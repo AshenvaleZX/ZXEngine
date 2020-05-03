@@ -1,0 +1,34 @@
+#vs_begin
+#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoords;
+
+out vec2 TexCoords;
+
+void main()
+{
+    TexCoords = aTexCoords;
+    gl_Position = vec4(aPos, 1.0);
+}
+#vs_end
+
+#gs_begin
+#gs_end
+
+#fs_begin
+#version 330 core
+out vec4 FragColor;
+
+in vec2 TexCoords;
+
+uniform sampler2D originColor;
+uniform sampler2D addColor;
+uniform float addTimes;
+
+void main()
+{             
+    vec3 result1 = texture(originColor, TexCoords).rgb;
+    vec3 result2 = texture(addColor, TexCoords).rgb;
+    FragColor = vec4(result1 + result2 * addTimes, 1.0);
+}
+#fs_end
