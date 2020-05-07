@@ -13,6 +13,7 @@
 #include "ParticleGenerator.h"
 
 #include <iostream>
+#include <random>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -59,6 +60,11 @@ glm::vec3 modelPos(-1.0f, -2.55f, 0.0f);
 
 // statistics
 int fps = 0;
+
+float lerp(float a, float b, float f)
+{
+    return a + f * (b - a);
+}
 
 int main()
 {
@@ -119,7 +125,11 @@ int main()
     Shader mixShader("..\\LearnOpenGL_Res\\ZXShaders\\mixTexture.zxshader");
     Shader particleShader("..\\LearnOpenGL_Res\\ZXShaders\\particle.zxshader");
     Shader gBufferShader("..\\LearnOpenGL_Res\\ZXShaders\\gBuffer.zxshader");
+    // Shader gBufferShader("..\\LearnOpenGL_Res\\Shaders\\SSAOGeometry.vs", "..\\LearnOpenGL_Res\\Shaders\\SSAOGeometry.fs");
     Shader colorBufferShader("..\\LearnOpenGL_Res\\ZXShaders\\showColorBuffer.zxshader");
+    Shader greyColorBufferShader("..\\LearnOpenGL_Res\\ZXShaders\\showGreyColorBuffer.zxshader");
+    Shader ssaoShader("..\\LearnOpenGL_Res\\ZXShaders\\SSAO.zxshader");
+    Shader ssaoBlurShader("..\\LearnOpenGL_Res\\ZXShaders\\SSAOBlur.zxshader");
 
     // load models
     // -----------
@@ -396,7 +406,7 @@ int main()
     unsigned int gBuffer;
     glGenFramebuffers(1, &gBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-    unsigned int gPosition, gNormal, gAlbedoSpec;
+    unsigned int gPosition, gNormal, gAlbedo;
     // position color buffer
     glGenTextures(1, &gPosition);
     glBindTexture(GL_TEXTURE_2D, gPosition);
@@ -412,12 +422,12 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
     // color + specular color buffer
-    glGenTextures(1, &gAlbedoSpec);
-    glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glGenTextures(1, &gAlbedo);
+    glBindTexture(GL_TEXTURE_2D, gAlbedo);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedo, 0);
     // tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
     unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers(3, attachments);
@@ -433,9 +443,79 @@ int main()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
+    // 配置用于处理SSAO的帧缓冲
+    // ------------------------
+    unsigned int ssaoFBO, ssaoBlurFBO;
+    glGenFramebuffers(1, &ssaoFBO);  glGenFramebuffers(1, &ssaoBlurFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
+    unsigned int ssaoColorBuffer, ssaoColorBufferBlur;
+    // SSAO color buffer
+    glGenTextures(1, &ssaoColorBuffer);
+    glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBuffer, 0);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "SSAO Framebuffer not complete!" << std::endl;
+    // and blur stage
+    glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
+    glGenTextures(1, &ssaoColorBufferBlur);
+    glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBufferBlur, 0);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "SSAO Blur Framebuffer not complete!" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // generate sample kernel for SSAO
+    // ----------------------
+    std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0); // generates random floats between 0.0 and 1.0
+    std::default_random_engine generator;
+    std::vector<glm::vec3> ssaoKernel;
+    for (unsigned int i = 0; i < 64; ++i)
+    {
+        glm::vec3 sample(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, randomFloats(generator));
+        sample = glm::normalize(sample);
+        sample *= randomFloats(generator);
+        float scale = float(i) / 64.0;
+
+        // scale samples s.t. they're more aligned to center of kernel
+        scale = lerp(0.1f, 1.0f, scale * scale);
+        sample *= scale;
+        ssaoKernel.push_back(sample);
+    }
+
+    // generate noise texture
+    // ----------------------
+    std::vector<glm::vec3> ssaoNoise;
+    for (unsigned int i = 0; i < 16; i++)
+    {
+        glm::vec3 noise(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, 0.0f); // rotate around z-axis (in tangent space)
+        ssaoNoise.push_back(noise);
+    }
+    unsigned int noiseTexture; glGenTextures(1, &noiseTexture);
+    glBindTexture(GL_TEXTURE_2D, noiseTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, 4, 4, 0, GL_RGB, GL_FLOAT, &ssaoNoise[0]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+
     // 设置一些Shader的固定Uniform
     colorBufferShader.use();
     colorBufferShader.setInt("screenTexture", 0);
+    greyColorBufferShader.use();
+    greyColorBufferShader.setInt("screenTexture", 0);
+    ssaoShader.use();
+    ssaoShader.setInt("gPosition", 0);
+    ssaoShader.setInt("gNormal", 1);
+    ssaoShader.setInt("texNoise", 2);
+    ssaoBlurShader.use();
+    ssaoBlurShader.setInt("ssaoInput", 0);
 
     // render loop
     // -----------
@@ -530,7 +610,6 @@ int main()
         // 切换回动态CubeMap，在RenderModelAndSkyBox函数里GL_TEXTURE_CUBE_MAP被切换到之前的天空盒了
         glBindTexture(GL_TEXTURE_CUBE_MAP, dynamicCubeMap);
         // 配置第一个面，当为CubeMap设置图像时，图像的高和宽一定要是相等的！！！
-        // glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, SKYBOX_WIDTH, SKYBOX_WIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, colorBufferData);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB, SKYBOX_WIDTH, SKYBOX_WIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, colorBufferData);
 
         DEMCamera.Yaw = 0;
@@ -539,7 +618,6 @@ int main()
         RenderModelAndSkyBox(DEMCamera, modelShader, ourModel, lampShader, skyboxShader, pointShadowShader, VAOs, textures);
         glReadPixels(0, 0, SKYBOX_WIDTH, SKYBOX_WIDTH, GL_RGB, GL_UNSIGNED_BYTE, colorBufferData);
         glBindTexture(GL_TEXTURE_CUBE_MAP, dynamicCubeMap);
-        // glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB, SKYBOX_WIDTH, SKYBOX_WIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, colorBufferData);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, SKYBOX_WIDTH, SKYBOX_WIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, colorBufferData);
 
         DEMCamera.Yaw = 0;
@@ -548,7 +626,6 @@ int main()
         RenderModelAndSkyBox(DEMCamera, modelShader, ourModel, lampShader, skyboxShader, pointShadowShader, VAOs, textures);
         glReadPixels(0, 0, SKYBOX_WIDTH, SKYBOX_WIDTH, GL_RGB, GL_UNSIGNED_BYTE, colorBufferData);
         glBindTexture(GL_TEXTURE_CUBE_MAP, dynamicCubeMap);
-        // glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB, SKYBOX_WIDTH, SKYBOX_WIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, colorBufferData);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB, SKYBOX_WIDTH, SKYBOX_WIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, colorBufferData);
 
         DEMCamera.Yaw = 0;
@@ -557,7 +634,6 @@ int main()
         RenderModelAndSkyBox(DEMCamera, modelShader, ourModel, lampShader, skyboxShader, pointShadowShader, VAOs, textures);
         glReadPixels(0, 0, SKYBOX_WIDTH, SKYBOX_WIDTH, GL_RGB, GL_UNSIGNED_BYTE, colorBufferData);
         glBindTexture(GL_TEXTURE_CUBE_MAP, dynamicCubeMap);
-        // glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB, SKYBOX_WIDTH, SKYBOX_WIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, colorBufferData);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB, SKYBOX_WIDTH, SKYBOX_WIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, colorBufferData);
 
         DEMCamera.Yaw = -90;
@@ -566,7 +642,6 @@ int main()
         RenderModelAndSkyBox(DEMCamera, modelShader, ourModel, lampShader, skyboxShader, pointShadowShader, VAOs, textures);
         glReadPixels(0, 0, SKYBOX_WIDTH, SKYBOX_WIDTH, GL_RGB, GL_UNSIGNED_BYTE, colorBufferData);
         glBindTexture(GL_TEXTURE_CUBE_MAP, dynamicCubeMap);
-        // glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB, SKYBOX_WIDTH, SKYBOX_WIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, colorBufferData);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB, SKYBOX_WIDTH, SKYBOX_WIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, colorBufferData);
 
         DEMCamera.Yaw = 90;
@@ -575,7 +650,6 @@ int main()
         RenderModelAndSkyBox(DEMCamera, modelShader, ourModel, lampShader, skyboxShader, pointShadowShader, VAOs, textures);
         glReadPixels(0, 0, SKYBOX_WIDTH, SKYBOX_WIDTH, GL_RGB, GL_UNSIGNED_BYTE, colorBufferData);
         glBindTexture(GL_TEXTURE_CUBE_MAP, dynamicCubeMap);
-        // glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB, SKYBOX_WIDTH, SKYBOX_WIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, colorBufferData);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB, SKYBOX_WIDTH, SKYBOX_WIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, colorBufferData);
 
         CheckGLError(3);
@@ -589,16 +663,20 @@ int main()
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 
-        // 切换到延迟渲染帧缓冲，将数据写入 G-Buffer
-        // -----------------------------------------
-        glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // 变换矩阵初始化
         glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+
+
+        // 切换到延迟渲染帧缓冲，将数据写入 G-Buffer
+        // -----------------------------------------
+        glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+        glClearColor(-1000.0f, -1000.0f, -1000.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         gBufferShader.use();
         gBufferShader.setMat4("view", view);
@@ -618,14 +696,40 @@ int main()
         model = glm::mat4(1.0f);
         gBufferShader.setMat4("model", model);
         gBufferShader.setInt("texture_diffuse1", 0);
-        gBufferShader.setInt("texture_specular1", 1);
         glBindVertexArray(planeVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, floorTexture);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, floorTexture);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
+
+
+        // 切到SSAO缓冲渲染SSAO贴图
+        // ------------------------
+        glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        ssaoShader.use();
+        // Send kernel + rotation 
+        for (unsigned int i = 0; i < 64; ++i)
+            ssaoShader.setVec3("samples[" + std::to_string(i) + "]", ssaoKernel[i]);
+        ssaoShader.setMat4("view", view);
+        ssaoShader.setMat4("projection", projection);
+        ssaoShader.setVec3("camPos", camera.Position);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, gPosition);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, gNormal);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, noiseTexture);
+        renderQuad();
+
+        // 模糊SSAO来提高SSAO的质量
+        // ------------------------
+        glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        ssaoBlurShader.use();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
+        renderQuad();
 
 
         // 切换到HDR帧缓冲，开始渲染HDR下的主视角画面
@@ -821,8 +925,11 @@ int main()
         glBindTexture(GL_TEXTURE_2D, gNormal);
         renderSmallQuad(0.2, glm::vec3(-0.75f, -0.25f, 0.0f));
 
-        glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
+        glBindTexture(GL_TEXTURE_2D, gAlbedo);
         renderSmallQuad(0.2, glm::vec3(-0.75f, -0.75f, 0.0f));
+
+        glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
+        renderSmallQuad(0.2, glm::vec3(0.75f, 0.75f, 0.0f));
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
