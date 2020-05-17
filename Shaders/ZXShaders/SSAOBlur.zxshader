@@ -17,7 +17,7 @@ void main()
 
 #fs_begin
 #version 330 core
-out float FragColor;
+out vec4 FragColor;
 
 in vec2 TexCoords;
 
@@ -35,6 +35,7 @@ void main()
             result += texture(ssaoInput, TexCoords + offset).r;
         }
     }
-    FragColor = result / (4.0 * 4.0);
+    float color = result / (4.0 * 4.0);
+    FragColor = vec4(color, color, color, 1.0);
 }
 #fs_end

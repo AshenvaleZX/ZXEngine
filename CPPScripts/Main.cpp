@@ -125,9 +125,7 @@ int main()
     Shader mixShader("..\\LearnOpenGL_Res\\ZXShaders\\mixTexture.zxshader");
     Shader particleShader("..\\LearnOpenGL_Res\\ZXShaders\\particle.zxshader");
     Shader gBufferShader("..\\LearnOpenGL_Res\\ZXShaders\\gBuffer.zxshader");
-    // Shader gBufferShader("..\\LearnOpenGL_Res\\Shaders\\SSAOGeometry.vs", "..\\LearnOpenGL_Res\\Shaders\\SSAOGeometry.fs");
     Shader colorBufferShader("..\\LearnOpenGL_Res\\ZXShaders\\showColorBuffer.zxshader");
-    Shader greyColorBufferShader("..\\LearnOpenGL_Res\\ZXShaders\\showGreyColorBuffer.zxshader");
     Shader ssaoShader("..\\LearnOpenGL_Res\\ZXShaders\\SSAO.zxshader");
     Shader ssaoBlurShader("..\\LearnOpenGL_Res\\ZXShaders\\SSAOBlur.zxshader");
 
@@ -462,7 +460,8 @@ int main()
     glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
     glGenTextures(1, &ssaoColorBufferBlur);
     glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+    // 这里第一个GL_RGB可以用GL_RED来代替，因为只要一个通道就够了，不过为了方便展示SSAO的中间过程，这里弄成GL_RED的话图像会是红的，GL_RGB是黑白的好看点
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBufferBlur, 0);
@@ -508,8 +507,6 @@ int main()
     // 设置一些Shader的固定Uniform
     colorBufferShader.use();
     colorBufferShader.setInt("screenTexture", 0);
-    greyColorBufferShader.use();
-    greyColorBufferShader.setInt("screenTexture", 0);
     ssaoShader.use();
     ssaoShader.setInt("gPosition", 0);
     ssaoShader.setInt("gNormal", 1);
@@ -916,7 +913,7 @@ int main()
         colorBufferShader.use();
         glActiveTexture(GL_TEXTURE0);
 
-        glBindTexture(GL_TEXTURE_2D, brightColorBuffer);
+        glBindTexture(GL_TEXTURE_2D, gAlbedo);
         renderSmallQuad(0.2, glm::vec3(-0.75f, 0.75f, 0.0f));
 
         glBindTexture(GL_TEXTURE_2D, gPosition);
@@ -925,11 +922,11 @@ int main()
         glBindTexture(GL_TEXTURE_2D, gNormal);
         renderSmallQuad(0.2, glm::vec3(-0.75f, -0.25f, 0.0f));
 
-        glBindTexture(GL_TEXTURE_2D, gAlbedo);
-        renderSmallQuad(0.2, glm::vec3(-0.75f, -0.75f, 0.0f));
-
-        glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
+        glBindTexture(GL_TEXTURE_2D, brightColorBuffer);
         renderSmallQuad(0.2, glm::vec3(0.75f, 0.75f, 0.0f));
+
+        glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
+        renderSmallQuad(0.2, glm::vec3(0.75f, 0.25f, 0.0f));
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
