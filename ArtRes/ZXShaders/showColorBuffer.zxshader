@@ -1,0 +1,38 @@
+#vs_begin
+#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoords;
+
+out vec2 TexCoords;
+
+void main()
+{
+    TexCoords = aTexCoords;
+    gl_Position = vec4(aPos, 1.0); 
+}
+#vs_end
+
+#gs_begin
+#gs_end
+
+#fs_begin
+#version 330 core
+out vec4 FragColor;
+
+in vec2 TexCoords;
+
+uniform sampler2D screenTexture;
+
+void main()
+{
+    vec3 col = texture(screenTexture, TexCoords).rgb;
+
+    // 画个边框出来
+    if(TexCoords.x < 0.03 || TexCoords.x > 0.97 || TexCoords.y < 0.05 || TexCoords.y > 0.95)
+    {
+        col = vec3(0.7, 0.7, 0.3);
+    }
+
+    FragColor = vec4(col, 1.0);
+}
+#fs_end

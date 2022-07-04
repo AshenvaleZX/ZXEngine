@@ -1,0 +1,1 @@
+这个ft2build.h是用于渲染字体的FreeType库的头文件，由于Free Type的一些具体实现细节，这个ft2build.h必须放在Include的根目录下，否则可能出问题

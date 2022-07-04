@@ -112,27 +112,27 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader shader("..\\LearnOpenGL_Res\\ZXShaders\\cubeMapWithLighting.zxshader");
-    Shader skyboxShader("..\\LearnOpenGL_Res\\Shaders\\skyBox.vs", "..\\LearnOpenGL_Res\\Shaders\\skyBox.fs");
-    Shader modelShader("..\\LearnOpenGL_Res\\Shaders\\cubeMapReflectAndLight.vs", "..\\LearnOpenGL_Res\\Shaders\\cubeMapReflectAndLight.fs");
-    Shader lampShader("..\\LearnOpenGL_Res\\Shaders\\lamp.vs", "..\\LearnOpenGL_Res\\Shaders\\lamp.fs");
-    Shader textureShader("..\\LearnOpenGL_Res\\ZXShaders\\simpleTexture.zxshader");
-    Shader pointShadowShader("..\\LearnOpenGL_Res\\ZXShaders\\pointShadow.zxshader");
-    Shader shadowDepthShader("..\\LearnOpenGL_Res\\ZXShaders\\pointShadowDepth.zxshader");
-    Shader hdrShader("..\\LearnOpenGL_Res\\ZXShaders\\HDR.zxshader");
-    Shader filterBrightAreaShader("..\\LearnOpenGL_Res\\ZXShaders\\filterBrightArea.zxshader");
-    Shader blurShader("..\\LearnOpenGL_Res\\ZXShaders\\gaussianBlur.zxshader");
-    Shader mixShader("..\\LearnOpenGL_Res\\ZXShaders\\mixTexture.zxshader");
-    Shader particleShader("..\\LearnOpenGL_Res\\ZXShaders\\particle.zxshader");
-    Shader gBufferShader("..\\LearnOpenGL_Res\\ZXShaders\\gBuffer.zxshader");
-    Shader colorBufferShader("..\\LearnOpenGL_Res\\ZXShaders\\showColorBuffer.zxshader");
-    Shader ssaoShader("..\\LearnOpenGL_Res\\ZXShaders\\SSAO.zxshader");
-    Shader ssaoBlurShader("..\\LearnOpenGL_Res\\ZXShaders\\SSAOBlur.zxshader");
+    Shader shader("..\\..\\Shaders\\ZXShaders\\cubeMapWithLighting.zxshader");
+    Shader skyboxShader("..\\..\\Shaders\\Shaders\\skyBox.vs", "..\\..\\Shaders\\Shaders\\skyBox.fs");
+    Shader modelShader("..\\..\\Shaders\\Shaders\\cubeMapReflectAndLight.vs", "..\\..\\Shaders\\Shaders\\cubeMapReflectAndLight.fs");
+    Shader lampShader("..\\..\\Shaders\\Shaders\\lamp.vs", "..\\..\\Shaders\\Shaders\\lamp.fs");
+    Shader textureShader("..\\..\\Shaders\\ZXShaders\\simpleTexture.zxshader");
+    Shader pointShadowShader("..\\..\\Shaders\\ZXShaders\\pointShadow.zxshader");
+    Shader shadowDepthShader("..\\..\\Shaders\\ZXShaders\\pointShadowDepth.zxshader");
+    Shader hdrShader("..\\..\\Shaders\\ZXShaders\\HDR.zxshader");
+    Shader filterBrightAreaShader("..\\..\\Shaders\\ZXShaders\\filterBrightArea.zxshader");
+    Shader blurShader("..\\..\\Shaders\\ZXShaders\\gaussianBlur.zxshader");
+    Shader mixShader("..\\..\\Shaders\\ZXShaders\\mixTexture.zxshader");
+    Shader particleShader("..\\..\\Shaders\\ZXShaders\\particle.zxshader");
+    Shader gBufferShader("..\\..\\Shaders\\ZXShaders\\gBuffer.zxshader");
+    Shader colorBufferShader("..\\..\\Shaders\\ZXShaders\\showColorBuffer.zxshader");
+    Shader ssaoShader("..\\..\\Shaders\\ZXShaders\\SSAO.zxshader");
+    Shader ssaoBlurShader("..\\..\\Shaders\\ZXShaders\\SSAOBlur.zxshader");
 
     // load models
     // -----------
-    Model ourModel("..\\LearnOpenGL_Res\\Models\\nanosuit_reflection\\nanosuit.obj");
-    Model lamborghini("..\\LearnOpenGL_Res\\Models\\Lamborghini\\huracan in 2.8.obj");
+    Model ourModel("..\\..\\ArtRes\\Models\\nanosuit_reflection\\nanosuit.obj");
+    Model lamborghini("..\\..\\ArtRes\\Models\\Lamborghini\\huracan in 2.8.obj");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -273,16 +273,16 @@ int main()
     // -------------
     vector<std::string> faces
     {
-        "..\\LearnOpenGL_Res\\Textures\\skybox3\\corona_rt2.png", // 右
-        "..\\LearnOpenGL_Res\\Textures\\skybox3\\corona_lf2.png", // 左
-        "..\\LearnOpenGL_Res\\Textures\\skybox3\\corona_dn2.png", // 上，注意这里用的天空盒上下反了一下，并且前后左右的图是转了180度的
-        "..\\LearnOpenGL_Res\\Textures\\skybox3\\corona_up2.png", // 下
-        "..\\LearnOpenGL_Res\\Textures\\skybox3\\corona_ft2.png", // 前
-        "..\\LearnOpenGL_Res\\Textures\\skybox3\\corona_bk2.png", // 后
+        "..\\..\\ArtRes\\Textures\\skybox3\\corona_rt2.png", // 右
+        "..\\..\\ArtRes\\Textures\\skybox3\\corona_lf2.png", // 左
+        "..\\..\\ArtRes\\Textures\\skybox3\\corona_dn2.png", // 上，注意这里用的天空盒上下反了一下，并且前后左右的图是转了180度的
+        "..\\..\\ArtRes\\Textures\\skybox3\\corona_up2.png", // 下
+        "..\\..\\ArtRes\\Textures\\skybox3\\corona_ft2.png", // 前
+        "..\\..\\ArtRes\\Textures\\skybox3\\corona_bk2.png", // 后
     };
     unsigned int cubemapTexture = loadCubemap(faces);
-    unsigned int floorTexture = loadTexture("..\\LearnOpenGL_Res\\Textures\\wall.jpg");
-    unsigned int particleTexture = loadTexture("..\\LearnOpenGL_Res\\Textures\\particle.png");
+    unsigned int floorTexture = loadTexture("..\\..\\ArtRes\\Textures\\wall.jpg");
+    unsigned int particleTexture = loadTexture("..\\..\\ArtRes\\Textures\\particle.png");
 
     // Particle System
     // ---------------

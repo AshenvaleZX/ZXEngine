@@ -1,0 +1,1 @@
+这里的config.h文件是手动从E:\CodeFromThirdParty\Assimp-5.0.1\build\include\assimp拷过来的

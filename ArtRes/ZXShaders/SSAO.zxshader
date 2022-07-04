@@ -1,0 +1,93 @@
+#vs_begin
+#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoords;
+
+out vec2 TexCoords;
+
+void main()
+{
+    TexCoords = aTexCoords;
+    gl_Position = vec4(aPos, 1.0);
+}
+#vs_end
+
+#gs_begin
+#gs_end
+
+#fs_begin
+#version 330 core
+out vec4 FragColor;
+
+in vec2 TexCoords;
+
+uniform sampler2D gPosition;
+uniform sampler2D gNormal;
+uniform sampler2D texNoise;
+
+uniform vec3 samples[64];
+uniform vec3 camPos;
+
+// parameters (you'd probably want to use them as uniforms to more easily tweak the effect)
+int kernelSize = 64;
+float radius = 0.5;
+float bias = 0.025;
+
+// tile noise texture over screen based on screen dimensions divided by noise size
+const vec2 noiseScale = vec2(1280.0/4.0, 720.0/4.0); 
+
+uniform mat4 view;
+uniform mat4 projection;
+
+void main()
+{
+    // get input for SSAO algorithm
+    vec3 fragPos = texture(gPosition, TexCoords).xyz;
+    vec3 normal = normalize(texture(gNormal, TexCoords).rgb);
+    vec3 randomVec = normalize(texture(texNoise, TexCoords * noiseScale).xyz);
+    // 因为原教程里的G-Buffer是在view空间里的，所以这个地方创建的矩阵是从切线空间转到view空间
+    // 但是我自己的G-Buffer是在世界空间里的，所以这个地方创建的矩阵是从切线空间转到世界空间，
+    // 无论是转到view空间还是转到世界空间，这三行代码都是一样的，唯一区别就是normal在哪个空间下
+    // normal在哪个空间下，构建出来的TBN矩阵就可以将坐标和向量转到对应的空间下
+    vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
+    vec3 bitangent = cross(normal, tangent);
+    mat3 TBN = mat3(tangent, bitangent, normal);
+    // iterate over the sample kernel and calculate occlusion factor
+    float occlusion = 0.0;
+    for(int i = 0; i < kernelSize; ++i)
+    {
+        // get sample position
+        vec3 sample = TBN * samples[i]; // from tangent to world-space
+        sample = fragPos + sample * radius; 
+        
+        // project sample position (to sample texture) (to get position on screen/texture)
+        vec4 offset = vec4(sample, 1.0);
+        offset = projection * view * offset; // from world to clip-space
+        offset.xyz /= offset.w; // perspective divide
+        offset.xyz = offset.xyz * 0.5 + 0.5; // transform to range 0.0 - 1.0
+
+        /* 这是原基于view空间下的算法，可以直接用z表示离观察者的距离
+        // get sample depth
+        float sampleDepth = texture(gPosition, offset.xy).z; // get depth value of kernel sample
+
+        // range check & accumulate
+        float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));
+        occlusion += (sampleDepth >= sample.z + bias ? 1.0 : 0.0) * rangeCheck;
+        */
+
+        // 这是我修改后的，基于世界空间下的算法。在世界空间下的z就无法代表一个fragment离观察者的距离远近了
+        // 所以传入了摄像机的世界坐标，根据fragment的世界坐标与摄像机的世界坐标差距来判断远近
+        vec3 samplePos = texture(gPosition, offset.xy).xyz; // get depth value of kernel sample
+        float fragDis = length(fragPos - camPos);
+        float sampleDis = length(samplePos - camPos);
+
+        float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragDis - sampleDis));
+        occlusion += (fragDis >= sampleDis + bias ? 1.0 : 0.0) * rangeCheck;
+    }
+    occlusion = 1.0 - (occlusion / kernelSize);
+    
+    // FragColor = occlusion;
+    FragColor = vec4(occlusion, occlusion, occlusion, 1);
+    // FragColor = texture(gNormal, TexCoords);
+}
+#fs_end

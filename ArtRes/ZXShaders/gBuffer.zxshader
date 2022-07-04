@@ -1,0 +1,52 @@
+#vs_begin
+#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec2 aTexCoords;
+
+out vec3 FragPos;
+out vec2 TexCoords;
+out vec3 Normal;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+void main()
+{
+    vec4 worldPos = model * vec4(aPos, 1.0);
+    FragPos = worldPos.xyz; 
+    TexCoords = aTexCoords;
+    
+    mat3 normalMatrix = transpose(inverse(mat3(model)));
+    Normal = normalMatrix * aNormal;
+
+    gl_Position = projection * view * worldPos;
+}
+#vs_end
+
+#gs_begin
+#gs_end
+
+#fs_begin
+#version 330 core
+layout (location = 0) out vec4 gPosition;
+layout (location = 1) out vec4 gNormal;
+layout (location = 2) out vec4 gAlbedoSpec;
+
+in vec2 TexCoords;
+in vec3 FragPos;
+in vec3 Normal;
+
+uniform sampler2D texture_diffuse1;
+
+void main()
+{    
+    // store the fragment position vector in the first gbuffer texture
+    gPosition = vec4(FragPos, 1.0);
+    // also store the per-fragment normals into the gbuffer
+    gNormal = vec4(normalize(Normal), 1.0);
+    // and the diffuse per-fragment color
+    gAlbedoSpec = vec4(texture(texture_diffuse1, TexCoords).rgb, 1.0);
+}
+#fs_end
