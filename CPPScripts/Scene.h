@@ -1,6 +1,7 @@
 #pragma once
 #include "pubh.h"
 #include "GameObject.h"
+#include "ZCamera.h"
 
 namespace ZXEngine
 {
@@ -10,7 +11,10 @@ namespace ZXEngine
 		Scene();
 		~Scene();
 
+		void Render();
+
 	private:
 		list<GameObject*> gameObjects;
+		list<Camera*> cameras;
 	};
 }

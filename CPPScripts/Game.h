@@ -1,5 +1,6 @@
 #pragma once
 #include "pubh.h"
+#include "SceneManager.h"
 
 namespace ZXEngine
 {
@@ -12,5 +13,6 @@ namespace ZXEngine
 		~Game();
 
 		void Play();
+		void Render();
 	};
 }

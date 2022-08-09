@@ -12,7 +12,10 @@ namespace ZXEngine
 		SceneManager();
 		~SceneManager();
 
+		Scene* GetCurScene();
+
 	private:
 		map<string, Scene> scenes;
+		Scene* curScene;
 	};
 }
