@@ -15,6 +15,6 @@ namespace ZXEngine
 
 	private:
 		list<GameObject*> gameObjects;
-		list<Camera*> cameras;
+		vector<Camera*> cameras;
 	};
 }
