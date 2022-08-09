@@ -1,5 +1,5 @@
 #pragma once
-#include <string>
+#include "pubh.h"
 #include "Component.h"
 #include "Transform.h"
 #include "MeshRenderer.h"
@@ -12,7 +12,7 @@ namespace ZXEngine
 		GameObject();
 		~GameObject();
 
-		Component* GetComponent(std::string type);
+		Component* GetComponent(string type);
 
 	private:
 		Transform* transform;
