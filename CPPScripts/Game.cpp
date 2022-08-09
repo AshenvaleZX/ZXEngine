@@ -1,4 +1,3 @@
-#include <iostream>
 #include "Game.h"
 
 namespace ZXEngine
@@ -7,6 +6,6 @@ namespace ZXEngine
 
 	void Game::Play()
 	{
-		std::cout << "ZXTest";
+		cout << "ZXTest";
 	}
 }
