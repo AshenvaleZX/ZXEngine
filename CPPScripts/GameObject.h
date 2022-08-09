@@ -1,20 +1,21 @@
 #pragma once
-#include "Model.h"
+#include <string>
+#include "Component.h"
+#include "Transform.h"
+#include "MeshRenderer.h"
 
-class GameObject
+namespace ZXEngine
 {
-public:
-
-	GameObject(Model model)
+	class GameObject
 	{
+	public:
+		GameObject();
+		~GameObject();
 
-	}
+		Component* GetComponent(std::string type);
 
-	GameObject(unsigned int VAO)
-	{
-
-	}
-
-private:
-
-};
+	private:
+		Transform* transform;
+		MeshRenderer* meshRenderer;
+	};
+}
