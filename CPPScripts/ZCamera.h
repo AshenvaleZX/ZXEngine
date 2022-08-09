@@ -1,4 +1,5 @@
 #pragma once
+#include "GameObject.h"
 
 namespace ZXEngine
 {
@@ -8,7 +9,7 @@ namespace ZXEngine
 		Camera();
 		~Camera();
 
-		void Render();
+		void Render(list<GameObject*> gameObjects);
 
 	private:
 
