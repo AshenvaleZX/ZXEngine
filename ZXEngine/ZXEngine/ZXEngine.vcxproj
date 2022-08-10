@@ -147,19 +147,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\CPPScripts\Component.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Entry.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Game.cpp" />
+    <ClCompile Include="..\..\CPPScripts\GameObject.cpp" />
     <ClCompile Include="..\..\CPPScripts\Main.cpp" />
+    <ClCompile Include="..\..\CPPScripts\MeshRenderer.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Scene.cpp" />
+    <ClCompile Include="..\..\CPPScripts\SceneManager.cpp" />
+    <ClCompile Include="..\..\CPPScripts\ZCamera.cpp" />
     <ClCompile Include="..\..\Vendor\Src\glad.c" />
-    <ClCompile Include="Entry.cpp" />
-    <ClCompile Include="Game.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h" />
+    <ClInclude Include="..\..\CPPScripts\Component.h" />
+    <ClInclude Include="..\..\CPPScripts\Game.h" />
+    <ClInclude Include="..\..\CPPScripts\GameObject.h" />
     <ClInclude Include="..\..\CPPScripts\Mesh.h" />
+    <ClInclude Include="..\..\CPPScripts\MeshRenderer.h" />
     <ClInclude Include="..\..\CPPScripts\Model.h" />
     <ClInclude Include="..\..\CPPScripts\ParticleGenerator.h" />
+    <ClInclude Include="..\..\CPPScripts\pubh.h" />
+    <ClInclude Include="..\..\CPPScripts\Scene.h" />
+    <ClInclude Include="..\..\CPPScripts\SceneManager.h" />
     <ClInclude Include="..\..\CPPScripts\Shader.h" />
     <ClInclude Include="..\..\CPPScripts\stb_image.h" />
-    <ClInclude Include="Game.h" />
+    <ClInclude Include="..\..\CPPScripts\Transform.h" />
+    <ClInclude Include="..\..\CPPScripts\ZCamera.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
