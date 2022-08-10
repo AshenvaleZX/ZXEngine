@@ -2,8 +2,5 @@
 
 namespace ZXEngine
 {
-	MeshRenderer::MeshRenderer()
-	{
 
-	}
 }

@@ -9,13 +9,13 @@ namespace ZXEngine
 	class GameObject
 	{
 	public:
-		GameObject();
-		~GameObject();
+		GameObject() {};
+		~GameObject() {};
 
 		Component* GetComponent(string type);
 
 	private:
-		Transform* transform;
-		MeshRenderer* meshRenderer;
+		Transform* transform = new Transform();
+		MeshRenderer* meshRenderer = new MeshRenderer();
 	};
 }

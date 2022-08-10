@@ -6,8 +6,8 @@ namespace ZXEngine
 	class Transform : public Component
 	{
 	public:
-		Transform();
-		~Transform();
+		Transform() {};
+		~Transform() {};
 
 	private:
 

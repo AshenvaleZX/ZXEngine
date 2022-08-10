@@ -7,7 +7,8 @@ namespace ZXEngine
 
 	void Game::Play()
 	{
-		cout << "ZXTest";
+		SceneManager::mInstance = new SceneManager();
+		cout << "ZXTest" << endl;
 		Render();
 	}
 

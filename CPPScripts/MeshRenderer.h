@@ -6,8 +6,8 @@ namespace ZXEngine
 	class MeshRenderer : public Component
 	{
 	public:
-		MeshRenderer();
-		~MeshRenderer();
+		MeshRenderer() {};
+		~MeshRenderer() {};
 
 	private:
 

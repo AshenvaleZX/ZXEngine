@@ -8,8 +8,8 @@ namespace ZXEngine
 	class Scene
 	{
 	public:
-		Scene();
-		~Scene();
+		Scene() {};
+		~Scene() {};
 
 		void Render();
 

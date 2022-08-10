@@ -6,8 +6,8 @@ namespace ZXEngine
 	class Camera
 	{
 	public:
-		Camera();
-		~Camera();
+		Camera() {};
+		~Camera() {};
 
 		void Render(list<GameObject*> gameObjects);
 

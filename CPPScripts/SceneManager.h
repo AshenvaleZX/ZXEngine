@@ -9,13 +9,13 @@ namespace ZXEngine
 	public:
 		static SceneManager* mInstance;
 
-		SceneManager();
-		~SceneManager();
+		SceneManager() {};
+		~SceneManager() {};
 
 		Scene* GetCurScene();
 
 	private:
 		map<string, Scene> scenes;
-		Scene* curScene;
+		Scene* curScene = new Scene();
 	};
 }
