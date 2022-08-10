@@ -66,7 +66,7 @@ float lerp(float a, float b, float f)
     return a + f * (b - a);
 }
 
-int main()
+int main1()
 {
     // glfw: initialize and configure
     // ------------------------------

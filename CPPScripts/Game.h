@@ -1,6 +1,8 @@
 #pragma once
 #include "pubh.h"
 #include "SceneManager.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 namespace ZXEngine
 {
@@ -9,10 +11,14 @@ namespace ZXEngine
 	public:
 		static Game* mInstance;
 
-		Game();
-		~Game();
+		Game() {};
+		~Game() {};
 
 		void Play();
-		void Render();
+		void InitWindow();
+;		void Render();
+
+	private:
+		GLFWwindow* window;
 	};
 }
