@@ -1,5 +1,6 @@
 #include "ZCamera.h"
 #include "MeshRenderer.h"
+#include "Scene.h"
 
 namespace ZXEngine
 {
@@ -7,7 +8,7 @@ namespace ZXEngine
 	{
 		for (auto go : gameObjects)
 		{
-			auto meshRenderer = go->GetComponent("MeshRenderer");
+			MeshRenderer* meshRenderer = go->GetComponent<MeshRenderer>("MeshRenderer");
 		}
 
 	}
