@@ -13,7 +13,7 @@ namespace ZXEngine
 	{
 		SceneManager::mInstance = new SceneManager();
 		InitWindow();
-		cout << "ZXTest" << endl;
+		Debug::Log("ZXTest");
 
 		while (!glfwWindowShouldClose(window))
 		{

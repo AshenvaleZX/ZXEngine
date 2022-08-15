@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h" />
     <ClInclude Include="..\..\CPPScripts\Component.h" />
+    <ClInclude Include="..\..\CPPScripts\Debug.h" />
     <ClInclude Include="..\..\CPPScripts\Game.h" />
     <ClInclude Include="..\..\CPPScripts\GameObject.h" />
     <ClInclude Include="..\..\CPPScripts\Mesh.h" />

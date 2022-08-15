@@ -92,5 +92,8 @@
     <ClInclude Include="..\..\CPPScripts\ZCamera.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Debug.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
