@@ -15,10 +15,8 @@ namespace ZXEngine
 		~Game() {};
 
 		void Play();
-		void InitWindow();
 ;		void Render();
 
 	private:
-		GLFWwindow* window;
 	};
 }

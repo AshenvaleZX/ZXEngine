@@ -153,6 +153,7 @@
     <ClCompile Include="..\..\CPPScripts\GameObject.cpp" />
     <ClCompile Include="..\..\CPPScripts\Main.cpp" />
     <ClCompile Include="..\..\CPPScripts\MeshRenderer.cpp" />
+    <ClCompile Include="..\..\CPPScripts\RenderEngine.cpp" />
     <ClCompile Include="..\..\CPPScripts\Scene.cpp" />
     <ClCompile Include="..\..\CPPScripts\SceneManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\ZCamera.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="..\..\CPPScripts\Model.h" />
     <ClInclude Include="..\..\CPPScripts\ParticleGenerator.h" />
     <ClInclude Include="..\..\CPPScripts\pubh.h" />
+    <ClInclude Include="..\..\CPPScripts\RenderEngine.h" />
     <ClInclude Include="..\..\CPPScripts\Scene.h" />
     <ClInclude Include="..\..\CPPScripts\SceneManager.h" />
     <ClInclude Include="..\..\CPPScripts\Shader.h" />
