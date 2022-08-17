@@ -159,6 +159,7 @@
     <ClCompile Include="..\..\CPPScripts\Texture.cpp" />
     <ClCompile Include="..\..\CPPScripts\ZCamera.cpp" />
     <ClCompile Include="..\..\CPPScripts\ZMesh.cpp" />
+    <ClCompile Include="..\..\CPPScripts\ZShader.cpp" />
     <ClCompile Include="..\..\Vendor\Src\glad.c" />
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +182,7 @@
     <ClInclude Include="..\..\CPPScripts\Transform.h" />
     <ClInclude Include="..\..\CPPScripts\ZCamera.h" />
     <ClInclude Include="..\..\CPPScripts\ZMesh.h" />
+    <ClInclude Include="..\..\CPPScripts\ZShader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

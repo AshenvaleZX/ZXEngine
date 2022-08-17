@@ -77,4 +77,107 @@ namespace ZXEngine
 
 		return textureID;
 	}
+
+	unsigned int RenderEngine::LoadAndCompileShader(const char* path)
+	{
+		string shaderCode;
+		string vertexCode;
+		string fragmentCode;
+		string geometryCode;
+		ifstream shaderFile;
+		// ensure ifstream objects can throw exceptions:
+		shaderFile.exceptions(ifstream::failbit | ifstream::badbit);
+		try
+		{
+			// open files
+			shaderFile.open(path);
+			stringstream shaderStream;
+			// read file's buffer contents into streams
+			shaderStream << shaderFile.rdbuf();
+			// close file handlers
+			shaderFile.close();
+			// convert stream into string
+			shaderCode = shaderStream.str();
+
+			int vs_begin = shaderCode.find("#vs_begin") + 9;
+			int vs_end = shaderCode.find("#vs_end");
+			vertexCode = shaderCode.substr(vs_begin, vs_end - vs_begin);
+
+			int gs_begin = shaderCode.find("#gs_begin") + 9;
+			int gs_end = shaderCode.find("#gs_end");
+			geometryCode = shaderCode.substr(gs_begin, gs_end - gs_begin);
+
+			int fs_begin = shaderCode.find("#fs_begin") + 9;
+			int fs_end = shaderCode.find("#fs_end");
+			fragmentCode = shaderCode.substr(fs_begin, fs_end - fs_begin);
+		}
+		catch (ifstream::failure e)
+		{
+			Debug::LogError("ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ");
+		}
+		const char* vShaderCode = vertexCode.c_str();
+		const char* fShaderCode = fragmentCode.c_str();
+		const char* gShaderCode = geometryCode.c_str();
+
+		unsigned int vertex, fragment;
+		// vertex shader
+		vertex = glCreateShader(GL_VERTEX_SHADER);
+		glShaderSource(vertex, 1, &vShaderCode, NULL);
+		glCompileShader(vertex);
+		CheckCompileErrors(vertex, "VERTEX");
+		// fragment Shader
+		fragment = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(fragment, 1, &fShaderCode, NULL);
+		glCompileShader(fragment);
+		CheckCompileErrors(fragment, "FRAGMENT");
+		// if geometry shader is given, compile geometry shader
+		unsigned int geometry;
+		if (geometryCode.length() > 1)
+		{
+			const char* gShaderCode = geometryCode.c_str();
+			geometry = glCreateShader(GL_GEOMETRY_SHADER);
+			glShaderSource(geometry, 1, &gShaderCode, NULL);
+			glCompileShader(geometry);
+			CheckCompileErrors(geometry, "GEOMETRY");
+		}
+		// shader Program
+		unsigned int ID = glCreateProgram();
+		glAttachShader(ID, vertex);
+		glAttachShader(ID, fragment);
+		if (geometryCode.length() > 1)
+			glAttachShader(ID, geometry);
+		glLinkProgram(ID);
+		CheckCompileErrors(ID, "PROGRAM");
+		// delete the shaders as they're linked into our program now and no longer necessery
+		glDeleteShader(vertex);
+		glDeleteShader(fragment);
+		if (geometryCode.length() > 1)
+			glDeleteShader(geometry);
+
+		return ID;
+	}
+
+	void RenderEngine::CheckCompileErrors(unsigned int shader, string type)
+	{
+		int success;
+		char infoLog[1024];
+		if (type != "PROGRAM")
+		{
+			glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+			if (!success)
+			{
+				glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+				Debug::LogError("ERROR::SHADER_COMPILATION_ERROR of type: " + type + "\n" + infoLog + "\n -- --------------------------------------------------- -- ");
+			}
+		}
+		else
+		{
+			glGetProgramiv(shader, GL_LINK_STATUS, &success);
+			if (!success)
+			{
+				glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+				Debug::LogError("ERROR::PROGRAM_LINKING_ERROR of type: " + type + "\n" + infoLog + "\n -- --------------------------------------------------- -- ");
+			}
+		}
+	}
 }

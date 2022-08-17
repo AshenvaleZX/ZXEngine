@@ -16,9 +16,12 @@ namespace ZXEngine
 		static void SwapBufferAndPollPollEvents();
 		static int WindowShouldClose();
 		static unsigned int LoadTexture(const char* path);
+		static unsigned int LoadAndCompileShader(const char* path);
 
 	private:
 		static GLFWwindow* window;
+
+		static void CheckCompileErrors(unsigned int shader, std::string type);
 
 	};
 }
