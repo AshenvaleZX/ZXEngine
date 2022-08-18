@@ -50,7 +50,7 @@ namespace ZXEngine
 		unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
 		if (data)
 		{
-			GLenum format;
+			GLenum format = GL_RGB;
 			if (nrComponents == 1)
 				format = GL_RED;
 			else if (nrComponents == 3)
@@ -131,7 +131,7 @@ namespace ZXEngine
 		glCompileShader(fragment);
 		CheckCompileErrors(fragment, "FRAGMENT");
 		// if geometry shader is given, compile geometry shader
-		unsigned int geometry;
+		unsigned int geometry = 0;
 		if (geometryCode.length() > 1)
 		{
 			const char* gShaderCode = geometryCode.c_str();
