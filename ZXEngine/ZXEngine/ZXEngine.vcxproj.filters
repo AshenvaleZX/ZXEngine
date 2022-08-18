@@ -54,10 +54,10 @@
     <ClCompile Include="..\..\CPPScripts\Texture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\ZShader.cpp">
-      <Filter>头文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\CPPScripts\Material.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\ZShader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
