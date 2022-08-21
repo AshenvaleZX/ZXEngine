@@ -49,6 +49,28 @@ namespace ZXEngine
 		return perspective(radians(Fov), (float)RenderEngine::scrWidth / (float)RenderEngine::scrHeight, 0.1f, 100.0f);
 	}
 
+	// 根据水平和竖直偏移量调整相机视角
+	void Camera::RotateAngleOfView(float horizontalOffset, float verticalOffset, bool constrainPitch = true)
+	{
+		horizontalOffset *= MouseSensitivity;
+		verticalOffset *= MouseSensitivity;
+
+		Yaw += horizontalOffset;
+		Pitch += verticalOffset;
+
+		// Make sure that when pitch is out of bounds, screen doesn't get flipped
+		if (constrainPitch)
+		{
+			if (Pitch > 89.0f)
+				Pitch = 89.0f;
+			if (Pitch < -89.0f)
+				Pitch = -89.0f;
+		}
+
+		// Update Front, Right and Up Vectors using the updated Euler angles
+		UpdateCameraVectors();
+	}
+
 	void Camera::Render(list<GameObject*> gameObjects)
 	{
 		for (auto go : gameObjects)

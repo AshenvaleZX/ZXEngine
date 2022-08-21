@@ -28,6 +28,7 @@ namespace ZXEngine
 
         mat4 GetViewMatrix();
         mat4 GetProjectionMatrix();
+        void RotateAngleOfView(float horizontalOffset, float verticalOffset, bool constrainPitch);
 		void Render(list<GameObject*> gameObjects);
 
 	private:
