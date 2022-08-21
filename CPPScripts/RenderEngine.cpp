@@ -11,6 +11,8 @@ namespace ZXEngine
 	}
 
 	GLFWwindow* RenderEngine::window;
+	unsigned int RenderEngine::scrWidth;
+	unsigned int RenderEngine::scrHeight;
 	void RenderEngine::InitWindow(unsigned int width, unsigned int height)
 	{
 		glfwInit();
