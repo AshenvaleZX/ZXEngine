@@ -9,6 +9,9 @@ namespace ZXEngine
 	class RenderEngine
 	{
 	public:
+		static unsigned int scrWidth;
+		static unsigned int scrHeight;
+
 		RenderEngine() {};
 		~RenderEngine() {};
 

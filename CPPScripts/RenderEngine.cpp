@@ -18,7 +18,9 @@ namespace ZXEngine
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		window = glfwCreateWindow(width, height, "ZXEngine", NULL, NULL);
+		scrWidth = width;
+		scrHeight = height;
+		window = glfwCreateWindow(scrWidth, scrHeight, "ZXEngine", NULL, NULL);
 		if (window == NULL)
 		{
 			Debug::LogError("Failed to create GLFW window");
