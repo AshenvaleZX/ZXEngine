@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "RenderEngine.h"
 
 namespace ZXEngine
 {
@@ -10,9 +11,14 @@ namespace ZXEngine
 		if (gameObjects.size() == 0)
 			gameObjects.push_back(new GameObject());
 
-		for (unsigned i = 0; i < cameras.size(); ++i) {
+		for (unsigned i = 0; i < cameras.size(); ++i) 
+		{
 			auto camera = cameras[i];
-			camera->Render(gameObjects);
+			for (unsigned j = 0; j < gameObjects.size(); ++j)
+			{
+				auto gameObject = gameObjects[j];
+				RenderEngine::mInstance->Render(camera, gameObject);
+			}
 		}
 	}
 }

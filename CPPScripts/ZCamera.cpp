@@ -64,15 +64,6 @@ namespace ZXEngine
 		UpdateCameraVectors();
 	}
 
-	void Camera::Render(list<GameObject*> gameObjects)
-	{
-		for (auto go : gameObjects)
-		{
-			MeshRenderer* meshRenderer = go->GetComponent<MeshRenderer>("MeshRenderer");
-		}
-
-	}
-
 	// Calculates the front vector from the Camera's (updated) Euler Angles
 	void Camera::UpdateCameraVectors()
 	{

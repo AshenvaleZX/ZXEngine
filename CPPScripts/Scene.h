@@ -14,7 +14,7 @@ namespace ZXEngine
 		void Render();
 
 	private:
-		list<GameObject*> gameObjects;
+		vector<GameObject*> gameObjects;
 		vector<Camera*> cameras;
 	};
 }
