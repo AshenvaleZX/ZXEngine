@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "ZMesh.h"
+#include "Material.h"
 
 namespace ZXEngine
 {
@@ -8,6 +9,7 @@ namespace ZXEngine
 	{
 	public:
 		Mesh* mesh = nullptr;
+		Material* matetrial = nullptr;
 
 		MeshRenderer() {};
 		~MeshRenderer() {};
