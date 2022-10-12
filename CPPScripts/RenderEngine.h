@@ -39,7 +39,7 @@ namespace ZXEngine
 	private:
 		static GLFWwindow* window;
 
-		RenderAPI* mRenderAPI;
+		RenderAPI* mRenderAPI = nullptr;
 
 		static void CheckCompileErrors(unsigned int shader, std::string type);
 
