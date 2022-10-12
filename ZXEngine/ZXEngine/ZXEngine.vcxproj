@@ -154,6 +154,8 @@
     <ClCompile Include="..\..\CPPScripts\Main.cpp" />
     <ClCompile Include="..\..\CPPScripts\Material.cpp" />
     <ClCompile Include="..\..\CPPScripts\MeshRenderer.cpp" />
+    <ClCompile Include="..\..\CPPScripts\RenderAPI.cpp" />
+    <ClCompile Include="..\..\CPPScripts\RenderAPIOpenGL.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderEngine.cpp" />
     <ClCompile Include="..\..\CPPScripts\Scene.cpp" />
     <ClCompile Include="..\..\CPPScripts\SceneManager.cpp" />
@@ -175,6 +177,8 @@
     <ClInclude Include="..\..\CPPScripts\Model.h" />
     <ClInclude Include="..\..\CPPScripts\ParticleGenerator.h" />
     <ClInclude Include="..\..\CPPScripts\pubh.h" />
+    <ClInclude Include="..\..\CPPScripts\RenderAPI.h" />
+    <ClInclude Include="..\..\CPPScripts\RenderAPIOpenGL.h" />
     <ClInclude Include="..\..\CPPScripts\RenderEngine.h" />
     <ClInclude Include="..\..\CPPScripts\Scene.h" />
     <ClInclude Include="..\..\CPPScripts\SceneManager.h" />

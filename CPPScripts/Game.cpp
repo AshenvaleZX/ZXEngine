@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "RenderEngine.h"
+#include "RenderAPI.h"
 
 namespace ZXEngine
 {
@@ -10,6 +11,7 @@ namespace ZXEngine
 	{
 		SceneManager::mInstance = new SceneManager();
 		RenderEngine::mInstance = new RenderEngine();
+		RenderEngine::mInstance->SetRenderAPI(RenderAPI::Creat());
 		RenderEngine::InitWindow(1280, 720);
 		Debug::Log("ZXTest");
 

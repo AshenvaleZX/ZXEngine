@@ -185,9 +185,18 @@ namespace ZXEngine
 		}
 	}
 
+	void RenderEngine::SetRenderAPI(RenderAPI* api)
+	{
+		mRenderAPI = api;
+	}
+
+	RenderAPI* RenderEngine::GetRenderAPI()
+	{
+		return mRenderAPI;
+	}
+
 	void RenderEngine::Render(Camera* camera, GameObject* gameObject)
 	{
-		MeshRenderer* meshRenderer = gameObject->GetComponent<MeshRenderer>("MeshRenderer");
 		Debug::Log("Render");
 	}
 }
