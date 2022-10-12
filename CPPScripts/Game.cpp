@@ -9,9 +9,9 @@ namespace ZXEngine
 
 	void Game::Play()
 	{
+		RenderAPI::Creat();
 		SceneManager::mInstance = new SceneManager();
 		RenderEngine::mInstance = new RenderEngine();
-		RenderEngine::mInstance->SetRenderAPI(RenderAPI::Creat());
 		RenderEngine::InitWindow(1280, 720);
 		Debug::Log("ZXTest");
 

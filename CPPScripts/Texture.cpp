@@ -4,7 +4,7 @@ namespace ZXEngine
 {
 	Texture::Texture(const char* path)
 	{
-		ID = RenderEngine::LoadTexture(path);
+		ID = RenderAPI::Get()->LoadTexture(path);
 	}
 
 	unsigned int Texture::GetID()

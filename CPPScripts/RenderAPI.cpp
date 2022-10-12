@@ -3,10 +3,15 @@
 
 namespace ZXEngine
 {
-	RenderAPI* RenderAPI::Creat()
+	RenderAPI* RenderAPI::mInstance = nullptr;
+
+	void RenderAPI::Creat()
 	{
-		RenderAPI* api = nullptr;
-		api = new RenderAPIOpenGL();
-		return api;
+		mInstance = new RenderAPIOpenGL();
+	}
+
+	RenderAPI* RenderAPI::Get()
+	{
+		return mInstance;
 	}
 }

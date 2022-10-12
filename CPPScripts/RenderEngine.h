@@ -26,22 +26,11 @@ namespace ZXEngine
 		static int WindowShouldClose();
 
 
-		// 资源加载相关
-		static unsigned int LoadTexture(const char* path);
-		static unsigned int LoadAndCompileShader(const char* path);
-
 		// 绘制
 		void Render(Camera* camera, GameObject* gameObject);
 		
-		void SetRenderAPI(RenderAPI* api);
-		RenderAPI* GetRenderAPI();
-
 	private:
 		static GLFWwindow* window;
-
-		RenderAPI* mRenderAPI = nullptr;
-
-		static void CheckCompileErrors(unsigned int shader, std::string type);
 
 	};
 }

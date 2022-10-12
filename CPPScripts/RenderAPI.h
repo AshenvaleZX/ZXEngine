@@ -2,6 +2,7 @@
 #include "pubh.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "stb_image.h"
 
 namespace ZXEngine
 {
@@ -11,7 +12,14 @@ namespace ZXEngine
 		RenderAPI() {};
 		~RenderAPI() {};
 
-		static RenderAPI* Creat();
+		static void Creat();
+		static RenderAPI* Get();
+
+
+		// 资源加载相关
+		virtual unsigned int LoadTexture(const char* path) = 0;
+		virtual unsigned int LoadAndCompileShader(const char* path) = 0;
+		virtual void CheckCompileErrors(unsigned int shader, std::string type) = 0;
 
 		// Shader设置
 		virtual void UseShader(unsigned int ID) = 0;
@@ -27,5 +35,8 @@ namespace ZXEngine
 		virtual void SetShaderMat2(unsigned int ID, string name, mat2 value) = 0;
 		virtual void SetShaderMat3(unsigned int ID, string name, mat3 value) = 0;
 		virtual void SetShaderMat4(unsigned int ID, string name, mat4 value) = 0;
+
+	private:
+		static RenderAPI* mInstance;
 	};
 }
