@@ -6,6 +6,14 @@
 
 namespace ZXEngine
 {
+	struct Vertex {
+		glm::vec3 Position;
+		glm::vec3 Normal;
+		glm::vec2 TexCoords;
+		glm::vec3 Tangent;
+		glm::vec3 Bitangent;
+	};
+
 	class RenderAPI
 	{
 	public:
@@ -20,6 +28,9 @@ namespace ZXEngine
 		virtual unsigned int LoadTexture(const char* path) = 0;
 		virtual unsigned int LoadAndCompileShader(const char* path) = 0;
 		virtual void CheckCompileErrors(unsigned int shader, std::string type) = 0;
+
+		// Mesh…Ë÷√
+		virtual void SetUpMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, vector<Vertex> vertices, vector<unsigned int> indices) = 0;
 
 		// Shader…Ë÷√
 		virtual void UseShader(unsigned int ID) = 0;

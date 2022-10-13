@@ -1,18 +1,9 @@
 #pragma once
 #include "pubh.h"
-#include <glm/glm.hpp>
-#include <glad/glad.h>
+#include "RenderAPI.h"
 
 namespace ZXEngine
 {
-    struct Vertex {
-        glm::vec3 Position;
-        glm::vec3 Normal;
-        glm::vec2 TexCoords;
-        glm::vec3 Tangent;
-        glm::vec3 Bitangent;
-    };
-
 	class Mesh
 	{
     public:
@@ -29,7 +20,5 @@ namespace ZXEngine
         unsigned int VBO;
         // Element Buffer Objects
         unsigned int EBO;
-
-        void SetupMesh();
     };
 }
