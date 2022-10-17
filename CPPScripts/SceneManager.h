@@ -11,6 +11,7 @@ namespace ZXEngine
 
 		SceneManager() {};
 		~SceneManager() {};
+		static SceneManager* GetInstance();
 
 		Scene* GetCurScene();
 

@@ -23,7 +23,7 @@ namespace ZXEngine
 
 	void Game::Render()
 	{
-		SceneManager::mInstance->GetCurScene()->Render();
+		SceneManager::GetInstance()->GetCurScene()->Render();
 
 		RenderEngine::SwapBufferAndPollPollEvents();
 	}

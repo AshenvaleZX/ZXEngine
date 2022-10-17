@@ -2,6 +2,11 @@
 
 namespace ZXEngine
 {
+	RenderEngine* RenderEngine::GetInstance()
+	{
+		return mInstance;
+	}
+
 	// glfw: whenever the window size changed (by OS or user resize) this callback function executes
 	void FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
 	{

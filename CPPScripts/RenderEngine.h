@@ -9,13 +9,13 @@ namespace ZXEngine
 	// 用前置声明替代include，否则会循环include
 	class Camera;
 	class GameObject;
-	class RenderAPI;
 	class RenderEngine
 	{
 	public:
 		RenderEngine() {};
 		~RenderEngine() {};
 		static RenderEngine* mInstance;
+		static RenderEngine* GetInstance();
 
 		// 窗口相关
 		static unsigned int scrWidth;

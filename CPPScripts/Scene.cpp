@@ -17,7 +17,7 @@ namespace ZXEngine
 			for (unsigned j = 0; j < gameObjects.size(); ++j)
 			{
 				auto gameObject = gameObjects[j];
-				RenderEngine::mInstance->Render(camera, gameObject);
+				RenderEngine::GetInstance()->Render(camera, gameObject);
 			}
 		}
 	}

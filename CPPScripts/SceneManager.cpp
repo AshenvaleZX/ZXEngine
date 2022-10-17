@@ -2,6 +2,11 @@
 
 namespace ZXEngine
 {
+	SceneManager* SceneManager::GetInstance()
+	{
+		return mInstance;
+	}
+
 	Scene* SceneManager::GetCurScene()
 	{
 		if (curScene == nullptr)
