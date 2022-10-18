@@ -10,7 +10,7 @@ namespace ZXEngine
 		mInstance = new RenderAPIOpenGL();
 	}
 
-	RenderAPI* RenderAPI::Get()
+	RenderAPI* RenderAPI::GetInstance()
 	{
 		return mInstance;
 	}

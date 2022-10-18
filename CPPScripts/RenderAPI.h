@@ -21,7 +21,7 @@ namespace ZXEngine
 		~RenderAPI() {};
 
 		static void Creat();
-		static RenderAPI* Get();
+		static RenderAPI* GetInstance();
 
 
 		// 资源加载相关
