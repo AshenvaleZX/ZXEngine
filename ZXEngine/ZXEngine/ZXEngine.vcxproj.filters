@@ -66,6 +66,12 @@
     <ClCompile Include="..\..\CPPScripts\RenderAPI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\RenderQueue.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\RenderQueueManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">
@@ -135,6 +141,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\RenderAPIOpenGL.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\RenderQueue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\RenderQueueManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\PublicEnum.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

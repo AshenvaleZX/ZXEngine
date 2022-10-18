@@ -12,5 +12,7 @@ namespace ZXEngine
 
 		Material() {};
 		~Material() {};
+
+		int GetRenderQueue();
 	};
 }

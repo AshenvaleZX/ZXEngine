@@ -4,12 +4,18 @@ namespace ZXEngine
 {
 	Shader::Shader(const char* path)
 	{
+		renderQueue = RenderQueueType::Qpaque;
 		ID = RenderAPI::Get()->LoadAndCompileShader(path);
 	}
 
 	unsigned int Shader::GetID()
 	{
 		return ID;
+	}
+
+	int Shader::GetRenderQueue()
+	{
+		return renderQueue;
 	}
 
 	void Shader::Use()

@@ -157,6 +157,8 @@
     <ClCompile Include="..\..\CPPScripts\RenderAPI.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPIOpenGL.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderEngine.cpp" />
+    <ClCompile Include="..\..\CPPScripts\RenderQueueManager.cpp" />
+    <ClCompile Include="..\..\CPPScripts\RenderQueue.cpp" />
     <ClCompile Include="..\..\CPPScripts\Scene.cpp" />
     <ClCompile Include="..\..\CPPScripts\SceneManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\Texture.cpp" />
@@ -177,9 +179,12 @@
     <ClInclude Include="..\..\CPPScripts\Model.h" />
     <ClInclude Include="..\..\CPPScripts\ParticleGenerator.h" />
     <ClInclude Include="..\..\CPPScripts\pubh.h" />
+    <ClInclude Include="..\..\CPPScripts\PublicEnum.h" />
     <ClInclude Include="..\..\CPPScripts\RenderAPI.h" />
     <ClInclude Include="..\..\CPPScripts\RenderAPIOpenGL.h" />
     <ClInclude Include="..\..\CPPScripts\RenderEngine.h" />
+    <ClInclude Include="..\..\CPPScripts\RenderQueue.h" />
+    <ClInclude Include="..\..\CPPScripts\RenderQueueManager.h" />
     <ClInclude Include="..\..\CPPScripts\Scene.h" />
     <ClInclude Include="..\..\CPPScripts\SceneManager.h" />
     <ClInclude Include="..\..\CPPScripts\Shader.h" />

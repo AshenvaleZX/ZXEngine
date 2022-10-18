@@ -1,5 +1,6 @@
 #pragma once
 #include "RenderAPI.h"
+#include "PublicEnum.h"
 
 namespace ZXEngine
 {
@@ -10,6 +11,7 @@ namespace ZXEngine
 		~Shader() {};
 
 		unsigned int GetID();
+		int GetRenderQueue();
 		void Use();
 		void SetBool(string name, bool value);
 		void SetInt(string name, int value);
@@ -26,5 +28,6 @@ namespace ZXEngine
 
 	private:
 		unsigned int ID;
+		int renderQueue;
 	};
 }

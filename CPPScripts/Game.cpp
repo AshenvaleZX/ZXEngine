@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "RenderEngine.h"
 #include "RenderAPI.h"
+#include "RenderQueueManager.h"
 
 namespace ZXEngine
 {
@@ -10,6 +11,7 @@ namespace ZXEngine
 	void Game::Play()
 	{
 		RenderAPI::Creat();
+		RenderQueueManager::Creat();
 		SceneManager::mInstance = new SceneManager();
 		RenderEngine::mInstance = new RenderEngine();
 		RenderEngine::InitWindow(1280, 720);
