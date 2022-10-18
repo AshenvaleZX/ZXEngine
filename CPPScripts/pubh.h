@@ -18,6 +18,7 @@ using std::vector;
 using std::endl;
 using std::ifstream;
 using std::stringstream;
+using std::to_string;
 using namespace glm;
 
 #include "Debug.h"

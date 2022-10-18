@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "RenderEngine.h"
+#include "RenderQueueManager.h"
 
 namespace ZXEngine
 {
@@ -17,8 +18,9 @@ namespace ZXEngine
 			for (unsigned j = 0; j < gameObjects.size(); ++j)
 			{
 				auto gameObject = gameObjects[j];
-				RenderEngine::GetInstance()->Render(camera, gameObject);
+				RenderQueueManager::GetInstance()->AddRenderer(gameObject->GetComponent<MeshRenderer>("MeshRenderer"));
 			}
+			RenderEngine::GetInstance()->Render(camera);
 		}
 	}
 }

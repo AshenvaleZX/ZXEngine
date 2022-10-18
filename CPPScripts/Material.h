@@ -10,7 +10,7 @@ namespace ZXEngine
 		Shader* shader = nullptr;
 		vector<Texture*> textures;
 
-		Material() {};
+		Material() { shader = new Shader("..\\..\\Shaders\\ZXShaders\\simpleTexture.zxshader"); };
 		~Material() {};
 
 		int GetRenderQueue();

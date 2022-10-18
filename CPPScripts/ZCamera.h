@@ -1,7 +1,5 @@
 #pragma once
-#include "GameObject.h"
-#include "RenderEngine.h"
-#include "MeshRenderer.h"
+#include "pubh.h"
 
 namespace ZXEngine
 {

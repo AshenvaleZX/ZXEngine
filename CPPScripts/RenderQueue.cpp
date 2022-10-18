@@ -6,4 +6,14 @@ namespace ZXEngine
 	{
 		renderers.push_back(meshRenderer);
 	}
+
+	list<MeshRenderer*> RenderQueue::GetRenderers()
+	{
+		return renderers;
+	}
+
+	void RenderQueue::ClearRenderer()
+	{
+		renderers.clear();
+	}
 }

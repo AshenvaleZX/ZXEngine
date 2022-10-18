@@ -3,12 +3,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "stb_image.h"
+#include "ZCamera.h"
 
 namespace ZXEngine
 {
-	// 用前置声明替代include，否则会循环include
-	class Camera;
-	class GameObject;
 	class RenderEngine
 	{
 	public:
@@ -27,7 +25,7 @@ namespace ZXEngine
 
 
 		// 绘制
-		void Render(Camera* camera, GameObject* gameObject);
+		void Render(Camera* camera);
 		
 	private:
 		static GLFWwindow* window;

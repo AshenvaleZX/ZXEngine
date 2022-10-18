@@ -12,8 +12,10 @@ namespace ZXEngine
 
 		int queue = 0;
 		void AddRenderer(MeshRenderer* meshRenderer);
+		list<MeshRenderer*> GetRenderers();
+		void ClearRenderer();
 
 	private:
-		vector<MeshRenderer*> renderers;
+		list<MeshRenderer*> renderers;
 	};
 }

@@ -1,4 +1,5 @@
 #include "ZCamera.h"
+#include "RenderEngine.h"
 
 namespace ZXEngine
 {

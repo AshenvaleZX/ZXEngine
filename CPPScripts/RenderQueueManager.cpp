@@ -32,4 +32,12 @@ namespace ZXEngine
 		auto renderQueue = this->GetRenderQueue(queue);
 		renderQueue->AddRenderer(meshRenderer);
 	}
+
+	void RenderQueueManager::ClearAllRenderQueue()
+	{
+		for (auto iter : renderQueues)
+		{
+			iter.second->ClearRenderer();
+		}
+	}
 }

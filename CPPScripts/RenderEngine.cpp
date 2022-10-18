@@ -1,4 +1,6 @@
 #include "RenderEngine.h"
+#include "RenderQueueManager.h"
+#include "MeshRenderer.h"
 
 namespace ZXEngine
 {
@@ -36,6 +38,14 @@ namespace ZXEngine
 		}
 		glfwMakeContextCurrent(window);
 		glfwSetFramebufferSizeCallback(window, FrameBufferSizeCallback);
+
+		// glad: load all OpenGL function pointers
+		// ---------------------------------------
+		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+		{
+			std::cout << "Failed to initialize GLAD" << std::endl;
+			return;
+		}
 	}
 
 	void RenderEngine::SwapBufferAndPollPollEvents()
@@ -50,8 +60,20 @@ namespace ZXEngine
 		return glfwWindowShouldClose(window);
 	}
 
-	void RenderEngine::Render(Camera* camera, GameObject* gameObject)
+	void RenderEngine::Render(Camera* camera)
 	{
 		Debug::Log("Render");
+
+		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue(RenderQueueType::Qpaque);
+
+		mat4 mat_V = camera->GetViewMatrix();
+		mat4 mat_P = camera->GetProjectionMatrix();
+		for (auto renderer : renderQueue->GetRenderers())
+		{
+			Debug::Log("Shader ID " + to_string(renderer->matetrial->shader->GetID()));
+		}
+
+		// 每次渲染完要清空，下次要渲染的时候再重新添加
+		RenderQueueManager::GetInstance()->ClearAllRenderQueue();
 	}
 }
