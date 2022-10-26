@@ -1,0 +1,13 @@
+{
+    "Cameras": 
+    [
+        {
+            "Type": "Camera"
+        }
+    ],
+    "GameObjects": 
+    [
+        "Prefabs/Cube.zxprefab",
+        "Prefabs/Cube.zxprefab"
+    ]
+}

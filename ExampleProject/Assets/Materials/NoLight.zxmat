@@ -1,0 +1,4 @@
+{
+    "Type": "Material",
+    "Shader": "Shaders/simpleTexture.zxshader"
+}
