@@ -15,7 +15,7 @@ namespace ZXEngine
 		SceneManager::mInstance = new SceneManager();
 		RenderEngine::mInstance = new RenderEngine();
 		RenderEngine::InitWindow(1280, 720);
-		Debug::Log("ZXTest");
+		Resources::SetAssetsPath("../../ExampleProject/Assets/");
 
 		while (!RenderEngine::WindowShouldClose())
 		{

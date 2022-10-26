@@ -2,13 +2,14 @@
 #include "pubh.h"
 #include "GameObject.h"
 #include "ZCamera.h"
+#include "Resources.h"
 
 namespace ZXEngine
 {
 	class Scene
 	{
 	public:
-		Scene() {};
+		Scene(SceneStruct* sceneStruct);
 		~Scene() {};
 
 		void Render();

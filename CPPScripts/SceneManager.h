@@ -17,6 +17,6 @@ namespace ZXEngine
 
 	private:
 		map<string, Scene> scenes;
-		Scene* curScene = new Scene();
+		Scene* curScene = nullptr;
 	};
 }

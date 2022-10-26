@@ -4,14 +4,21 @@
 
 namespace ZXEngine
 {
+	Scene::Scene(SceneStruct* sceneStruct)
+	{
+		for (auto cam : sceneStruct->cameras)
+		{
+			cameras.push_back(new Camera());
+		}
+
+		for (auto prefab : sceneStruct->prefabs)
+		{
+			gameObjects.push_back(new GameObject());
+		}
+	}
+	
 	void Scene::Render()
 	{
-		if (cameras.size() == 0)
-			cameras.push_back(new Camera());
-
-		if (gameObjects.size() == 0)
-			gameObjects.push_back(new GameObject());
-
 		for (unsigned i = 0; i < cameras.size(); ++i) 
 		{
 			auto camera = cameras[i];

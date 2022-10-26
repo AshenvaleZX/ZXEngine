@@ -1,4 +1,5 @@
 #include "SceneManager.h"
+#include "Resources.h"
 
 namespace ZXEngine
 {
@@ -10,7 +11,7 @@ namespace ZXEngine
 	Scene* SceneManager::GetCurScene()
 	{
 		if (curScene == nullptr)
-			curScene = new Scene();
+			curScene = new Scene(Resources::LoadScene("Scenes/MyWorld.zxscene"));
 
 		return curScene;
 	}

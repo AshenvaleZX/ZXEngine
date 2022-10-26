@@ -159,6 +159,7 @@
     <ClCompile Include="..\..\CPPScripts\RenderEngine.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderQueueManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderQueue.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Resources.cpp" />
     <ClCompile Include="..\..\CPPScripts\Scene.cpp" />
     <ClCompile Include="..\..\CPPScripts\SceneManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\Texture.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="..\..\CPPScripts\RenderEngine.h" />
     <ClInclude Include="..\..\CPPScripts\RenderQueue.h" />
     <ClInclude Include="..\..\CPPScripts\RenderQueueManager.h" />
+    <ClInclude Include="..\..\CPPScripts\Resources.h" />
     <ClInclude Include="..\..\CPPScripts\Scene.h" />
     <ClInclude Include="..\..\CPPScripts\SceneManager.h" />
     <ClInclude Include="..\..\CPPScripts\Shader.h" />
