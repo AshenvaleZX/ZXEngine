@@ -9,7 +9,7 @@ namespace ZXEngine
 	{
 	public:
 		Shader* shader = nullptr;
-		vector<Texture*> textures;
+		vector<pair<string, Texture*>> textures;
 
 		Material() {};
 		Material(MaterialStruct* matStruct);

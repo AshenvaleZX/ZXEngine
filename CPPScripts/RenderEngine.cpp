@@ -72,6 +72,7 @@ namespace ZXEngine
 		{
 			Debug::Log("Shader ID " + to_string(renderer->matetrial->shader->GetID()));
 			Debug::Log("Mesh num " + to_string(renderer->meshes.size()));
+			Debug::Log("Texture num " + to_string(renderer->matetrial->textures.size()));
 		}
 
 		// 每次渲染完要清空，下次要渲染的时候再重新添加

@@ -8,9 +8,16 @@ namespace ZXEngine
 
 	};
 
+	struct TextureStruct
+	{
+		string uniformName;
+		string path;
+	};
+
 	struct MaterialStruct
 	{
 		string shaderPath;
+		vector<TextureStruct*> textures;
 	};
 
 	struct PrefabStruct
@@ -35,6 +42,8 @@ namespace ZXEngine
 		static SceneStruct* LoadScene(const char* path);
 		static PrefabStruct* LoadPrefab(const char* path);
 		static MaterialStruct* LoadMaterial(const char* path);
+
+		static string JsonStrToString(json data);
 
 	private:
 		static const char* assetsPath;

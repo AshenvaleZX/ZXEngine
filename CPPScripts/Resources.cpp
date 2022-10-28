@@ -15,6 +15,14 @@ namespace ZXEngine
 		return ss.str();
 	}
 
+	string Resources::JsonStrToString(json data)
+	{
+		string p = to_string(data);
+		// 这个json字符串取出来前后会有双引号，需要去掉再用
+		p = p.substr(1, p.length() - 2);
+		return p;
+	}
+
 	json Resources::GetAssetData(const char* path)
 	{
 		string p = Resources::GetAssetFullPath(path);
@@ -41,9 +49,7 @@ namespace ZXEngine
 
 		for (unsigned int i = 0; i < data["GameObjects"].size(); i++)
 		{
-			string p = to_string(data["GameObjects"][i]);
-			// 这个json字符串取出来前后会有双引号，需要去掉再用
-			p = p.substr(1, p.length()-2);
+			string p = Resources::JsonStrToString(data["GameObjects"][i]);
 			PrefabStruct* prefab = Resources::LoadPrefab(p.c_str());
 			scene->prefabs.push_back(prefab);
 		}
@@ -70,10 +76,18 @@ namespace ZXEngine
 		json data = Resources::GetAssetData(path);
 		MaterialStruct* matStruct = new MaterialStruct;
 
-		string p = to_string(data["Shader"]);
-		// 这个json字符串取出来前后会有双引号，需要去掉再用
-		p = p.substr(1, p.length() - 2);
+		string p = Resources::JsonStrToString(data["Shader"]);
 		matStruct->shaderPath = Resources::GetAssetFullPath(p.c_str());
+
+		for (unsigned int i = 0; i < data["Textures"].size(); i++)
+		{
+			json texture = data["Textures"][i];
+			TextureStruct* textureStruct = new TextureStruct();
+			textureStruct->path = Resources::GetAssetFullPath(Resources::JsonStrToString(texture["Path"]).c_str());
+			textureStruct->uniformName = Resources::JsonStrToString(texture["UniformName"]);
+
+			matStruct->textures.push_back(textureStruct);
+		}
 
 		return matStruct;
 	}

@@ -24,9 +24,7 @@ namespace ZXEngine
 				}
 				else
 				{
-					p = to_string(component["Material"]);
-					// 这个json字符串取出来前后会有双引号，需要去掉再用
-					p = p.substr(1, p.length() - 2);
+					p = Resources::JsonStrToString(component["Material"]);
 					MaterialStruct* matStruct = Resources::LoadMaterial(p.c_str());
 					meshRenderer->matetrial = new Material(matStruct);
 				}
@@ -38,8 +36,7 @@ namespace ZXEngine
 				}
 				else
 				{
-					p = to_string(component["Mesh"]);
-					p = p.substr(1, p.length() - 2);
+					p = Resources::JsonStrToString(component["Mesh"]);
 					p = Resources::GetAssetFullPath(p.c_str());
 					meshRenderer->LoadModel(p);
 				}

@@ -33,7 +33,8 @@ namespace ZXEngine
 		}
 		else
 		{
-			std::cout << "Texture failed to load at path: " << path << std::endl;
+			string p = path;
+			Debug::LogError("Texture failed to load at path: " + p);
 			stbi_image_free(data);
 		}
 

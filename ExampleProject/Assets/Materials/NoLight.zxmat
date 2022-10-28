@@ -1,4 +1,11 @@
 {
     "Type": "Material",
-    "Shader": "Shaders/simpleTexture.zxshader"
+    "Shader": "Shaders/simpleTexture.zxshader",
+    "Textures":
+    [
+        {
+            "UniformName": "texture1",
+            "Path": "Textures/red.png"
+        }
+    ]
 }
