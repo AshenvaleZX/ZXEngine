@@ -9,7 +9,7 @@
         },
         {
             "Type": "MeshRenderer",
-            "Mesh": "",
+            "Mesh": "Models/12190_Heart_v1_L3.obj",
             "Material": "Materials/NoLight.zxmat"
         }
     ]
