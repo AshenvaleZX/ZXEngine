@@ -13,7 +13,7 @@ namespace ZXEngine
 
 		for (auto prefab : sceneStruct->prefabs)
 		{
-			gameObjects.push_back(new GameObject());
+			gameObjects.push_back(new GameObject(prefab));
 		}
 	}
 	

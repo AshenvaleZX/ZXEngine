@@ -15,7 +15,7 @@ namespace ZXEngine
 
 	struct PrefabStruct
 	{
-
+		list<json> components;
 	};
 
 	struct SceneStruct
@@ -31,11 +31,14 @@ namespace ZXEngine
 		~Resources() {};
 
 		static void SetAssetsPath(const char* path);
+		static string GetAssetFullPath(const char* path);
 		static SceneStruct* LoadScene(const char* path);
 		static PrefabStruct* LoadPrefab(const char* path);
 		static MaterialStruct* LoadMaterial(const char* path);
 
 	private:
 		static const char* assetsPath;
+
+		static json GetAssetData(const char* path);
 	};
 }

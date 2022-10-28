@@ -1,24 +1,25 @@
 #pragma once
 #include "pubh.h"
 #include "Component.h"
-#include "Transform.h"
-#include "MeshRenderer.h"
+#include "Resources.h"
 
 namespace ZXEngine
 {
 	class GameObject
 	{
 	public:
-		GameObject() {};
+		GameObject(PrefabStruct* prefab);
 		~GameObject() {};
 
 		template<class T> 
 		inline T* GetComponent(string type);
+		template<class T>
+		inline T* AddComponent(string type);
+
+		void AddComponent(string type, Component* component);
 
 	private:
-		Transform* transform = new Transform();
-		MeshRenderer* meshRenderer = new MeshRenderer();
-		map<string, Component*> components = { {"Transform", transform}, {"MeshRenderer", meshRenderer} };
+		map<string, Component*> components = {};
 	};
 
 	template<class T>
@@ -26,10 +27,18 @@ namespace ZXEngine
 	{
 		map<string, Component*>::iterator iter = components.find(type);
 		if (iter != components.end()) {
-			return static_cast<T*> (iter->second);
+			return reinterpret_cast<T*> (iter->second);
 		}
 		else {
-			return static_cast<T*> (nullptr);
+			return reinterpret_cast<T*> (nullptr);
 		}
+	}
+
+	template<class T>
+	inline T* GameObject::AddComponent(string type)
+	{
+		T* t = new T();
+		components.insert(pair<string, Component*>(type, t));
+		return t;
 	}
 }

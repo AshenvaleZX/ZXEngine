@@ -11,7 +11,7 @@ namespace ZXEngine
 		Mesh* mesh = nullptr;
 		Material* matetrial = nullptr;
 
-		MeshRenderer() { matetrial = new Material(); };
+		MeshRenderer() {};
 		~MeshRenderer() {};
 
 	private:

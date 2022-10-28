@@ -5,7 +5,7 @@ class Debug
 public:
 	static void Log(string message)
 	{
-		cout << "Log: " << message << endl;
+		cout << "Log:     " << message << endl;
 	}
 
 	static void LogWarning(string message)
@@ -15,6 +15,6 @@ public:
 
 	static void LogError(string message)
 	{
-		cout << "Error: " << message << endl;
+		cout << "Error:   " << message << endl;
 	}
 };

@@ -1,6 +1,7 @@
 #pragma once
 #include "ZShader.h"
 #include "Texture.h"
+#include "Resources.h"
 
 namespace ZXEngine
 {
@@ -10,7 +11,8 @@ namespace ZXEngine
 		Shader* shader = nullptr;
 		vector<Texture*> textures;
 
-		Material() { shader = new Shader("..\\..\\Shaders\\ZXShaders\\simpleTexture.zxshader"); };
+		Material() {};
+		Material(MaterialStruct* matStruct);
 		~Material() {};
 
 		int GetRenderQueue();
