@@ -236,4 +236,10 @@ namespace ZXEngine
 	{
 		glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 	}
+	void RenderAPIOpenGL::SetShaderTexture(unsigned int ID, string name, unsigned int textureID, unsigned int idx)
+	{
+		glUniform1i(glGetUniformLocation(ID, name.c_str()), idx);
+		glActiveTexture(GL_TEXTURE0 + idx);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+	}
 }

@@ -70,4 +70,8 @@ namespace ZXEngine
 	{
 		RenderAPI::GetInstance()->SetShaderMat4(this->ID, name, value);
 	}
+	void Shader::SetTexture(string name, unsigned int textureID, unsigned int idx)
+	{
+		RenderAPI::GetInstance()->SetShaderTexture(this->ID, name, textureID, idx);
+	}
 }

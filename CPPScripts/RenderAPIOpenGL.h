@@ -31,5 +31,6 @@ namespace ZXEngine
 		virtual void SetShaderMat2(unsigned int ID, string name, mat2 value);
 		virtual void SetShaderMat3(unsigned int ID, string name, mat3 value);
 		virtual void SetShaderMat4(unsigned int ID, string name, mat4 value);
+		virtual void SetShaderTexture(unsigned int ID, string name, unsigned int textureID, unsigned int idx);
 	};
 }

@@ -25,6 +25,7 @@ namespace ZXEngine
 		void SetMat2(string name, mat2 value);
 		void SetMat3(string name, mat3 value);
 		void SetMat4(string name, mat4 value);
+		void SetTexture(string name, unsigned int textureID, unsigned int idx);
 
 	private:
 		unsigned int ID;

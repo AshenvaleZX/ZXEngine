@@ -66,6 +66,7 @@ namespace ZXEngine
 
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue(RenderQueueType::Qpaque);
 
+		mat4 mat_M = mat4(1.0f);
 		mat4 mat_V = camera->GetViewMatrix();
 		mat4 mat_P = camera->GetProjectionMatrix();
 		for (auto renderer : renderQueue->GetRenderers())
@@ -73,6 +74,18 @@ namespace ZXEngine
 			Debug::Log("Shader ID " + to_string(renderer->matetrial->shader->GetID()));
 			Debug::Log("Mesh num " + to_string(renderer->meshes.size()));
 			Debug::Log("Texture num " + to_string(renderer->matetrial->textures.size()));
+
+			Material* material = renderer->matetrial;
+			Shader* shader = material->shader;
+			shader->Use();
+			shader->SetMat4("model", mat_M);
+			shader->SetMat4("view", mat_V);
+			shader->SetMat4("projection", mat_P);
+
+			for (unsigned int i = 0; i < material->textures.size(); i++)
+			{
+				shader->SetTexture(material->textures[i].first, material->textures[i].second->GetID(), i);
+			}
 		}
 
 		// 每次渲染完要清空，下次要渲染的时候再重新添加
