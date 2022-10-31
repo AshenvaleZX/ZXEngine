@@ -63,8 +63,6 @@ namespace ZXEngine
 
 	void RenderEngine::Render(Camera* camera)
 	{
-		Debug::Log("Render");
-
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue(RenderQueueType::Qpaque);
 
 		mat4 mat_M = mat4(1.0f);
@@ -72,10 +70,6 @@ namespace ZXEngine
 		mat4 mat_P = camera->GetProjectionMatrix();
 		for (auto renderer : renderQueue->GetRenderers())
 		{
-			Debug::Log("Shader ID " + to_string(renderer->matetrial->shader->GetID()));
-			Debug::Log("Mesh num " + to_string(renderer->meshes.size()));
-			Debug::Log("Texture num " + to_string(renderer->matetrial->textures.size()));
-
 			Material* material = renderer->matetrial;
 			Shader* shader = material->shader;
 			shader->Use();
@@ -91,6 +85,8 @@ namespace ZXEngine
 			for (auto mesh : renderer->meshes)
 			{
 				mesh->Use();
+
+				RenderAPI::GetInstance()->Draw();
 			}
 		}
 

@@ -144,6 +144,14 @@ namespace ZXEngine
 		}
 	}
 
+	void RenderAPIOpenGL::Draw()
+	{
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, primitiveSize, GL_UNSIGNED_INT, 0);
+		// 绘制完重置一下(不重置也行，不过及时重置避免出问题)
+		glBindVertexArray(0);
+	}
+
 	// Mesh设置
 	void RenderAPIOpenGL::SetMesh(unsigned int VAO, unsigned int size)
 	{

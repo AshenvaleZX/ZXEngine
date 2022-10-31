@@ -14,6 +14,9 @@ namespace ZXEngine
 		virtual unsigned int LoadAndCompileShader(const char* path);
 		virtual void CheckCompileErrors(unsigned int shader, std::string type);
 
+		// DrawCall
+		virtual void Draw();
+
 		// Mesh…Ë÷√
 		virtual void SetMesh(unsigned int VAO, unsigned int size);
 		virtual void SetUpMesh(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO, vector<Vertex> vertices, vector<unsigned int> indices);
