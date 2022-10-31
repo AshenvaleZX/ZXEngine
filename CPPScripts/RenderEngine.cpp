@@ -1,6 +1,7 @@
 #include "RenderEngine.h"
 #include "RenderQueueManager.h"
 #include "MeshRenderer.h"
+#include "RenderAPI.h"
 
 namespace ZXEngine
 {
@@ -85,6 +86,11 @@ namespace ZXEngine
 			for (unsigned int i = 0; i < material->textures.size(); i++)
 			{
 				shader->SetTexture(material->textures[i].first, material->textures[i].second->GetID(), i);
+			}
+
+			for (auto mesh : renderer->meshes)
+			{
+				mesh->Use();
 			}
 		}
 

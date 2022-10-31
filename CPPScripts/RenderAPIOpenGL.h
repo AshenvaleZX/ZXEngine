@@ -15,6 +15,7 @@ namespace ZXEngine
 		virtual void CheckCompileErrors(unsigned int shader, std::string type);
 
 		// Mesh设置
+		virtual void SetMesh(unsigned int VAO, unsigned int size);
 		virtual void SetUpMesh(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO, vector<Vertex> vertices, vector<unsigned int> indices);
 
 		// Shader设置
@@ -32,5 +33,10 @@ namespace ZXEngine
 		virtual void SetShaderMat3(unsigned int ID, string name, mat3 value);
 		virtual void SetShaderMat4(unsigned int ID, string name, mat4 value);
 		virtual void SetShaderTexture(unsigned int ID, string name, unsigned int textureID, unsigned int idx);
+
+	private:
+		unsigned int VAO;
+		// 与VAO对应的图元数量
+		unsigned int primitiveSize;
 	};
 }

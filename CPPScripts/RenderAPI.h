@@ -30,6 +30,7 @@ namespace ZXEngine
 		virtual void CheckCompileErrors(unsigned int shader, std::string type) = 0;
 
 		// Mesh…Ë÷√
+		virtual void SetMesh(unsigned int VAO, unsigned int size) = 0;
 		virtual void SetUpMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, vector<Vertex> vertices, vector<unsigned int> indices) = 0;
 
 		// Shader…Ë÷√

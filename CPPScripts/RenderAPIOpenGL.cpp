@@ -145,6 +145,12 @@ namespace ZXEngine
 	}
 
 	// MeshÉèÖÃ
+	void RenderAPIOpenGL::SetMesh(unsigned int VAO, unsigned int size)
+	{
+		this->VAO = VAO;
+		this->primitiveSize = size;
+	}
+
 	void RenderAPIOpenGL::SetUpMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, vector<Vertex> vertices, vector<unsigned int> indices)
 	{
 		// create buffers/arrays

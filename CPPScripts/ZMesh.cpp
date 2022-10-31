@@ -6,5 +6,12 @@ namespace ZXEngine
 	{
 		this->vertices = vertices;
 		this->indices = indices;
+
+		RenderAPI::GetInstance()->SetUpMesh(VAO, VBO, EBO, vertices, indices);
+	}
+
+	void Mesh::Use()
+	{
+		RenderAPI::GetInstance()->SetMesh(VAO, indices.size());
 	}
 }
