@@ -3,6 +3,13 @@
 
 namespace ZXEngine
 {
+	SceneManager* SceneManager::mInstance = nullptr;
+
+	void SceneManager::Create()
+	{
+		mInstance = new SceneManager();
+	}
+
 	SceneManager* SceneManager::GetInstance()
 	{
 		return mInstance;

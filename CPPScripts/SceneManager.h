@@ -7,15 +7,17 @@ namespace ZXEngine
 	class SceneManager
 	{
 	public:
-		static SceneManager* mInstance;
-
 		SceneManager() {};
 		~SceneManager() {};
+
+		static void Create();
 		static SceneManager* GetInstance();
 
 		Scene* GetCurScene();
 
 	private:
+		static SceneManager* mInstance;
+
 		map<string, Scene> scenes;
 		Scene* curScene = nullptr;
 	};

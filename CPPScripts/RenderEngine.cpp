@@ -5,6 +5,13 @@
 
 namespace ZXEngine
 {
+	RenderEngine* RenderEngine::mInstance = nullptr;
+
+	void RenderEngine::Create()
+	{
+		mInstance = new RenderEngine();
+	}
+
 	RenderEngine* RenderEngine::GetInstance()
 	{
 		return mInstance;

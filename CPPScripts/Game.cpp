@@ -5,15 +5,12 @@
 
 namespace ZXEngine
 {
-	SceneManager* SceneManager::mInstance;
-	RenderEngine* RenderEngine::mInstance;
-
 	void Game::Play()
 	{
 		RenderAPI::Creat();
 		RenderQueueManager::Creat();
-		SceneManager::mInstance = new SceneManager();
-		RenderEngine::mInstance = new RenderEngine();
+		SceneManager::Create();
+		RenderEngine::Create();
 		RenderEngine::InitWindow(1280, 720);
 		Resources::SetAssetsPath("../../ExampleProject/Assets/");
 

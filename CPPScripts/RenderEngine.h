@@ -12,7 +12,8 @@ namespace ZXEngine
 	public:
 		RenderEngine() {};
 		~RenderEngine() {};
-		static RenderEngine* mInstance;
+
+		static void Create();
 		static RenderEngine* GetInstance();
 
 		// ´°¿ÚÏà¹Ø
@@ -28,6 +29,8 @@ namespace ZXEngine
 		void Render(Camera* camera);
 		
 	private:
+		static RenderEngine* mInstance;
+
 		static GLFWwindow* window;
 
 	};
