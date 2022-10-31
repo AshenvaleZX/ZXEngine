@@ -12,6 +12,15 @@ namespace ZXEngine
 		UpdateCameraVectors();
 	}
 
+	Camera::Camera(CameraStruct* camStruct) : Front(vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Fov(FOV)
+	{
+		Position = camStruct->position;
+		WorldUp = vec3(0.0f, 1.0f, 0.0f);
+		Yaw = YAW;
+		Pitch = PITCH;
+		UpdateCameraVectors();
+	}
+
 	// Returns the view matrix calculated using Euler Angles and the LookAt Matrix
 	mat4 Camera::GetViewMatrix()
 	{

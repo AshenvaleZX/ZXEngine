@@ -2,7 +2,8 @@
     "Cameras": 
     [
         {
-            "Type": "Camera"
+            "Type": "Camera",
+            "Position": [0, 0, 50]
         }
     ],
     "GameObjects": 

@@ -5,7 +5,7 @@ namespace ZXEngine
 {
 	struct CameraStruct
 	{
-
+		vec3 position;
 	};
 
 	struct TextureStruct

@@ -8,7 +8,7 @@ namespace ZXEngine
 	{
 		for (auto cam : sceneStruct->cameras)
 		{
-			cameras.push_back(new Camera());
+			cameras.push_back(new Camera(cam));
 		}
 
 		for (auto prefab : sceneStruct->prefabs)
