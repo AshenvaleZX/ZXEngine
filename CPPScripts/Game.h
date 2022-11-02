@@ -15,6 +15,7 @@ namespace ZXEngine
 		~Game() {};
 
 		void Play();
+		void Update();
 ;		void Render();
 
 	private:

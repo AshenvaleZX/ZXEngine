@@ -18,8 +18,17 @@ namespace ZXEngine
 
 		while (!RenderEngine::WindowShouldClose())
 		{
+			// Âß¼­
+			Update();
+
+			// äÖÈ¾
 			Render();
 		}
+	}
+
+	void Game::Update()
+	{
+		InputManager::GetInstance()->Update();
 	}
 
 	void Game::Render()
