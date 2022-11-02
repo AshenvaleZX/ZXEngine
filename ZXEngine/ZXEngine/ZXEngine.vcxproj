@@ -164,6 +164,7 @@
     <ClCompile Include="..\..\CPPScripts\Scene.cpp" />
     <ClCompile Include="..\..\CPPScripts\SceneManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\Texture.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Utils.cpp" />
     <ClCompile Include="..\..\CPPScripts\ZCamera.cpp" />
     <ClCompile Include="..\..\CPPScripts\ZMesh.cpp" />
     <ClCompile Include="..\..\CPPScripts\ZShader.cpp" />
@@ -195,6 +196,7 @@
     <ClInclude Include="..\..\CPPScripts\stb_image.h" />
     <ClInclude Include="..\..\CPPScripts\Texture.h" />
     <ClInclude Include="..\..\CPPScripts\Transform.h" />
+    <ClInclude Include="..\..\CPPScripts\Utils.h" />
     <ClInclude Include="..\..\CPPScripts\ZCamera.h" />
     <ClInclude Include="..\..\CPPScripts\ZMesh.h" />
     <ClInclude Include="..\..\CPPScripts\ZShader.h" />
