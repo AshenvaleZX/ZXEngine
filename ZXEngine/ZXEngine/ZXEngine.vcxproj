@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\CPPScripts\Component.cpp" />
     <ClCompile Include="..\..\CPPScripts\Entry.cpp" />
+    <ClCompile Include="..\..\CPPScripts\EventManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\Game.cpp" />
     <ClCompile Include="..\..\CPPScripts\GameObject.cpp" />
     <ClCompile Include="..\..\CPPScripts\InputManager.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="..\..\CPPScripts\Camera.h" />
     <ClInclude Include="..\..\CPPScripts\Component.h" />
     <ClInclude Include="..\..\CPPScripts\Debug.h" />
+    <ClInclude Include="..\..\CPPScripts\EventManager.h" />
     <ClInclude Include="..\..\CPPScripts\Game.h" />
     <ClInclude Include="..\..\CPPScripts\GameObject.h" />
     <ClInclude Include="..\..\CPPScripts\InputManager.h" />

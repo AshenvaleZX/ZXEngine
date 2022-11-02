@@ -78,6 +78,9 @@
     <ClCompile Include="..\..\CPPScripts\InputManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\EventManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\CPPScripts\Utils.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -165,6 +168,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\InputManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\EventManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Utils.h">

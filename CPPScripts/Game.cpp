@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "EventManager.h"
 #include "RenderEngine.h"
 #include "RenderAPI.h"
 #include "RenderQueueManager.h"
@@ -8,6 +9,7 @@ namespace ZXEngine
 {
 	void Game::Play()
 	{
+		EventManager::Create();
 		RenderAPI::Creat();
 		RenderQueueManager::Creat();
 		SceneManager::Create();
