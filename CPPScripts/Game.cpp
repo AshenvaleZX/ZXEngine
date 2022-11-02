@@ -4,6 +4,7 @@
 #include "RenderAPI.h"
 #include "RenderQueueManager.h"
 #include "InputManager.h"
+#include "Time.h"
 
 namespace ZXEngine
 {
@@ -30,6 +31,8 @@ namespace ZXEngine
 
 	void Game::Update()
 	{
+		Time::Update();
+
 		InputManager::GetInstance()->Update();
 	}
 
