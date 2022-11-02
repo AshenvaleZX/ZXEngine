@@ -75,6 +75,9 @@
     <ClCompile Include="..\..\CPPScripts\Resources.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\InputManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">
@@ -156,6 +159,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Resources.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\InputManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

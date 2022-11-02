@@ -2,6 +2,7 @@
 #include "RenderEngine.h"
 #include "RenderAPI.h"
 #include "RenderQueueManager.h"
+#include "InputManager.h"
 
 namespace ZXEngine
 {
@@ -12,6 +13,7 @@ namespace ZXEngine
 		SceneManager::Create();
 		RenderEngine::Create();
 		RenderEngine::InitWindow(1280, 720);
+		InputManager::Create();
 		Resources::SetAssetsPath("../../ExampleProject/Assets/");
 
 		while (!RenderEngine::WindowShouldClose())

@@ -17,6 +17,7 @@ namespace ZXEngine
 		static RenderEngine* GetInstance();
 
 		// ´°¿ÚÏà¹Ø
+		static GLFWwindow* window;
 		static unsigned int scrWidth;
 		static unsigned int scrHeight;
 
@@ -30,8 +31,5 @@ namespace ZXEngine
 		
 	private:
 		static RenderEngine* mInstance;
-
-		static GLFWwindow* window;
-
 	};
 }

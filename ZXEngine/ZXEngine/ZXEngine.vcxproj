@@ -151,6 +151,7 @@
     <ClCompile Include="..\..\CPPScripts\Entry.cpp" />
     <ClCompile Include="..\..\CPPScripts\Game.cpp" />
     <ClCompile Include="..\..\CPPScripts\GameObject.cpp" />
+    <ClCompile Include="..\..\CPPScripts\InputManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\Main.cpp" />
     <ClCompile Include="..\..\CPPScripts\Material.cpp" />
     <ClCompile Include="..\..\CPPScripts\MeshRenderer.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="..\..\CPPScripts\Debug.h" />
     <ClInclude Include="..\..\CPPScripts\Game.h" />
     <ClInclude Include="..\..\CPPScripts\GameObject.h" />
+    <ClInclude Include="..\..\CPPScripts\InputManager.h" />
     <ClInclude Include="..\..\CPPScripts\Material.h" />
     <ClInclude Include="..\..\CPPScripts\Mesh.h" />
     <ClInclude Include="..\..\CPPScripts\MeshRenderer.h" />
