@@ -1,5 +1,6 @@
 #include "ZCamera.h"
 #include "RenderEngine.h"
+#include "EventManager.h"
 
 namespace ZXEngine
 {
@@ -19,8 +20,9 @@ namespace ZXEngine
 		Yaw = YAW;
 		Pitch = PITCH;
 		UpdateCameraVectors();
+		EventManager::GetInstance()->AddEventHandler(EventType::UPDATE_MOUSE_POS, std::bind(&Camera::MouseMoveCallBack, this, std::placeholders::_1));
 	}
-
+	
 	// Returns the view matrix calculated using Euler Angles and the LookAt Matrix
 	mat4 Camera::GetViewMatrix()
 	{
@@ -52,8 +54,28 @@ namespace ZXEngine
 		return perspective(radians(Fov), (float)RenderEngine::scrWidth / (float)RenderEngine::scrHeight, 0.1f, 100.0f);
 	}
 
-	// 根据水平和竖直偏移量调整相机视角
-	void Camera::RotateAngleOfView(float horizontalOffset, float verticalOffset, bool constrainPitch = true)
+	void Camera::MouseMoveCallBack(string args)
+	{
+		vector<string> argList = Utils::StringSplit(args, '|');
+		double xpos = atof(argList[0].c_str());
+		double ypos = atof(argList[1].c_str());
+		if (firstMouse)
+		{
+			lastX = xpos;
+			lastY = ypos;
+			firstMouse = false;
+		}
+
+		float xoffset = xpos - lastX;
+		float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+		lastX = xpos;
+		lastY = ypos;
+
+		RotateAngleOfView(xoffset, yoffset);
+	}
+
+	void Camera::RotateAngleOfView(float horizontalOffset, float verticalOffset, bool constrainPitch)
 	{
 		horizontalOffset *= MouseSensitivity;
 		verticalOffset *= MouseSensitivity;

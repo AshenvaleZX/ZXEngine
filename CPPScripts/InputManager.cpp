@@ -1,10 +1,10 @@
 #include "InputManager.h"
 #include "RenderEngine.h"
+#include "EventManager.h"
 
 // 因为GLFW的函数接口问题，没办法传递成员函数，所以这里用普通函数包了一层
 void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
-//void processInput(GLFWwindow* window);
 
 namespace ZXEngine
 {
@@ -36,7 +36,7 @@ namespace ZXEngine
 
 	void InputManager::UpdateMousePos(double xpos, double ypos)
 	{
-		Debug::Log("xpos " + to_string(xpos) + " ypos " + to_string(ypos));
+		EventManager::GetInstance()->FireEvent(EventType::UPDATE_MOUSE_POS, to_string(xpos) + "|" + to_string(ypos));
 	}
 
 	void InputManager::UpdateMouseScroll(double xoffset, double yoffset)

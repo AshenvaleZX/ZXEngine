@@ -34,9 +34,17 @@ namespace ZXEngine
 
         mat4 GetViewMatrix();
         mat4 GetProjectionMatrix();
-        void RotateAngleOfView(float horizontalOffset, float verticalOffset, bool constrainPitch);
+        // 接收鼠标移动事件
+        void MouseMoveCallBack(string args);
+        // 根据水平和竖直偏移量调整相机视角
+        void RotateAngleOfView(float horizontalOffset, float verticalOffset, bool constrainPitch = true);
 
 	private:
+        // 处理镜头移动用的变量
+        bool firstMouse = true;
+        double lastX = 0;
+        double lastY = 0;
+
         void UpdateCameraVectors();
 
 	};
