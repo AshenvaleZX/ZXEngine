@@ -23,10 +23,10 @@ namespace ZXEngine
 
 	void InputManager::RegisterMouse()
 	{
-		glfwSetCursorPosCallback(RenderEngine::window, CursorPosCallback);
-		glfwSetScrollCallback(RenderEngine::window, ScrollCallback);
+		glfwSetCursorPosCallback(RenderEngine::GetInstance()->window, CursorPosCallback);
+		glfwSetScrollCallback(RenderEngine::GetInstance()->window, ScrollCallback);
 		// tell GLFW to capture our mouse
-		glfwSetInputMode(RenderEngine::window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetInputMode(RenderEngine::GetInstance()->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 
 	void InputManager::Update()
@@ -46,7 +46,7 @@ namespace ZXEngine
 
 	void InputManager::UpdateKeyInput()
 	{
-		GLFWwindow* window = RenderEngine::window;
+		GLFWwindow* window = RenderEngine::GetInstance()->window;
 	}
 }
 

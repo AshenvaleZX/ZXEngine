@@ -14,11 +14,11 @@ namespace ZXEngine
 		RenderQueueManager::Creat();
 		SceneManager::Create();
 		RenderEngine::Create();
-		RenderEngine::InitWindow(1280, 720);
+		RenderEngine::GetInstance()->InitWindow(1280, 720);
 		InputManager::Create();
 		Resources::SetAssetsPath("../../ExampleProject/Assets/");
 
-		while (!RenderEngine::WindowShouldClose())
+		while (!RenderEngine::GetInstance()->WindowShouldClose())
 		{
 			// Âß¼­
 			Update();
@@ -37,6 +37,6 @@ namespace ZXEngine
 	{
 		SceneManager::GetInstance()->GetCurScene()->Render();
 
-		RenderEngine::SwapBufferAndPollPollEvents();
+		RenderEngine::GetInstance()->SwapBufferAndPollPollEvents();
 	}
 }

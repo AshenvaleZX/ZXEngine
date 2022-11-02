@@ -51,7 +51,7 @@ namespace ZXEngine
 
 	mat4 Camera::GetProjectionMatrix()
 	{
-		return perspective(radians(Fov), (float)RenderEngine::scrWidth / (float)RenderEngine::scrHeight, 0.1f, 100.0f);
+		return perspective(radians(Fov), (float)RenderEngine::GetInstance()->scrWidth / (float)RenderEngine::GetInstance()->scrHeight, 0.1f, 100.0f);
 	}
 
 	void Camera::MouseMoveCallBack(string args)

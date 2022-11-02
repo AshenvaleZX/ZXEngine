@@ -17,13 +17,13 @@ namespace ZXEngine
 		static RenderEngine* GetInstance();
 
 		// 窗口相关
-		static GLFWwindow* window;
-		static unsigned int scrWidth;
-		static unsigned int scrHeight;
+		GLFWwindow* window;
+		unsigned int scrWidth;
+		unsigned int scrHeight;
 
-		static void InitWindow(unsigned int width, unsigned int height);
-		static void SwapBufferAndPollPollEvents();
-		static int WindowShouldClose();
+		void InitWindow(unsigned int width, unsigned int height);
+		void SwapBufferAndPollPollEvents();
+		int WindowShouldClose();
 
 
 		// 绘制

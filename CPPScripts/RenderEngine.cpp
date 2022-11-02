@@ -25,9 +25,6 @@ namespace ZXEngine
 		glViewport(0, 0, width, height);
 	}
 
-	GLFWwindow* RenderEngine::window;
-	unsigned int RenderEngine::scrWidth;
-	unsigned int RenderEngine::scrHeight;
 	void RenderEngine::InitWindow(unsigned int width, unsigned int height)
 	{
 		glfwInit();
