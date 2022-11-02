@@ -65,6 +65,12 @@ namespace ZXEngine
 		return glfwWindowShouldClose(window);
 	}
 
+	void RenderEngine::BeginRender()
+	{
+		// 渲染下一帧之前，先清理一下上一帧的Buffer
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
 	void RenderEngine::Render(Camera* camera)
 	{
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue(RenderQueueType::Qpaque);

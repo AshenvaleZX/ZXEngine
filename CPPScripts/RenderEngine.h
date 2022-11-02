@@ -25,8 +25,8 @@ namespace ZXEngine
 		void SwapBufferAndPollPollEvents();
 		int WindowShouldClose();
 
-
 		// »æÖÆ
+		void BeginRender();
 		void Render(Camera* camera);
 		
 	private:

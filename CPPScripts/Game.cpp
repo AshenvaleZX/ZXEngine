@@ -35,6 +35,8 @@ namespace ZXEngine
 
 	void Game::Render()
 	{
+		RenderEngine::GetInstance()->BeginRender();
+
 		SceneManager::GetInstance()->GetCurScene()->Render();
 
 		RenderEngine::GetInstance()->SwapBufferAndPollPollEvents();
