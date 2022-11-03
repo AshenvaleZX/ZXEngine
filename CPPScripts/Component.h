@@ -4,6 +4,7 @@
 namespace ZXEngine
 {
 	class GameObject;
+	class Transform;
 	class Component
 	{
 	public:
@@ -11,6 +12,8 @@ namespace ZXEngine
 
 		Component() {};
 		~Component() {};
+
+		Transform* GetTransform();
 
 	private:
 		
