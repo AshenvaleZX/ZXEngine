@@ -64,7 +64,6 @@ namespace ZXEngine
 
 	void RenderEngine::SwapBufferAndPollPollEvents()
 	{
-		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
@@ -111,5 +110,10 @@ namespace ZXEngine
 
 		// 每次渲染完要清空，下次要渲染的时候再重新添加
 		RenderQueueManager::GetInstance()->ClearAllRenderQueue();
+	}
+
+	void RenderEngine::EndRender()
+	{
+		SwapBufferAndPollPollEvents();
 	}
 }

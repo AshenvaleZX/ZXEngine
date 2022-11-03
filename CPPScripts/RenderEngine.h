@@ -22,14 +22,17 @@ namespace ZXEngine
 
 		void InitWindow(unsigned int width, unsigned int height);
 		void CloseWindow(string args);
-		void SwapBufferAndPollPollEvents();
 		int WindowShouldClose();
 
 		// »æÖÆ
 		void BeginRender();
 		void Render(Camera* camera);
+		void EndRender();
 		
 	private:
 		static RenderEngine* mInstance;
+
+		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+		void SwapBufferAndPollPollEvents();
 	};
 }

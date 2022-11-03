@@ -43,6 +43,6 @@ namespace ZXEngine
 
 		SceneManager::GetInstance()->GetCurScene()->Render();
 
-		RenderEngine::GetInstance()->SwapBufferAndPollPollEvents();
+		RenderEngine::GetInstance()->EndRender();
 	}
 }
