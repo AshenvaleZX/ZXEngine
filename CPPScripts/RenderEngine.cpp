@@ -3,6 +3,7 @@
 #include "MeshRenderer.h"
 #include "RenderAPI.h"
 #include "stb_image.h"
+#include "EventManager.h"
 
 namespace ZXEngine
 {
@@ -52,6 +53,13 @@ namespace ZXEngine
 			std::cout << "Failed to initialize GLAD" << std::endl;
 			return;
 		}
+
+		EventManager::GetInstance()->AddEventHandler(EventType::KEY_ESCAPE_PRESS, std::bind(&RenderEngine::CloseWindow, this, std::placeholders::_1));
+	}
+
+	void RenderEngine::CloseWindow(string args)
+	{
+		glfwSetWindowShouldClose(window, true);
 	}
 
 	void RenderEngine::SwapBufferAndPollPollEvents()

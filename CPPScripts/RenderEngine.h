@@ -21,6 +21,7 @@ namespace ZXEngine
 		unsigned int scrHeight;
 
 		void InitWindow(unsigned int width, unsigned int height);
+		void CloseWindow(string args);
 		void SwapBufferAndPollPollEvents();
 		int WindowShouldClose();
 
