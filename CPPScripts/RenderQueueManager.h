@@ -1,6 +1,5 @@
 #pragma once
 #include "pubh.h"
-#include "PublicEnum.h"
 #include "RenderQueue.h"
 
 namespace ZXEngine

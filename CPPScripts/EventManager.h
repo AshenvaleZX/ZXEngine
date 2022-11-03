@@ -3,12 +3,6 @@
 
 namespace ZXEngine
 {
-    enum EventType
-    {
-        GAME_START = 0,
-        UPDATE_MOUSE_POS,
-    };
-
     class EventManager
     {
     public:

@@ -2,6 +2,7 @@
 #include "RenderQueueManager.h"
 #include "MeshRenderer.h"
 #include "RenderAPI.h"
+#include "stb_image.h"
 
 namespace ZXEngine
 {

@@ -27,3 +27,4 @@ using namespace glm;
 
 #include "Debug.h"
 #include "Utils.h"
+#include "PublicEnum.h"

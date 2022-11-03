@@ -1,6 +1,5 @@
 #pragma once
 #include "RenderAPI.h"
-#include "PublicEnum.h"
 
 namespace ZXEngine
 {

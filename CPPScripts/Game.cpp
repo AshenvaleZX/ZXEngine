@@ -5,6 +5,7 @@
 #include "RenderQueueManager.h"
 #include "InputManager.h"
 #include "Time.h"
+#include "SceneManager.h"
 
 namespace ZXEngine
 {
