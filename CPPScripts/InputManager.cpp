@@ -47,6 +47,37 @@ namespace ZXEngine
 	void InputManager::UpdateKeyInput()
 	{
 		GLFWwindow* window = RenderEngine::GetInstance()->window;
+
+		// 从0到9
+		for (int i = 0; i < 10; i++)
+		{
+			if (glfwGetKey(window, GLFW_KEY_0 + i) == GLFW_PRESS)
+			{
+				EventManager::GetInstance()->FireEvent(EventType::KEY_0_PRESS + i, "");
+			}
+		}
+
+		// 从A到Z
+		for (int i = 0; i < 26; i++)
+		{
+			if (glfwGetKey(window, GLFW_KEY_A + i) == GLFW_PRESS)
+			{
+				EventManager::GetInstance()->FireEvent(EventType::KEY_A_PRESS + i, "");
+			}
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+			EventManager::GetInstance()->FireEvent(EventType::KEY_SPACE_PRESS, "");
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+			EventManager::GetInstance()->FireEvent(EventType::KEY_ESCAPE_PRESS, "");
+		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+			EventManager::GetInstance()->FireEvent(EventType::KEY_RIGHT_PRESS, "");
+		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+			EventManager::GetInstance()->FireEvent(EventType::KEY_LEFT_PRESS, "");
+		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+			EventManager::GetInstance()->FireEvent(EventType::KEY_DOWN_PRESS, "");
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+			EventManager::GetInstance()->FireEvent(EventType::KEY_UP_PRESS, "");
 	}
 }
 
