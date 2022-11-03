@@ -46,6 +46,7 @@ namespace ZXEngine
 
 	void GameObject::AddComponent(string type, Component* component)
 	{
+		component->gameObject = this;
 		components.insert(pair<string, Component*>(type, component));
 	}
 }

@@ -38,6 +38,7 @@ namespace ZXEngine
 	inline T* GameObject::AddComponent(string type)
 	{
 		T* t = new T();
+		t->gameObject = this;
 		components.insert(pair<string, Component*>(type, t));
 		return t;
 	}

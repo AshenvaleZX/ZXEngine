@@ -3,9 +3,12 @@
 
 namespace ZXEngine
 {
+	class GameObject;
 	class Component
 	{
 	public:
+		GameObject* gameObject = nullptr;
+
 		Component() {};
 		~Component() {};
 
