@@ -40,13 +40,6 @@ namespace ZXEngine
 		json data = Resources::GetAssetData(path);
 		SceneStruct* scene = new SceneStruct;
 
-		for (unsigned int i = 0; i < data["Cameras"].size(); i++)
-		{
-			CameraStruct* cam = new CameraStruct;
-			cam->position = vec3(data["Cameras"][i]["Position"][0], data["Cameras"][i]["Position"][1], data["Cameras"][i]["Position"][2]);
-			scene->cameras.push_back(cam);
-		}
-
 		for (unsigned int i = 0; i < data["GameObjects"].size(); i++)
 		{
 			string p = Resources::JsonStrToString(data["GameObjects"][i]);

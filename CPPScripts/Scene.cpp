@@ -6,11 +6,6 @@ namespace ZXEngine
 {
 	Scene::Scene(SceneStruct* sceneStruct)
 	{
-		for (auto cam : sceneStruct->cameras)
-		{
-			cameras.push_back(new Camera(cam));
-		}
-
 		for (auto prefab : sceneStruct->prefabs)
 		{
 			gameObjects.push_back(new GameObject(prefab));
@@ -19,13 +14,17 @@ namespace ZXEngine
 	
 	void Scene::Render()
 	{
-		for (unsigned i = 0; i < cameras.size(); ++i) 
+		for (unsigned i = 0; i < Camera::GetAllCameras().size(); ++i)
 		{
-			auto camera = cameras[i];
+			auto camera = Camera::GetAllCameras()[i];
 			for (unsigned j = 0; j < gameObjects.size(); ++j)
 			{
 				auto gameObject = gameObjects[j];
-				RenderQueueManager::GetInstance()->AddRenderer(gameObject->GetComponent<MeshRenderer>("MeshRenderer"));
+				MeshRenderer* meshRenderer = gameObject->GetComponent<MeshRenderer>("MeshRenderer");
+				if (meshRenderer != nullptr)
+				{
+					RenderQueueManager::GetInstance()->AddRenderer(gameObject->GetComponent<MeshRenderer>("MeshRenderer"));
+				}
 			}
 			RenderEngine::GetInstance()->Render(camera);
 		}

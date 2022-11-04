@@ -3,11 +3,6 @@
 
 namespace ZXEngine
 {
-	struct CameraStruct
-	{
-		vec3 position;
-	};
-
 	struct TextureStruct
 	{
 		string uniformName;
@@ -27,7 +22,6 @@ namespace ZXEngine
 
 	struct SceneStruct
 	{
-		list<CameraStruct*> cameras;
 		list<PrefabStruct*> prefabs;
 	};
 

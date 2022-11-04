@@ -1,14 +1,7 @@
 {
-    "Cameras": 
-    [
-        {
-            "Type": "Camera",
-            "Position": [0, 0, 50]
-        }
-    ],
     "GameObjects": 
     [
         "Prefabs/Cube.zxprefab",
-        "Prefabs/Cube.zxprefab"
+        "Prefabs/MainCamera.zxprefab"
     ]
 }

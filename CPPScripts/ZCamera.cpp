@@ -2,30 +2,37 @@
 #include "RenderEngine.h"
 #include "EventManager.h"
 #include "Time.h"
+#include "Transform.h"
 
 namespace ZXEngine
 {
-	Camera::Camera(vec3 position, vec3 up, float yaw, float pitch) : Front(vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Fov(FOV)
-	{
-		Position = position;
-		WorldUp = up;
-		Yaw = yaw;
-		Pitch = pitch;
-		UpdateCameraVectors();
-	}
+	vector<Camera*> Camera::allCameras;
 
-	Camera::Camera(CameraStruct* camStruct) : Front(vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Fov(FOV)
+	Camera::Camera() : Front(vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Fov(FOV)
 	{
-		Position = camStruct->position;
 		WorldUp = vec3(0.0f, 1.0f, 0.0f);
 		Yaw = YAW;
 		Pitch = PITCH;
 		UpdateCameraVectors();
+
+		allCameras.push_back(this);
+
 		EventManager::GetInstance()->AddEventHandler(EventType::UPDATE_MOUSE_POS, std::bind(&Camera::MouseMoveCallBack, this, std::placeholders::_1));
 		EventManager::GetInstance()->AddEventHandler(EventType::KEY_D_PRESS, std::bind(&Camera::MoveRightCallBack, this, std::placeholders::_1));
 		EventManager::GetInstance()->AddEventHandler(EventType::KEY_A_PRESS, std::bind(&Camera::MoveLeftCallBack, this, std::placeholders::_1));
 		EventManager::GetInstance()->AddEventHandler(EventType::KEY_S_PRESS, std::bind(&Camera::MoveDownCallBack, this, std::placeholders::_1));
 		EventManager::GetInstance()->AddEventHandler(EventType::KEY_W_PRESS, std::bind(&Camera::MoveUpCallBack, this, std::placeholders::_1));
+	}
+
+	Camera::~Camera()
+	{
+		auto l = std::find(allCameras.begin(), allCameras.end(), this);
+		allCameras.erase(l);
+	}
+
+	vector<Camera*> Camera::GetAllCameras()
+	{
+		return allCameras;
 	}
 	
 	// Returns the view matrix calculated using Euler Angles and the LookAt Matrix
@@ -40,6 +47,7 @@ namespace ZXEngine
 		// -Front.x, -Front.y, -Front.z, 0,
 		//  0,        0,        0,       1
 		// 后面的posMat同理
+		vec3 pos = GetTransform()->position;
 		mat4 viewMat = mat4(
 			Right.x, Up.x, -Front.x, 0,
 			Right.y, Up.y, -Front.y, 0,
@@ -49,7 +57,7 @@ namespace ZXEngine
 			1, 0, 0, 0,
 			0, 1, 0, 0,
 			0, 0, 1, 0,
-			-Position.x, -Position.y, -Position.z, 1);
+			-pos.x, -pos.y, -pos.z, 1);
 
 		return viewMat * posMat;
 	}
@@ -99,13 +107,13 @@ namespace ZXEngine
 	{
 		float velocity = MovementSpeed * Time::deltaTime;
 		if (direction == CameraMoveDir::FORWARD)
-			Position += Front * velocity;
+			GetTransform()->position += Front * velocity;
 		if (direction == CameraMoveDir::BACKWARD)
-			Position -= Front * velocity;
+			GetTransform()->position -= Front * velocity;
 		if (direction == CameraMoveDir::LEFT)
-			Position -= Right * velocity;
+			GetTransform()->position -= Right * velocity;
 		if (direction == CameraMoveDir::RIGHT)
-			Position += Right * velocity;
+			GetTransform()->position += Right * velocity;
 	}
 
 	void Camera::MouseMoveCallBack(string args)

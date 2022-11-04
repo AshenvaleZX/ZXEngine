@@ -1,6 +1,7 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include "MeshRenderer.h"
+#include "ZCamera.h"
 
 namespace ZXEngine
 {
@@ -11,6 +12,8 @@ namespace ZXEngine
 			if (component["Type"] == "Transform")
 			{
 				Transform* transform = AddComponent<Transform>("Transform");
+
+				transform->position = vec3(component["Position"][0], component["Position"][1], component["Position"][2]);
 			}
 			else if (component["Type"] == "MeshRenderer")
 			{
@@ -40,6 +43,10 @@ namespace ZXEngine
 					p = Resources::GetAssetFullPath(p.c_str());
 					meshRenderer->LoadModel(p);
 				}
+			}
+			else if (component["Type"] == "Camera")
+			{
+				Camera* camera = AddComponent<Camera>("Camera");
 			}
 		}
 	}

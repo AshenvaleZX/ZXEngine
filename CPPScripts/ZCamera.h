@@ -1,6 +1,6 @@
 #pragma once
 #include "pubh.h"
-#include "Resources.h"
+#include "Component.h"
 
 namespace ZXEngine
 {
@@ -20,11 +20,10 @@ namespace ZXEngine
     const float SENSITIVITY = 0.1f;
     const float FOV = 45.0f;
 
-	class Camera
+	class Camera : public Component
 	{
 	public:
         // Camera Attributes
-        vec3 Position;
         vec3 Front;
         vec3 Up;
         vec3 Right;
@@ -37,9 +36,10 @@ namespace ZXEngine
         float MouseSensitivity;
         float Fov;
 
-        Camera(vec3 position = vec3(0.0f, 0.0f, 0.0f), vec3 up = vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
-        Camera(CameraStruct* camStruct);
-		~Camera() {};
+        Camera();
+		~Camera();
+
+        static vector<Camera*> GetAllCameras();
 
         mat4 GetViewMatrix();
         mat4 GetProjectionMatrix();
@@ -61,6 +61,9 @@ namespace ZXEngine
         bool firstMouse = true;
         double lastX = 0;
         double lastY = 0;
+
+        // 所有相机
+        static vector<Camera*> allCameras;
 
         void UpdateCameraVectors();
 

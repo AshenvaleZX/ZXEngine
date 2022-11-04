@@ -1,0 +1,14 @@
+{
+    "Type": "GameObject",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 0, 50],
+            "Rotation": [0, 0, 0]
+        },
+        {
+            "Type": "Camera"
+        }
+    ]
+}
