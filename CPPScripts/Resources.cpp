@@ -32,7 +32,18 @@ namespace ZXEngine
 		{
 			Debug::LogError("Load asset failed: " + p);
 		}
-		return json::parse(f);
+		json data;
+		try
+		{
+			data = json::parse(f);
+		}
+		catch (json::exception& e)
+		{
+			Debug::LogError("Asset format error: " + p);
+			string msg = e.what();
+			Debug::LogError("Error detail: " + msg);
+		}
+		return data;
 	}
 
 	SceneStruct* Resources::LoadScene(const char* path)
