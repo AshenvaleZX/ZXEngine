@@ -8,6 +8,13 @@ namespace ZXEngine
 		Transparent = 2000 
 	};
 
+	enum LightType
+	{
+		None,
+		Directional,
+		Point,
+	};
+
 	enum EventType
 	{
 		GAME_START = 0,

@@ -41,8 +41,9 @@ namespace ZXEngine
 		return textureID;
 	}
 
-	unsigned int RenderAPIOpenGL::LoadAndCompileShader(const char* path)
+	ShaderInfo RenderAPIOpenGL::LoadAndCompileShader(const char* path)
 	{
+		ShaderInfo info{};
 		string shaderCode;
 		string vertexCode;
 		string fragmentCode;
@@ -61,6 +62,15 @@ namespace ZXEngine
 			shaderFile.close();
 			// convert stream into string
 			shaderCode = shaderStream.str();
+
+			int hasDirLight = shaderCode.find("DirLight");
+			int hasPointLight = shaderCode.find("PointLight");
+			if (hasDirLight > 0)
+				info.lightType = LightType::Directional;
+			else if (hasPointLight > 0)
+				info.lightType = LightType::Point;
+			else
+				info.lightType = LightType::None;
 
 			int vs_begin = shaderCode.find("#vs_begin") + 9;
 			int vs_end = shaderCode.find("#vs_end");
@@ -117,7 +127,9 @@ namespace ZXEngine
 		if (geometryCode.length() > 1)
 			glDeleteShader(geometry);
 
-		return ID;
+		info.ID = ID;
+
+		return info;
 	}
 
 	void RenderAPIOpenGL::CheckCompileErrors(unsigned int shader, string type)

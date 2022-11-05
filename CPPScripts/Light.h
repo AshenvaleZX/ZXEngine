@@ -4,12 +4,6 @@
 
 namespace ZXEngine
 {
-	enum LightType
-	{
-		Directional,
-		Point,
-	};
-
 	class Light : public Component
 	{
 	public:

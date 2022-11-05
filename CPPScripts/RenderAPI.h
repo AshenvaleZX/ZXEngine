@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "stb_image.h"
+#include "PublicStruct.h"
 
 namespace ZXEngine
 {
@@ -26,7 +27,7 @@ namespace ZXEngine
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path) = 0;
-		virtual unsigned int LoadAndCompileShader(const char* path) = 0;
+		virtual ShaderInfo LoadAndCompileShader(const char* path) = 0;
 		virtual void CheckCompileErrors(unsigned int shader, std::string type) = 0;
 
 		// DrawCall

@@ -10,6 +10,7 @@ namespace ZXEngine
 		~Shader() {};
 
 		unsigned int GetID();
+		LightType GetLightType();
 		int GetRenderQueue();
 		void Use();
 		void SetBool(string name, bool value);
@@ -29,5 +30,6 @@ namespace ZXEngine
 	private:
 		unsigned int ID;
 		int renderQueue;
+		LightType lightType;
 	};
 }

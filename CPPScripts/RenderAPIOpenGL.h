@@ -11,7 +11,7 @@ namespace ZXEngine
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path);
-		virtual unsigned int LoadAndCompileShader(const char* path);
+		virtual ShaderInfo LoadAndCompileShader(const char* path);
 		virtual void CheckCompileErrors(unsigned int shader, std::string type);
 
 		// DrawCall

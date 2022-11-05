@@ -5,12 +5,19 @@ namespace ZXEngine
 	Shader::Shader(const char* path)
 	{
 		renderQueue = RenderQueueType::Qpaque;
-		ID = RenderAPI::GetInstance()->LoadAndCompileShader(path);
+		ShaderInfo info = RenderAPI::GetInstance()->LoadAndCompileShader(path);
+		ID = info.ID;
+		lightType = info.lightType;
 	}
 
 	unsigned int Shader::GetID()
 	{
 		return ID;
+	}
+
+	LightType Shader::GetLightType()
+	{
+		return lightType;
 	}
 
 	int Shader::GetRenderQueue()
