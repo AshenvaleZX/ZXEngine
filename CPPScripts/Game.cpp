@@ -12,11 +12,12 @@ namespace ZXEngine
 	void Game::Play()
 	{
 		EventManager::Create();
-		RenderAPI::Creat();
 		RenderQueueManager::Creat();
 		SceneManager::Create();
 		RenderEngine::Create();
 		RenderEngine::GetInstance()->InitWindow(1280, 720);
+		RenderAPI::Creat();
+		RenderAPI::GetInstance()->InitRenderSetting();
 		InputManager::Create();
 		Resources::SetAssetsPath("../../ExampleProject/Assets/");
 

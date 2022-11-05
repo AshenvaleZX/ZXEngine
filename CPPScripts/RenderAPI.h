@@ -24,6 +24,8 @@ namespace ZXEngine
 		static void Creat();
 		static RenderAPI* GetInstance();
 
+		// 渲染状态设置
+		virtual void InitRenderSetting() = 0;
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path) = 0;

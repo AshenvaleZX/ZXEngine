@@ -9,6 +9,9 @@ namespace ZXEngine
 		RenderAPIOpenGL() {};
 		~RenderAPIOpenGL() {};
 
+		// 渲染状态设置
+		virtual void InitRenderSetting();
+
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path);
 		virtual ShaderInfo LoadAndCompileShader(const char* path);
