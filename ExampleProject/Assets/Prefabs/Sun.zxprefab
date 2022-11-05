@@ -1,0 +1,17 @@
+{
+    "Type": "GameObject",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 10, 0],
+            "Rotation": [1, 1, 1]
+        },
+        {
+            "Type": "Light",
+            "Color": [1, 1, 1],
+            "Intensity": 1,
+            "LightType": 0
+        }
+    ]
+}

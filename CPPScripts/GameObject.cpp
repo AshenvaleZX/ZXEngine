@@ -2,6 +2,7 @@
 #include "Transform.h"
 #include "MeshRenderer.h"
 #include "ZCamera.h"
+#include "Light.h"
 
 namespace ZXEngine
 {
@@ -14,6 +15,7 @@ namespace ZXEngine
 				Transform* transform = AddComponent<Transform>("Transform");
 
 				transform->position = vec3(component["Position"][0], component["Position"][1], component["Position"][2]);
+				transform->rotation = vec3(component["Rotation"][0], component["Rotation"][1], component["Rotation"][2]);
 			}
 			else if (component["Type"] == "MeshRenderer")
 			{
@@ -47,6 +49,14 @@ namespace ZXEngine
 			else if (component["Type"] == "Camera")
 			{
 				Camera* camera = AddComponent<Camera>("Camera");
+			}
+			else if (component["Type"] == "Light")
+			{
+				Light* light = AddComponent<Light>("Light");
+
+				light->color = vec3(component["Color"][0], component["Color"][1], component["Color"][2]);
+				light->intensity = component["Intensity"];
+				light->type = component["LightType"];
 			}
 		}
 	}

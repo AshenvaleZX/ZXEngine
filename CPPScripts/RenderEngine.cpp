@@ -4,6 +4,9 @@
 #include "RenderAPI.h"
 #include "stb_image.h"
 #include "EventManager.h"
+#include "PublicEnum.h"
+#include "Light.h"
+#include "Transform.h"
 
 namespace ZXEngine
 {
@@ -53,7 +56,7 @@ namespace ZXEngine
 			std::cout << "Failed to initialize GLAD" << std::endl;
 			return;
 		}
-
+		
 		EventManager::GetInstance()->AddEventHandler(EventType::KEY_ESCAPE_PRESS, std::bind(&RenderEngine::CloseWindow, this, std::placeholders::_1));
 	}
 
@@ -98,6 +101,15 @@ namespace ZXEngine
 			for (unsigned int i = 0; i < material->textures.size(); i++)
 			{
 				shader->SetTexture(material->textures[i].first, material->textures[i].second->GetID(), i);
+			}
+
+			if (shader->GetLightType() == LightType::Directional)
+			{
+				Light* light = Light::GetAllLights()[0];
+				shader->SetVec3("viewPos", camera->GetTransform()->position);
+				shader->SetVec3("dirLight.direction", light->GetTransform()->rotation);
+				shader->SetVec3("dirLight.color", light->color);
+				shader->SetFloat("dirLight.intensity", light->intensity);
 			}
 
 			for (auto mesh : renderer->meshes)

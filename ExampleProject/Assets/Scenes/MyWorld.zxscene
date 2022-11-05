@@ -2,6 +2,7 @@
     "GameObjects": 
     [
         "Prefabs/Cube.zxprefab",
-        "Prefabs/MainCamera.zxprefab"
+        "Prefabs/MainCamera.zxprefab",
+        "Prefabs/Sun.zxprefab"
     ]
 }
