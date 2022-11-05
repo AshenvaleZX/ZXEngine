@@ -156,7 +156,9 @@
     <ClCompile Include="..\..\CPPScripts\Light.cpp" />
     <ClCompile Include="..\..\CPPScripts\Main.cpp" />
     <ClCompile Include="..\..\CPPScripts\Material.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Math.cpp" />
     <ClCompile Include="..\..\CPPScripts\MeshRenderer.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Quaternion.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPI.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPIOpenGL.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderEngine.cpp" />
@@ -183,6 +185,7 @@
     <ClInclude Include="..\..\CPPScripts\InputManager.h" />
     <ClInclude Include="..\..\CPPScripts\Light.h" />
     <ClInclude Include="..\..\CPPScripts\Material.h" />
+    <ClInclude Include="..\..\CPPScripts\Math.h" />
     <ClInclude Include="..\..\CPPScripts\Mesh.h" />
     <ClInclude Include="..\..\CPPScripts\MeshRenderer.h" />
     <ClInclude Include="..\..\CPPScripts\Model.h" />
@@ -190,6 +193,7 @@
     <ClInclude Include="..\..\CPPScripts\pubh.h" />
     <ClInclude Include="..\..\CPPScripts\PublicEnum.h" />
     <ClInclude Include="..\..\CPPScripts\PublicStruct.h" />
+    <ClInclude Include="..\..\CPPScripts\Quaternion.h" />
     <ClInclude Include="..\..\CPPScripts\RenderAPI.h" />
     <ClInclude Include="..\..\CPPScripts\RenderAPIOpenGL.h" />
     <ClInclude Include="..\..\CPPScripts\RenderEngine.h" />
