@@ -126,9 +126,49 @@ namespace ZXEngine
 	void Quaternion::SetEulerAngles(float x, float y, float z) 
 	{
 		Quaternion q = Quaternion::Euler(x, y ,z);
-		x = q.x;
-		y = q.y;
-		z = q.z;
-		w = q.w;
+		this->x = q.x;
+		this->y = q.y;
+		this->z = q.z;
+		this->w = q.w;
+	}
+
+	mat4 Quaternion::ToMatrix()
+	{
+		float wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2;
+
+		x2 = this->x + this->x;
+		y2 = this->y + this->y;
+		z2 = this->z + this->z;
+
+		xx = this->x * x2;
+		xy = this->x * y2;
+		xz = this->x * z2;
+
+		yy = this->y * y2;
+		yz = this->y * z2;
+
+		zz = this->z * z2;
+
+		wx = this->w * x2;
+		wy = this->w * y2;
+		wz = this->w * z2;
+
+		float m00 = 1.0f - (yy + zz);
+		float m01 = xy - wz;
+		float m02 = xz + wy;
+
+		float m10 = xy + wz;
+		float m11 = 1.0f - (xx + zz);
+		float m12 = yz - wx;
+
+		float m20 = xz - wy;
+		float m21 = yz + wx;
+		float m22 = 1.0f - (xx + yy);
+
+		return mat4(
+			m00, m10, m20, 0,
+			m01, m11, m21, 0,
+			m02, m12, m22, 0,
+			0, 0, 0, 1);
 	}
 }

@@ -169,6 +169,7 @@
     <ClCompile Include="..\..\CPPScripts\SceneManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\Texture.cpp" />
     <ClCompile Include="..\..\CPPScripts\Time.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Transform.cpp" />
     <ClCompile Include="..\..\CPPScripts\Utils.cpp" />
     <ClCompile Include="..\..\CPPScripts\ZCamera.cpp" />
     <ClCompile Include="..\..\CPPScripts\ZMesh.cpp" />

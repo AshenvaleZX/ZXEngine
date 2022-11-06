@@ -28,5 +28,6 @@ namespace ZXEngine
 		void Normalize();
 		vec3 GetEulerAngles() const;
 		void SetEulerAngles(float x, float y, float z);
+		mat4 ToMatrix();
 	};
 }
