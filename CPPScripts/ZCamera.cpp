@@ -8,13 +8,8 @@ namespace ZXEngine
 {
 	vector<Camera*> Camera::allCameras;
 
-	Camera::Camera() : Front(vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Fov(FOV)
+	Camera::Camera() : MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Fov(FOV)
 	{
-		WorldUp = vec3(0.0f, 1.0f, 0.0f);
-		Yaw = YAW;
-		Pitch = PITCH;
-		UpdateCameraVectors();
-
 		allCameras.push_back(this);
 
 		EventManager::GetInstance()->AddEventHandler(EventType::UPDATE_MOUSE_POS, std::bind(&Camera::MouseMoveCallBack, this, std::placeholders::_1));
@@ -48,10 +43,13 @@ namespace ZXEngine
 		//  0,        0,        0,       1
 		// 后面的posMat同理
 		vec3 pos = GetTransform()->position;
+		vec3 forward = GetTransform()->GetForward();
+		vec3 right = GetTransform()->GetRight();
+		vec3 up = GetTransform()->GetUp();
 		mat4 viewMat = mat4(
-			Right.x, Up.x, -Front.x, 0,
-			Right.y, Up.y, -Front.y, 0,
-			Right.z, Up.z, -Front.z, 0,
+			right.x, up.x, -forward.x, 0,
+			right.y, up.y, -forward.y, 0,
+			right.z, up.z, -forward.z, 0,
 			0, 0, 0, 1);
 		mat4 posMat = mat4(
 			1, 0, 0, 0,
@@ -72,48 +70,23 @@ namespace ZXEngine
 		horizontalOffset *= MouseSensitivity;
 		verticalOffset *= MouseSensitivity;
 
-		Yaw += horizontalOffset;
-		Pitch += verticalOffset;
-
-		// Make sure that when pitch is out of bounds, screen doesn't get flipped
-		if (constrainPitch)
-		{
-			if (Pitch > 89.0f)
-				Pitch = 89.0f;
-			if (Pitch < -89.0f)
-				Pitch = -89.0f;
-		}
-
-		// Update Front, Right and Up Vectors using the updated Euler angles
-		UpdateCameraVectors();
-	}
-
-	// Calculates the front vector from the Camera's (updated) Euler Angles
-	void Camera::UpdateCameraVectors()
-	{
-		// Calculate the new Front vector
-		vec3 front;
-		front.x = cos(radians(Yaw)) * cos(radians(Pitch));
-		front.y = sin(radians(Pitch));
-		front.z = sin(radians(Yaw)) * cos(radians(Pitch));
-		Front = normalize(front);
-		// Also re-calculate the Right and Up vector
-		// Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-		Right = normalize(cross(Front, WorldUp));
-		Up = normalize(cross(Right, Front));
+		vec3 eulerAngle = GetTransform()->rotation.GetEulerAngles();
+		eulerAngle.x -= verticalOffset;
+		eulerAngle.y += horizontalOffset;
+		GetTransform()->rotation.SetEulerAngles(eulerAngle.x, eulerAngle.y, eulerAngle.z);
 	}
 
 	void Camera::MoveCamera(CameraMoveDir direction)
 	{
 		float velocity = MovementSpeed * Time::deltaTime;
 		if (direction == CameraMoveDir::FORWARD)
-			GetTransform()->position += Front * velocity;
+			GetTransform()->position += GetTransform()->GetForward() * velocity;
 		if (direction == CameraMoveDir::BACKWARD)
-			GetTransform()->position -= Front * velocity;
+			GetTransform()->position -= GetTransform()->GetForward() * velocity;
 		if (direction == CameraMoveDir::LEFT)
-			GetTransform()->position -= Right * velocity;
+			GetTransform()->position -= GetTransform()->GetRight() * velocity;
 		if (direction == CameraMoveDir::RIGHT)
-			GetTransform()->position += Right * velocity;
+			GetTransform()->position += GetTransform()->GetRight() * velocity;
 	}
 
 	void Camera::MouseMoveCallBack(string args)

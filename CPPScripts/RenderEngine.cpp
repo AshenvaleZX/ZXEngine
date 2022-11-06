@@ -107,7 +107,7 @@ namespace ZXEngine
 			{
 				Light* light = Light::GetAllLights()[0];
 				shader->SetVec3("viewPos", camera->GetTransform()->position);
-				shader->SetVec3("dirLight.direction", light->GetTransform()->rotation);
+				shader->SetVec3("dirLight.direction", light->GetTransform()->GetForward());
 				shader->SetVec3("dirLight.color", light->color);
 				shader->SetFloat("dirLight.intensity", light->intensity);
 			}

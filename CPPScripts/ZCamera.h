@@ -14,8 +14,6 @@ namespace ZXEngine
     };
 
     // 一些相机参数的默认值
-    const float YAW = -90.0f;
-    const float PITCH = 0.0f;
     const float SPEED = 2.5f;
     const float SENSITIVITY = 0.1f;
     const float FOV = 45.0f;
@@ -23,14 +21,6 @@ namespace ZXEngine
 	class Camera : public Component
 	{
 	public:
-        // Camera Attributes
-        vec3 Front;
-        vec3 Up;
-        vec3 Right;
-        vec3 WorldUp;
-        // Euler Angles
-        float Yaw;
-        float Pitch;
         // Camera options
         float MovementSpeed;
         float MouseSensitivity;
@@ -64,8 +54,5 @@ namespace ZXEngine
 
         // 所有相机
         static vector<Camera*> allCameras;
-
-        void UpdateCameraVectors();
-
 	};
 }
