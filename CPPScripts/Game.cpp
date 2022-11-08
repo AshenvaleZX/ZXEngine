@@ -22,6 +22,7 @@ namespace ZXEngine
 		InputManager::Create();
 		Resources::SetAssetsPath("../../ExampleProject/Assets/");
 		RenderEngine::GetInstance()->InitSkyBox();
+		SceneManager::GetInstance()->SetCurScene("Scenes/MyWorld.zxscene");
 
 		while (!RenderEngine::GetInstance()->WindowShouldClose())
 		{

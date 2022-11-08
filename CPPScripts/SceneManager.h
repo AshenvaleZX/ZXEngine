@@ -14,6 +14,7 @@ namespace ZXEngine
 		static SceneManager* GetInstance();
 
 		Scene* GetCurScene();
+		void SetCurScene(const char* path);
 
 	private:
 		static SceneManager* mInstance;

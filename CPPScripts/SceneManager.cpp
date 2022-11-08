@@ -17,9 +17,11 @@ namespace ZXEngine
 
 	Scene* SceneManager::GetCurScene()
 	{
-		if (curScene == nullptr)
-			curScene = new Scene(Resources::LoadScene("Scenes/MyWorld.zxscene"));
-
 		return curScene;
+	}
+
+	void SceneManager::SetCurScene(const char* path)
+	{
+		curScene = new Scene(Resources::LoadScene(path));
 	}
 }
