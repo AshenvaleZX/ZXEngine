@@ -72,6 +72,7 @@ namespace ZXEngine
 
 		vec3 eulerAngle = GetTransform()->rotation.GetEulerAngles();
 		eulerAngle.x -= verticalOffset;
+		eulerAngle.x = Math::Clamp(eulerAngle.x, -89.f, 89.f);
 		eulerAngle.y += horizontalOffset;
 		GetTransform()->rotation.SetEulerAngles(eulerAngle.x, eulerAngle.y, eulerAngle.z);
 	}
