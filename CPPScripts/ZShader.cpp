@@ -81,4 +81,8 @@ namespace ZXEngine
 	{
 		RenderAPI::GetInstance()->SetShaderTexture(this->ID, name, textureID, idx);
 	}
+	void Shader::SetCubeMap(string name, unsigned int textureID, unsigned int idx)
+	{
+		RenderAPI::GetInstance()->SetShaderCubeMap(this->ID, name, textureID, idx);
+	}
 }

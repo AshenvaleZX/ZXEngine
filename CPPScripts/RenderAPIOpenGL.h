@@ -14,6 +14,7 @@ namespace ZXEngine
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path);
+		virtual unsigned int LoadCubeMap(vector<string> faces);
 		virtual ShaderInfo LoadAndCompileShader(const char* path);
 		virtual void CheckCompileErrors(unsigned int shader, std::string type);
 
@@ -39,6 +40,7 @@ namespace ZXEngine
 		virtual void SetShaderMat3(unsigned int ID, string name, mat3 value);
 		virtual void SetShaderMat4(unsigned int ID, string name, mat4 value);
 		virtual void SetShaderTexture(unsigned int ID, string name, unsigned int textureID, unsigned int idx);
+		virtual void SetShaderCubeMap(unsigned int ID, string name, unsigned int textureID, unsigned int idx);
 
 	private:
 		unsigned int VAO;
