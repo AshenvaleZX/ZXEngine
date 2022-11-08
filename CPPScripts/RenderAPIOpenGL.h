@@ -11,6 +11,7 @@ namespace ZXEngine
 
 		// 渲染状态设置
 		virtual void InitRenderSetting();
+		virtual void EnableDepthWrite(bool enable);
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path);

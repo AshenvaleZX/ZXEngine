@@ -8,7 +8,15 @@ namespace ZXEngine
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
-	
+
+	void RenderAPIOpenGL::EnableDepthWrite(bool enable)
+	{
+		if (enable)
+			glDepthMask(GL_TRUE);
+		else
+			glDepthMask(GL_FALSE);
+	}
+
 	unsigned int RenderAPIOpenGL::LoadTexture(const char* path)
 	{
 		unsigned int textureID;
