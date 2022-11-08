@@ -22,6 +22,7 @@ namespace ZXEngine
 
 	struct SceneStruct
 	{
+		vector<string> skyBox;
 		list<PrefabStruct*> prefabs;
 	};
 
@@ -36,6 +37,7 @@ namespace ZXEngine
 		static SceneStruct* LoadScene(const char* path);
 		static PrefabStruct* LoadPrefab(const char* path);
 		static MaterialStruct* LoadMaterial(const char* path);
+		static vector<string> LoadCubeMap(json data);
 
 		static string JsonStrToString(json data);
 

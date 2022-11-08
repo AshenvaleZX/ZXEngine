@@ -1,4 +1,14 @@
 {
+    "SkyBox": 
+    {
+        "Path": "Textures/stars/",
+        "Right": "right.png",
+        "Left": "left.png",
+        "Up": "up.png",
+        "Down": "down.png",
+        "Front": "front.png",
+        "Back": "back.png"
+    },
     "GameObjects": 
     [
         "Prefabs/Cube.zxprefab",

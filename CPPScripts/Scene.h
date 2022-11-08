@@ -1,14 +1,17 @@
 #pragma once
 #include "pubh.h"
-#include "GameObject.h"
-#include "ZCamera.h"
-#include "Resources.h"
 
 namespace ZXEngine
 {
+	class Camera;
+	class CubeMap;
+	class GameObject;
+	struct SceneStruct;
 	class Scene
 	{
 	public:
+		CubeMap* skyBox = nullptr;
+
 		Scene(SceneStruct* sceneStruct);
 		~Scene() {};
 

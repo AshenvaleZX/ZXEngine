@@ -6,6 +6,7 @@
 #include "InputManager.h"
 #include "Time.h"
 #include "SceneManager.h"
+#include "Resources.h"
 
 namespace ZXEngine
 {
@@ -20,6 +21,7 @@ namespace ZXEngine
 		RenderAPI::GetInstance()->InitRenderSetting();
 		InputManager::Create();
 		Resources::SetAssetsPath("../../ExampleProject/Assets/");
+		RenderEngine::GetInstance()->InitSkyBox();
 
 		while (!RenderEngine::GetInstance()->WindowShouldClose())
 		{

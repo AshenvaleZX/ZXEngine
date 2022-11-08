@@ -1,11 +1,17 @@
 #include "Scene.h"
 #include "RenderEngine.h"
 #include "RenderQueueManager.h"
+#include "CubeMap.h"
+#include "GameObject.h"
+#include "ZCamera.h"
+#include "Resources.h"
 
 namespace ZXEngine
 {
 	Scene::Scene(SceneStruct* sceneStruct)
 	{
+		skyBox = new CubeMap(sceneStruct->skyBox);
+
 		for (auto prefab : sceneStruct->prefabs)
 		{
 			gameObjects.push_back(new GameObject(prefab));

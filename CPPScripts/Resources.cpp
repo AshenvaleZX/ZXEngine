@@ -51,6 +51,8 @@ namespace ZXEngine
 		json data = Resources::GetAssetData(path);
 		SceneStruct* scene = new SceneStruct;
 
+		scene->skyBox = Resources::LoadCubeMap(data["SkyBox"]);
+
 		for (unsigned int i = 0; i < data["GameObjects"].size(); i++)
 		{
 			string p = Resources::JsonStrToString(data["GameObjects"][i]);
@@ -94,5 +96,17 @@ namespace ZXEngine
 		}
 
 		return matStruct;
+	}
+
+	vector<string> Resources::LoadCubeMap(json data)
+	{
+		vector<string> cube;
+		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]).c_str()) + Resources::JsonStrToString(data["Right"]));
+		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]).c_str()) + Resources::JsonStrToString(data["Left"]));
+		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]).c_str()) + Resources::JsonStrToString(data["Up"]));
+		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]).c_str()) + Resources::JsonStrToString(data["Down"]));
+		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]).c_str()) + Resources::JsonStrToString(data["Front"]));
+		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]).c_str()) + Resources::JsonStrToString(data["Back"]));
+		return cube;
 	}
 }
