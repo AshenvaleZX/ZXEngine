@@ -163,6 +163,9 @@
     <ClCompile Include="..\..\CPPScripts\RenderAPI.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPIOpenGL.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderEngine.cpp" />
+    <ClCompile Include="..\..\CPPScripts\RenderPassForwardRendering.cpp" />
+    <ClCompile Include="..\..\CPPScripts\RenderPassManager.cpp" />
+    <ClCompile Include="..\..\CPPScripts\RenderPassShadowGeneration.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderQueueManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderQueue.cpp" />
     <ClCompile Include="..\..\CPPScripts\Resources.cpp" />
@@ -200,6 +203,10 @@
     <ClInclude Include="..\..\CPPScripts\RenderAPI.h" />
     <ClInclude Include="..\..\CPPScripts\RenderAPIOpenGL.h" />
     <ClInclude Include="..\..\CPPScripts\RenderEngine.h" />
+    <ClInclude Include="..\..\CPPScripts\RenderPass.h" />
+    <ClInclude Include="..\..\CPPScripts\RenderPassForwardRendering.h" />
+    <ClInclude Include="..\..\CPPScripts\RenderPassManager.h" />
+    <ClInclude Include="..\..\CPPScripts\RenderPassShadowGeneration.h" />
     <ClInclude Include="..\..\CPPScripts\RenderQueue.h" />
     <ClInclude Include="..\..\CPPScripts\RenderQueueManager.h" />
     <ClInclude Include="..\..\CPPScripts\Resources.h" />
