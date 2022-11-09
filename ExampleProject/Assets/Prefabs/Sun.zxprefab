@@ -5,7 +5,8 @@
         {
             "Type": "Transform",
             "Position": [0, 10, 0],
-            "Rotation": [-45, -45, 0]
+            "Rotation": [-45, -45, 0],
+            "Scale": [1, 1, 1]
         },
         {
             "Type": "Light",

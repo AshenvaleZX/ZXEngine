@@ -16,6 +16,7 @@ namespace ZXEngine
 
 				transform->position = vec3(component["Position"][0], component["Position"][1], component["Position"][2]);
 				transform->rotation.SetEulerAngles(component["Rotation"][0], component["Rotation"][1], component["Rotation"][2]);
+				transform->scale = vec3(component["Scale"][0], component["Scale"][1], component["Scale"][2]);
 			}
 			else if (component["Type"] == "MeshRenderer")
 			{

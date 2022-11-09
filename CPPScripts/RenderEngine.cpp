@@ -90,13 +90,13 @@ namespace ZXEngine
 	{
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue(RenderQueueType::Qpaque);
 
-		mat4 mat_M = mat4(1.0f);
 		mat4 mat_V = camera->GetViewMatrix();
 		mat4 mat_P = camera->GetProjectionMatrix();
 		for (auto renderer : renderQueue->GetRenderers())
 		{
 			Material* material = renderer->matetrial;
 			Shader* shader = material->shader;
+			mat4 mat_M = renderer->GetTransform()->GetModelMatrix();
 			shader->Use();
 			shader->SetMat4("model", mat_M);
 			shader->SetMat4("view", mat_V);

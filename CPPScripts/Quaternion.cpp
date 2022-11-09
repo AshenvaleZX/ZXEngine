@@ -153,18 +153,22 @@ namespace ZXEngine
 		wy = this->w * y2;
 		wz = this->w * z2;
 
+		// 第一行
 		float m00 = 1.0f - (yy + zz);
 		float m01 = xy - wz;
 		float m02 = xz + wy;
 
+		// 第二行
 		float m10 = xy + wz;
 		float m11 = 1.0f - (xx + zz);
 		float m12 = yz - wx;
 
+		// 第三行
 		float m20 = xz - wy;
 		float m21 = yz + wx;
 		float m22 = 1.0f - (xx + yy);
 
+		// 构建GLM矩阵的时候，行列是反的
 		return mat4(
 			m00, m10, m20, 0,
 			m01, m11, m21, 0,
