@@ -1,14 +1,12 @@
 #include "RenderEngine.h"
-#include "RenderQueueManager.h"
-#include "MeshRenderer.h"
-#include "RenderAPI.h"
-#include "stb_image.h"
 #include "EventManager.h"
+#include "MeshRenderer.h"
 #include "PublicEnum.h"
-#include "Light.h"
-#include "Transform.h"
 #include "SceneManager.h"
 #include "CubeMap.h"
+#include "ZCamera.h"
+#include "RenderPassManager.h"
+#include "RenderPass.h"
 
 namespace ZXEngine
 {
@@ -88,44 +86,11 @@ namespace ZXEngine
 
 	void RenderEngine::Render(Camera* camera)
 	{
-		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue(RenderQueueType::Qpaque);
-
-		mat4 mat_V = camera->GetViewMatrix();
-		mat4 mat_P = camera->GetProjectionMatrix();
-		for (auto renderer : renderQueue->GetRenderers())
+		auto renderPassMgr = RenderPassManager::GetInstance();
+		for (unsigned int i = 0; i < renderPassMgr->passes.size(); i++)
 		{
-			Material* material = renderer->matetrial;
-			Shader* shader = material->shader;
-			mat4 mat_M = renderer->GetTransform()->GetModelMatrix();
-			shader->Use();
-			shader->SetMat4("model", mat_M);
-			shader->SetMat4("view", mat_V);
-			shader->SetMat4("projection", mat_P);
-
-			for (unsigned int i = 0; i < material->textures.size(); i++)
-			{
-				shader->SetTexture(material->textures[i].first, material->textures[i].second->GetID(), i);
-			}
-
-			if (shader->GetLightType() == LightType::Directional)
-			{
-				Light* light = Light::GetAllLights()[0];
-				shader->SetVec3("viewPos", camera->GetTransform()->position);
-				shader->SetVec3("dirLight.direction", light->GetTransform()->GetForward());
-				shader->SetVec3("dirLight.color", light->color);
-				shader->SetFloat("dirLight.intensity", light->intensity);
-			}
-
-			for (auto mesh : renderer->meshes)
-			{
-				mesh->Use();
-
-				RenderAPI::GetInstance()->Draw();
-			}
+			renderPassMgr->passes[i]->Render(camera);
 		}
-
-		// 每次渲染完要清空，下次要渲染的时候再重新添加
-		RenderQueueManager::GetInstance()->ClearAllRenderQueue();
 	}
 
 	void RenderEngine::EndRender()

@@ -7,6 +7,7 @@
 #include "Time.h"
 #include "SceneManager.h"
 #include "Resources.h"
+#include "RenderPassManager.h"
 
 namespace ZXEngine
 {
@@ -15,6 +16,7 @@ namespace ZXEngine
 		EventManager::Create();
 		RenderQueueManager::Creat();
 		SceneManager::Create();
+		RenderPassManager::Create();
 		RenderEngine::Create();
 		RenderEngine::GetInstance()->InitWindow(1280, 720);
 		RenderAPI::Creat();

@@ -2,12 +2,12 @@
 #include "pubh.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "ZCamera.h"
 
 namespace ZXEngine
 {
 	class Mesh;
 	class Shader;
+	class Camera;
 	class RenderEngine
 	{
 	public:

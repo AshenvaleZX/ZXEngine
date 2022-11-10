@@ -3,12 +3,13 @@
 
 namespace ZXEngine
 {
+	class Camera;
 	class RenderPass
 	{
 	public:
 		RenderPass() {};
 		~RenderPass() {};
 
-		virtual void Render() = 0;
+		virtual void Render(Camera* camera) = 0;
 	};
 }

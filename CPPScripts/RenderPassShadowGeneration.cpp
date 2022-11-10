@@ -2,8 +2,8 @@
 
 namespace ZXEngine
 {
-	void RenderPassShadowGeneration::Render()
+	void RenderPassShadowGeneration::Render(Camera* camera)
 	{
-
+		
 	}
 }

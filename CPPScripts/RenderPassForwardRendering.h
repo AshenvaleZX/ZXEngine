@@ -9,6 +9,6 @@ namespace ZXEngine
 		RenderPassForwardRendering() {};
 		~RenderPassForwardRendering() {};
 
-		virtual void Render();
+		virtual void Render(Camera* camera);
 	};
 }

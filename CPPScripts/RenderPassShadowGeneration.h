@@ -9,6 +9,6 @@ namespace ZXEngine
 		RenderPassShadowGeneration() {};
 		~RenderPassShadowGeneration() {};
 
-		virtual void Render();
+		virtual void Render(Camera* camera);
 	};
 }

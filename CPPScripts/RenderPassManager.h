@@ -10,6 +10,13 @@ namespace ZXEngine
 		RenderPassManager();
 		~RenderPassManager() {};
 
+		static void Create();
+		static RenderPassManager* GetInstance();
+
 		vector<RenderPass*> passes;
+
+	private:
+		static RenderPassManager* mInstance;
+	
 	};
 }
