@@ -225,6 +225,9 @@
     <ClCompile Include="..\..\CPPScripts\GameLogic.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\GameLogicManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">
@@ -450,6 +453,9 @@
       <Filter>LuaWrap</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\GameLogic.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\GameLogicManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

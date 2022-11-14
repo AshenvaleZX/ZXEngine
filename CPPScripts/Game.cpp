@@ -9,6 +9,7 @@
 #include "Resources.h"
 #include "RenderPassManager.h"
 #include "LuaManager.h"
+#include "GameLogicManager.h"
 
 namespace ZXEngine
 {
@@ -25,6 +26,7 @@ namespace ZXEngine
 		InputManager::Create();
 		Resources::SetAssetsPath("../../ExampleProject/Assets/");
 		LuaManager::Create();
+		GameLogicManager::Create();
 		RenderEngine::GetInstance()->InitSkyBox();
 		SceneManager::GetInstance()->SetCurScene("Scenes/MyWorld.zxscene");
 
@@ -43,6 +45,8 @@ namespace ZXEngine
 		Time::Update();
 
 		InputManager::GetInstance()->Update();
+
+		GameLogicManager::GetInstance()->Update();
 	}
 
 	void Game::Render()

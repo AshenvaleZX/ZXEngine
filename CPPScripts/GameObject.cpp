@@ -3,6 +3,7 @@
 #include "MeshRenderer.h"
 #include "ZCamera.h"
 #include "Light.h"
+#include "GameLogic.h"
 
 namespace ZXEngine
 {
@@ -58,6 +59,11 @@ namespace ZXEngine
 				light->color = vec3(component["Color"][0], component["Color"][1], component["Color"][2]);
 				light->intensity = component["Intensity"];
 				light->type = component["LightType"];
+			}
+			else if (component["Type"] == "GameLogic")
+			{
+				GameLogic* gameLogic = AddComponent<GameLogic>("GameLogic");
+				gameLogic->lua = Resources::JsonStrToString(component["Lua"]);
 			}
 		}
 	}
