@@ -8,6 +8,7 @@
 #include "SceneManager.h"
 #include "Resources.h"
 #include "RenderPassManager.h"
+#include "LuaManager.h"
 
 namespace ZXEngine
 {
@@ -23,6 +24,7 @@ namespace ZXEngine
 		RenderAPI::GetInstance()->InitRenderSetting();
 		InputManager::Create();
 		Resources::SetAssetsPath("../../ExampleProject/Assets/");
+		LuaManager::Create();
 		RenderEngine::GetInstance()->InitSkyBox();
 		SceneManager::GetInstance()->SetCurScene("Scenes/MyWorld.zxscene");
 
