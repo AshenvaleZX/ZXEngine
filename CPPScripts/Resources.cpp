@@ -7,6 +7,11 @@ namespace ZXEngine
 	{
 		assetsPath = path;
 	}
+	
+	const char* Resources::GetAssetsPath()
+	{
+		return assetsPath;
+	}
 
 	string Resources::GetAssetFullPath(const char* path)
 	{

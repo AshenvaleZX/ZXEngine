@@ -16,6 +16,9 @@
     <Filter Include="Lua">
       <UniqueIdentifier>{c99d4948-e521-4c21-b3dc-0c440d6f6597}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LuaWrap">
+      <UniqueIdentifier>{a25bc57f-220b-45ed-bb74-8024bd2867be}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Vendor\Src\glad.c">
@@ -215,6 +218,12 @@
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\Lua\lzio.c">
       <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\LuaManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\GameLogic.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -421,6 +430,27 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Lua\lzio.h">
       <Filter>Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\Student.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Student.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Debug.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\LuaWrap.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\LuaManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Resources.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\GameLogic.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

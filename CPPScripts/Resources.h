@@ -33,6 +33,7 @@ namespace ZXEngine
 		~Resources() {};
 
 		static void SetAssetsPath(const char* path);
+		static const char* GetAssetsPath();
 		static string GetAssetFullPath(const char* path);
 		static SceneStruct* LoadScene(const char* path);
 		static PrefabStruct* LoadPrefab(const char* path);
