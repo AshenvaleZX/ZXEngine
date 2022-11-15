@@ -12,6 +12,10 @@
             "Type": "MeshRenderer",
             "Mesh": "Models/12190_Heart_v1_L3.obj",
             "Material": "Materials/NoLight.zxmat"
+        },
+        {
+            "Type": "GameLogic",
+            "Lua": "LogicTest"
         }
     ]
 }

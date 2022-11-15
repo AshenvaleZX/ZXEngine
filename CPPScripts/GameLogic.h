@@ -7,12 +7,17 @@ namespace ZXEngine
 	class GameLogic : public Component
 	{
 	public:
-		string lua;
+		int luaID = 0;
+		string luaName;
 
 		GameLogic();
 		~GameLogic();
 
+		void Start();
 		void Update();
+		void CallLuaFunction(const char* func);
 
+	private:
+		bool firstCall = true;
 	};
 }

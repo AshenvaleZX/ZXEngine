@@ -28,4 +28,9 @@ namespace ZXEngine
 	{
 		return mInstance;
 	}
+
+	lua_State* LuaManager::GetState()
+	{
+		return L;
+	}
 }

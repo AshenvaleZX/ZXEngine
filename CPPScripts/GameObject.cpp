@@ -63,7 +63,7 @@ namespace ZXEngine
 			else if (component["Type"] == "GameLogic")
 			{
 				GameLogic* gameLogic = AddComponent<GameLogic>("GameLogic");
-				gameLogic->lua = Resources::JsonStrToString(component["Lua"]);
+				gameLogic->luaName = Resources::JsonStrToString(component["Lua"]);
 			}
 		}
 	}

@@ -19,6 +19,8 @@ namespace ZXEngine
 		static void Create();
 		static LuaManager* GetInstance();
 
+		lua_State* GetState();
+
 	private:
 		static LuaManager* mInstance;
 		lua_State* L;
