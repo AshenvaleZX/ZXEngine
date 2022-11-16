@@ -18,6 +18,8 @@ namespace ZXEngine
 
 		static void Create();
 		static LuaManager* GetInstance();
+		static void PrintTable(lua_State* state, int tableIndex, const char* msg);
+		static void PrintLuaState(lua_State* state, const char* msg);
 
 		lua_State* GetState();
 
