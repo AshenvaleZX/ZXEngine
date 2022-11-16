@@ -230,11 +230,14 @@
     <ClInclude Include="..\..\CPPScripts\InputManager.h" />
     <ClInclude Include="..\..\CPPScripts\Light.h" />
     <ClInclude Include="..\..\CPPScripts\LuaManager.h" />
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\BitArray.h" />
     <ClInclude Include="..\..\CPPScripts\LuaWrap\LuaWrap.h" />
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_BitArray.h" />
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_GameLogic.h" />
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Time.h" />
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Transform.h" />
     <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Debug.h" />
     <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Resources.h" />
-    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Student.h" />
-    <ClInclude Include="..\..\CPPScripts\LuaWrap\Student.h" />
     <ClInclude Include="..\..\CPPScripts\Lua\lapi.h" />
     <ClInclude Include="..\..\CPPScripts\Lua\lauxlib.h" />
     <ClInclude Include="..\..\CPPScripts\Lua\lcode.h" />

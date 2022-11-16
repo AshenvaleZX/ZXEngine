@@ -434,12 +434,6 @@
     <ClInclude Include="..\..\CPPScripts\Lua\lzio.h">
       <Filter>Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\LuaWrap\Student.h">
-      <Filter>LuaWrap</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Student.h">
-      <Filter>LuaWrap</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Debug.h">
       <Filter>LuaWrap</Filter>
     </ClInclude>
@@ -457,6 +451,21 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\GameLogicManager.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\BitArray.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_BitArray.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Transform.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_GameLogic.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Time.h">
+      <Filter>LuaWrap</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,11 +1,17 @@
 #pragma once
 #include "Lua_Debug.h"
 #include "Lua_Resources.h"
+#include "Lua_Time.h"
+#include "Lua_GameLogic.h"
+#include "Lua_Transform.h"
 
 static const luaL_Reg myLibs[] = {
-  {"Debug", luaopen_Debug},
-  {"Resources", luaopen_Resources},
-  {NULL, NULL}
+    {"Debug", luaopen_Debug},
+    {"Resources", luaopen_Resources},
+    {"Time", luaopen_Time},
+    {"GameLogic", luaopen_GameLogic},
+    {"Transform", luaopen_Transform},
+    {NULL, NULL}
 };
 
 LUALIB_API void luaL_openMyLibs(lua_State* L) {
