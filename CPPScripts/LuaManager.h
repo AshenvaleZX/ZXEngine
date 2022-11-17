@@ -22,6 +22,8 @@ namespace ZXEngine
 		static void PrintLuaState(lua_State* state, const char* msg);
 
 		lua_State* GetState();
+		void CallFunction(const char* table, const char* func, const char* msg, bool self = true);
+		void CallGlobalFunction(const char* func, const char* msg);
 
 	private:
 		static LuaManager* mInstance;

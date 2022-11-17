@@ -87,6 +87,40 @@ namespace ZXEngine
 		}
 	}
 
+	void LuaManager::CallFunction(const char* table, const char* func, const char* msg, bool self)
+	{
+		// global table名入栈
+		lua_getglobal(L, table);
+		// 函数名入栈
+		lua_pushstring(L, func);
+		// 获取函数func
+		int type = lua_gettable(L, -2);
+		// 检查一下有没有这个函数
+		if (type != LUA_TFUNCTION)
+		{
+			Debug::LogWarning("Called invalid global function: " + (string)func);
+			return;
+		}
+		if (self)
+		{
+			// 把位于-2位置上的table复制一遍，重新入栈，作为调用func的self参数，对应lua那边的:调用
+			lua_pushvalue(L, -2);
+		}
+		// 参数入栈
+		lua_pushstring(L, msg);
+		// 调用函数func，1或2个参数，0返回值
+		if (lua_pcall(L, self?2:1, 0, 0) != LUA_OK)
+		{
+			// 调用失败打印日志
+			Debug::LogError(lua_tostring(L, -1));
+		}
+	}
+
+	void LuaManager::CallGlobalFunction(const char* func, const char* msg)
+	{
+		CallFunction(LUA_GNAME, func, msg, false);
+	}
+	
 	lua_State* LuaManager::GetState()
 	{
 		return L;
