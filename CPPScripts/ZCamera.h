@@ -4,17 +4,7 @@
 
 namespace ZXEngine
 {
-    // 相机移动方向
-    enum CameraMoveDir
-    {
-        FORWARD,
-        BACKWARD,
-        LEFT,
-        RIGHT
-    };
-
     // 一些相机参数的默认值
-    const float SPEED = 2.5f;
     const float SENSITIVITY = 0.1f;
     const float FOV = 45.0f;
 
@@ -22,7 +12,6 @@ namespace ZXEngine
 	{
 	public:
         // Camera options
-        float MovementSpeed;
         float MouseSensitivity;
         float Fov;
 
@@ -35,16 +24,9 @@ namespace ZXEngine
         mat4 GetProjectionMatrix();
         // 根据水平和竖直偏移量调整相机视角
         void RotateAngleOfView(float horizontalOffset, float verticalOffset, bool constrainPitch = true);
-        // 移动相机位置
-        void MoveCamera(CameraMoveDir direction);
 
         // 接收鼠标移动事件
         void MouseMoveCallBack(string args);
-        // 接收键盘按键事件
-        void MoveRightCallBack(string args);
-        void MoveLeftCallBack(string args);
-        void MoveDownCallBack(string args);
-        void MoveUpCallBack(string args);
 
 	private:
         // 处理镜头移动用的变量

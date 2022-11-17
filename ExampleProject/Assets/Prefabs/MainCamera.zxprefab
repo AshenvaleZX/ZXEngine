@@ -10,6 +10,10 @@
         },
         {
             "Type": "Camera"
+        },
+        {
+            "Type": "GameLogic",
+            "Lua": "CameraMove"
         }
     ]
 }

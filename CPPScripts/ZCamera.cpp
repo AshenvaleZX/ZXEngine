@@ -8,15 +8,11 @@ namespace ZXEngine
 {
 	vector<Camera*> Camera::allCameras;
 
-	Camera::Camera() : MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Fov(FOV)
+	Camera::Camera() : MouseSensitivity(SENSITIVITY), Fov(FOV)
 	{
 		allCameras.push_back(this);
 
 		EventManager::GetInstance()->AddEventHandler(EventType::UPDATE_MOUSE_POS, std::bind(&Camera::MouseMoveCallBack, this, std::placeholders::_1));
-		EventManager::GetInstance()->AddEventHandler(EventType::KEY_D_PRESS, std::bind(&Camera::MoveRightCallBack, this, std::placeholders::_1));
-		EventManager::GetInstance()->AddEventHandler(EventType::KEY_A_PRESS, std::bind(&Camera::MoveLeftCallBack, this, std::placeholders::_1));
-		EventManager::GetInstance()->AddEventHandler(EventType::KEY_S_PRESS, std::bind(&Camera::MoveDownCallBack, this, std::placeholders::_1));
-		EventManager::GetInstance()->AddEventHandler(EventType::KEY_W_PRESS, std::bind(&Camera::MoveUpCallBack, this, std::placeholders::_1));
 	}
 
 	Camera::~Camera()
@@ -77,19 +73,6 @@ namespace ZXEngine
 		GetTransform()->rotation.SetEulerAngles(eulerAngle.x, eulerAngle.y, eulerAngle.z);
 	}
 
-	void Camera::MoveCamera(CameraMoveDir direction)
-	{
-		float velocity = MovementSpeed * Time::deltaTime;
-		if (direction == CameraMoveDir::FORWARD)
-			GetTransform()->position += GetTransform()->GetForward() * velocity;
-		if (direction == CameraMoveDir::BACKWARD)
-			GetTransform()->position -= GetTransform()->GetForward() * velocity;
-		if (direction == CameraMoveDir::LEFT)
-			GetTransform()->position -= GetTransform()->GetRight() * velocity;
-		if (direction == CameraMoveDir::RIGHT)
-			GetTransform()->position += GetTransform()->GetRight() * velocity;
-	}
-
 	void Camera::MouseMoveCallBack(string args)
 	{
 		vector<string> argList = Utils::StringSplit(args, '|');
@@ -109,22 +92,5 @@ namespace ZXEngine
 		lastY = ypos;
 
 		RotateAngleOfView(xoffset, yoffset);
-	}
-
-	void Camera::MoveRightCallBack(string args)
-	{
-		MoveCamera(CameraMoveDir::RIGHT);
-	}
-	void Camera::MoveLeftCallBack(string args)
-	{
-		MoveCamera(CameraMoveDir::LEFT);
-	}
-	void Camera::MoveDownCallBack(string args)
-	{
-		MoveCamera(CameraMoveDir::BACKWARD);
-	}
-	void Camera::MoveUpCallBack(string args)
-	{
-		MoveCamera(CameraMoveDir::FORWARD);
 	}
 }
