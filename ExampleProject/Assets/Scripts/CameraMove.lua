@@ -1,9 +1,12 @@
 local CameraMove = NewGameLogic()
 
+CameraMove.firstMouse = true
+CameraMove.MouseSensitivity = 0.1
 CameraMove.MovementSpeed = 2.5
 
 function CameraMove:Start()
     self.trans = self.GameLogic:GetTransform()
+    EngineEvent:AddEventHandler(EngineEventType.UPDATE_MOUSE_POS, self.MouseMoveCallBack, self)
     EngineEvent:AddEventHandler(EngineEventType.KEY_W_PRESS, self.MoveForwardCallBack, self)
     EngineEvent:AddEventHandler(EngineEventType.KEY_S_PRESS, self.MoveBackCallBack, self)
     EngineEvent:AddEventHandler(EngineEventType.KEY_A_PRESS, self.MoveLeftCallBack, self)
@@ -12,6 +15,36 @@ end
 
 function CameraMove:Update()
 
+end
+
+function CameraMove:MouseMoveCallBack(args)
+    local argList = Utils:StringSplit(args, '|')
+    local xpos = tonumber(argList[1])
+    local ypos = tonumber(argList[2])
+    if self.firstMouse then
+        self.lastX = xpos
+        self.lastY = ypos
+        self.firstMouse = false
+    end
+
+    local xoffset = xpos - self.lastX
+    local yoffset = self.lastY - ypos
+
+    self.lastX = xpos
+    self.lastY = ypos
+
+    self:RotateAngleOfView(xoffset, yoffset)
+end
+
+function CameraMove:RotateAngleOfView(horizontalOffset, verticalOffset)
+    horizontalOffset = horizontalOffset * self.MouseSensitivity
+    verticalOffset = verticalOffset * self.MouseSensitivity
+
+    local eulerAngle = self.trans:GetEulerAngles()
+    eulerAngle.x = eulerAngle.x - verticalOffset
+    eulerAngle.x = Utils:Clamp(eulerAngle.x, -89, 89)
+    eulerAngle.y = eulerAngle.y + horizontalOffset
+    self.trans:SetEulerAngles(eulerAngle.x, eulerAngle.y, eulerAngle.z)
 end
 
 function CameraMove:MoveForwardCallBack()

@@ -1,3 +1,29 @@
+Utils = {}
+
+function Utils:StringSplit(oriStr, p)
+    if not oriStr or not p then
+        return {}
+    end
+	local nFindStartIndex = 1
+	local nSplitIndex = 1
+	local nSplitArray = {}
+	while true do
+		local nFindLastIndex = string.find(oriStr, p, nFindStartIndex)
+		if not nFindLastIndex then
+			nSplitArray[nSplitIndex] = string.sub(oriStr, nFindStartIndex, string.len(oriStr))
+			break
+		end
+		nSplitArray[nSplitIndex] = string.sub(oriStr, nFindStartIndex, nFindLastIndex - 1)
+		nFindStartIndex = nFindLastIndex + string.len(p)
+		nSplitIndex = nSplitIndex + 1
+	end
+	return nSplitArray
+end
+
+function Utils:Clamp(num, min, max)
+    return math.max(math.min(num, max), min)
+end
+
 local function GetKeyValueStr(v, depth)
     if type(v) == 'string' then
         return string.format('%q', v)

@@ -29,6 +29,21 @@ static int SetEulerAngles(lua_State* L)
 	return 0;
 }
 
+static int GetEulerAngles(lua_State* L)
+{
+	ZXEngine::Transform** data = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
+
+	lua_newtable(L);
+	lua_pushnumber(L, (*data)->rotation.GetEulerAngles().x);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, (*data)->rotation.GetEulerAngles().y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, (*data)->rotation.GetEulerAngles().z);
+	lua_setfield(L, -2, "z");
+
+	return 1;
+}
+
 static int GetPosition(lua_State* L)
 {
 	ZXEngine::Transform** data = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
@@ -96,6 +111,7 @@ static const luaL_Reg Transform_Funcs[] = {
 static const luaL_Reg Transform_Funcs_Meta[] = {
 	{"SetPosition", SetPosition},
 	{"SetEulerAngles", SetEulerAngles},
+	{"GetEulerAngles", GetEulerAngles},
 	{"GetPosition", GetPosition},
 	{"GetForward", GetForward},
 	{"GetRight", GetRight},

@@ -8,11 +8,9 @@ namespace ZXEngine
 {
 	vector<Camera*> Camera::allCameras;
 
-	Camera::Camera() : MouseSensitivity(SENSITIVITY), Fov(FOV)
+	Camera::Camera() : Fov(FOV)
 	{
 		allCameras.push_back(this);
-
-		EventManager::GetInstance()->AddEventHandler(EventType::UPDATE_MOUSE_POS, std::bind(&Camera::MouseMoveCallBack, this, std::placeholders::_1));
 	}
 
 	Camera::~Camera()
@@ -59,38 +57,5 @@ namespace ZXEngine
 	mat4 Camera::GetProjectionMatrix()
 	{
 		return perspective(radians(Fov), (float)RenderEngine::GetInstance()->scrWidth / (float)RenderEngine::GetInstance()->scrHeight, 0.1f, 100.0f);
-	}
-
-	void Camera::RotateAngleOfView(float horizontalOffset, float verticalOffset, bool constrainPitch)
-	{
-		horizontalOffset *= MouseSensitivity;
-		verticalOffset *= MouseSensitivity;
-
-		vec3 eulerAngle = GetTransform()->rotation.GetEulerAngles();
-		eulerAngle.x -= verticalOffset;
-		eulerAngle.x = Math::Clamp(eulerAngle.x, -89.f, 89.f);
-		eulerAngle.y += horizontalOffset;
-		GetTransform()->rotation.SetEulerAngles(eulerAngle.x, eulerAngle.y, eulerAngle.z);
-	}
-
-	void Camera::MouseMoveCallBack(string args)
-	{
-		vector<string> argList = Utils::StringSplit(args, '|');
-		double xpos = atof(argList[0].c_str());
-		double ypos = atof(argList[1].c_str());
-		if (firstMouse)
-		{
-			lastX = xpos;
-			lastY = ypos;
-			firstMouse = false;
-		}
-
-		float xoffset = xpos - lastX;
-		float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
-		lastX = xpos;
-		lastY = ypos;
-
-		RotateAngleOfView(xoffset, yoffset);
 	}
 }
