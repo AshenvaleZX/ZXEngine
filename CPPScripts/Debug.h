@@ -1,20 +1,18 @@
 #pragma once
+#include <string>
 
-class Debug
+namespace ZXEngine
 {
-public:
-	static void Log(string message)
+	class Debug
 	{
-		cout << "Log:     " << message << endl;
-	}
+	public:
+		static void Log(std::string message);
+		static void LogWarning(std::string message);
+		static void LogError(std::string message);
+		static void Update();
 
-	static void LogWarning(string message)
-	{
-		cout << "Warning: " << message << endl;
-	}
-
-	static void LogError(string message)
-	{
-		cout << "Error:   " << message << endl;
-	}
-};
+	private:
+		static int FPS;
+		static long long lastSecond;
+	};
+}

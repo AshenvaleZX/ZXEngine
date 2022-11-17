@@ -47,6 +47,8 @@ namespace ZXEngine
 		InputManager::GetInstance()->Update();
 
 		GameLogicManager::GetInstance()->Update();
+
+		Debug::Update();
 	}
 
 	void Game::Render()

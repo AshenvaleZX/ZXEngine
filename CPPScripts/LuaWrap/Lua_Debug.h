@@ -11,21 +11,21 @@ extern "C"
 static int Log(lua_State* L)
 {
 	const char* s = lua_tostring(L, -1);
-	Debug::Log(s);
+	ZXEngine::Debug::Log(s);
 	return 0;
 }
 
 static int LogWarning(lua_State* L)
 {
 	const char* s = lua_tostring(L, -1);
-	Debug::LogWarning(s);
+	ZXEngine::Debug::LogWarning(s);
 	return 0;
 }
 
 static int LogError(lua_State* L)
 {
 	const char* s = lua_tostring(L, -1);
-	Debug::LogError(s);
+	ZXEngine::Debug::LogError(s);
 	return 0;
 }
 

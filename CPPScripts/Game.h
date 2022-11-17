@@ -13,7 +13,7 @@ namespace ZXEngine
 
 		void Play();
 		void Update();
-;		void Render();
+		void Render();
 
 	private:
 	};

@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\CPPScripts\Component.cpp" />
     <ClCompile Include="..\..\CPPScripts\CubeMap.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Debug.cpp" />
     <ClCompile Include="..\..\CPPScripts\Entry.cpp" />
     <ClCompile Include="..\..\CPPScripts\EventManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\Game.cpp" />
