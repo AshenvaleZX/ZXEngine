@@ -1,4 +1,5 @@
 #include "EventManager.h"
+#include "LuaManager.h"
 
 namespace ZXEngine
 {
@@ -34,5 +35,6 @@ namespace ZXEngine
         {
             iter->second(args);
         }
+        LuaManager::GetInstance()->CallFunction("EngineEvent", "FireEvent", (to_string(id) + "," + args).c_str());
     }
 }

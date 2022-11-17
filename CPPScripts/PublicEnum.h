@@ -17,7 +17,8 @@ namespace ZXEngine
 
 	enum EventType
 	{
-		GAME_START = 0,
+		PLACE_HOLDER = 0, // 这里加一个占位符，因为Lua也有一份EventType需要和这里对齐，但是Lua下标是从1开始的
+		GAME_START,
 		UPDATE_MOUSE_POS,
 
 		KEY_0_PRESS,
