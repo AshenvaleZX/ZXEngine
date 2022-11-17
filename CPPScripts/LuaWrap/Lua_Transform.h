@@ -29,6 +29,66 @@ static int SetEulerAngles(lua_State* L)
 	return 0;
 }
 
+static int GetPosition(lua_State* L)
+{
+	ZXEngine::Transform** data = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
+
+	lua_newtable(L);
+	lua_pushnumber(L, (*data)->position.x);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, (*data)->position.y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, (*data)->position.z);
+	lua_setfield(L, -2, "z");
+
+	return 1;
+}
+
+static int GetForward(lua_State* L)
+{
+	ZXEngine::Transform** data = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
+
+	lua_newtable(L);
+	lua_pushnumber(L, (*data)->GetForward().x);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, (*data)->GetForward().y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, (*data)->GetForward().z);
+	lua_setfield(L, -2, "z");
+
+	return 1;
+}
+
+static int GetRight(lua_State* L)
+{
+	ZXEngine::Transform** data = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
+
+	lua_newtable(L);
+	lua_pushnumber(L, (*data)->GetRight().x);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, (*data)->GetRight().y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, (*data)->GetRight().z);
+	lua_setfield(L, -2, "z");
+
+	return 1;
+}
+
+static int GetUp(lua_State* L)
+{
+	ZXEngine::Transform** data = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
+
+	lua_newtable(L);
+	lua_pushnumber(L, (*data)->GetUp().x);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, (*data)->GetUp().y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, (*data)->GetUp().z);
+	lua_setfield(L, -2, "z");
+
+	return 1;
+}
+
 static const luaL_Reg Transform_Funcs[] = {
 	{NULL, NULL}
 };
@@ -36,6 +96,10 @@ static const luaL_Reg Transform_Funcs[] = {
 static const luaL_Reg Transform_Funcs_Meta[] = {
 	{"SetPosition", SetPosition},
 	{"SetEulerAngles", SetEulerAngles},
+	{"GetPosition", GetPosition},
+	{"GetForward", GetForward},
+	{"GetRight", GetRight},
+	{"GetUp", GetUp},
 	{NULL, NULL}
 };
 
