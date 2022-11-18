@@ -36,15 +36,15 @@ in VS_OUT {
     vec2 TexCoords;
 } fs_in;
 
-struct DirLight {
-    vec3 direction;
+struct PointLight {
+    vec3 position;
     vec3 color;
     float intensity;
 };
 
 uniform sampler2D texture1;
 uniform vec3 viewPos;
-uniform DirLight dirLight;
+uniform PointLight pointLight;
 
 void main()
 {           
@@ -52,7 +52,7 @@ void main()
     // ambient
     vec3 ambient = 0.05 * color;
     // diffuse
-    vec3 lightDir = normalize(dirLight.direction);
+    vec3 lightDir = normalize(pointLight.position - fs_in.WorldPos);
     vec3 normal = normalize(fs_in.Normal);
     float diff = max(dot(lightDir, normal), 0.0);
     vec3 diffuse = diff * color;
@@ -64,6 +64,5 @@ void main()
     vec3 specular = vec3(1) * spec; // assuming bright white light color
 
     FragColor = vec4(ambient + diffuse + specular, 1.0);
-    // FragColor = vec4(color, 1.0);
 }
 #fs_end
