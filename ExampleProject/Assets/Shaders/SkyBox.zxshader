@@ -1,5 +1,5 @@
 #vs_begin
-#version 330 core
+#version 460 core
 layout (location = 0) in vec3 aPos;
 
 out vec3 TexCoords;
@@ -18,7 +18,7 @@ void main()
 #gs_end
 
 #fs_begin
-#version 330 core
+#version 460 core
 out vec4 FragColor;
 
 in vec3 TexCoords;
