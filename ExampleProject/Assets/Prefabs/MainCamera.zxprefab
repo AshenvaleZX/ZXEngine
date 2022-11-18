@@ -9,7 +9,9 @@
             "Scale": [1, 1, 1]
         },
         {
-            "Type": "Camera"
+            "Type": "Camera",
+            "NearClipDis": 0.1,
+            "FarClipDis": 1000
         },
         {
             "Type": "GameLogic",

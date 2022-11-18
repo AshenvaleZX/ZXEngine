@@ -51,6 +51,8 @@ namespace ZXEngine
 			else if (component["Type"] == "Camera")
 			{
 				Camera* camera = AddComponent<Camera>("Camera");
+				camera->nearClipDis = component["NearClipDis"];
+				camera->farClipDis = component["FarClipDis"];
 			}
 			else if (component["Type"] == "Light")
 			{
