@@ -1,11 +1,11 @@
 {
     "Type": "Material",
-    "Shader": "Shaders/simpleTexture.zxshader",
+    "Shader": "Shaders/BlinnPhong_PointLight.zxshader",
     "Textures":
     [
         {
             "UniformName": "texture1",
-            "Path": "Textures/white.png"
+            "Path": "Textures/red.png"
         }
     ]
 }

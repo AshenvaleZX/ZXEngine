@@ -6,12 +6,12 @@
             "Type": "Transform",
             "Position": [0, 10, 0],
             "Rotation": [0, 0, 0],
-            "Scale": [1, 1, 1]
+            "Scale": [0.5, 0.5, 0.5]
         },
         {
             "Type": "MeshRenderer",
             "Mesh": "Models/12190_Heart_v1_L3.obj",
-            "Material": "Materials/NoLight.zxmat"
+            "Material": "Materials/BlinnPhong.zxmat"
         },
         {
             "Type": "GameLogic",

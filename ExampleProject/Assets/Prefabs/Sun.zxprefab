@@ -6,7 +6,12 @@
             "Type": "Transform",
             "Position": [0, 10, 0],
             "Rotation": [-45, -45, 0],
-            "Scale": [1, 1, 1]
+            "Scale": [3, 3, 3]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Mesh": "Models/ball.obj",
+            "Material": "Materials/NoLight.zxmat"
         },
         {
             "Type": "Light",
