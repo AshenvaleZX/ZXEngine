@@ -37,6 +37,14 @@ namespace ZXEngine
 				shader->SetVec3("dirLight.color", light->color);
 				shader->SetFloat("dirLight.intensity", light->intensity);
 			}
+			else if (shader->GetLightType() == LightType::Point)
+			{
+				Light* light = Light::GetAllLights()[0];
+				shader->SetVec3("viewPos", camera->GetTransform()->position);
+				shader->SetVec3("pointLight.position", light->GetTransform()->position);
+				shader->SetVec3("pointLight.color", light->color);
+				shader->SetFloat("pointLight.intensity", light->intensity);
+			}
 
 			for (auto mesh : renderer->meshes)
 			{
