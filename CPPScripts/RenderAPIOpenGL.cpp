@@ -4,6 +4,14 @@ namespace ZXEngine
 {
 	void RenderAPIOpenGL::InitRenderSetting()
 	{
+		// 获取当前OpenGL版本并输出
+		int majorVersion;
+		int minorVersion;
+		glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
+		glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
+		Debug::Log("Graphic API: OpenGL");
+		Debug::Log("Version: " + to_string(majorVersion) + "." + to_string(minorVersion));
+
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
