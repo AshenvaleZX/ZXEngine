@@ -13,6 +13,7 @@
     [
         "Prefabs/Cube.zxprefab",
         "Prefabs/MainCamera.zxprefab",
-        "Prefabs/Sun.zxprefab"
+        "Prefabs/Sun.zxprefab",
+        "Prefabs/Floor.zxprefab"
     ]
 }
