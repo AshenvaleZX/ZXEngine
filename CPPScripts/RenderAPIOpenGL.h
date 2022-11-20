@@ -12,12 +12,14 @@ namespace ZXEngine
 		// 渲染状态设置
 		virtual void InitRenderSetting();
 		virtual void EnableDepthWrite(bool enable);
+		virtual void SwitchFrameBuffer(unsigned int id);
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path);
 		virtual unsigned int LoadCubeMap(vector<string> faces);
 		virtual ShaderInfo LoadAndCompileShader(const char* path);
 		virtual void CheckCompileErrors(unsigned int shader, std::string type);
+		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
 
 		// DrawCall
 		virtual void Draw();

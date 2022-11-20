@@ -1,4 +1,5 @@
 #include "RenderAPIOpenGL.h"
+#include "GlobalData.h"
 
 namespace ZXEngine
 {
@@ -23,6 +24,11 @@ namespace ZXEngine
 			glDepthMask(GL_TRUE);
 		else
 			glDepthMask(GL_FALSE);
+	}
+
+	void RenderAPIOpenGL::SwitchFrameBuffer(unsigned int id)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, id);
 	}
 
 	unsigned int RenderAPIOpenGL::LoadTexture(const char* path)
@@ -206,6 +212,75 @@ namespace ZXEngine
 				Debug::LogError("ERROR::PROGRAM_LINKING_ERROR of type: " + type + "\n" + infoLog + "\n -- --------------------------------------------------- -- ");
 			}
 		}
+	}
+
+	FrameBufferObject* RenderAPIOpenGL::CreateFrameBufferObject(FrameBufferType type, unsigned int width, unsigned int height)
+	{
+		width = width == 0 ? 1 : GlobalData::srcWidth;
+		height = height == 0 ? 1 : GlobalData::srcHeight;
+		FrameBufferObject* FBO = new FrameBufferObject();
+		if (type == FrameBufferType::Normal)
+		{
+			unsigned int FBO_ID;
+			glGenFramebuffers(1, &FBO_ID);
+			// 创建ColorBuffer
+			unsigned int colorBuffer;
+			glGenTextures(1, &colorBuffer);
+			glBindTexture(GL_TEXTURE_2D, colorBuffer);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			// 创建DepthBuffer
+			// (用的Renderbuffer而不是Texture，Renderbuffer一般用于不读取，只写入或者复制的buffer，所以深度缓冲区更适合用Renderbuffer)
+			unsigned int depthBuffer;
+			glGenRenderbuffers(1, &depthBuffer);
+			glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+			// 把ColorBuffer和DepthBuffer绑定到FBO上
+			glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+				Debug::LogError("Framebuffer not complete!");
+			// 恢复默认状态
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			// 对FBO对象赋值
+			FBO->ID = FBO_ID;
+			FBO->ColorBuffer = colorBuffer;
+			FBO->DepthBuffer = depthBuffer;
+		}
+		else if (type == FrameBufferType::HigthPrecision)
+		{
+			unsigned int FBO_ID;
+			glGenFramebuffers(1, &FBO_ID);
+			// 创建高精度(浮点)ColorBuffer
+			unsigned int colorBuffer;
+			glGenTextures(1, &colorBuffer);
+			glBindTexture(GL_TEXTURE_2D, colorBuffer);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			// 创建DepthBuffer
+			// (用的Renderbuffer而不是Texture，Renderbuffer一般用于不读取，只写入或者复制的buffer，所以深度缓冲区更适合用Renderbuffer)
+			unsigned int depthBuffer;
+			glGenRenderbuffers(1, &depthBuffer);
+			glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+			// 把ColorBuffer和DepthBuffer绑定到FBO上
+			glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+				Debug::LogError("Framebuffer not complete!");
+			// 恢复默认状态
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			// 对FBO对象赋值
+			FBO->ID = FBO_ID;
+			FBO->ColorBuffer = colorBuffer;
+			FBO->DepthBuffer = depthBuffer;
+		}
+
+		return FBO;
 	}
 
 	void RenderAPIOpenGL::Draw()

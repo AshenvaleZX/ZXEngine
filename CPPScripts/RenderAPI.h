@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include "stb_image.h"
 #include "PublicStruct.h"
+#include "FrameBufferObject.h"
 
 namespace ZXEngine
 {
@@ -27,12 +28,14 @@ namespace ZXEngine
 		// 渲染状态设置
 		virtual void InitRenderSetting() = 0;
 		virtual void EnableDepthWrite(bool enable) = 0;
+		virtual void SwitchFrameBuffer(unsigned int id) = 0;
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path) = 0;
 		virtual unsigned int LoadCubeMap(vector<string> faces) = 0;
 		virtual ShaderInfo LoadAndCompileShader(const char* path) = 0;
-		virtual void CheckCompileErrors(unsigned int shader, std::string type) = 0;
+		virtual void CheckCompileErrors(unsigned int shader, string type) = 0;
+		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0) = 0;
 
 		// DrawCall
 		virtual void Draw() = 0;

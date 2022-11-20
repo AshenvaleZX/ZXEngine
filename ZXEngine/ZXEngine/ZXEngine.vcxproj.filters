@@ -231,6 +231,15 @@
     <ClCompile Include="..\..\CPPScripts\Debug.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\FBOManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\GlobalData.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\RenderPassAfterEffectRendering.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">
@@ -469,6 +478,18 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Time.h">
       <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\FBOManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\FrameBufferObject.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\GlobalData.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\RenderPassAfterEffectRendering.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

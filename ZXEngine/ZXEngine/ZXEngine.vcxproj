@@ -152,10 +152,12 @@
     <ClCompile Include="..\..\CPPScripts\Debug.cpp" />
     <ClCompile Include="..\..\CPPScripts\Entry.cpp" />
     <ClCompile Include="..\..\CPPScripts\EventManager.cpp" />
+    <ClCompile Include="..\..\CPPScripts\FBOManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\Game.cpp" />
     <ClCompile Include="..\..\CPPScripts\GameLogic.cpp" />
     <ClCompile Include="..\..\CPPScripts\GameLogicManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\GameObject.cpp" />
+    <ClCompile Include="..\..\CPPScripts\GlobalData.cpp" />
     <ClCompile Include="..\..\CPPScripts\InputManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\Light.cpp" />
     <ClCompile Include="..\..\CPPScripts\LuaManager.cpp" />
@@ -201,6 +203,7 @@
     <ClCompile Include="..\..\CPPScripts\RenderAPI.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPIOpenGL.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderEngine.cpp" />
+    <ClCompile Include="..\..\CPPScripts\RenderPassAfterEffectRendering.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderPassForwardRendering.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderPassManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderPassShadowGeneration.cpp" />
@@ -224,10 +227,13 @@
     <ClInclude Include="..\..\CPPScripts\CubeMap.h" />
     <ClInclude Include="..\..\CPPScripts\Debug.h" />
     <ClInclude Include="..\..\CPPScripts\EventManager.h" />
+    <ClInclude Include="..\..\CPPScripts\FBOManager.h" />
+    <ClInclude Include="..\..\CPPScripts\FrameBufferObject.h" />
     <ClInclude Include="..\..\CPPScripts\Game.h" />
     <ClInclude Include="..\..\CPPScripts\GameLogic.h" />
     <ClInclude Include="..\..\CPPScripts\GameLogicManager.h" />
     <ClInclude Include="..\..\CPPScripts\GameObject.h" />
+    <ClInclude Include="..\..\CPPScripts\GlobalData.h" />
     <ClInclude Include="..\..\CPPScripts\InputManager.h" />
     <ClInclude Include="..\..\CPPScripts\Light.h" />
     <ClInclude Include="..\..\CPPScripts\LuaManager.h" />
@@ -281,6 +287,7 @@
     <ClInclude Include="..\..\CPPScripts\RenderAPIOpenGL.h" />
     <ClInclude Include="..\..\CPPScripts\RenderEngine.h" />
     <ClInclude Include="..\..\CPPScripts\RenderPass.h" />
+    <ClInclude Include="..\..\CPPScripts\RenderPassAfterEffectRendering.h" />
     <ClInclude Include="..\..\CPPScripts\RenderPassForwardRendering.h" />
     <ClInclude Include="..\..\CPPScripts\RenderPassManager.h" />
     <ClInclude Include="..\..\CPPScripts\RenderPassShadowGeneration.h" />
