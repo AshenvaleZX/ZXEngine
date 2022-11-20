@@ -1,0 +1,31 @@
+#vs_begin
+#version 460 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec2 aTexCoords;
+
+out vec2 TexCoords;
+
+void main()
+{
+    TexCoords = aTexCoords;    
+    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
+}
+#vs_end
+
+#gs_begin
+#gs_end
+
+#fs_begin
+#version 460 core
+out vec4 FragColor;
+
+in vec2 TexCoords;
+
+uniform sampler2D _RenderTexture;
+
+void main()
+{
+    FragColor = texture(_RenderTexture, TexCoords);
+}
+#fs_end

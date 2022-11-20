@@ -1,6 +1,7 @@
 #include "RenderPassManager.h"
 #include "RenderPassForwardRendering.h"
 #include "RenderPassShadowGeneration.h"
+#include "RenderPassAfterEffectRendering.h"
 
 namespace ZXEngine
 {
@@ -8,6 +9,7 @@ namespace ZXEngine
 	{
 		passes.push_back(new RenderPassShadowGeneration());
 		passes.push_back(new RenderPassForwardRendering());
+		passes.push_back(new RenderPassAfterEffectRendering());
 	}
 
 	RenderPassManager* RenderPassManager::mInstance = nullptr;
