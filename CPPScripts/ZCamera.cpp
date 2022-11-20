@@ -3,6 +3,7 @@
 #include "EventManager.h"
 #include "Time.h"
 #include "Transform.h"
+#include "GlobalData.h"
 
 namespace ZXEngine
 {
@@ -56,6 +57,6 @@ namespace ZXEngine
 
 	mat4 Camera::GetProjectionMatrix()
 	{
-		return perspective(radians(Fov), (float)RenderEngine::GetInstance()->scrWidth / (float)RenderEngine::GetInstance()->scrHeight, nearClipDis, farClipDis);
+		return perspective(radians(Fov), (float)GlobalData::srcWidth / (float)GlobalData::srcHeight, nearClipDis, farClipDis);
 	}
 }

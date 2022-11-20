@@ -7,6 +7,7 @@
 #include "ZCamera.h"
 #include "RenderPassManager.h"
 #include "RenderPass.h"
+#include "GlobalData.h"
 
 namespace ZXEngine
 {
@@ -25,6 +26,8 @@ namespace ZXEngine
 	// glfw: whenever the window size changed (by OS or user resize) this callback function executes
 	void FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
 	{
+		GlobalData::srcWidth = width;
+		GlobalData::srcHeight = height;
 		// make sure the viewport matches the new window dimensions; note that width and
 		// height will be significantly larger than specified on retina displays.
 		glViewport(0, 0, width, height);
@@ -37,9 +40,9 @@ namespace ZXEngine
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		scrWidth = width;
-		scrHeight = height;
-		window = glfwCreateWindow(scrWidth, scrHeight, "ZXEngine", NULL, NULL);
+		GlobalData::srcWidth = width;
+		GlobalData::srcHeight = height;
+		window = glfwCreateWindow(width, height, "ZXEngine", NULL, NULL);
 		if (window == NULL)
 		{
 			Debug::LogError("Failed to create GLFW window");

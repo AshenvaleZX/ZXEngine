@@ -19,8 +19,6 @@ namespace ZXEngine
 
 		// ´°¿ÚÏà¹Ø
 		GLFWwindow* window;
-		unsigned int scrWidth;
-		unsigned int scrHeight;
 
 		void InitSkyBox();
 		void InitWindow(unsigned int width, unsigned int height);
