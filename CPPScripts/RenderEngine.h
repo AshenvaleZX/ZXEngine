@@ -29,13 +29,9 @@ namespace ZXEngine
 		void BeginRender();
 		void Render(Camera* camera);
 		void EndRender();
-		void RenderSkyBox();
 		
 	private:
 		static RenderEngine* mInstance;
-
-		Mesh* skyBox;
-		Shader* skyBoxShader;
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		void SwapBufferAndPollPollEvents();

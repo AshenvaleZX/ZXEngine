@@ -81,10 +81,7 @@ namespace ZXEngine
 
 	void RenderEngine::BeginRender()
 	{
-		// 渲染下一帧之前，先清理一下上一帧的Buffer
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		RenderSkyBox();
+		
 	}
 
 	void RenderEngine::Render(Camera* camera)
@@ -99,75 +96,5 @@ namespace ZXEngine
 	void RenderEngine::EndRender()
 	{
 		SwapBufferAndPollPollEvents();
-	}
-
-	void RenderEngine::InitSkyBox()
-	{
-		// 这里自己在代码里写一个Box模型，就不从硬盘加载了
-		vec3 points[8] = 
-		{
-			vec3(1, 1, 1),
-			vec3(1, 1, -1),
-			vec3(1, -1, 1),
-			vec3(1, -1, -1),
-			vec3(-1, 1, 1),
-			vec3(-1, 1, -1),
-			vec3(-1, -1, 1),
-			vec3(-1, -1, -1)
-		};
-		vector<Vertex> vertices;
-		vector<unsigned int> indices = 
-		{
-			// 前
-			1,5,7,
-			1,7,3,
-			// 右
-			0,1,3,
-			0,3,2,
-			// 后
-			6,4,0,
-			6,0,2,
-			// 左
-			4,7,5,
-			4,6,7,
-			// 上
-			0,5,1,
-			0,4,5,
-			// 下
-			2,3,7,
-			7,6,2
-		};
-		for (unsigned int i = 0; i < 8; i++)
-		{
-			Vertex vertex;
-			vertex.Position = points[i];
-			vertex.Normal = vec3(1);
-			vertex.Tangent = vec3(1);
-			vertex.Bitangent = vec3(1);
-			vertex.TexCoords = vec2(1);
-			vertices.push_back(vertex);
-		}
-		skyBoxShader = new Shader(Resources::GetAssetFullPath("Shaders/SkyBox.zxshader").c_str());
-		skyBox = new Mesh(vertices, indices);
-	}
-
-	void RenderEngine::RenderSkyBox()
-	{
-		Camera* camera = Camera::GetAllCameras()[0];
-
-		// 先转3x3再回4x4，把相机位移信息去除
-		mat4 mat_V = mat4(mat3(camera->GetViewMatrix()));
-		mat4 mat_P = camera->GetProjectionMatrix();
-
-		skyBoxShader->Use();
-		skyBoxShader->SetMat4("view", mat_V);
-		skyBoxShader->SetMat4("projection", mat_P);
-		skyBoxShader->SetCubeMap("skybox", SceneManager::GetInstance()->GetCurScene()->skyBox->GetID(), 0);
-
-		skyBox->Use();
-
-		RenderAPI::GetInstance()->EnableDepthWrite(false);
-		RenderAPI::GetInstance()->Draw();
-		RenderAPI::GetInstance()->EnableDepthWrite(true);
 	}
 }

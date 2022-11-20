@@ -19,7 +19,6 @@ namespace ZXEngine
 		EventManager::Create();
 		RenderQueueManager::Creat();
 		SceneManager::Create();
-		RenderPassManager::Create();
 		RenderEngine::Create();
 		RenderEngine::GetInstance()->InitWindow(1280, 720);
 		RenderAPI::Creat();
@@ -27,9 +26,9 @@ namespace ZXEngine
 		FBOManager::Create();
 		InputManager::Create();
 		Resources::SetAssetsPath("../../ExampleProject/Assets/");
+		RenderPassManager::Create();
 		LuaManager::Create();
 		GameLogicManager::Create();
-		RenderEngine::GetInstance()->InitSkyBox();
 		SceneManager::GetInstance()->SetCurScene("Scenes/MyWorld.zxscene");
 
 		while (!RenderEngine::GetInstance()->WindowShouldClose())
