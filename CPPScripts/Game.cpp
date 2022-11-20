@@ -10,6 +10,7 @@
 #include "RenderPassManager.h"
 #include "LuaManager.h"
 #include "GameLogicManager.h"
+#include "FBOManager.h"
 
 namespace ZXEngine
 {
@@ -23,6 +24,7 @@ namespace ZXEngine
 		RenderEngine::GetInstance()->InitWindow(1280, 720);
 		RenderAPI::Creat();
 		RenderAPI::GetInstance()->InitRenderSetting();
+		FBOManager::Create();
 		InputManager::Create();
 		Resources::SetAssetsPath("../../ExampleProject/Assets/");
 		LuaManager::Create();
