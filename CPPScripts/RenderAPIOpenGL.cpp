@@ -13,9 +13,16 @@ namespace ZXEngine
 		Debug::Log("Graphic API: OpenGL");
 		Debug::Log("Version: " + to_string(majorVersion) + "." + to_string(minorVersion));
 
-		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
+	void RenderAPIOpenGL::EnableDepthTest(bool enable)
+	{
+		if (enable)
+			glEnable(GL_DEPTH_TEST);
+		else
+			glDisable(GL_DEPTH_TEST);
 	}
 
 	void RenderAPIOpenGL::EnableDepthWrite(bool enable)
@@ -29,6 +36,11 @@ namespace ZXEngine
 	void RenderAPIOpenGL::SwitchFrameBuffer(unsigned int id)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, id);
+	}
+
+	void RenderAPIOpenGL::ClearFrameBuffer()
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	unsigned int RenderAPIOpenGL::LoadTexture(const char* path)
@@ -216,8 +228,8 @@ namespace ZXEngine
 
 	FrameBufferObject* RenderAPIOpenGL::CreateFrameBufferObject(FrameBufferType type, unsigned int width, unsigned int height)
 	{
-		width = width == 0 ? 1 : GlobalData::srcWidth;
-		height = height == 0 ? 1 : GlobalData::srcHeight;
+		width = width == 0 ? GlobalData::srcWidth : 1;
+		height = height == 0 ? GlobalData::srcHeight : 1;
 		FrameBufferObject* FBO = new FrameBufferObject();
 		if (type == FrameBufferType::Normal)
 		{

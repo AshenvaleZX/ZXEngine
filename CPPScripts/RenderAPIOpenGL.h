@@ -11,8 +11,10 @@ namespace ZXEngine
 
 		// 渲染状态设置
 		virtual void InitRenderSetting();
+		virtual void EnableDepthTest(bool enable);
 		virtual void EnableDepthWrite(bool enable);
 		virtual void SwitchFrameBuffer(unsigned int id);
+		virtual void ClearFrameBuffer();
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path);
