@@ -15,6 +15,7 @@ namespace ZXEngine
 		virtual void EnableDepthWrite(bool enable);
 		virtual void SwitchFrameBuffer(unsigned int id);
 		virtual void ClearFrameBuffer();
+		virtual void CheckError();
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path);

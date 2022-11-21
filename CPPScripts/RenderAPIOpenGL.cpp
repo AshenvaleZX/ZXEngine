@@ -43,6 +43,29 @@ namespace ZXEngine
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
+	void RenderAPIOpenGL::CheckError()
+	{
+		GLenum error = glGetError();
+		if (error == GL_NO_ERROR)
+			return;
+		else if (error == GL_INVALID_ENUM)
+			Debug::LogError("GL_INVALID_ENUM");
+		else if (error == GL_INVALID_VALUE)
+			Debug::LogError("GL_INVALID_VALUE");
+		else if (error == GL_INVALID_OPERATION)
+			Debug::LogError("GL_INVALID_OPERATION");
+		else if (error == GL_INVALID_FRAMEBUFFER_OPERATION)
+			Debug::LogError("GL_INVALID_FRAMEBUFFER_OPERATION");
+		else if (error == GL_OUT_OF_MEMORY)
+			Debug::LogError("GL_OUT_OF_MEMORY");
+		else if (error == GL_STACK_UNDERFLOW)
+			Debug::LogError("GL_STACK_UNDERFLOW");
+		else if (error == GL_STACK_OVERFLOW)
+			Debug::LogError("GL_STACK_OVERFLOW");
+		else
+			Debug::LogError("OTHER_ERROR");
+	}
+
 	unsigned int RenderAPIOpenGL::LoadTexture(const char* path)
 	{
 		unsigned int textureID;
