@@ -19,9 +19,9 @@ namespace ZXEngine
 		RenderAPI::GetInstance()->SwitchFrameBuffer(0);
 		// Todo: 其实这里可以不用每帧都设置，最开始设置一次就行
 		RenderAPI::GetInstance()->EnableDepthTest(false);
+		RenderAPI::GetInstance()->EnableDepthWrite(false);
 		// 清理上一帧数据
 		RenderAPI::GetInstance()->ClearFrameBuffer();
-		RenderAPI::GetInstance()->EnableDepthWrite(false);
 		aeShader->Use();
 		aeShader->SetTexture("_RenderTexture", FBOManager::GetInstance()->mainFBO->ColorBuffer, 0);
 		screenQuad->Use();
