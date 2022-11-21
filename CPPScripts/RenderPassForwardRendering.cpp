@@ -21,8 +21,10 @@ namespace ZXEngine
 	{
 		// 切换到主FBO
 		RenderAPI::GetInstance()->SwitchFrameBuffer(FBOManager::GetInstance()->mainFBO->ID);
-		// Todo: 其实这里可以不用每帧都设置，最开始设置一次就行
+		// 开启深度测试
 		RenderAPI::GetInstance()->EnableDepthTest(true);
+		// 妈的，深度写入的状态设置居然是跨FBO的，在渲染其它FBO时的设置也会影响这里，所以在Clear深度缓冲之前，为了确保没问题先开启一下深度写入，因为Clear深度缓冲需要在开启深度写入状态下执行
+		RenderAPI::GetInstance()->EnableDepthWrite(true);
 		// 清理上一帧数据
 		RenderAPI::GetInstance()->ClearFrameBuffer();
 
