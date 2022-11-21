@@ -15,6 +15,9 @@ namespace ZXEngine
 		virtual void EnableDepthWrite(bool enable);
 		virtual void SwitchFrameBuffer(unsigned int id);
 		virtual void ClearFrameBuffer();
+		virtual void ClearColorBuffer();
+		virtual void ClearDepthBuffer();
+		virtual void ClearStencilBuffer();
 		virtual void CheckError();
 
 		// 资源加载相关

@@ -40,7 +40,22 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::ClearFrameBuffer()
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	}
+
+	void RenderAPIOpenGL::ClearColorBuffer()
+	{
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
+
+	void RenderAPIOpenGL::ClearDepthBuffer()
+	{
+		glClear(GL_DEPTH_BUFFER_BIT);
+	}
+
+	void RenderAPIOpenGL::ClearStencilBuffer()
+	{
+		glClear(GL_STENCIL_BUFFER_BIT);
 	}
 
 	void RenderAPIOpenGL::CheckError()
