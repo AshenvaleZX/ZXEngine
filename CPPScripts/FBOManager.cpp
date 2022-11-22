@@ -10,6 +10,7 @@ namespace ZXEngine
 	{
 		mInstance = new FBOManager();
 		mInstance->mainFBO = RenderAPI::GetInstance()->CreateFrameBufferObject(FrameBufferType::Normal);
+		mInstance->shadowCubeMapFBO = RenderAPI::GetInstance()->CreateFrameBufferObject(FrameBufferType::ShadowCubeMap);
 	}
 
 	FBOManager* FBOManager::GetInstance()

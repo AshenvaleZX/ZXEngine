@@ -329,6 +329,66 @@ namespace ZXEngine
 			FBO->ColorBuffer = colorBuffer;
 			FBO->DepthBuffer = depthBuffer;
 		}
+		else if (type == FrameBufferType::ShadowMap)
+		{
+			unsigned int FBO_ID;
+			glGenFramebuffers(1, &FBO_ID);
+			// 创建深度Map
+			unsigned int depthMap;
+			glGenTextures(1, &depthMap);
+			glBindTexture(GL_TEXTURE_2D, depthMap);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+			float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+			glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+			// 把深度Map绑定到FBO
+			glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+			// 明确告诉OpenGL这个FBO不会渲染到Color Buffer
+			glDrawBuffer(GL_NONE);
+			glReadBuffer(GL_NONE);
+			// 恢复默认状态
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			// 对FBO对象赋值
+			FBO->ID = FBO_ID;
+			FBO->ColorBuffer = NULL;
+			FBO->DepthBuffer = depthMap;
+		}
+		else if (type == FrameBufferType::ShadowCubeMap)
+		{
+			unsigned int FBO_ID;
+			glGenFramebuffers(1, &FBO_ID);
+			// 创建深度CubeMap
+			unsigned int depthCubeMap;
+			glGenTextures(1, &depthCubeMap);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubeMap);
+			for (unsigned int i = 0; i < 6; ++i)
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+			// 把深度CubeMap绑定到FBO
+			glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubeMap, 0);
+			// 明确告诉OpenGL这个FBO不会渲染到Color Buffer
+			glDrawBuffer(GL_NONE);
+			glReadBuffer(GL_NONE);
+			// 恢复默认状态
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			// 对FBO对象赋值
+			FBO->ID = FBO_ID;
+			FBO->ColorBuffer = NULL;
+			FBO->DepthBuffer = depthCubeMap;
+		}
+		else
+		{
+			Debug::LogError("Invalide frame buffer type.");
+		}
 
 		return FBO;
 	}

@@ -19,6 +19,8 @@ namespace ZXEngine
 	{
 		Normal,
 		HigthPrecision,
+		ShadowMap,
+		ShadowCubeMap,
 	};
 
 	enum EventType

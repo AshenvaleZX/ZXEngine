@@ -8,6 +8,8 @@ namespace ZXEngine
 	{
 	public:
 		FrameBufferObject* mainFBO = nullptr;
+		FrameBufferObject* shadowMapFBO = nullptr;
+		FrameBufferObject* shadowCubeMapFBO = nullptr;
 
 		FBOManager() {};
 		~FBOManager() {};
