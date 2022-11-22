@@ -25,6 +25,9 @@ namespace ZXEngine
 		static void Creat();
 		static RenderAPI* GetInstance();
 
+		// ´°¿ÚÉèÖÃ
+		virtual void SetWindowSize(unsigned int width, unsigned int height) = 0;
+
 		// äÖÈ¾×´Ì¬ÉèÖÃ
 		virtual void InitRenderSetting() = 0;
 		virtual void EnableDepthTest(bool enable) = 0;
