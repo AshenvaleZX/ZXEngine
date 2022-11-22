@@ -17,12 +17,6 @@ namespace ZXEngine
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
-	void RenderAPIOpenGL::SetWindowSize(unsigned int width, unsigned int height)
-	{
-		// äÖÈ¾´°¿Ú·Ö±æÂÊ
-		glViewport(0, 0, width, height);
-	}
-
 	void RenderAPIOpenGL::EnableDepthTest(bool enable)
 	{
 		if (enable)
@@ -42,6 +36,11 @@ namespace ZXEngine
 	void RenderAPIOpenGL::SwitchFrameBuffer(unsigned int id)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, id);
+	}
+
+	void RenderAPIOpenGL::SetViewPortSize(unsigned int width, unsigned int height)
+	{
+		glViewport(0, 0, width, height);
 	}
 
 	void RenderAPIOpenGL::ClearFrameBuffer()

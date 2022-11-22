@@ -9,14 +9,12 @@ namespace ZXEngine
 		RenderAPIOpenGL() {};
 		~RenderAPIOpenGL() {};
 
-		// ¥∞ø⁄…Ë÷√
-		virtual void SetWindowSize(unsigned int width, unsigned int height);
-
 		// ‰÷»æ◊¥Ã¨…Ë÷√
 		virtual void InitRenderSetting();
 		virtual void EnableDepthTest(bool enable);
 		virtual void EnableDepthWrite(bool enable);
 		virtual void SwitchFrameBuffer(unsigned int id);
+		virtual void SetViewPortSize(unsigned int width, unsigned int height);
 		virtual void ClearFrameBuffer();
 		virtual void ClearColorBuffer();
 		virtual void ClearDepthBuffer();

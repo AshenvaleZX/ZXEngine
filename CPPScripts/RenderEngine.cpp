@@ -30,7 +30,7 @@ namespace ZXEngine
 		GlobalData::srcHeight = height;
 		// make sure the viewport matches the new window dimensions; note that width and
 		// height will be significantly larger than specified on retina displays.
-		RenderAPI::GetInstance()->SetWindowSize(width, height);
+		RenderAPI::GetInstance()->SetViewPortSize(width, height);
 	}
 
 	void RenderEngine::InitWindow(unsigned int width, unsigned int height)
