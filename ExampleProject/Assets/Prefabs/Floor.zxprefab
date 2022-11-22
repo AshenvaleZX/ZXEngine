@@ -11,7 +11,9 @@
         {
             "Type": "MeshRenderer",
             "Mesh": "Models/plane.FBX",
-            "Material": "Materials/Terrain.zxmat"
+            "Material": "Materials/Terrain.zxmat",
+            "CastShadow": false,
+            "ReceiveShadow": true
         }
     ]
 }

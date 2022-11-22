@@ -24,6 +24,9 @@ namespace ZXEngine
 				MeshRenderer* meshRenderer = AddComponent<MeshRenderer>("MeshRenderer");
 				string p = "";
 
+				meshRenderer->castShadow = component["CastShadow"];
+				meshRenderer->receiveShadow = component["ReceiveShadow"];
+
 				// ²ÄÖÊ
 				if (component["Material"].is_null())
 				{

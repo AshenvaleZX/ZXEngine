@@ -11,7 +11,9 @@
         {
             "Type": "MeshRenderer",
             "Mesh": "Models/ball.obj",
-            "Material": "Materials/NoLight.zxmat"
+            "Material": "Materials/NoLight.zxmat",
+            "CastShadow": false,
+            "ReceiveShadow": false
         },
         {
             "Type": "Light",

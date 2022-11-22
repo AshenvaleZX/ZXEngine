@@ -11,6 +11,8 @@ namespace ZXEngine
 	class MeshRenderer : public Component
 	{
 	public:
+		bool castShadow = false;
+		bool receiveShadow = false;
 		Material* matetrial = nullptr;
 		vector<Mesh*> meshes;
 
