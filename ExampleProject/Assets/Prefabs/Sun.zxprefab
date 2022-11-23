@@ -19,7 +19,7 @@
             "Type": "Light",
             "Color": [1, 1, 1],
             "Intensity": 1,
-            "LightType": 0
+            "LightType": 2
         }
     ]
 }
