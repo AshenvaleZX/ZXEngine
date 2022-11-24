@@ -95,6 +95,9 @@ namespace ZXEngine
 
 	void RenderEngine::EndRender()
 	{
+		// OpenGL异常不会主动抛出，每帧结束检测一下
+		RenderAPI::GetInstance()->CheckError();
+		// 交换前后缓冲区，poll事件
 		SwapBufferAndPollPollEvents();
 	}
 }
