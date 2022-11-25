@@ -14,9 +14,6 @@ namespace ZXEngine
 		virtual void Render(Camera* camera);
 
 	private:
-		const unsigned int DEPTH_CUBEMAP_WIDTH = 1024;
-		float nearPlane = 1.0f;
-		float farPlane = 100.0f;
 		mat4 shadowProj;
 		vector<mat4> shadowTransforms;
 		Shader* shadowCubeMapShader;

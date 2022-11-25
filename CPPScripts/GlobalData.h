@@ -7,5 +7,9 @@ namespace ZXEngine
 	public:
 		static unsigned int srcWidth;
 		static unsigned int srcHeight;
+
+		static float shadowCubeMapNearPlane;
+		static float shadowCubeMapFarPlane;
+		static unsigned int depthCubeMapWidth;
 	};
 }
