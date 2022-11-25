@@ -271,8 +271,8 @@ namespace ZXEngine
 
 	FrameBufferObject* RenderAPIOpenGL::CreateFrameBufferObject(FrameBufferType type, unsigned int width, unsigned int height)
 	{
-		width = width == 0 ? GlobalData::srcWidth : 1;
-		height = height == 0 ? GlobalData::srcHeight : 1;
+		width = width == 0 ? GlobalData::srcWidth : width;
+		height = height == 0 ? GlobalData::srcHeight : height;
 		FrameBufferObject* FBO = new FrameBufferObject();
 		if (type == FrameBufferType::Normal)
 		{

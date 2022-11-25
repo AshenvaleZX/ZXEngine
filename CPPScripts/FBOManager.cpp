@@ -1,6 +1,7 @@
 #include "FBOManager.h"
 #include "RenderAPI.h"
 #include "RenderEngine.h"
+#include "GlobalData.h"
 
 namespace ZXEngine
 {
@@ -10,7 +11,7 @@ namespace ZXEngine
 	{
 		mInstance = new FBOManager();
 		mInstance->mainFBO = RenderAPI::GetInstance()->CreateFrameBufferObject(FrameBufferType::Normal);
-		mInstance->shadowCubeMapFBO = RenderAPI::GetInstance()->CreateFrameBufferObject(FrameBufferType::ShadowCubeMap);
+		mInstance->shadowCubeMapFBO = RenderAPI::GetInstance()->CreateFrameBufferObject(FrameBufferType::ShadowCubeMap, GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
 	}
 
 	FBOManager* FBOManager::GetInstance()
