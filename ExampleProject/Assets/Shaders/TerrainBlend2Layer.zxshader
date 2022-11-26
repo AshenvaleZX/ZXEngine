@@ -73,6 +73,53 @@ uniform sampler2D _Control;
 uniform vec3 viewPos;
 uniform PointLight pointLight;
 
+// 阴影
+uniform samplerCube _DepthCubeMap;
+uniform float _FarPlane;
+
+// 做Soft Shadow的采样偏移
+vec3 gridSamplingDisk[20] = vec3[]
+(
+   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
+
+float ShadowCalculation(vec3 fragPos)
+{
+    // 光源到当前片元的方向(即采样ShadowCubeMap的方向)
+    vec3 fragToLight = fragPos - pointLight.position;
+    // 当前片元到光源的距离
+    float currentDepth = length(fragToLight);
+    // 阴影厚度
+    float shadow = 0.0;
+    // 为防止浮点数精度问题导致的Z-Fight问题增加的偏移量
+    float bias = 0.15;
+    // 采样次数
+    int samples = 20;
+    // 观察点到当前片元的距离
+    float viewDistance = length(viewPos - fragPos);
+    // 控制阴影柔和程度的参数，越小越柔和
+    float soft = 5.0;
+    // Soft Shadow采样半径，观察距离更远的时候阴影更柔和，更近了就更锐利
+    float diskRadius = (1.0 + (viewDistance / _FarPlane)) / soft;
+    for(int i = 0; i < samples; ++i)
+    {
+        // 在原方向上增加偏移量进行采样，得到当前片元到光源的方向上，离光源最近片元的距离
+        float closestDepth = texture(_DepthCubeMap, fragToLight + gridSamplingDisk[i] * diskRadius).r;
+        // 采样出来的值在0-1之间，还原到世界空间下的真实距离
+        closestDepth *= _FarPlane;
+        // 如果当前距离大于最近距离，说明被其它对象遮挡了光源，在阴影内，阴影厚度+1
+        if(currentDepth - bias > closestDepth)
+            shadow += 1.0;
+    }
+    // 阴影厚度映射到0-1之间
+    shadow /= float(samples);
+    return shadow;
+}
+
 void main()
 {
     // 对多层地表纹理采样，这里的纹理a通道代表高度
@@ -122,6 +169,15 @@ void main()
     // 沙子的部分不要镜反射
     specular *= blend.x;
 
-    FragColor = vec4(ambient + diffuse + specular, 1.0);
+    // 计算阴影
+    float shadow = ShadowCalculation(fs_in.WorldPos);
+    // 对漫反射的影响参数
+    float shadowD = 1.0 - shadow / 2;
+    // 对镜面反射的影响参数，这个值更小，因为被挡住了光源的直射，应该几乎没有镜面反射了
+    float shadowS = 1.0 - shadow;
+    // 计算添加了阴影后的光照颜色
+    vec3 lightColor = shadowD * diffuse + shadowS * specular;
+
+    FragColor = vec4(ambient + lightColor, 1.0);
 }
 #fs_end

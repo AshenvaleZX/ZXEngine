@@ -51,11 +51,13 @@ namespace ZXEngine
 			shader->SetMat4("view", mat_V);
 			shader->SetMat4("projection", mat_P);
 
-			for (unsigned int i = 0; i < material->textures.size(); i++)
+			unsigned int textureNum = material->textures.size();
+			for (unsigned int i = 0; i < textureNum; i++)
 			{
 				shader->SetTexture(material->textures[i].first, material->textures[i].second->GetID(), i);
 			}
 
+			// 光源
 			if (shader->GetLightType() == LightType::Directional)
 			{
 				Light* light = Light::GetAllLights()[0];
@@ -71,6 +73,22 @@ namespace ZXEngine
 				shader->SetVec3("pointLight.position", light->GetTransform()->position);
 				shader->SetVec3("pointLight.color", light->color);
 				shader->SetFloat("pointLight.intensity", light->intensity);
+			}
+
+			// 阴影
+			if (renderer->receiveShadow)
+			{
+				Light* light = Light::GetAllLights()[0];
+				if (light->type == LightType::Directional)
+				{
+
+				}
+				else if (light->type == LightType::Point)
+				{
+					// 之前已经把纹理编号设置到 textureNum - 1 了，所以这里是textureNum
+					shader->SetCubeMap("_DepthCubeMap", FBOManager::GetInstance()->shadowCubeMapFBO->DepthBuffer, textureNum);
+					shader->SetFloat("_FarPlane", GlobalData::shadowCubeMapFarPlane);
+				}
 			}
 
 			for (auto mesh : renderer->meshes)
