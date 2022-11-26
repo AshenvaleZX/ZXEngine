@@ -13,7 +13,8 @@ namespace ZXEngine
 {
 	RenderPassShadowGeneration::RenderPassShadowGeneration()
 	{
-		shadowProj = perspective(radians(90.0f), (float)GlobalData::depthCubeMapWidth / (float)GlobalData::depthCubeMapWidth, GlobalData::shadowCubeMapNearPlane, GlobalData::shadowCubeMapFarPlane);
+		// 这个是用在OpenGL的几何着色器里的，OpenGL是右手坐标系，所以这个得用基于右手坐标系的
+		shadowProj = Math::PerspectiveRH(radians(90.0f), (float)GlobalData::depthCubeMapWidth / (float)GlobalData::depthCubeMapWidth, GlobalData::shadowCubeMapNearPlane, GlobalData::shadowCubeMapFarPlane);
 		shadowCubeMapShader = new Shader(Resources::GetAssetFullPath("Shaders/PointShadowDepth.zxshader").c_str());
 	}
 	
@@ -51,7 +52,8 @@ namespace ZXEngine
 
 		// 基于左手坐标系构建6个方向上的VP矩阵
 		vec3 lightPos = light->GetTransform()->position;
-		// 如果是右手坐标系，里面的参数要颠倒一下
+		// 注意这里的shadowProj是基于右手坐标系构建的，因为OpenGL是基于右手坐标系的，这个是用在OpenGL的几何着色器里的
+		// 如果是基于左手坐标系构建shadowProj，这里怎么设置都不对
 		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3(-1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)));
 		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3( 1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)));
 		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3( 0.0f, -1.0f,  0.0f), vec3(0.0f,  0.0f,  1.0f)));

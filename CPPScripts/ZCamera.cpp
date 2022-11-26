@@ -36,6 +36,6 @@ namespace ZXEngine
 
 	mat4 Camera::GetProjectionMatrix()
 	{
-		return perspective(radians(Fov), (float)GlobalData::srcWidth / (float)GlobalData::srcHeight, nearClipDis, farClipDis);
+		return Math::Perspective(radians(Fov), (float)GlobalData::srcWidth / (float)GlobalData::srcHeight, nearClipDis, farClipDis);
 	}
 }

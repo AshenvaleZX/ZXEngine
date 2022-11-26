@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <cfloat>
+#include "glm/glm.hpp"
 
 namespace ZXEngine
 {
@@ -12,7 +13,9 @@ namespace ZXEngine
 		static float Rad2Deg(float radian);
 		// a和b是否基本相等
 		static bool Approximately(float a, float b, float eps = FLT_EPSILON);
-
+		static glm::mat4 Perspective(float fov, float aspect, float nearClip, float farClip);
+		static glm::mat4 PerspectiveLH(float fov, float aspect, float nearClip, float farClip);
+		static glm::mat4 PerspectiveRH(float fov, float aspect, float nearClip, float farClip);
 
 		template<class T>
 		static T Min(T num1, T num2);
