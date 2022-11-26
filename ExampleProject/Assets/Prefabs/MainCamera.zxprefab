@@ -4,8 +4,8 @@
     [
         {
             "Type": "Transform",
-            "Position": [0, 20, 40],
-            "Rotation": [30, 180, 0],
+            "Position": [0, 20, -40],
+            "Rotation": [30, 0, 0],
             "Scale": [1, 1, 1]
         },
         {

@@ -20,6 +20,10 @@
             "Color": [1, 1, 1],
             "Intensity": 1,
             "LightType": 2
+        },
+        {
+            "Type": "GameLogic",
+            "Lua": "ObjectMove2"
         }
     ]
 }

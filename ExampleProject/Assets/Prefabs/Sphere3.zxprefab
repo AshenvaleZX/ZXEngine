@@ -4,20 +4,16 @@
     [
         {
             "Type": "Transform",
-            "Position": [0, 10, 0],
+            "Position": [0, 0, 5],
             "Rotation": [0, 0, 0],
-            "Scale": [0.5, 0.5, 0.5]
+            "Scale": [3, 3, 3]
         },
         {
             "Type": "MeshRenderer",
-            "Mesh": "Models/12190_Heart_v1_L3.obj",
+            "Mesh": "Models/ball.obj",
             "Material": "Materials/BlinnPhong.zxmat",
             "CastShadow": true,
             "ReceiveShadow": false
-        },
-        {
-            "Type": "GameLogic",
-            "Lua": "ObjectMove"
         }
     ]
 }
