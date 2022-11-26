@@ -7,12 +7,13 @@
 #include "Resources.h"
 #include "RenderQueueManager.h"
 #include "MeshRenderer.h"
+#include "GlobalData.h"
 
 namespace ZXEngine
 {
 	RenderPassShadowGeneration::RenderPassShadowGeneration()
 	{
-		shadowProj = perspective(radians(90.0f), (float)DEPTH_CUBEMAP_WIDTH / (float)DEPTH_CUBEMAP_WIDTH, nearPlane, farPlane);
+		shadowProj = perspective(radians(90.0f), (float)GlobalData::depthCubeMapWidth / (float)GlobalData::depthCubeMapWidth, GlobalData::shadowCubeMapNearPlane, GlobalData::shadowCubeMapFarPlane);
 		shadowCubeMapShader = new Shader(Resources::GetAssetFullPath("Shaders/PointShadowDepth.zxshader").c_str());
 	}
 	
@@ -40,27 +41,33 @@ namespace ZXEngine
 	{
 		// 切换到shadow FBO
 		RenderAPI::GetInstance()->SwitchFrameBuffer(FBOManager::GetInstance()->shadowCubeMapFBO->ID);
-
-		// 构建6个方向上的VP矩阵
-		vec3 lightPos = light->GetTransform()->position;
-		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3( 1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)));
-		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3(-1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)));
-		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3( 0.0f,  1.0f,  0.0f), vec3(0.0f,  0.0f,  1.0f)));
-		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3( 0.0f, -1.0f,  0.0f), vec3(0.0f,  0.0f, -1.0f)));
-		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3( 0.0f,  0.0f,  1.0f), vec3(0.0f, -1.0f,  0.0f)));
-		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3( 0.0f,  0.0f, -1.0f), vec3(0.0f, -1.0f,  0.0f)));
-
 		// ViewPort改成渲染CubeMap的正方形
-		RenderAPI::GetInstance()->SetViewPortSize(DEPTH_CUBEMAP_WIDTH, DEPTH_CUBEMAP_WIDTH);
+		RenderAPI::GetInstance()->SetViewPortSize(GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
+		// 开启深度测试和写入
+		RenderAPI::GetInstance()->EnableDepthTest(true);
+		RenderAPI::GetInstance()->EnableDepthWrite(true);
 		// 清理上一帧数据
 		RenderAPI::GetInstance()->ClearDepthBuffer();
+
+		// 基于左手坐标系构建6个方向上的VP矩阵
+		vec3 lightPos = light->GetTransform()->position;
+		// 如果是右手坐标系，里面的参数要颠倒一下
+		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3(-1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)));
+		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3( 1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)));
+		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3( 0.0f, -1.0f,  0.0f), vec3(0.0f,  0.0f,  1.0f)));
+		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3( 0.0f,  1.0f,  0.0f), vec3(0.0f,  0.0f, -1.0f)));
+		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3( 0.0f,  0.0f, -1.0f), vec3(0.0f, -1.0f,  0.0f)));
+		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3( 0.0f,  0.0f,  1.0f), vec3(0.0f, -1.0f,  0.0f)));
 
 		// 设置shader
 		shadowCubeMapShader->Use();
 		for (unsigned int i = 0; i < 6; ++i)
 			shadowCubeMapShader->SetMat4("_ShadowMatrices[" + to_string(i) + "]", shadowTransforms[i]);
-		shadowCubeMapShader->SetFloat("_FarPlane", farPlane);
+		shadowCubeMapShader->SetFloat("_FarPlane", GlobalData::shadowCubeMapFarPlane);
 		shadowCubeMapShader->SetVec3("_LightPos", lightPos);
+
+		// 用完立刻清除，下一帧还会生成
+		shadowTransforms.clear();
 
 		// 渲染投射阴影的物体
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue(RenderQueueType::Qpaque);
