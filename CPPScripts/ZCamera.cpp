@@ -25,13 +25,13 @@ namespace ZXEngine
 		return allCameras;
 	}
 	
-	// Returns the view matrix calculated using Euler Angles and the LookAt Matrix
 	mat4 Camera::GetViewMatrix()
 	{
-		vec3 pos = GetTransform()->position;
-		vec3 forward = GetTransform()->GetForward();
-		vec3 up = GetTransform()->GetUp();
-		return Utils::GetLookToMatrix(pos, forward, up);
+		// Model矩阵是把顶点从模型空间转到世界空间，而相机的View矩阵，其实就是把场景中所有顶点从世界空间转到相机自己的模型空间
+		// 所以这里直接返回Model矩阵的逆矩阵即可
+		// 这里用glm::lookAt或者Utils::GetLookToMatrix也是一样的
+		mat4 model = GetTransform()->GetModelMatrix();
+		return inverse(model);
 	}
 
 	mat4 Camera::GetProjectionMatrix()
