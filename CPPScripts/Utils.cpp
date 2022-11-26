@@ -47,13 +47,14 @@ namespace ZXEngine
         // 由于GLM里是以列为主序的，平时书面上的矩阵都是以行为主序的，所以这里看起来像是转置过了一样，其实这个viewMat看起来应该是这样的：
         //  Right.x,  Right.y,  Right.z, 0,
         //  Up.x,     Up.y,     Up.z,    0,
-        // -Front.x, -Front.y, -Front.z, 0,
+        //  Front.x,  Front.y,  Front.z, 0,
         //  0,        0,        0,       1
         // 后面的posMat同理
+        // 基于左手坐标系构建View矩阵这里的forward应该是正的，右手坐标系是负的
         glm::mat4 viewMat = glm::mat4(
-            right.x, up.x, -forward.x, 0,
-            right.y, up.y, -forward.y, 0,
-            right.z, up.z, -forward.z, 0,
+            right.x, up.x, forward.x, 0,
+            right.y, up.y, forward.y, 0,
+            right.z, up.z, forward.z, 0,
             0, 0, 0, 1);
         glm::mat4 posMat = glm::mat4(
             1, 0, 0, 0,
