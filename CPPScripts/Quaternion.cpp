@@ -134,39 +134,20 @@ namespace ZXEngine
 
 	mat4 Quaternion::ToMatrix()
 	{
-		float wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2;
-
-		x2 = this->x + this->x;
-		y2 = this->y + this->y;
-		z2 = this->z + this->z;
-
-		xx = this->x * x2;
-		xy = this->x * y2;
-		xz = this->x * z2;
-
-		yy = this->y * y2;
-		yz = this->y * z2;
-
-		zz = this->z * z2;
-
-		wx = this->w * x2;
-		wy = this->w * y2;
-		wz = this->w * z2;
-
 		// 第一行
-		float m00 = 1.0f - (yy + zz);
-		float m01 = xy - wz;
-		float m02 = xz + wy;
+		float m00 = 1 - (2 * y * y) - (2 * z * z);
+		float m01 = (2 * x * y) - (2 * w * z);
+		float m02 = (2 * x * z) + (2 * w * y);
 
 		// 第二行
-		float m10 = xy + wz;
-		float m11 = 1.0f - (xx + zz);
-		float m12 = yz - wx;
+		float m10 = (2 * x * y) + (2 * w * z);
+		float m11 = 1 - (2 * x * x) - (2 * z * z);
+		float m12 = (2 * y * z) - (2 * w * x);
 
 		// 第三行
-		float m20 = xz - wy;
-		float m21 = yz + wx;
-		float m22 = 1.0f - (xx + yy);
+		float m20 = (2 * x * z) - (2 * w * y);
+		float m21 = (2 * y * z) + (2 * w * x);
+		float m22 = 1 - (2 * x * x) - (2 * y * y);
 
 		// 构建GLM矩阵的时候，行列是反的
 		return mat4(
