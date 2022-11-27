@@ -6,11 +6,11 @@
             "Type": "Transform",
             "Position": [0, 10, 0],
             "Rotation": [-45, -45, 0],
-            "Scale": [3, 3, 3]
+            "Scale": [1, 1, 1]
         },
         {
             "Type": "MeshRenderer",
-            "Mesh": "Models/ball.obj",
+            "Mesh": "Models/sphere.obj",
             "Material": "Materials/NoLight.zxmat",
             "CastShadow": false,
             "ReceiveShadow": false

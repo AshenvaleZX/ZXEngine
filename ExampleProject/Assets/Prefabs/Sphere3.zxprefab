@@ -6,11 +6,11 @@
             "Type": "Transform",
             "Position": [0, 0, 5],
             "Rotation": [0, 0, 0],
-            "Scale": [3, 3, 3]
+            "Scale": [1, 1, 1]
         },
         {
             "Type": "MeshRenderer",
-            "Mesh": "Models/ball.obj",
+            "Mesh": "Models/sphere.obj",
             "Material": "Materials/BlinnPhong.zxmat",
             "CastShadow": true,
             "ReceiveShadow": false
