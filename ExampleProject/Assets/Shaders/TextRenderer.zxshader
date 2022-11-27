@@ -1,0 +1,31 @@
+#vs_begin
+#version 460 core
+layout (location = 0) in vec4 vertex; // <vec2 pos, vec2 tex>
+out vec2 TexCoords;
+
+uniform mat4 projection;
+
+void main()
+{
+    gl_Position = projection * vec4(vertex.xy, 0.0, 1.0);
+    TexCoords = vertex.zw;
+}
+#vs_end
+
+#gs_begin
+#gs_end
+
+#fs_begin
+#version 460 core
+in vec2 TexCoords;
+out vec4 color;
+
+uniform sampler2D _Text;
+uniform vec3 _TextColor;
+
+void main()
+{    
+    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(_Text, TexCoords).r);
+    color = vec4(_TextColor, 1.0) * sampled;
+}
+#fs_end

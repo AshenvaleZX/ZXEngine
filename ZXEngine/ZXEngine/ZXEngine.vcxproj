@@ -97,7 +97,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>assimp-vc142-mt.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mt.lib;opengl32.lib;glfw3.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -207,11 +207,14 @@
     <ClCompile Include="..\..\CPPScripts\RenderPassForwardRendering.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderPassManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderPassShadowGeneration.cpp" />
+    <ClCompile Include="..\..\CPPScripts\RenderPassUIRendering.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderQueueManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderQueue.cpp" />
     <ClCompile Include="..\..\CPPScripts\Resources.cpp" />
     <ClCompile Include="..\..\CPPScripts\Scene.cpp" />
     <ClCompile Include="..\..\CPPScripts\SceneManager.cpp" />
+    <ClCompile Include="..\..\CPPScripts\TextCharactersManager.cpp" />
+    <ClCompile Include="..\..\CPPScripts\TextRenderer.cpp" />
     <ClCompile Include="..\..\CPPScripts\Texture.cpp" />
     <ClCompile Include="..\..\CPPScripts\Time.cpp" />
     <ClCompile Include="..\..\CPPScripts\Transform.cpp" />
@@ -291,6 +294,7 @@
     <ClInclude Include="..\..\CPPScripts\RenderPassForwardRendering.h" />
     <ClInclude Include="..\..\CPPScripts\RenderPassManager.h" />
     <ClInclude Include="..\..\CPPScripts\RenderPassShadowGeneration.h" />
+    <ClInclude Include="..\..\CPPScripts\RenderPassUIRendering.h" />
     <ClInclude Include="..\..\CPPScripts\RenderQueue.h" />
     <ClInclude Include="..\..\CPPScripts\RenderQueueManager.h" />
     <ClInclude Include="..\..\CPPScripts\Resources.h" />
@@ -298,6 +302,8 @@
     <ClInclude Include="..\..\CPPScripts\SceneManager.h" />
     <ClInclude Include="..\..\CPPScripts\Shader.h" />
     <ClInclude Include="..\..\CPPScripts\stb_image.h" />
+    <ClInclude Include="..\..\CPPScripts\TextCharactersManager.h" />
+    <ClInclude Include="..\..\CPPScripts\TextRenderer.h" />
     <ClInclude Include="..\..\CPPScripts\Texture.h" />
     <ClInclude Include="..\..\CPPScripts\Time.h" />
     <ClInclude Include="..\..\CPPScripts\Transform.h" />
