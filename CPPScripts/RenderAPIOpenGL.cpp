@@ -154,6 +154,30 @@ namespace ZXEngine
 		return textureID;
 	}
 
+	unsigned int RenderAPIOpenGL::GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data)
+	{
+		// 通过字形生成的位图是一个8位灰度图，它的每一个颜色都由一个字节来表示。因此我们需要将位图缓冲的每一字节都作为纹理的颜色值。
+		// 这个纹理的每一字节都对应着纹理颜色的红色分量(颜色向量的第一个字节)，即我们使用一个字节来表示纹理的颜色。
+		// 但是OpenGL默认所有的纹理都是4字节对齐的，即纹理的大小永远是4字节的倍数，因为大部分纹理的宽度都为4的倍数并/或每像素使用4个字节。
+		// 但是现在我们每个像素只用了一个字节，它可以是任意的宽度，所以需要将纹理解压对齐参数设为1，这样才能确保不会有对齐问题。
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+		// 配置纹理
+		unsigned int textureID;
+		glGenTextures(1, &textureID);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		// 还原默认设置
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
+		return textureID;
+	}
+
 	ShaderInfo RenderAPIOpenGL::LoadAndCompileShader(const char* path)
 	{
 		ShaderInfo info{};

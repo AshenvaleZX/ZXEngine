@@ -40,6 +40,7 @@ namespace ZXEngine
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path) = 0;
 		virtual unsigned int LoadCubeMap(vector<string> faces) = 0;
+		virtual unsigned int GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data) = 0;
 		virtual ShaderInfo LoadAndCompileShader(const char* path) = 0;
 		virtual void CheckCompileErrors(unsigned int shader, string type) = 0;
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0) = 0;
