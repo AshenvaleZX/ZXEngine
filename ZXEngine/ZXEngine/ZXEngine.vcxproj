@@ -150,6 +150,7 @@
     <ClCompile Include="..\..\CPPScripts\Component.cpp" />
     <ClCompile Include="..\..\CPPScripts\CubeMap.cpp" />
     <ClCompile Include="..\..\CPPScripts\Debug.cpp" />
+    <ClCompile Include="..\..\CPPScripts\DynamicMesh.cpp" />
     <ClCompile Include="..\..\CPPScripts\Entry.cpp" />
     <ClCompile Include="..\..\CPPScripts\EventManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\FBOManager.cpp" />
@@ -229,6 +230,7 @@
     <ClInclude Include="..\..\CPPScripts\Component.h" />
     <ClInclude Include="..\..\CPPScripts\CubeMap.h" />
     <ClInclude Include="..\..\CPPScripts\Debug.h" />
+    <ClInclude Include="..\..\CPPScripts\DynamicMesh.h" />
     <ClInclude Include="..\..\CPPScripts\EventManager.h" />
     <ClInclude Include="..\..\CPPScripts\FBOManager.h" />
     <ClInclude Include="..\..\CPPScripts\FrameBufferObject.h" />
