@@ -43,6 +43,8 @@ namespace ZXEngine
 		// Mesh…Ë÷√
 		virtual void SetMesh(unsigned int VAO, unsigned int size) = 0;
 		virtual void SetUpMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, vector<Vertex> vertices, vector<unsigned int> indices) = 0;
+		virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, unsigned int vertexSize, unsigned int indexSize) = 0;
+		virtual void UpdateDynamicMesh(unsigned int VAO, unsigned int VBO, unsigned int EBO, vector<Vertex> vertices, vector<unsigned int> indices) = 0;
 
 		// Shader…Ë÷√
 		virtual void UseShader(unsigned int ID) = 0;
