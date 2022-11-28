@@ -1,16 +1,18 @@
 #pragma once
 #include "pubh.h"
+#include "PublicStruct.h"
 
 namespace ZXEngine
 {
 	struct Character {
-		unsigned int TextureID;	// ID handle of the glyph texture
+		unsigned int TextureID;	// 字形纹理ID
 		ivec2 Size;				// Size of glyph
 		ivec2 Bearing;			// Offset from baseline to left/top of glyph
 		unsigned int Advance;	// Horizontal offset to advance to next glyph
 	};
 
 	class Shader;
+	class DynamicMesh;
 	class TextCharactersManager
 	{
 	public:
@@ -20,10 +22,30 @@ namespace ZXEngine
 		TextCharactersManager();
 		~TextCharactersManager() {};
 
-		Shader* textShader = nullptr;
 		map<char, Character> Characters;
+
+		void BeginRender();
+		// 设置字符颜色
+		void SetColor(vec3 color);
+		// 设置字符的字形(glyph)纹理
+		void SetTexture(unsigned int ID);
+		// 更新字符Mesh数据
+		void UpdateCharacterMesh(vector<Vertex> vertices, vector<unsigned int> indices);
+		void DrawCharacter();
+
+		// 渲染一个字符用的
+		// Vertex Arrays Objects
+		unsigned int VAO;
+		// Vertex Buffer Objects
+		unsigned int VBO;
+		// Element Buffer Objects
+		unsigned int EBO;
 
 	private:
 		static TextCharactersManager* mInstance;
+		Shader* textShader = nullptr;
+		DynamicMesh* characterMesh = nullptr;
+
+		void LoadCharacters();
 	};
 }

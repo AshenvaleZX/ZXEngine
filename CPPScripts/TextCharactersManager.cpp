@@ -1,6 +1,7 @@
 #include "TextCharactersManager.h"
 #include "Resources.h"
 #include "ZShader.h"
+#include "DynamicMesh.h"
 #include "GlobalData.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -21,11 +22,21 @@ namespace ZXEngine
 
 	TextCharactersManager::TextCharactersManager()
 	{
+        // 新建渲染字符的动态Mesh，一个矩形Mesh即可，4个顶点，2个三角形
+        characterMesh = new DynamicMesh(4, 6);
+
+        // 初始化字符渲染Shader
         mat4 mat_P = glm::ortho(0.0f, (float)GlobalData::srcWidth, 0.0f, (float)GlobalData::srcHeight);
         textShader = new Shader(Resources::GetAssetFullPath("Shaders/TextRenderer.zxshader").c_str());
         textShader->Use();
         textShader->SetMat4("projection", mat_P);
 
+        // 加载字符
+        LoadCharacters();
+	}
+
+    void TextCharactersManager::LoadCharacters()
+    {
         // FreeType
         // --------
         FT_Library ft;
@@ -79,5 +90,31 @@ namespace ZXEngine
         // destroy FreeType once we're finished
         FT_Done_Face(face);
         FT_Done_FreeType(ft);
-	}
+    }
+
+    void TextCharactersManager::BeginRender()
+    {
+        textShader->Use();
+    }
+
+    void TextCharactersManager::SetColor(vec3 color)
+    {
+        textShader->SetVec3("_TextColor", color);
+    }
+
+    void TextCharactersManager::SetTexture(unsigned int ID)
+    {
+        textShader->SetTexture("_Text", ID, 0);
+    }
+
+    void TextCharactersManager::UpdateCharacterMesh(vector<Vertex> vertices, vector<unsigned int> indices)
+    {
+        characterMesh->UpdateData(vertices, indices);
+    }
+
+    void TextCharactersManager::DrawCharacter()
+    {
+        characterMesh->Use();
+        RenderAPI::GetInstance()->Draw();
+    }
 }
