@@ -9,6 +9,8 @@ namespace ZXEngine
 {
 	GameObject::GameObject(PrefabStruct* prefab)
 	{
+		layer = prefab->layer;
+
 		for (auto component : prefab->components)
 		{
 			if (component["Type"] == "Transform")

@@ -8,6 +8,8 @@ namespace ZXEngine
 	class GameObject
 	{
 	public:
+		unsigned int layer;
+
 		GameObject(PrefabStruct* prefab);
 		~GameObject() {};
 

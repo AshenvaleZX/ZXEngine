@@ -73,6 +73,11 @@ namespace ZXEngine
 		json data = Resources::GetAssetData(path);
 		PrefabStruct* prefab = new PrefabStruct;
 
+		if (data["Layer"].is_null())
+			prefab->layer = GameObjectLayer::Default;
+		else
+			prefab->layer = data["Layer"];
+
 		for (unsigned int i = 0; i < data["Components"].size(); i++)
 		{
 			json component = data["Components"][i];

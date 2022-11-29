@@ -17,6 +17,7 @@ namespace ZXEngine
 
 	struct PrefabStruct
 	{
+		unsigned int layer;
 		list<json> components;
 	};
 
