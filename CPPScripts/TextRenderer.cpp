@@ -2,15 +2,14 @@
 #include "ZShader.h"
 #include "TextCharactersManager.h"
 #include "DynamicMesh.h"
+#include "Transform.h"
 
 namespace ZXEngine
 {
     TextRenderer::TextRenderer()
     {
         text = "";
-        pos = vec2(0, 0);
-        scale = 1;
-        color = vec3(1, 1, 1);
+        color = vec4(1, 1, 1, 1);
     }
 
     void TextRenderer::Render()
@@ -18,8 +17,9 @@ namespace ZXEngine
         TextCharactersManager::GetInstance()->BeginRender();
         TextCharactersManager::GetInstance()->SetColor(color);
 
-        float tmpX = pos.x;
-        float tmpY = pos.y;
+        float tmpX = this->GetTransform()->position.x;
+        float tmpY = this->GetTransform()->position.y;
+        float scale = this->GetTransform()->scale.x;
         // 遍历字符串的每个字符
         string::const_iterator c;
         for (c = text.begin(); c != text.end(); c++)

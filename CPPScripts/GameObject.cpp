@@ -4,6 +4,7 @@
 #include "ZCamera.h"
 #include "Light.h"
 #include "GameLogic.h"
+#include "TextRenderer.h"
 
 namespace ZXEngine
 {
@@ -71,6 +72,12 @@ namespace ZXEngine
 			{
 				GameLogic* gameLogic = AddComponent<GameLogic>("GameLogic");
 				gameLogic->luaName = Resources::JsonStrToString(component["Lua"]);
+			}
+			else if (component["Type"] == "TextRenderer")
+			{
+				TextRenderer* textRenderer = AddComponent<TextRenderer>("TextRenderer");
+				textRenderer->text = component["Text"];
+				textRenderer->color = vec4(component["Color"][0], component["Color"][1], component["Color"][2], component["Color"][3]);
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 #pragma once
 #include "pubh.h"
+#include "Component.h"
 
 namespace ZXEngine
 {
@@ -12,17 +13,13 @@ namespace ZXEngine
 		1, 2, 3,
 	};
 
-	class TextRenderer
+	class TextRenderer : public Component
 	{
 	public:
 		// 当前渲染的文本
 		string text;
-		// 字符串位置
-		vec2 pos;
-		// 字符大小
-		float scale;
 		// 字符颜色
-		vec3 color;
+		vec4 color;
 
 		TextRenderer();
 		~TextRenderer() {};
