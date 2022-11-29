@@ -26,10 +26,18 @@ namespace ZXEngine
 			for (unsigned j = 0; j < gameObjects.size(); ++j)
 			{
 				auto gameObject = gameObjects[j];
-				MeshRenderer* meshRenderer = gameObject->GetComponent<MeshRenderer>("MeshRenderer");
-				if (meshRenderer != nullptr)
+
+				if (gameObject->layer == GameObjectLayer::UI)
 				{
-					RenderQueueManager::GetInstance()->AddRenderer(gameObject->GetComponent<MeshRenderer>("MeshRenderer"));
+					RenderQueueManager::GetInstance()->AddUIGameObject(gameObject);
+				}
+				else
+				{
+					MeshRenderer* meshRenderer = gameObject->GetComponent<MeshRenderer>("MeshRenderer");
+					if (meshRenderer != nullptr)
+					{
+						RenderQueueManager::GetInstance()->AddRenderer(gameObject->GetComponent<MeshRenderer>("MeshRenderer"));
+					}
 				}
 			}
 			RenderEngine::GetInstance()->Render(camera);

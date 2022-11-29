@@ -18,6 +18,7 @@
         "Prefabs/Sphere.zxprefab",
         "Prefabs/Sphere1.zxprefab",
         "Prefabs/Sphere2.zxprefab",
-        "Prefabs/Sphere3.zxprefab"
+        "Prefabs/Sphere3.zxprefab",
+        "Prefabs/UI/FPSText.zxprefab"
     ]
 }

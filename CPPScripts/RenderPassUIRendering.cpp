@@ -1,20 +1,26 @@
 #include "RenderPassUIRendering.h"
 #include "TextCharactersManager.h"
 #include "TextRenderer.h"
+#include "RenderQueueManager.h"
+#include "GameObject.h"
 
 namespace ZXEngine
 {
 	RenderPassUIRendering::RenderPassUIRendering()
 	{
 		TextCharactersManager::Create();
-		text = new TextRenderer();
-		text->text = "ZX Test";
-		text->pos = vec2(20, 680);
-		text->scale = 0.5;
 	}
 
 	void RenderPassUIRendering::Render(Camera* camera)
 	{
-		text->Render();
+		auto uiGameObjects = RenderQueueManager::GetInstance()->GetUIGameObjects();
+
+		for (auto uiGameObject : uiGameObjects)
+		{
+			auto textRenderer = uiGameObject->GetComponent<TextRenderer>("TextRenderer");
+			textRenderer->Render();
+		}
+
+		RenderQueueManager::GetInstance()->ClearUIGameObjects();
 	}
 }

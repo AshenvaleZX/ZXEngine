@@ -11,8 +11,5 @@ namespace ZXEngine
 		~RenderPassUIRendering() {};
 
 		virtual void Render(Camera* camera);
-
-	private:
-		TextRenderer* text;
 	};
 }
