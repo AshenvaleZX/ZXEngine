@@ -40,4 +40,19 @@ namespace ZXEngine
 			iter.second->ClearRenderer();
 		}
 	}
+
+	void RenderQueueManager::AddUIGameObject(GameObject* uiGameObject)
+	{
+		uiGameObjectList.push_back(uiGameObject);
+	}
+
+	list<GameObject*> RenderQueueManager::GetUIGameObjects()
+	{
+		return uiGameObjectList;
+	}
+
+	void RenderQueueManager::ClearUIGameObjects()
+	{
+		uiGameObjectList.clear();
+	}
 }
