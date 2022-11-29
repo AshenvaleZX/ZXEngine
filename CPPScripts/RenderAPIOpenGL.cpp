@@ -86,12 +86,12 @@ namespace ZXEngine
 			Debug::LogError("OTHER_ERROR");
 	}
 
-	unsigned int RenderAPIOpenGL::LoadTexture(const char* path)
+	unsigned int RenderAPIOpenGL::LoadTexture(const char* path, int& width, int& height)
 	{
 		unsigned int textureID;
 		glGenTextures(1, &textureID);
 
-		int width, height, nrComponents;
+		int nrComponents;
 		unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
 		if (data)
 		{

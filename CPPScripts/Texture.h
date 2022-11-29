@@ -6,6 +6,9 @@ namespace ZXEngine
 	class Texture
 	{
 	public:
+		int width;
+		int height;
+
 		Texture(const char* path);
 		~Texture() {};
 

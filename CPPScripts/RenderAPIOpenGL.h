@@ -22,7 +22,7 @@ namespace ZXEngine
 		virtual void CheckError();
 
 		// 资源加载相关
-		virtual unsigned int LoadTexture(const char* path);
+		virtual unsigned int LoadTexture(const char* path, int& width, int& height);
 		virtual unsigned int LoadCubeMap(vector<string> faces);
 		virtual unsigned int GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data);
 		virtual ShaderInfo LoadAndCompileShader(const char* path);
