@@ -13,7 +13,7 @@ namespace ZXEngine
 		1, 2, 3,
 	};
 
-	class TextRenderer : public Component
+	class UITextRenderer : public Component
 	{
 	public:
 		// 当前渲染的文本
@@ -21,8 +21,8 @@ namespace ZXEngine
 		// 字符颜色
 		vec4 color;
 
-		TextRenderer();
-		~TextRenderer() {};
+		UITextRenderer();
+		~UITextRenderer() {};
 
 		void Render();
 	};

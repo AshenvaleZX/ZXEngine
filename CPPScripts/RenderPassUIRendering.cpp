@@ -1,6 +1,6 @@
 #include "RenderPassUIRendering.h"
 #include "TextCharactersManager.h"
-#include "TextRenderer.h"
+#include "UITextRenderer.h"
 #include "RenderQueueManager.h"
 #include "GameObject.h"
 
@@ -17,8 +17,8 @@ namespace ZXEngine
 
 		for (auto uiGameObject : uiGameObjects)
 		{
-			auto textRenderer = uiGameObject->GetComponent<TextRenderer>("TextRenderer");
-			textRenderer->Render();
+			auto uiTextRenderer = uiGameObject->GetComponent<UITextRenderer>("UITextRenderer");
+			uiTextRenderer->Render();
 		}
 
 		RenderQueueManager::GetInstance()->ClearUIGameObjects();

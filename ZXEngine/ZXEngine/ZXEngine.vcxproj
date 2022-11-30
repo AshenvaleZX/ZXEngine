@@ -215,7 +215,7 @@
     <ClCompile Include="..\..\CPPScripts\Scene.cpp" />
     <ClCompile Include="..\..\CPPScripts\SceneManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\TextCharactersManager.cpp" />
-    <ClCompile Include="..\..\CPPScripts\TextRenderer.cpp" />
+    <ClCompile Include="..\..\CPPScripts\UITextRenderer.cpp" />
     <ClCompile Include="..\..\CPPScripts\Texture.cpp" />
     <ClCompile Include="..\..\CPPScripts\Time.cpp" />
     <ClCompile Include="..\..\CPPScripts\Transform.cpp" />
@@ -305,7 +305,7 @@
     <ClInclude Include="..\..\CPPScripts\Shader.h" />
     <ClInclude Include="..\..\CPPScripts\stb_image.h" />
     <ClInclude Include="..\..\CPPScripts\TextCharactersManager.h" />
-    <ClInclude Include="..\..\CPPScripts\TextRenderer.h" />
+    <ClInclude Include="..\..\CPPScripts\UITextRenderer.h" />
     <ClInclude Include="..\..\CPPScripts\Texture.h" />
     <ClInclude Include="..\..\CPPScripts\Time.h" />
     <ClInclude Include="..\..\CPPScripts\Transform.h" />

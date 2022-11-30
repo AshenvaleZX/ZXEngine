@@ -10,7 +10,7 @@
             "Scale": [0.5, 1, 1]
         },
         {
-            "Type": "TextRenderer",
+            "Type": "UITextRenderer",
             "Text": "ZX Test FPS",
             "Color": [1, 1, 1, 1]
         }

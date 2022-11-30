@@ -1,4 +1,4 @@
-#include "TextRenderer.h"
+#include "UITextRenderer.h"
 #include "ZShader.h"
 #include "TextCharactersManager.h"
 #include "DynamicMesh.h"
@@ -6,13 +6,13 @@
 
 namespace ZXEngine
 {
-    TextRenderer::TextRenderer()
+    UITextRenderer::UITextRenderer()
     {
         text = "";
         color = vec4(1, 1, 1, 1);
     }
 
-    void TextRenderer::Render()
+    void UITextRenderer::Render()
     {
         TextCharactersManager::GetInstance()->BeginRender();
         TextCharactersManager::GetInstance()->SetColor(color);
