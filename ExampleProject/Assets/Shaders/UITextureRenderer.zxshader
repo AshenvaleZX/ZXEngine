@@ -1,0 +1,32 @@
+#vs_begin
+#version 460 core
+layout (location = 0) in vec3 aPos;
+layout (location = 2) in vec2 aTexCoords;
+
+out vec2 TexCoords;
+
+uniform mat4 model;
+uniform mat4 projection;
+
+void main()
+{
+    gl_Position = projection * model * vec4(aPos.xy, 0.0, 1.0);
+    TexCoords = aTexCoords;
+}
+#vs_end
+
+#gs_begin
+#gs_end
+
+#fs_begin
+#version 460 core
+in vec2 TexCoords;
+out vec4 color;
+
+uniform sampler2D _Texture;
+
+void main()
+{    
+    color = texture(_Texture, TexCoords);
+}
+#fs_end

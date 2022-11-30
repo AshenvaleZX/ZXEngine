@@ -5,6 +5,7 @@
 #include "Light.h"
 #include "GameLogic.h"
 #include "UITextRenderer.h"
+#include "UITextureRenderer.h"
 
 namespace ZXEngine
 {
@@ -78,6 +79,12 @@ namespace ZXEngine
 				UITextRenderer* uiTextRenderer = AddComponent<UITextRenderer>("UITextRenderer");
 				uiTextRenderer->text = component["Text"];
 				uiTextRenderer->color = vec4(component["Color"][0], component["Color"][1], component["Color"][2], component["Color"][3]);
+			}
+			else if (component["Type"] == "UITextureRenderer")
+			{
+				UITextureRenderer* uiTextureRenderer = AddComponent<UITextureRenderer>("UITextureRenderer");
+				string p = Resources::JsonStrToString(component["TexturePath"]);
+				uiTextureRenderer->SetTexture(Resources::GetAssetFullPath(p.c_str()).c_str());
 			}
 		}
 	}

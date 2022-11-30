@@ -219,6 +219,7 @@
     <ClCompile Include="..\..\CPPScripts\Texture.cpp" />
     <ClCompile Include="..\..\CPPScripts\Time.cpp" />
     <ClCompile Include="..\..\CPPScripts\Transform.cpp" />
+    <ClCompile Include="..\..\CPPScripts\UITextureRenderer.cpp" />
     <ClCompile Include="..\..\CPPScripts\Utils.cpp" />
     <ClCompile Include="..\..\CPPScripts\ZCamera.cpp" />
     <ClCompile Include="..\..\CPPScripts\ZMesh.cpp" />
@@ -309,6 +310,7 @@
     <ClInclude Include="..\..\CPPScripts\Texture.h" />
     <ClInclude Include="..\..\CPPScripts\Time.h" />
     <ClInclude Include="..\..\CPPScripts\Transform.h" />
+    <ClInclude Include="..\..\CPPScripts\UITextureRenderer.h" />
     <ClInclude Include="..\..\CPPScripts\Utils.h" />
     <ClInclude Include="..\..\CPPScripts\ZCamera.h" />
     <ClInclude Include="..\..\CPPScripts\ZMesh.h" />
