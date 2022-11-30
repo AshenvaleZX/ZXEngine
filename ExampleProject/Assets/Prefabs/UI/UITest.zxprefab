@@ -1,0 +1,17 @@
+{
+    "Type": "GameObject",
+    "Layer": 1,
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [640,687, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [0.7, 0.85, 1]
+        },
+        {
+            "Type": "UITextureRenderer",
+            "TexturePath": "Textures/Ui_Frame_BG.png"
+        }
+    ]
+}
