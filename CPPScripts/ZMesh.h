@@ -14,6 +14,7 @@ namespace ZXEngine
         unsigned int VAO;
 
         Mesh(vector<Vertex> vertices, vector<unsigned int> indices);
+        ~Mesh();
         
         // 把当前Mesh数据注册到OpenGL状态机
         void Use();

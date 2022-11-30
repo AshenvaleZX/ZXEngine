@@ -10,6 +10,11 @@ namespace ZXEngine
 		RenderAPI::GetInstance()->SetUpMesh(VAO, VBO, EBO, vertices, indices);
 	}
 
+	Mesh::~Mesh()
+	{
+		RenderAPI::GetInstance()->DeleteMesh(VAO);
+	}
+
 	void Mesh::Use()
 	{
 		RenderAPI::GetInstance()->SetMesh(VAO, indices.size());

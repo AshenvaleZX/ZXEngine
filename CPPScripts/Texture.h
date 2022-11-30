@@ -10,7 +10,7 @@ namespace ZXEngine
 		int height;
 
 		Texture(const char* path);
-		~Texture() {};
+		~Texture();
 
 		unsigned int GetID();
 
