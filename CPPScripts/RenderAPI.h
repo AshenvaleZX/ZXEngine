@@ -31,6 +31,7 @@ namespace ZXEngine
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path, int& width, int& height) = 0;
+		virtual void DeleteTexture(unsigned int id) = 0;
 		virtual unsigned int LoadCubeMap(vector<string> faces) = 0;
 		virtual unsigned int GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data) = 0;
 		virtual ShaderInfo LoadAndCompileShader(const char* path) = 0;
@@ -43,6 +44,7 @@ namespace ZXEngine
 		// Mesh设置
 		virtual void SetMesh(unsigned int VAO, unsigned int size) = 0;
 		virtual void SetUpMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, vector<Vertex> vertices, vector<unsigned int> indices) = 0;
+		virtual void DeleteMesh(unsigned int VAO) = 0;
 		virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, unsigned int vertexSize, unsigned int indexSize) = 0;
 		virtual void UpdateDynamicMesh(unsigned int VAO, unsigned int VBO, unsigned int EBO, vector<Vertex> vertices, vector<unsigned int> indices) = 0;
 

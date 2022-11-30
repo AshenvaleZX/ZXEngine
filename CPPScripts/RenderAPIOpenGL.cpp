@@ -124,6 +124,11 @@ namespace ZXEngine
 		return textureID;
 	}
 
+	void RenderAPIOpenGL::DeleteTexture(unsigned int id)
+	{
+		glDeleteTextures(1, &id);
+	}
+
 	unsigned int RenderAPIOpenGL::LoadCubeMap(vector<string> faces)
 	{
 		unsigned int textureID;
@@ -474,6 +479,11 @@ namespace ZXEngine
 
 		// 设置完记得还原一下
 		glBindVertexArray(0);
+	}
+
+	void RenderAPIOpenGL::DeleteMesh(unsigned int VAO)
+	{
+		glDeleteVertexArrays(1, &VAO);
 	}
 
 	void RenderAPIOpenGL::SetUpDynamicMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, unsigned int vertexSize, unsigned int indexSize)
