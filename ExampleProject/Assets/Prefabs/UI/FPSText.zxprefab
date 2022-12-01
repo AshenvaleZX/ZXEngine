@@ -13,6 +13,10 @@
             "Type": "UITextRenderer",
             "Text": "ZX Test FPS",
             "Color": [1, 1, 1, 1]
+        },
+        {
+            "Type": "GameLogic",
+            "Lua": "ShowFPS"
         }
     ]
 }

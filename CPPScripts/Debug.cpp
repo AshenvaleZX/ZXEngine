@@ -18,17 +18,4 @@ namespace ZXEngine
 	{
 		std::cout << "Error:   " << message << std::endl;
 	}
-
-	int Debug::FPS = 0;
-	long long Debug::lastSecond = 0;
-	void Debug::Update()
-	{
-		FPS++;
-		if (lastSecond != Time::curTime)
-		{
-			Log("FPS: " + std::to_string(FPS));
-			lastSecond = Time::curTime;
-			FPS = 0;
-		}
-	}
 }
