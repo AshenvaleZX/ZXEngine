@@ -1,6 +1,7 @@
 #pragma once
 #include "../GameLogic.h"
 #include "../Transform.h"
+#include "../GameObject.h"
 
 extern "C"
 {
@@ -28,12 +29,28 @@ static int GetTransform(lua_State* L)
 	return 1;
 }
 
+static int GetGameObject(lua_State* L)
+{
+	ZXEngine::GameLogic** data = (ZXEngine::GameLogic**)luaL_checkudata(L, -1, "ZXEngine.GameLogic");
+
+	size_t nbytes = sizeof(ZXEngine::GameObject);
+	ZXEngine::GameObject** t = (ZXEngine::GameObject**)lua_newuserdata(L, nbytes);
+
+	*t = (*data)->gameObject;
+
+	luaL_getmetatable(L, "ZXEngine.GameObject");
+	lua_setmetatable(L, -2);
+
+	return 1;
+}
+
 static const luaL_Reg GameLogic_Funcs[] = {
 	{NULL, NULL}
 };
 
 static const luaL_Reg GameLogic_Funcs_Meta[] = {
 	{"GetTransform", GetTransform},
+	{"GetGameObject", GetGameObject},
 	{NULL, NULL}
 };
 

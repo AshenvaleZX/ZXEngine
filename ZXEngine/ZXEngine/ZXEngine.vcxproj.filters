@@ -521,5 +521,11 @@
     <ClInclude Include="..\..\CPPScripts\UITextureRenderer.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_GameObject.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_UITextRenderer.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
