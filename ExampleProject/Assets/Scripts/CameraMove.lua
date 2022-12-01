@@ -2,7 +2,7 @@ local CameraMove = NewGameLogic()
 
 CameraMove.firstMouse = true
 CameraMove.MouseSensitivity = 0.1
-CameraMove.MovementSpeed = 2.5
+CameraMove.MovementSpeed = 25
 
 function CameraMove:Start()
     self.trans = self.GameLogic:GetTransform()

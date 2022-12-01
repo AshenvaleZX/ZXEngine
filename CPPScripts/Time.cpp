@@ -17,7 +17,7 @@ namespace ZXEngine
 		if (curTime_micro != 0)
 		{
 			// 这里用微秒计算deltaTime，用毫秒有可能精度不够
-			deltaTime = (time_micro - curTime_micro) / 100000.0f;
+			deltaTime = (time_micro - curTime_micro) / 1000000.0f;
 		}
 
 		curTime = time;

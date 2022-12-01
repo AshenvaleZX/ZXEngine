@@ -1,18 +1,18 @@
-local LogicTest = NewGameLogic()
+local ObjectMove2 = NewGameLogic()
 
-LogicTest.radius = 20
-LogicTest.angle = 0
-LogicTest.rot = 0
+ObjectMove2.radius = 20
+ObjectMove2.angle = 0
+ObjectMove2.rot = 0
 
-function LogicTest:Start()
+function ObjectMove2:Start()
     self.trans = self.GameLogic:GetTransform()
 end
 
-function LogicTest:Update()
-    self.angle = self.angle - 0.2 * Time.GetDeltaTime()
+function ObjectMove2:Update()
+    self.angle = self.angle - 2 * Time.GetDeltaTime()
     local x = math.sin(self.angle)*self.radius
     local z = math.cos(self.angle)*self.radius
     self.trans:SetPosition(x, 10, z)
 end
 
-return LogicTest
+return ObjectMove2
