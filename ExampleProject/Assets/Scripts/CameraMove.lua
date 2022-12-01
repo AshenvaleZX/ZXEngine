@@ -5,7 +5,7 @@ CameraMove.MouseSensitivity = 0.1
 CameraMove.MovementSpeed = 25
 
 function CameraMove:Start()
-    self.trans = self.GameLogic:GetTransform()
+    self.trans = self.gameObject:GetComponent("Transform")
     EngineEvent:AddEventHandler(EngineEventType.UPDATE_MOUSE_POS, self.MouseMoveCallBack, self)
     EngineEvent:AddEventHandler(EngineEventType.KEY_W_PRESS, self.MoveForwardCallBack, self)
     EngineEvent:AddEventHandler(EngineEventType.KEY_S_PRESS, self.MoveBackCallBack, self)

@@ -22,6 +22,14 @@ static int GetComponent(lua_State* L)
 		luaL_getmetatable(L, "ZXEngine.UITextRenderer");
 		lua_setmetatable(L, -2);
 	}
+	else if (type == "Transform")
+	{
+		size_t nbytes = sizeof(ZXEngine::Transform);
+		ZXEngine::Transform** t = (ZXEngine::Transform**)lua_newuserdata(L, nbytes);
+		*t = (*data)->GetComponent<ZXEngine::Transform>();
+		luaL_getmetatable(L, "ZXEngine.Transform");
+		lua_setmetatable(L, -2);
+	}
 	else
 	{ 
 		ZXEngine::Debug::LogError("Not find lua wrap component: " + type);

@@ -2,7 +2,6 @@
 #include "Lua_Debug.h"
 #include "Lua_Resources.h"
 #include "Lua_Time.h"
-#include "Lua_GameLogic.h"
 #include "Lua_Transform.h"
 #include "Lua_GameObject.h"
 #include "Lua_UITextRenderer.h"
@@ -11,7 +10,6 @@ static const luaL_Reg myLibs[] = {
     {"Debug", luaopen_Debug},
     {"Resources", luaopen_Resources},
     {"Time", luaopen_Time},
-    {"GameLogic", luaopen_GameLogic},
     {"Transform", luaopen_Transform},
     {"GameObject", luaopen_GameObject},
     {"UITextRenderer", luaopen_UITextRenderer},

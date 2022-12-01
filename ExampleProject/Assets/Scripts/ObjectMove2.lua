@@ -5,7 +5,7 @@ ObjectMove2.angle = 0
 ObjectMove2.rot = 0
 
 function ObjectMove2:Start()
-    self.trans = self.GameLogic:GetTransform()
+    self.trans = self.gameObject:GetComponent("Transform")
 end
 
 function ObjectMove2:Update()

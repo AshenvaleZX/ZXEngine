@@ -37,20 +37,20 @@ namespace ZXEngine
 			// lua_tonumber不会自动出栈，手动pop一下，table回到-1位置
 			lua_pop(L, 1);
 
-			// 把"GameLogic"字符串入栈，准备作为Lua table访问this的字段名
-			lua_pushstring(L, "GameLogic");
-			// 新建一个GameLogic*的userdata，入栈，作为访问this的指针
-			GameLogic** data = (GameLogic**)lua_newuserdata(L, sizeof(GameLogic*));
-			// 把刚刚新建的指针指向this
-			*data = this;
+			// 把"GameLogic"字符串入栈，准备作为Lua table访问this->gameObject的字段名
+			lua_pushstring(L, "gameObject");
+			// 新建一个GameObject*的userdata，入栈，作为访问this->gameObject的指针
+			GameObject** data = (GameObject**)lua_newuserdata(L, sizeof(GameObject*));
+			// 把刚刚新建的指针指向this->gameObject
+			*data = this->gameObject;
 
-			// 获取this对应的metatable，入栈
-			luaL_getmetatable(L, "ZXEngine.GameLogic");
-			// 给this(现在在-2位置)设置meta table，同时meta table出栈
+			// 获取GameObject对应的metatable，入栈
+			luaL_getmetatable(L, "ZXEngine.GameObject");
+			// 给this->gameObject(现在在-2位置)设置meta table，同时meta table出栈
 			lua_setmetatable(L, -2);
 
-			// 此时-1位置是this，-2位置是"GameLogic"，-3位置是绑定的lua table
-			// 设置table["GameLogic"] = this
+			// 此时-1位置是this->gameObject，-2位置是"GameObject"，-3位置是绑定的lua table
+			// 设置table["gameObject"] = this->gameObject
 			lua_settable(L, -3);
 
 			CallLuaFunction("Start");

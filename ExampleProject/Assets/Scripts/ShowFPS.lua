@@ -10,7 +10,7 @@ ShowFPS.accumulation = 0
 ShowFPS.accumulateFPS = 0
 
 function ShowFPS:Start()
-    self.FPSText = self.GameLogic:GetGameObject():GetComponent("UITextRenderer")
+    self.FPSText = self.gameObject:GetComponent("UITextRenderer")
 end
 
 function ShowFPS:Update()

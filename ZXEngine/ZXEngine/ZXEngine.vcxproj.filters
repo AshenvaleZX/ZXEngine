@@ -479,16 +479,7 @@
     <ClInclude Include="..\..\CPPScripts\GameLogicManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\LuaWrap\BitArray.h">
-      <Filter>LuaWrap</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_BitArray.h">
-      <Filter>LuaWrap</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Transform.h">
-      <Filter>LuaWrap</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_GameLogic.h">
       <Filter>LuaWrap</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Time.h">
