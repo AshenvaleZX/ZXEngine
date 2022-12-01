@@ -1,6 +1,13 @@
 #pragma once
 #include "pubh.h"
 #include "Component.h"
+#include "Transform.h"
+#include "MeshRenderer.h"
+#include "ZCamera.h"
+#include "Light.h"
+#include "GameLogic.h"
+#include "UITextRenderer.h"
+#include "UITextureRenderer.h"
 #include "Resources.h"
 
 namespace ZXEngine
@@ -14,20 +21,21 @@ namespace ZXEngine
 		~GameObject() {};
 
 		template<class T> 
-		inline T* GetComponent(string type);
+		inline T* GetComponent();
 		template<class T>
-		inline T* AddComponent(string type);
+		inline T* AddComponent();
 
-		void AddComponent(string type, Component* component);
+		void AddComponent(ComponentType type, Component* component);
 
 	private:
-		map<string, Component*> components = {};
+		map<ComponentType, Component*> components = {};
 	};
 
 	template<class T>
-	inline T* GameObject::GetComponent(string type)
+	inline T* GameObject::GetComponent()
 	{
-		map<string, Component*>::iterator iter = components.find(type);
+		ComponentType type = T::GetType();
+		map<ComponentType, Component*>::iterator iter = components.find(type);
 		if (iter != components.end()) {
 			return reinterpret_cast<T*> (iter->second);
 		}
@@ -37,11 +45,12 @@ namespace ZXEngine
 	}
 
 	template<class T>
-	inline T* GameObject::AddComponent(string type)
+	inline T* GameObject::AddComponent()
 	{
 		T* t = new T();
 		t->gameObject = this;
-		components.insert(pair<string, Component*>(type, t));
+		ComponentType type = T::GetType();
+		components.insert(pair<ComponentType, Component*>(type, t));
 		return t;
 	}
 }

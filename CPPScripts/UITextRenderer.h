@@ -24,6 +24,8 @@ namespace ZXEngine
 		UITextRenderer();
 		~UITextRenderer() {};
 
+		static ComponentType GetType();
+
 		void Render();
 	};
 }

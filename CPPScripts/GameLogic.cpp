@@ -15,6 +15,11 @@ namespace ZXEngine
 		GameLogicManager::GetInstance()->RemoveGameLogic(this);
 	}
 
+	ComponentType GameLogic::GetType()
+	{
+		return ComponentType::T_GameLogic;
+	}
+
 	void GameLogic::Start()
 	{
 		lua_State* L = LuaManager::GetInstance()->GetState();

@@ -16,6 +16,8 @@ namespace ZXEngine
 		UITextureRenderer() {};
 		~UITextureRenderer() {};
 
+		static ComponentType GetType();
+
 		void Render();
 		void SetTexture(const char* path);
 

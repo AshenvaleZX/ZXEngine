@@ -13,6 +13,8 @@ namespace ZXEngine
 		GameLogic();
 		~GameLogic();
 
+		static ComponentType GetType();
+
 		void Start();
 		void Update();
 		void CallLuaFunction(const char* func);

@@ -2,6 +2,11 @@
 
 namespace ZXEngine
 {
+	ComponentType Transform::GetType()
+	{
+		return ComponentType::T_Transform;
+	}
+
 	mat4 Transform::GetModelMatrix()
 	{
 		return GetPositionMatrix() * GetRotationMatrix() * GetScaleMatrix();

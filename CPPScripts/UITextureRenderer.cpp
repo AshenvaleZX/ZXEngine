@@ -18,6 +18,11 @@ namespace ZXEngine
 		shader->SetMat4("projection", mat_P);
 	}
 
+	ComponentType UITextureRenderer::GetType()
+	{
+		return ComponentType::T_UITextureRenderer;
+	}
+
 	void UITextureRenderer::Render()
 	{
 		mat4 mat_M = GetTransform()->GetModelMatrix();

@@ -14,6 +14,7 @@ namespace ZXEngine
 		Light();
 		~Light();
 
+		static ComponentType GetType();
 		static vector<Light*> GetAllLights();
 
 	private:

@@ -3,8 +3,13 @@
 
 namespace ZXEngine
 {
+	ComponentType Component::GetType()
+	{
+		return ComponentType::T_Component;
+	}
+
 	Transform* Component::GetTransform()
 	{
-		return gameObject->GetComponent<Transform>("Transform");
+		return gameObject->GetComponent<Transform>();
 	}
 }

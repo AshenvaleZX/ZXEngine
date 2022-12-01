@@ -16,6 +16,7 @@ namespace ZXEngine
         Camera();
 		~Camera();
 
+        static ComponentType GetType();
         static vector<Camera*> GetAllCameras();
 
         mat4 GetViewMatrix();

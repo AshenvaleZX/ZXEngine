@@ -19,6 +19,8 @@ namespace ZXEngine
 		MeshRenderer() {};
 		~MeshRenderer() {};
 
+		static ComponentType GetType();
+
 		// 使用ASSIMP加载模型文件
 		void LoadModel(string const& path);
 

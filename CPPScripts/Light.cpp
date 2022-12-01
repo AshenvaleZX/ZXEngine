@@ -19,4 +19,9 @@ namespace ZXEngine
 	{
 		return allLights;
 	}
+
+	ComponentType Light::GetType()
+	{
+		return ComponentType::T_Light;
+	}
 }

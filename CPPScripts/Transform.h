@@ -14,6 +14,8 @@ namespace ZXEngine
 		Transform() {};
 		~Transform() {};
 
+		static ComponentType GetType();
+
 		mat4 GetModelMatrix();
 		vec3 GetForward();
 		vec3 GetRight();

@@ -12,6 +12,11 @@ namespace ZXEngine
         color = vec4(1, 1, 1, 1);
     }
 
+    ComponentType UITextRenderer::GetType()
+    {
+        return ComponentType::T_UITextRenderer;
+    }
+
     void UITextRenderer::Render()
     {
         TextCharactersManager::GetInstance()->BeginRender();

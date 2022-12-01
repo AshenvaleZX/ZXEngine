@@ -2,6 +2,11 @@
 
 namespace ZXEngine
 {
+    ComponentType MeshRenderer::GetType()
+    {
+        return ComponentType::T_MeshRenderer;
+    }
+
 	void MeshRenderer::LoadModel(string const& path)
 	{
         // read file via ASSIMP

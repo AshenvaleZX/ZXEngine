@@ -13,6 +13,8 @@ namespace ZXEngine
 		Component() {};
 		~Component() {};
 
+		static ComponentType GetType();
+
 		Transform* GetTransform();
 
 	private:

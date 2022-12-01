@@ -24,6 +24,11 @@ namespace ZXEngine
 	{
 		return allCameras;
 	}
+
+	ComponentType Camera::GetType()
+	{
+		return ComponentType::T_Camera;
+	}
 	
 	mat4 Camera::GetViewMatrix()
 	{

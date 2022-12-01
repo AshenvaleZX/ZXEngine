@@ -1,11 +1,4 @@
 #include "GameObject.h"
-#include "Transform.h"
-#include "MeshRenderer.h"
-#include "ZCamera.h"
-#include "Light.h"
-#include "GameLogic.h"
-#include "UITextRenderer.h"
-#include "UITextureRenderer.h"
 
 namespace ZXEngine
 {
@@ -17,7 +10,7 @@ namespace ZXEngine
 		{
 			if (component["Type"] == "Transform")
 			{
-				Transform* transform = AddComponent<Transform>("Transform");
+				Transform* transform = AddComponent<Transform>();
 
 				transform->position = vec3(component["Position"][0], component["Position"][1], component["Position"][2]);
 				transform->rotation.SetEulerAngles(component["Rotation"][0], component["Rotation"][1], component["Rotation"][2]);
@@ -25,7 +18,7 @@ namespace ZXEngine
 			}
 			else if (component["Type"] == "MeshRenderer")
 			{
-				MeshRenderer* meshRenderer = AddComponent<MeshRenderer>("MeshRenderer");
+				MeshRenderer* meshRenderer = AddComponent<MeshRenderer>();
 				string p = "";
 
 				meshRenderer->castShadow = component["CastShadow"];
@@ -57,13 +50,13 @@ namespace ZXEngine
 			}
 			else if (component["Type"] == "Camera")
 			{
-				Camera* camera = AddComponent<Camera>("Camera");
+				Camera* camera = AddComponent<Camera>();
 				camera->nearClipDis = component["NearClipDis"];
 				camera->farClipDis = component["FarClipDis"];
 			}
 			else if (component["Type"] == "Light")
 			{
-				Light* light = AddComponent<Light>("Light");
+				Light* light = AddComponent<Light>();
 
 				light->color = vec3(component["Color"][0], component["Color"][1], component["Color"][2]);
 				light->intensity = component["Intensity"];
@@ -71,27 +64,27 @@ namespace ZXEngine
 			}
 			else if (component["Type"] == "GameLogic")
 			{
-				GameLogic* gameLogic = AddComponent<GameLogic>("GameLogic");
+				GameLogic* gameLogic = AddComponent<GameLogic>();
 				gameLogic->luaName = Resources::JsonStrToString(component["Lua"]);
 			}
 			else if (component["Type"] == "UITextRenderer")
 			{
-				UITextRenderer* uiTextRenderer = AddComponent<UITextRenderer>("UITextRenderer");
+				UITextRenderer* uiTextRenderer = AddComponent<UITextRenderer>();
 				uiTextRenderer->text = component["Text"];
 				uiTextRenderer->color = vec4(component["Color"][0], component["Color"][1], component["Color"][2], component["Color"][3]);
 			}
 			else if (component["Type"] == "UITextureRenderer")
 			{
-				UITextureRenderer* uiTextureRenderer = AddComponent<UITextureRenderer>("UITextureRenderer");
+				UITextureRenderer* uiTextureRenderer = AddComponent<UITextureRenderer>();
 				string p = Resources::JsonStrToString(component["TexturePath"]);
 				uiTextureRenderer->SetTexture(Resources::GetAssetFullPath(p.c_str()).c_str());
 			}
 		}
 	}
 
-	void GameObject::AddComponent(string type, Component* component)
+	void GameObject::AddComponent(ComponentType type, Component* component)
 	{
 		component->gameObject = this;
-		components.insert(pair<string, Component*>(type, component));
+		components.insert(pair<ComponentType, Component*>(type, component));
 	}
 }

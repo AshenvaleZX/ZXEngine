@@ -33,10 +33,10 @@ namespace ZXEngine
 				}
 				else
 				{
-					MeshRenderer* meshRenderer = gameObject->GetComponent<MeshRenderer>("MeshRenderer");
+					MeshRenderer* meshRenderer = gameObject->GetComponent<MeshRenderer>();
 					if (meshRenderer != nullptr)
 					{
-						RenderQueueManager::GetInstance()->AddRenderer(gameObject->GetComponent<MeshRenderer>("MeshRenderer"));
+						RenderQueueManager::GetInstance()->AddRenderer(gameObject->GetComponent<MeshRenderer>());
 					}
 				}
 			}
