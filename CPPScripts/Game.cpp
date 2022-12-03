@@ -1,32 +1,22 @@
 #include "Game.h"
 #include "EventManager.h"
 #include "RenderEngine.h"
-#include "RenderAPI.h"
-#include "RenderQueueManager.h"
 #include "InputManager.h"
 #include "Time.h"
 #include "SceneManager.h"
 #include "Resources.h"
-#include "RenderPassManager.h"
 #include "LuaManager.h"
 #include "GameLogicManager.h"
-#include "FBOManager.h"
 
 namespace ZXEngine
 {
 	void Game::Play()
 	{
+		Resources::SetAssetsPath("../../ExampleProject/Assets/");
 		EventManager::Create();
-		RenderQueueManager::Creat();
 		SceneManager::Create();
 		RenderEngine::Create();
-		RenderEngine::GetInstance()->InitWindow(1280, 720);
-		RenderAPI::Creat();
-		RenderAPI::GetInstance()->InitRenderSetting();
-		FBOManager::Create();
 		InputManager::Create();
-		Resources::SetAssetsPath("../../ExampleProject/Assets/");
-		RenderPassManager::Create();
 		LuaManager::Create();
 		GameLogicManager::Create();
 		SceneManager::GetInstance()->SetCurScene("Scenes/MyWorld.zxscene");

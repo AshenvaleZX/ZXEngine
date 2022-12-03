@@ -8,6 +8,9 @@
 #include "RenderPassManager.h"
 #include "RenderPass.h"
 #include "GlobalData.h"
+#include "RenderQueueManager.h"
+#include "FBOManager.h"
+#include "ParticleSystemManager.h"
 
 namespace ZXEngine
 {
@@ -16,6 +19,13 @@ namespace ZXEngine
 	void RenderEngine::Create()
 	{
 		mInstance = new RenderEngine();
+		mInstance->InitWindow(1280, 720);
+		RenderQueueManager::Creat();
+		RenderAPI::Creat();
+		RenderAPI::GetInstance()->InitRenderSetting();
+		FBOManager::Create();
+		ParticleSystemManager::Create();
+		RenderPassManager::Create();
 	}
 
 	RenderEngine* RenderEngine::GetInstance()
