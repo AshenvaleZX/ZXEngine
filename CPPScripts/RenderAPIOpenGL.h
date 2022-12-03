@@ -15,6 +15,7 @@ namespace ZXEngine
 		virtual void EnableDepthWrite(bool enable);
 		virtual void SwitchFrameBuffer(unsigned int id);
 		virtual void SetViewPortSize(unsigned int width, unsigned int height);
+		virtual void SetBlendMode(BlendOption sfactor, BlendOption dfactor);
 		virtual void ClearFrameBuffer();
 		virtual void ClearColorBuffer();
 		virtual void ClearDepthBuffer();
@@ -60,8 +61,11 @@ namespace ZXEngine
 		virtual void SetShaderCubeMap(unsigned int ID, string name, unsigned int textureID, unsigned int idx);
 
 	private:
-		unsigned int VAO;
+		unsigned int VAO = 0;
 		// 与VAO对应的图元数量
-		unsigned int primitiveSize;
+		unsigned int primitiveSize = 0;
+
+		map<BlendOption, int> BlendMap;
+		void InitBlendMap();
 	};
 }

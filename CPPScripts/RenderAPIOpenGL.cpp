@@ -15,6 +15,8 @@ namespace ZXEngine
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		InitBlendMap();
 	}
 
 	void RenderAPIOpenGL::EnableDepthTest(bool enable)
@@ -41,6 +43,11 @@ namespace ZXEngine
 	void RenderAPIOpenGL::SetViewPortSize(unsigned int width, unsigned int height)
 	{
 		glViewport(0, 0, width, height);
+	}
+
+	void RenderAPIOpenGL::SetBlendMode(BlendOption sfactor, BlendOption dfactor)
+	{
+		glBlendFunc(BlendMap[sfactor], BlendMap[dfactor]);
 	}
 
 	void RenderAPIOpenGL::ClearFrameBuffer()
@@ -477,7 +484,6 @@ namespace ZXEngine
 			Debug::LogError("Wrong draw type: " + to_string(type));
 
 		glBindVertexArray(0);
-
 	}
 
 	// Mesh…Ë÷√
@@ -639,5 +645,27 @@ namespace ZXEngine
 		glUniform1i(glGetUniformLocation(ID, name.c_str()), idx);
 		glActiveTexture(GL_TEXTURE0 + idx);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+	}
+
+
+	void RenderAPIOpenGL::InitBlendMap()
+	{
+		BlendMap =
+		{
+			{ BlendOption::ZERO,					GL_ZERO						},
+			{ BlendOption::ONE,						GL_ONE						},
+			{ BlendOption::SRC_COLOR,				GL_SRC_COLOR				},
+			{ BlendOption::ONE_MINUS_SRC_COLOR,		GL_ONE_MINUS_SRC_COLOR		},
+			{ BlendOption::DST_COLOR,				GL_DST_COLOR				},
+			{ BlendOption::ONE_MINUS_DST_COLOR,		GL_ONE_MINUS_DST_COLOR		},
+			{ BlendOption::SRC_ALPHA,				GL_SRC_ALPHA				},
+			{ BlendOption::ONE_MINUS_SRC_ALPHA,		GL_ONE_MINUS_SRC_ALPHA		},
+			{ BlendOption::DST_ALPHA,				GL_DST_ALPHA				},
+			{ BlendOption::ONE_MINUS_DST_ALPHA,		GL_ONE_MINUS_DST_ALPHA		},
+			{ BlendOption::CONSTANT_COLOR,			GL_CONSTANT_COLOR			},
+			{ BlendOption::ONE_MINUS_CONSTANT_COLOR,GL_ONE_MINUS_CONSTANT_COLOR },
+			{ BlendOption::CONSTANT_ALPHA,			GL_CONSTANT_ALPHA			},
+			{ BlendOption::ONE_MINUS_CONSTANT_ALPHA,GL_ONE_MINUS_CONSTANT_ALPHA	},
+		};
 	}
 }
