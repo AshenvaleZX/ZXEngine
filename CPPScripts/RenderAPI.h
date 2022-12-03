@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "stb_image.h"
+#include "PublicEnum.h"
 #include "PublicStruct.h"
 #include "FrameBufferObject.h"
 
@@ -41,6 +42,7 @@ namespace ZXEngine
 
 		// DrawCall
 		virtual void Draw() = 0;
+		virtual void Draw(unsigned int VAO, unsigned int size, DrawType type) = 0;
 
 		// Mesh…Ë÷√
 		virtual void SetMesh(unsigned int VAO, unsigned int size) = 0;

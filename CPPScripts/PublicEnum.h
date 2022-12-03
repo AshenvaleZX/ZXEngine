@@ -41,6 +41,12 @@ namespace ZXEngine
 		T_UITextureRenderer,
 	};
 
+	enum DrawType
+	{
+		OpenGLDrawArrays,
+		OpenGLDrawElements,
+	};
+
 	enum EventType
 	{
 		PLACE_HOLDER = 0, // 这里加一个占位符，因为Lua也有一份EventType需要和这里对齐，但是Lua下标是从1开始的

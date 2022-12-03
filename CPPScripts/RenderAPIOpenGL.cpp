@@ -465,6 +465,21 @@ namespace ZXEngine
 		glBindVertexArray(0);
 	}
 
+	void RenderAPIOpenGL::Draw(unsigned int VAO, unsigned int size, DrawType type)
+	{
+		glBindVertexArray(VAO);
+
+		if (type == DrawType::OpenGLDrawArrays)
+			glDrawArrays(GL_TRIANGLES, 0, size);
+		else if (type == DrawType::OpenGLDrawElements)
+			glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, 0);
+		else
+			Debug::LogError("Wrong draw type: " + to_string(type));
+
+		glBindVertexArray(0);
+
+	}
+
 	// Mesh…Ë÷√
 	void RenderAPIOpenGL::SetMesh(unsigned int VAO, unsigned int size)
 	{

@@ -33,6 +33,7 @@ namespace ZXEngine
 
 		// DrawCall
 		virtual void Draw();
+		virtual void Draw(unsigned int VAO, unsigned int size, DrawType type);
 
 		// Mesh…Ë÷√
 		virtual void SetMesh(unsigned int VAO, unsigned int size);
