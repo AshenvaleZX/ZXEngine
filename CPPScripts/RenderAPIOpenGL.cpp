@@ -439,14 +439,14 @@ namespace ZXEngine
 		unsigned int VAO;
 		unsigned int VBO;
 		float particleQuad[] = {
-			// pos      // tex coord
-			0.0f, 1.0f, 0.0f, 1.0f,
-			1.0f, 0.0f, 1.0f, 0.0f,
-			0.0f, 0.0f, 0.0f, 0.0f,
+			// pos        // tex coord
+			-0.5f,  0.5f, 0.0f, 1.0f,
+			 0.5f, -0.5f, 1.0f, 0.0f,
+			-0.5f, -0.5f, 0.0f, 0.0f,
 
-			0.0f, 1.0f, 0.0f, 1.0f,
-			1.0f, 1.0f, 1.0f, 1.0f,
-			1.0f, 0.0f, 1.0f, 0.0f
+			-0.5f,  0.5f, 0.0f, 1.0f,
+			 0.5f,  0.5f, 1.0f, 1.0f,
+			 0.5f, -0.5f, 1.0f, 0.0f
 		};
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);
