@@ -19,6 +19,9 @@ namespace ZXEngine
 		static glm::mat4 Translate(glm::mat4 const& oriMat, glm::vec3 const& v);
 		static glm::mat4 Rotate(glm::mat4 const& oriMat, float angle, glm::vec3 const& axis);
 		static glm::mat4 Scale(glm::mat4 const& oriMat, glm::vec3 const& scale);
+		static glm::vec2 Normalize(glm::vec2 v);
+		static glm::vec3 Normalize(glm::vec3 v);
+		static glm::vec4 Normalize(glm::vec4 v);
 
 		template<class T>
 		static T Min(T num1, T num2);

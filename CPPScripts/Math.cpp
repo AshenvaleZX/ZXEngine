@@ -142,4 +142,22 @@ namespace ZXEngine
 		Result[3] = oriMat[3];
 		return Result;
 	}
+
+	glm::vec2 Math::Normalize(glm::vec2 v)
+	{
+		float l = sqrt(pow(v.x, 2) + pow(v.y, 2));
+		return glm::vec2(v.x/l, v.y/l);
+	}
+
+	glm::vec3 Math::Normalize(glm::vec3 v)
+	{
+		float l = sqrt(pow(v.x, 2) + pow(v.y, 2) + pow(v.z, 2));
+		return glm::vec3(v.x/l, v.y/l, v.z/l);
+	}
+
+	glm::vec4 Math::Normalize(glm::vec4 v)
+	{
+		float l = sqrt(pow(v.x, 2) + pow(v.y, 2) + pow(v.z, 2) + pow(v.w, 2));
+		return glm::vec4(v.x / l, v.y / l, v.z / l, v.w/l);
+	}
 }
