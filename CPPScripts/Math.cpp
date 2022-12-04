@@ -96,4 +96,50 @@ namespace ZXEngine
 			m02, m12, m22, m32,
 			m03, m13, m23, m33);
 	}
+
+	glm::mat4 Math::Translate(glm::mat4 const& oriMat, glm::vec3 const& v)
+	{
+		glm::mat4 Result(oriMat);
+		Result[3] = oriMat[0] * v[0] + oriMat[1] * v[1] + oriMat[2] * v[2] + oriMat[3];
+		return Result;
+	}
+
+	glm::mat4 Math::Rotate(glm::mat4 const& oriMat, float angle, glm::vec3 const& axis)
+	{
+		float a = angle;
+		float c = cos(a);
+		float s = sin(a);
+
+		glm::vec3 temp((1 - c) * axis);
+
+		glm::mat4 Rotate;
+		Rotate[0][0] = c + temp[0] * axis[0];
+		Rotate[0][1] = temp[0] * axis[1] + s * axis[2];
+		Rotate[0][2] = temp[0] * axis[2] - s * axis[1];
+
+		Rotate[1][0] = temp[1] * axis[0] - s * axis[2];
+		Rotate[1][1] = c + temp[1] * axis[1];
+		Rotate[1][2] = temp[1] * axis[2] + s * axis[0];
+
+		Rotate[2][0] = temp[2] * axis[0] + s * axis[1];
+		Rotate[2][1] = temp[2] * axis[1] - s * axis[0];
+		Rotate[2][2] = c + temp[2] * axis[2];
+
+		glm::mat4 Result;
+		Result[0] = oriMat[0] * Rotate[0][0] + oriMat[1] * Rotate[0][1] + oriMat[2] * Rotate[0][2];
+		Result[1] = oriMat[0] * Rotate[1][0] + oriMat[1] * Rotate[1][1] + oriMat[2] * Rotate[1][2];
+		Result[2] = oriMat[0] * Rotate[2][0] + oriMat[1] * Rotate[2][1] + oriMat[2] * Rotate[2][2];
+		Result[3] = oriMat[3];
+		return Result;
+	}
+
+	glm::mat4 Math::Scale(glm::mat4 const& oriMat, glm::vec3 const& scale)
+	{
+		glm::mat4 Result;
+		Result[0] = oriMat[0] * scale[0];
+		Result[1] = oriMat[1] * scale[1];
+		Result[2] = oriMat[2] * scale[2];
+		Result[3] = oriMat[3];
+		return Result;
+	}
 }
