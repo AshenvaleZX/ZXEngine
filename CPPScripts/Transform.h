@@ -17,13 +17,12 @@ namespace ZXEngine
 		static ComponentType GetType();
 
 		mat4 GetModelMatrix();
-		vec3 GetForward();
-		vec3 GetRight();
-		vec3 GetUp();
-
-	private:
 		mat4 GetPositionMatrix();
 		mat4 GetRotationMatrix();
 		mat4 GetScaleMatrix();
+
+		vec3 GetForward();
+		vec3 GetRight();
+		vec3 GetUp();
 	};
 }

@@ -255,6 +255,12 @@
     <ClCompile Include="..\..\CPPScripts\UITextureRenderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\ParticleSystem.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\ParticleSystemManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">
@@ -517,6 +523,12 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_UITextRenderer.h">
       <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\ParticleSystem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\ParticleSystemManager.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

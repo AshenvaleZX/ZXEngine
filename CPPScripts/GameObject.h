@@ -9,6 +9,7 @@
 #include "UITextRenderer.h"
 #include "UITextureRenderer.h"
 #include "Resources.h"
+#include "ParticleSystem.h"
 
 namespace ZXEngine
 {

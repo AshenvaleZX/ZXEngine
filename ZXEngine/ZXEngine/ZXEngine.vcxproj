@@ -200,6 +200,8 @@
     <ClCompile Include="..\..\CPPScripts\Material.cpp" />
     <ClCompile Include="..\..\CPPScripts\Math.cpp" />
     <ClCompile Include="..\..\CPPScripts\MeshRenderer.cpp" />
+    <ClCompile Include="..\..\CPPScripts\ParticleSystem.cpp" />
+    <ClCompile Include="..\..\CPPScripts\ParticleSystemManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\Quaternion.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPI.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPIOpenGL.cpp" />
@@ -284,6 +286,8 @@
     <ClInclude Include="..\..\CPPScripts\MeshRenderer.h" />
     <ClInclude Include="..\..\CPPScripts\Model.h" />
     <ClInclude Include="..\..\CPPScripts\ParticleGenerator.h" />
+    <ClInclude Include="..\..\CPPScripts\ParticleSystem.h" />
+    <ClInclude Include="..\..\CPPScripts\ParticleSystemManager.h" />
     <ClInclude Include="..\..\CPPScripts\pubh.h" />
     <ClInclude Include="..\..\CPPScripts\PublicEnum.h" />
     <ClInclude Include="..\..\CPPScripts\PublicStruct.h" />

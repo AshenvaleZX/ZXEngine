@@ -39,6 +39,7 @@ namespace ZXEngine
 		T_GameLogic,
 		T_UITextRenderer,
 		T_UITextureRenderer,
+		T_ParticleSystem,
 	};
 
 	enum DrawType

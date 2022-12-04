@@ -24,6 +24,14 @@
         {
             "Type": "GameLogic",
             "Lua": "ObjectMove2"
+        },
+        {
+            "Type": "ParticleSystem",
+            "ParticleNum": 20,
+            "TexturePath": "Textures/star.png",
+            "LifeTime": 1,
+            "Velocity": [0, 10, 0],
+            "StartOffset": [1, 1, 0]
         }
     ]
 }

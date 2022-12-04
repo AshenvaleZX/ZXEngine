@@ -79,6 +79,17 @@ namespace ZXEngine
 				string p = Resources::JsonStrToString(component["TexturePath"]);
 				uiTextureRenderer->SetTexture(Resources::GetAssetFullPath(p.c_str()).c_str());
 			}
+			else if (component["Type"] == "ParticleSystem")
+			{
+				ParticleSystem* particleSystem = AddComponent<ParticleSystem>();
+				string p = Resources::JsonStrToString(component["TexturePath"]);
+				particleSystem->SetTexture(Resources::GetAssetFullPath(p.c_str()).c_str());
+				particleSystem->particleNum = component["ParticleNum"];
+				particleSystem->lifeTime = component["LifeTime"];
+				particleSystem->velocity = vec3(component["Velocity"][0], component["Velocity"][1], component["Velocity"][2]);
+				particleSystem->offset = vec3(component["StartOffset"][0], component["StartOffset"][1], component["StartOffset"][2]);
+				particleSystem->GenerateParticles();
+			}
 		}
 	}
 
