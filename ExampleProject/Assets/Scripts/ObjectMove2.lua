@@ -9,7 +9,7 @@ function ObjectMove2:Start()
 end
 
 function ObjectMove2:Update()
-    self.angle = self.angle - 2 * Time.GetDeltaTime()
+    self.angle = self.angle - 1 * Time.GetDeltaTime()
     local x = math.sin(self.angle)*self.radius
     local z = math.cos(self.angle)*self.radius
     self.trans:SetPosition(x, 10, z)

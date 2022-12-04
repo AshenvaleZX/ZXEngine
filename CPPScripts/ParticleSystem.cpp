@@ -54,12 +54,12 @@ namespace ZXEngine
 		float dt = Time::deltaTime;
 		for (unsigned int i = 0; i < particleNum; i++)
 		{
-			Particle& p = particles[i];
-			p.life -= dt;
-			if (p.life > 0.0f)
+			Particle* p = particles[i];
+			p->life -= dt;
+			if (p->life > 0.0f)
 			{
-				p.position -= p.velocity * dt;
-				p.color.a -= dt * 1;
+				p->position -= p->velocity * dt;
+				p->color.a -= dt * 1;
 			}
 		}
 	}
@@ -71,42 +71,35 @@ namespace ZXEngine
 		bool caculateAngle = true;
 		float hypotenuse = 0;
 		float angle = 0;
-		//int count = 0;
-		for (auto& particle : particles)
+		for (auto particle : particles)
 		{
-			if (particle.life > 0)
+			if (particle->life > 0)
 			{
-				//if (caculateAngle)
+				if (caculateAngle)
 				{
-					hypotenuse = (float)sqrt(pow(viewPos.x - particle.position.x, 2) + pow(viewPos.z - particle.position.z, 2));
-					if (viewPos.z > particle.position.x)
+					hypotenuse = (float)sqrt(pow(viewPos.x - particle->position.x, 2) + pow(viewPos.z - particle->position.z, 2));
+					if (viewPos.z > particle->position.x)
 					{
-						angle = asin((viewPos.x - particle.position.x) / hypotenuse);
+						angle = asin((viewPos.x - particle->position.x) / hypotenuse);
 					}
 					else
 					{
-						angle = asin((particle.position.x - viewPos.x) / hypotenuse);
+						angle = asin((particle->position.x - viewPos.x) / hypotenuse);
 					}
 					caculateAngle = false;
 				}
 
-				mat4 model = mat4(1);
-				model = Math::Translate(model, particle.position);
-				mat4 rotate = GetTransform()->GetRotationMatrix();
-				rotate = Math::Rotate(rotate, angle, vec3(0.0f, 1.0f, 0.0f));
-				mat4 scale = GetTransform()->GetScaleMatrix();
-				scale = Math::Scale(scale, vec3(2.0f));
-				//mat4 mat_M = model * rotate * scale;
-				mat4 mat_M = model * scale;;
+				mat4 model = Math::Translate(mat4(1), particle->position);
+				mat4 rotate = Math::Rotate(mat4(1), angle, vec3(0.0f, 1.0f, 0.0f));
+				mat4 scale = Math::Scale(mat4(1), vec3(2.0f));
+				mat4 mat_M = model * rotate * scale;
 
 				shader->SetMat4("model", mat_M);
-				shader->SetVec4("_Color", particle.color);
+				shader->SetVec4("_Color", particle->color);
 
-				//count++;
 				RenderAPI::GetInstance()->Draw(VAO, 6, DrawType::OpenGLDrawArrays);
 			}
 		}
-		//Debug::Log("Count " + to_string(count));
 	}
 
 	void ParticleSystem::SetTexture(const char* path)
@@ -121,7 +114,7 @@ namespace ZXEngine
 	void ParticleSystem::GenerateParticles()
 	{
 		for (unsigned int i = 0; i < particleNum; ++i)
-			particles.push_back(Particle());
+			particles.push_back(new Particle());
 	}
 
 	unsigned int ParticleSystem::GetUnusedParticleIndex()
@@ -129,7 +122,7 @@ namespace ZXEngine
 		// 从上一个用过的向后找
 		for (unsigned int i = lastUsedIndex; i < particleNum; ++i) 
 		{
-			if (particles[i].life <= 0.0f)
+			if (particles[i]->life <= 0.0f)
 			{
 				lastUsedIndex = i;
 				return i;
@@ -138,7 +131,7 @@ namespace ZXEngine
 		// 没找到就从头找
 		for (unsigned int i = 0; i < lastUsedIndex; ++i) 
 		{
-			if (particles[i].life <= 0.0f)
+			if (particles[i]->life <= 0.0f)
 			{
 				lastUsedIndex = i;
 				return i;
@@ -149,14 +142,17 @@ namespace ZXEngine
 		return 0;
 	}
 
-	void ParticleSystem::RespawnParticle(Particle& particle)
+	void ParticleSystem::RespawnParticle(Particle* particle)
 	{
-		float random = (float)((rand() % 100) - 50) / 100.0f;
+		float xRandom = (float)((rand() % 100) - 50) / 100.0f;
+		float yRandom = (float)((rand() % 100) - 50) / 100.0f;
+		float zRandom = (float)((rand() % 100) - 50) / 100.0f;
 		float rColor = 0.5f + ((rand() % 100) / 100.0f);
-		particle.position = GetTransform()->position + random * offset;
-		//particle.color = vec4(rColor, rColor, rColor, 1.0f);
-		particle.color = vec4(1.0f);
-		particle.life = lifeTime;
-		particle.velocity = velocity;
+		float gColor = 0.5f + ((rand() % 100) / 100.0f);
+		float bColor = 0.5f + ((rand() % 100) / 100.0f);
+		particle->position = GetTransform()->position + vec3(xRandom * offset.x, yRandom * offset.y, zRandom * offset.z);
+		particle->color = vec4(rColor, gColor, bColor, 1.0f);
+		particle->life = lifeTime;
+		particle->velocity = velocity;
 	}
 }

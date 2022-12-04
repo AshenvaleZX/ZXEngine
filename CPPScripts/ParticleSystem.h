@@ -40,12 +40,12 @@ namespace ZXEngine
 		void GenerateParticles();
 
 	private:
-		vector<Particle> particles;
+		vector<Particle*> particles;
 		unsigned int textureID = 0;
 		unsigned int lastUsedIndex = 0;
 		long long lastGenTime = 0;
 
 		unsigned int GetUnusedParticleIndex();
-		void RespawnParticle(Particle& particle);
+		void RespawnParticle(Particle* particle);
 	};
 }
