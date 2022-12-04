@@ -9,6 +9,7 @@
 #include "SceneManager.h"
 #include "CubeMap.h"
 #include "GlobalData.h"
+#include "ParticleSystemManager.h"
 
 namespace ZXEngine
 {
@@ -98,6 +99,9 @@ namespace ZXEngine
 				RenderAPI::GetInstance()->Draw();
 			}
 		}
+
+		ParticleSystemManager::GetInstance()->Update();
+		ParticleSystemManager::GetInstance()->Render(camera);
 
 		// 每次渲染完要清空，下次要渲染的时候再重新添加
 		RenderQueueManager::GetInstance()->ClearAllRenderQueue();
