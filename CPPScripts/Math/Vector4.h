@@ -26,6 +26,8 @@ namespace ZXEngine
 
 		std::string ToString();
 
+		float& operator[] (int i);
+		const float& operator[] (int i) const;
 		Vector4 operator+ (const Vector4& v) const;
 		Vector4 operator- (const Vector4& v) const;
 		Vector4 operator* (const Vector4& v) const;
@@ -34,6 +36,10 @@ namespace ZXEngine
 		Vector4 operator- (float n) const;
 		Vector4 operator* (float n) const;
 		Vector4 operator/ (float n) const;
+		friend Vector4 operator+ (float n, const Vector4& v);
+		friend Vector4 operator- (float n, const Vector4& v);
+		friend Vector4 operator* (float n, const Vector4& v);
+		friend Vector4 operator/ (float n, const Vector4& v);
 		Vector4 operator* (const Matrix4& mat) const;
 	};
 }

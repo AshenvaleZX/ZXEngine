@@ -1,7 +1,9 @@
+#include <cassert>
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Matrix4.h"
+#include "../Debug.h"
 
 namespace ZXEngine
 {
@@ -82,6 +84,46 @@ namespace ZXEngine
 		return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ", " + std::to_string(w) + ")";
 	}
 
+	float& Vector4::operator[] (int i)
+	{
+		switch (i)
+		{
+		case 0:
+			return x;
+		case 1:
+			return y;
+		case 2:
+			return z;
+		case 3:
+			return w;
+		default:
+			Debug::LogError("Invalid index to Vector4 !");
+			assert(false);
+			return x;
+			break;
+		}
+	}
+
+	const float& Vector4::operator[] (int i) const
+	{
+		switch (i)
+		{
+		case 0:
+			return x;
+		case 1:
+			return y;
+		case 2:
+			return z;
+		case 3:
+			return w;
+		default:
+			Debug::LogError("Invalid index to Vector4 !");
+			assert(false);
+			return x;
+			break;
+		}
+	}
+
 	Vector4 Vector4::operator+ (const Vector4& v) const
 	{
 		return Vector4(x + v.x, y + v.y, z + v.z, w + v.w);
@@ -120,6 +162,26 @@ namespace ZXEngine
 	Vector4 Vector4::operator/ (float n) const
 	{
 		return Vector4(x / n, y / n, z / n, w / n);
+	}
+
+	Vector4 operator+ (float n, const Vector4& v)
+	{
+		return Vector4(n + v.x, n + v.y, n + v.z, n + v.w);
+	}
+
+	Vector4 operator- (float n, const Vector4& v)
+	{
+		return Vector4(n - v.x, n - v.y, n - v.z, n - v.w);
+	}
+
+	Vector4 operator* (float n, const Vector4& v)
+	{
+		return Vector4(n * v.x, n * v.y, n * v.z, n * v.w);
+	}
+
+	Vector4 operator/ (float n, const Vector4& v)
+	{
+		return Vector4(n / v.x, n / v.y, n / v.z, n / v.w);
 	}
 
 	Vector4 Vector4::operator* (const Matrix4& mat) const

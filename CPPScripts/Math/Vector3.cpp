@@ -1,7 +1,9 @@
+#include <cassert>
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Matrix3.h"
+#include "../Debug.h"
 
 namespace ZXEngine
 {
@@ -59,6 +61,42 @@ namespace ZXEngine
 		return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ")";
 	}
 
+	float& Vector3::operator[] (int i)
+	{
+		switch (i)
+		{
+		case 0:
+			return x;
+		case 1:
+			return y;
+		case 2:
+			return z;
+		default:
+			Debug::LogError("Invalid index to Vector3 !");
+			assert(false);
+			return x;
+			break;
+		}
+	}
+
+	const float& Vector3::operator[] (int i) const
+	{
+		switch (i)
+		{
+		case 0:
+			return x;
+		case 1:
+			return y;
+		case 2:
+			return z;
+		default:
+			Debug::LogError("Invalid index to Vector3 !");
+			assert(false);
+			return x;
+			break;
+		}
+	}
+
 	Vector3 Vector3::operator+ (const Vector3& v) const
 	{
 		return Vector3(x + v.x, y + v.y, z + v.z);
@@ -97,6 +135,26 @@ namespace ZXEngine
 	Vector3 Vector3::operator/ (float n) const
 	{
 		return Vector3(x / n, y / n, z / n);
+	}
+
+	Vector3 operator+ (float n, const Vector3& v)
+	{
+		return Vector3(n + v.x, n + v.y, n + v.z);
+	}
+
+	Vector3 operator- (float n, const Vector3& v)
+	{
+		return Vector3(n - v.x, n - v.y, n - v.z);
+	}
+
+	Vector3 operator* (float n, const Vector3& v)
+	{
+		return Vector3(n * v.x, n * v.y, n * v.z);
+	}
+
+	Vector3 operator/ (float n, const Vector3& v)
+	{
+		return Vector3(n / v.x, n / v.y, n / v.z);
 	}
 
 	Vector3 Vector3::operator* (const Matrix3& mat) const

@@ -1,6 +1,8 @@
+#include <cassert>
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
+#include "../Debug.h"
 
 namespace ZXEngine
 {
@@ -45,6 +47,38 @@ namespace ZXEngine
 		return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
 	}
 
+	float& Vector2::operator[] (int i)
+	{
+		switch (i)
+		{
+		case 0:
+			return x;
+		case 1:
+			return y;
+		default:
+			Debug::LogError("Invalid index to Vector2 !");
+			assert(false);
+			return x;
+			break;
+		}
+	}
+
+	const float& Vector2::operator[] (int i) const
+	{
+		switch (i)
+		{
+		case 0:
+			return x;
+		case 1:
+			return y;
+		default:
+			Debug::LogError("Invalid index to Vector2 !");
+			assert(false);
+			return x;
+			break;
+		}
+	}
+
 	Vector2 Vector2::operator+ (const Vector2& v) const
 	{
 		return Vector2(x + v.x, y + v.y);
@@ -83,5 +117,25 @@ namespace ZXEngine
 	Vector2 Vector2::operator/ (float n) const
 	{
 		return Vector2(x / n, y / n);
+	}
+
+	Vector2 operator+ (float n, const Vector2& v)
+	{
+		return Vector2(n + v.x, n + v.y);
+	}
+
+	Vector2 operator- (float n, const Vector2& v)
+	{
+		return Vector2(n - v.x, n - v.y);
+	}
+
+	Vector2 operator* (float n, const Vector2& v)
+	{
+		return Vector2(n * v.x, n * v.y);
+	}
+
+	Vector2 operator/ (float n, const Vector2& v)
+	{
+		return Vector2(n / v.x, n / v.y);
 	}
 }

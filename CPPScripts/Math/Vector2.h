@@ -20,6 +20,8 @@ namespace ZXEngine
 
 		std::string ToString();
 
+		float& operator[] (int i);
+		const float& operator[] (int i) const;
 		Vector2 operator+ (const Vector2& v) const;
 		Vector2 operator- (const Vector2& v) const;
 		Vector2 operator* (const Vector2& v) const;
@@ -28,5 +30,9 @@ namespace ZXEngine
 		Vector2 operator- (float n) const;
 		Vector2 operator* (float n) const;
 		Vector2 operator/ (float n) const;
+		friend Vector2 operator+ (float n, const Vector2& v);
+		friend Vector2 operator- (float n, const Vector2& v);
+		friend Vector2 operator* (float n, const Vector2& v);
+		friend Vector2 operator/ (float n, const Vector2& v);
 	};
 }
