@@ -199,6 +199,11 @@
     <ClCompile Include="..\..\CPPScripts\Main.cpp" />
     <ClCompile Include="..\..\CPPScripts\Material.cpp" />
     <ClCompile Include="..\..\CPPScripts\Math.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Math\Matrix3.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Math\Matrix4.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Math\Vector2.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Math\Vector3.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Math\Vector4.cpp" />
     <ClCompile Include="..\..\CPPScripts\MeshRenderer.cpp" />
     <ClCompile Include="..\..\CPPScripts\ParticleSystem.cpp" />
     <ClCompile Include="..\..\CPPScripts\ParticleSystemManager.cpp" />
@@ -282,6 +287,11 @@
     <ClInclude Include="..\..\CPPScripts\Lua\lzio.h" />
     <ClInclude Include="..\..\CPPScripts\Material.h" />
     <ClInclude Include="..\..\CPPScripts\Math.h" />
+    <ClInclude Include="..\..\CPPScripts\Math\Matrix3.h" />
+    <ClInclude Include="..\..\CPPScripts\Math\Matrix4.h" />
+    <ClInclude Include="..\..\CPPScripts\Math\Vector2.h" />
+    <ClInclude Include="..\..\CPPScripts\Math\Vector3.h" />
+    <ClInclude Include="..\..\CPPScripts\Math\Vector4.h" />
     <ClInclude Include="..\..\CPPScripts\Mesh.h" />
     <ClInclude Include="..\..\CPPScripts\MeshRenderer.h" />
     <ClInclude Include="..\..\CPPScripts\Model.h" />

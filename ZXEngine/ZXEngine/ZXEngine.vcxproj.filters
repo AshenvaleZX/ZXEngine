@@ -19,6 +19,9 @@
     <Filter Include="LuaWrap">
       <UniqueIdentifier>{a25bc57f-220b-45ed-bb74-8024bd2867be}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{e40c68b2-581c-4347-826f-71eca3cca993}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Vendor\Src\glad.c">
@@ -260,6 +263,21 @@
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\ParticleSystemManager.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Math\Vector2.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Math\Vector3.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Math\Vector4.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Math\Matrix3.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Math\Matrix4.cpp">
+      <Filter>Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -529,6 +547,21 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\ParticleSystemManager.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Math\Vector2.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Math\Vector3.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Math\Vector4.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Math\Matrix3.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Math\Matrix4.h">
+      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
