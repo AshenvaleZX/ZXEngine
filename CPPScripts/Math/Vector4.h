@@ -28,14 +28,23 @@ namespace ZXEngine
 
 		float& operator[] (int i);
 		const float& operator[] (int i) const;
+		Vector4& operator= (const Vector4& v);
 		Vector4 operator+ (const Vector4& v) const;
 		Vector4 operator- (const Vector4& v) const;
 		Vector4 operator* (const Vector4& v) const;
 		Vector4 operator/ (const Vector4& v) const;
+		Vector4 operator+= (const Vector4& v) const;
+		Vector4 operator-= (const Vector4& v) const;
+		Vector4 operator*= (const Vector4& v) const;
+		Vector4 operator/= (const Vector4& v) const;
 		Vector4 operator+ (float n) const;
 		Vector4 operator- (float n) const;
 		Vector4 operator* (float n) const;
 		Vector4 operator/ (float n) const;
+		Vector4 operator+= (float n) const;
+		Vector4 operator-= (float n) const;
+		Vector4 operator*= (float n) const;
+		Vector4 operator/= (float n) const;
 		friend Vector4 operator+ (float n, const Vector4& v);
 		friend Vector4 operator- (float n, const Vector4& v);
 		friend Vector4 operator* (float n, const Vector4& v);

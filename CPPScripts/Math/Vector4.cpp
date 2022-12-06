@@ -124,6 +124,15 @@ namespace ZXEngine
 		}
 	}
 
+	Vector4& Vector4::operator= (const Vector4& v)
+	{
+		x = v.x;
+		y = v.y;
+		z = v.z;
+		w = v.w;
+		return *this;
+	}
+
 	Vector4 Vector4::operator+ (const Vector4& v) const
 	{
 		return Vector4(x + v.x, y + v.y, z + v.z, w + v.w);
@@ -144,6 +153,26 @@ namespace ZXEngine
 		return Vector4(x / v.x, y / v.y, z / v.z, w / v.w);
 	}
 
+	Vector4 Vector4::operator+= (const Vector4& v) const
+	{
+		return Vector4(x + v.x, y + v.y, z + v.z, w + v.w);
+	}
+
+	Vector4 Vector4::operator-= (const Vector4& v) const
+	{
+		return Vector4(x - v.x, y - v.y, z - v.z, w - v.w);
+	}
+
+	Vector4 Vector4::operator*= (const Vector4& v) const
+	{
+		return Vector4(x * v.x, y * v.y, z * v.z, w * v.w);
+	}
+
+	Vector4 Vector4::operator/= (const Vector4& v) const
+	{
+		return Vector4(x / v.x, y / v.y, z / v.z, w / v.w);
+	}
+
 	Vector4 Vector4::operator+ (float n) const
 	{
 		return Vector4(x + n, y + n, z + n, w + n);
@@ -160,6 +189,26 @@ namespace ZXEngine
 	}
 
 	Vector4 Vector4::operator/ (float n) const
+	{
+		return Vector4(x / n, y / n, z / n, w / n);
+	}
+
+	Vector4 Vector4::operator+= (float n) const
+	{
+		return Vector4(x + n, y + n, z + n, w + n);
+	}
+
+	Vector4 Vector4::operator-= (float n) const
+	{
+		return Vector4(x - n, y - n, z - n, w - n);
+	}
+
+	Vector4 Vector4::operator*= (float n) const
+	{
+		return Vector4(x * n, y * n, z * n, w * n);
+	}
+
+	Vector4 Vector4::operator/= (float n) const
 	{
 		return Vector4(x / n, y / n, z / n, w / n);
 	}
