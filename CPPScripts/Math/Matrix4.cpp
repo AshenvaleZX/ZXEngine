@@ -48,6 +48,15 @@ namespace ZXEngine
 		this->m30 = m30; this->m31 = m31; this->m32 = m32; this->m33 = m33;
 	}
 
+	std::string Matrix4::ToString()
+	{
+		return "\n" +
+			std::to_string(m00) + ", " + std::to_string(m01) + ", " + std::to_string(m02) + ", " + std::to_string(m03) + "\n" +
+			std::to_string(m10) + ", " + std::to_string(m11) + ", " + std::to_string(m12) + ", " + std::to_string(m13) + "\n" +
+			std::to_string(m20) + ", " + std::to_string(m21) + ", " + std::to_string(m22) + ", " + std::to_string(m23) + "\n" +
+			std::to_string(m30) + ", " + std::to_string(m31) + ", " + std::to_string(m32) + ", " + std::to_string(m33) + "\n" +
+			+"\n";
+	}
 
 	Vector4 Matrix4::operator* (const Vector4& v) const
 	{
