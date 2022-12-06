@@ -12,6 +12,9 @@ namespace ZXEngine
 		float x;
 		float y;
 		float z;
+		float& r = x;
+		float& g = y;
+		float& b = z;
 
 		Vector3();
 		Vector3(float n);

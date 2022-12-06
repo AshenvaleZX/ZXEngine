@@ -10,6 +10,8 @@ namespace ZXEngine
 	public:
 		float x;
 		float y;
+		float& r = x;
+		float& g = y;
 
 		Vector2();
 		Vector2(float n);
