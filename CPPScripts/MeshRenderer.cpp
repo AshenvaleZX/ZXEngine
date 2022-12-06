@@ -49,7 +49,7 @@ namespace ZXEngine
         for (unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
             Vertex vertex;
-            vec3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
+            Vector3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to Vector3 class so we transfer the data to this placeholder Vector3 first.
             // positions
             vector.x = mesh->mVertices[i].x;
             vector.y = mesh->mVertices[i].y;
@@ -63,7 +63,7 @@ namespace ZXEngine
             // texture coordinates
             if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
             {
-                vec2 vec;
+                Vector2 vec;
                 // a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
                 // use models where a vertex can have multiple texture coordinates so we always take the first set (0).
                 vec.x = mesh->mTextureCoords[0][i].x;
@@ -72,13 +72,13 @@ namespace ZXEngine
             }
             else
             {
-                vertex.TexCoords = vec2(0.0f, 0.0f);
+                vertex.TexCoords = Vector2(0.0f, 0.0f);
             }
 
             // tangent
             if (mesh->mTangents == nullptr)
             {
-                vertex.Tangent = vec3(0.0f, 0.0f, 0.0f);
+                vertex.Tangent = Vector3(0.0f, 0.0f, 0.0f);
             }
             else
             {
@@ -91,7 +91,7 @@ namespace ZXEngine
             // bitangent
             if (mesh->mBitangents == nullptr)
             {
-                vertex.Bitangent = vec3(0.0f, 0.0f, 0.0f);
+                vertex.Bitangent = Vector3(0.0f, 0.0f, 0.0f);
             }
             else
             {

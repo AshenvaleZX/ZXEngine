@@ -57,15 +57,14 @@ namespace ZXEngine
 		virtual void SetShaderBool(unsigned int ID, string name, bool value) = 0;
 		virtual void SetShaderInt(unsigned int ID, string name, int value) = 0;
 		virtual void SetShaderFloat(unsigned int ID, string name, float value) = 0;
-		virtual void SetShaderVec2(unsigned int ID, string name, vec2 value) = 0;
+		virtual void SetShaderVec2(unsigned int ID, string name, Vector2 value) = 0;
 		virtual void SetShaderVec2(unsigned int ID, string name, float x, float y) = 0;
-		virtual void SetShaderVec3(unsigned int ID, string name, vec3 value) = 0;
+		virtual void SetShaderVec3(unsigned int ID, string name, Vector3 value) = 0;
 		virtual void SetShaderVec3(unsigned int ID, string name, float x, float y, float z) = 0;
-		virtual void SetShaderVec4(unsigned int ID, string name, vec4 value) = 0;
+		virtual void SetShaderVec4(unsigned int ID, string name, Vector4 value) = 0;
 		virtual void SetShaderVec4(unsigned int ID, string name, float x, float y, float z, float w) = 0;
-		virtual void SetShaderMat2(unsigned int ID, string name, mat2 value) = 0;
-		virtual void SetShaderMat3(unsigned int ID, string name, mat3 value) = 0;
-		virtual void SetShaderMat4(unsigned int ID, string name, mat4 value) = 0;
+		virtual void SetShaderMat3(unsigned int ID, string name, Matrix3 value) = 0;
+		virtual void SetShaderMat4(unsigned int ID, string name, Matrix4 value) = 0;
 		virtual void SetShaderTexture(unsigned int ID, string name, unsigned int textureID, unsigned int idx) = 0;
 		virtual void SetShaderCubeMap(unsigned int ID, string name, unsigned int textureID, unsigned int idx) = 0;
 

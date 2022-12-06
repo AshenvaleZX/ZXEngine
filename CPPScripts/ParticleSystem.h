@@ -6,9 +6,9 @@ namespace ZXEngine
 {
 	struct Particle
 	{
-		vec3 position;
-		vec3 velocity;
-		vec4 color;
+		Vector3 position;
+		Vector3 velocity;
+		Vector4 color;
 		float life;
 
 		Particle() : position(0.0f), velocity(0.0f), color(1.0f), life(0.0f) {}
@@ -26,15 +26,15 @@ namespace ZXEngine
 		// 粒子生命周期
 		float lifeTime = 0;
 		// 粒子移动方向和速度
-		vec3 velocity;
+		Vector3 velocity;
 		// 粒子生成位置偏移量
-		vec3 offset;
+		Vector3 offset;
 
 		ParticleSystem();
 		~ParticleSystem();
 
 		void Update();
-		void Render(Shader* shader, vec3 viewPos);
+		void Render(Shader* shader, Vector3 viewPos);
 
 		void SetTexture(const char* path);
 		void GenerateParticles();

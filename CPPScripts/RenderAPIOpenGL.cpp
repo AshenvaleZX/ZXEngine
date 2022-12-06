@@ -504,7 +504,7 @@ namespace ZXEngine
 		// load data into vertex buffers
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		// A great thing about structs is that their memory layout is sequential for all its items.
-		// The effect is that we can simply pass a pointer to the struct and it translates perfectly to a glm::vec3/2 array which
+		// The effect is that we can simply pass a pointer to the struct and it translates perfectly to a Vector3/2 array which
 		// again translates to 3/2 floats which translates to a byte array.
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
 
@@ -598,41 +598,52 @@ namespace ZXEngine
 	{
 		glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 	}
-	void RenderAPIOpenGL::SetShaderVec2(unsigned int ID, string name, vec2 value)
+	void RenderAPIOpenGL::SetShaderVec2(unsigned int ID, string name, Vector2 value)
 	{
-		glUniform2fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+		float* array = new float[2];
+		value.ToArray(array);
+		glUniform2fv(glGetUniformLocation(ID, name.c_str()), 1, array);
+		delete[] array;
 	}
 	void RenderAPIOpenGL::SetShaderVec2(unsigned int ID, string name, float x, float y)
 	{
 		glUniform2f(glGetUniformLocation(ID, name.c_str()), x, y);
 	}
-	void RenderAPIOpenGL::SetShaderVec3(unsigned int ID, string name, vec3 value)
+	void RenderAPIOpenGL::SetShaderVec3(unsigned int ID, string name, Vector3 value)
 	{
-		glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+		float* array = new float[3];
+		value.ToArray(array);
+		glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, array);
+		delete[] array;
 	}
 	void RenderAPIOpenGL::SetShaderVec3(unsigned int ID, string name, float x, float y, float z)
 	{
 		glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
 	}
-	void RenderAPIOpenGL::SetShaderVec4(unsigned int ID, string name, vec4 value)
+	void RenderAPIOpenGL::SetShaderVec4(unsigned int ID, string name, Vector4 value)
 	{
-		glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+		float* array = new float[4];
+		value.ToArray(array);
+		glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, array);
+		delete[] array;
 	}
 	void RenderAPIOpenGL::SetShaderVec4(unsigned int ID, string name, float x, float y, float z, float w)
 	{
 		glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
 	}
-	void RenderAPIOpenGL::SetShaderMat2(unsigned int ID, string name, mat2 mat)
+	void RenderAPIOpenGL::SetShaderMat3(unsigned int ID, string name, Matrix3 mat)
 	{
-		glUniformMatrix2fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+		float* array = new float[9];
+		mat.ToColumnMajorArray(array);
+		glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, array);
+		delete[] array;
 	}
-	void RenderAPIOpenGL::SetShaderMat3(unsigned int ID, string name, mat3 mat)
+	void RenderAPIOpenGL::SetShaderMat4(unsigned int ID, string name, Matrix4 mat)
 	{
-		glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
-	}
-	void RenderAPIOpenGL::SetShaderMat4(unsigned int ID, string name, mat4 mat)
-	{
-		glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+		float* array = new float[16];
+		mat.ToColumnMajorArray(array);
+		glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, array);
+		delete[] array;
 	}
 	void RenderAPIOpenGL::SetShaderTexture(unsigned int ID, string name, unsigned int textureID, unsigned int idx)
 	{

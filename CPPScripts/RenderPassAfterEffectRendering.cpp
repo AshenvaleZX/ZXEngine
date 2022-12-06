@@ -31,19 +31,19 @@ namespace ZXEngine
 	void RenderPassAfterEffectRendering::InitScreenQuad()
 	{
 		// 这里自己在代码里写一个Quad模型，就不从硬盘加载了
-		vec3 points[4] =
+		Vector3 points[4] =
 		{
-			vec3(1, 1, 0),
-			vec3(1, -1, 0),
-			vec3(-1, 1, 0),
-			vec3(-1, -1, 0),
+			Vector3(1, 1, 0),
+			Vector3(1, -1, 0),
+			Vector3(-1, 1, 0),
+			Vector3(-1, -1, 0),
 		};
-		vec2 coords[4] =
+		Vector2 coords[4] =
 		{
-			vec2(1, 1),
-			vec2(1, 0),
-			vec2(0, 1),
-			vec2(0, 0),
+			Vector2(1, 1),
+			Vector2(1, 0),
+			Vector2(0, 1),
+			Vector2(0, 0),
 		};
 		vector<Vertex> vertices;
 		vector<unsigned int> indices =
@@ -55,9 +55,9 @@ namespace ZXEngine
 		{
 			Vertex vertex;
 			vertex.Position = points[i];
-			vertex.Normal = vec3(1);
-			vertex.Tangent = vec3(1);
-			vertex.Bitangent = vec3(1);
+			vertex.Normal = Vector3(1);
+			vertex.Tangent = Vector3(1);
+			vertex.Bitangent = Vector3(1);
 			vertex.TexCoords = coords[i];
 			vertices.push_back(vertex);
 		}

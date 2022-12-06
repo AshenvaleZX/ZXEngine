@@ -5,7 +5,7 @@
 namespace ZXEngine
 {
 	// 固定的字形Mesh顶点采样纹理UV
-	const vec2 GlyphCoords[4] = { vec2(0, 1), vec2(0, 0), vec2(1, 1), vec2(1, 0) };
+	const Vector2 GlyphCoords[4] = { Vector2(0, 1), Vector2(0, 0), Vector2(1, 1), Vector2(1, 0) };
 	// 固定的字形Mesh三角形顶点数组
 	const vector<unsigned int> GlyphIndices =
 	{
@@ -19,7 +19,7 @@ namespace ZXEngine
 		// 当前渲染的文本
 		string text;
 		// 字符颜色
-		vec4 color;
+		Vector4 color;
 
 		UITextRenderer();
 		~UITextRenderer() {};

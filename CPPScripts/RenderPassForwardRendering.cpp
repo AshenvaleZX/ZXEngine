@@ -40,13 +40,13 @@ namespace ZXEngine
 
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue(RenderQueueType::Qpaque);
 
-		mat4 mat_V = camera->GetViewMatrix();
-		mat4 mat_P = camera->GetProjectionMatrix();
+		Matrix4 mat_V = camera->GetViewMatrix();
+		Matrix4 mat_P = camera->GetProjectionMatrix();
 		for (auto renderer : renderQueue->GetRenderers())
 		{
 			Material* material = renderer->matetrial;
 			Shader* shader = material->shader;
-			mat4 mat_M = renderer->GetTransform()->GetModelMatrix();
+			Matrix4 mat_M = renderer->GetTransform()->GetModelMatrix();
 			shader->Use();
 			shader->SetMat4("model", mat_M);
 			shader->SetMat4("view", mat_V);
@@ -110,16 +110,16 @@ namespace ZXEngine
 	void RenderPassForwardRendering::InitSkyBox()
 	{
 		// 这里自己在代码里写一个Box模型，就不从硬盘加载了
-		vec3 points[8] =
+		Vector3 points[8] =
 		{
-			vec3(1, 1, 1),
-			vec3(1, 1, -1),
-			vec3(1, -1, 1),
-			vec3(1, -1, -1),
-			vec3(-1, 1, 1),
-			vec3(-1, 1, -1),
-			vec3(-1, -1, 1),
-			vec3(-1, -1, -1)
+			Vector3(1, 1, 1),
+			Vector3(1, 1, -1),
+			Vector3(1, -1, 1),
+			Vector3(1, -1, -1),
+			Vector3(-1, 1, 1),
+			Vector3(-1, 1, -1),
+			Vector3(-1, -1, 1),
+			Vector3(-1, -1, -1)
 		};
 		vector<Vertex> vertices;
 		vector<unsigned int> indices =
@@ -147,10 +147,10 @@ namespace ZXEngine
 		{
 			Vertex vertex;
 			vertex.Position = points[i];
-			vertex.Normal = vec3(1);
-			vertex.Tangent = vec3(1);
-			vertex.Bitangent = vec3(1);
-			vertex.TexCoords = vec2(1);
+			vertex.Normal = Vector3(1);
+			vertex.Tangent = Vector3(1);
+			vertex.Bitangent = Vector3(1);
+			vertex.TexCoords = Vector2(1);
 			vertices.push_back(vertex);
 		}
 		skyBox = new Mesh(vertices, indices);
@@ -159,8 +159,8 @@ namespace ZXEngine
 	void RenderPassForwardRendering::RenderSkyBox(Camera* camera)
 	{
 		// 先转3x3再回4x4，把相机位移信息去除
-		mat4 mat_V = mat4(mat3(camera->GetViewMatrix()));
-		mat4 mat_P = camera->GetProjectionMatrix();
+		Matrix4 mat_V = Matrix4(Matrix3(camera->GetViewMatrix()));
+		Matrix4 mat_P = camera->GetProjectionMatrix();
 
 		skyBoxShader->Use();
 		skyBoxShader->SetMat4("view", mat_V);

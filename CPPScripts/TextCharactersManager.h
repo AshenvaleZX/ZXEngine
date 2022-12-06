@@ -6,8 +6,8 @@ namespace ZXEngine
 {
 	struct Character {
 		unsigned int TextureID;	// 字形纹理ID
-		ivec2 Size;				// Size of glyph
-		ivec2 Bearing;			// Offset from baseline to left/top of glyph
+		unsigned int Size[2];	// Size of glyph
+		unsigned int Bearing[2];// Offset from baseline to left/top of glyph
 		unsigned int Advance;	// Horizontal offset to advance to next glyph
 	};
 
@@ -26,7 +26,7 @@ namespace ZXEngine
 
 		void BeginRender();
 		// 设置字符颜色
-		void SetColor(vec3 color);
+		void SetColor(Vector3 color);
 		// 设置字符的字形(glyph)纹理
 		void SetTexture(unsigned int ID);
 		// 更新字符Mesh数据

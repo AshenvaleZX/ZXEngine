@@ -7,8 +7,6 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <nlohmann/json.hpp>
 
 using std::string; 
@@ -23,7 +21,6 @@ using std::ifstream;
 using std::stringstream;
 using std::to_string;
 using json = nlohmann::json;
-using namespace glm;
 
 #include "Debug.h"
 #include "Utils.h"

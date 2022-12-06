@@ -83,7 +83,7 @@ namespace ZXEngine
 		}
 	}
 
-	vec3 Quaternion::GetEulerAngles() const 
+	Vector3 Quaternion::GetEulerAngles() const 
 	{
 		// read here: http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/index.htm
 		float test = x * y + z * w;
@@ -116,7 +116,7 @@ namespace ZXEngine
 			}
 		}
 
-		vec3 result;
+		Vector3 result;
 		result.x = Math::Rad2Deg(pitch);
 		result.y = Math::Rad2Deg(yaw);
 		result.z = Math::Rad2Deg(roll);
@@ -132,7 +132,7 @@ namespace ZXEngine
 		this->w = q.w;
 	}
 
-	mat4 Quaternion::ToMatrix()
+	Matrix4 Quaternion::ToMatrix()
 	{
 		// 第一行
 		float m00 = 1 - (2 * y * y) - (2 * z * z);
@@ -149,11 +149,10 @@ namespace ZXEngine
 		float m21 = (2 * y * z) + (2 * w * x);
 		float m22 = 1 - (2 * x * x) - (2 * y * y);
 
-		// 构建GLM矩阵的时候，行列是反的
-		return mat4(
-			m00, m10, m20, 0,
-			m01, m11, m21, 0,
-			m02, m12, m22, 0,
+		return Matrix4(
+			m00, m01, m02, 0,
+			m10, m11, m12, 0,
+			m20, m21, m22, 0,
 			0, 0, 0, 1);
 	}
 }

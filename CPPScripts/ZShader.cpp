@@ -41,7 +41,7 @@ namespace ZXEngine
 	{
 		RenderAPI::GetInstance()->SetShaderFloat(this->ID, name, value);
 	}
-	void Shader::SetVec2(string name, vec2 value)
+	void Shader::SetVec2(string name, Vector2 value)
 	{
 		RenderAPI::GetInstance()->SetShaderVec2(this->ID, name, value);
 	}
@@ -49,7 +49,7 @@ namespace ZXEngine
 	{
 		RenderAPI::GetInstance()->SetShaderVec2(this->ID, name, x, y);
 	}
-	void Shader::SetVec3(string name, vec3 value)
+	void Shader::SetVec3(string name, Vector3 value)
 	{
 		RenderAPI::GetInstance()->SetShaderVec3(this->ID, name, value);
 	}
@@ -57,7 +57,7 @@ namespace ZXEngine
 	{
 		RenderAPI::GetInstance()->SetShaderVec3(this->ID, name, x, y, z);
 	}
-	void Shader::SetVec4(string name, vec4 value)
+	void Shader::SetVec4(string name, Vector4 value)
 	{
 		RenderAPI::GetInstance()->SetShaderVec4(this->ID, name, value);
 	}
@@ -65,15 +65,11 @@ namespace ZXEngine
 	{
 		RenderAPI::GetInstance()->SetShaderVec4(this->ID, name, x, y, z, w);
 	}
-	void Shader::SetMat2(string name, mat2 value)
-	{
-		RenderAPI::GetInstance()->SetShaderMat2(this->ID, name, value);
-	}
-	void Shader::SetMat3(string name, mat3 value)
+	void Shader::SetMat3(string name, Matrix3 value)
 	{
 		RenderAPI::GetInstance()->SetShaderMat3(this->ID, name, value);
 	}
-	void Shader::SetMat4(string name, mat4 value)
+	void Shader::SetMat4(string name, Matrix4 value)
 	{
 		RenderAPI::GetInstance()->SetShaderMat4(this->ID, name, value);
 	}

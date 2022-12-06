@@ -7,22 +7,22 @@ namespace ZXEngine
 	class Transform : public Component
 	{
 	public:
-		vec3 position = vec3(0, 0, 0);
+		Vector3 position = Vector3(0, 0, 0);
 		Quaternion rotation = Quaternion();
-		vec3 scale = vec3(1, 1, 1);
+		Vector3 scale = Vector3(1, 1, 1);
 
 		Transform() {};
 		~Transform() {};
 
 		static ComponentType GetType();
 
-		mat4 GetModelMatrix();
-		mat4 GetPositionMatrix();
-		mat4 GetRotationMatrix();
-		mat4 GetScaleMatrix();
+		Matrix4 GetModelMatrix();
+		Matrix4 GetPositionMatrix();
+		Matrix4 GetRotationMatrix();
+		Matrix4 GetScaleMatrix();
 
-		vec3 GetForward();
-		vec3 GetRight();
-		vec3 GetUp();
+		Vector3 GetForward();
+		Vector3 GetRight();
+		Vector3 GetUp();
 	};
 }

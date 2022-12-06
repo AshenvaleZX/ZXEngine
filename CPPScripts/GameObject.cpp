@@ -12,9 +12,9 @@ namespace ZXEngine
 			{
 				Transform* transform = AddComponent<Transform>();
 
-				transform->position = vec3(component["Position"][0], component["Position"][1], component["Position"][2]);
+				transform->position = Vector3(component["Position"][0], component["Position"][1], component["Position"][2]);
 				transform->rotation.SetEulerAngles(component["Rotation"][0], component["Rotation"][1], component["Rotation"][2]);
-				transform->scale = vec3(component["Scale"][0], component["Scale"][1], component["Scale"][2]);
+				transform->scale = Vector3(component["Scale"][0], component["Scale"][1], component["Scale"][2]);
 			}
 			else if (component["Type"] == "MeshRenderer")
 			{
@@ -58,7 +58,7 @@ namespace ZXEngine
 			{
 				Light* light = AddComponent<Light>();
 
-				light->color = vec3(component["Color"][0], component["Color"][1], component["Color"][2]);
+				light->color = Vector3(component["Color"][0], component["Color"][1], component["Color"][2]);
 				light->intensity = component["Intensity"];
 				light->type = component["LightType"];
 			}
@@ -71,7 +71,7 @@ namespace ZXEngine
 			{
 				UITextRenderer* uiTextRenderer = AddComponent<UITextRenderer>();
 				uiTextRenderer->text = component["Text"];
-				uiTextRenderer->color = vec4(component["Color"][0], component["Color"][1], component["Color"][2], component["Color"][3]);
+				uiTextRenderer->color = Vector4(component["Color"][0], component["Color"][1], component["Color"][2], component["Color"][3]);
 			}
 			else if (component["Type"] == "UITextureRenderer")
 			{
@@ -86,8 +86,8 @@ namespace ZXEngine
 				particleSystem->SetTexture(Resources::GetAssetFullPath(p.c_str()).c_str());
 				particleSystem->particleNum = component["ParticleNum"];
 				particleSystem->lifeTime = component["LifeTime"];
-				particleSystem->velocity = vec3(component["Velocity"][0], component["Velocity"][1], component["Velocity"][2]);
-				particleSystem->offset = vec3(component["StartOffset"][0], component["StartOffset"][1], component["StartOffset"][2]);
+				particleSystem->velocity = Vector3(component["Velocity"][0], component["Velocity"][1], component["Velocity"][2]);
+				particleSystem->offset = Vector3(component["StartOffset"][0], component["StartOffset"][1], component["StartOffset"][2]);
 				particleSystem->GenerateParticles();
 			}
 		}

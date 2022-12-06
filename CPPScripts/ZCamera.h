@@ -19,8 +19,8 @@ namespace ZXEngine
         static ComponentType GetType();
         static vector<Camera*> GetAllCameras();
 
-        mat4 GetViewMatrix();
-        mat4 GetProjectionMatrix();
+        Matrix4 GetViewMatrix();
+        Matrix4 GetProjectionMatrix();
 
 	private:
         // 所有相机

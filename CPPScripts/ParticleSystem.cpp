@@ -64,7 +64,7 @@ namespace ZXEngine
 		}
 	}
 
-	void ParticleSystem::Render(Shader* shader, vec3 viewPos)
+	void ParticleSystem::Render(Shader* shader, Vector3 viewPos)
 	{
 		unsigned int VAO = ParticleSystemManager::GetInstance()->VAO;
 		shader->SetTexture("_Sprite", textureID, 0);
@@ -89,10 +89,10 @@ namespace ZXEngine
 					caculateAngle = false;
 				}
 
-				mat4 model = Math::Translate(mat4(1), particle->position);
-				mat4 rotate = Math::Rotate(mat4(1), angle, vec3(0.0f, 1.0f, 0.0f));
-				mat4 scale = Math::Scale(mat4(1), vec3(2.0f));
-				mat4 mat_M = model * rotate * scale;
+				Matrix4 model = Math::Translate(Matrix4(1), particle->position);
+				Matrix4 rotate = Math::Rotate(Matrix4(1), angle, Vector3(0.0f, 1.0f, 0.0f));
+				Matrix4 scale = Math::Scale(Matrix4(1), Vector3(2.0f));
+				Matrix4 mat_M = model * rotate * scale;
 
 				shader->SetMat4("model", mat_M);
 				shader->SetVec4("_Color", particle->color);
@@ -150,8 +150,8 @@ namespace ZXEngine
 		float rColor = 0.5f + ((rand() % 100) / 100.0f);
 		float gColor = 0.5f + ((rand() % 100) / 100.0f);
 		float bColor = 0.5f + ((rand() % 100) / 100.0f);
-		particle->position = GetTransform()->position + vec3(xRandom * offset.x, yRandom * offset.y, zRandom * offset.z);
-		particle->color = vec4(rColor, gColor, bColor, 1.0f);
+		particle->position = GetTransform()->position + Vector3(xRandom * offset.x, yRandom * offset.y, zRandom * offset.z);
+		particle->color = Vector4(rColor, gColor, bColor, 1.0f);
 		particle->life = lifeTime;
 		particle->velocity = velocity;
 	}

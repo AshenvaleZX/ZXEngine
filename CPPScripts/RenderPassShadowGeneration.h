@@ -14,8 +14,8 @@ namespace ZXEngine
 		virtual void Render(Camera* camera);
 
 	private:
-		mat4 shadowProj;
-		vector<mat4> shadowTransforms;
+		Matrix4 shadowProj;
+		vector<Matrix4> shadowTransforms;
 		Shader* shadowCubeMapShader;
 
 		void RenderShadowMap(Light* light);

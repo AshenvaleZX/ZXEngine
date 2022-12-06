@@ -9,7 +9,7 @@ namespace ZXEngine
     UITextRenderer::UITextRenderer()
     {
         text = "";
-        color = vec4(1, 1, 1, 1);
+        color = Vector4(1, 1, 1, 1);
     }
 
     ComponentType UITextRenderer::GetType()
@@ -32,27 +32,27 @@ namespace ZXEngine
             Character ch = TextCharactersManager::GetInstance()->Characters[*c];
 
             // 计算字符位置和大小
-            float xpos = tmpX + ch.Bearing.x * scale;
-            float ypos = tmpY - (ch.Size.y - ch.Bearing.y) * scale;
-            float w = ch.Size.x * scale;
-            float h = ch.Size.y * scale;
+            float xpos = tmpX + ch.Bearing[0] * scale;
+            float ypos = tmpY - (ch.Size[1] - ch.Bearing[1]) * scale;
+            float w = ch.Size[0] * scale;
+            float h = ch.Size[1] * scale;
             
             // 设置字符顶点数据
-            vec3 points[4] =
+            Vector3 points[4] =
             {
-                vec3(xpos,     ypos,     0),
-                vec3(xpos,     ypos + h, 0),
-                vec3(xpos + w, ypos,     0),
-                vec3(xpos + w, ypos + h, 0),
+                Vector3(xpos,     ypos,     0),
+                Vector3(xpos,     ypos + h, 0),
+                Vector3(xpos + w, ypos,     0),
+                Vector3(xpos + w, ypos + h, 0),
             };
             vector<Vertex> vertices;
             for (unsigned int i = 0; i < 4; i++)
             {
                 Vertex vertex;
                 vertex.Position = points[i];
-                vertex.Normal = vec3(1);
-                vertex.Tangent = vec3(1);
-                vertex.Bitangent = vec3(1);
+                vertex.Normal = Vector3(1);
+                vertex.Tangent = Vector3(1);
+                vertex.Bitangent = Vector3(1);
                 vertex.TexCoords = GlyphCoords[i];
                 vertices.push_back(vertex);
             }

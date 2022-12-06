@@ -1,7 +1,6 @@
 #pragma once
 #include <cmath>
 #include <cfloat>
-#include "glm/glm.hpp"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
@@ -18,22 +17,22 @@ namespace ZXEngine
 		static float Rad2Deg(float radian);
 		// a和b是否基本相等
 		static bool Approximately(float a, float b, float eps = FLT_EPSILON);
-		static glm::mat4 Perspective(float fov, float aspect, float nearClip, float farClip);
-		static glm::mat4 PerspectiveLH(float fov, float aspect, float nearClip, float farClip);
-		static glm::mat4 PerspectiveRH(float fov, float aspect, float nearClip, float farClip);
-		static glm::mat4 Orthographic(float left, float right, float bottom, float top);
-		static glm::mat4 Translate(glm::mat4 const& oriMat, glm::vec3 const& v);
-		static glm::mat4 Rotate(glm::mat4 const& oriMat, float angle, glm::vec3 const& axis);
-		static glm::mat4 Scale(glm::mat4 const& oriMat, glm::vec3 const& scale);
+		static Matrix4 Perspective(float fov, float aspect, float nearClip, float farClip);
+		static Matrix4 PerspectiveLH(float fov, float aspect, float nearClip, float farClip);
+		static Matrix4 PerspectiveRH(float fov, float aspect, float nearClip, float farClip);
+		static Matrix4 Orthographic(float left, float right, float bottom, float top);
+		static Matrix4 Translate(Matrix4 const& oriMat, Vector3 const& v);
+		static Matrix4 Rotate(Matrix4 const& oriMat, float angle, Vector3 const& axis);
+		static Matrix4 Scale(Matrix4 const& oriMat, Vector3 const& scale);
 		static Matrix3 Inverse(const Matrix3& mat);
 		static Matrix4 Inverse(const Matrix4& mat);
-		static glm::vec2 Normalize(glm::vec2 v);
-		static glm::vec3 Normalize(glm::vec3 v);
-		static glm::vec4 Normalize(glm::vec4 v);
-		static float Dot(glm::vec3 left, glm::vec3 right);
-		static glm::vec3 Cross(glm::vec3 left, glm::vec3 right);
+		static Vector2 Normalize(Vector2 v);
+		static Vector3 Normalize(Vector3 v);
+		static Vector4 Normalize(Vector4 v);
+		static float Dot(Vector3 left, Vector3 right);
+		static Vector3 Cross(Vector3 left, Vector3 right);
 		// 这个函数和GLM的LookAt函数效果是一样的
-		static glm::mat4 GetLookToMatrix(glm::vec3 pos, glm::vec3 forward, glm::vec3 up);
+		static Matrix4 GetLookToMatrix(Vector3 pos, Vector3 forward, Vector3 up);
 
 		template<class T>
 		static T Min(T num1, T num2);

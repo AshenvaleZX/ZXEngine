@@ -7,7 +7,7 @@ namespace ZXEngine
 	class Light : public Component
 	{
 	public:
-		vec3 color;
+		Vector3 color;
 		float intensity;
 		LightType type;
 

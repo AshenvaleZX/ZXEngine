@@ -15,7 +15,7 @@ static int SetPosition(lua_State* L)
 	float x = (float)luaL_checknumber(L, -3);
 	float y = (float)luaL_checknumber(L, -2);
 	float z = (float)luaL_checknumber(L, -1);
-	(*data)->position = vec3(x,y,z);
+	(*data)->position = ZXEngine::Vector3(x,y,z);
 	return 0;
 }
 

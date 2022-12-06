@@ -22,19 +22,4 @@ namespace ZXEngine
         }
         return elems;
 	}
-
-    std::string Utils::Vec2ToString(glm::vec2 v)
-    {
-        return "x " + std::to_string(v.x) + " y " + std::to_string(v.y);
-    }
-
-    std::string Utils::Vec3ToString(glm::vec3 v)
-    {
-        return "x " + std::to_string(v.x) + " y " + std::to_string(v.y) + " z " + std::to_string(v.z);
-    }
-
-    std::string Utils::Vec4ToString(glm::vec4 v)
-    {
-        return "x " + std::to_string(v.x) + " y " + std::to_string(v.y) + " z " + std::to_string(v.z) + " w " + std::to_string(v.w);
-    }
 }

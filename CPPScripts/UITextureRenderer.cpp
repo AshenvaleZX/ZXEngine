@@ -13,7 +13,7 @@ namespace ZXEngine
 	{
 		shader = new Shader(Resources::GetAssetFullPath("Shaders/UITextureRenderer.zxshader").c_str());
 
-		mat4 mat_P = Math::Orthographic(0.0f, (float)GlobalData::srcWidth, 0.0f, (float)GlobalData::srcHeight);
+		Matrix4 mat_P = Math::Orthographic(0.0f, (float)GlobalData::srcWidth, 0.0f, (float)GlobalData::srcHeight);
 		shader->Use();
 		shader->SetMat4("projection", mat_P);
 	}
@@ -25,7 +25,7 @@ namespace ZXEngine
 
 	void UITextureRenderer::Render()
 	{
-		mat4 mat_M = GetTransform()->GetModelMatrix();
+		Matrix4 mat_M = GetTransform()->GetModelMatrix();
 		shader->Use();
 		shader->SetMat4("model", mat_M);
 		shader->SetTexture("_Texture", texture->GetID(), 0);
@@ -53,19 +53,19 @@ namespace ZXEngine
 		float height = (float)texture->height;
 
 		// 根据图片尺寸构建Mesh
-		vec3 points[4] =
+		Vector3 points[4] =
 		{
-			vec3(  width / 2 ,   height / 2 , 0),
-			vec3(  width / 2 , -(height / 2), 0),
-			vec3(-(width / 2),   height / 2 , 0),
-			vec3(-(width / 2), -(height / 2), 0),
+			Vector3(  width / 2 ,   height / 2 , 0),
+			Vector3(  width / 2 , -(height / 2), 0),
+			Vector3(-(width / 2),   height / 2 , 0),
+			Vector3(-(width / 2), -(height / 2), 0),
 		};
-		vec2 coords[4] =
+		Vector2 coords[4] =
 		{
-			vec2(1, 1),
-			vec2(1, 0),
-			vec2(0, 1),
-			vec2(0, 0),
+			Vector2(1, 1),
+			Vector2(1, 0),
+			Vector2(0, 1),
+			Vector2(0, 0),
 		};
 		vector<Vertex> vertices;
 		vector<unsigned int> indices =
@@ -77,9 +77,9 @@ namespace ZXEngine
 		{
 			Vertex vertex;
 			vertex.Position = points[i];
-			vertex.Normal = vec3(1);
-			vertex.Tangent = vec3(1);
-			vertex.Bitangent = vec3(1);
+			vertex.Normal = Vector3(1);
+			vertex.Tangent = Vector3(1);
+			vertex.Bitangent = Vector3(1);
 			vertex.TexCoords = coords[i];
 			vertices.push_back(vertex);
 		}
