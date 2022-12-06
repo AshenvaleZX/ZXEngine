@@ -48,7 +48,7 @@ namespace ZXEngine
 		this->m30 = m30; this->m31 = m31; this->m32 = m32; this->m33 = m33;
 	}
 
-	float Matrix4::GetDeterminant()
+	float Matrix4::GetDeterminant() const
 	{
 		return (m00 * m11 * m22 * m33) + (m01 * m12 * m23 * m30) + (m02 * m13 * m20 * m31) + (m03 * m10 * m21 * m32) -
 			(m03 * m12 * m21 * m30) - (m00 * m13 * m22 * m31) - (m01 * m10 * m23 * m32) - (m02 * m11 * m20 * m33);

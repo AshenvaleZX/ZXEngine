@@ -42,7 +42,7 @@ namespace ZXEngine
 		this->m20 = m20; this->m21 = m21; this->m22 = m22;
 	}
 
-	float Matrix3::GetDeterminant()
+	float Matrix3::GetDeterminant() const
 	{
 		return (m00 * m11 * m22) + (m01 * m12 * m20) + (m02 * m10 * m21) - 
 			(m02 * m11 * m20) - (m00 * m12 * m21) - (m01 * m10 * m22);

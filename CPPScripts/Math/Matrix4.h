@@ -4,6 +4,7 @@ namespace ZXEngine
 {
 	class Matrix4
 	{
+		friend class Math;
 		friend class Vector4;
 		friend class Matrix3;
 	public:
@@ -18,7 +19,7 @@ namespace ZXEngine
 			float m30, float m31, float m32, float m33
 		);
 
-		float GetDeterminant();
+		float GetDeterminant() const;
 		std::string ToString();
 
 		Vector4 operator* (const Vector4& v) const;
