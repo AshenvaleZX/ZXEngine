@@ -21,18 +21,18 @@ namespace ZXEngine
 		static Matrix4 PerspectiveLH(float fov, float aspect, float nearClip, float farClip);
 		static Matrix4 PerspectiveRH(float fov, float aspect, float nearClip, float farClip);
 		static Matrix4 Orthographic(float left, float right, float bottom, float top);
-		static Matrix4 Translate(Matrix4 const& oriMat, Vector3 const& v);
-		static Matrix4 Rotate(Matrix4 const& oriMat, float angle, Vector3 const& axis);
-		static Matrix4 Scale(Matrix4 const& oriMat, Vector3 const& scale);
+		static Matrix4 Translate(const Matrix4& oriMat, const Vector3& v);
+		static Matrix4 Rotate(const Matrix4& oriMat, float angle, const Vector3& axis);
+		static Matrix4 Scale(const Matrix4& oriMat, const Vector3& scale);
 		static Matrix3 Inverse(const Matrix3& mat);
 		static Matrix4 Inverse(const Matrix4& mat);
 		static Vector2 Normalize(Vector2 v);
 		static Vector3 Normalize(Vector3 v);
 		static Vector4 Normalize(Vector4 v);
-		static float Dot(Vector3 left, Vector3 right);
-		static Vector3 Cross(Vector3 left, Vector3 right);
+		static float Dot(const Vector3& left, const Vector3& right);
+		static Vector3 Cross(const Vector3& left, const Vector3& right);
 		// 这个函数和GLM的LookAt函数效果是一样的
-		static Matrix4 GetLookToMatrix(Vector3 pos, Vector3 forward, Vector3 up);
+		static Matrix4 GetLookToMatrix(const Vector3& pos, const Vector3& forward, const Vector3& up);
 
 		template<class T>
 		static T Min(T num1, T num2);

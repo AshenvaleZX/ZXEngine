@@ -106,7 +106,7 @@ namespace ZXEngine
 		return resMat;
 	}
 
-	Matrix4 Math::Translate(Matrix4 const& oriMat, Vector3 const& v)
+	Matrix4 Math::Translate(const Matrix4& oriMat, const Vector3& v)
 	{
 		Matrix4 resMat(oriMat);
 		resMat.m03 = oriMat.m03 + v.x;
@@ -115,7 +115,7 @@ namespace ZXEngine
 		return resMat;
 	}
 
-	Matrix4 Math::Rotate(Matrix4 const& oriMat, float angle, Vector3 const& axis)
+	Matrix4 Math::Rotate(const Matrix4& oriMat, float angle, const Vector3& axis)
 	{
 		float a = angle;
 		float c = cos(a);
@@ -139,7 +139,7 @@ namespace ZXEngine
 		return rotate * oriMat;
 	}
 
-	Matrix4 Math::Scale(Matrix4 const& oriMat, Vector3 const& scale)
+	Matrix4 Math::Scale(const Matrix4& oriMat, const Vector3& scale)
 	{
 		Matrix4 resMat(oriMat);
 		resMat.m00 *= scale.x;
@@ -225,12 +225,12 @@ namespace ZXEngine
 		return Vector4(v.x / l, v.y / l, v.z / l, v.w/l);
 	}
 
-	float Math::Dot(Vector3 left, Vector3 right)
+	float Math::Dot(const Vector3& left, const Vector3& right)
 	{
 		return left.x * right.x + left.y + right.y + left.z + right.z;
 	}
 
-	Vector3 Math::Cross(Vector3 left, Vector3 right)
+	Vector3 Math::Cross(const Vector3& left, const Vector3& right)
 	{
 		return Vector3(
 			left.y * right.z - left.z * right.y,
@@ -238,7 +238,7 @@ namespace ZXEngine
 			left.x * right.y - left.y * right.x);
 	}
 
-	Matrix4 Math::GetLookToMatrix(Vector3 pos, Vector3 forward, Vector3 up)
+	Matrix4 Math::GetLookToMatrix(const Vector3& pos, const Vector3& forward, const Vector3& up)
 	{
 		// 学Unity用的左手坐标系，up叉乘forward得到right，右手坐标系得反过来
 		Vector3 right = Cross(up, forward);
@@ -254,19 +254,7 @@ namespace ZXEngine
 			0, 1, 0, -pos.y,
 			0, 0, 1, -pos.z,
 			0, 0, 0, 1);
-		/**
-		Matrix4 viewMat = Matrix4(
-			right.x, up.x, forward.x, 0,
-			right.y, up.y, forward.y, 0,
-			right.z, up.z, forward.z, 0,
-			0, 0, 0, 1);
-		Matrix4 posMat = Matrix4(
-			1, 0, 0, 0,
-			0, 1, 0, 0,
-			0, 0, 1, 0,
-			-pos.x, -pos.y, -pos.z, 1);
-		//*/
-
+		
 		return viewMat * posMat;
 	}
 }
