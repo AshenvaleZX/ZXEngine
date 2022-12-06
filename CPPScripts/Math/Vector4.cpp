@@ -79,6 +79,14 @@ namespace ZXEngine
 		this->w = v.w;
 	}
 
+	void Vector4::ToArray(float* array)
+	{
+		array[0] = x;
+		array[1] = y;
+		array[2] = z;
+		array[3] = w;
+	}
+
 	std::string Vector4::ToString()
 	{
 		return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ", " + std::to_string(w) + ")";

@@ -54,6 +54,22 @@ namespace ZXEngine
 			(m03 * m12 * m21 * m30) - (m00 * m13 * m22 * m31) - (m01 * m10 * m23 * m32) - (m02 * m11 * m20 * m33);
 	}
 
+	void Matrix4::ToRowMajorArray(float* array)
+	{
+		array[0]  = m00; array[1]  = m01; array[2]  = m02; array[3]  = m03;
+		array[4]  = m10; array[5]  = m11; array[6]  = m12; array[7]  = m13;
+		array[8]  = m20; array[9]  = m21; array[10] = m22; array[11] = m23;
+		array[12] = m30; array[13] = m31; array[14] = m32; array[15] = m33;
+	}
+
+	void Matrix4::ToColumnMajorArray(float* array)
+	{
+		array[0]  = m00; array[1]  = m10; array[2]  = m20; array[3]  = m30;
+		array[4]  = m01; array[5]  = m11; array[6]  = m21; array[7]  = m31;
+		array[8]  = m02; array[9]  = m12; array[10] = m22; array[11] = m32;
+		array[12] = m03; array[13] = m13; array[14] = m23; array[15] = m33;
+	}
+
 	std::string Matrix4::ToString()
 	{
 		return "\n" +

@@ -42,6 +42,12 @@ namespace ZXEngine
 		this->y = v.y;
 	}
 
+	void Vector2::ToArray(float* array)
+	{
+		array[0] = x;
+		array[1] = y;
+	}
+
 	std::string Vector2::ToString()
 	{
 		return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";

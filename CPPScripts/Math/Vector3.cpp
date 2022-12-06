@@ -56,6 +56,13 @@ namespace ZXEngine
 		this->z = v.z;
 	}
 
+	void Vector3::ToArray(float* array)
+	{
+		array[0] = x;
+		array[1] = y;
+		array[2] = z;
+	}
+
 	std::string Vector3::ToString()
 	{
 		return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ")";
