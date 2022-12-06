@@ -18,6 +18,7 @@ namespace ZXEngine
 			float m20, float m21, float m22
 		);
 
+		float GetDeterminant();
 		std::string ToString();
 
 		Vector3 operator* (const Vector3& v) const;
