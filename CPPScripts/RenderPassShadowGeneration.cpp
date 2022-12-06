@@ -54,12 +54,12 @@ namespace ZXEngine
 		vec3 lightPos = light->GetTransform()->position;
 		// 注意这里的shadowProj是基于右手坐标系构建的，因为OpenGL是基于右手坐标系的，这个是用在OpenGL的几何着色器里的
 		// 如果是基于左手坐标系构建shadowProj，这里怎么设置都不对
-		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3(-1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)));
-		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3( 1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)));
-		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3( 0.0f, -1.0f,  0.0f), vec3(0.0f,  0.0f,  1.0f)));
-		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3( 0.0f,  1.0f,  0.0f), vec3(0.0f,  0.0f, -1.0f)));
-		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3( 0.0f,  0.0f, -1.0f), vec3(0.0f, -1.0f,  0.0f)));
-		shadowTransforms.push_back(shadowProj * Utils::GetLookToMatrix(lightPos, vec3( 0.0f,  0.0f,  1.0f), vec3(0.0f, -1.0f,  0.0f)));
+		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, vec3(-1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)));
+		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, vec3( 1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)));
+		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, vec3( 0.0f, -1.0f,  0.0f), vec3(0.0f,  0.0f,  1.0f)));
+		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, vec3( 0.0f,  1.0f,  0.0f), vec3(0.0f,  0.0f, -1.0f)));
+		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, vec3( 0.0f,  0.0f, -1.0f), vec3(0.0f, -1.0f,  0.0f)));
+		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, vec3( 0.0f,  0.0f,  1.0f), vec3(0.0f, -1.0f,  0.0f)));
 
 		// 设置shader
 		shadowCubeMapShader->Use();

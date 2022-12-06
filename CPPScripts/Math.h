@@ -27,6 +27,10 @@ namespace ZXEngine
 		static glm::vec2 Normalize(glm::vec2 v);
 		static glm::vec3 Normalize(glm::vec3 v);
 		static glm::vec4 Normalize(glm::vec4 v);
+		static float Dot(glm::vec3 left, glm::vec3 right);
+		static glm::vec3 Cross(glm::vec3 left, glm::vec3 right);
+		// 这个函数和GLM的LookAt函数效果是一样的
+		static glm::mat4 GetLookToMatrix(glm::vec3 pos, glm::vec3 forward, glm::vec3 up);
 
 		template<class T>
 		static T Min(T num1, T num2);

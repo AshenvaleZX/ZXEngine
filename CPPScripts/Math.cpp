@@ -160,4 +160,43 @@ namespace ZXEngine
 		float l = sqrt(pow(v.x, 2) + pow(v.y, 2) + pow(v.z, 2) + pow(v.w, 2));
 		return glm::vec4(v.x / l, v.y / l, v.z / l, v.w/l);
 	}
+
+	float Math::Dot(glm::vec3 left, glm::vec3 right)
+	{
+		return left.x * right.x + left.y + right.y + left.z + right.z;
+	}
+
+	glm::vec3 Math::Cross(glm::vec3 left, glm::vec3 right)
+	{
+		return glm::vec3(
+			left.y * right.z - left.z * right.y,
+			left.z * right.x - left.x * right.z,
+			left.x * right.y - left.y * right.x);
+	}
+
+	glm::mat4 Math::GetLookToMatrix(glm::vec3 pos, glm::vec3 forward, glm::vec3 up)
+	{
+		// 学Unity用的左手坐标系，up叉乘forward得到right，右手坐标系得反过来
+		glm::vec3 right = Cross(up, forward);
+
+		// 由于GLM里是以列为主序的，平时书面上的矩阵都是以行为主序的，所以这里看起来像是转置过了一样，其实这个viewMat看起来应该是这样的：
+		//  Right.x,  Right.y,  Right.z, 0,
+		//  Up.x,     Up.y,     Up.z,    0,
+		//  Front.x,  Front.y,  Front.z, 0,
+		//  0,        0,        0,       1
+		// 后面的posMat同理
+		// 基于左手坐标系构建View矩阵这里的forward应该是正的，右手坐标系是负的
+		glm::mat4 viewMat = glm::mat4(
+			right.x, up.x, forward.x, 0,
+			right.y, up.y, forward.y, 0,
+			right.z, up.z, forward.z, 0,
+			0, 0, 0, 1);
+		glm::mat4 posMat = glm::mat4(
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			-pos.x, -pos.y, -pos.z, 1);
+
+		return viewMat * posMat;
+	}
 }
