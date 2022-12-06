@@ -21,6 +21,7 @@ namespace ZXEngine
 		static glm::mat4 Perspective(float fov, float aspect, float nearClip, float farClip);
 		static glm::mat4 PerspectiveLH(float fov, float aspect, float nearClip, float farClip);
 		static glm::mat4 PerspectiveRH(float fov, float aspect, float nearClip, float farClip);
+		static glm::mat4 Orthographic(float left, float right, float bottom, float top);
 		static glm::mat4 Translate(glm::mat4 const& oriMat, glm::vec3 const& v);
 		static glm::mat4 Rotate(glm::mat4 const& oriMat, float angle, glm::vec3 const& axis);
 		static glm::mat4 Scale(glm::mat4 const& oriMat, glm::vec3 const& scale);

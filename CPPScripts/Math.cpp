@@ -97,6 +97,17 @@ namespace ZXEngine
 			m03, m13, m23, m33);
 	}
 
+	glm::mat4 Math::Orthographic(float left, float right, float bottom, float top)
+	{
+		glm::mat4 mat(1);
+		mat[0][0] = 2 / (right - left);
+		mat[1][1] = 2 / (top - bottom);
+		mat[2][2] = -1;
+		mat[3][0] = -(right + left) / (right - left);
+		mat[3][1] = -(top + bottom) / (top - bottom);
+		return mat;
+	}
+
 	glm::mat4 Math::Translate(glm::mat4 const& oriMat, glm::vec3 const& v)
 	{
 		glm::mat4 Result(oriMat);
@@ -145,19 +156,19 @@ namespace ZXEngine
 
 	glm::vec2 Math::Normalize(glm::vec2 v)
 	{
-		float l = sqrt(pow(v.x, 2) + pow(v.y, 2));
+		float l = (float)sqrt(pow(v.x, 2) + pow(v.y, 2));
 		return glm::vec2(v.x/l, v.y/l);
 	}
 
 	glm::vec3 Math::Normalize(glm::vec3 v)
 	{
-		float l = sqrt(pow(v.x, 2) + pow(v.y, 2) + pow(v.z, 2));
+		float l = (float)sqrt(pow(v.x, 2) + pow(v.y, 2) + pow(v.z, 2));
 		return glm::vec3(v.x/l, v.y/l, v.z/l);
 	}
 
 	glm::vec4 Math::Normalize(glm::vec4 v)
 	{
-		float l = sqrt(pow(v.x, 2) + pow(v.y, 2) + pow(v.z, 2) + pow(v.w, 2));
+		float l = (float)sqrt(pow(v.x, 2) + pow(v.y, 2) + pow(v.z, 2) + pow(v.w, 2));
 		return glm::vec4(v.x / l, v.y / l, v.z / l, v.w/l);
 	}
 
