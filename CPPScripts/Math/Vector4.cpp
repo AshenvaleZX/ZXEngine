@@ -161,24 +161,40 @@ namespace ZXEngine
 		return Vector4(x / v.x, y / v.y, z / v.z, w / v.w);
 	}
 
-	Vector4 Vector4::operator+= (const Vector4& v) const
+	Vector4& Vector4::operator+= (const Vector4& v)
 	{
-		return Vector4(x + v.x, y + v.y, z + v.z, w + v.w);
+		x += v.x;
+		y += v.y;
+		z += v.z;
+		w += v.w;
+		return *this;
 	}
 
-	Vector4 Vector4::operator-= (const Vector4& v) const
+	Vector4& Vector4::operator-= (const Vector4& v)
 	{
-		return Vector4(x - v.x, y - v.y, z - v.z, w - v.w);
+		x -= v.x;
+		y -= v.y;
+		z -= v.z;
+		w -= v.w;
+		return *this;
 	}
 
-	Vector4 Vector4::operator*= (const Vector4& v) const
+	Vector4& Vector4::operator*= (const Vector4& v)
 	{
-		return Vector4(x * v.x, y * v.y, z * v.z, w * v.w);
+		x *= v.x;
+		y *= v.y;
+		z *= v.z;
+		w *= v.w;
+		return *this;
 	}
 
-	Vector4 Vector4::operator/= (const Vector4& v) const
+	Vector4& Vector4::operator/= (const Vector4& v)
 	{
-		return Vector4(x / v.x, y / v.y, z / v.z, w / v.w);
+		x /= v.x;
+		y /= v.y;
+		z /= v.z;
+		w /= v.w;
+		return *this;
 	}
 
 	Vector4 Vector4::operator+ (float n) const
@@ -201,24 +217,40 @@ namespace ZXEngine
 		return Vector4(x / n, y / n, z / n, w / n);
 	}
 
-	Vector4 Vector4::operator+= (float n) const
+	Vector4& Vector4::operator+= (float n)
 	{
-		return Vector4(x + n, y + n, z + n, w + n);
+		x += n;
+		y += n;
+		z += n;
+		w += n;
+		return *this;
 	}
 
-	Vector4 Vector4::operator-= (float n) const
+	Vector4& Vector4::operator-= (float n)
 	{
-		return Vector4(x - n, y - n, z - n, w - n);
+		x -= n;
+		y -= n;
+		z -= n;
+		w -= n;
+		return *this;
 	}
 
-	Vector4 Vector4::operator*= (float n) const
+	Vector4& Vector4::operator*= (float n)
 	{
-		return Vector4(x * n, y * n, z * n, w * n);
+		x *= n;
+		y *= n;
+		z *= n;
+		w *= n;
+		return *this;
 	}
 
-	Vector4 Vector4::operator/= (float n) const
+	Vector4& Vector4::operator/= (float n)
 	{
-		return Vector4(x / n, y / n, z / n, w / n);
+		x /= n;
+		y /= n;
+		z /= n;
+		w /= n;
+		return *this;
 	}
 
 	Vector4 operator+ (float n, const Vector4& v)

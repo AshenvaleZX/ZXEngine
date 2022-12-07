@@ -132,24 +132,36 @@ namespace ZXEngine
 		return Vector3(x / v.x, y / v.y, z / v.z);
 	}
 
-	Vector3 Vector3::operator+= (const Vector3& v) const
+	Vector3& Vector3::operator+= (const Vector3& v)
 	{
-		return Vector3(x + v.x, y + v.y, z + v.z);
+		x += v.x;
+		y += v.y;
+		z += v.z;
+		return *this;
 	}
 
-	Vector3 Vector3::operator-= (const Vector3& v) const
+	Vector3& Vector3::operator-= (const Vector3& v)
 	{
-		return Vector3(x - v.x, y - v.y, z - v.z);
+		x -= v.x;
+		y -= v.y;
+		z -= v.z;
+		return *this;
 	}
 
-	Vector3 Vector3::operator*= (const Vector3& v) const
+	Vector3& Vector3::operator*= (const Vector3& v)
 	{
-		return Vector3(x * v.x, y * v.y, z * v.z);
+		x *= v.x;
+		y *= v.y;
+		z *= v.z;
+		return *this;
 	}
 
-	Vector3 Vector3::operator/= (const Vector3& v) const
+	Vector3& Vector3::operator/= (const Vector3& v)
 	{
-		return Vector3(x / v.x, y / v.y, z / v.z);
+		x /= v.x;
+		y /= v.y;
+		z /= v.z;
+		return *this;
 	}
 
 	Vector3 Vector3::operator+ (float n) const
@@ -172,24 +184,36 @@ namespace ZXEngine
 		return Vector3(x / n, y / n, z / n);
 	}
 
-	Vector3 Vector3::operator+= (float n) const
+	Vector3& Vector3::operator+= (float n)
 	{
-		return Vector3(x + n, y + n, z + n);
+		x += n;
+		y += n;
+		z += n;
+		return *this;
 	}
 
-	Vector3 Vector3::operator-= (float n) const
+	Vector3& Vector3::operator-= (float n)
 	{
-		return Vector3(x - n, y - n, z - n);
+		x -= n;
+		y -= n;
+		z -= n;
+		return *this;
 	}
 
-	Vector3 Vector3::operator*= (float n) const
+	Vector3& Vector3::operator*= (float n)
 	{
-		return Vector3(x * n, y * n, z * n);
+		x *= n;
+		y *= n;
+		z *= n;
+		return *this;
 	}
 
-	Vector3 Vector3::operator/= (float n) const
+	Vector3& Vector3::operator/= (float n)
 	{
-		return Vector3(x / n, y / n, z / n);
+		x /= n;
+		y /= n;
+		z /= n;
+		return *this;
 	}
 
 	Vector3 operator+ (float n, const Vector3& v)
