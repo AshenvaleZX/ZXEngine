@@ -1,0 +1,4 @@
+{
+    "WindowSize": [1280, 720],
+    "DefaultScene": "Scenes/MyWorld.zxscene"
+}

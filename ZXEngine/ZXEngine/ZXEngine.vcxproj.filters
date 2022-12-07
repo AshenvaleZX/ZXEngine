@@ -279,6 +279,9 @@
     <ClCompile Include="..\..\CPPScripts\Math\Quaternion.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\ProjectSetting.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">
@@ -562,6 +565,9 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Math\Quaternion.h">
       <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\ProjectSetting.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

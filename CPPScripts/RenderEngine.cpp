@@ -19,7 +19,7 @@ namespace ZXEngine
 	void RenderEngine::Create()
 	{
 		mInstance = new RenderEngine();
-		mInstance->InitWindow(1280, 720);
+		mInstance->InitWindow(ProjectSetting::srcWidth, ProjectSetting::srcHeight);
 		RenderQueueManager::Creat();
 		RenderAPI::Creat();
 		RenderAPI::GetInstance()->InitRenderSetting();

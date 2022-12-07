@@ -33,19 +33,20 @@ namespace ZXEngine
 		Resources() {};
 		~Resources() {};
 
-		static void SetAssetsPath(const char* path);
-		static const char* GetAssetsPath();
-		static string GetAssetFullPath(const char* path);
-		static SceneStruct* LoadScene(const char* path);
-		static PrefabStruct* LoadPrefab(const char* path);
-		static MaterialStruct* LoadMaterial(const char* path);
+		static void SetAssetsPath(string path);
+		static string GetAssetsPath();
+		static string GetAssetFullPath(string path);
+		static json LoadJson(string path);
+		static SceneStruct* LoadScene(string path);
+		static PrefabStruct* LoadPrefab(string path);
+		static MaterialStruct* LoadMaterial(string path);
 		static vector<string> LoadCubeMap(json data);
 
 		static string JsonStrToString(json data);
 
 	private:
-		static const char* assetsPath;
+		static string assetsPath;
 
-		static json GetAssetData(const char* path);
+		static json GetAssetData(string path);
 	};
 }

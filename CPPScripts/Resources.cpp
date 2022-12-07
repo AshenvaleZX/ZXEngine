@@ -2,22 +2,20 @@
 
 namespace ZXEngine
 {
-	const char* Resources::assetsPath;
-	void Resources::SetAssetsPath(const char* path)
+	string Resources::assetsPath;
+	void Resources::SetAssetsPath(string path)
 	{
 		assetsPath = path;
 	}
 	
-	const char* Resources::GetAssetsPath()
+	string Resources::GetAssetsPath()
 	{
 		return assetsPath;
 	}
 
-	string Resources::GetAssetFullPath(const char* path)
+	string Resources::GetAssetFullPath(string path)
 	{
-		std::stringstream ss;
-		ss << assetsPath << path;
-		return ss.str();
+		return assetsPath + (string)path;
 	}
 
 	string Resources::JsonStrToString(json data)
@@ -28,14 +26,12 @@ namespace ZXEngine
 		return p;
 	}
 
-	json Resources::GetAssetData(const char* path)
+	json Resources::LoadJson(string path)
 	{
-		string p = Resources::GetAssetFullPath(path);
-		Debug::Log("Load asset: " + p);
-		std::ifstream f(p);
+		std::ifstream f(path);
 		if (!f.is_open())
 		{
-			Debug::LogError("Load asset failed: " + p);
+			Debug::LogError("Load asset failed: " + path);
 		}
 		json data;
 		try
@@ -44,14 +40,21 @@ namespace ZXEngine
 		}
 		catch (json::exception& e)
 		{
-			Debug::LogError("Asset format error: " + p);
+			Debug::LogError("Asset format error: " + path);
 			string msg = e.what();
 			Debug::LogError("Error detail: " + msg);
 		}
 		return data;
 	}
 
-	SceneStruct* Resources::LoadScene(const char* path)
+	json Resources::GetAssetData(string path)
+	{
+		string p = Resources::GetAssetFullPath(path);
+		Debug::Log("Load asset: " + p);
+		return Resources::LoadJson(p);
+	}
+
+	SceneStruct* Resources::LoadScene(string path)
 	{
 		json data = Resources::GetAssetData(path);
 		SceneStruct* scene = new SceneStruct;
@@ -68,7 +71,7 @@ namespace ZXEngine
 		return scene;
 	}
 
-	PrefabStruct* Resources::LoadPrefab(const char* path)
+	PrefabStruct* Resources::LoadPrefab(string path)
 	{
 		json data = Resources::GetAssetData(path);
 		PrefabStruct* prefab = new PrefabStruct;
@@ -87,7 +90,7 @@ namespace ZXEngine
 		return prefab;
 	}
 
-	MaterialStruct* Resources::LoadMaterial(const char* path)
+	MaterialStruct* Resources::LoadMaterial(string path)
 	{
 		json data = Resources::GetAssetData(path);
 		MaterialStruct* matStruct = new MaterialStruct;
@@ -111,12 +114,12 @@ namespace ZXEngine
 	vector<string> Resources::LoadCubeMap(json data)
 	{
 		vector<string> cube;
-		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]).c_str()) + Resources::JsonStrToString(data["Right"]));
-		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]).c_str()) + Resources::JsonStrToString(data["Left"]));
-		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]).c_str()) + Resources::JsonStrToString(data["Up"]));
-		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]).c_str()) + Resources::JsonStrToString(data["Down"]));
-		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]).c_str()) + Resources::JsonStrToString(data["Front"]));
-		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]).c_str()) + Resources::JsonStrToString(data["Back"]));
+		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"])) + Resources::JsonStrToString(data["Right"]));
+		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"])) + Resources::JsonStrToString(data["Left"]));
+		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"])) + Resources::JsonStrToString(data["Up"]));
+		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"])) + Resources::JsonStrToString(data["Down"]));
+		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"])) + Resources::JsonStrToString(data["Front"]));
+		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"])) + Resources::JsonStrToString(data["Back"]));
 		return cube;
 	}
 }

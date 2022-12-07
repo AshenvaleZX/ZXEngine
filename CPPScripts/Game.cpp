@@ -4,7 +4,6 @@
 #include "InputManager.h"
 #include "Time.h"
 #include "SceneManager.h"
-#include "Resources.h"
 #include "LuaManager.h"
 #include "GameLogicManager.h"
 
@@ -12,14 +11,13 @@ namespace ZXEngine
 {
 	void Game::Play()
 	{
-		Resources::SetAssetsPath("../../ExampleProject/Assets/");
+		ProjectSetting::InitSetting("../../ExampleProject");
 		EventManager::Create();
-		SceneManager::Create();
 		RenderEngine::Create();
 		InputManager::Create();
 		LuaManager::Create();
 		GameLogicManager::Create();
-		SceneManager::GetInstance()->SetCurScene("Scenes/MyWorld.zxscene");
+		SceneManager::Create();
 
 		while (!RenderEngine::GetInstance()->WindowShouldClose())
 		{

@@ -10,7 +10,7 @@ extern "C"
 
 static int GetAssetsPath(lua_State* L)
 {
-	lua_pushstring(L, ZXEngine::Resources::GetAssetsPath());
+	lua_pushstring(L, ZXEngine::Resources::GetAssetsPath().c_str());
 	return 1;
 }
 

@@ -8,6 +8,7 @@ namespace ZXEngine
 	void SceneManager::Create()
 	{
 		mInstance = new SceneManager();
+		mInstance->SetCurScene(ProjectSetting::defaultScene.c_str());
 	}
 
 	SceneManager* SceneManager::GetInstance()
