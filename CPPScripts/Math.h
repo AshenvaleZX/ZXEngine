@@ -6,6 +6,7 @@
 #include "Math/Vector4.h"
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
+#include "Math/Quaternion.h"
 
 namespace ZXEngine
 {

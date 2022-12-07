@@ -201,13 +201,13 @@
     <ClCompile Include="..\..\CPPScripts\Math.cpp" />
     <ClCompile Include="..\..\CPPScripts\Math\Matrix3.cpp" />
     <ClCompile Include="..\..\CPPScripts\Math\Matrix4.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Math\Quaternion.cpp" />
     <ClCompile Include="..\..\CPPScripts\Math\Vector2.cpp" />
     <ClCompile Include="..\..\CPPScripts\Math\Vector3.cpp" />
     <ClCompile Include="..\..\CPPScripts\Math\Vector4.cpp" />
     <ClCompile Include="..\..\CPPScripts\MeshRenderer.cpp" />
     <ClCompile Include="..\..\CPPScripts\ParticleSystem.cpp" />
     <ClCompile Include="..\..\CPPScripts\ParticleSystemManager.cpp" />
-    <ClCompile Include="..\..\CPPScripts\Quaternion.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPI.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPIOpenGL.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderEngine.cpp" />
@@ -289,6 +289,7 @@
     <ClInclude Include="..\..\CPPScripts\Math.h" />
     <ClInclude Include="..\..\CPPScripts\Math\Matrix3.h" />
     <ClInclude Include="..\..\CPPScripts\Math\Matrix4.h" />
+    <ClInclude Include="..\..\CPPScripts\Math\Quaternion.h" />
     <ClInclude Include="..\..\CPPScripts\Math\Vector2.h" />
     <ClInclude Include="..\..\CPPScripts\Math\Vector3.h" />
     <ClInclude Include="..\..\CPPScripts\Math\Vector4.h" />
@@ -301,7 +302,6 @@
     <ClInclude Include="..\..\CPPScripts\pubh.h" />
     <ClInclude Include="..\..\CPPScripts\PublicEnum.h" />
     <ClInclude Include="..\..\CPPScripts\PublicStruct.h" />
-    <ClInclude Include="..\..\CPPScripts\Quaternion.h" />
     <ClInclude Include="..\..\CPPScripts\RenderAPI.h" />
     <ClInclude Include="..\..\CPPScripts\RenderAPIOpenGL.h" />
     <ClInclude Include="..\..\CPPScripts\RenderEngine.h" />

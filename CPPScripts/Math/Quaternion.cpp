@@ -1,24 +1,8 @@
 #include "Quaternion.h"
-#include "Math.h"
+#include "../Math.h"
 
 namespace ZXEngine
 {
-	Quaternion::Quaternion() 
-	{
-		x = 0;
-		y = 0;
-		z = 0;
-		w = 1.0f;
-	}
-
-	Quaternion::Quaternion(float x, float y, float z, float w) 
-	{
-		this->x = x;
-		this->y = y;
-		this->z = z;
-		this->w = w;
-	}
-
 	Quaternion Quaternion::Euler(float x, float y, float z)
 	{
 		// read here: http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm
@@ -43,21 +27,20 @@ namespace ZXEngine
 		return q;
 	}
 
-	Quaternion Quaternion::operator * (const Quaternion& q)const 
+	Quaternion::Quaternion() 
 	{
-		float xx = w * q.x + q.w * x + y * q.z - z * q.y;
-		float yy = w * q.y + q.w * y - x * q.z + z * q.x;
-		float zz = w * q.z + q.w * z + x * q.y - y * q.x;
-		float ww = w * q.w - (x * q.x + y * q.y + z * q.z);
-		Quaternion result = Quaternion(xx, yy, zz, ww);
-		result.Normalize();
-		return result;
+		x = 0;
+		y = 0;
+		z = 0;
+		w = 1.0f;
 	}
 
-	void Quaternion::operator *= (const Quaternion& q) 
+	Quaternion::Quaternion(float x, float y, float z, float w) 
 	{
-		// 把this解引用再乘
-		*this = *this * q;
+		this->x = x;
+		this->y = y;
+		this->z = z;
+		this->w = w;
 	}
 
 	float Quaternion::Normal() const
@@ -154,5 +137,23 @@ namespace ZXEngine
 			m10, m11, m12, 0,
 			m20, m21, m22, 0,
 			0, 0, 0, 1);
+	}
+
+	Quaternion Quaternion::operator* (const Quaternion& q) const
+	{
+		float xx = w * q.x + q.w * x + y * q.z - z * q.y;
+		float yy = w * q.y + q.w * y - x * q.z + z * q.x;
+		float zz = w * q.z + q.w * z + x * q.y - y * q.x;
+		float ww = w * q.w - (x * q.x + y * q.y + z * q.z);
+		Quaternion result = Quaternion(xx, yy, zz, ww);
+		result.Normalize();
+		return result;
+	}
+
+	Quaternion& Quaternion::operator*= (const Quaternion& q)
+	{
+		// 把this解引用再乘
+		*this = *this * q;
+		return *this;
 	}
 }

@@ -1,6 +1,5 @@
 #pragma once
 #include "Component.h"
-#include "Quaternion.h"
 
 namespace ZXEngine
 {

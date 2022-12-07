@@ -99,9 +99,6 @@
     <ClCompile Include="..\..\CPPScripts\Light.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Quaternion.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\CPPScripts\Math.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -279,6 +276,9 @@
     <ClCompile Include="..\..\CPPScripts\Math\Matrix4.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Math\Quaternion.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">
@@ -378,9 +378,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\PublicStruct.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Quaternion.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Math.h">
@@ -561,6 +558,9 @@
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Math\Matrix4.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Math\Quaternion.h">
       <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
