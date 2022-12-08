@@ -10,7 +10,8 @@ namespace ZXEngine
 	RenderPassAfterEffectRendering::RenderPassAfterEffectRendering()
 	{
 		InitScreenQuad();
-		InitGaussianBlur();
+		//InitGaussianBlur();
+		InitKawaseBlur();
 		InitExtractBrightArea();
 		InitBloomBlend(true);
 	}
@@ -27,7 +28,10 @@ namespace ZXEngine
 		string res1 = BlitExtractBrightArea("Main");
 		
 		// 高斯模糊高亮区域
-		string res2 = BlitGaussianBlur(res1, 1, 3.0f);
+		//string res2 = BlitGaussianBlur(res1, 1, 3.0f);
+		
+		// Kawase模糊高亮区域
+		string res2 = BlitKawaseBlur(res1, 2, 2.0f);
 
 		// 混合原图和高亮模糊
 		string res3 = BlitBloomBlend("Main", res2, true);
@@ -134,6 +138,33 @@ namespace ZXEngine
 		}
 		// 返回最终输出的FBO名字
 		return pingpongBuffer[!isHorizontal];
+	}
+
+	void RenderPassAfterEffectRendering::InitKawaseBlur(bool isFinal)
+	{
+		CreateShader(KawaseBlur, "Shaders/KawaseBlur.zxshader");
+		FBOManager::GetInstance()->CreateFBO("KawaseBlur0", FrameBufferType::Color);
+		FBOManager::GetInstance()->CreateFBO("KawaseBlur1", FrameBufferType::Color);
+	}
+
+	string RenderPassAfterEffectRendering::BlitKawaseBlur(string sourceFBO, int blurTimes, float texOffset, bool isFinal)
+	{
+		bool isSwitch = true;
+		string pingpongBuffer[2] = { "KawaseBlur0", "KawaseBlur1" };
+		auto shader = GetShader(KawaseBlur);
+		shader->Use();
+		shader->SetFloat("_TexOffset", texOffset);
+		for (int i = 0; i < blurTimes; i++)
+		{
+			FBOManager::GetInstance()->SwitchFBO(pingpongBuffer[isSwitch]);
+			string colorFBO = i == 0 ? sourceFBO : pingpongBuffer[!isSwitch];
+			shader->SetInt("_BlurTimes", i+1);
+			shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(colorFBO)->ColorBuffer, 0);
+			RenderAPI::GetInstance()->Draw();
+			isSwitch = !isSwitch;
+		}
+		// 返回最终输出的FBO名字
+		return pingpongBuffer[!isSwitch];
 	}
 
 	void RenderPassAfterEffectRendering::InitBloomBlend(bool isFinal)
