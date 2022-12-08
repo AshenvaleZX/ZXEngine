@@ -332,7 +332,7 @@ namespace ZXEngine
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
 			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-				Debug::LogError("Framebuffer not complete!");
+				Debug::LogError("Framebuffer Normal not complete!");
 			// 恢复默认状态
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			// 对FBO对象赋值
@@ -362,13 +362,36 @@ namespace ZXEngine
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
 			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-				Debug::LogError("Framebuffer not complete!");
+				Debug::LogError("Framebuffer HigthPrecision not complete!");
 			// 恢复默认状态
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			// 对FBO对象赋值
 			FBO->ID = FBO_ID;
 			FBO->ColorBuffer = colorBuffer;
 			FBO->DepthBuffer = depthBuffer;
+		}
+		else if (type == FrameBufferType::Color)
+		{
+			unsigned int FBO_ID;
+			glGenFramebuffers(1, &FBO_ID);
+			// 创建ColorBuffer
+			unsigned int colorBuffer;
+			glGenTextures(1, &colorBuffer);
+			glBindTexture(GL_TEXTURE_2D, colorBuffer);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			// 把ColorBuffer绑定到FBO上
+			glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
+			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+				Debug::LogError("Framebuffer Color not complete!");
+			// 恢复默认状态
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			// 对FBO对象赋值
+			FBO->ID = FBO_ID;
+			FBO->ColorBuffer = colorBuffer;
+			FBO->DepthBuffer = NULL;
 		}
 		else if (type == FrameBufferType::ShadowMap)
 		{
@@ -391,6 +414,8 @@ namespace ZXEngine
 			// 明确告诉OpenGL这个FBO不会渲染到Color Buffer
 			glDrawBuffer(GL_NONE);
 			glReadBuffer(GL_NONE);
+			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+				Debug::LogError("Framebuffer ShadowMap not complete!");
 			// 恢复默认状态
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			// 对FBO对象赋值
@@ -419,6 +444,8 @@ namespace ZXEngine
 			// 明确告诉OpenGL这个FBO不会渲染到Color Buffer
 			glDrawBuffer(GL_NONE);
 			glReadBuffer(GL_NONE);
+			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+				Debug::LogError("Framebuffer ShadowCubeMap not complete!");
 			// 恢复默认状态
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			// 对FBO对象赋值

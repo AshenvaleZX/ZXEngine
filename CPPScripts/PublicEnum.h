@@ -19,6 +19,7 @@ namespace ZXEngine
 	{
 		Normal,
 		HigthPrecision,
+		Color,
 		ShadowMap,
 		ShadowCubeMap,
 	};
