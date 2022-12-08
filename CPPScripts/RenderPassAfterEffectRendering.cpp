@@ -10,13 +10,9 @@ namespace ZXEngine
 	RenderPassAfterEffectRendering::RenderPassAfterEffectRendering()
 	{
 		InitScreenQuad();
-		aeShader = new Shader(Resources::GetAssetFullPath("Shaders/RenderTexture.zxshader").c_str());
-		extractBrightShader = new Shader(Resources::GetAssetFullPath("Shaders/ExtractBrightArea.zxshader").c_str());
-		gaussianBlurShader = new Shader(Resources::GetAssetFullPath("Shaders/GaussianBlur.zxshader").c_str());
-		bloomBlendShader = new Shader(Resources::GetAssetFullPath("Shaders/BloomBlend.zxshader").c_str());
-		FBOManager::GetInstance()->CreateFBO("ExtractBrightArea", FrameBufferType::Color);
-		FBOManager::GetInstance()->CreateFBO("GaussianBlurVertical", FrameBufferType::Color);
-		FBOManager::GetInstance()->CreateFBO("GaussianBlurHorizontal", FrameBufferType::Color);
+		InitGaussianBlur();
+		InitExtractBrightArea();
+		InitBloomBlend(true);
 	}
 
 	void RenderPassAfterEffectRendering::Render(Camera* camera)
@@ -27,40 +23,33 @@ namespace ZXEngine
 		// 整个后处理都在这个覆盖屏幕的四边形上渲染
 		screenQuad->Use();
 
-		// -------------------- 提取画面高亮部分 --------------------
-		FBOManager::GetInstance()->SwitchFBO("ExtractBrightArea");
-		RenderAPI::GetInstance()->ClearFrameBuffer();
-		extractBrightShader->Use();
-		extractBrightShader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("Main")->ColorBuffer, 0);
-		RenderAPI::GetInstance()->Draw();
+		// 提取画面高亮部分
+		string res1 = BlitExtractBrightArea("Main");
 		
-		// -------------------- 高斯模糊高亮区域 --------------------
-		// 反复模糊次数，次数越多越模糊，但是这个很影响性能，别开太高
-		int blurTimes = 1;
-		// 采样偏移距离，1代表偏移1像素，越大越模糊，这个不影响性能，但是太大了效果会不正常
-		float texOffset = 3.0f;
-		bool isHorizontal = true;
-		string pingpongBuffer[2] = { "GaussianBlurHorizontal", "GaussianBlurVertical" };
-		gaussianBlurShader->Use();
-		gaussianBlurShader->SetFloat("_TexOffset", texOffset);
-		for (int i = 0; i < blurTimes * 2; i++)
-		{
-			FBOManager::GetInstance()->SwitchFBO(pingpongBuffer[isHorizontal]);
-			string colorFBO = i == 0 ? "ExtractBrightArea" : pingpongBuffer[!isHorizontal];
-			gaussianBlurShader->SetBool("_Horizontal", isHorizontal);
-			gaussianBlurShader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(colorFBO)->ColorBuffer, 0);
-			RenderAPI::GetInstance()->Draw();
-			isHorizontal = !isHorizontal;
-		}
+		// 高斯模糊高亮区域
+		string res2 = BlitGaussianBlur(res1, 1, 3.0f);
 
-		// 切换到默认FBO，也就是直接渲染到输出的画面上
-		FBOManager::GetInstance()->SwitchFBO("Screen");
-		// 清理上一帧数据
-		RenderAPI::GetInstance()->ClearFrameBuffer();
-		bloomBlendShader->Use();
-		bloomBlendShader->SetTexture("_BrightBlur", FBOManager::GetInstance()->GetFBO(pingpongBuffer[!isHorizontal])->ColorBuffer, 1);
-		bloomBlendShader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("Main")->ColorBuffer, 2);
-		RenderAPI::GetInstance()->Draw();
+		// 混合原图和高亮模糊
+		string res3 = BlitBloomBlend("Main", res2, true);
+	}
+
+	void RenderPassAfterEffectRendering::CreateShader(string name, string path)
+	{
+		if (aeShaders.count(name) > 0)
+		{
+			Debug::LogError("Try to add an existing shader");
+			return;
+		}
+		aeShaders.insert(pair<string, Shader*>(name, new Shader(Resources::GetAssetFullPath(path).c_str())));
+	}
+
+	Shader* RenderPassAfterEffectRendering::GetShader(string name)
+	{
+		map<string, Shader*>::iterator iter = aeShaders.find(name);
+		if (iter != aeShaders.end())
+			return iter->second;
+		else
+			return nullptr;
 	}
 
 	void RenderPassAfterEffectRendering::InitScreenQuad()
@@ -97,5 +86,71 @@ namespace ZXEngine
 			vertices.push_back(vertex);
 		}
 		screenQuad = new Mesh(vertices, indices);
+	}
+
+	void RenderPassAfterEffectRendering::InitExtractBrightArea(bool isFinal)
+	{
+		CreateShader(ExtractBrightArea, "Shaders/ExtractBrightArea.zxshader");
+		if (!isFinal)
+			FBOManager::GetInstance()->CreateFBO(ExtractBrightArea, FrameBufferType::Color);
+	}
+
+	string RenderPassAfterEffectRendering::BlitExtractBrightArea(string sourceFBO, bool isFinal)
+	{
+		FBOManager::GetInstance()->SwitchFBO(isFinal ? ScreenBuffer : ExtractBrightArea);
+		RenderAPI::GetInstance()->ClearFrameBuffer();
+		auto shader = GetShader(ExtractBrightArea);
+		shader->Use();
+		shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(sourceFBO)->ColorBuffer, 0);
+		RenderAPI::GetInstance()->Draw();
+		// 返回输出的FBO名字
+		return ExtractBrightArea;
+	}
+
+	void RenderPassAfterEffectRendering::InitGaussianBlur(bool isFinal)
+	{
+		CreateShader(GaussianBlur, "Shaders/GaussianBlur.zxshader");
+		FBOManager::GetInstance()->CreateFBO("GaussianBlurVertical", FrameBufferType::Color);
+		FBOManager::GetInstance()->CreateFBO("GaussianBlurHorizontal", FrameBufferType::Color);
+	}
+
+	// blurTimes 反复模糊次数，次数越多越模糊，但是这个很影响性能，别开太高
+	// texOffset 采样偏移距离，1代表偏移1像素，越大越模糊，这个不影响性能，但是太大了效果会不正常
+	string RenderPassAfterEffectRendering::BlitGaussianBlur(string sourceFBO, int blurTimes, float texOffset, bool isFinal)
+	{
+		bool isHorizontal = true;
+		string pingpongBuffer[2] = { "GaussianBlurHorizontal", "GaussianBlurVertical" };
+		auto shader = GetShader(GaussianBlur);
+		shader->Use();
+		shader->SetFloat("_TexOffset", texOffset);
+		for (int i = 0; i < blurTimes * 2; i++)
+		{
+			FBOManager::GetInstance()->SwitchFBO(pingpongBuffer[isHorizontal]);
+			string colorFBO = i == 0 ? sourceFBO : pingpongBuffer[!isHorizontal];
+			shader->SetBool("_Horizontal", isHorizontal);
+			shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(colorFBO)->ColorBuffer, 0);
+			RenderAPI::GetInstance()->Draw();
+			isHorizontal = !isHorizontal;
+		}
+		// 返回最终输出的FBO名字
+		return pingpongBuffer[!isHorizontal];
+	}
+
+	void RenderPassAfterEffectRendering::InitBloomBlend(bool isFinal)
+	{
+		CreateShader(BloomBlend, "Shaders/BloomBlend.zxshader");
+		if (!isFinal)
+			FBOManager::GetInstance()->CreateFBO(BloomBlend, FrameBufferType::Color);
+	}
+
+	string RenderPassAfterEffectRendering::BlitBloomBlend(string originFBO, string blurFBO, bool isFinal)
+	{
+		FBOManager::GetInstance()->SwitchFBO(isFinal ? ScreenBuffer : BloomBlend);
+		auto shader = GetShader(BloomBlend);
+		shader->Use();
+		shader->SetTexture("_BrightBlur", FBOManager::GetInstance()->GetFBO(blurFBO)->ColorBuffer, 0);
+		shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(originFBO)->ColorBuffer, 1);
+		RenderAPI::GetInstance()->Draw();
+		return BloomBlend;
 	}
 }

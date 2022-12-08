@@ -21,7 +21,7 @@ namespace ZXEngine
 	void FBOManager::SwitchFBO(string name)
 	{
 		// 直接写入到默认的屏幕Buffer
-		if (name == "Screen")
+		if (name == ScreenBuffer)
 		{
 			RenderAPI::GetInstance()->SwitchFrameBuffer(0);
 			return;

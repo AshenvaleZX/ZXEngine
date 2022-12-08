@@ -2,6 +2,8 @@
 #include "pubh.h"
 #include "FrameBufferObject.h"
 
+#define ScreenBuffer "Screen"
+
 namespace ZXEngine
 {
 	class FBOManager
