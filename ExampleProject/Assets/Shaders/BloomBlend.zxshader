@@ -21,10 +21,13 @@ out vec4 FragColor;
 
 in vec2 TexCoords;
 
+uniform sampler2D _BrightBlur;
 uniform sampler2D _RenderTexture;
 
 void main()
 {
-    FragColor = texture(_RenderTexture, TexCoords);
+    vec3 brightBlur = texture(_BrightBlur, TexCoords).rgb;
+    vec3 renderTexture = texture(_RenderTexture, TexCoords).rgb;
+    FragColor = vec4(renderTexture + brightBlur, 1.0);
 }
 #fs_end

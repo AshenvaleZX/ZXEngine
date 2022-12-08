@@ -1,0 +1,55 @@
+#vs_begin
+#version 460 core
+layout (location = 0) in vec3 aPos;
+layout (location = 2) in vec2 aTexCoords;
+
+out vec2 TexCoords;
+
+void main()
+{
+    TexCoords = aTexCoords;    
+    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
+}
+#vs_end
+
+#gs_begin
+#gs_end
+
+#fs_begin
+#version 460 core
+out vec4 FragColor;
+
+in vec2 TexCoords;
+
+// 是否横向模糊
+uniform bool _Horizontal;
+// 采样偏移距离，1表示偏移1像素
+uniform float _TexOffset;
+// 原图
+uniform sampler2D _RenderTexture;
+// 简化后的高斯卷积核
+uniform float weight[5] = float[] (0.2270270270, 0.1945945946, 0.1216216216, 0.0540540541, 0.0162162162);
+
+void main()
+{             
+    vec2 texOffset = _TexOffset / textureSize(_RenderTexture, 0);
+    vec3 color = texture(_RenderTexture, TexCoords).rgb * weight[0];
+    if(_Horizontal)
+    {
+        for(int i = 1; i < 5; ++i)
+        {
+            color += texture(_RenderTexture, TexCoords + vec2(texOffset.x * i, 0.0)).rgb * weight[i];
+            color += texture(_RenderTexture, TexCoords - vec2(texOffset.x * i, 0.0)).rgb * weight[i];
+        }
+    }
+    else
+    {
+        for(int i = 1; i < 5; ++i)
+        {
+            color += texture(_RenderTexture, TexCoords + vec2(0.0, texOffset.y * i)).rgb * weight[i];
+            color += texture(_RenderTexture, TexCoords - vec2(0.0, texOffset.y * i)).rgb * weight[i];
+        }
+    }
+    FragColor = vec4(color, 1.0);
+}
+#fs_end

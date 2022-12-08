@@ -10,6 +10,9 @@ namespace ZXEngine
 	{
 	public:
 		Shader* aeShader;
+		Shader* extractBrightShader;
+		Shader* gaussianBlurShader;
+		Shader* bloomBlendShader;
 
 		RenderPassAfterEffectRendering();
 		~RenderPassAfterEffectRendering() {};
@@ -18,7 +21,7 @@ namespace ZXEngine
 
 	private:
 		Mesh* screenQuad;
-
+		
 		void InitScreenQuad();
 	};
 }
