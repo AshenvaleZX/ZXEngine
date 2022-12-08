@@ -7,18 +7,20 @@ namespace ZXEngine
 	class FBOManager
 	{
 	public:
-		FrameBufferObject* mainFBO = nullptr;
-		FrameBufferObject* shadowMapFBO = nullptr;
-		FrameBufferObject* shadowCubeMapFBO = nullptr;
-
-		FBOManager() {};
-		~FBOManager() {};
-
 		static void Create();
 		static FBOManager* GetInstance();
-
 	private:
 		static FBOManager* mInstance;
 
+	public:
+		FBOManager() {};
+		~FBOManager() {};
+
+		void SwitchFBO(string name);
+		void CreateFBO(string name, FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
+		FrameBufferObject* GetFBO(string name);
+
+	private:
+		map<string, FrameBufferObject*> allFBO;
 	};
 }

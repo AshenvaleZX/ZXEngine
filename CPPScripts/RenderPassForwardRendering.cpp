@@ -22,7 +22,7 @@ namespace ZXEngine
 	void RenderPassForwardRendering::Render(Camera* camera)
 	{
 		// 切换到主FBO
-		RenderAPI::GetInstance()->SwitchFrameBuffer(FBOManager::GetInstance()->mainFBO->ID);
+		FBOManager::GetInstance()->SwitchFBO("Main");
 		// ViewPort设置为窗口大小
 		RenderAPI::GetInstance()->SetViewPortSize(GlobalData::srcWidth, GlobalData::srcHeight);
 		// 开启深度测试
@@ -87,7 +87,7 @@ namespace ZXEngine
 				else if (light->type == LightType::Point)
 				{
 					// 之前已经把纹理编号设置到 textureNum - 1 了，所以这里是textureNum
-					shader->SetCubeMap("_DepthCubeMap", FBOManager::GetInstance()->shadowCubeMapFBO->DepthBuffer, textureNum);
+					shader->SetCubeMap("_DepthCubeMap", FBOManager::GetInstance()->GetFBO("ShadowCubeMap")->DepthBuffer, textureNum);
 					shader->SetFloat("_FarPlane", GlobalData::shadowCubeMapFarPlane);
 				}
 			}

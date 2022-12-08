@@ -16,6 +16,7 @@ namespace ZXEngine
 		// 这个是用在OpenGL的几何着色器里的，OpenGL是右手坐标系，所以这个得用基于右手坐标系的
 		shadowProj = Math::PerspectiveRH(Math::Deg2Rad(90.0f), (float)GlobalData::depthCubeMapWidth / (float)GlobalData::depthCubeMapWidth, GlobalData::shadowCubeMapNearPlane, GlobalData::shadowCubeMapFarPlane);
 		shadowCubeMapShader = new Shader(Resources::GetAssetFullPath("Shaders/PointShadowDepth.zxshader").c_str());
+		FBOManager::GetInstance()->CreateFBO("ShadowCubeMap", FrameBufferType::ShadowCubeMap, GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
 	}
 	
 	void RenderPassShadowGeneration::Render(Camera* camera)
@@ -41,7 +42,7 @@ namespace ZXEngine
 	void RenderPassShadowGeneration::RenderShadowCubeMap(Light* light)
 	{
 		// 切换到shadow FBO
-		RenderAPI::GetInstance()->SwitchFrameBuffer(FBOManager::GetInstance()->shadowCubeMapFBO->ID);
+		FBOManager::GetInstance()->SwitchFBO("ShadowCubeMap");
 		// ViewPort改成渲染CubeMap的正方形
 		RenderAPI::GetInstance()->SetViewPortSize(GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
 		// 开启深度测试和写入

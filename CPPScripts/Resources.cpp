@@ -64,7 +64,7 @@ namespace ZXEngine
 		for (unsigned int i = 0; i < data["GameObjects"].size(); i++)
 		{
 			string p = Resources::JsonStrToString(data["GameObjects"][i]);
-			PrefabStruct* prefab = Resources::LoadPrefab(p.c_str());
+			PrefabStruct* prefab = Resources::LoadPrefab(p);
 			scene->prefabs.push_back(prefab);
 		}
 
@@ -96,13 +96,13 @@ namespace ZXEngine
 		MaterialStruct* matStruct = new MaterialStruct;
 
 		string p = Resources::JsonStrToString(data["Shader"]);
-		matStruct->shaderPath = Resources::GetAssetFullPath(p.c_str());
+		matStruct->shaderPath = Resources::GetAssetFullPath(p);
 
 		for (unsigned int i = 0; i < data["Textures"].size(); i++)
 		{
 			json texture = data["Textures"][i];
 			TextureStruct* textureStruct = new TextureStruct();
-			textureStruct->path = Resources::GetAssetFullPath(Resources::JsonStrToString(texture["Path"]).c_str());
+			textureStruct->path = Resources::GetAssetFullPath(Resources::JsonStrToString(texture["Path"]));
 			textureStruct->uniformName = Resources::JsonStrToString(texture["UniformName"]);
 
 			matStruct->textures.push_back(textureStruct);

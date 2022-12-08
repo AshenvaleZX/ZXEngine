@@ -16,14 +16,14 @@ namespace ZXEngine
 	void RenderPassAfterEffectRendering::Render(Camera* camera)
 	{
 		// 切换到默认FBO，也就是直接渲染到输出的画面上
-		RenderAPI::GetInstance()->SwitchFrameBuffer(0);
+		FBOManager::GetInstance()->SwitchFBO("Screen");
 		// 关闭深度测试和写入
 		RenderAPI::GetInstance()->EnableDepthTest(false);
 		RenderAPI::GetInstance()->EnableDepthWrite(false);
 		// 清理上一帧数据
 		RenderAPI::GetInstance()->ClearFrameBuffer();
 		aeShader->Use();
-		aeShader->SetTexture("_RenderTexture", FBOManager::GetInstance()->mainFBO->ColorBuffer, 0);
+		aeShader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("Main")->ColorBuffer, 0);
 		screenQuad->Use();
 		RenderAPI::GetInstance()->Draw();
 	}
