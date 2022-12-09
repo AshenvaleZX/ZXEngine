@@ -18,4 +18,13 @@ namespace ZXEngine
 	{
 		std::cout << "Error:   " << message << std::endl;
 	}
+
+#ifdef ZX_DEBUG
+	int Debug::drawCallCount;
+	void Debug::Update() 
+	{
+		Log("Draw Call: " + std::to_string(drawCallCount));
+		drawCallCount = 0;
+	}
+#endif
 }

@@ -26,6 +26,11 @@ namespace ZXEngine
 
 			// äÖÈ¾
 			Render();
+
+#ifdef ZX_DEBUG
+			// µ÷ÊÔ
+			Debug::Update();
+#endif
 		}
 	}
 

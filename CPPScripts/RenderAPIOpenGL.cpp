@@ -497,6 +497,10 @@ namespace ZXEngine
 		glDrawElements(GL_TRIANGLES, primitiveSize, GL_UNSIGNED_INT, 0);
 		// 绘制完重置一下(不重置也行，不过及时重置避免出问题)
 		glBindVertexArray(0);
+
+#ifdef ZX_DEBUG
+		Debug::drawCallCount++;
+#endif
 	}
 
 	void RenderAPIOpenGL::Draw(unsigned int VAO, unsigned int size, DrawType type)
@@ -511,6 +515,10 @@ namespace ZXEngine
 			Debug::LogError("Wrong draw type: " + to_string(type));
 
 		glBindVertexArray(0);
+
+#ifdef ZX_DEBUG
+		Debug::drawCallCount++;
+#endif
 	}
 
 	// Mesh设置
