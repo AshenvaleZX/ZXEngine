@@ -149,12 +149,12 @@ namespace ZXEngine
 
 	void ParticleSystem::RespawnParticle(Particle* particle)
 	{
-		float xRandom = (float)((rand() % 100) - 50) / 100.0f;
-		float yRandom = (float)((rand() % 100) - 50) / 100.0f;
-		float zRandom = (float)((rand() % 100) - 50) / 100.0f;
-		float rColor = 0.5f + ((rand() % 100) / 100.0f);
-		float gColor = 0.5f + ((rand() % 100) / 100.0f);
-		float bColor = 0.5f + ((rand() % 100) / 100.0f);
+		float xRandom = Math::RandomFloat(-0.5f, 0.5f);
+		float yRandom = Math::RandomFloat(-0.5f, 0.5f);
+		float zRandom = Math::RandomFloat(-0.5f, 0.5f);
+		float rColor = Math::RandomFloat(0.5f, 1.0f);
+		float gColor = Math::RandomFloat(0.5f, 1.0f);
+		float bColor = Math::RandomFloat(0.5f, 1.0f);
 		particle->position = GetTransform()->position + Vector3(xRandom * offset.x, yRandom * offset.y, zRandom * offset.z);
 		particle->color = Vector4(rColor, gColor, bColor, 1.0f);
 		particle->life = lifeTime;
