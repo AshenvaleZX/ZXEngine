@@ -1,4 +1,5 @@
 #include "Math.h"
+#include "Debug.h"
 
 namespace ZXEngine
 {
@@ -12,6 +13,16 @@ namespace ZXEngine
 	float Math::Rad2Deg(float radian)
 	{
 		return radian / Math::PI * 180.f;
+	}
+
+	int Math::RandomInt(int min, int max)
+	{
+		return rand() % (max - min + 1) + min;
+	}
+
+	float Math::RandomFloat(float min, float max)
+	{
+		return min + float(rand() / double(RAND_MAX)) * (max - min);
 	}
 
 	bool Math::Approximately(float a, float b, float eps) 
@@ -218,6 +229,54 @@ namespace ZXEngine
 			left.y * right.z - left.z * right.y,
 			left.z * right.x - left.x * right.z,
 			left.x * right.y - left.y * right.x);
+	}
+
+	Vector2 Math::GetRandomPerpendicular(const Vector2& v)
+	{
+		Vector2 res;
+		if (v.x != 0.0f)
+		{
+			res.y = RandomFloat(-1.0f, 1.0f);
+			res.x = -(res.y * v.y) / v.x;
+		}
+		else if (v.y != 0.0f)
+		{
+			res.x = RandomFloat(-1.0f, 1.0f);
+			res.y = -(res.x * v.x) / v.y;
+		}
+		else
+		{
+			Debug::LogError("Invalid vector2 !");
+		}
+		return res.Normalize();
+	}
+
+	Vector3 Math::GetRandomPerpendicular(const Vector3& v)
+	{
+		Vector3 res;
+		if (v.x != 0.0f)
+		{
+			res.y = RandomFloat(-1.0f, 1.0f);
+			res.z = RandomFloat(-1.0f, 1.0f);
+			res.x = -(res.y * v.y + res.z * v.z) / v.x;
+		}
+		else if (v.y != 0.0f)
+		{
+			res.x = RandomFloat(-1.0f, 1.0f);
+			res.z = RandomFloat(-1.0f, 1.0f);
+			res.y = -(res.x * v.x + res.z * v.z) / v.y;
+		}
+		else if (v.z != 0.0f)
+		{
+			res.x = RandomFloat(-1.0f, 1.0f);
+			res.y = RandomFloat(-1.0f, 1.0f);
+			res.z = -(res.x * v.x + res.y * v.y) / v.z;
+		}
+		else
+		{
+			Debug::LogError("Invalid vector3 !");
+		}
+		return res.Normalize();
 	}
 
 	Matrix4 Math::GetLookToMatrix(const Vector3& pos, const Vector3& forward, const Vector3& up)
