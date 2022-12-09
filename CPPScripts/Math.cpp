@@ -207,24 +207,6 @@ namespace ZXEngine
 			inv30 * oneOverDeterminant, inv31 * oneOverDeterminant, inv32 * oneOverDeterminant, inv33 * oneOverDeterminant);
 	}
 
-	Vector2 Math::Normalize(Vector2 v)
-	{
-		float l = (float)sqrt(pow(v.x, 2) + pow(v.y, 2));
-		return Vector2(v.x/l, v.y/l);
-	}
-
-	Vector3 Math::Normalize(Vector3 v)
-	{
-		float l = (float)sqrt(pow(v.x, 2) + pow(v.y, 2) + pow(v.z, 2));
-		return Vector3(v.x/l, v.y/l, v.z/l);
-	}
-
-	Vector4 Math::Normalize(Vector4 v)
-	{
-		float l = (float)sqrt(pow(v.x, 2) + pow(v.y, 2) + pow(v.z, 2) + pow(v.w, 2));
-		return Vector4(v.x / l, v.y / l, v.z / l, v.w/l);
-	}
-
 	float Math::Dot(const Vector3& left, const Vector3& right)
 	{
 		return left.x * right.x + left.y + right.y + left.z + right.z;

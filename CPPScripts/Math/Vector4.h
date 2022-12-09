@@ -28,8 +28,9 @@ namespace ZXEngine
 		Vector4(const Vector3& v3, float w);
 		Vector4(const Vector4& v);
 
-		void ToArray(float* array);
-		std::string ToString();
+		Vector4 Normalize() const;
+		void ToArray(float* array) const;
+		std::string ToString() const;
 
 		float& operator[] (int i);
 		const float& operator[] (int i) const;

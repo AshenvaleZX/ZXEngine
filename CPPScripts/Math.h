@@ -27,9 +27,6 @@ namespace ZXEngine
 		static Matrix4 Scale(const Matrix4& oriMat, const Vector3& scale);
 		static Matrix3 Inverse(const Matrix3& mat);
 		static Matrix4 Inverse(const Matrix4& mat);
-		static Vector2 Normalize(Vector2 v);
-		static Vector3 Normalize(Vector3 v);
-		static Vector4 Normalize(Vector4 v);
 		static float Dot(const Vector3& left, const Vector3& right);
 		static Vector3 Cross(const Vector3& left, const Vector3& right);
 		// 这个函数和GLM的LookAt函数效果是一样的

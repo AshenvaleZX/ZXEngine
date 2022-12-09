@@ -79,7 +79,13 @@ namespace ZXEngine
 		this->w = v.w;
 	}
 
-	void Vector4::ToArray(float* array)
+	Vector4 Vector4::Normalize() const
+	{
+		float l = (float)sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2) + pow(w, 2));
+		return Vector4(x / l, y / l, z / l, w / l);
+	}
+
+	void Vector4::ToArray(float* array) const
 	{
 		array[0] = x;
 		array[1] = y;
@@ -87,7 +93,7 @@ namespace ZXEngine
 		array[3] = w;
 	}
 
-	std::string Vector4::ToString()
+	std::string Vector4::ToString() const
 	{
 		return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ", " + std::to_string(w) + ")";
 	}

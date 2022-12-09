@@ -56,14 +56,20 @@ namespace ZXEngine
 		this->z = v.z;
 	}
 
-	void Vector3::ToArray(float* array)
+	Vector3 Vector3::Normalize() const
+	{
+		float l = (float)sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+		return Vector3(x / l, y / l, z / l);
+	}
+
+	void Vector3::ToArray(float* array) const
 	{
 		array[0] = x;
 		array[1] = y;
 		array[2] = z;
 	}
 
-	std::string Vector3::ToString()
+	std::string Vector3::ToString() const
 	{
 		return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ")";
 	}

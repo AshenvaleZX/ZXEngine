@@ -42,13 +42,19 @@ namespace ZXEngine
 		this->y = v.y;
 	}
 
-	void Vector2::ToArray(float* array)
+	Vector2 Vector2::Normalize() const
+	{
+		float l = (float)sqrt(pow(x, 2) + pow(y, 2));
+		return Vector2(x / l, y / l);
+	}
+
+	void Vector2::ToArray(float* array) const
 	{
 		array[0] = x;
 		array[1] = y;
 	}
 
-	std::string Vector2::ToString()
+	std::string Vector2::ToString() const
 	{
 		return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
 	}

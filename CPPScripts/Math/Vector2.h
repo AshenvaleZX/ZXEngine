@@ -20,8 +20,9 @@ namespace ZXEngine
 		Vector2(const Vector3& v);
 		Vector2(const Vector4& v);
 
-		void ToArray(float* array);
-		std::string ToString();
+		Vector2 Normalize() const;
+		void ToArray(float* array) const;
+		std::string ToString() const;
 
 		float& operator[] (int i);
 		const float& operator[] (int i) const;
