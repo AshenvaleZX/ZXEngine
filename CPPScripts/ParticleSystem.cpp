@@ -12,7 +12,7 @@ namespace ZXEngine
 		return ComponentType::T_ParticleSystem;
 	}
 
-	ParticleSystem::ParticleSystem() : offset(0), velocity(0)
+	ParticleSystem::ParticleSystem() : offset(0), velocity(0), moveDir(0), lastPos(0)
 	{
 		ParticleSystemManager::GetInstance()->AddParticleSystem(this);
 	}
@@ -24,6 +24,11 @@ namespace ZXEngine
 
 	void ParticleSystem::Update()
 	{
+		// 更新当前位置和移动方向
+		Vector3 curPos = GetTransform()->position;
+		moveDir = (curPos - lastPos).Normalize();
+		lastPos = curPos;
+
 		// 粒子生产的时间间隔
 		float interval = lifeTime / (float)particleNum;
 		long long curTime = Time::curTime_milli;
@@ -58,7 +63,7 @@ namespace ZXEngine
 			p->life -= dt;
 			if (p->life > 0.0f)
 			{
-				p->position -= p->velocity * dt;
+				p->position += p->velocity * dt;
 				p->color.a -= dt * 1;
 			}
 		}
@@ -153,6 +158,6 @@ namespace ZXEngine
 		particle->position = GetTransform()->position + Vector3(xRandom * offset.x, yRandom * offset.y, zRandom * offset.z);
 		particle->color = Vector4(rColor, gColor, bColor, 1.0f);
 		particle->life = lifeTime;
-		particle->velocity = velocity;
+		particle->velocity = Math::GetRandomPerpendicular(moveDir) * 10;
 	}
 }

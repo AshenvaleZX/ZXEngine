@@ -44,6 +44,9 @@ namespace ZXEngine
 		unsigned int textureID = 0;
 		unsigned int lastUsedIndex = 0;
 		long long lastGenTime = 0;
+		Vector3 lastPos;
+		// 所挂载的GO当前移动方向
+		Vector3 moveDir;
 
 		unsigned int GetUnusedParticleIndex();
 		void RespawnParticle(Particle* particle);

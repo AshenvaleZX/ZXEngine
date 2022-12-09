@@ -27,7 +27,7 @@
         },
         {
             "Type": "ParticleSystem",
-            "ParticleNum": 20,
+            "ParticleNum": 100,
             "TexturePath": "Textures/star.png",
             "LifeTime": 1,
             "Velocity": [0, 5, 0],
