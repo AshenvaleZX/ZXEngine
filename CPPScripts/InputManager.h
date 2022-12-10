@@ -19,7 +19,10 @@ namespace ZXEngine
 
 	private:
 		static InputManager* mInstance;
+		int buttonState[InputButton::END];
 
+		void CheckButton(int id, InputButton button, EventType e);
 		void RegisterMouse();
+		void InitButtonRecord();
 	};
 }

@@ -14,6 +14,7 @@ namespace ZXEngine
 	{
 		mInstance = new InputManager();
 		mInstance->RegisterMouse();
+		mInstance->InitButtonRecord();
 	}
 
 	InputManager* InputManager::GetInstance()
@@ -46,38 +47,51 @@ namespace ZXEngine
 
 	void InputManager::UpdateKeyInput()
 	{
-		GLFWwindow* window = RenderEngine::GetInstance()->window;
+		// 鼠标按键
+		CheckButton(GLFW_MOUSE_BUTTON_1, InputButton::MOUSE_BUTTON_1, EventType::MOUSE_BUTTON_1_PRESS);
+		CheckButton(GLFW_MOUSE_BUTTON_2, InputButton::MOUSE_BUTTON_2, EventType::MOUSE_BUTTON_2_PRESS);
 
 		// 从0到9
 		for (int i = 0; i < 10; i++)
 		{
-			if (glfwGetKey(window, GLFW_KEY_0 + i) == GLFW_PRESS)
-			{
-				EventManager::GetInstance()->FireEvent(EventType::KEY_0_PRESS + i, "");
-			}
+			CheckButton(GLFW_KEY_0 + i, InputButton(InputButton::KEY_0 + i), EventType(EventType::KEY_0_PRESS + i));
 		}
 
 		// 从A到Z
 		for (int i = 0; i < 26; i++)
 		{
-			if (glfwGetKey(window, GLFW_KEY_A + i) == GLFW_PRESS)
-			{
-				EventManager::GetInstance()->FireEvent(EventType::KEY_A_PRESS + i, "");
-			}
+			CheckButton(GLFW_KEY_A + i, InputButton(InputButton::KEY_A + i), EventType(EventType::KEY_A_PRESS + i * 3));
 		}
 
-		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-			EventManager::GetInstance()->FireEvent(EventType::KEY_SPACE_PRESS, "");
-		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-			EventManager::GetInstance()->FireEvent(EventType::KEY_ESCAPE_PRESS, "");
-		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-			EventManager::GetInstance()->FireEvent(EventType::KEY_RIGHT_PRESS, "");
-		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-			EventManager::GetInstance()->FireEvent(EventType::KEY_LEFT_PRESS, "");
-		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-			EventManager::GetInstance()->FireEvent(EventType::KEY_DOWN_PRESS, "");
-		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-			EventManager::GetInstance()->FireEvent(EventType::KEY_UP_PRESS, "");
+		CheckButton(GLFW_KEY_SPACE, InputButton::KEY_SPACE, EventType::KEY_SPACE_PRESS);
+		CheckButton(GLFW_KEY_ESCAPE, InputButton::KEY_ESCAPE, EventType::KEY_ESCAPE_PRESS);
+		CheckButton(GLFW_KEY_RIGHT, InputButton::KEY_RIGHT, EventType::KEY_RIGHT_PRESS);
+		CheckButton(GLFW_KEY_LEFT, InputButton::KEY_LEFT, EventType::KEY_LEFT_PRESS);
+		CheckButton(GLFW_KEY_DOWN, InputButton::KEY_DOWN, EventType::KEY_DOWN_PRESS);
+		CheckButton(GLFW_KEY_UP, InputButton::KEY_UP, EventType::KEY_UP_PRESS);
+	}
+
+	void InputManager::CheckButton(int id, InputButton button, EventType e)
+	{
+		GLFWwindow* window = RenderEngine::GetInstance()->window;
+		int state = glfwGetKey(window, id);
+		
+		if (state == GLFW_PRESS && buttonState[button] == GLFW_PRESS)
+			EventManager::GetInstance()->FireEvent(e, ""); // Press
+		else if (state == GLFW_PRESS && buttonState[button] == GLFW_RELEASE)
+			EventManager::GetInstance()->FireEvent(e + 1, ""); // Down
+		else if (state == GLFW_RELEASE && buttonState[button] == GLFW_PRESS)
+			EventManager::GetInstance()->FireEvent(e + 2, ""); // Up
+
+		buttonState[button] = state;
+	}
+
+	void InputManager::InitButtonRecord()
+	{
+		for (int i = 0; i < InputButton::END; i++)
+		{
+			buttonState[i] = GLFW_RELEASE;
+		}
 	}
 }
 
