@@ -5,6 +5,7 @@
 #include "Lua_Transform.h"
 #include "Lua_GameObject.h"
 #include "Lua_UITextRenderer.h"
+#include "Lua_InputManager.h"
 
 static const luaL_Reg myLibs[] = {
     {"Debug", luaopen_Debug},
@@ -13,6 +14,7 @@ static const luaL_Reg myLibs[] = {
     {"Transform", luaopen_Transform},
     {"GameObject", luaopen_GameObject},
     {"UITextRenderer", luaopen_UITextRenderer},
+    {"InputManager", luaopen_InputManager},
     {NULL, NULL}
 };
 

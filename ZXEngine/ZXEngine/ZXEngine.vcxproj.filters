@@ -617,5 +617,8 @@
     <ClInclude Include="..\..\CPPScripts\ImGui\imstb_truetype.h">
       <Filter>ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_InputManager.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
