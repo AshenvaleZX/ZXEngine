@@ -6,6 +6,17 @@ CameraMove.MovementSpeed = 25
 
 function CameraMove:Start()
     self.trans = self.gameObject:GetComponent("Transform")
+    EngineEvent:AddEventHandler(EngineEventType.MOUSE_BUTTON_2_DOWN, self.RegisterCameraControl, self)
+    EngineEvent:AddEventHandler(EngineEventType.MOUSE_BUTTON_2_UP, self.UnregisterCameraControl, self)
+end
+
+function CameraMove:Update()
+
+end
+
+function CameraMove:RegisterCameraControl()
+    self.firstMouse = true
+    InputManager.ShowCursor(false)
     EngineEvent:AddEventHandler(EngineEventType.UPDATE_MOUSE_POS, self.MouseMoveCallBack, self)
     EngineEvent:AddEventHandler(EngineEventType.KEY_W_PRESS, self.MoveForwardCallBack, self)
     EngineEvent:AddEventHandler(EngineEventType.KEY_S_PRESS, self.MoveBackCallBack, self)
@@ -13,8 +24,13 @@ function CameraMove:Start()
     EngineEvent:AddEventHandler(EngineEventType.KEY_D_PRESS, self.MoveRightCallBack, self)
 end
 
-function CameraMove:Update()
-
+function CameraMove:UnregisterCameraControl()
+    InputManager.ShowCursor(true)
+    EngineEvent:RemoveEventHandler(EngineEventType.UPDATE_MOUSE_POS, self.MouseMoveCallBack)
+    EngineEvent:RemoveEventHandler(EngineEventType.KEY_W_PRESS, self.MoveForwardCallBack)
+    EngineEvent:RemoveEventHandler(EngineEventType.KEY_S_PRESS, self.MoveBackCallBack)
+    EngineEvent:RemoveEventHandler(EngineEventType.KEY_A_PRESS, self.MoveLeftCallBack)
+    EngineEvent:RemoveEventHandler(EngineEventType.KEY_D_PRESS, self.MoveRightCallBack)
 end
 
 function CameraMove:MouseMoveCallBack(args)
