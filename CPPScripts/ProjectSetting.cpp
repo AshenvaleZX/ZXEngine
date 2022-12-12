@@ -6,27 +6,56 @@ namespace ZXEngine
 {
 	unsigned int ProjectSetting::srcWidth;
 	unsigned int ProjectSetting::srcHeight;
-	std::string ProjectSetting::defaultScene;
-	std::string ProjectSetting::projectPath;
+	string ProjectSetting::defaultScene;
+	string ProjectSetting::projectPath;
 
-	void ProjectSetting::InitSetting(std::string path)
+	// Editor
+	unsigned int ProjectSetting::hierarchyWidth;
+	unsigned int ProjectSetting::hierarchyHeight;
+	unsigned int ProjectSetting::fileWidth;
+	unsigned int ProjectSetting::fileHeight;
+	unsigned int ProjectSetting::inspectorWidth;
+	unsigned int ProjectSetting::inspectorHeight;
+	unsigned int ProjectSetting::mainBarWidth;
+	unsigned int ProjectSetting::mainBarHeight;
+
+	void ProjectSetting::InitSetting(string path)
 	{
-		ProjectSetting::projectPath = path;
+		projectPath = path;
 		Resources::SetAssetsPath(path + "/Assets/");
 
 		json data = Resources::LoadJson(path + "/ProjectSetting.zxprjcfg");
 
+		GlobalData::srcWidth = data["WindowSize"][0];
+		GlobalData::srcHeight = data["WindowSize"][1];
+		defaultScene = Resources::JsonStrToString(data["DefaultScene"]);
+
 #ifdef ZX_EDITOR
-		GlobalData::srcWidth = data["WindowSize"][0];
-		GlobalData::srcHeight = data["WindowSize"][1];
-		ProjectSetting::srcWidth = GlobalData::srcWidth + 100;
-		ProjectSetting::srcHeight = GlobalData::srcHeight + 100;
+		SetWindowSize(200, 200, 200);
 #else
-		GlobalData::srcWidth = data["WindowSize"][0];
-		GlobalData::srcHeight = data["WindowSize"][1];
-		ProjectSetting::srcWidth = GlobalData::srcWidth;
-		ProjectSetting::srcHeight = GlobalData::srcHeight;
+		SetWindowSize();
 #endif
-		ProjectSetting::defaultScene = Resources::JsonStrToString(data["DefaultScene"]);
 	}
+
+#ifdef ZX_EDITOR
+	void ProjectSetting::SetWindowSize(unsigned int hWidth, unsigned int fHeight, unsigned int iWidth)
+	{
+		hierarchyWidth = hWidth;
+		hierarchyHeight = GlobalData::srcHeight;
+		fileWidth = GlobalData::srcWidth + hierarchyWidth;
+		fileHeight = fHeight;
+		inspectorWidth = iWidth;
+		inspectorHeight = GlobalData::srcHeight + fileHeight;
+		mainBarWidth = GlobalData::srcWidth + hierarchyWidth + inspectorWidth;
+		mainBarHeight = 50;
+		srcWidth = mainBarWidth;
+		srcHeight = inspectorHeight + mainBarHeight;
+	}
+#else
+	void ProjectSetting::SetWindowSize()
+	{
+		srcWidth = GlobalData::srcWidth;
+		srcHeight = GlobalData::srcHeight;
+	}
+#endif
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include <string>
+#include "pubh.h"
 
 namespace ZXEngine
 {
@@ -8,9 +8,25 @@ namespace ZXEngine
 	public:
 		static unsigned int srcWidth;
 		static unsigned int srcHeight;
-		static std::string defaultScene;
-		static std::string projectPath;
+		static string defaultScene;
+		static string projectPath;
 
-		static void InitSetting(std::string path);
+		// Editor
+		static unsigned int hierarchyWidth;
+		static unsigned int hierarchyHeight;
+		static unsigned int fileWidth;
+		static unsigned int fileHeight;
+		static unsigned int inspectorWidth;
+		static unsigned int inspectorHeight;
+		static unsigned int mainBarWidth;
+		static unsigned int mainBarHeight;
+
+		static void InitSetting(string path);
+
+#ifdef ZX_EDITOR
+		static void SetWindowSize(unsigned int hWidth, unsigned int fHeight, unsigned int iWidth);
+#else
+		static void SetWindowSize();
+#endif
 	};
 }
