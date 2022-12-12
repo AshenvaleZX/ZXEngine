@@ -11,6 +11,7 @@ namespace ZXEngine
 	{
 	public:
 		CubeMap* skyBox = nullptr;
+		vector<GameObject*> gameObjects;
 
 		Scene(SceneStruct* sceneStruct);
 		~Scene() {};
@@ -18,7 +19,6 @@ namespace ZXEngine
 		void Render();
 
 	private:
-		vector<GameObject*> gameObjects;
 		vector<Camera*> cameras;
 	};
 }
