@@ -4,6 +4,7 @@ namespace ZXEngine
 {
 	GameObject::GameObject(PrefabStruct* prefab)
 	{
+		name = prefab->name;
 		layer = prefab->layer;
 
 		for (auto component : prefab->components)

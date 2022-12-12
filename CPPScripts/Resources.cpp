@@ -15,7 +15,14 @@ namespace ZXEngine
 
 	string Resources::GetAssetFullPath(string path)
 	{
-		return assetsPath + (string)path;
+		return assetsPath + path;
+	}
+
+	string Resources::GetAssetName(string path)
+	{
+		int s = path.rfind("/");
+		int e = path.rfind(".");
+		return path.substr(s + 1, e - s - 1);
 	}
 
 	string Resources::JsonStrToString(json data)
@@ -76,6 +83,7 @@ namespace ZXEngine
 		json data = Resources::GetAssetData(path);
 		PrefabStruct* prefab = new PrefabStruct;
 
+		prefab->name = GetAssetName(path);
 		if (data["Layer"].is_null())
 			prefab->layer = GameObjectLayer::Default;
 		else

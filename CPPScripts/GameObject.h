@@ -16,6 +16,7 @@ namespace ZXEngine
 	class GameObject
 	{
 	public:
+		string name;
 		unsigned int layer;
 
 		GameObject(PrefabStruct* prefab);

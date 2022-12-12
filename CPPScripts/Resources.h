@@ -17,6 +17,7 @@ namespace ZXEngine
 
 	struct PrefabStruct
 	{
+		string name;
 		unsigned int layer;
 		list<json> components;
 	};
@@ -36,6 +37,7 @@ namespace ZXEngine
 		static void SetAssetsPath(string path);
 		static string GetAssetsPath();
 		static string GetAssetFullPath(string path);
+		static string GetAssetName(string path);
 		static json LoadJson(string path);
 		static SceneStruct* LoadScene(string path);
 		static PrefabStruct* LoadPrefab(string path);
