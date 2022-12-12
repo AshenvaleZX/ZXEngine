@@ -14,7 +14,7 @@ namespace ZXEngine
 		virtual void EnableDepthTest(bool enable);
 		virtual void EnableDepthWrite(bool enable);
 		virtual void SwitchFrameBuffer(unsigned int id);
-		virtual void SetViewPortSize(unsigned int width, unsigned int height);
+		virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0);
 		virtual void SetBlendMode(BlendOption sfactor, BlendOption dfactor);
 		virtual void ClearFrameBuffer();
 		virtual void ClearColorBuffer();

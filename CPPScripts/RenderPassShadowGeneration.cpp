@@ -44,7 +44,7 @@ namespace ZXEngine
 		// 切换到shadow FBO
 		FBOManager::GetInstance()->SwitchFBO("ShadowCubeMap");
 		// ViewPort改成渲染CubeMap的正方形
-		RenderAPI::GetInstance()->SetViewPortSize(GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
+		RenderAPI::GetInstance()->SetViewPort(GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
 		// 开启深度测试和写入
 		RenderAPI::GetInstance()->EnableDepthTest(true);
 		RenderAPI::GetInstance()->EnableDepthWrite(true);

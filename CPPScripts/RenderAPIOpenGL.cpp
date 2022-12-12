@@ -40,9 +40,9 @@ namespace ZXEngine
 		glBindFramebuffer(GL_FRAMEBUFFER, id);
 	}
 
-	void RenderAPIOpenGL::SetViewPortSize(unsigned int width, unsigned int height)
+	void RenderAPIOpenGL::SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset, unsigned int yOffset)
 	{
-		glViewport(0, 0, width, height);
+		glViewport(xOffset, yOffset, width, height);
 	}
 
 	void RenderAPIOpenGL::SetBlendMode(BlendOption sfactor, BlendOption dfactor)
