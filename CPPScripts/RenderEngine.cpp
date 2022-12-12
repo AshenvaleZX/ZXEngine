@@ -19,7 +19,6 @@ namespace ZXEngine
 	void RenderEngine::Create()
 	{
 		mInstance = new RenderEngine();
-		mInstance->InitWindow(ProjectSetting::srcWidth, ProjectSetting::srcHeight);
 		RenderQueueManager::Creat();
 		RenderAPI::Creat();
 		RenderAPI::GetInstance()->InitRenderSetting();
@@ -33,6 +32,11 @@ namespace ZXEngine
 		return mInstance;
 	}
 
+	RenderEngine::RenderEngine()
+	{
+		InitWindow();
+	}
+
 	// glfw: whenever the window size changed (by OS or user resize) this callback function executes
 	void FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
 	{
@@ -43,16 +47,14 @@ namespace ZXEngine
 		RenderAPI::GetInstance()->SetViewPortSize(width, height);
 	}
 
-	void RenderEngine::InitWindow(unsigned int width, unsigned int height)
+	void RenderEngine::InitWindow()
 	{
 		glfwInit();
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		GlobalData::srcWidth = width;
-		GlobalData::srcHeight = height;
-		window = glfwCreateWindow(width, height, "ZXEngine", NULL, NULL);
+		window = glfwCreateWindow(ProjectSetting::srcWidth, ProjectSetting::srcHeight, "ZXEngine", NULL, NULL);
 		if (window == NULL)
 		{
 			Debug::LogError("Failed to create GLFW window");

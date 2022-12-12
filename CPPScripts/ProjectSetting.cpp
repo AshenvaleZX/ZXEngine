@@ -1,5 +1,6 @@
 #include "ProjectSetting.h"
 #include "Resources.h"
+#include "GlobalData.h"
 
 namespace ZXEngine
 {
@@ -15,8 +16,17 @@ namespace ZXEngine
 
 		json data = Resources::LoadJson(path + "/ProjectSetting.zxprjcfg");
 
-		ProjectSetting::srcWidth = data["WindowSize"][0];
-		ProjectSetting::srcHeight = data["WindowSize"][1];
+#ifdef ZX_EDITOR
+		GlobalData::srcWidth = data["WindowSize"][0];
+		GlobalData::srcHeight = data["WindowSize"][1];
+		ProjectSetting::srcWidth = GlobalData::srcWidth + 100;
+		ProjectSetting::srcHeight = GlobalData::srcHeight + 100;
+#else
+		GlobalData::srcWidth = data["WindowSize"][0];
+		GlobalData::srcHeight = data["WindowSize"][1];
+		ProjectSetting::srcWidth = GlobalData::srcWidth;
+		ProjectSetting::srcHeight = GlobalData::srcHeight;
+#endif
 		ProjectSetting::defaultScene = Resources::JsonStrToString(data["DefaultScene"]);
 	}
 }

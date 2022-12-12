@@ -11,17 +11,20 @@ namespace ZXEngine
 	class RenderEngine
 	{
 	public:
-		RenderEngine() {};
-		~RenderEngine() {};
-
 		static void Create();
 		static RenderEngine* GetInstance();
+
+	private:
+		static RenderEngine* mInstance;
+
+	public:
+		RenderEngine();
+		~RenderEngine() {};
 
 		// ´°¿ÚÏà¹Ø
 		GLFWwindow* window;
 
-		void InitSkyBox();
-		void InitWindow(unsigned int width, unsigned int height);
+		void InitWindow();
 		void CloseWindow(string args);
 		int WindowShouldClose();
 
@@ -31,8 +34,6 @@ namespace ZXEngine
 		void EndRender();
 		
 	private:
-		static RenderEngine* mInstance;
-
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		void SwapBufferAndPollPollEvents();
 	};
