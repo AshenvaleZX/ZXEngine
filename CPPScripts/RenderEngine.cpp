@@ -11,6 +11,7 @@
 #include "RenderQueueManager.h"
 #include "FBOManager.h"
 #include "ParticleSystemManager.h"
+#include "ProjectSetting.h"
 
 namespace ZXEngine
 {
@@ -40,11 +41,16 @@ namespace ZXEngine
 	// glfw: whenever the window size changed (by OS or user resize) this callback function executes
 	void FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
 	{
+#ifdef ZX_EDITOR
+		unsigned int hWidth = (width - GlobalData::srcWidth) / 2;
+		unsigned int iWidth = width - GlobalData::srcWidth - hWidth;
+		unsigned int fHeight = height - GlobalData::srcHeight - ProjectSetting::mainBarHeight;
+		ProjectSetting::SetWindowSize(hWidth, fHeight, iWidth);
+#else
 		GlobalData::srcWidth = width;
 		GlobalData::srcHeight = height;
-		// make sure the viewport matches the new window dimensions; note that width and
-		// height will be significantly larger than specified on retina displays.
-		RenderAPI::GetInstance()->SetViewPortSize(width, height);
+		RenderAPI::GetInstance()->SetViewPort(width, height);
+#endif
 	}
 
 	void RenderEngine::InitWindow()

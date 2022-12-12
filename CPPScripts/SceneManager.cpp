@@ -1,5 +1,6 @@
 #include "SceneManager.h"
 #include "Resources.h"
+#include "ProjectSetting.h"
 
 namespace ZXEngine
 {

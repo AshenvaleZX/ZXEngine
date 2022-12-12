@@ -6,6 +6,7 @@
 #include "SceneManager.h"
 #include "LuaManager.h"
 #include "GameLogicManager.h"
+#include "ProjectSetting.h"
 #include "Editor/EditorGUIManager.h"
 
 namespace ZXEngine
