@@ -152,6 +152,10 @@
     <ClCompile Include="..\..\CPPScripts\Debug.cpp" />
     <ClCompile Include="..\..\CPPScripts\DynamicMesh.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorGUIManager.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorHierarchyPanel.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorInspectorPanel.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorMainBarPanel.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorProjectPanel.cpp" />
     <ClCompile Include="..\..\CPPScripts\Entry.cpp" />
     <ClCompile Include="..\..\CPPScripts\EventManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\FBOManager.cpp" />
@@ -248,6 +252,11 @@
     <ClInclude Include="..\..\CPPScripts\Debug.h" />
     <ClInclude Include="..\..\CPPScripts\DynamicMesh.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorGUIManager.h" />
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorHierarchyPanel.h" />
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorInspectorPanel.h" />
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorMainBarPanel.h" />
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorPanel.h" />
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorProjectPanel.h" />
     <ClInclude Include="..\..\CPPScripts\EventManager.h" />
     <ClInclude Include="..\..\CPPScripts\FBOManager.h" />
     <ClInclude Include="..\..\CPPScripts\FrameBufferObject.h" />

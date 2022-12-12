@@ -44,8 +44,8 @@ namespace ZXEngine
 #ifdef ZX_EDITOR
 		unsigned int hWidth = (width - GlobalData::srcWidth) / 2;
 		unsigned int iWidth = width - GlobalData::srcWidth - hWidth;
-		unsigned int fHeight = height - GlobalData::srcHeight - ProjectSetting::mainBarHeight;
-		ProjectSetting::SetWindowSize(hWidth, fHeight, iWidth);
+		unsigned int pHeight = height - GlobalData::srcHeight - ProjectSetting::mainBarHeight;
+		ProjectSetting::SetWindowSize(hWidth, pHeight, iWidth);
 #else
 		GlobalData::srcWidth = width;
 		GlobalData::srcHeight = height;

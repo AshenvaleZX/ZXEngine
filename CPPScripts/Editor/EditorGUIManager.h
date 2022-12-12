@@ -6,6 +6,7 @@
 
 namespace ZXEngine
 {
+	class EditorPanel;
 	class EditorGUIManager
 	{
 	public:
@@ -24,5 +25,6 @@ namespace ZXEngine
 		void EndEditorRender();
 
 	private:
+		vector<EditorPanel*> allPanels;
 	};
 }

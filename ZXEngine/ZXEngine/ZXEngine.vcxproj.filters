@@ -309,6 +309,18 @@
     <ClCompile Include="..\..\CPPScripts\Editor\EditorGUIManager.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorHierarchyPanel.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorProjectPanel.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorInspectorPanel.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorMainBarPanel.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">
@@ -627,6 +639,21 @@
       <Filter>LuaWrap</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Editor\EditorGUIManager.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorPanel.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorHierarchyPanel.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorProjectPanel.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorInspectorPanel.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorMainBarPanel.h">
       <Filter>Editor</Filter>
     </ClInclude>
   </ItemGroup>

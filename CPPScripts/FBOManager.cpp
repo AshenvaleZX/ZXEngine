@@ -25,7 +25,7 @@ namespace ZXEngine
 		if (name == ScreenBuffer)
 		{
 #ifdef ZX_EDITOR
-			RenderAPI::GetInstance()->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight, ProjectSetting::hierarchyWidth, ProjectSetting::fileHeight);
+			RenderAPI::GetInstance()->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight, ProjectSetting::hierarchyWidth, ProjectSetting::projectHeight);
 #endif
 			RenderAPI::GetInstance()->SwitchFrameBuffer(0);
 			return;

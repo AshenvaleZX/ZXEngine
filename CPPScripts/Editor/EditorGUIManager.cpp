@@ -1,7 +1,11 @@
-#include "EditorGUIManager.h"
 #include "../RenderEngine.h"
 #include "../ProjectSetting.h"
 #include "../GlobalData.h"
+#include "EditorGUIManager.h"
+#include "EditorProjectPanel.h"
+#include "EditorMainBarPanel.h"
+#include "EditorInspectorPanel.h"
+#include "EditorHierarchyPanel.h"
 
 namespace ZXEngine
 {
@@ -27,6 +31,11 @@ namespace ZXEngine
 		// Setup Platform/Renderer backends
 		ImGui_ImplGlfw_InitForOpenGL(RenderEngine::GetInstance()->window, true);
 		ImGui_ImplOpenGL3_Init(glsl_version);
+
+		allPanels.push_back(new EditorProjectPanel());
+		allPanels.push_back(new EditorMainBarPanel());
+		allPanels.push_back(new EditorInspectorPanel());
+		allPanels.push_back(new EditorHierarchyPanel());
 	}
 
 	EditorGUIManager::~EditorGUIManager()
@@ -46,31 +55,10 @@ namespace ZXEngine
 
 	void EditorGUIManager::EditorRender()
 	{
-		ImGui::SetNextWindowPos(ImVec2(0, (float)ProjectSetting::mainBarHeight));
-		ImGui::SetNextWindowSize(ImVec2((float)ProjectSetting::hierarchyWidth, (float)ProjectSetting::hierarchyHeight));
-		ImGui::Begin("Hierarchy");
-		ImGui::Text("This is Hierarchy.");
-		ImGui::End();
-
-		ImGui::SetNextWindowPos(ImVec2(0, (float)ProjectSetting::mainBarHeight + (float)ProjectSetting::hierarchyHeight));
-		ImGui::SetNextWindowSize(ImVec2((float)ProjectSetting::fileWidth, (float)ProjectSetting::fileHeight));
-		ImGui::Begin("Peoject");
-		ImGui::Text("This is Peoject.");
-		ImGui::End();
-
-		ImGui::SetNextWindowPos(ImVec2((float)ProjectSetting::hierarchyWidth + (float)GlobalData::srcWidth, (float)ProjectSetting::mainBarHeight));
-		ImGui::SetNextWindowSize(ImVec2((float)ProjectSetting::inspectorWidth, (float)ProjectSetting::inspectorHeight));
-		ImGui::Begin("Inspector");
-		ImGui::Text("This is Hierarchy.");
-		ImGui::End();
-
-		ImGui::SetNextWindowPos(ImVec2(0, 0));
-		ImGui::SetNextWindowSize(ImVec2((float)ProjectSetting::mainBarWidth, (float)ProjectSetting::mainBarHeight));
-		ImGui::Begin("ZXEngine");
-		ImGui::Text("This is main bar.");
-		ImGui::End();
-
-		// Rendering
+		for (auto panel : allPanels)
+		{
+			panel->DrawPanel();
+		}
 		ImGui::Render();
 	}
 

@@ -14,8 +14,8 @@ namespace ZXEngine
 		// Editor
 		static unsigned int hierarchyWidth;
 		static unsigned int hierarchyHeight;
-		static unsigned int fileWidth;
-		static unsigned int fileHeight;
+		static unsigned int projectWidth;
+		static unsigned int projectHeight;
 		static unsigned int inspectorWidth;
 		static unsigned int inspectorHeight;
 		static unsigned int mainBarWidth;
@@ -24,7 +24,7 @@ namespace ZXEngine
 		static void InitSetting(string path);
 
 #ifdef ZX_EDITOR
-		static void SetWindowSize(unsigned int hWidth, unsigned int fHeight, unsigned int iWidth);
+		static void SetWindowSize(unsigned int hWidth, unsigned int pHeight, unsigned int iWidth);
 #else
 		static void SetWindowSize();
 #endif

@@ -12,8 +12,8 @@ namespace ZXEngine
 	// Editor
 	unsigned int ProjectSetting::hierarchyWidth;
 	unsigned int ProjectSetting::hierarchyHeight;
-	unsigned int ProjectSetting::fileWidth;
-	unsigned int ProjectSetting::fileHeight;
+	unsigned int ProjectSetting::projectWidth;
+	unsigned int ProjectSetting::projectHeight;
 	unsigned int ProjectSetting::inspectorWidth;
 	unsigned int ProjectSetting::inspectorHeight;
 	unsigned int ProjectSetting::mainBarWidth;
@@ -38,14 +38,14 @@ namespace ZXEngine
 	}
 
 #ifdef ZX_EDITOR
-	void ProjectSetting::SetWindowSize(unsigned int hWidth, unsigned int fHeight, unsigned int iWidth)
+	void ProjectSetting::SetWindowSize(unsigned int hWidth, unsigned int pHeight, unsigned int iWidth)
 	{
 		hierarchyWidth = hWidth;
 		hierarchyHeight = GlobalData::srcHeight;
-		fileWidth = GlobalData::srcWidth + hierarchyWidth;
-		fileHeight = fHeight;
+		projectWidth = GlobalData::srcWidth + hierarchyWidth;
+		projectHeight = pHeight;
 		inspectorWidth = iWidth;
-		inspectorHeight = GlobalData::srcHeight + fileHeight;
+		inspectorHeight = GlobalData::srcHeight + projectHeight;
 		mainBarWidth = GlobalData::srcWidth + hierarchyWidth + inspectorWidth;
 		mainBarHeight = 50;
 		srcWidth = mainBarWidth;
