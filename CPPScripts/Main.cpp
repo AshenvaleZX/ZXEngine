@@ -61,7 +61,7 @@ glm::vec3 modelPos(-1.0f, -2.55f, 0.0f);
 // statistics
 int fps = 0;
 
-float lerp(float a, float b, float f)
+float myLerp(float a, float b, float f)
 {
     return a + f * (b - a);
 }
@@ -482,7 +482,7 @@ int main1()
         float scale = float(i) / 64.0;
 
         // scale samples s.t. they're more aligned to center of kernel
-        scale = lerp(0.1f, 1.0f, scale * scale);
+        scale = myLerp(0.1f, 1.0f, scale * scale);
         sample *= scale;
         ssaoKernel.push_back(sample);
     }
