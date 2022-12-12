@@ -25,6 +25,9 @@
     <Filter Include="ImGui">
       <UniqueIdentifier>{0ad4c03f-e08b-4115-9ee4-25e2aa4bd1cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Editor">
+      <UniqueIdentifier>{925d5f95-bb96-4598-81bd-91393859b792}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Vendor\Src\glad.c">
@@ -302,6 +305,9 @@
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\ImGui\imgui_widgets.cpp">
       <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorGUIManager.cpp">
+      <Filter>Editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -619,6 +625,9 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_InputManager.h">
       <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorGUIManager.h">
+      <Filter>Editor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

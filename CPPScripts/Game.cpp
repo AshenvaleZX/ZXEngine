@@ -6,6 +6,7 @@
 #include "SceneManager.h"
 #include "LuaManager.h"
 #include "GameLogicManager.h"
+#include "Editor/EditorGUIManager.h"
 
 namespace ZXEngine
 {
@@ -18,6 +19,9 @@ namespace ZXEngine
 		LuaManager::Create();
 		GameLogicManager::Create();
 		SceneManager::Create();
+#ifdef ZX_EDITOR
+		EditorGUIManager::Create();
+#endif
 
 		while (!RenderEngine::GetInstance()->WindowShouldClose())
 		{
@@ -48,6 +52,12 @@ namespace ZXEngine
 		RenderEngine::GetInstance()->BeginRender();
 
 		SceneManager::GetInstance()->GetCurScene()->Render();
+
+#ifdef ZX_EDITOR
+		EditorGUIManager::GetInstance()->BeginEditorRender();
+		EditorGUIManager::GetInstance()->EditorRender();
+		EditorGUIManager::GetInstance()->EndEditorRender();
+#endif
 
 		RenderEngine::GetInstance()->EndRender();
 	}

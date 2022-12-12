@@ -1,4 +1,5 @@
 #pragma once
+#define ZX_EDITOR
 
 #include <string>
 #include <list>
