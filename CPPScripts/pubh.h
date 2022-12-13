@@ -8,6 +8,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <filesystem>
 #include <nlohmann/json.hpp>
 
 using std::string; 
@@ -22,6 +23,7 @@ using std::ifstream;
 using std::stringstream;
 using std::to_string;
 using json = nlohmann::json;
+namespace filesystem = std::filesystem;
 
 #include "Debug.h"
 #include "Utils.h"
