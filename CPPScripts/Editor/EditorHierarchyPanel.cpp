@@ -15,9 +15,13 @@ namespace ZXEngine
 		ImGui::Begin("Hierarchy");
 		{
 			auto scene = SceneManager::GetInstance()->GetCurScene();
-			for (auto gameObject : scene->gameObjects)
+			auto goNum = scene->gameObjects.size();
+			static unsigned int selected = -1;
+			for (unsigned int i = 0; i < goNum; i++)
 			{
-				ImGui::Text(gameObject->name.c_str());
+				auto gameObject = scene->gameObjects[i];
+				if (ImGui::Selectable(gameObject->name.c_str(), selected == i))
+					selected = i;
 			}
 		}
 		ImGui::End();
