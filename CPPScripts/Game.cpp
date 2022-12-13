@@ -8,6 +8,7 @@
 #include "GameLogicManager.h"
 #include "ProjectSetting.h"
 #include "Editor/EditorGUIManager.h"
+#include "Editor/EditorDataManager.h"
 
 namespace ZXEngine
 {
@@ -22,6 +23,7 @@ namespace ZXEngine
 		SceneManager::Create();
 #ifdef ZX_EDITOR
 		EditorGUIManager::Create();
+		EditorDataManager::Create();
 #endif
 
 		while (!RenderEngine::GetInstance()->WindowShouldClose())

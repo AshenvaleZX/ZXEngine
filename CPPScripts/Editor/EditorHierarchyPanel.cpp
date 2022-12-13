@@ -1,4 +1,5 @@
 #include "EditorHierarchyPanel.h"
+#include "EditorDataManager.h"
 #include "../Scene.h"
 #include "../SceneManager.h"
 #include "../GameObject.h"
@@ -12,7 +13,7 @@ namespace ZXEngine
 		ImGui::SetNextWindowSize(ImVec2((float)ProjectSetting::hierarchyWidth, (float)ProjectSetting::hierarchyHeight));
 
 		// 设置面板具体内容
-		ImGui::Begin("Hierarchy");
+		if (ImGui::Begin("Hierarchy"))
 		{
 			auto scene = SceneManager::GetInstance()->GetCurScene();
 			auto goNum = scene->gameObjects.size();
@@ -21,7 +22,10 @@ namespace ZXEngine
 			{
 				auto gameObject = scene->gameObjects[i];
 				if (ImGui::Selectable(gameObject->name.c_str(), selected == i))
+				{
 					selected = i;
+					EditorDataManager::GetInstance()->selectedGO = gameObject;
+				}
 			}
 		}
 		ImGui::End();

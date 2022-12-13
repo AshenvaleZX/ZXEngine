@@ -15,6 +15,9 @@ namespace ZXEngine
 {
 	class GameObject
 	{
+#ifdef ZX_EDITOR
+		friend class EditorInspectorPanel;
+#endif
 	public:
 		string name;
 		unsigned int layer;
