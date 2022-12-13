@@ -152,6 +152,7 @@
     <ClCompile Include="..\..\CPPScripts\CubeMap.cpp" />
     <ClCompile Include="..\..\CPPScripts\Debug.cpp" />
     <ClCompile Include="..\..\CPPScripts\DynamicMesh.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorDataManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorGUIManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorHierarchyPanel.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorInspectorPanel.cpp" />
@@ -252,6 +253,7 @@
     <ClInclude Include="..\..\CPPScripts\CubeMap.h" />
     <ClInclude Include="..\..\CPPScripts\Debug.h" />
     <ClInclude Include="..\..\CPPScripts\DynamicMesh.h" />
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorDataManager.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorGUIManager.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorHierarchyPanel.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorInspectorPanel.h" />

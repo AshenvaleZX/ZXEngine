@@ -321,6 +321,9 @@
     <ClCompile Include="..\..\CPPScripts\Editor\EditorMainBarPanel.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorDataManager.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">
@@ -654,6 +657,9 @@
       <Filter>Editor</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Editor\EditorMainBarPanel.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorDataManager.h">
       <Filter>Editor</Filter>
     </ClInclude>
   </ItemGroup>
