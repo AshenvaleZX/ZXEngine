@@ -26,12 +26,100 @@ namespace ZXEngine
 			if (curGO != nullptr)
 			{
 				ImGui::Text(curGO->name.c_str());
-				for (auto component : curGO->components)
+				for (auto iter : curGO->components)
 				{
-					ImGui::Text(to_string(component.first).c_str());
+					ComponentType type = iter.first;
+					if (type == ComponentType::T_Transform)
+						DrawTransform(static_cast<Transform*>(iter.second));
+					else if (type == ComponentType::T_MeshRenderer)
+						DrawMeshRenderer(static_cast<MeshRenderer*>(iter.second));
+					else if (type == ComponentType::T_Camera)
+						DrawCamera(static_cast<Camera*>(iter.second));
+					else if (type == ComponentType::T_Light)
+						DrawLight(static_cast<Light*>(iter.second));
+					else if (type == ComponentType::T_GameLogic)
+						DrawGameLogic(static_cast<GameLogic*>(iter.second));
+					else if (type == ComponentType::T_UITextRenderer)
+						DrawUITextRenderer(static_cast<UITextRenderer*>(iter.second));
+					else if (type == ComponentType::T_UITextureRenderer)
+						DrawUITextureRenderer(static_cast<UITextureRenderer*>(iter.second));
+					else if (type == ComponentType::T_ParticleSystem)
+						DrawParticleSystem(static_cast<ParticleSystem*>(iter.second));
 				}
 			}
 		}
 		ImGui::End();
+	}
+
+	void EditorInspectorPanel::DrawTransform(Transform* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("Transform"))
+			return;
+
+		ImGui::Text("Temp Content");
+	}
+
+	void EditorInspectorPanel::DrawMeshRenderer(MeshRenderer* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("MeshRenderer"))
+			return;
+
+		ImGui::Text("Temp Content");
+	}
+
+	void EditorInspectorPanel::DrawCamera(Camera* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("Camera"))
+			return;
+
+		ImGui::Text("Temp Content");
+	}
+
+	void EditorInspectorPanel::DrawLight(Light* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("Light"))
+			return;
+
+		ImGui::Text("Temp Content");
+	}
+
+	void EditorInspectorPanel::DrawGameLogic(GameLogic* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("GameLogic"))
+			return;
+
+		ImGui::Text("Temp Content");
+	}
+
+	void EditorInspectorPanel::DrawUITextRenderer(UITextRenderer* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("UITextRenderer"))
+			return;
+
+		ImGui::Text("Temp Content");
+	}
+
+	void EditorInspectorPanel::DrawUITextureRenderer(UITextureRenderer* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("UITextureRenderer"))
+			return;
+
+		ImGui::Text("Temp Content");
+	}
+
+	void EditorInspectorPanel::DrawParticleSystem(ParticleSystem* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("ParticleSystem"))
+			return;
+
+		ImGui::Text("Temp Content");
 	}
 }
