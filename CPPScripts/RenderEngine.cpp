@@ -42,7 +42,7 @@ namespace ZXEngine
 	void FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
 	{
 #ifdef ZX_EDITOR
-		unsigned int hWidth = (width - GlobalData::srcWidth) / 2;
+		unsigned int hWidth = (width - GlobalData::srcWidth) / 3;
 		unsigned int iWidth = width - GlobalData::srcWidth - hWidth;
 		unsigned int pHeight = height - GlobalData::srcHeight - ProjectSetting::mainBarHeight;
 		ProjectSetting::SetWindowSize(hWidth, pHeight, iWidth);
