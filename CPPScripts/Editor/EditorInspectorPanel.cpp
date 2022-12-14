@@ -174,7 +174,6 @@ namespace ZXEngine
 		float intensity = component->intensity;
 		ImGui::Text("Intensity ");
 		ImGui::SameLine(); ImGui::DragFloat("##Intensity", &intensity, 0.01f, 0.0f, FLT_MAX);
-
 	}
 
 	void EditorInspectorPanel::DrawGameLogic(GameLogic* component)
@@ -197,7 +196,14 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("UITextRenderer"))
 			return;
 
-		ImGui::Text("Temp Content");
+		char* text = (char*)component->text.c_str();
+		ImGui::Text("Text  ");
+		ImGui::SameLine(); ImGui::InputTextMultiline("##text", text, 256);
+
+		Vector3 textColor = component->color;
+		ImVec4 color = ImVec4(textColor.r, textColor.g, textColor.b, 1.0f);
+		ImGui::Text("Color ");
+		ImGui::SameLine(); ImGui::ColorEdit3("##color", (float*)&color);
 	}
 
 	void EditorInspectorPanel::DrawUITextureRenderer(UITextureRenderer* component)
