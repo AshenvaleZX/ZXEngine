@@ -100,9 +100,10 @@ namespace ZXEngine
 
 	MaterialStruct* Resources::LoadMaterial(string path)
 	{
-		json data = Resources::GetAssetData(path);
 		MaterialStruct* matStruct = new MaterialStruct;
+		matStruct->name = GetAssetName(path);
 
+		json data = Resources::GetAssetData(path);
 		string p = Resources::JsonStrToString(data["Shader"]);
 		matStruct->shaderPath = Resources::GetAssetFullPath(p);
 

@@ -4,6 +4,7 @@ namespace ZXEngine
 {
 	Material::Material(MaterialStruct* matStruct)
 	{
+		name = matStruct->name;
 		shader = new Shader(matStruct->shaderPath.c_str());
 
 		for (auto textureStruct : matStruct->textures)

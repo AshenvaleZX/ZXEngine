@@ -98,7 +98,24 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("MeshRenderer"))
 			return;
 
-		ImGui::Text("Temp Content");
+		ImGui::Text("Mesh            ");
+		ImGui::SameLine(); 
+		if (ImGui::Button(component->modelName.c_str()))
+		{
+			Debug::Log("Click Mesh");
+		}
+		ImGui::Text("Material        ");
+		ImGui::SameLine(); 
+		if (ImGui::Button(component->matetrial->name.c_str()))
+		{
+			Debug::Log("Click Material");
+		}
+		bool castShadow = component->castShadow;
+		ImGui::Text("Cast Shadow     ");
+		ImGui::SameLine(); ImGui::Checkbox("##castShadow", &castShadow);
+		bool receiveShadow = component->receiveShadow;
+		ImGui::Text("Receive Shadow  ");
+		ImGui::SameLine(); ImGui::Checkbox("##receiveShadow", &receiveShadow);
 	}
 
 	void EditorInspectorPanel::DrawCamera(Camera* component)

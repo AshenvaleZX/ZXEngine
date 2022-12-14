@@ -11,6 +11,7 @@ namespace ZXEngine
 
 	struct MaterialStruct
 	{
+		string name;
 		string shaderPath;
 		vector<TextureStruct*> textures;
 	};

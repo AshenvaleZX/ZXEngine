@@ -16,6 +16,7 @@ namespace ZXEngine
 	public:
 		bool castShadow = false;
 		bool receiveShadow = false;
+		string modelName = "";
 		Material* matetrial = nullptr;
 		vector<Mesh*> meshes;
 

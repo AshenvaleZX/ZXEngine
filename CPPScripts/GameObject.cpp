@@ -33,7 +33,7 @@ namespace ZXEngine
 				else
 				{
 					p = Resources::JsonStrToString(component["Material"]);
-					MaterialStruct* matStruct = Resources::LoadMaterial(p.c_str());
+					MaterialStruct* matStruct = Resources::LoadMaterial(p);
 					meshRenderer->matetrial = new Material(matStruct);
 				}
 
@@ -45,7 +45,8 @@ namespace ZXEngine
 				else
 				{
 					p = Resources::JsonStrToString(component["Mesh"]);
-					p = Resources::GetAssetFullPath(p.c_str());
+					meshRenderer->modelName = Resources::GetAssetName(p);
+					p = Resources::GetAssetFullPath(p);
 					meshRenderer->LoadModel(p);
 				}
 			}
