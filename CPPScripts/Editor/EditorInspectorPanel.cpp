@@ -124,7 +124,20 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("Camera"))
 			return;
 
-		ImGui::Text("Temp Content");
+		float fov = component->Fov;
+		ImGui::Text("Field of View ");
+		ImGui::PushItemWidth(180);
+		ImGui::SameLine(); ImGui::SliderFloat("##fov", &fov, 1.0f, 179.0f, "");
+		ImGui::PushItemWidth(50);
+		ImGui::SameLine(); ImGui::DragFloat("##fov", &fov, 0.1f, 1.0f, 179.0f);
+		ImGui::PopItemWidth();
+
+		float nearClipDis = component->nearClipDis;
+		ImGui::Text("Near Clip     ");
+		ImGui::SameLine(); ImGui::DragFloat("##nearClipDis", &nearClipDis, 0.1f, 0.0f, FLT_MAX);
+		float farClipDis = component->farClipDis;
+		ImGui::Text("Far Clip      ");
+		ImGui::SameLine(); ImGui::DragFloat("##farClipDis", &farClipDis, 0.1f, 0.0f, FLT_MAX);
 	}
 
 	void EditorInspectorPanel::DrawLight(Light* component)
