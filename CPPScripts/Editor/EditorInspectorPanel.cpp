@@ -57,7 +57,39 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("Transform"))
 			return;
 
-		ImGui::Text("Temp Content");
+		ImGui::PushItemWidth(60);
+		float posX = component->position.x;
+		float posY = component->position.y;
+		float posZ = component->position.z;
+		ImGui::Text("Position    ");
+		ImGui::SameLine(); ImGui::Text("X");
+		ImGui::SameLine(); ImGui::DragFloat("##posX", &posX, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::Text("Y");
+		ImGui::SameLine(); ImGui::DragFloat("##posY", &posY, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::Text("Z");
+		ImGui::SameLine(); ImGui::DragFloat("##posZ", &posZ, 0.25f, -FLT_MAX, FLT_MAX);
+		Vector3 euler = component->rotation.GetEulerAngles();
+		float rotX = euler.x;
+		float rotY = euler.y;
+		float rotZ = euler.z;
+		ImGui::Text("Rotation    ");
+		ImGui::SameLine(); ImGui::Text("X");
+		ImGui::SameLine(); ImGui::DragFloat("##rotX", &rotX, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::Text("Y");
+		ImGui::SameLine(); ImGui::DragFloat("##rotY", &rotY, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::Text("Z");
+		ImGui::SameLine(); ImGui::DragFloat("##rotZ", &rotZ, 0.25f, -FLT_MAX, FLT_MAX);
+		float scaX = component->scale.x;
+		float scaY = component->scale.y;
+		float scaZ = component->scale.z;
+		ImGui::Text("Scale       ");
+		ImGui::SameLine(); ImGui::Text("X");
+		ImGui::SameLine(); ImGui::DragFloat("##scaX", &scaX, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::Text("Y");
+		ImGui::SameLine(); ImGui::DragFloat("##scaY", &scaY, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::Text("Z");
+		ImGui::SameLine(); ImGui::DragFloat("##scaZ", &scaZ, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::PopItemWidth();
 	}
 
 	void EditorInspectorPanel::DrawMeshRenderer(MeshRenderer* component)
