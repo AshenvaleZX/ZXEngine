@@ -183,7 +183,12 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("GameLogic"))
 			return;
 
-		ImGui::Text("Temp Content");
+		ImGui::Text("Lua Script    ");
+		ImGui::SameLine();
+		if (ImGui::Button(component->luaName.c_str()))
+		{
+			Debug::Log("Click Lua");
+		}
 	}
 
 	void EditorInspectorPanel::DrawUITextRenderer(UITextRenderer* component)
