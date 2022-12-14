@@ -3,6 +3,15 @@
 namespace ZXEngine
 {
 	vector<Light*> Light::allLights;
+	vector<Light*> Light::GetAllLights()
+	{
+		return allLights;
+	}
+
+	ComponentType Light::GetType()
+	{
+		return ComponentType::T_Light;
+	}
 
 	Light::Light()
 	{
@@ -15,12 +24,7 @@ namespace ZXEngine
 		allLights.erase(l);
 	}
 
-	vector<Light*> Light::GetAllLights()
-	{
-		return allLights;
-	}
-
-	ComponentType Light::GetType()
+	ComponentType Light::GetInsType()
 	{
 		return ComponentType::T_Light;
 	}

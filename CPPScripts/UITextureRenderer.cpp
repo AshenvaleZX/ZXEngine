@@ -23,6 +23,11 @@ namespace ZXEngine
 		return ComponentType::T_UITextureRenderer;
 	}
 
+	ComponentType UITextureRenderer::GetInsType()
+	{
+		return ComponentType::T_UITextureRenderer;
+	}
+
 	void UITextureRenderer::Render()
 	{
 		Matrix4 mat_M = GetTransform()->GetModelMatrix();

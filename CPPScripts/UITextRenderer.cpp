@@ -6,13 +6,18 @@
 
 namespace ZXEngine
 {
+    ComponentType UITextRenderer::GetType()
+    {
+        return ComponentType::T_UITextRenderer;
+    }
+
     UITextRenderer::UITextRenderer()
     {
         text = "";
         color = Vector4(1, 1, 1, 1);
     }
 
-    ComponentType UITextRenderer::GetType()
+    ComponentType UITextRenderer::GetInsType()
     {
         return ComponentType::T_UITextRenderer;
     }

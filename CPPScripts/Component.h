@@ -8,12 +8,15 @@ namespace ZXEngine
 	class Component
 	{
 	public:
+		static ComponentType GetType();
+
+	public:
 		GameObject* gameObject = nullptr;
 
 		Component() {};
 		~Component() {};
 
-		static ComponentType GetType();
+		virtual ComponentType GetInsType() = 0;
 
 		Transform* GetTransform();
 

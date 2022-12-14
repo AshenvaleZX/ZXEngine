@@ -7,6 +7,11 @@ namespace ZXEngine
         return ComponentType::T_MeshRenderer;
     }
 
+    ComponentType MeshRenderer::GetInsType()
+    {
+        return ComponentType::T_MeshRenderer;
+    }
+
 	void MeshRenderer::LoadModel(string const& path)
 	{
         // read file via ASSIMP

@@ -16,6 +16,9 @@ namespace ZXEngine
 	class UITextRenderer : public Component
 	{
 	public:
+		static ComponentType GetType();
+
+	public:
 		// 当前渲染的文本
 		string text;
 		// 字符颜色
@@ -24,7 +27,7 @@ namespace ZXEngine
 		UITextRenderer();
 		~UITextRenderer() {};
 
-		static ComponentType GetType();
+		virtual ComponentType GetInsType();
 
 		void Render();
 	};

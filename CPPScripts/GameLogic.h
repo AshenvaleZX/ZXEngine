@@ -7,13 +7,16 @@ namespace ZXEngine
 	class GameLogic : public Component
 	{
 	public:
+		static ComponentType GetType();
+
+	public:
 		int luaID = 0;
 		string luaName;
 
 		GameLogic();
 		~GameLogic();
 
-		static ComponentType GetType();
+		virtual ComponentType GetInsType();
 
 		void Start();
 		void Update();

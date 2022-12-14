@@ -8,6 +8,15 @@
 namespace ZXEngine
 {
 	vector<Camera*> Camera::allCameras;
+	vector<Camera*> Camera::GetAllCameras()
+	{
+		return allCameras;
+	}
+
+	ComponentType Camera::GetType()
+	{
+		return ComponentType::T_Camera;
+	}
 
 	Camera::Camera() : Fov(FOV)
 	{
@@ -20,12 +29,7 @@ namespace ZXEngine
 		allCameras.erase(l);
 	}
 
-	vector<Camera*> Camera::GetAllCameras()
-	{
-		return allCameras;
-	}
-
-	ComponentType Camera::GetType()
+	ComponentType Camera::GetInsType()
 	{
 		return ComponentType::T_Camera;
 	}

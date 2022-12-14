@@ -7,6 +7,13 @@ namespace ZXEngine
 	class Light : public Component
 	{
 	public:
+		static ComponentType GetType();
+		static vector<Light*> GetAllLights();
+
+	private:
+		static vector<Light*> allLights;
+
+	public:
 		Vector3 color;
 		float intensity;
 		LightType type;
@@ -14,10 +21,6 @@ namespace ZXEngine
 		Light();
 		~Light();
 
-		static ComponentType GetType();
-		static vector<Light*> GetAllLights();
-
-	private:
-		static vector<Light*> allLights;
+		virtual ComponentType GetInsType();
 	};
 }

@@ -5,6 +5,11 @@
 
 namespace ZXEngine
 {
+	ComponentType GameLogic::GetType()
+	{
+		return ComponentType::T_GameLogic;
+	}
+
 	GameLogic::GameLogic()
 	{
 		GameLogicManager::GetInstance()->AddGameLogic(this);
@@ -15,7 +20,7 @@ namespace ZXEngine
 		GameLogicManager::GetInstance()->RemoveGameLogic(this);
 	}
 
-	ComponentType GameLogic::GetType()
+	ComponentType GameLogic::GetInsType()
 	{
 		return ComponentType::T_GameLogic;
 	}

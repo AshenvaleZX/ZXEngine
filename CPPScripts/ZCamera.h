@@ -8,6 +8,14 @@ namespace ZXEngine
 
 	class Camera : public Component
 	{
+    public:
+        static ComponentType GetType();
+        static vector<Camera*> GetAllCameras();
+
+    private:
+        // 所有相机
+        static vector<Camera*> allCameras;
+
 	public:
         float Fov;
         float nearClipDis = 0.1f;
@@ -16,14 +24,9 @@ namespace ZXEngine
         Camera();
 		~Camera();
 
-        static ComponentType GetType();
-        static vector<Camera*> GetAllCameras();
+        virtual ComponentType GetInsType();
 
         Matrix4 GetViewMatrix();
         Matrix4 GetProjectionMatrix();
-
-	private:
-        // 所有相机
-        static vector<Camera*> allCameras;
 	};
 }

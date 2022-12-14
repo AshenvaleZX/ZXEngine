@@ -6,6 +6,9 @@ namespace ZXEngine
 	class Transform : public Component
 	{
 	public:
+		static ComponentType GetType();
+
+	public:
 		Vector3 position = Vector3(0, 0, 0);
 		Quaternion rotation = Quaternion();
 		Vector3 scale = Vector3(1, 1, 1);
@@ -13,7 +16,7 @@ namespace ZXEngine
 		Transform() {};
 		~Transform() {};
 
-		static ComponentType GetType();
+		virtual ComponentType GetInsType();
 
 		Matrix4 GetModelMatrix();
 		Matrix4 GetPositionMatrix();

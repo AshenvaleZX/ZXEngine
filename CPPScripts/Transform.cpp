@@ -7,6 +7,11 @@ namespace ZXEngine
 		return ComponentType::T_Transform;
 	}
 
+	ComponentType Transform::GetInsType()
+	{
+		return ComponentType::T_Transform;
+	}
+
 	Matrix4 Transform::GetModelMatrix()
 	{
 		return GetPositionMatrix() * GetRotationMatrix() * GetScaleMatrix();

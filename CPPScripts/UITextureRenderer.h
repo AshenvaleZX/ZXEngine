@@ -12,11 +12,13 @@ namespace ZXEngine
 	public:
 		static Shader* shader;
 		static void Init();
+		static ComponentType GetType();
 
+	public:
 		UITextureRenderer() {};
 		~UITextureRenderer() {};
 
-		static ComponentType GetType();
+		virtual ComponentType GetInsType();
 
 		void Render();
 		void SetTexture(const char* path);

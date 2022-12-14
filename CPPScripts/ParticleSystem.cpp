@@ -22,6 +22,11 @@ namespace ZXEngine
 		ParticleSystemManager::GetInstance()->RemoveParticleSystem(this);
 	}
 
+	ComponentType ParticleSystem::GetInsType()
+	{
+		return ComponentType::T_ParticleSystem;
+	}
+
 	void ParticleSystem::Update()
 	{
 		// 更新当前位置和移动方向

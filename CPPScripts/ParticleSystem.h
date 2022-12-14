@@ -33,6 +33,8 @@ namespace ZXEngine
 		ParticleSystem();
 		~ParticleSystem();
 
+		virtual ComponentType GetInsType();
+
 		void Update();
 		void Render(Shader* shader, Vector3 viewPos);
 

@@ -11,6 +11,9 @@ namespace ZXEngine
 	class MeshRenderer : public Component
 	{
 	public:
+		static ComponentType GetType();
+
+	public:
 		bool castShadow = false;
 		bool receiveShadow = false;
 		Material* matetrial = nullptr;
@@ -19,7 +22,7 @@ namespace ZXEngine
 		MeshRenderer() {};
 		~MeshRenderer() {};
 
-		static ComponentType GetType();
+		virtual ComponentType GetInsType();
 
 		// 使用ASSIMP加载模型文件
 		void LoadModel(string const& path);
