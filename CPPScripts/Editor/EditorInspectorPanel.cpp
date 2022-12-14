@@ -146,7 +146,35 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("Light"))
 			return;
 
-		ImGui::Text("Temp Content");
+		// Type
+		static ImGuiComboFlags flags = 0;
+		const char* items[] = { "None", "Directional", "Point" };
+		static int item_current_idx = component->type;
+		const char* combo_preview_value = items[item_current_idx];
+		ImGui::Text("Type      ");
+		ImGui::SameLine();
+		if (ImGui::BeginCombo("##Type", combo_preview_value, flags))
+		{
+			for (int i = 0; i < IM_ARRAYSIZE(items); i++)
+			{
+				const bool is_selected = (item_current_idx == i);
+				if (ImGui::Selectable(items[i], is_selected))
+					item_current_idx = i;
+			}
+			ImGui::EndCombo();
+		}
+
+		// Color
+		Vector3 lightColor = component->color;
+		ImVec4 color = ImVec4(lightColor.r, lightColor.g, lightColor.b, 1.0f);
+		ImGui::Text("Color     ");
+		ImGui::SameLine(); ImGui::ColorEdit3("##color", (float*)&color);
+
+		// Intensity
+		float intensity = component->intensity;
+		ImGui::Text("Intensity ");
+		ImGui::SameLine(); ImGui::DragFloat("##Intensity", &intensity, 0.01f, 0.0f, FLT_MAX);
+
 	}
 
 	void EditorInspectorPanel::DrawGameLogic(GameLogic* component)
