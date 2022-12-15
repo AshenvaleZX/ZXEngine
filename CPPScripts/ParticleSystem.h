@@ -17,6 +17,9 @@ namespace ZXEngine
 	class Shader;
 	class ParticleSystem : public Component
 	{
+#ifdef ZX_EDITOR
+		friend class EditorInspectorPanel;
+#endif
 	public:
 		static ComponentType GetType();
 
