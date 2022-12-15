@@ -212,7 +212,9 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("UITextureRenderer"))
 			return;
 
-		ImGui::Text("Temp Content");
+		unsigned int id = component->texture->GetID();
+		ImGui::Text("Image  ");
+		ImGui::SameLine(); ImGui::Image((void*)(intptr_t)id, ImVec2(50.0f, 50.0f));
 	}
 
 	void EditorInspectorPanel::DrawParticleSystem(ParticleSystem* component)

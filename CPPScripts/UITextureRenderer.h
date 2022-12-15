@@ -9,6 +9,9 @@ namespace ZXEngine
 	class Shader;
 	class UITextureRenderer : public Component
 	{
+#ifdef ZX_EDITOR
+		friend class EditorInspectorPanel;
+#endif
 	public:
 		static Shader* shader;
 		static void Init();
