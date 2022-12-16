@@ -1,9 +1,11 @@
 #include "ZShader.h"
+#include "Resources.h"
 
 namespace ZXEngine
 {
 	Shader::Shader(const char* path)
 	{
+		name = Resources::GetAssetName(path);
 		renderQueue = RenderQueueType::Qpaque;
 		ShaderInfo info = RenderAPI::GetInstance()->LoadAndCompileShader(path);
 		ID = info.ID;

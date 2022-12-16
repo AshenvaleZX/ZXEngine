@@ -3,6 +3,7 @@
 
 namespace ZXEngine
 {
+	class Material;
 	class Transform;
 	class MeshRenderer;
 	class Camera;
@@ -20,6 +21,7 @@ namespace ZXEngine
 		virtual void DrawPanel();
 
 	private:
+		void DrawMaterial(Material* material);
 		void DrawTransform(Transform* component);
 		void DrawMeshRenderer(MeshRenderer* component);
 		void DrawCamera(Camera* component);

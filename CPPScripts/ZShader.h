@@ -6,6 +6,8 @@ namespace ZXEngine
 	class Shader
 	{
 	public:
+		string name;
+
 		Shader(const char* path);
 		~Shader() {};
 

@@ -25,14 +25,13 @@ namespace ZXEngine
 			auto curGO = EditorDataManager::GetInstance()->selectedGO;
 			if (curGO != nullptr)
 			{
+				Material* mat = nullptr;
 				ImGui::Text(curGO->name.c_str());
 				for (auto& iter : curGO->components)
 				{
 					ComponentType type = iter.first;
 					if (type == ComponentType::T_Transform)
 						DrawTransform(static_cast<Transform*>(iter.second));
-					else if (type == ComponentType::T_MeshRenderer)
-						DrawMeshRenderer(static_cast<MeshRenderer*>(iter.second));
 					else if (type == ComponentType::T_Camera)
 						DrawCamera(static_cast<Camera*>(iter.second));
 					else if (type == ComponentType::T_Light)
@@ -45,11 +44,41 @@ namespace ZXEngine
 						DrawUITextureRenderer(static_cast<UITextureRenderer*>(iter.second));
 					else if (type == ComponentType::T_ParticleSystem)
 						DrawParticleSystem(static_cast<ParticleSystem*>(iter.second));
+					else if (type == ComponentType::T_MeshRenderer)
+					{
+						auto meshRenderer = static_cast<MeshRenderer*>(iter.second);
+						mat = meshRenderer->matetrial;
+						DrawMeshRenderer(meshRenderer);
+					}
 				}
 				ImGui::Separator();
+				if (mat != nullptr)
+					DrawMaterial(mat);
 			}
 		}
 		ImGui::End();
+	}
+
+	void EditorInspectorPanel::DrawMaterial(Material* material)
+	{
+		string title = material->name + "(Material)";
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader(title.c_str()))
+			return;
+
+		ImGui::Text("Shader");
+		ImGui::SameLine(120);
+		if (ImGui::Button(material->shader->name.c_str()))
+		{
+			Debug::Log("Click Shader");
+		}
+
+		for (auto& iter : material->textures)
+		{
+			unsigned int id = iter.second->GetID();
+			ImGui::Text(iter.first.c_str());
+			ImGui::SameLine(120); ImGui::Image((void*)(intptr_t)id, ImVec2(50.0f, 50.0f));
+		}
 	}
 
 	void EditorInspectorPanel::DrawTransform(Transform* component)
