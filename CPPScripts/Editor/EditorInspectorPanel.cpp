@@ -26,7 +26,7 @@ namespace ZXEngine
 			if (curGO != nullptr)
 			{
 				ImGui::Text(curGO->name.c_str());
-				for (auto iter : curGO->components)
+				for (auto& iter : curGO->components)
 				{
 					ComponentType type = iter.first;
 					if (type == ComponentType::T_Transform)
@@ -46,6 +46,7 @@ namespace ZXEngine
 					else if (type == ComponentType::T_ParticleSystem)
 						DrawParticleSystem(static_cast<ParticleSystem*>(iter.second));
 				}
+				ImGui::Separator();
 			}
 		}
 		ImGui::End();
