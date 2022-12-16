@@ -23,6 +23,9 @@ namespace ZXEngine
 		for (unsigned i = 0; i < Camera::GetAllCameras().size(); ++i)
 		{
 			auto camera = Camera::GetAllCameras()[i];
+			if (camera->cameraType != CameraType::GameCamera)
+				continue;
+
 			for (unsigned j = 0; j < gameObjects.size(); ++j)
 			{
 				auto gameObject = gameObjects[j];

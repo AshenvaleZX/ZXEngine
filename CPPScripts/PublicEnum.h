@@ -15,6 +15,12 @@ namespace ZXEngine
 		Point,
 	};
 
+	enum CameraType
+	{
+		GameCamera,
+		EditorCamera,
+	};
+
 	enum FrameBufferType
 	{
 		Normal,

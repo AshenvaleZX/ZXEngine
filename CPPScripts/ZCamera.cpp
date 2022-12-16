@@ -20,6 +20,7 @@ namespace ZXEngine
 
 	Camera::Camera() : Fov(FOV)
 	{
+		cameraType = CameraType::GameCamera;
 		allCameras.push_back(this);
 	}
 
