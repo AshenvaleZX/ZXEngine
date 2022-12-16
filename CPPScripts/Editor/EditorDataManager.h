@@ -14,6 +14,7 @@ namespace ZXEngine
 		static EditorDataManager* mInstance;
 
 	public:
+		void* selectedAsset;
 		GameObject* selectedGO;
 
 		EditorDataManager();

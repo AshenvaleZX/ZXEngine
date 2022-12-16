@@ -17,5 +17,6 @@ namespace ZXEngine
 	EditorDataManager::EditorDataManager()
 	{
 		selectedGO = nullptr;
+		selectedAsset = nullptr;
 	}
 }
