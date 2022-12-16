@@ -7,6 +7,7 @@
 namespace ZXEngine
 {
 	class EditorPanel;
+	class EditorAssetPreviewer;
 	class EditorGUIManager
 	{
 	public:
@@ -26,5 +27,6 @@ namespace ZXEngine
 
 	private:
 		vector<EditorPanel*> allPanels;
+		EditorAssetPreviewer* assetPreviewer;
 	};
 }

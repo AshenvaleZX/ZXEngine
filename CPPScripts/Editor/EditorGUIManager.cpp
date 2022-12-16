@@ -6,6 +6,7 @@
 #include "EditorMainBarPanel.h"
 #include "EditorInspectorPanel.h"
 #include "EditorHierarchyPanel.h"
+#include "EditorAssetPreviewer.h"
 
 namespace ZXEngine
 {
@@ -36,6 +37,7 @@ namespace ZXEngine
 		allPanels.push_back(new EditorMainBarPanel());
 		allPanels.push_back(new EditorInspectorPanel());
 		allPanels.push_back(new EditorHierarchyPanel());
+		assetPreviewer = new EditorAssetPreviewer();
 	}
 
 	EditorGUIManager::~EditorGUIManager()
@@ -55,6 +57,9 @@ namespace ZXEngine
 
 	void EditorGUIManager::EditorRender()
 	{
+		if (assetPreviewer->Check())
+			assetPreviewer->Draw();
+
 		for (auto panel : allPanels)
 		{
 			panel->DrawPanel();
