@@ -10,7 +10,7 @@ namespace ZXEngine
 		ImGui::SetNextWindowSize(ImVec2((float)ProjectSetting::projectWidth, (float)ProjectSetting::projectHeight));
 
 		// 设置面板具体内容
-		ImGui::Begin("Peoject");
+		ImGui::Begin("Peoject", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 		{
 			string path = Resources::GetAssetsPath();
 			for (const auto& entry : filesystem::directory_iterator(path))

@@ -13,7 +13,7 @@ namespace ZXEngine
 		ImGui::SetNextWindowSize(ImVec2((float)ProjectSetting::hierarchyWidth, (float)ProjectSetting::hierarchyHeight));
 
 		// 设置面板具体内容
-		if (ImGui::Begin("Hierarchy"))
+		if (ImGui::Begin("Hierarchy", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
 		{
 			auto scene = SceneManager::GetInstance()->GetCurScene();
 			auto goNum = scene->gameObjects.size();
