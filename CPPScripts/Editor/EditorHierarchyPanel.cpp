@@ -24,7 +24,7 @@ namespace ZXEngine
 				if (ImGui::Selectable(gameObject->name.c_str(), selected == i))
 				{
 					selected = i;
-					EditorDataManager::GetInstance()->selectedGO = gameObject;
+					EditorDataManager::GetInstance()->SetSelectedGO(gameObject);
 				}
 			}
 		}

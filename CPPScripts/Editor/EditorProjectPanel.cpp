@@ -1,4 +1,5 @@
 #include "EditorProjectPanel.h"
+#include "EditorDataManager.h"
 #include "../Resources.h"
 #include "../Texture.h"
 
@@ -6,7 +7,7 @@ namespace ZXEngine
 {
 	EditorProjectPanel::EditorProjectPanel()
 	{
-		root = new EditorFileNode();
+		root = new EditorAssetNode();
 		root->parent = nullptr;
 		root->path = Resources::GetAssetsPath();
 		root->name = "Assets";
@@ -40,7 +41,7 @@ namespace ZXEngine
 			// 绘制路径条
 			ImGui::PushStyleColor(ImGuiCol_Button, style.Colors[ImGuiCol_WindowBg]);
 			auto tmpPathNode = curPathNode;
-			vector<EditorFileNode*> pathNodes;
+			vector<EditorAssetNode*> pathNodes;
 			while (tmpPathNode != nullptr)
 			{
 				pathNodes.push_back(tmpPathNode);
@@ -52,7 +53,7 @@ namespace ZXEngine
 				ImGui::SameLine(); 
 				if (ImGui::SmallButton(pathNodes[i - 1]->name.c_str()))
 				{
-					curNode = pathNodes[i - 1];
+					SetCurNode(pathNodes[i - 1]);
 					// 切换路径的时候刷新选中状态
 					selected = -1;
 				}
@@ -88,7 +89,7 @@ namespace ZXEngine
 				if (click)
 				{
 					selected = i;
-					curNode = node;
+					SetCurNode(node);
 					if (node->extension == "")
 					{
 						// 切换路径的时候刷新选中状态
@@ -123,11 +124,17 @@ namespace ZXEngine
 		ImGui::End();
 	}
 
-	void EditorProjectPanel::GetChildren(EditorFileNode* node)
+	void EditorProjectPanel::SetCurNode(EditorAssetNode* node)
+	{
+		curNode = node;
+		EditorDataManager::GetInstance()->SetSelectedAsset(node);
+	}
+
+	void EditorProjectPanel::GetChildren(EditorAssetNode* node)
 	{
 		for (const auto& entry : filesystem::directory_iterator(node->path))
 		{
-			EditorFileNode* child = new EditorFileNode();
+			EditorAssetNode* child = new EditorAssetNode();
 			child->parent = node;
 			child->path = entry.path().string();
 			child->name = entry.path().filename().string();

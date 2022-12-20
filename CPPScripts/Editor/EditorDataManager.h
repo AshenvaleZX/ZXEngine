@@ -3,6 +3,15 @@
 
 namespace ZXEngine
 {
+	struct EditorAssetNode
+	{
+		string path;
+		string name;
+		string extension;
+		EditorAssetNode* parent;
+		vector<EditorAssetNode*> children;
+	};
+
 	class GameObject;
 	class EditorDataManager
 	{
@@ -14,10 +23,13 @@ namespace ZXEngine
 		static EditorDataManager* mInstance;
 
 	public:
-		void* selectedAsset;
 		GameObject* selectedGO;
+		EditorAssetNode* selectedAsset;
 
 		EditorDataManager();
 		~EditorDataManager() {};
+
+		void SetSelectedGO(GameObject* go);
+		void SetSelectedAsset(EditorAssetNode* asset);
 	};
 }

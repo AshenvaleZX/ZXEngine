@@ -3,16 +3,8 @@
 
 namespace ZXEngine
 {
-	struct EditorFileNode
-	{
-		string path;
-		string name;
-		string extension;
-		EditorFileNode* parent;
-		vector<EditorFileNode*> children;
-	};
-
 	class Texture;
+	struct EditorAssetNode;
 	class EditorProjectPanel : public EditorPanel
 	{
 	public:
@@ -22,9 +14,10 @@ namespace ZXEngine
 		virtual void DrawPanel();
 
 	private:
-		EditorFileNode* root;
-		EditorFileNode* curNode;
-		void GetChildren(EditorFileNode* node);
+		EditorAssetNode* root;
+		EditorAssetNode* curNode;
+		void SetCurNode(EditorAssetNode* node);
+		void GetChildren(EditorAssetNode* node);
 
 		Texture* fileIcons[9];
 		unordered_map<string, int> extIconMap;

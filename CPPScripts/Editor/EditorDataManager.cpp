@@ -19,4 +19,16 @@ namespace ZXEngine
 		selectedGO = nullptr;
 		selectedAsset = nullptr;
 	}
+
+	void EditorDataManager::SetSelectedGO(GameObject* go)
+	{
+		selectedGO = go;
+		selectedAsset = nullptr;
+	}
+
+	void EditorDataManager::SetSelectedAsset(EditorAssetNode* asset)
+	{
+		selectedGO = nullptr;
+		selectedAsset = asset;
+	}
 }
