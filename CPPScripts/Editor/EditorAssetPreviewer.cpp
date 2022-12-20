@@ -34,16 +34,30 @@ namespace ZXEngine
 
 	bool EditorAssetPreviewer::Check()
 	{
+		bool needPreview = false;
 		auto curAsset = EditorDataManager::GetInstance()->selectedAsset;
 		if (curAsset != nullptr)
 		{
-			// Todo, set render object
+			if (curAsset->type == AssetType::AT_Material)
+			{
+				needPreview = true;
+			}
+			else if (curAsset->type == AssetType::AT_Model)
+			{
+				needPreview = true;
+			}
+		}
 
+		if (needPreview)
+		{
 			ProjectSetting::inspectorHeight = GlobalData::srcHeight + ProjectSetting::projectHeight - ProjectSetting::inspectorWidth;
 			return true;
 		}
-		ProjectSetting::inspectorHeight = GlobalData::srcHeight + ProjectSetting::projectHeight;
-		return false;
+		else
+		{
+			ProjectSetting::inspectorHeight = GlobalData::srcHeight + ProjectSetting::projectHeight;
+			return false;
+		}
 	}
 
 	void EditorAssetPreviewer::Draw()
