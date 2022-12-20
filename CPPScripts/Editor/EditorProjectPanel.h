@@ -12,6 +12,7 @@ namespace ZXEngine
 		vector<EditorFileNode*> children;
 	};
 
+	class Texture;
 	class EditorProjectPanel : public EditorPanel
 	{
 	public:
@@ -24,5 +25,10 @@ namespace ZXEngine
 		EditorFileNode* root;
 		EditorFileNode* curNode;
 		void GetChildren(EditorFileNode* node);
+
+		Texture* fileIcons[9];
+		unordered_map<string, int> extIconMap;
+		void InitIcons();
+		Texture* GetIcon(string extension);
 	};
 }
