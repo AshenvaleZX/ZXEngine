@@ -1,5 +1,4 @@
 #include "EditorProjectPanel.h"
-#include "EditorDataManager.h"
 #include "../Resources.h"
 #include "../Texture.h"
 
@@ -7,14 +6,16 @@ namespace ZXEngine
 {
 	EditorProjectPanel::EditorProjectPanel()
 	{
+		InitIcons();
+		InitAssetType();
 		root = new EditorAssetNode();
 		root->parent = nullptr;
 		root->path = Resources::GetAssetsPath();
 		root->name = "Assets";
 		root->extension = "";
+		root->type = AssetType::AT_Folder;
 		GetChildren(root);
 		curNode = root;
-		InitIcons();
 	}
 
 	void EditorProjectPanel::DrawPanel()
@@ -82,7 +83,7 @@ namespace ZXEngine
 
 				// 无论是否点击都必须PopStyleColor，所以没有直接写在if中
 				string label = "##File" + to_string(i);
-				auto icon = GetIcon(node->extension);
+				auto icon = fileIcons[node->type];
 				auto texID = icon->GetID();
 				bool click = ImGui::ImageButton(label.c_str(), (void*)(intptr_t)texID, iconSize);
 				ImGui::PopStyleColor(1);
@@ -139,6 +140,7 @@ namespace ZXEngine
 			child->path = entry.path().string();
 			child->name = entry.path().filename().string();
 			child->extension = entry.path().filename().extension().string();
+			child->type = GetAssetType(child->extension);
 			// 把文件扩展(后缀名)截取掉
 			child->name = child->name.substr(0, child->name.length() - child->extension.length());
 			node->children.push_back(child);
@@ -147,43 +149,42 @@ namespace ZXEngine
 		}
 	}
 
-	void EditorProjectPanel::InitIcons()
+	void EditorProjectPanel::InitAssetType()
 	{
-		fileIcons[0] = new Texture(Resources::GetAssetFullPath("Textures/icons/other.png").c_str());
+		extTypeMap.insert(make_pair<string, AssetType>("", AssetType::AT_Folder));
+		extTypeMap.insert(make_pair<string, AssetType>(".zxmat", AssetType::AT_Material));
+		extTypeMap.insert(make_pair<string, AssetType>(".zxprefab", AssetType::AT_Prefab));
+		extTypeMap.insert(make_pair<string, AssetType>(".lua", AssetType::AT_Script));
+		extTypeMap.insert(make_pair<string, AssetType>(".zxshader", AssetType::AT_Shader));
 
-		extIconMap.insert(make_pair<string, int>("", 1));
-		fileIcons[1] = new Texture(Resources::GetAssetFullPath("Textures/icons/folder.png").c_str());
+		extTypeMap.insert(make_pair<string, AssetType>(".png", AssetType::AT_Texture));
+		extTypeMap.insert(make_pair<string, AssetType>(".tga", AssetType::AT_Texture));
 
-		extIconMap.insert(make_pair<string, int>(".zxmat", 2));
-		fileIcons[2] = new Texture(Resources::GetAssetFullPath("Textures/icons/material.png").c_str());
+		extTypeMap.insert(make_pair<string, AssetType>(".zxscene", AssetType::AT_Scene));
 
-		extIconMap.insert(make_pair<string, int>(".zxprefab", 3));
-		fileIcons[3] = new Texture(Resources::GetAssetFullPath("Textures/icons/prefab.png").c_str());
-
-		extIconMap.insert(make_pair<string, int>(".lua", 4));
-		fileIcons[4] = new Texture(Resources::GetAssetFullPath("Textures/icons/script.png").c_str());
-
-		extIconMap.insert(make_pair<string, int>(".zxshader", 5));
-		fileIcons[5] = new Texture(Resources::GetAssetFullPath("Textures/icons/shader.png").c_str());
-
-		extIconMap.insert(make_pair<string, int>(".png", 6));
-		extIconMap.insert(make_pair<string, int>(".tga", 6));
-		fileIcons[6] = new Texture(Resources::GetAssetFullPath("Textures/icons/texture.png").c_str());
-
-		extIconMap.insert(make_pair<string, int>(".zxscene", 7));
-		fileIcons[7] = new Texture(Resources::GetAssetFullPath("Textures/icons/scene.png").c_str());
-
-		extIconMap.insert(make_pair<string, int>(".obj", 8));
-		extIconMap.insert(make_pair<string, int>(".FBX", 8));
-		fileIcons[8] = new Texture(Resources::GetAssetFullPath("Textures/icons/model.png").c_str());
+		extTypeMap.insert(make_pair<string, AssetType>(".obj", AssetType::AT_Model));
+		extTypeMap.insert(make_pair<string, AssetType>(".FBX", AssetType::AT_Model));
 	}
 
-	Texture* EditorProjectPanel::GetIcon(string extension)
+	AssetType EditorProjectPanel::GetAssetType(string extension)
 	{
-		auto iter = extIconMap.find(extension);
-		if (iter == extIconMap.end())
-			return fileIcons[0];
+		auto iter = extTypeMap.find(extension);
+		if (iter == extTypeMap.end())
+			return AssetType::AT_Other;
 		else
-			return fileIcons[iter->second];
+			return iter->second;
+	}
+
+	void EditorProjectPanel::InitIcons()
+	{
+		fileIcons[AT_Other]	   = new Texture(Resources::GetAssetFullPath("Textures/icons/other.png").c_str());
+		fileIcons[AT_Folder]   = new Texture(Resources::GetAssetFullPath("Textures/icons/folder.png").c_str());
+		fileIcons[AT_Material] = new Texture(Resources::GetAssetFullPath("Textures/icons/material.png").c_str());
+		fileIcons[AT_Prefab]   = new Texture(Resources::GetAssetFullPath("Textures/icons/prefab.png").c_str());
+		fileIcons[AT_Script]   = new Texture(Resources::GetAssetFullPath("Textures/icons/script.png").c_str());
+		fileIcons[AT_Shader]   = new Texture(Resources::GetAssetFullPath("Textures/icons/shader.png").c_str());
+		fileIcons[AT_Texture]  = new Texture(Resources::GetAssetFullPath("Textures/icons/texture.png").c_str());
+		fileIcons[AT_Scene]    = new Texture(Resources::GetAssetFullPath("Textures/icons/scene.png").c_str());
+		fileIcons[AT_Model]    = new Texture(Resources::GetAssetFullPath("Textures/icons/model.png").c_str());
 	}
 }

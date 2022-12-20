@@ -1,10 +1,10 @@
 #pragma once
 #include "EditorPanel.h"
+#include "EditorDataManager.h"
 
 namespace ZXEngine
 {
 	class Texture;
-	struct EditorAssetNode;
 	class EditorProjectPanel : public EditorPanel
 	{
 	public:
@@ -19,9 +19,11 @@ namespace ZXEngine
 		void SetCurNode(EditorAssetNode* node);
 		void GetChildren(EditorAssetNode* node);
 
+		unordered_map<string, AssetType> extTypeMap;
+		void InitAssetType();
+		AssetType GetAssetType(string extension);
+
 		Texture* fileIcons[9];
-		unordered_map<string, int> extIconMap;
 		void InitIcons();
-		Texture* GetIcon(string extension);
 	};
 }
