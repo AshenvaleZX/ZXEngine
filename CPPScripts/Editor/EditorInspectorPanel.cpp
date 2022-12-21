@@ -1,5 +1,4 @@
 #include "EditorInspectorPanel.h"
-#include "EditorDataManager.h"
 #include "../GameObject.h"
 #include "../Component.h"
 #include "../Transform.h"
@@ -23,6 +22,7 @@ namespace ZXEngine
 		if (ImGui::Begin("Inspector", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
 		{
 			auto curGO = EditorDataManager::GetInstance()->selectedGO;
+			auto curAsset = EditorDataManager::GetInstance()->selectedAsset;
 			if (curGO != nullptr)
 			{
 				Material* mat = nullptr;
@@ -54,6 +54,12 @@ namespace ZXEngine
 				ImGui::Separator();
 				if (mat != nullptr)
 					DrawMaterial(mat);
+			}
+			else if (curAsset != nullptr)
+			{
+				auto curAssetInfo = EditorDataManager::GetInstance()->curAssetInfo;
+				if (curAsset->type == AssetType::AT_Script)
+					DrawScript(static_cast<AssetScriptInfo*>(curAssetInfo));
 			}
 		}
 		ImGui::End();
@@ -274,5 +280,17 @@ namespace ZXEngine
 		ImVec4 o = ImVec4(offset.x, offset.y, offset.z, 1.0f);
 		ImGui::Text("StartOffset ");
 		ImGui::SameLine(); ImGui::DragFloat3("##offset", (float*)&o, 0.01f, -FLT_MAX, FLT_MAX);
+	}
+
+	void EditorInspectorPanel::DrawScript(AssetScriptInfo* info)
+	{
+		string title = info->name + "(Lua Script)";
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader(title.c_str()))
+			return;
+
+		ImGui::PushTextWrapPos(0.0f);
+		ImGui::TextUnformatted(info->preview.c_str());
+		ImGui::PopTextWrapPos();
 	}
 }

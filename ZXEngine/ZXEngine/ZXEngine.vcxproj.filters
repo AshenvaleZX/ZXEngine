@@ -668,5 +668,8 @@
     <ClInclude Include="..\..\CPPScripts\Editor\EditorAssetPreviewer.h">
       <Filter>Editor</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorEnumStruct.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

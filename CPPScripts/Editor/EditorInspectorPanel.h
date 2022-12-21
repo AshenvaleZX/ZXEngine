@@ -1,5 +1,6 @@
 #pragma once
 #include "EditorPanel.h"
+#include "EditorDataManager.h"
 
 namespace ZXEngine
 {
@@ -21,6 +22,7 @@ namespace ZXEngine
 		virtual void DrawPanel();
 
 	private:
+		// Component
 		void DrawMaterial(Material* material);
 		void DrawTransform(Transform* component);
 		void DrawMeshRenderer(MeshRenderer* component);
@@ -30,5 +32,8 @@ namespace ZXEngine
 		void DrawUITextRenderer(UITextRenderer* component);
 		void DrawUITextureRenderer(UITextureRenderer* component);
 		void DrawParticleSystem(ParticleSystem* component);
+		
+		// Asset
+		void DrawScript(AssetScriptInfo* info);
 	};
 }

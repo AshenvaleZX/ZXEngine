@@ -1,31 +1,8 @@
 #pragma once
-#include "../pubh.h"
+#include "EditorEnumStruct.h"
 
 namespace ZXEngine
 {
-	enum AssetType
-	{
-		AT_Other,
-		AT_Folder,
-		AT_Material,
-		AT_Prefab,
-		AT_Script,
-		AT_Shader,
-		AT_Texture,
-		AT_Scene,
-		AT_Model,
-	};
-
-	struct EditorAssetNode
-	{
-		string path;
-		string name;
-		string extension;
-		AssetType type;
-		EditorAssetNode* parent;
-		vector<EditorAssetNode*> children;
-	};
-
 	class GameObject;
 	class EditorDataManager
 	{
@@ -39,11 +16,15 @@ namespace ZXEngine
 	public:
 		GameObject* selectedGO;
 		EditorAssetNode* selectedAsset;
+		void* curAssetInfo;
 
 		EditorDataManager();
 		~EditorDataManager() {};
 
 		void SetSelectedGO(GameObject* go);
 		void SetSelectedAsset(EditorAssetNode* asset);
+
+	private:
+		string GetTextFilePreview(string path);
 	};
 }

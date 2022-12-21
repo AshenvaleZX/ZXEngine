@@ -255,6 +255,7 @@
     <ClInclude Include="..\..\CPPScripts\Debug.h" />
     <ClInclude Include="..\..\CPPScripts\DynamicMesh.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorDataManager.h" />
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorEnumStruct.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorGUIManager.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorHierarchyPanel.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorInspectorPanel.h" />
