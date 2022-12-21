@@ -62,6 +62,8 @@ namespace ZXEngine
 					DrawScript(static_cast<AssetScriptInfo*>(curAssetInfo));
 				else if (curAsset->type == AssetType::AT_Shader)
 					DrawShader(static_cast<AssetShaderInfo*>(curAssetInfo));
+				else if (curAsset->type == AssetType::AT_Texture)
+					DrawTexture(static_cast<AssetTextureInfo*>(curAssetInfo));
 			}
 		}
 		ImGui::End();
@@ -306,5 +308,37 @@ namespace ZXEngine
 		ImGui::PushTextWrapPos(0.0f);
 		ImGui::TextUnformatted(info->preview.c_str());
 		ImGui::PopTextWrapPos();
+	}
+
+	void EditorInspectorPanel::DrawTexture(AssetTextureInfo* info)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("Texture"))
+			return;
+
+		ImGui::Text("Name:");
+		ImGui::SameLine(120);
+		ImGui::Text(info->name.c_str());
+
+		ImGui::Text("Format:");
+		ImGui::SameLine(120);
+		ImGui::Text(info->format.c_str());
+
+		auto id = info->texture->GetID();
+		auto width = info->texture->width;
+		auto height = info->texture->height;
+
+		string sizeText = to_string(width) + "x" + to_string(height);
+		ImGui::Text("Size:");
+		ImGui::SameLine(120);
+		ImGui::Text(sizeText.c_str());
+		
+		int maxWidth = (int)ProjectSetting::inspectorWidth - 16;
+		if (width > maxWidth)
+		{
+			height = height * maxWidth / width;
+			width = maxWidth;
+		}
+		ImGui::Image((void*)(intptr_t)id, ImVec2((float)width, (float)height));
 	}
 }

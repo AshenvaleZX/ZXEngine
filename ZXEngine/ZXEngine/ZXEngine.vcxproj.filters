@@ -327,6 +327,9 @@
     <ClCompile Include="..\..\CPPScripts\Editor\EditorAssetPreviewer.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorEnumStruct.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">

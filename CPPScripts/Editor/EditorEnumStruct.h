@@ -37,4 +37,15 @@ namespace ZXEngine
 		string name;
 		string preview;
 	};
+
+	class Texture;
+	struct AssetTextureInfo
+	{
+		string name;
+		string format;
+		Texture* texture;
+
+		AssetTextureInfo();
+		~AssetTextureInfo();
+	};
 }

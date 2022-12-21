@@ -1,4 +1,5 @@
 #include "EditorDataManager.h"
+#include "../Texture.h"
 
 namespace ZXEngine
 {
@@ -51,6 +52,14 @@ namespace ZXEngine
 			auto info = new AssetShaderInfo();
 			info->name = asset->name;
 			info->preview = GetTextFilePreview(asset->path);
+			curAssetInfo = info;
+		}
+		else if (asset->type == AssetType::AT_Texture)
+		{
+			auto info = new AssetTextureInfo();
+			info->name = asset->name;
+			info->format = asset->extension;
+			info->texture = new Texture(asset->path.c_str());
 			curAssetInfo = info;
 		}
 	}

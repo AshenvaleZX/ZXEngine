@@ -153,6 +153,7 @@
     <ClCompile Include="..\..\CPPScripts\Debug.cpp" />
     <ClCompile Include="..\..\CPPScripts\DynamicMesh.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorDataManager.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorEnumStruct.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorGUIManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorHierarchyPanel.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorInspectorPanel.cpp" />
