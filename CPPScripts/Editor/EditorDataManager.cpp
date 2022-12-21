@@ -31,15 +31,22 @@ namespace ZXEngine
 	void EditorDataManager::SetSelectedAsset(EditorAssetNode* asset)
 	{
 		selectedGO = nullptr;
-		selectedAsset = asset;
-
 		if (curAssetInfo != nullptr)
 		{
-			delete curAssetInfo;
+			// delete上一个AssetInfo的时候需要先把指针映射成对应类型，才能正确调用析构函数，确保内存正确释放
+			if (selectedAsset->type == AssetType::AT_Script)
+				delete static_cast<AssetScriptInfo*>(curAssetInfo);
+			else if (selectedAsset->type == AssetType::AT_Shader)
+				delete static_cast<AssetShaderInfo*>(curAssetInfo);
+			else if (selectedAsset->type == AssetType::AT_Texture)
+				delete static_cast<AssetTextureInfo*>(curAssetInfo);
+			else
+				delete curAssetInfo;
 			// delete后立刻重新赋值为nullptr，防止连续delete指针出现无法预期的行为导致直接崩溃
 			curAssetInfo = nullptr;
 		}
-	
+		selectedAsset = asset;
+
 		if (asset->type == AssetType::AT_Script)
 		{
 			auto info = new AssetScriptInfo();
