@@ -44,7 +44,13 @@ namespace ZXEngine
 			auto info = new AssetScriptInfo();
 			info->name = asset->name;
 			info->preview = GetTextFilePreview(asset->path);
-
+			curAssetInfo = info;
+		}
+		else if (asset->type == AssetType::AT_Shader)
+		{
+			auto info = new AssetShaderInfo();
+			info->name = asset->name;
+			info->preview = GetTextFilePreview(asset->path);
 			curAssetInfo = info;
 		}
 	}
@@ -56,7 +62,7 @@ namespace ZXEngine
 		{
 			string line;
 			string content;
-			int lineNum = 20;
+			int lineNum = 40;
 			while (getline(f, line) && lineNum > 0)
 			{
 				content = content + line + "\n";

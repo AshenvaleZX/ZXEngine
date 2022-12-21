@@ -60,6 +60,8 @@ namespace ZXEngine
 				auto curAssetInfo = EditorDataManager::GetInstance()->curAssetInfo;
 				if (curAsset->type == AssetType::AT_Script)
 					DrawScript(static_cast<AssetScriptInfo*>(curAssetInfo));
+				else if (curAsset->type == AssetType::AT_Shader)
+					DrawShader(static_cast<AssetShaderInfo*>(curAssetInfo));
 			}
 		}
 		ImGui::End();
@@ -67,7 +69,7 @@ namespace ZXEngine
 
 	void EditorInspectorPanel::DrawMaterial(Material* material)
 	{
-		string title = material->name + "(Material)";
+		string title = material->name + " (Material)";
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 		if (!ImGui::CollapsingHeader(title.c_str()))
 			return;
@@ -284,7 +286,19 @@ namespace ZXEngine
 
 	void EditorInspectorPanel::DrawScript(AssetScriptInfo* info)
 	{
-		string title = info->name + "(Lua Script)";
+		string title = info->name + " (Lua Script)";
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader(title.c_str()))
+			return;
+
+		ImGui::PushTextWrapPos(0.0f);
+		ImGui::TextUnformatted(info->preview.c_str());
+		ImGui::PopTextWrapPos();
+	}
+
+	void EditorInspectorPanel::DrawShader(AssetShaderInfo* info)
+	{
+		string title = info->name + " (Shader)";
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 		if (!ImGui::CollapsingHeader(title.c_str()))
 			return;

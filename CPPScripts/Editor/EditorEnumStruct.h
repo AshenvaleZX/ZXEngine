@@ -31,4 +31,10 @@ namespace ZXEngine
 		string name;
 		string preview;
 	};
+
+	struct AssetShaderInfo
+	{
+		string name;
+		string preview;
+	};
 }
