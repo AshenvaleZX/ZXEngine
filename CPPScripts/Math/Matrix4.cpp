@@ -58,7 +58,7 @@ namespace ZXEngine
 		return m00 * a00 + m01 * a01 + m02 * a02 + m03 * a03;
 	}
 
-	void Matrix4::ToRowMajorArray(float* array)
+	void Matrix4::ToRowMajorArray(float* array) const
 	{
 		array[0]  = m00; array[1]  = m01; array[2]  = m02; array[3]  = m03;
 		array[4]  = m10; array[5]  = m11; array[6]  = m12; array[7]  = m13;
@@ -66,7 +66,7 @@ namespace ZXEngine
 		array[12] = m30; array[13] = m31; array[14] = m32; array[15] = m33;
 	}
 
-	void Matrix4::ToColumnMajorArray(float* array)
+	void Matrix4::ToColumnMajorArray(float* array) const
 	{
 		array[0]  = m00; array[1]  = m10; array[2]  = m20; array[3]  = m30;
 		array[4]  = m01; array[5]  = m11; array[6]  = m21; array[7]  = m31;

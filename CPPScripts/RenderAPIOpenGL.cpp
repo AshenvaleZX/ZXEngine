@@ -50,6 +50,11 @@ namespace ZXEngine
 		glBlendFunc(BlendMap[sfactor], BlendMap[dfactor]);
 	}
 
+	void RenderAPIOpenGL::SetClearColor(const Vector4& color)
+	{
+		glClearColor(color.r, color.g, color.b, color.a);
+	}
+
 	void RenderAPIOpenGL::ClearFrameBuffer()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -643,7 +648,7 @@ namespace ZXEngine
 	{
 		glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 	}
-	void RenderAPIOpenGL::SetShaderVec2(unsigned int ID, string name, Vector2 value)
+	void RenderAPIOpenGL::SetShaderVec2(unsigned int ID, string name, const Vector2& value)
 	{
 		float* array = new float[2];
 		value.ToArray(array);
@@ -654,7 +659,7 @@ namespace ZXEngine
 	{
 		glUniform2f(glGetUniformLocation(ID, name.c_str()), x, y);
 	}
-	void RenderAPIOpenGL::SetShaderVec3(unsigned int ID, string name, Vector3 value)
+	void RenderAPIOpenGL::SetShaderVec3(unsigned int ID, string name, const Vector3& value)
 	{
 		float* array = new float[3];
 		value.ToArray(array);
@@ -665,7 +670,7 @@ namespace ZXEngine
 	{
 		glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
 	}
-	void RenderAPIOpenGL::SetShaderVec4(unsigned int ID, string name, Vector4 value)
+	void RenderAPIOpenGL::SetShaderVec4(unsigned int ID, string name, const Vector4& value)
 	{
 		float* array = new float[4];
 		value.ToArray(array);
@@ -676,14 +681,14 @@ namespace ZXEngine
 	{
 		glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
 	}
-	void RenderAPIOpenGL::SetShaderMat3(unsigned int ID, string name, Matrix3 mat)
+	void RenderAPIOpenGL::SetShaderMat3(unsigned int ID, string name, const Matrix3& mat)
 	{
 		float* array = new float[9];
 		mat.ToColumnMajorArray(array);
 		glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, array);
 		delete[] array;
 	}
-	void RenderAPIOpenGL::SetShaderMat4(unsigned int ID, string name, Matrix4 mat)
+	void RenderAPIOpenGL::SetShaderMat4(unsigned int ID, string name, const Matrix4& mat)
 	{
 		float* array = new float[16];
 		mat.ToColumnMajorArray(array);

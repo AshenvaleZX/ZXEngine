@@ -20,8 +20,8 @@ namespace ZXEngine
 		);
 
 		float GetDeterminant() const;
-		void ToRowMajorArray(float* array);
-		void ToColumnMajorArray(float* array);
+		void ToRowMajorArray(float* array) const;
+		void ToColumnMajorArray(float* array) const;
 		std::string ToString();
 
 		Vector3 operator* (const Vector3& v) const;

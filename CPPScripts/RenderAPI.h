@@ -25,6 +25,7 @@ namespace ZXEngine
 		virtual void SwitchFrameBuffer(unsigned int id) = 0;
 		virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0) = 0;
 		virtual void SetBlendMode(BlendOption sfactor, BlendOption dfactor) = 0;
+		virtual void SetClearColor(const Vector4& color) = 0;
 		virtual void ClearFrameBuffer() = 0;
 		virtual void ClearColorBuffer() = 0;
 		virtual void ClearDepthBuffer() = 0;
@@ -59,14 +60,14 @@ namespace ZXEngine
 		virtual void SetShaderBool(unsigned int ID, string name, bool value) = 0;
 		virtual void SetShaderInt(unsigned int ID, string name, int value) = 0;
 		virtual void SetShaderFloat(unsigned int ID, string name, float value) = 0;
-		virtual void SetShaderVec2(unsigned int ID, string name, Vector2 value) = 0;
+		virtual void SetShaderVec2(unsigned int ID, string name, const Vector2& value) = 0;
 		virtual void SetShaderVec2(unsigned int ID, string name, float x, float y) = 0;
-		virtual void SetShaderVec3(unsigned int ID, string name, Vector3 value) = 0;
+		virtual void SetShaderVec3(unsigned int ID, string name, const Vector3& value) = 0;
 		virtual void SetShaderVec3(unsigned int ID, string name, float x, float y, float z) = 0;
-		virtual void SetShaderVec4(unsigned int ID, string name, Vector4 value) = 0;
+		virtual void SetShaderVec4(unsigned int ID, string name, const Vector4& value) = 0;
 		virtual void SetShaderVec4(unsigned int ID, string name, float x, float y, float z, float w) = 0;
-		virtual void SetShaderMat3(unsigned int ID, string name, Matrix3 value) = 0;
-		virtual void SetShaderMat4(unsigned int ID, string name, Matrix4 value) = 0;
+		virtual void SetShaderMat3(unsigned int ID, string name, const Matrix3& value) = 0;
+		virtual void SetShaderMat4(unsigned int ID, string name, const Matrix4& value) = 0;
 		virtual void SetShaderTexture(unsigned int ID, string name, unsigned int textureID, unsigned int idx) = 0;
 		virtual void SetShaderCubeMap(unsigned int ID, string name, unsigned int textureID, unsigned int idx) = 0;
 

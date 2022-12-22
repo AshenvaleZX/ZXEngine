@@ -48,14 +48,14 @@ namespace ZXEngine
 			(m02 * m11 * m20) - (m00 * m12 * m21) - (m01 * m10 * m22);
 	}
 
-	void Matrix3::ToRowMajorArray(float* array)
+	void Matrix3::ToRowMajorArray(float* array) const
 	{
 		array[0] = m00; array[1] = m01; array[2] = m02;
 		array[3] = m10; array[4] = m11; array[5] = m12;
 		array[6] = m20; array[7] = m21; array[8] = m22;
 	}
 
-	void Matrix3::ToColumnMajorArray(float* array)
+	void Matrix3::ToColumnMajorArray(float* array) const
 	{
 		array[0] = m00; array[1] = m10; array[2] = m20;
 		array[3] = m01; array[4] = m11; array[5] = m21;
