@@ -39,13 +39,9 @@ namespace ZXEngine
 		if (curAsset != nullptr)
 		{
 			if (curAsset->type == AssetType::AT_Material)
-			{
 				needPreview = true;
-			}
 			else if (curAsset->type == AssetType::AT_Model)
-			{
 				needPreview = true;
-			}
 		}
 
 		if (needPreview)
@@ -63,9 +59,29 @@ namespace ZXEngine
 	void EditorAssetPreviewer::Draw()
 	{
 		FBOManager::GetInstance()->SwitchFBO("MaterialPreview");
+		RenderAPI::GetInstance()->SetClearColor(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
 		RenderAPI::GetInstance()->ClearFrameBuffer();
+		RenderAPI::GetInstance()->SetClearColor(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+
+		auto curAsset = EditorDataManager::GetInstance()->selectedAsset;
+		auto curAssetInfo = EditorDataManager::GetInstance()->curAssetInfo;
+
+		if (curAsset->type == AssetType::AT_Material)
+			RenderMaterialPreview(static_cast<AssetMaterialInfo*>(curAssetInfo));
+		else if (curAsset->type == AssetType::AT_Model)
+			RenderModelPreview(static_cast<AssetModelInfo*>(curAssetInfo));
 
 		RenderToQuad();
+	}
+
+	void EditorAssetPreviewer::RenderMaterialPreview(AssetMaterialInfo* info)
+	{
+
+	}
+
+	void EditorAssetPreviewer::RenderModelPreview(AssetModelInfo* info)
+	{
+
 	}
 
 	void EditorAssetPreviewer::RenderToQuad()

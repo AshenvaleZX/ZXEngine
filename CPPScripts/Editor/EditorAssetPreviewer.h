@@ -1,5 +1,6 @@
 #pragma once
 #include "../pubh.h"
+#include "EditorDataManager.h"
 
 namespace ZXEngine
 {
@@ -22,6 +23,8 @@ namespace ZXEngine
 		Shader* previewShader;
 		MeshRenderer* renderer;
 
+		void RenderMaterialPreview(AssetMaterialInfo* info);
+		void RenderModelPreview(AssetModelInfo* info);
 		void RenderToQuad();
 		void InitPreviewQuad();
 	};
