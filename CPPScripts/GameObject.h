@@ -42,10 +42,10 @@ namespace ZXEngine
 		ComponentType type = T::GetType();
 		map<ComponentType, Component*>::iterator iter = components.find(type);
 		if (iter != components.end()) {
-			return reinterpret_cast<T*> (iter->second);
+			return static_cast<T*> (iter->second);
 		}
 		else {
-			return reinterpret_cast<T*> (nullptr);
+			return static_cast<T*> (nullptr);
 		}
 	}
 
