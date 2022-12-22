@@ -496,6 +496,11 @@ namespace ZXEngine
 		return VAO;
 	}
 
+	void RenderAPIOpenGL::DeleteBuffer(unsigned int id)
+	{
+		glDeleteBuffers(1, &id);
+	}
+
 	void RenderAPIOpenGL::Draw()
 	{
 		glBindVertexArray(VAO);

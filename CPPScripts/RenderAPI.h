@@ -41,6 +41,7 @@ namespace ZXEngine
 		virtual void CheckCompileErrors(unsigned int shader, string type) = 0;
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0) = 0;
 		virtual unsigned int GenerateParticleMesh() = 0;
+		virtual void DeleteBuffer(unsigned int id) = 0;
 
 		// DrawCall
 		virtual void Draw() = 0;

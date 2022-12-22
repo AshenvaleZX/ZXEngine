@@ -32,6 +32,7 @@ namespace ZXEngine
 		virtual void CheckCompileErrors(unsigned int shader, std::string type);
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
 		virtual unsigned int GenerateParticleMesh();
+		virtual void DeleteBuffer(unsigned int id);
 
 		// DrawCall
 		virtual void Draw();
