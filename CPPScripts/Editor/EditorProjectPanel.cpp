@@ -30,6 +30,9 @@ namespace ZXEngine
 			// 记录一下按钮原本颜色
 			ImGuiStyle& style = ImGui::GetStyle();
 			ImVec4 btnColor = style.Colors[ImGuiCol_Button];
+			ImVec4 selectBtnColor = ImVec4(btnColor.x - 0.1f, btnColor.y - 0.1f, btnColor.z - 0.1f, 1.0f);
+			ImVec4 textColor = style.Colors[ImGuiCol_Text];
+			ImVec4 selectTextColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 			// 当前选中的id
 			static unsigned int selected = -1;
 			// 文件名大小
@@ -73,13 +76,22 @@ namespace ZXEngine
 			float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
 			// 记录当前绘制的一排文件名
 			vector<string> fileNames;
+			// 当前绘制的文件在当前这一行里是第几个
+			int rowIdx = 0;
+			// 记录当前选中的文件在当前这一行里是第几个
+			int curRowIdx = -1;
 			for (unsigned int i = 0; i < childNum; i++)
 			{
 				auto node = curPathNode->children[i];
 				if (i == selected)
-					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(btnColor.x - 0.1f, btnColor.y - 0.1f, btnColor.z - 0.1f, 1.0f));
+				{
+					curRowIdx = rowIdx;
+					ImGui::PushStyleColor(ImGuiCol_Button, selectBtnColor);
+				}
 				else
+				{
 					ImGui::PushStyleColor(ImGuiCol_Button, btnColor);
+				}
 
 				// 无论是否点击都必须PopStyleColor，所以没有直接写在if中
 				string label = "##File" + to_string(i);
@@ -105,20 +117,34 @@ namespace ZXEngine
 				float next_button_x2 = last_button_x2 + style.ItemSpacing.x + iconSize.x;
 				if (i + 1 < childNum && next_button_x2 < window_visible_x2)
 				{
+					rowIdx++;
 					ImGui::SameLine();
 				}
 				else
 				{
+					rowIdx = 0;
 					// 绘制下一行文件前，先把这一行的文件名绘制出来
-					ImGui::PushStyleColor(ImGuiCol_Button, style.Colors[ImGuiCol_WindowBg]);
 					for (unsigned int j = 0; j < fileNames.size(); j++)
 					{
 						if (j > 0)
 							ImGui::SameLine();
+
+						if (curRowIdx == j)
+						{
+							ImGui::PushStyleColor(ImGuiCol_Text, selectTextColor);
+							ImGui::PushStyleColor(ImGuiCol_Button, selectBtnColor);
+						}
+						else
+						{
+							ImGui::PushStyleColor(ImGuiCol_Text, textColor);
+							ImGui::PushStyleColor(ImGuiCol_Button, style.Colors[ImGuiCol_WindowBg]);
+						}
+
 						ImGui::Button(fileNames[j].c_str(), nameSize);
+						ImGui::PopStyleColor(2);
 					}
-					ImGui::PopStyleColor(1);
 					fileNames.clear();
+					curRowIdx = -1;
 				}
 			}
 		}
