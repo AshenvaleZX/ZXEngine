@@ -1,6 +1,7 @@
 #include "EditorDataManager.h"
 #include "../Texture.h"
 #include "../Material.h"
+#include "../MeshRenderer.h"
 
 namespace ZXEngine
 {
@@ -43,6 +44,8 @@ namespace ZXEngine
 				delete static_cast<AssetTextureInfo*>(curAssetInfo);
 			else if (selectedAsset->type == AssetType::AT_Material)
 				delete static_cast<AssetMaterialInfo*>(curAssetInfo);
+			else if (selectedAsset->type == AssetType::AT_Model)
+				delete static_cast<AssetModelInfo*>(curAssetInfo);
 			else
 				delete curAssetInfo;
 			// delete后立刻重新赋值为nullptr，防止连续delete指针出现无法预期的行为导致直接崩溃
@@ -76,10 +79,18 @@ namespace ZXEngine
 		{
 			auto info = new AssetMaterialInfo();
 			info->name = asset->name;
-			int s = asset->path.find("Assets");
-			string localPath = asset->path.substr(s + 7, asset->path.length() - s - 7);
+			string localPath = Resources::GetAssetLocalPath(asset->path);
 			MaterialStruct* matStruct = Resources::LoadMaterial(localPath);
 			info->material = new Material(matStruct);
+			curAssetInfo = info;
+		}
+		else if (asset->type == AssetType::AT_Model)
+		{
+			auto info = new AssetModelInfo();
+			info->name = asset->name;
+			info->format = asset->extension;
+			info->meshRenderer = new MeshRenderer();
+			info->meshRenderer->LoadModel(asset->path);
 			curAssetInfo = info;
 		}
 	}

@@ -1,6 +1,7 @@
 #include "EditorEnumStruct.h"
 #include "../Texture.h"
 #include "../Material.h"
+#include "../MeshRenderer.h"
 
 namespace ZXEngine
 {
@@ -22,5 +23,15 @@ namespace ZXEngine
 	AssetMaterialInfo::~AssetMaterialInfo()
 	{
 		delete material;
+	}
+
+	AssetModelInfo::AssetModelInfo()
+	{
+		meshRenderer = NULL;
+	}
+
+	AssetModelInfo::~AssetModelInfo()
+	{
+		delete meshRenderer;
 	}
 }

@@ -66,6 +66,8 @@ namespace ZXEngine
 					DrawTexture(static_cast<AssetTextureInfo*>(curAssetInfo));
 				else if (curAsset->type == AssetType::AT_Material)
 					DrawMaterial(static_cast<AssetMaterialInfo*>(curAssetInfo));
+				else if (curAsset->type == AssetType::AT_Model)
+					DrawModel(static_cast<AssetModelInfo*>(curAssetInfo));
 			}
 		}
 		ImGui::End();
@@ -347,5 +349,20 @@ namespace ZXEngine
 	void EditorInspectorPanel::DrawMaterial(AssetMaterialInfo* info)
 	{
 		DrawMaterial(info->material);
+	}
+
+	void EditorInspectorPanel::DrawModel(AssetModelInfo* info)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("Model"))
+			return;
+
+		ImGui::Text("Name:");
+		ImGui::SameLine(120);
+		ImGui::Text(info->name.c_str());
+
+		ImGui::Text("Format:");
+		ImGui::SameLine(120);
+		ImGui::Text(info->format.c_str());
 	}
 }

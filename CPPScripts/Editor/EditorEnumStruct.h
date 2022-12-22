@@ -58,4 +58,15 @@ namespace ZXEngine
 		AssetMaterialInfo();
 		~AssetMaterialInfo();
 	};
+
+	class MeshRenderer;
+	struct AssetModelInfo
+	{
+		string name;
+		string format;
+		MeshRenderer* meshRenderer;
+
+		AssetModelInfo();
+		~AssetModelInfo();
+	};
 }
