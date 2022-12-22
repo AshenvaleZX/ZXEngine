@@ -36,8 +36,12 @@ namespace ZXEngine
 		~Resources() {};
 
 		static void SetAssetsPath(string path);
+		// 获取当前工程Assets文件夹路径
 		static string GetAssetsPath();
+		// 把Assets下的路径转为硬盘上的路径
 		static string GetAssetFullPath(string path);
+		// 把硬盘上的路径转为Assets下的路径
+		static string GetAssetLocalPath(string path);
 		static string GetAssetName(string path);
 		static json LoadJson(string path);
 		static SceneStruct* LoadScene(string path);

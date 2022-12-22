@@ -18,6 +18,15 @@ namespace ZXEngine
 		return assetsPath + path;
 	}
 
+	string Resources::GetAssetLocalPath(string path)
+	{
+		int s = path.find("Assets");
+		if (s > 0)
+			return path.substr(s + 7, path.length() - s - 7);
+		else
+			return path;
+	}
+
 	string Resources::GetAssetName(string path)
 	{
 		int s = path.rfind("/");
