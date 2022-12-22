@@ -12,6 +12,11 @@ namespace ZXEngine
 		lightType = info.lightType;
 	}
 
+	Shader::~Shader()
+	{
+		RenderAPI::GetInstance()->DeleteShaderProgram(ID);
+	}
+
 	unsigned int Shader::GetID()
 	{
 		return ID;

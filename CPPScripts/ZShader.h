@@ -9,7 +9,7 @@ namespace ZXEngine
 		string name;
 
 		Shader(const char* path);
-		~Shader() {};
+		~Shader();
 
 		unsigned int GetID();
 		LightType GetLightType();

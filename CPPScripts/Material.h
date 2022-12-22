@@ -14,7 +14,7 @@ namespace ZXEngine
 
 		Material() {};
 		Material(MaterialStruct* matStruct);
-		~Material() {};
+		~Material();
 
 		int GetRenderQueue();
 	};

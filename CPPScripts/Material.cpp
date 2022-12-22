@@ -14,6 +14,13 @@ namespace ZXEngine
 		}
 	}
 
+	Material::~Material()
+	{
+		delete shader;
+		for (auto& iter : textures)
+			delete iter.second;
+	}
+
 	int Material::GetRenderQueue()
 	{
 		return shader->GetRenderQueue();
