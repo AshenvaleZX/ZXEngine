@@ -64,6 +64,8 @@ namespace ZXEngine
 					DrawShader(static_cast<AssetShaderInfo*>(curAssetInfo));
 				else if (curAsset->type == AssetType::AT_Texture)
 					DrawTexture(static_cast<AssetTextureInfo*>(curAssetInfo));
+				else if (curAsset->type == AssetType::AT_Material)
+					DrawMaterial(static_cast<AssetMaterialInfo*>(curAssetInfo));
 			}
 		}
 		ImGui::End();
@@ -340,5 +342,10 @@ namespace ZXEngine
 			width = maxWidth;
 		}
 		ImGui::Image((void*)(intptr_t)id, ImVec2((float)width, (float)height));
+	}
+
+	void EditorInspectorPanel::DrawMaterial(AssetMaterialInfo* info)
+	{
+		DrawMaterial(info->material);
 	}
 }

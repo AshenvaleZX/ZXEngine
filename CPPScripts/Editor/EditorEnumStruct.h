@@ -48,4 +48,14 @@ namespace ZXEngine
 		AssetTextureInfo();
 		~AssetTextureInfo();
 	};
+
+	class Material;
+	struct AssetMaterialInfo
+	{
+		string name;
+		Material* material;
+
+		AssetMaterialInfo();
+		~AssetMaterialInfo();
+	};
 }

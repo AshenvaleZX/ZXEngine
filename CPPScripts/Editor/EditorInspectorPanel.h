@@ -37,5 +37,6 @@ namespace ZXEngine
 		void DrawScript(AssetScriptInfo* info);
 		void DrawShader(AssetShaderInfo* info);
 		void DrawTexture(AssetTextureInfo* info);
+		void DrawMaterial(AssetMaterialInfo* info);
 	};
 }
