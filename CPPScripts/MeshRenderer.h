@@ -21,7 +21,7 @@ namespace ZXEngine
 		vector<Mesh*> meshes;
 
 		MeshRenderer() {};
-		~MeshRenderer() {};
+		~MeshRenderer();
 
 		virtual ComponentType GetInsType();
 

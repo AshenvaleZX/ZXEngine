@@ -7,6 +7,13 @@ namespace ZXEngine
         return ComponentType::T_MeshRenderer;
     }
 
+    MeshRenderer::~MeshRenderer()
+    {
+        delete matetrial;
+        for (auto mesh : meshes)
+            delete mesh;
+    }
+
     ComponentType MeshRenderer::GetInsType()
     {
         return ComponentType::T_MeshRenderer;
