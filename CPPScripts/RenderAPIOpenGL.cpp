@@ -281,6 +281,11 @@ namespace ZXEngine
 		return info;
 	}
 
+	void RenderAPIOpenGL::DeleteShaderProgram(unsigned int id)
+	{
+		glDeleteProgram(id);
+	}
+
 	void RenderAPIOpenGL::CheckCompileErrors(unsigned int shader, string type)
 	{
 		int success;
