@@ -3,6 +3,7 @@
 namespace ZXEngine
 {
 	string Resources::assetsPath;
+	const string Resources::builtInAssetsPath = "../../BuiltInAssets/";
 	void Resources::SetAssetsPath(string path)
 	{
 		assetsPath = path;
@@ -32,6 +33,11 @@ namespace ZXEngine
 		int s = path.rfind("/");
 		int e = path.rfind(".");
 		return path.substr(s + 1, e - s - 1);
+	}
+
+	string Resources::GetBuiltInAssetPath(string path)
+	{
+		return builtInAssetsPath + path;
 	}
 
 	string Resources::JsonStrToString(json data)

@@ -21,7 +21,7 @@ namespace ZXEngine
 		renderer->LoadModel(Resources::GetAssetFullPath("Models/sphere.obj"));
 
 		InitPreviewQuad();
-		previewShader = new Shader(Resources::GetAssetFullPath("Shaders/RenderTexture.zxshader").c_str());
+		previewShader = new Shader(Resources::GetBuiltInAssetPath("Shaders/RenderTexture.zxshader").c_str());
 
 		FBOManager::GetInstance()->CreateFBO("MaterialPreview", FrameBufferType::Normal, 256, 256);
 	}

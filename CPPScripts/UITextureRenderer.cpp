@@ -11,7 +11,7 @@ namespace ZXEngine
 
 	void UITextureRenderer::Init()
 	{
-		shader = new Shader(Resources::GetAssetFullPath("Shaders/UITextureRenderer.zxshader").c_str());
+		shader = new Shader(Resources::GetBuiltInAssetPath("Shaders/UITextureRenderer.zxshader").c_str());
 
 		Matrix4 mat_P = Math::Orthographic(0.0f, (float)GlobalData::srcWidth, 0.0f, (float)GlobalData::srcHeight);
 		shader->Use();
