@@ -56,6 +56,8 @@ namespace ZXEngine
 				camera->Fov = component["FOV"];
 				camera->nearClipDis = component["NearClipDis"];
 				camera->farClipDis = component["FarClipDis"];
+				if (!component["Aspect"].is_null())
+					camera->aspect = component["Aspect"];
 			}
 			else if (component["Type"] == "Light")
 			{

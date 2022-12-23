@@ -20,6 +20,7 @@ namespace ZXEngine
 
 	Camera::Camera() : Fov(FOV)
 	{
+		aspect = (float)GlobalData::srcWidth / (float)GlobalData::srcHeight;
 		cameraType = CameraType::GameCamera;
 		allCameras.push_back(this);
 	}
@@ -46,6 +47,6 @@ namespace ZXEngine
 
 	Matrix4 Camera::GetProjectionMatrix()
 	{
-		return Math::Perspective(Math::Deg2Rad(Fov), (float)GlobalData::srcWidth / (float)GlobalData::srcHeight, nearClipDis, farClipDis);
+		return Math::Perspective(Math::Deg2Rad(Fov), aspect, nearClipDis, farClipDis);
 	}
 }
