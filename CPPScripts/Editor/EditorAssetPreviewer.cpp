@@ -11,25 +11,27 @@ namespace ZXEngine
 {
 	EditorAssetPreviewer::EditorAssetPreviewer()
 	{
-		camera = new Camera();
-		camera->Fov = 45.0f;
-		camera->nearClipDis = 1.0f;
-		camera->farClipDis = 100.0f;
-		camera->cameraType = CameraType::EditorCamera;
+		PrefabStruct* prefab = Resources::LoadPrefab("Prefabs/AssetPreviewCamera.zxprefab", true);
+		cameraGO = new GameObject(prefab);
+		cameraGO->GetComponent<Camera>()->cameraType = CameraType::EditorCamera;
+		delete prefab;
 
 		renderer = new MeshRenderer();
 		renderer->LoadModel(Resources::GetAssetFullPath("Models/sphere.obj"));
 
 		InitPreviewQuad();
-		previewShader = new Shader(Resources::GetAssetFullPath("Shaders/RenderTexture.zxshader", true).c_str());
+		previewQuadShader = new Shader(Resources::GetAssetFullPath("Shaders/RenderTexture.zxshader", true).c_str());
+		previewModelShader = new Shader(Resources::GetAssetFullPath("Shaders/ModelPreview.zxshader", true).c_str());
 
-		FBOManager::GetInstance()->CreateFBO("MaterialPreview", FrameBufferType::Normal, 256, 256);
+		FBOManager::GetInstance()->CreateFBO("AssetPreview", FrameBufferType::Normal, previewSize, previewSize);
 	}
 
 	EditorAssetPreviewer::~EditorAssetPreviewer()
 	{
-		delete camera;
+		delete cameraGO;
 		delete renderer;
+		delete previewQuadShader;
+		delete previewModelShader;
 	}
 
 	bool EditorAssetPreviewer::Check()
@@ -58,7 +60,11 @@ namespace ZXEngine
 
 	void EditorAssetPreviewer::Draw()
 	{
-		FBOManager::GetInstance()->SwitchFBO("MaterialPreview");
+		FBOManager::GetInstance()->SwitchFBO("AssetPreview");
+		// ViewPort的Size和偏移量是基于当前的FBO，而不是基于当前的进程窗口，这一点很重要
+		RenderAPI::GetInstance()->SetViewPort(previewSize, previewSize);
+		RenderAPI::GetInstance()->EnableDepthTest(true);
+		RenderAPI::GetInstance()->EnableDepthWrite(true);
 		RenderAPI::GetInstance()->SetClearColor(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
 		RenderAPI::GetInstance()->ClearFrameBuffer();
 		RenderAPI::GetInstance()->SetClearColor(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -81,16 +87,34 @@ namespace ZXEngine
 
 	void EditorAssetPreviewer::RenderModelPreview(AssetModelInfo* info)
 	{
+		auto camera = cameraGO->GetComponent<Camera>();
 
+		Matrix4 mat_M = Matrix4();
+		Matrix4 mat_V = camera->GetViewMatrix();
+		Matrix4 mat_P = camera->GetProjectionMatrix();
+
+		previewModelShader->Use();
+		previewModelShader->SetMat4("model", mat_M);
+		previewModelShader->SetMat4("view", mat_V);
+		previewModelShader->SetMat4("projection", mat_P);
+		previewModelShader->SetVec3("_Direction", Vector3(1.0f, 1.0f, -1.0f).Normalize());
+
+		for (auto mesh : info->meshRenderer->meshes)
+		{
+			mesh->Use();
+			RenderAPI::GetInstance()->Draw();
+		}
 	}
 
 	void EditorAssetPreviewer::RenderToQuad()
 	{
 		RenderAPI::GetInstance()->SwitchFrameBuffer(0);
 		RenderAPI::GetInstance()->SetViewPort(ProjectSetting::inspectorWidth, ProjectSetting::inspectorWidth, ProjectSetting::projectWidth, 0);
+		RenderAPI::GetInstance()->EnableDepthTest(false);
+		RenderAPI::GetInstance()->EnableDepthWrite(false);
 		previewQuad->Use();
-		previewShader->Use();
-		previewShader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("MaterialPreview")->ColorBuffer, 0);
+		previewQuadShader->Use();
+		previewQuadShader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("AssetPreview")->ColorBuffer, 0);
 		RenderAPI::GetInstance()->Draw();
 		RenderAPI::GetInstance()->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight, ProjectSetting::hierarchyWidth, ProjectSetting::projectHeight);
 	}

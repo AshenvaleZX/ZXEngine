@@ -28,6 +28,7 @@ namespace ZXEngine
 	{
 		selectedGO = go;
 		selectedAsset = nullptr;
+		curAssetInfo = nullptr;
 	}
 
 	void EditorDataManager::SetSelectedAsset(EditorAssetNode* asset)

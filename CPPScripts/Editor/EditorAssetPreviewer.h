@@ -6,7 +6,7 @@ namespace ZXEngine
 {
 	class Mesh;
 	class Shader;
-	class Camera;
+	class GameObject;
 	class MeshRenderer;
 	class EditorAssetPreviewer
 	{
@@ -18,9 +18,11 @@ namespace ZXEngine
 		void Draw();
 
 	private:
-		Camera* camera;
+		const unsigned int previewSize = 512;
+		GameObject* cameraGO;
 		Mesh* previewQuad;
-		Shader* previewShader;
+		Shader* previewQuadShader;
+		Shader* previewModelShader;
 		MeshRenderer* renderer;
 
 		void RenderMaterialPreview(AssetMaterialInfo* info);

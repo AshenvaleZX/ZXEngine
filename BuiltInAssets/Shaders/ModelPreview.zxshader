@@ -1,0 +1,43 @@
+#vs_begin
+#version 460 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aNormal;
+
+out vec3 Normal;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+void main()
+{
+    Normal = transpose(inverse(mat3(model))) * aNormal;
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
+}
+#vs_end
+
+#gs_begin
+#gs_end
+
+#fs_begin
+#version 460 core
+out vec4 FragColor;
+
+in vec3 Normal;
+
+uniform vec3 _Direction;
+
+void main()
+{
+    vec3 color = vec3(0.5, 0.5, 0.5);
+    // ambient
+    vec3 ambient = 0.05 * color;
+    // diffuse
+    vec3 lightDir = normalize(_Direction);
+    vec3 normal = normalize(Normal);
+    float diff = max(dot(lightDir, normal), 0.0);
+    vec3 diffuse = diff * color;
+
+    FragColor = vec4(ambient + diffuse, 1.0);
+}
+#fs_end
