@@ -203,14 +203,14 @@ namespace ZXEngine
 
 	void EditorProjectPanel::InitIcons()
 	{
-		fileIcons[AT_Other]	   = new Texture(Resources::GetBuiltInAssetPath("Textures/icons/other.png").c_str());
-		fileIcons[AT_Folder]   = new Texture(Resources::GetBuiltInAssetPath("Textures/icons/folder.png").c_str());
-		fileIcons[AT_Material] = new Texture(Resources::GetBuiltInAssetPath("Textures/icons/material.png").c_str());
-		fileIcons[AT_Prefab]   = new Texture(Resources::GetBuiltInAssetPath("Textures/icons/prefab.png").c_str());
-		fileIcons[AT_Script]   = new Texture(Resources::GetBuiltInAssetPath("Textures/icons/script.png").c_str());
-		fileIcons[AT_Shader]   = new Texture(Resources::GetBuiltInAssetPath("Textures/icons/shader.png").c_str());
-		fileIcons[AT_Texture]  = new Texture(Resources::GetBuiltInAssetPath("Textures/icons/texture.png").c_str());
-		fileIcons[AT_Scene]    = new Texture(Resources::GetBuiltInAssetPath("Textures/icons/scene.png").c_str());
-		fileIcons[AT_Model]    = new Texture(Resources::GetBuiltInAssetPath("Textures/icons/model.png").c_str());
+		fileIcons[AT_Other]	   = new Texture(Resources::GetAssetFullPath("Textures/icons/other.png", true).c_str());
+		fileIcons[AT_Folder]   = new Texture(Resources::GetAssetFullPath("Textures/icons/folder.png", true).c_str());
+		fileIcons[AT_Material] = new Texture(Resources::GetAssetFullPath("Textures/icons/material.png", true).c_str());
+		fileIcons[AT_Prefab]   = new Texture(Resources::GetAssetFullPath("Textures/icons/prefab.png", true).c_str());
+		fileIcons[AT_Script]   = new Texture(Resources::GetAssetFullPath("Textures/icons/script.png", true).c_str());
+		fileIcons[AT_Shader]   = new Texture(Resources::GetAssetFullPath("Textures/icons/shader.png", true).c_str());
+		fileIcons[AT_Texture]  = new Texture(Resources::GetAssetFullPath("Textures/icons/texture.png", true).c_str());
+		fileIcons[AT_Scene]    = new Texture(Resources::GetAssetFullPath("Textures/icons/scene.png", true).c_str());
+		fileIcons[AT_Model]    = new Texture(Resources::GetAssetFullPath("Textures/icons/model.png", true).c_str());
 	}
 }

@@ -14,9 +14,12 @@ namespace ZXEngine
 		return assetsPath;
 	}
 
-	string Resources::GetAssetFullPath(string path)
+	string Resources::GetAssetFullPath(string path, bool isBuiltIn)
 	{
-		return assetsPath + path;
+		if (isBuiltIn)
+			return builtInAssetsPath + path;
+		else
+			return assetsPath + path;
 	}
 
 	string Resources::GetAssetLocalPath(string path)
@@ -33,11 +36,6 @@ namespace ZXEngine
 		int s = path.rfind("/");
 		int e = path.rfind(".");
 		return path.substr(s + 1, e - s - 1);
-	}
-
-	string Resources::GetBuiltInAssetPath(string path)
-	{
-		return builtInAssetsPath + path;
 	}
 
 	string Resources::JsonStrToString(json data)
@@ -69,9 +67,9 @@ namespace ZXEngine
 		return data;
 	}
 
-	json Resources::GetAssetData(string path)
+	json Resources::GetAssetData(string path, bool isBuiltIn)
 	{
-		string p = Resources::GetAssetFullPath(path);
+		string p = Resources::GetAssetFullPath(path, isBuiltIn);
 		Debug::Log("Load asset: " + p);
 		return Resources::LoadJson(p);
 	}
@@ -93,9 +91,9 @@ namespace ZXEngine
 		return scene;
 	}
 
-	PrefabStruct* Resources::LoadPrefab(string path)
+	PrefabStruct* Resources::LoadPrefab(string path, bool isBuiltIn)
 	{
-		json data = Resources::GetAssetData(path);
+		json data = Resources::GetAssetData(path, isBuiltIn);
 		PrefabStruct* prefab = new PrefabStruct;
 
 		prefab->name = GetAssetName(path);
@@ -113,20 +111,20 @@ namespace ZXEngine
 		return prefab;
 	}
 
-	MaterialStruct* Resources::LoadMaterial(string path)
+	MaterialStruct* Resources::LoadMaterial(string path, bool isBuiltIn)
 	{
 		MaterialStruct* matStruct = new MaterialStruct;
 		matStruct->name = GetAssetName(path);
 
-		json data = Resources::GetAssetData(path);
+		json data = Resources::GetAssetData(path, isBuiltIn);
 		string p = Resources::JsonStrToString(data["Shader"]);
-		matStruct->shaderPath = Resources::GetAssetFullPath(p);
+		matStruct->shaderPath = Resources::GetAssetFullPath(p, isBuiltIn);
 
 		for (unsigned int i = 0; i < data["Textures"].size(); i++)
 		{
 			json texture = data["Textures"][i];
 			TextureStruct* textureStruct = new TextureStruct();
-			textureStruct->path = Resources::GetAssetFullPath(Resources::JsonStrToString(texture["Path"]));
+			textureStruct->path = Resources::GetAssetFullPath(Resources::JsonStrToString(texture["Path"]), isBuiltIn);
 			textureStruct->uniformName = Resources::JsonStrToString(texture["UniformName"]);
 
 			matStruct->textures.push_back(textureStruct);
@@ -135,15 +133,15 @@ namespace ZXEngine
 		return matStruct;
 	}
 
-	vector<string> Resources::LoadCubeMap(json data)
+	vector<string> Resources::LoadCubeMap(json data, bool isBuiltIn)
 	{
 		vector<string> cube;
-		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"])) + Resources::JsonStrToString(data["Right"]));
-		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"])) + Resources::JsonStrToString(data["Left"]));
-		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"])) + Resources::JsonStrToString(data["Up"]));
-		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"])) + Resources::JsonStrToString(data["Down"]));
-		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"])) + Resources::JsonStrToString(data["Front"]));
-		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"])) + Resources::JsonStrToString(data["Back"]));
+		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]), isBuiltIn) + Resources::JsonStrToString(data["Right"]));
+		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]), isBuiltIn) + Resources::JsonStrToString(data["Left"]));
+		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]), isBuiltIn) + Resources::JsonStrToString(data["Up"]));
+		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]), isBuiltIn) + Resources::JsonStrToString(data["Down"]));
+		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]), isBuiltIn) + Resources::JsonStrToString(data["Front"]));
+		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]), isBuiltIn) + Resources::JsonStrToString(data["Back"]));
 		return cube;
 	}
 }

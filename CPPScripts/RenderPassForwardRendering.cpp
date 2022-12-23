@@ -16,7 +16,7 @@ namespace ZXEngine
 	RenderPassForwardRendering::RenderPassForwardRendering()
 	{
 		InitSkyBox();
-		skyBoxShader = new Shader(Resources::GetBuiltInAssetPath("Shaders/SkyBox.zxshader").c_str());
+		skyBoxShader = new Shader(Resources::GetAssetFullPath("Shaders/SkyBox.zxshader", true).c_str());
 	}
 
 	void RenderPassForwardRendering::Render(Camera* camera)

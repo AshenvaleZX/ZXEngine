@@ -39,16 +39,15 @@ namespace ZXEngine
 		// 获取当前工程Assets文件夹路径
 		static string GetAssetsPath();
 		// 把Assets下的路径转为硬盘上的路径
-		static string GetAssetFullPath(string path);
+		static string GetAssetFullPath(string path, bool isBuiltIn = false);
 		// 把硬盘上的路径转为Assets下的路径
 		static string GetAssetLocalPath(string path);
 		static string GetAssetName(string path);
-		static string GetBuiltInAssetPath(string path);
 		static json LoadJson(string path);
 		static SceneStruct* LoadScene(string path);
-		static PrefabStruct* LoadPrefab(string path);
-		static MaterialStruct* LoadMaterial(string path);
-		static vector<string> LoadCubeMap(json data);
+		static PrefabStruct* LoadPrefab(string path, bool isBuiltIn = false);
+		static MaterialStruct* LoadMaterial(string path, bool isBuiltIn = false);
+		static vector<string> LoadCubeMap(json data, bool isBuiltIn = false);
 
 		static string JsonStrToString(json data);
 
@@ -56,6 +55,6 @@ namespace ZXEngine
 		static string assetsPath;
 		static const string builtInAssetsPath;
 
-		static json GetAssetData(string path);
+		static json GetAssetData(string path, bool isBuiltIn = false);
 	};
 }
