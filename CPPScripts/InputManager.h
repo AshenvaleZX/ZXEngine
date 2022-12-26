@@ -25,6 +25,7 @@ namespace ZXEngine
 		void ShowCursor(bool show);
 
 	private:
+		bool isCursorShow = true;
 		int buttonState[InputButton::END];
 
 		void CheckKey(int id, InputButton button, EventType e);

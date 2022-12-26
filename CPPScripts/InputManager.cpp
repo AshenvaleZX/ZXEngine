@@ -1,6 +1,7 @@
 #include "InputManager.h"
 #include "RenderEngine.h"
 #include "EventManager.h"
+#include "Editor/EditorInputManager.h"
 
 // 因为GLFW的函数接口问题，没办法传递成员函数，所以这里用普通函数包了一层
 void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
@@ -36,6 +37,11 @@ namespace ZXEngine
 
 	void InputManager::Update()
 	{
+#ifdef ZX_EDITOR
+		// 在编辑器模式下，如果鼠标未被游戏捕获，并且当前位置不在游戏画面区域，则不会处理游戏输入
+		if (isCursorShow && EditorInputManager::GetInstance()->CheckCurMousePos() != EditorAreaType::EAT_Game)
+			return;
+#endif
 		UpdateKeyInput();
 	}
 
@@ -55,6 +61,8 @@ namespace ZXEngine
 			glfwSetInputMode(RenderEngine::GetInstance()->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		else
 			glfwSetInputMode(RenderEngine::GetInstance()->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+		isCursorShow = show;
 	}
 
 	void InputManager::UpdateKeyInput()
