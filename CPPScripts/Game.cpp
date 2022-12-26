@@ -9,6 +9,7 @@
 #include "ProjectSetting.h"
 #include "Editor/EditorGUIManager.h"
 #include "Editor/EditorDataManager.h"
+#include "Editor/EditorInputManager.h"
 
 namespace ZXEngine
 {
@@ -24,6 +25,7 @@ namespace ZXEngine
 #ifdef ZX_EDITOR
 		EditorGUIManager::Create();
 		EditorDataManager::Create();
+		EditorInputManager::Create();
 #endif
 
 		while (!RenderEngine::GetInstance()->WindowShouldClose())

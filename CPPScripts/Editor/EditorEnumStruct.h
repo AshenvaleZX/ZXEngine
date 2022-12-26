@@ -16,6 +16,13 @@ namespace ZXEngine
 		AT_Model,
 	};
 
+	enum EditorAreaType
+	{
+		EAT_None,
+		EAT_Game,
+		EAT_AssetPreview,
+	};
+
 	struct EditorAssetNode
 	{
 		string path;

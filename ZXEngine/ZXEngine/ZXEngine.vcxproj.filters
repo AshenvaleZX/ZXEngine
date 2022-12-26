@@ -330,6 +330,9 @@
     <ClCompile Include="..\..\CPPScripts\Editor\EditorEnumStruct.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorInputManager.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">
@@ -672,6 +675,9 @@
       <Filter>Editor</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Editor\EditorEnumStruct.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorInputManager.h">
       <Filter>Editor</Filter>
     </ClInclude>
   </ItemGroup>
