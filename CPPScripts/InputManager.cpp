@@ -38,8 +38,7 @@ namespace ZXEngine
 	void InputManager::Update()
 	{
 #ifdef ZX_EDITOR
-		// 在编辑器模式下，如果鼠标未被游戏捕获，并且当前位置不在游戏画面区域，则不会处理游戏输入
-		if (isCursorShow && EditorInputManager::GetInstance()->CheckCurMousePos() != EditorAreaType::EAT_Game)
+		if (!EditorInputManager::GetInstance()->IsProcessGameInput())
 			return;
 #endif
 		UpdateKeyInput();
@@ -52,7 +51,7 @@ namespace ZXEngine
 
 	void InputManager::UpdateMouseScroll(double xoffset, double yoffset)
 	{
-		Debug::Log("xoffset " + to_string(xoffset) + " yoffset " + to_string(yoffset));
+		// Debug::Log("xoffset " + to_string(xoffset) + " yoffset " + to_string(yoffset));
 	}
 
 	void InputManager::ShowCursor(bool show)
@@ -138,4 +137,7 @@ void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	ZXEngine::InputManager::GetInstance()->UpdateMouseScroll(xoffset, yoffset);
+#ifdef ZX_EDITOR
+	ZXEngine::EditorInputManager::GetInstance()->UpdateMouseScroll((float)xoffset, (float)yoffset);
+#endif
 }

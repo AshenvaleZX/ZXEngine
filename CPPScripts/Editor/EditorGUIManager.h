@@ -10,6 +10,7 @@ namespace ZXEngine
 	class EditorAssetPreviewer;
 	class EditorGUIManager
 	{
+		friend class EditorInputManager;
 	public:
 		static void Create();
 		static EditorGUIManager* GetInstance();

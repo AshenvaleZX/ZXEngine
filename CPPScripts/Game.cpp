@@ -49,6 +49,10 @@ namespace ZXEngine
 
 		InputManager::GetInstance()->Update();
 
+#ifdef ZX_EDITOR
+		EditorInputManager::GetInstance()->Update();
+#endif
+
 		GameLogicManager::GetInstance()->Update();
 	}
 
