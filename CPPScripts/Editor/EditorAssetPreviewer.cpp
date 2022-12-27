@@ -119,6 +119,13 @@ namespace ZXEngine
 		RenderAPI::GetInstance()->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight, ProjectSetting::hierarchyWidth, ProjectSetting::projectHeight);
 	}
 
+	void EditorAssetPreviewer::Reset()
+	{
+		scale = 1.0f;
+		yaw = 0.0f;
+		pitch = 0.0f;
+	}
+
 	void EditorAssetPreviewer::UpdateModelScale(float delta)
 	{
 		scale += delta * scaleSensitivity;

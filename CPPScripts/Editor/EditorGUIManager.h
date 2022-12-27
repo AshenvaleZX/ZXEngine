@@ -10,7 +10,6 @@ namespace ZXEngine
 	class EditorAssetPreviewer;
 	class EditorGUIManager
 	{
-		friend class EditorInputManager;
 	public:
 		static void Create();
 		static EditorGUIManager* GetInstance();
@@ -19,6 +18,8 @@ namespace ZXEngine
 		static EditorGUIManager* mInstance;
 
 	public:
+		EditorAssetPreviewer* assetPreviewer;
+
 		EditorGUIManager();
 		~EditorGUIManager();
 
@@ -28,6 +29,5 @@ namespace ZXEngine
 
 	private:
 		vector<EditorPanel*> allPanels;
-		EditorAssetPreviewer* assetPreviewer;
 	};
 }

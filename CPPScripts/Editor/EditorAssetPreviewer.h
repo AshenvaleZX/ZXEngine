@@ -1,6 +1,6 @@
 #pragma once
 #include "../pubh.h"
-#include "EditorDataManager.h"
+#include "EditorEnumStruct.h"
 
 namespace ZXEngine
 {
@@ -16,6 +16,7 @@ namespace ZXEngine
 
 		bool Check();
 		void Draw();
+		void Reset();
 		void UpdateModelScale(float delta);
 		void UpdateModelRotation(float xOffset, float yOffset);
 

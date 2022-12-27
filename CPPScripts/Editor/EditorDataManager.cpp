@@ -1,4 +1,6 @@
 #include "EditorDataManager.h"
+#include "EditorGUIManager.h"
+#include "EditorAssetPreviewer.h"
 #include "../Texture.h"
 #include "../Material.h"
 #include "../MeshRenderer.h"
@@ -93,6 +95,7 @@ namespace ZXEngine
 			info->meshRenderer = new MeshRenderer();
 			info->meshRenderer->LoadModel(asset->path);
 			curAssetInfo = info;
+			EditorGUIManager::GetInstance()->assetPreviewer->Reset();
 		}
 	}
 
