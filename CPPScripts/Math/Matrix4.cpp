@@ -17,7 +17,7 @@ namespace ZXEngine
 		m00 = n   ; m01 = 0.0f; m02 = 0.0f; m03 = 0.0f;
 		m10 = 0.0f; m11 = n   ; m12 = 0.0f; m13 = 0.0f;
 		m20 = 0.0f; m21 = 0.0f; m22 = n   ; m23 = 0.0f;
-		m30 = 0.0f; m31 = 0.0f; m32 = 0.0f; m33 = n   ;
+		m30 = 0.0f; m31 = 0.0f; m32 = 0.0f; m33 = 1.0f;
 	}
 
 	Matrix4::Matrix4(const Matrix3& mat3)

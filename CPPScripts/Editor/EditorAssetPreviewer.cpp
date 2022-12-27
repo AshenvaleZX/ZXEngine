@@ -65,7 +65,7 @@ namespace ZXEngine
 		RenderAPI::GetInstance()->SetViewPort(previewSize, previewSize);
 		RenderAPI::GetInstance()->EnableDepthTest(true);
 		RenderAPI::GetInstance()->EnableDepthWrite(true);
-		RenderAPI::GetInstance()->SetClearColor(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
+		RenderAPI::GetInstance()->SetClearColor(Vector4(0.2f, 0.2f, 0.2f, 1.0f));
 		RenderAPI::GetInstance()->ClearFrameBuffer();
 		RenderAPI::GetInstance()->SetClearColor(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
 
@@ -89,7 +89,7 @@ namespace ZXEngine
 	{
 		auto camera = cameraGO->GetComponent<Camera>();
 
-		Matrix4 mat_M = Matrix4();
+		Matrix4 mat_M = GetModelMatrix();
 		Matrix4 mat_V = camera->GetViewMatrix();
 		Matrix4 mat_P = camera->GetProjectionMatrix();
 
@@ -117,6 +117,26 @@ namespace ZXEngine
 		previewQuadShader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("AssetPreview")->ColorBuffer, 0);
 		RenderAPI::GetInstance()->Draw();
 		RenderAPI::GetInstance()->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight, ProjectSetting::hierarchyWidth, ProjectSetting::projectHeight);
+	}
+
+	void EditorAssetPreviewer::UpdateModelScale(float delta)
+	{
+		scale += delta * scaleSensitivity;
+		scale = Math::Clamp(scale, 0.1f, 10.0f);
+	}
+
+	void EditorAssetPreviewer::UpdateModelRotation(float xOffset, float yOffset)
+	{
+		yaw += xOffset * rotSensitivity;
+		pitch += yOffset * rotSensitivity;
+	}
+
+	Matrix4 EditorAssetPreviewer::GetModelMatrix()
+	{
+		Matrix4 mat = Matrix4(scale);
+		mat = Math::Rotate(mat, yaw, Vector3(0.0f, 1.0f, 0.0f));
+		mat = Math::Rotate(mat, pitch, Vector3(1.0f, 0.0f, 0.0f));
+		return mat;
 	}
 
 	void EditorAssetPreviewer::InitPreviewQuad()
