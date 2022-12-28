@@ -119,17 +119,21 @@ namespace ZXEngine
 		RenderAPI::GetInstance()->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight, ProjectSetting::hierarchyWidth, ProjectSetting::projectHeight);
 	}
 
-	void EditorAssetPreviewer::Reset()
+	void EditorAssetPreviewer::Reset(float size)
 	{
-		scale = 1.0f;
 		yaw = 0.0f;
 		pitch = 0.0f;
+		scale = standardSize / size;
+		minScale = scale * 0.1f;
+		maxScale = scale * 10.0f;
+		// 调整缩放敏感度，让不同大小的模型缩放速度的手感一直
+		scaleSensitivity = scale * standardScaleSensitivity;
 	}
 
 	void EditorAssetPreviewer::UpdateModelScale(float delta)
 	{
 		scale += delta * scaleSensitivity;
-		scale = Math::Clamp(scale, 0.1f, 10.0f);
+		scale = Math::Clamp(scale, minScale, maxScale);
 	}
 
 	void EditorAssetPreviewer::UpdateModelRotation(float xOffset, float yOffset)

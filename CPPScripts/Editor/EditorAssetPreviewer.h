@@ -16,7 +16,7 @@ namespace ZXEngine
 
 		bool Check();
 		void Draw();
-		void Reset();
+		void Reset(float size);
 		void UpdateModelScale(float delta);
 		void UpdateModelRotation(float xOffset, float yOffset);
 
@@ -25,7 +25,11 @@ namespace ZXEngine
 		float pitch = 0.0f;
 		const float rotSensitivity = 0.01f;
 		float scale = 1.0f;
-		const float scaleSensitivity = 0.05f;
+		float minScale = 0.1f;
+		float maxScale = 10.0f;
+		const float standardSize = 6.0f;
+		float scaleSensitivity = 0.05f;
+		const float standardScaleSensitivity = 0.05f;
 		const unsigned int previewSize = 512;
 		GameObject* cameraGO;
 		Mesh* previewQuad;
