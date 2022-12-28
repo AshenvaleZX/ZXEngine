@@ -28,21 +28,6 @@ namespace ZXEngine
         return ComponentType::T_MeshRenderer;
     }
 
-    float MeshRenderer::GetModelSizeX()
-    {
-        return extremeVertices[0].Position.x - extremeVertices[1].Position.x;
-    }
-
-    float MeshRenderer::GetModelSizeY()
-    {
-        return extremeVertices[2].Position.y - extremeVertices[3].Position.y;
-    }
-
-    float MeshRenderer::GetModelSizeZ()
-    {
-        return extremeVertices[4].Position.z - extremeVertices[5].Position.z;
-    }
-
 	void MeshRenderer::LoadModel(string const& path)
 	{
         // read file via ASSIMP
@@ -56,7 +41,17 @@ namespace ZXEngine
         }
 
         ProcessNode(scene->mRootNode, scene);
-	}
+
+        for (auto mesh : meshes)
+        {
+            verticesNum += mesh->vertices.size();
+            trianglesNum += mesh->indices.size() / 3;
+        }
+
+        boundsSizeX = extremeVertices[0].Position.x - extremeVertices[1].Position.x;
+        boundsSizeY = extremeVertices[2].Position.y - extremeVertices[3].Position.y;
+        boundsSizeZ = extremeVertices[4].Position.z - extremeVertices[5].Position.z;
+    }
 
     void MeshRenderer::ProcessNode(aiNode* node, const aiScene* scene)
     {

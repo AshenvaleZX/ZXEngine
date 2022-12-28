@@ -18,21 +18,23 @@ namespace ZXEngine
 		bool receiveShadow = false;
 		string modelName = "";
 		Material* matetrial = nullptr;
+		unsigned int verticesNum = 0;
+		unsigned int trianglesNum = 0;
 		vector<Mesh*> meshes;
 		// 在xyz方向上最远的点，0-5分别对应+x, -x, +y, -y, +z, -z
 		Vertex extremeVertices[6];
+		// 模型在X轴上的长度
+		float boundsSizeX = 0.0f;
+		// 模型在Y轴上的长度
+		float boundsSizeY = 0.0f;
+		// 模型在Z轴上的长度
+		float boundsSizeZ = 0.0f;
 
 		MeshRenderer();
 		~MeshRenderer();
 
 		virtual ComponentType GetInsType();
 
-		// 获取模型在X轴上的长度
-		float GetModelSizeX();
-		// 获取模型在Y轴上的长度
-		float GetModelSizeY();
-		// 获取模型在Z轴上的长度
-		float GetModelSizeZ();
 		// 使用ASSIMP加载模型文件
 		void LoadModel(string const& path);
 

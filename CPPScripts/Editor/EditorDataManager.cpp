@@ -95,7 +95,7 @@ namespace ZXEngine
 			info->meshRenderer = new MeshRenderer();
 			info->meshRenderer->LoadModel(asset->path);
 			curAssetInfo = info;
-			EditorGUIManager::GetInstance()->assetPreviewer->Reset(info->meshRenderer->GetModelSizeX());
+			EditorGUIManager::GetInstance()->assetPreviewer->Reset(info->meshRenderer->boundsSizeX);
 		}
 	}
 

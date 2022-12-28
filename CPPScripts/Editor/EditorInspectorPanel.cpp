@@ -364,5 +364,24 @@ namespace ZXEngine
 		ImGui::Text("Format:");
 		ImGui::SameLine(120);
 		ImGui::Text(info->format.c_str());
+
+		ImGui::Text("Vertices Num:");
+		ImGui::SameLine(120);
+		ImGui::Text(to_string(info->meshRenderer->verticesNum).c_str());
+
+		ImGui::Text("Triangles Num:");
+		ImGui::SameLine(120);
+		ImGui::Text(to_string(info->meshRenderer->trianglesNum).c_str());
+
+		ImGui::Text("Bounds Size:");
+		ImGui::Text("          X:");
+		ImGui::SameLine(120);
+		ImGui::Text(to_string(info->meshRenderer->boundsSizeX).c_str());
+		ImGui::Text("          Y:");
+		ImGui::SameLine(120);
+		ImGui::Text(to_string(info->meshRenderer->boundsSizeY).c_str());
+		ImGui::Text("          Z:");
+		ImGui::SameLine(120);
+		ImGui::Text(to_string(info->meshRenderer->boundsSizeZ).c_str());
 	}
 }
