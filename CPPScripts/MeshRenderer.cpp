@@ -159,13 +159,13 @@ namespace ZXEngine
             extremeVertices[0] = vertex;
         else if (vertex.Position.x < extremeVertices[1].Position.x)
             extremeVertices[1] = vertex;
-        else if (vertex.Position.y > extremeVertices[1].Position.y)
+        else if (vertex.Position.y > extremeVertices[2].Position.y)
             extremeVertices[2] = vertex;
-        else if (vertex.Position.y < extremeVertices[1].Position.y)
+        else if (vertex.Position.y < extremeVertices[3].Position.y)
             extremeVertices[3] = vertex;
-        else if (vertex.Position.z > extremeVertices[1].Position.z)
+        else if (vertex.Position.z > extremeVertices[4].Position.z)
             extremeVertices[4] = vertex;
-        else if (vertex.Position.z < extremeVertices[1].Position.z)
+        else if (vertex.Position.z < extremeVertices[5].Position.z)
             extremeVertices[5] = vertex;
     }
 }
