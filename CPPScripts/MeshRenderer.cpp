@@ -7,6 +7,15 @@ namespace ZXEngine
         return ComponentType::T_MeshRenderer;
     }
 
+    MeshRenderer::MeshRenderer()
+    {
+        for (unsigned int i = 0; i < 6; i++)
+        {
+            extremeVertices[i] = Vertex();
+            extremeVertices[i].Position = Vector3(0.0f);
+        }
+    }
+
     MeshRenderer::~MeshRenderer()
     {
         delete matetrial;
@@ -17,6 +26,21 @@ namespace ZXEngine
     ComponentType MeshRenderer::GetInsType()
     {
         return ComponentType::T_MeshRenderer;
+    }
+
+    float MeshRenderer::GetModelSizeX()
+    {
+        return extremeVertices[0].Position.x - extremeVertices[1].Position.x;
+    }
+
+    float MeshRenderer::GetModelSizeY()
+    {
+        return extremeVertices[2].Position.y - extremeVertices[3].Position.y;
+    }
+
+    float MeshRenderer::GetModelSizeZ()
+    {
+        return extremeVertices[4].Position.z - extremeVertices[5].Position.z;
     }
 
 	void MeshRenderer::LoadModel(string const& path)
@@ -112,7 +136,7 @@ namespace ZXEngine
                 vector.z = mesh->mBitangents[i].z;
                 vertex.Bitangent = vector;
             }
-
+            CheckExtremeVertex(vertex);
             vertices.push_back(vertex);
         }
         // now wak through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
@@ -127,5 +151,21 @@ namespace ZXEngine
         }
 
         return new Mesh(vertices, indices);
+    }
+
+    void MeshRenderer::CheckExtremeVertex(const Vertex& vertex)
+    {
+        if (vertex.Position.x > extremeVertices[0].Position.x)
+            extremeVertices[0] = vertex;
+        else if (vertex.Position.x < extremeVertices[1].Position.x)
+            extremeVertices[1] = vertex;
+        else if (vertex.Position.y > extremeVertices[1].Position.y)
+            extremeVertices[2] = vertex;
+        else if (vertex.Position.y < extremeVertices[1].Position.y)
+            extremeVertices[3] = vertex;
+        else if (vertex.Position.z > extremeVertices[1].Position.z)
+            extremeVertices[4] = vertex;
+        else if (vertex.Position.z < extremeVertices[1].Position.z)
+            extremeVertices[5] = vertex;
     }
 }
