@@ -6,6 +6,7 @@
 #include "../GlobalData.h"
 #include "../ProjectSetting.h"
 #include "../FBOManager.h"
+#include "../CubeMap.h"
 
 namespace ZXEngine
 {
@@ -16,8 +17,17 @@ namespace ZXEngine
 		cameraGO->GetComponent<Camera>()->cameraType = CameraType::EditorCamera;
 		delete prefab;
 
-		renderer = new MeshRenderer();
-		renderer->LoadModel(Resources::GetAssetFullPath("Models/sphere.obj"));
+		materialSphere = new MeshRenderer();
+		materialSphere->LoadModel(Resources::GetAssetFullPath("Models/sphere.obj", true));
+
+		vector<string> cubeMapPath;
+		cubeMapPath.push_back(Resources::GetAssetFullPath("Textures/white.png", true));
+		cubeMapPath.push_back(Resources::GetAssetFullPath("Textures/white.png", true));
+		cubeMapPath.push_back(Resources::GetAssetFullPath("Textures/white.png", true));
+		cubeMapPath.push_back(Resources::GetAssetFullPath("Textures/white.png", true));
+		cubeMapPath.push_back(Resources::GetAssetFullPath("Textures/white.png", true));
+		cubeMapPath.push_back(Resources::GetAssetFullPath("Textures/white.png", true));
+		shadowCubeMap = new CubeMap(cubeMapPath);
 
 		InitPreviewQuad();
 		previewQuadShader = new Shader(Resources::GetAssetFullPath("Shaders/RenderTexture.zxshader", true).c_str());
@@ -29,7 +39,8 @@ namespace ZXEngine
 	EditorAssetPreviewer::~EditorAssetPreviewer()
 	{
 		delete cameraGO;
-		delete renderer;
+		delete shadowCubeMap;
+		delete materialSphere;
 		delete previewQuadShader;
 		delete previewModelShader;
 	}
@@ -82,7 +93,54 @@ namespace ZXEngine
 
 	void EditorAssetPreviewer::RenderMaterialPreview(AssetMaterialInfo* info)
 	{
+		auto camera = cameraGO->GetComponent<Camera>();
 
+		Matrix4 mat_M = GetModelMatrix();
+		Matrix4 mat_V = camera->GetViewMatrix();
+		Matrix4 mat_P = camera->GetProjectionMatrix();
+
+		auto material = info->material;
+		auto shader = material->shader;
+
+		shader->Use();
+		shader->SetMat4("model", mat_M);
+		shader->SetMat4("view", mat_V);
+		shader->SetMat4("projection", mat_P);
+
+		unsigned int textureNum = material->textures.size();
+		for (unsigned int i = 0; i < textureNum; i++)
+		{
+			shader->SetTexture(material->textures[i].first, material->textures[i].second->GetID(), i);
+		}
+
+		// 固定光源
+		if (shader->GetLightType() == LightType::Directional)
+		{
+			shader->SetVec3("viewPos", camera->GetTransform()->position);
+			shader->SetVec3("dirLight.direction", Vector3(1.0f, 1.0f, -1.0f).Normalize());
+			shader->SetVec3("dirLight.color", Vector3(1.0f, 1.0f, 1.0f));
+			shader->SetFloat("dirLight.intensity", 1.0f);
+		}
+		else if (shader->GetLightType() == LightType::Point)
+		{
+			shader->SetVec3("viewPos", camera->GetTransform()->position);
+			shader->SetVec3("pointLight.position", Vector3(10.0f, 10.0f, -10.0f));
+			shader->SetVec3("pointLight.color", Vector3(1.0f, 1.0f, 1.0f));
+			shader->SetFloat("pointLight.intensity", 1.0f);
+		}
+
+		// 无阴影，即阴影贴图纯白，不产生遮挡
+		if (shader->GetShadowType() == ShadowType::Directional)
+		{
+
+		}
+		else if (shader->GetShadowType() == ShadowType::Point)
+		{
+			shader->SetCubeMap("_DepthCubeMap", shadowCubeMap->GetID(), textureNum);
+			shader->SetFloat("_FarPlane", 100.0f);
+		}
+
+		materialSphere->Draw();
 	}
 
 	void EditorAssetPreviewer::RenderModelPreview(AssetModelInfo* info)

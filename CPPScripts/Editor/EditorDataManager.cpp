@@ -86,6 +86,7 @@ namespace ZXEngine
 			MaterialStruct* matStruct = Resources::LoadMaterial(localPath);
 			info->material = new Material(matStruct);
 			curAssetInfo = info;
+			EditorGUIManager::GetInstance()->assetPreviewer->Reset();
 		}
 		else if (asset->type == AssetType::AT_Model)
 		{

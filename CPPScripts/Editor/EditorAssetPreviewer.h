@@ -6,6 +6,7 @@ namespace ZXEngine
 {
 	class Mesh;
 	class Shader;
+	class CubeMap;
 	class GameObject;
 	class MeshRenderer;
 	class EditorAssetPreviewer
@@ -16,7 +17,7 @@ namespace ZXEngine
 
 		bool Check();
 		void Draw();
-		void Reset(float size);
+		void Reset(float size = 2.0f);
 		void UpdateModelScale(float delta);
 		void UpdateModelRotation(float xOffset, float yOffset);
 
@@ -35,7 +36,8 @@ namespace ZXEngine
 		Mesh* previewQuad;
 		Shader* previewQuadShader;
 		Shader* previewModelShader;
-		MeshRenderer* renderer;
+		MeshRenderer* materialSphere;
+		CubeMap* shadowCubeMap;
 
 		void RenderMaterialPreview(AssetMaterialInfo* info);
 		void RenderModelPreview(AssetModelInfo* info);
