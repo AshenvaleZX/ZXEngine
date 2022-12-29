@@ -10,6 +10,7 @@ namespace ZXEngine
 		ShaderInfo info = RenderAPI::GetInstance()->LoadAndCompileShader(path);
 		ID = info.ID;
 		lightType = info.lightType;
+		shadowType = info.shadowType;
 	}
 
 	Shader::~Shader()
@@ -25,6 +26,11 @@ namespace ZXEngine
 	LightType Shader::GetLightType()
 	{
 		return lightType;
+	}
+
+	ShadowType Shader::GetShadowType()
+	{
+		return shadowType;
 	}
 
 	int Shader::GetRenderQueue()

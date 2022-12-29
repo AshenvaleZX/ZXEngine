@@ -13,6 +13,7 @@ namespace ZXEngine
 
 		unsigned int GetID();
 		LightType GetLightType();
+		ShadowType GetShadowType();
 		int GetRenderQueue();
 		void Use();
 		void SetBool(string name, bool value);
@@ -33,5 +34,6 @@ namespace ZXEngine
 		unsigned int ID;
 		int renderQueue;
 		LightType lightType;
+		ShadowType shadowType;
 	};
 }

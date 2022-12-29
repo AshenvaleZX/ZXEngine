@@ -15,5 +15,6 @@ namespace ZXEngine
 	{
 		unsigned int ID;
 		LightType lightType;
+		ShadowType shadowType;
 	};
 }

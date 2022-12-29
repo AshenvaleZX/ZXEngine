@@ -226,6 +226,15 @@ namespace ZXEngine
 			else
 				info.lightType = LightType::None;
 
+			int hasDirShadow = shaderCode.find("_DepthMap");
+			int hasPointShadow = shaderCode.find("_DepthCubeMap");
+			if (hasDirShadow > 0)
+				info.shadowType = ShadowType::Directional;
+			else if (hasPointShadow > 0)
+				info.shadowType = ShadowType::Point;
+			else
+				info.shadowType = ShadowType::None;
+
 			int vs_begin = shaderCode.find("#vs_begin") + 9;
 			int vs_end = shaderCode.find("#vs_end");
 			vertexCode = shaderCode.substr(vs_begin, vs_end - vs_begin);

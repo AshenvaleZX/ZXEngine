@@ -15,6 +15,13 @@ namespace ZXEngine
 		Point,
 	};
 
+	enum class ShadowType
+	{
+		None,
+		Directional,
+		Point,
+	};
+
 	enum CameraType
 	{
 		GameCamera,
