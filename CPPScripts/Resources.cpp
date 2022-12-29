@@ -98,7 +98,7 @@ namespace ZXEngine
 
 		prefab->name = GetAssetName(path);
 		if (data["Layer"].is_null())
-			prefab->layer = GameObjectLayer::Default;
+			prefab->layer = (int)GameObjectLayer::Default;
 		else
 			prefab->layer = data["Layer"];
 

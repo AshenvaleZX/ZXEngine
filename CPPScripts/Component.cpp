@@ -5,7 +5,7 @@ namespace ZXEngine
 {
 	ComponentType Component::GetType()
 	{
-		return ComponentType::T_Component;
+		return ComponentType::Component;
 	}
 
 	Transform* Component::GetTransform()

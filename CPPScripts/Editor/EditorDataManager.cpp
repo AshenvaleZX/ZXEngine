@@ -39,15 +39,15 @@ namespace ZXEngine
 		if (curAssetInfo != nullptr)
 		{
 			// delete上一个AssetInfo的时候需要先把指针映射成对应类型，才能正确调用析构函数，确保内存正确释放
-			if (selectedAsset->type == AssetType::AT_Script)
+			if (selectedAsset->type == AssetType::Script)
 				delete static_cast<AssetScriptInfo*>(curAssetInfo);
-			else if (selectedAsset->type == AssetType::AT_Shader)
+			else if (selectedAsset->type == AssetType::Shader)
 				delete static_cast<AssetShaderInfo*>(curAssetInfo);
-			else if (selectedAsset->type == AssetType::AT_Texture)
+			else if (selectedAsset->type == AssetType::Texture)
 				delete static_cast<AssetTextureInfo*>(curAssetInfo);
-			else if (selectedAsset->type == AssetType::AT_Material)
+			else if (selectedAsset->type == AssetType::Material)
 				delete static_cast<AssetMaterialInfo*>(curAssetInfo);
-			else if (selectedAsset->type == AssetType::AT_Model)
+			else if (selectedAsset->type == AssetType::Model)
 				delete static_cast<AssetModelInfo*>(curAssetInfo);
 			else
 				delete curAssetInfo;
@@ -56,21 +56,21 @@ namespace ZXEngine
 		}
 		selectedAsset = asset;
 
-		if (asset->type == AssetType::AT_Script)
+		if (asset->type == AssetType::Script)
 		{
 			auto info = new AssetScriptInfo();
 			info->name = asset->name;
 			info->preview = GetTextFilePreview(asset->path);
 			curAssetInfo = info;
 		}
-		else if (asset->type == AssetType::AT_Shader)
+		else if (asset->type == AssetType::Shader)
 		{
 			auto info = new AssetShaderInfo();
 			info->name = asset->name;
 			info->preview = GetTextFilePreview(asset->path);
 			curAssetInfo = info;
 		}
-		else if (asset->type == AssetType::AT_Texture)
+		else if (asset->type == AssetType::Texture)
 		{
 			auto info = new AssetTextureInfo();
 			info->name = asset->name;
@@ -78,7 +78,7 @@ namespace ZXEngine
 			info->texture = new Texture(asset->path.c_str());
 			curAssetInfo = info;
 		}
-		else if (asset->type == AssetType::AT_Material)
+		else if (asset->type == AssetType::Material)
 		{
 			auto info = new AssetMaterialInfo();
 			info->name = asset->name;
@@ -88,7 +88,7 @@ namespace ZXEngine
 			curAssetInfo = info;
 			EditorGUIManager::GetInstance()->assetPreviewer->Reset();
 		}
-		else if (asset->type == AssetType::AT_Model)
+		else if (asset->type == AssetType::Model)
 		{
 			auto info = new AssetModelInfo();
 			info->name = asset->name;

@@ -78,7 +78,7 @@ namespace ZXEngine
 			return;
 		}
 		
-		EventManager::GetInstance()->AddEventHandler(EventType::KEY_ESCAPE_PRESS, std::bind(&RenderEngine::CloseWindow, this, std::placeholders::_1));
+		EventManager::GetInstance()->AddEventHandler((int)EventType::KEY_ESCAPE_PRESS, std::bind(&RenderEngine::CloseWindow, this, std::placeholders::_1));
 	}
 
 	void RenderEngine::CloseWindow(string args)

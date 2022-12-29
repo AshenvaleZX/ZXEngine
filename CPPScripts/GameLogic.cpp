@@ -7,7 +7,7 @@ namespace ZXEngine
 {
 	ComponentType GameLogic::GetType()
 	{
-		return ComponentType::T_GameLogic;
+		return ComponentType::GameLogic;
 	}
 
 	GameLogic::GameLogic()
@@ -22,7 +22,7 @@ namespace ZXEngine
 
 	ComponentType GameLogic::GetInsType()
 	{
-		return ComponentType::T_GameLogic;
+		return ComponentType::GameLogic;
 	}
 
 	void GameLogic::Start()

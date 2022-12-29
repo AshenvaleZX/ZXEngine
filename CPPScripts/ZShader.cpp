@@ -6,7 +6,7 @@ namespace ZXEngine
 	Shader::Shader(const char* path)
 	{
 		name = Resources::GetAssetName(path);
-		renderQueue = RenderQueueType::Qpaque;
+		renderQueue = (int)RenderQueueType::Qpaque;
 		ShaderInfo info = RenderAPI::GetInstance()->LoadAndCompileShader(path);
 		ID = info.ID;
 		lightType = info.lightType;

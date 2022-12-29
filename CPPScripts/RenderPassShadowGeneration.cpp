@@ -73,7 +73,7 @@ namespace ZXEngine
 		shadowTransforms.clear();
 
 		// 渲染投射阴影的物体
-		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue(RenderQueueType::Qpaque);
+		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Qpaque);
 		for (auto renderer : renderQueue->GetRenderers())
 		{
 			// 跳过不投射阴影的物体

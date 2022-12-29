@@ -2,13 +2,13 @@
 
 namespace ZXEngine
 {
-	enum RenderQueueType 
+	enum class RenderQueueType
 	{ 
 		Qpaque = 1000, 
 		Transparent = 2000 
 	};
 
-	enum LightType
+	enum class LightType
 	{
 		None,
 		Directional,
@@ -22,13 +22,13 @@ namespace ZXEngine
 		Point,
 	};
 
-	enum CameraType
+	enum class CameraType
 	{
 		GameCamera,
 		EditorCamera,
 	};
 
-	enum FrameBufferType
+	enum class FrameBufferType
 	{
 		Normal,
 		HigthPrecision,
@@ -37,32 +37,32 @@ namespace ZXEngine
 		ShadowCubeMap,
 	};
 
-	enum GameObjectLayer
+	enum class GameObjectLayer
 	{
 		Default,
 		UI,
 	};
 
-	enum ComponentType
+	enum class ComponentType
 	{
-		T_Component,
-		T_Transform,
-		T_MeshRenderer,
-		T_Camera,
-		T_Light,
-		T_GameLogic,
-		T_UITextRenderer,
-		T_UITextureRenderer,
-		T_ParticleSystem,
+		Component,
+		Transform,
+		MeshRenderer,
+		Camera,
+		Light,
+		GameLogic,
+		UITextRenderer,
+		UITextureRenderer,
+		ParticleSystem,
 	};
 
-	enum DrawType
+	enum class DrawType
 	{
 		OpenGLDrawArrays,
 		OpenGLDrawElements,
 	};
 
-	enum BlendOption
+	enum class BlendOption
 	{
 		ZERO,
 		ONE,
@@ -80,7 +80,7 @@ namespace ZXEngine
 		ONE_MINUS_CONSTANT_ALPHA
 	};
 
-	enum InputButton
+	enum class InputButton
 	{
 		MOUSE_BUTTON_1,
 		MOUSE_BUTTON_2,
@@ -134,7 +134,7 @@ namespace ZXEngine
 		END,
 	};
 
-	enum EventType
+	enum class EventType
 	{
 		PLACE_HOLDER = 0, // 这里加一个占位符，因为Lua也有一份EventType需要和这里对齐，但是Lua下标是从1开始的
 		GAME_START,

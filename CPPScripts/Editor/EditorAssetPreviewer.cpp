@@ -51,9 +51,9 @@ namespace ZXEngine
 		auto curAsset = EditorDataManager::GetInstance()->selectedAsset;
 		if (curAsset != nullptr)
 		{
-			if (curAsset->type == AssetType::AT_Material)
+			if (curAsset->type == AssetType::Material)
 				needPreview = true;
-			else if (curAsset->type == AssetType::AT_Model)
+			else if (curAsset->type == AssetType::Model)
 				needPreview = true;
 		}
 
@@ -83,9 +83,9 @@ namespace ZXEngine
 		auto curAsset = EditorDataManager::GetInstance()->selectedAsset;
 		auto curAssetInfo = EditorDataManager::GetInstance()->curAssetInfo;
 
-		if (curAsset->type == AssetType::AT_Material)
+		if (curAsset->type == AssetType::Material)
 			RenderMaterialPreview(static_cast<AssetMaterialInfo*>(curAssetInfo));
-		else if (curAsset->type == AssetType::AT_Model)
+		else if (curAsset->type == AssetType::Model)
 			RenderModelPreview(static_cast<AssetModelInfo*>(curAssetInfo));
 
 		RenderToQuad();

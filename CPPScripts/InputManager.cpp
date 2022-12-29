@@ -46,7 +46,7 @@ namespace ZXEngine
 
 	void InputManager::UpdateMousePos(double xpos, double ypos)
 	{
-		EventManager::GetInstance()->FireEvent(EventType::UPDATE_MOUSE_POS, to_string(xpos) + "|" + to_string(ypos));
+		EventManager::GetInstance()->FireEvent((int)EventType::UPDATE_MOUSE_POS, to_string(xpos) + "|" + to_string(ypos));
 	}
 
 	void InputManager::UpdateMouseScroll(double xoffset, double yoffset)
@@ -73,13 +73,13 @@ namespace ZXEngine
 		// 从0到9
 		for (int i = 0; i < 10; i++)
 		{
-			CheckKey(GLFW_KEY_0 + i, InputButton(InputButton::KEY_0 + i), EventType(EventType::KEY_0_PRESS + i));
+			CheckKey(GLFW_KEY_0 + i, InputButton((int)InputButton::KEY_0 + i), EventType((int)EventType::KEY_0_PRESS + i));
 		}
 
 		// 从A到Z
 		for (int i = 0; i < 26; i++)
 		{
-			CheckKey(GLFW_KEY_A + i, InputButton(InputButton::KEY_A + i), EventType(EventType::KEY_A_PRESS + i * 3));
+			CheckKey(GLFW_KEY_A + i, InputButton((int)InputButton::KEY_A + i), EventType((int)EventType::KEY_A_PRESS + i * 3));
 		}
 
 		CheckKey(GLFW_KEY_SPACE, InputButton::KEY_SPACE, EventType::KEY_SPACE_PRESS);
@@ -95,14 +95,14 @@ namespace ZXEngine
 		GLFWwindow* window = RenderEngine::GetInstance()->window;
 		int state = glfwGetKey(window, id);
 		
-		if (state == GLFW_PRESS && buttonState[button] == GLFW_PRESS)
-			EventManager::GetInstance()->FireEvent(e, ""); // Press
-		else if (state == GLFW_PRESS && buttonState[button] == GLFW_RELEASE)
-			EventManager::GetInstance()->FireEvent(e + 1, ""); // Down
-		else if (state == GLFW_RELEASE && buttonState[button] == GLFW_PRESS)
-			EventManager::GetInstance()->FireEvent(e + 2, ""); // Up
+		if (state == GLFW_PRESS && buttonState[(int)button] == GLFW_PRESS)
+			EventManager::GetInstance()->FireEvent((int)e, ""); // Press
+		else if (state == GLFW_PRESS && buttonState[(int)button] == GLFW_RELEASE)
+			EventManager::GetInstance()->FireEvent((int)e + 1, ""); // Down
+		else if (state == GLFW_RELEASE && buttonState[(int)button] == GLFW_PRESS)
+			EventManager::GetInstance()->FireEvent((int)e + 2, ""); // Up
 
-		buttonState[button] = state;
+		buttonState[(int)button] = state;
 	}
 
 	void InputManager::CheckMouse(int id, InputButton button, EventType e)
@@ -110,19 +110,19 @@ namespace ZXEngine
 		GLFWwindow* window = RenderEngine::GetInstance()->window;
 		int state = glfwGetMouseButton(window, id);
 
-		if (state == GLFW_PRESS && buttonState[button] == GLFW_PRESS)
-			EventManager::GetInstance()->FireEvent(e, ""); // Press
-		else if (state == GLFW_PRESS && buttonState[button] == GLFW_RELEASE)
-			EventManager::GetInstance()->FireEvent(e + 1, ""); // Down
-		else if (state == GLFW_RELEASE && buttonState[button] == GLFW_PRESS)
-			EventManager::GetInstance()->FireEvent(e + 2, ""); // Up
+		if (state == GLFW_PRESS && buttonState[(int)button] == GLFW_PRESS)
+			EventManager::GetInstance()->FireEvent((int)e, ""); // Press
+		else if (state == GLFW_PRESS && buttonState[(int)button] == GLFW_RELEASE)
+			EventManager::GetInstance()->FireEvent((int)e + 1, ""); // Down
+		else if (state == GLFW_RELEASE && buttonState[(int)button] == GLFW_PRESS)
+			EventManager::GetInstance()->FireEvent((int)e + 2, ""); // Up
 
-		buttonState[button] = state;
+		buttonState[(int)button] = state;
 	}
 
 	void InputManager::InitButtonRecord()
 	{
-		for (int i = 0; i < InputButton::END; i++)
+		for (int i = 0; i < (int)InputButton::END; i++)
 		{
 			buttonState[i] = GLFW_RELEASE;
 		}

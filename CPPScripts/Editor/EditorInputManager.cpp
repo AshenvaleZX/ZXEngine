@@ -29,7 +29,7 @@ namespace ZXEngine
 			return;
 
 
-		if (CheckCurMousePos() == EditorAreaType::EAT_AssetPreview)
+		if (CheckCurMousePos() == EditorAreaType::AssetPreview)
 		{
 			// Preview区域按下鼠标左键进入编辑器的拖拽状态
 			if (ImGui::IsMouseDown(0))
@@ -57,23 +57,23 @@ namespace ZXEngine
 		posY = Math::Max(0.0f, posY);
 		if (posX > ProjectSetting::hierarchyWidth && posX < ProjectSetting::hierarchyWidth + GlobalData::srcWidth
 			&& posY > ProjectSetting::mainBarHeight && posY < ProjectSetting::mainBarHeight + GlobalData::srcHeight)
-			return EditorAreaType::EAT_Game;
+			return EditorAreaType::Game;
 		else if (posX > ProjectSetting::projectWidth && posY > ProjectSetting::mainBarHeight + ProjectSetting::inspectorHeight)
-			return EditorAreaType::EAT_AssetPreview;
+			return EditorAreaType::AssetPreview;
 		else
-			return EditorAreaType::EAT_None;
+			return EditorAreaType::None;
 	}
 
 	bool EditorInputManager::IsProcessGameInput()
 	{
 		// 如果当前未处于编辑器拖拽状态，并且鼠标被游戏捕获或者当前位置在游戏画面区域内，则需要处理游戏输入
-		return !isDragging && (!InputManager::GetInstance()->isCursorShow || CheckCurMousePos() == EditorAreaType::EAT_Game);
+		return !isDragging && (!InputManager::GetInstance()->isCursorShow || CheckCurMousePos() == EditorAreaType::Game);
 	}
 
 	void EditorInputManager::UpdateMouseScroll(float xOffset, float yOffset)
 	{
 		// 本来编辑器的输入是想统一用ImGuiIO的，但是ImGuiIO的MouseWheel必须要在ImGui::Begin和End之间调用才能生效
-		if (CheckCurMousePos() == EditorAreaType::EAT_AssetPreview)
+		if (CheckCurMousePos() == EditorAreaType::AssetPreview)
 			EditorGUIManager::GetInstance()->assetPreviewer->UpdateModelScale(yOffset);
 	}
 }

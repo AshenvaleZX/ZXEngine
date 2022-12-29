@@ -536,7 +536,7 @@ namespace ZXEngine
 		else if (type == DrawType::OpenGLDrawElements)
 			glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, 0);
 		else
-			Debug::LogError("Wrong draw type: " + to_string(type));
+			Debug::LogError("Wrong draw type: " + to_string((int)type));
 
 		glBindVertexArray(0);
 

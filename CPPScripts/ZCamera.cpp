@@ -15,7 +15,7 @@ namespace ZXEngine
 
 	ComponentType Camera::GetType()
 	{
-		return ComponentType::T_Camera;
+		return ComponentType::Camera;
 	}
 
 	Camera::Camera() : Fov(FOV)
@@ -33,7 +33,7 @@ namespace ZXEngine
 
 	ComponentType Camera::GetInsType()
 	{
-		return ComponentType::T_Camera;
+		return ComponentType::Camera;
 	}
 	
 	Matrix4 Camera::GetViewMatrix()

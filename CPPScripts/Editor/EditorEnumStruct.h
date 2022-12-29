@@ -3,24 +3,24 @@
 
 namespace ZXEngine
 {
-	enum AssetType
+	enum class AssetType
 	{
-		AT_Other,
-		AT_Folder,
-		AT_Material,
-		AT_Prefab,
-		AT_Script,
-		AT_Shader,
-		AT_Texture,
-		AT_Scene,
-		AT_Model,
+		Other,
+		Folder,
+		Material,
+		Prefab,
+		Script,
+		Shader,
+		Texture,
+		Scene,
+		Model,
 	};
 
-	enum EditorAreaType
+	enum class EditorAreaType
 	{
-		EAT_None,
-		EAT_Game,
-		EAT_AssetPreview,
+		None,
+		Game,
+		AssetPreview,
 	};
 
 	struct EditorAssetNode

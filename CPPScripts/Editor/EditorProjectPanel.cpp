@@ -13,7 +13,7 @@ namespace ZXEngine
 		root->path = Resources::GetAssetsPath();
 		root->name = "Assets";
 		root->extension = "";
-		root->type = AssetType::AT_Folder;
+		root->type = AssetType::Folder;
 		GetChildren(root);
 		curNode = root;
 	}
@@ -95,7 +95,7 @@ namespace ZXEngine
 
 				// 无论是否点击都必须PopStyleColor，所以没有直接写在if中
 				string label = "##File" + to_string(i);
-				auto icon = fileIcons[node->type];
+				auto icon = fileIcons[(int)node->type];
 				auto texID = icon->GetID();
 				bool click = ImGui::ImageButton(label.c_str(), (void*)(intptr_t)texID, iconSize);
 				ImGui::PopStyleColor(1);
@@ -177,40 +177,40 @@ namespace ZXEngine
 
 	void EditorProjectPanel::InitAssetType()
 	{
-		extTypeMap.insert(make_pair<string, AssetType>("", AssetType::AT_Folder));
-		extTypeMap.insert(make_pair<string, AssetType>(".zxmat", AssetType::AT_Material));
-		extTypeMap.insert(make_pair<string, AssetType>(".zxprefab", AssetType::AT_Prefab));
-		extTypeMap.insert(make_pair<string, AssetType>(".lua", AssetType::AT_Script));
-		extTypeMap.insert(make_pair<string, AssetType>(".zxshader", AssetType::AT_Shader));
+		extTypeMap.insert(make_pair<string, AssetType>("", AssetType::Folder));
+		extTypeMap.insert(make_pair<string, AssetType>(".zxmat", AssetType::Material));
+		extTypeMap.insert(make_pair<string, AssetType>(".zxprefab", AssetType::Prefab));
+		extTypeMap.insert(make_pair<string, AssetType>(".lua", AssetType::Script));
+		extTypeMap.insert(make_pair<string, AssetType>(".zxshader", AssetType::Shader));
 
-		extTypeMap.insert(make_pair<string, AssetType>(".png", AssetType::AT_Texture));
-		extTypeMap.insert(make_pair<string, AssetType>(".tga", AssetType::AT_Texture));
+		extTypeMap.insert(make_pair<string, AssetType>(".png", AssetType::Texture));
+		extTypeMap.insert(make_pair<string, AssetType>(".tga", AssetType::Texture));
 
-		extTypeMap.insert(make_pair<string, AssetType>(".zxscene", AssetType::AT_Scene));
+		extTypeMap.insert(make_pair<string, AssetType>(".zxscene", AssetType::Scene));
 
-		extTypeMap.insert(make_pair<string, AssetType>(".obj", AssetType::AT_Model));
-		extTypeMap.insert(make_pair<string, AssetType>(".FBX", AssetType::AT_Model));
+		extTypeMap.insert(make_pair<string, AssetType>(".obj", AssetType::Model));
+		extTypeMap.insert(make_pair<string, AssetType>(".FBX", AssetType::Model));
 	}
 
 	AssetType EditorProjectPanel::GetAssetType(string extension)
 	{
 		auto iter = extTypeMap.find(extension);
 		if (iter == extTypeMap.end())
-			return AssetType::AT_Other;
+			return AssetType::Other;
 		else
 			return iter->second;
 	}
 
 	void EditorProjectPanel::InitIcons()
 	{
-		fileIcons[AT_Other]	   = new Texture(Resources::GetAssetFullPath("Textures/icons/other.png", true).c_str());
-		fileIcons[AT_Folder]   = new Texture(Resources::GetAssetFullPath("Textures/icons/folder.png", true).c_str());
-		fileIcons[AT_Material] = new Texture(Resources::GetAssetFullPath("Textures/icons/material.png", true).c_str());
-		fileIcons[AT_Prefab]   = new Texture(Resources::GetAssetFullPath("Textures/icons/prefab.png", true).c_str());
-		fileIcons[AT_Script]   = new Texture(Resources::GetAssetFullPath("Textures/icons/script.png", true).c_str());
-		fileIcons[AT_Shader]   = new Texture(Resources::GetAssetFullPath("Textures/icons/shader.png", true).c_str());
-		fileIcons[AT_Texture]  = new Texture(Resources::GetAssetFullPath("Textures/icons/texture.png", true).c_str());
-		fileIcons[AT_Scene]    = new Texture(Resources::GetAssetFullPath("Textures/icons/scene.png", true).c_str());
-		fileIcons[AT_Model]    = new Texture(Resources::GetAssetFullPath("Textures/icons/model.png", true).c_str());
+		fileIcons[(int)AssetType::Other]	   = new Texture(Resources::GetAssetFullPath("Textures/icons/other.png", true).c_str());
+		fileIcons[(int)AssetType::Folder]   = new Texture(Resources::GetAssetFullPath("Textures/icons/folder.png", true).c_str());
+		fileIcons[(int)AssetType::Material] = new Texture(Resources::GetAssetFullPath("Textures/icons/material.png", true).c_str());
+		fileIcons[(int)AssetType::Prefab]   = new Texture(Resources::GetAssetFullPath("Textures/icons/prefab.png", true).c_str());
+		fileIcons[(int)AssetType::Script]   = new Texture(Resources::GetAssetFullPath("Textures/icons/script.png", true).c_str());
+		fileIcons[(int)AssetType::Shader]   = new Texture(Resources::GetAssetFullPath("Textures/icons/shader.png", true).c_str());
+		fileIcons[(int)AssetType::Texture]  = new Texture(Resources::GetAssetFullPath("Textures/icons/texture.png", true).c_str());
+		fileIcons[(int)AssetType::Scene]    = new Texture(Resources::GetAssetFullPath("Textures/icons/scene.png", true).c_str());
+		fileIcons[(int)AssetType::Model]    = new Texture(Resources::GetAssetFullPath("Textures/icons/model.png", true).c_str());
 	}
 }

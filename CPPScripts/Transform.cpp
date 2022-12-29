@@ -4,12 +4,12 @@ namespace ZXEngine
 {
 	ComponentType Transform::GetType()
 	{
-		return ComponentType::T_Transform;
+		return ComponentType::Transform;
 	}
 
 	ComponentType Transform::GetInsType()
 	{
-		return ComponentType::T_Transform;
+		return ComponentType::Transform;
 	}
 
 	Matrix4 Transform::GetModelMatrix()

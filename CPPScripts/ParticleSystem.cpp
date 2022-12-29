@@ -9,7 +9,7 @@ namespace ZXEngine
 {
 	ComponentType ParticleSystem::GetType()
 	{
-		return ComponentType::T_ParticleSystem;
+		return ComponentType::ParticleSystem;
 	}
 
 	ParticleSystem::ParticleSystem() : offset(0), velocity(0), moveDir(0), lastPos(0)
@@ -24,7 +24,7 @@ namespace ZXEngine
 
 	ComponentType ParticleSystem::GetInsType()
 	{
-		return ComponentType::T_ParticleSystem;
+		return ComponentType::ParticleSystem;
 	}
 
 	void ParticleSystem::Update()

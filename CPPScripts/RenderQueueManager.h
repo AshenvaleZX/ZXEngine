@@ -23,7 +23,7 @@ namespace ZXEngine
 
 	private:
 		static RenderQueueManager* mInstance;
-		map<int, RenderQueue*> renderQueues = { {RenderQueueType::Qpaque, new RenderQueue()}, {RenderQueueType::Transparent, new RenderQueue()} };
+		map<int, RenderQueue*> renderQueues = { {(int)RenderQueueType::Qpaque, new RenderQueue()}, {(int)RenderQueueType::Transparent, new RenderQueue()} };
 		list<GameObject*> uiGameObjectList;
 	};
 }

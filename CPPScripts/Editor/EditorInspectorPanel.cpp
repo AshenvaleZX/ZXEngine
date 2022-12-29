@@ -30,21 +30,21 @@ namespace ZXEngine
 				for (auto& iter : curGO->components)
 				{
 					ComponentType type = iter.first;
-					if (type == ComponentType::T_Transform)
+					if (type == ComponentType::Transform)
 						DrawTransform(static_cast<Transform*>(iter.second));
-					else if (type == ComponentType::T_Camera)
+					else if (type == ComponentType::Camera)
 						DrawCamera(static_cast<Camera*>(iter.second));
-					else if (type == ComponentType::T_Light)
+					else if (type == ComponentType::Light)
 						DrawLight(static_cast<Light*>(iter.second));
-					else if (type == ComponentType::T_GameLogic)
+					else if (type == ComponentType::GameLogic)
 						DrawGameLogic(static_cast<GameLogic*>(iter.second));
-					else if (type == ComponentType::T_UITextRenderer)
+					else if (type == ComponentType::UITextRenderer)
 						DrawUITextRenderer(static_cast<UITextRenderer*>(iter.second));
-					else if (type == ComponentType::T_UITextureRenderer)
+					else if (type == ComponentType::UITextureRenderer)
 						DrawUITextureRenderer(static_cast<UITextureRenderer*>(iter.second));
-					else if (type == ComponentType::T_ParticleSystem)
+					else if (type == ComponentType::ParticleSystem)
 						DrawParticleSystem(static_cast<ParticleSystem*>(iter.second));
-					else if (type == ComponentType::T_MeshRenderer)
+					else if (type == ComponentType::MeshRenderer)
 					{
 						auto meshRenderer = static_cast<MeshRenderer*>(iter.second);
 						mat = meshRenderer->matetrial;
@@ -58,15 +58,15 @@ namespace ZXEngine
 			else if (curAsset != nullptr)
 			{
 				auto curAssetInfo = EditorDataManager::GetInstance()->curAssetInfo;
-				if (curAsset->type == AssetType::AT_Script)
+				if (curAsset->type == AssetType::Script)
 					DrawScript(static_cast<AssetScriptInfo*>(curAssetInfo));
-				else if (curAsset->type == AssetType::AT_Shader)
+				else if (curAsset->type == AssetType::Shader)
 					DrawShader(static_cast<AssetShaderInfo*>(curAssetInfo));
-				else if (curAsset->type == AssetType::AT_Texture)
+				else if (curAsset->type == AssetType::Texture)
 					DrawTexture(static_cast<AssetTextureInfo*>(curAssetInfo));
-				else if (curAsset->type == AssetType::AT_Material)
+				else if (curAsset->type == AssetType::Material)
 					DrawMaterial(static_cast<AssetMaterialInfo*>(curAssetInfo));
-				else if (curAsset->type == AssetType::AT_Model)
+				else if (curAsset->type == AssetType::Model)
 					DrawModel(static_cast<AssetModelInfo*>(curAssetInfo));
 			}
 		}
@@ -193,7 +193,7 @@ namespace ZXEngine
 		// Type
 		static ImGuiComboFlags flags = 0;
 		const char* items[] = { "None", "Directional", "Point" };
-		static int item_current_idx = component->type;
+		static int item_current_idx = (int)component->type;
 		const char* combo_preview_value = items[item_current_idx];
 		ImGui::Text("Type      ");
 		ImGui::SameLine();

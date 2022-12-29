@@ -20,12 +20,12 @@ namespace ZXEngine
 
 	ComponentType UITextureRenderer::GetType()
 	{
-		return ComponentType::T_UITextureRenderer;
+		return ComponentType::UITextureRenderer;
 	}
 
 	ComponentType UITextureRenderer::GetInsType()
 	{
-		return ComponentType::T_UITextureRenderer;
+		return ComponentType::UITextureRenderer;
 	}
 
 	void UITextureRenderer::Render()

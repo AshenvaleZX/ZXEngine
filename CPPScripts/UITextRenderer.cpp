@@ -8,7 +8,7 @@ namespace ZXEngine
 {
     ComponentType UITextRenderer::GetType()
     {
-        return ComponentType::T_UITextRenderer;
+        return ComponentType::UITextRenderer;
     }
 
     UITextRenderer::UITextRenderer()
@@ -19,7 +19,7 @@ namespace ZXEngine
 
     ComponentType UITextRenderer::GetInsType()
     {
-        return ComponentType::T_UITextRenderer;
+        return ComponentType::UITextRenderer;
     }
 
     void UITextRenderer::Render()

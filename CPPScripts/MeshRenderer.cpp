@@ -4,7 +4,7 @@ namespace ZXEngine
 {
     ComponentType MeshRenderer::GetType()
     {
-        return ComponentType::T_MeshRenderer;
+        return ComponentType::MeshRenderer;
     }
 
     MeshRenderer::MeshRenderer()
@@ -25,7 +25,7 @@ namespace ZXEngine
 
     ComponentType MeshRenderer::GetInsType()
     {
-        return ComponentType::T_MeshRenderer;
+        return ComponentType::MeshRenderer;
     }
 
     void MeshRenderer::Draw()

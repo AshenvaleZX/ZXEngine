@@ -10,7 +10,7 @@ namespace ZXEngine
 
 	ComponentType Light::GetType()
 	{
-		return ComponentType::T_Light;
+		return ComponentType::Light;
 	}
 
 	Light::Light()
@@ -26,6 +26,6 @@ namespace ZXEngine
 
 	ComponentType Light::GetInsType()
 	{
-		return ComponentType::T_Light;
+		return ComponentType::Light;
 	}
 }

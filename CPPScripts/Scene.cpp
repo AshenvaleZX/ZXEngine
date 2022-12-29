@@ -30,7 +30,7 @@ namespace ZXEngine
 			{
 				auto gameObject = gameObjects[j];
 
-				if (gameObject->layer == GameObjectLayer::UI)
+				if (gameObject->layer == (int)GameObjectLayer::UI)
 				{
 					RenderQueueManager::GetInstance()->AddUIGameObject(gameObject);
 				}

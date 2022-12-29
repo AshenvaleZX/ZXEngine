@@ -38,7 +38,7 @@ namespace ZXEngine
 		// 重新打开深度写入
 		RenderAPI::GetInstance()->EnableDepthWrite(true);
 
-		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue(RenderQueueType::Qpaque);
+		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Qpaque);
 
 		Matrix4 mat_V = camera->GetViewMatrix();
 		Matrix4 mat_P = camera->GetProjectionMatrix();

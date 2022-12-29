@@ -27,7 +27,7 @@ namespace ZXEngine
 		void ShowCursor(bool show);
 
 	private:
-		int buttonState[InputButton::END];
+		int buttonState[(int)InputButton::END];
 
 		void CheckKey(int id, InputButton button, EventType e);
 		void CheckMouse(int id, InputButton button, EventType e);
