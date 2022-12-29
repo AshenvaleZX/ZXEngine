@@ -82,11 +82,8 @@ namespace ZXEngine
 
 			Matrix4 mat_M = renderer->GetTransform()->GetModelMatrix();
 			shadowCubeMapShader->SetMat4("_Model", mat_M);
-			for (auto mesh : renderer->meshes)
-			{
-				mesh->Use();
-				RenderAPI::GetInstance()->Draw();
-			}
+
+			renderer->Draw();
 		}
 	}
 }

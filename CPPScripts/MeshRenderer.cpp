@@ -28,6 +28,15 @@ namespace ZXEngine
         return ComponentType::T_MeshRenderer;
     }
 
+    void MeshRenderer::Draw()
+    {
+        for (auto mesh : meshes)
+        {
+            mesh->Use();
+            RenderAPI::GetInstance()->Draw();
+        }
+    }
+
 	void MeshRenderer::LoadModel(string const& path)
 	{
         // read file via ASSIMP

@@ -92,12 +92,7 @@ namespace ZXEngine
 				}
 			}
 
-			for (auto mesh : renderer->meshes)
-			{
-				mesh->Use();
-
-				RenderAPI::GetInstance()->Draw();
-			}
+			renderer->Draw();
 		}
 
 		ParticleSystemManager::GetInstance()->Update();

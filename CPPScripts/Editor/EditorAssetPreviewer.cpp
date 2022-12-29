@@ -99,11 +99,7 @@ namespace ZXEngine
 		previewModelShader->SetMat4("projection", mat_P);
 		previewModelShader->SetVec3("_Direction", Vector3(1.0f, 1.0f, -1.0f).Normalize());
 
-		for (auto mesh : info->meshRenderer->meshes)
-		{
-			mesh->Use();
-			RenderAPI::GetInstance()->Draw();
-		}
+		info->meshRenderer->Draw();
 	}
 
 	void EditorAssetPreviewer::RenderToQuad()

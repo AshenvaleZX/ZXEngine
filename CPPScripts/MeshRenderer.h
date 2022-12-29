@@ -35,6 +35,7 @@ namespace ZXEngine
 
 		virtual ComponentType GetInsType();
 
+		void Draw();
 		// 使用ASSIMP加载模型文件
 		void LoadModel(string const& path);
 
