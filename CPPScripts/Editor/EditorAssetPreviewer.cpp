@@ -192,8 +192,8 @@ namespace ZXEngine
 
 	void EditorAssetPreviewer::UpdateModelRotation(float xOffset, float yOffset)
 	{
-		yaw += xOffset * rotSensitivity;
-		pitch += yOffset * rotSensitivity;
+		yaw -= xOffset * rotSensitivity;
+		pitch -= yOffset * rotSensitivity;
 	}
 
 	Matrix4 EditorAssetPreviewer::GetModelMatrix()
