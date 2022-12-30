@@ -11,14 +11,11 @@
     },
     "GameObjects": 
     [
-        "Prefabs/Cube.zxprefab",
+        "Prefabs/Heart.zxprefab",
         "Prefabs/MainCamera.zxprefab",
         "Prefabs/Sun.zxprefab",
         "Prefabs/Floor.zxprefab",
-        "Prefabs/Sphere.zxprefab",
-        "Prefabs/Sphere1.zxprefab",
-        "Prefabs/Sphere2.zxprefab",
-        "Prefabs/Sphere3.zxprefab",
+        "Prefabs/Spheres.zxprefab",
         "Prefabs/UI/FPSText.zxprefab",
         "Prefabs/UI/UITest.zxprefab",
         "Prefabs/UI/TitleText.zxprefab"

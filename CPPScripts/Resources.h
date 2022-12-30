@@ -21,6 +21,8 @@ namespace ZXEngine
 		string name;
 		unsigned int layer;
 		list<json> components;
+		PrefabStruct* parent;
+		vector<PrefabStruct*> children;
 	};
 
 	struct SceneStruct
@@ -56,5 +58,6 @@ namespace ZXEngine
 		static const string builtInAssetsPath;
 
 		static json GetAssetData(string path, bool isBuiltIn = false);
+		static PrefabStruct* ParsePrefab(json data);
 	};
 }

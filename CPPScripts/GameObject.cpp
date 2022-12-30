@@ -96,6 +96,13 @@ namespace ZXEngine
 				particleSystem->GenerateParticles();
 			}
 		}
+
+		for (auto subPrefab : prefab->children)
+		{
+			auto subGameObject = new GameObject(subPrefab);
+			subGameObject->parent = this;
+			children.push_back(subGameObject);
+		}
 	}
 
 	void GameObject::AddComponent(ComponentType type, Component* component)

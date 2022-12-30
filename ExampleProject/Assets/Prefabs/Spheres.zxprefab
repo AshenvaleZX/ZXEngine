@@ -1,0 +1,91 @@
+{
+    "Name": "Spheres",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 0, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [1, 1, 1]
+        }
+    ],
+    "GameObjects":
+    [
+        {
+            "Name": "Sphere",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 0, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Mesh": "Models/sphere.obj",
+                    "Material": "Materials/BlinnPhong.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "Sphere1",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [5, 0, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Mesh": "Models/sphere.obj",
+                    "Material": "Materials/BlinnPhong.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "Sphere2",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 5, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Mesh": "Models/sphere.obj",
+                    "Material": "Materials/BlinnPhong.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "Sphere3",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 0, 5],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Mesh": "Models/sphere.obj",
+                    "Material": "Materials/BlinnPhong.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                }
+            ]
+        }
+    ]
+}

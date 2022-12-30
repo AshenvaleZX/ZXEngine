@@ -94,9 +94,14 @@ namespace ZXEngine
 	PrefabStruct* Resources::LoadPrefab(string path, bool isBuiltIn)
 	{
 		json data = Resources::GetAssetData(path, isBuiltIn);
+		return ParsePrefab(data);
+	}
+
+	PrefabStruct* Resources::ParsePrefab(json data)
+	{
 		PrefabStruct* prefab = new PrefabStruct;
 
-		prefab->name = GetAssetName(path);
+		prefab->name = data["Name"];
 		if (data["Layer"].is_null())
 			prefab->layer = (int)GameObjectLayer::Default;
 		else
@@ -106,6 +111,17 @@ namespace ZXEngine
 		{
 			json component = data["Components"][i];
 			prefab->components.push_back(component);
+		}
+
+		if (!data["GameObjects"].is_null())
+		{
+			for (unsigned int i = 0; i < data["GameObjects"].size(); i++)
+			{
+				json subData = data["GameObjects"][i];
+				auto subPrefab = ParsePrefab(subData);
+				subPrefab->parent = prefab;
+				prefab->children.push_back(subPrefab);
+			}
 		}
 
 		return prefab;
