@@ -1,5 +1,5 @@
 {
-    "Type": "GameObject",
+    "Name": "UITest",
     "Layer": 1,
     "Components":
     [

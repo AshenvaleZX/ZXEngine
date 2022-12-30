@@ -1,5 +1,5 @@
 {
-    "Type": "GameObject",
+    "Name": "Sphere1",
     "Components":
     [
         {
