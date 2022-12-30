@@ -14,10 +14,9 @@ namespace ZXEngine
 		static void Creat();
 		static RenderQueueManager* GetInstance();
 
+		void AddGameObject(GameObject* gameObject);
 		RenderQueue* GetRenderQueue(int queue);
-		void AddRenderer(MeshRenderer* meshRenderer);
 		void ClearAllRenderQueue();
-		void AddUIGameObject(GameObject* uiGameObject);
 		list<GameObject*> GetUIGameObjects();
 		void ClearUIGameObjects();
 
@@ -25,5 +24,8 @@ namespace ZXEngine
 		static RenderQueueManager* mInstance;
 		map<int, RenderQueue*> renderQueues = { {(int)RenderQueueType::Qpaque, new RenderQueue()}, {(int)RenderQueueType::Transparent, new RenderQueue()} };
 		list<GameObject*> uiGameObjectList;
+
+		void AddRenderer(MeshRenderer* meshRenderer);
+		void AddUIGameObject(GameObject* uiGameObject);
 	};
 }

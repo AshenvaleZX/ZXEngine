@@ -1,5 +1,6 @@
 #include "RenderQueueManager.h"
 #include "MeshRenderer.h"
+#include "GameObject.h"
 
 namespace ZXEngine
 {
@@ -24,6 +25,25 @@ namespace ZXEngine
 		else {
 			return nullptr;
 		}
+	}
+
+	void RenderQueueManager::AddGameObject(GameObject* gameObject)
+	{
+		if (gameObject->layer == (int)GameObjectLayer::UI)
+		{
+			AddUIGameObject(gameObject);
+		}
+		else
+		{
+			MeshRenderer* meshRenderer = gameObject->GetComponent<MeshRenderer>();
+			if (meshRenderer != nullptr)
+			{
+				AddRenderer(gameObject->GetComponent<MeshRenderer>());
+			}
+		}
+
+		for (auto subGameObject : gameObject->children)
+			AddGameObject(subGameObject);
 	}
 
 	void RenderQueueManager::AddRenderer(MeshRenderer* meshRenderer)
