@@ -27,12 +27,25 @@ namespace ZXEngine
 		return q;
 	}
 
+	Quaternion Quaternion::Euler(const Vector3& eulerAngles)
+	{
+		return Euler(eulerAngles.x, eulerAngles.y , eulerAngles.z);
+	}
+
 	Quaternion::Quaternion() 
 	{
 		x = 0;
 		y = 0;
 		z = 0;
 		w = 1.0f;
+	}
+
+	Quaternion::Quaternion(const Quaternion& q)
+	{
+		this->x = q.x;
+		this->y = q.y;
+		this->z = q.z;
+		this->w = q.w;
 	}
 
 	Quaternion::Quaternion(float x, float y, float z, float w) 
@@ -43,19 +56,9 @@ namespace ZXEngine
 		this->w = w;
 	}
 
-	float Quaternion::Normal() const
-	{
-		return sqrtf(NormalSquare());
-	}
-
-	float Quaternion::NormalSquare() const
-	{
-		return x * x + y * y + z * z + w * w;
-	}
-
 	void Quaternion::Normalize()
 	{
-		float sqrNorm = NormalSquare();
+		float sqrNorm = MagnitudeSquare();
 		if (!Math::Approximately(sqrNorm, 0.f))
 		{
 			float normInverse = 1.0f / sqrtf(sqrNorm);
@@ -115,7 +118,12 @@ namespace ZXEngine
 		this->w = q.w;
 	}
 
-	Matrix4 Quaternion::ToMatrix()
+	void Quaternion::SetEulerAngles(const Vector3& eulerAngles)
+	{
+		SetEulerAngles(eulerAngles.x, eulerAngles.y, eulerAngles.z);
+	}
+
+	Matrix4 Quaternion::ToMatrix() const
 	{
 		// 第一行
 		float m00 = 1 - (2 * y * y) - (2 * z * z);
@@ -155,5 +163,15 @@ namespace ZXEngine
 		// 把this解引用再乘
 		*this = *this * q;
 		return *this;
+	}
+
+	float Quaternion::Magnitude() const
+	{
+		return sqrtf(MagnitudeSquare());
+	}
+
+	float Quaternion::MagnitudeSquare() const
+	{
+		return x * x + y * y + z * z + w * w;
 	}
 }

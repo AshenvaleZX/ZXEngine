@@ -8,6 +8,7 @@ namespace ZXEngine
 	{
 	public:
 		static Quaternion Euler(float x, float y, float z);
+		static Quaternion Euler(const Vector3& eulerAngles);
 
 	public:
 		float x;
@@ -16,19 +17,21 @@ namespace ZXEngine
 		float w;
 
 		Quaternion();
+		Quaternion(const Quaternion& q);
 		Quaternion(float x, float y, float z, float w);
 		~Quaternion() {};
 
-		// 函数声明的后面加const的意思，是表示这个函数不会修改类中的任何数据成员，不加也行。
-		// 但是加了的话函数代码里去改就会报错，强行让你不能改，防止写代码的时候不小心去改了，加强健壮性。
-		float Normal() const;
-		float NormalSquare() const;
 		void Normalize();
 		Vector3 GetEulerAngles() const;
 		void SetEulerAngles(float x, float y, float z);
-		Matrix4 ToMatrix();
+		void SetEulerAngles(const Vector3& eulerAngles);
+		Matrix4 ToMatrix() const;
 
 		Quaternion operator* (const Quaternion& q) const;
 		Quaternion& operator*= (const Quaternion& q);
+
+	private:
+		float Magnitude() const;
+		float MagnitudeSquare() const;
 	};
 }
