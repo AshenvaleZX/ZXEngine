@@ -102,9 +102,10 @@ namespace ZXEngine
 			return;
 
 		ImGui::PushItemWidth(60);
-		float posX = component->position.x;
-		float posY = component->position.y;
-		float posZ = component->position.z;
+		Vector3 position = component->GetLocalPosition();
+		float posX = position.x;
+		float posY = position.y;
+		float posZ = position.z;
 		ImGui::Text("Position    ");
 		ImGui::SameLine(); ImGui::Text("X");
 		ImGui::SameLine(); ImGui::DragFloat("##posX", &posX, 0.25f, -FLT_MAX, FLT_MAX);
@@ -112,7 +113,7 @@ namespace ZXEngine
 		ImGui::SameLine(); ImGui::DragFloat("##posY", &posY, 0.25f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Z");
 		ImGui::SameLine(); ImGui::DragFloat("##posZ", &posZ, 0.25f, -FLT_MAX, FLT_MAX);
-		Vector3 euler = component->rotation.GetEulerAngles();
+		Vector3 euler = component->GetLocalEulerAngles();
 		float rotX = euler.x;
 		float rotY = euler.y;
 		float rotZ = euler.z;
@@ -123,9 +124,10 @@ namespace ZXEngine
 		ImGui::SameLine(); ImGui::DragFloat("##rotY", &rotY, 0.25f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Z");
 		ImGui::SameLine(); ImGui::DragFloat("##rotZ", &rotZ, 0.25f, -FLT_MAX, FLT_MAX);
-		float scaX = component->scale.x;
-		float scaY = component->scale.y;
-		float scaZ = component->scale.z;
+		Vector3 scale = component->GetLocalScale();
+		float scaX = scale.x;
+		float scaY = scale.y;
+		float scaZ = scale.z;
 		ImGui::Text("Scale       ");
 		ImGui::SameLine(); ImGui::Text("X");
 		ImGui::SameLine(); ImGui::DragFloat("##scaX", &scaX, 0.25f, -FLT_MAX, FLT_MAX);

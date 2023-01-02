@@ -40,7 +40,7 @@ namespace ZXEngine
 		// 渲染粒子时只向颜色缓冲区叠加颜色
 		RenderAPI::GetInstance()->SetBlendMode(BlendOption::SRC_ALPHA, BlendOption::ONE);
 
-		Vector3 camPos = camera->GetTransform()->position;
+		Vector3 camPos = camera->GetTransform()->GetPosition();
 		Matrix4 mat_V = camera->GetViewMatrix();
 		Matrix4 mat_P = camera->GetProjectionMatrix();
 		shader->Use();

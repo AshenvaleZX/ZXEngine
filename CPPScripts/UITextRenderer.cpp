@@ -27,9 +27,9 @@ namespace ZXEngine
         TextCharactersManager::GetInstance()->BeginRender();
         TextCharactersManager::GetInstance()->SetColor(color);
 
-        float tmpX = this->GetTransform()->position.x;
-        float tmpY = this->GetTransform()->position.y;
-        float scale = this->GetTransform()->scale.x;
+        float tmpX = this->GetTransform()->GetPosition().x;
+        float tmpY = this->GetTransform()->GetPosition().y;
+        float scale = this->GetTransform()->GetScale().x;
         // 遍历字符串的每个字符
         string::const_iterator c;
         for (c = text.begin(); c != text.end(); c++)

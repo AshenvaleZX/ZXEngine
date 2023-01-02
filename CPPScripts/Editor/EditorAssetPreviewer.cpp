@@ -116,14 +116,14 @@ namespace ZXEngine
 		// ¹Ì¶¨¹âÔ´
 		if (shader->GetLightType() == LightType::Directional)
 		{
-			shader->SetVec3("viewPos", camera->GetTransform()->position);
+			shader->SetVec3("viewPos", camera->GetTransform()->GetPosition());
 			shader->SetVec3("dirLight.direction", Vector3(1.0f, 1.0f, -1.0f).Normalize());
 			shader->SetVec3("dirLight.color", Vector3(1.0f, 1.0f, 1.0f));
 			shader->SetFloat("dirLight.intensity", 1.0f);
 		}
 		else if (shader->GetLightType() == LightType::Point)
 		{
-			shader->SetVec3("viewPos", camera->GetTransform()->position);
+			shader->SetVec3("viewPos", camera->GetTransform()->GetPosition());
 			shader->SetVec3("pointLight.position", Vector3(10.0f, 10.0f, -10.0f));
 			shader->SetVec3("pointLight.color", Vector3(1.0f, 1.0f, 1.0f));
 			shader->SetFloat("pointLight.intensity", 1.0f);

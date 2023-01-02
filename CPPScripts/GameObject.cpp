@@ -13,9 +13,9 @@ namespace ZXEngine
 			{
 				Transform* transform = AddComponent<Transform>();
 
-				transform->position = Vector3(component["Position"][0], component["Position"][1], component["Position"][2]);
-				transform->rotation.SetEulerAngles(component["Rotation"][0], component["Rotation"][1], component["Rotation"][2]);
-				transform->scale = Vector3(component["Scale"][0], component["Scale"][1], component["Scale"][2]);
+				transform->SetLocalPosition(Vector3(component["Position"][0], component["Position"][1], component["Position"][2]));
+				transform->SetLocalEulerAngles(component["Rotation"][0], component["Rotation"][1], component["Rotation"][2]);
+				transform->SetLocalScale(Vector3(component["Scale"][0], component["Scale"][1], component["Scale"][2]));
 			}
 			else if (component["Type"] == "MeshRenderer")
 			{

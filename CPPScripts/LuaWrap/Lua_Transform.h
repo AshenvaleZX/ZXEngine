@@ -15,7 +15,7 @@ static int SetPosition(lua_State* L)
 	float x = (float)luaL_checknumber(L, -3);
 	float y = (float)luaL_checknumber(L, -2);
 	float z = (float)luaL_checknumber(L, -1);
-	(*data)->position = ZXEngine::Vector3(x,y,z);
+	(*data)->SetPosition(x, y, z);
 	return 0;
 }
 
@@ -25,7 +25,7 @@ static int SetEulerAngles(lua_State* L)
 	float x = (float)luaL_checknumber(L, -3);
 	float y = (float)luaL_checknumber(L, -2);
 	float z = (float)luaL_checknumber(L, -1);
-	(*data)->rotation.SetEulerAngles(x, y, z);
+	(*data)->SetEulerAngles(x, y, z);
 	return 0;
 }
 
@@ -33,12 +33,13 @@ static int GetEulerAngles(lua_State* L)
 {
 	ZXEngine::Transform** data = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
 
+	ZXEngine::Vector3 eulerAngles = (*data)->GetEulerAngles();
 	lua_newtable(L);
-	lua_pushnumber(L, (*data)->rotation.GetEulerAngles().x);
+	lua_pushnumber(L, eulerAngles.x);
 	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, (*data)->rotation.GetEulerAngles().y);
+	lua_pushnumber(L, eulerAngles.y);
 	lua_setfield(L, -2, "y");
-	lua_pushnumber(L, (*data)->rotation.GetEulerAngles().z);
+	lua_pushnumber(L, eulerAngles.z);
 	lua_setfield(L, -2, "z");
 
 	return 1;
@@ -48,12 +49,13 @@ static int GetPosition(lua_State* L)
 {
 	ZXEngine::Transform** data = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
 
+	ZXEngine::Vector3 position = (*data)->GetPosition();
 	lua_newtable(L);
-	lua_pushnumber(L, (*data)->position.x);
+	lua_pushnumber(L, position.x);
 	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, (*data)->position.y);
+	lua_pushnumber(L, position.y);
 	lua_setfield(L, -2, "y");
-	lua_pushnumber(L, (*data)->position.z);
+	lua_pushnumber(L, position.z);
 	lua_setfield(L, -2, "z");
 
 	return 1;
@@ -63,12 +65,13 @@ static int GetForward(lua_State* L)
 {
 	ZXEngine::Transform** data = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
 
+	ZXEngine::Vector3 forward = (*data)->GetForward();
 	lua_newtable(L);
-	lua_pushnumber(L, (*data)->GetForward().x);
+	lua_pushnumber(L, forward.x);
 	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, (*data)->GetForward().y);
+	lua_pushnumber(L, forward.y);
 	lua_setfield(L, -2, "y");
-	lua_pushnumber(L, (*data)->GetForward().z);
+	lua_pushnumber(L, forward.z);
 	lua_setfield(L, -2, "z");
 
 	return 1;
@@ -78,12 +81,13 @@ static int GetRight(lua_State* L)
 {
 	ZXEngine::Transform** data = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
 
+	ZXEngine::Vector3 right = (*data)->GetRight();
 	lua_newtable(L);
-	lua_pushnumber(L, (*data)->GetRight().x);
+	lua_pushnumber(L, right.x);
 	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, (*data)->GetRight().y);
+	lua_pushnumber(L, right.y);
 	lua_setfield(L, -2, "y");
-	lua_pushnumber(L, (*data)->GetRight().z);
+	lua_pushnumber(L, right.z);
 	lua_setfield(L, -2, "z");
 
 	return 1;
@@ -93,12 +97,13 @@ static int GetUp(lua_State* L)
 {
 	ZXEngine::Transform** data = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
 
+	ZXEngine::Vector3 up = (*data)->GetUp();
 	lua_newtable(L);
-	lua_pushnumber(L, (*data)->GetUp().x);
+	lua_pushnumber(L, up.x);
 	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, (*data)->GetUp().y);
+	lua_pushnumber(L, up.y);
 	lua_setfield(L, -2, "y");
-	lua_pushnumber(L, (*data)->GetUp().z);
+	lua_pushnumber(L, up.z);
 	lua_setfield(L, -2, "z");
 
 	return 1;

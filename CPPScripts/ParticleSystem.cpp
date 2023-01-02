@@ -30,7 +30,7 @@ namespace ZXEngine
 	void ParticleSystem::Update()
 	{
 		// 更新当前位置和移动方向
-		Vector3 curPos = GetTransform()->position;
+		Vector3 curPos = GetTransform()->GetPosition();
 		moveDir = (curPos - lastPos).Normalize();
 		lastPos = curPos;
 
@@ -160,7 +160,7 @@ namespace ZXEngine
 		float rColor = Math::RandomFloat(0.5f, 1.0f);
 		float gColor = Math::RandomFloat(0.5f, 1.0f);
 		float bColor = Math::RandomFloat(0.5f, 1.0f);
-		particle->position = GetTransform()->position + Vector3(xRandom * offset.x, yRandom * offset.y, zRandom * offset.z);
+		particle->position = GetTransform()->GetPosition() + Vector3(xRandom * offset.x, yRandom * offset.y, zRandom * offset.z);
 		particle->color = Vector4(rColor, gColor, bColor, 1.0f);
 		particle->life = lifeTime;
 		particle->velocity = Math::GetRandomPerpendicular(moveDir) * 10;
