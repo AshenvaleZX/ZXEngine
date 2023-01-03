@@ -5,25 +5,23 @@ namespace ZXEngine
 {
 	Quaternion Quaternion::Euler(float x, float y, float z)
 	{
-		// read here: http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm
-		float dx = x * Math::Deg2Rad(0.5f);
-		float dy = y * Math::Deg2Rad(0.5f);
-		float dz = z * Math::Deg2Rad(0.5f);
-		// in order of YXZ, yaw, pitch, roll in local space
-		float c1 = cos(dy);
-		float s1 = sin(dy);
-		float c2 = cos(dz);
-		float s2 = sin(dz);
-		float c3 = cos(dx);
-		float s3 = sin(dx);
-		float c1c2 = c1 * c2;
-		float s1s2 = s1 * s2;
+		// ²Î¿¼: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+		float pitch = Math::Deg2Rad(x);
+		float yaw = Math::Deg2Rad(y);
+		float roll = Math::Deg2Rad(z);
+		float cp = (float)cos(pitch * 0.5);
+		float sp = (float)sin(pitch * 0.5);
+		float cy = (float)cos(yaw * 0.5);
+		float sy = (float)sin(yaw * 0.5);
+		float cr = (float)cos(roll * 0.5);
+		float sr = (float)sin(roll * 0.5);
 
 		Quaternion q;
-		q.w = c1c2 * c3 - s1s2 * s3;
-		q.x = c1c2 * s3 + s1s2 * c3;
-		q.y = s1 * c2 * c3 + c1 * s2 * s3;
-		q.z = c1 * s2 * c3 - s1 * c2 * s3;
+		q.x = cr * sp * cy + sr * cp * sy;
+		q.y = cr * cp * sy - sr * sp * cy;
+		q.z = sr * cp * cy - cr * sp * sy;
+		q.w = cr * cp * cy + sr * sp * sy;
+
 		return q;
 	}
 
@@ -71,42 +69,24 @@ namespace ZXEngine
 
 	Vector3 Quaternion::GetEulerAngles() const 
 	{
-		// read here: http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/index.htm
-		float test = x * y + z * w;
-		float yaw, pitch, roll;
-		if (test > 0.499f)
-		{
-			// singularity at north pole
-			yaw = 2 * atan2(x, w);
-			roll = Math::PI * 0.5f;
-			pitch = 0;
-		}
-		else
-		{
-			if (test < -0.499f)
-			{
-				// singularity at south pole
-				yaw = -2 * atan2(x, w);
-				roll = -Math::PI * 0.5f;
-				pitch = 0;
-			}
-			else
-			{
-				float sqx = x * x;
-				float sqy = y * y;
-				float sqz = z * z;
+		// ²Î¿¼: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+		float sinp = sqrt(1 + 2 * (w * x - y * z));
+		float cosp = sqrt(1 - 2 * (w * x - y * z));
+		float pitch = 2 * atan2(sinp, cosp) - Math::PI / 2.0f;
 
-				yaw = atan2(2.f * y * w - 2 * x * z, 1 - 2 * sqy - 2 * sqz);
-				roll = asin(2 * test);
-				pitch = atan2(2 * x * w - 2 * y * z, 1 - 2 * sqx - 2 * sqz);
-			}
-		}
+		float siny_cosp = 2 * (w * y + z * x);
+		float cosy_cosp = 1 - 2 * (x * x + y * y);
+		float yaw = atan2(siny_cosp, cosy_cosp);
 
-		Vector3 result;
-		result.x = Math::Rad2Deg(pitch);
-		result.y = Math::Rad2Deg(yaw);
-		result.z = Math::Rad2Deg(roll);
-		return result;
+		float sinr_cosp = 2 * (w * z + x * y);
+		float cosr_cosp = 1 - 2 * (z * z + x * x);
+		float roll = atan2(sinr_cosp, cosr_cosp);
+
+		Vector3 angles;
+		angles.x = Math::Rad2Deg(pitch);
+		angles.y = Math::Rad2Deg(yaw);
+		angles.z = Math::Rad2Deg(roll);
+		return angles;
 	}
 
 	void Quaternion::SetEulerAngles(float x, float y, float z) 
@@ -149,11 +129,12 @@ namespace ZXEngine
 
 	Quaternion Quaternion::operator* (const Quaternion& q) const
 	{
-		float xx = w * q.x + q.w * x + y * q.z - z * q.y;
-		float yy = w * q.y + q.w * y - x * q.z + z * q.x;
-		float zz = w * q.z + q.w * z + x * q.y - y * q.x;
-		float ww = w * q.w - (x * q.x + y * q.y + z * q.z);
-		Quaternion result = Quaternion(xx, yy, zz, ww);
+		// ²Î¿¼: https://www.mathworks.com/help/aeroblks/quaternionmultiplication.html
+		float qx =  q.x * w + q.y * z - q.z * y + q.w * x;
+		float qy = -q.x * z + q.y * w + q.z * x + q.w * y;
+		float qz =  q.x * y - q.y * x + q.z * w + q.w * z;
+		float qw = -q.x * x - q.y * y - q.z * z + q.w * w;
+		Quaternion result = Quaternion(qx, qy, qz, qw);
 		result.Normalize();
 		return result;
 	}

@@ -3,7 +3,7 @@
 
 namespace ZXEngine
 {
-	float Math::PI = 3.1415926f;
+	float Math::PI = 3.141592653f;
 
 	float Math::Deg2Rad(float degree)
 	{
