@@ -22,6 +22,7 @@ namespace ZXEngine
 		~Quaternion() {};
 
 		void Normalize();
+		Quaternion GetInverse() const;
 		Vector3 GetEulerAngles() const;
 		void SetEulerAngles(float x, float y, float z);
 		void SetEulerAngles(const Vector3& eulerAngles);

@@ -67,7 +67,14 @@ namespace ZXEngine
 		}
 	}
 
-	Vector3 Quaternion::GetEulerAngles() const 
+	Quaternion Quaternion::GetInverse() const
+	{
+		// 参考: https://www.mathworks.com/help/aeroblks/quaternioninverse.html
+		// 四元数的逆操作按理说应该有一个除以长度的计算，但是我们这里表达旋转的四元数长度都是1，所以直接省略了这一步
+		return Quaternion(-x, -y, -z, w);
+	}
+
+	Vector3 Quaternion::GetEulerAngles() const
 	{
 		// 参考: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
 		float sinp = sqrt(1 + 2 * (w * x - y * z));
