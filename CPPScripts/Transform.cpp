@@ -102,22 +102,37 @@ namespace ZXEngine
 
 	Vector3 Transform::GetScale() const
 	{
-		return GetLocalScale();
+		if (gameObject->parent == nullptr)
+			return localScale;
+		else
+			return localScale * gameObject->parent->GetComponent<Transform>()->GetScale();
 	}
 
 	Vector3 Transform::GetPosition() const
 	{
-		return GetLocalPosition();
+		if (gameObject->parent == nullptr)
+		{
+			return localPosition;
+		}
+		else
+		{
+			auto parent = gameObject->parent->GetComponent<Transform>();
+			Vector3 offset = parent->GetRotationMatrix() * parent->GetScaleMatrix() * localPosition;
+			return parent->GetPosition() + offset;
+		}
 	}
 
 	Vector3 Transform::GetEulerAngles() const
 	{
-		return GetLocalEulerAngles();
+		return GetRotation().GetEulerAngles();
 	}
 
 	Quaternion Transform::GetRotation() const
 	{
-		return GetLocalRotation();
+		if (gameObject->parent == nullptr)
+			return localRotation;
+		else
+			return localRotation * gameObject->parent->GetComponent<Transform>()->GetRotation();
 	}
 
 	void Transform::SetScale(const Vector3& scale)
