@@ -29,7 +29,7 @@ namespace ZXEngine
 
         float tmpX = this->GetTransform()->GetPosition().x;
         float tmpY = this->GetTransform()->GetPosition().y;
-        float scale = this->GetTransform()->GetScale().x;
+        float scale = this->GetTransform()->GetLocalScale().x;
         // 遍历字符串的每个字符
         string::const_iterator c;
         for (c = text.begin(); c != text.end(); c++)

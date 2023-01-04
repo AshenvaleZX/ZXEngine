@@ -14,11 +14,17 @@ namespace ZXEngine
 
 		virtual ComponentType GetInsType();
 
+		// Local Space
+		Matrix4 GetLocalPositionMatrix() const;
+		Matrix4 GetLocalRotationMatrix() const;
+		Matrix4 GetLocalScaleMatrix() const;
+
 		// World Space
 		Matrix4 GetModelMatrix() const;
 		Matrix4 GetPositionMatrix() const;
 		Matrix4 GetRotationMatrix() const;
 		Matrix4 GetScaleMatrix() const;
+		Matrix4 GetRotationAndScaleMatrix() const;
 
 		// Local Space
 		Vector3 GetLocalScale() const;
@@ -34,12 +40,10 @@ namespace ZXEngine
 		void SetLocalRotation(const Quaternion& rotation);
 
 		// World Space
-		Vector3 GetScale() const;
+		Matrix3 GetScale() const;
 		Vector3 GetPosition() const;
 		Vector3 GetEulerAngles() const;
 		Quaternion GetRotation() const;
-		void SetScale(const Vector3& scale);
-		void SetScale(float x, float y, float z);
 		void SetPosition(const Vector3& position);
 		void SetPosition(float x, float y, float z);
 		void SetEulerAngles(const Vector3& eulerAngles);

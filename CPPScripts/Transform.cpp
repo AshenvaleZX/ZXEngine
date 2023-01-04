@@ -13,10 +13,33 @@ namespace ZXEngine
 		return ComponentType::Transform;
 	}
 
+	Matrix4 Transform::GetLocalPositionMatrix() const
+	{
+		return Matrix4(
+			1, 0, 0, localPosition.x,
+			0, 1, 0, localPosition.y,
+			0, 0, 1, localPosition.z,
+			0, 0, 0, 1);
+	}
+
+	Matrix4 Transform::GetLocalRotationMatrix() const
+	{
+		return localRotation.ToMatrix();
+	}
+
+	Matrix4 Transform::GetLocalScaleMatrix() const
+	{
+		return Matrix4(
+			localScale.x, 0,            0,            0,
+			0,            localScale.y, 0,            0,
+			0,            0,            localScale.z, 0,
+			0,            0,            0,            1);
+	}
 
 	Matrix4 Transform::GetModelMatrix() const
 	{
-		return GetPositionMatrix() * GetRotationMatrix() * GetScaleMatrix();
+		// 把顶点从Local Space变换到World Space的矩阵
+		return GetPositionMatrix() * GetRotationAndScaleMatrix();
 	}
 
 	Matrix4 Transform::GetPositionMatrix() const
@@ -37,12 +60,24 @@ namespace ZXEngine
 
 	Matrix4 Transform::GetScaleMatrix() const
 	{
-		Vector3 scale = GetScale();
-		return Matrix4(
-			scale.x, 0, 0, 0,
-			0, scale.y, 0, 0,
-			0, 0, scale.z, 0,
-			0, 0, 0, 1);
+		// 在Transform嵌套起来，并且有旋转的情况下，scale只能倒推出来，很难正向计算
+		auto invRotationMat = Math::Inverse(GetRotation().ToMatrix());
+		auto rotationAndScaleMat = GetRotationAndScaleMatrix();
+		return invRotationMat * rotationAndScaleMat;
+	}
+
+	Matrix4 Transform::GetRotationAndScaleMatrix() const
+	{
+		auto localScaleMat = GetLocalScaleMatrix();
+		auto localRotationMat = GetLocalRotationMatrix();
+		if (gameObject->parent == nullptr)
+		{
+			return localRotationMat * localScaleMat;
+		}
+		else
+		{
+			return gameObject->parent->GetComponent<Transform>()->GetRotationAndScaleMatrix() * localRotationMat * localScaleMat;
+		}
 	}
 
 	Vector3 Transform::GetLocalScale() const
@@ -100,12 +135,12 @@ namespace ZXEngine
 		localRotation = rotation;
 	}
 
-	Vector3 Transform::GetScale() const
+	Matrix3 Transform::GetScale() const
 	{
-		if (gameObject->parent == nullptr)
-			return localScale;
-		else
-			return localScale * gameObject->parent->GetComponent<Transform>()->GetScale();
+		// 当Transform嵌套起来，并且有旋转时，scale无法再用简单的Vector3表达
+		// 因为父级缩放时，子对象如果有旋转，则对于子对象来说缩放不再是标准的xyz轴缩放了
+		// 相应的，缩放也无法再用Vector3表达，只能用Matrix3表达
+		return Matrix3(GetScaleMatrix());
 	}
 
 	Vector3 Transform::GetPosition() const
@@ -117,7 +152,7 @@ namespace ZXEngine
 		else
 		{
 			auto parent = gameObject->parent->GetComponent<Transform>();
-			Vector3 offset = parent->GetRotationMatrix() * parent->GetScaleMatrix() * localPosition;
+			Vector3 offset = parent->GetRotationAndScaleMatrix() * localPosition;
 			return parent->GetPosition() + offset;
 		}
 	}
@@ -135,19 +170,19 @@ namespace ZXEngine
 			return localRotation * gameObject->parent->GetComponent<Transform>()->GetRotation();
 	}
 
-	void Transform::SetScale(const Vector3& scale)
-	{
-		SetLocalScale(scale);
-	}
-
-	void Transform::SetScale(float x, float y, float z)
-	{
-		SetScale(Vector3(x, y, z));
-	}
-
 	void Transform::SetPosition(const Vector3& position)
 	{
-		SetLocalPosition(position);
+		if (gameObject->parent == nullptr)
+		{
+			localPosition = position;
+		}
+		else
+		{
+			auto wPosition = GetPosition();
+			auto parent = gameObject->parent->GetComponent<Transform>();
+			Vector3 offset = parent->GetRotationAndScaleMatrix() * localPosition;
+			localPosition = Math::Inverse(parent->GetRotationAndScaleMatrix()) * (offset + position - wPosition);
+		}
 	}
 
 	void Transform::SetPosition(float x, float y, float z)
@@ -157,7 +192,7 @@ namespace ZXEngine
 
 	void Transform::SetEulerAngles(const Vector3& eulerAngles)
 	{
-		SetLocalEulerAngles(eulerAngles);
+		SetRotation(Quaternion::Euler(eulerAngles));
 	}
 
 	void Transform::SetEulerAngles(float x, float y, float z)
@@ -167,7 +202,10 @@ namespace ZXEngine
 
 	void Transform::SetRotation(const Quaternion& rotation)
 	{
-		SetLocalRotation(rotation);
+		if (gameObject->parent == nullptr)
+			localRotation = rotation;
+		else
+			localRotation = gameObject->parent->GetComponent<Transform>()->GetRotation().GetInverse() * rotation;
 	}
 
 	Vector3 Transform::GetUp() const
