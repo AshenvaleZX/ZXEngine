@@ -8,57 +8,352 @@ extern "C"
 #include "../Lua/lauxlib.h"
 }
 
+static int GetLocalScale(lua_State* L)
+{
+	ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
+
+	ZXEngine::Vector3 data = (*transform)->GetLocalScale();
+	lua_newtable(L);
+	lua_pushnumber(L, data.x);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, data.y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, data.z);
+	lua_setfield(L, -2, "z");
+
+	return 1;
+}
+
+static int GetLocalPosition(lua_State* L)
+{
+	ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
+
+	ZXEngine::Vector3 data = (*transform)->GetLocalPosition();
+	lua_newtable(L);
+	lua_pushnumber(L, data.x);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, data.y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, data.z);
+	lua_setfield(L, -2, "z");
+
+	return 1;
+}
+
+static int GetLocalEulerAngles(lua_State* L)
+{
+	ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
+
+	ZXEngine::Vector3 data = (*transform)->GetLocalEulerAngles();
+	lua_newtable(L);
+	lua_pushnumber(L, data.x);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, data.y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, data.z);
+	lua_setfield(L, -2, "z");
+
+	return 1;
+}
+
+static int GetLocalRotation(lua_State* L)
+{
+	ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
+
+	ZXEngine::Quaternion data = (*transform)->GetLocalRotation();
+	lua_newtable(L);
+	lua_pushnumber(L, data.x);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, data.y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, data.z);
+	lua_setfield(L, -2, "z");
+	lua_pushnumber(L, data.w);
+	lua_setfield(L, -2, "w");
+
+	return 1;
+}
+
+static int SetLocalScale(lua_State* L)
+{
+	int argc = lua_gettop(L);
+	if (argc == 2)
+	{
+		ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -2, "ZXEngine.Transform");
+		lua_getfield(L, -1, "x");
+		float x = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "y");
+		float y = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "z");
+		float z = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		(*transform)->SetLocalScale(x, y, z);
+	}
+	else if (argc == 4)
+	{
+		ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -4, "ZXEngine.Transform");
+		float x = (float)luaL_checknumber(L, -3);
+		float y = (float)luaL_checknumber(L, -2);
+		float z = (float)luaL_checknumber(L, -1);
+		(*transform)->SetLocalScale(x, y, z);
+	}
+	else
+	{
+		ZXEngine::Debug::LogError("No matched lua warp function to call: SetLocalScale");
+	}
+	return 0;
+}
+
+static int SetLocalPosition(lua_State* L)
+{
+	int argc = lua_gettop(L);
+	if (argc == 2)
+	{
+		ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -2, "ZXEngine.Transform");
+		lua_getfield(L, -1, "x");
+		float x = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "y");
+		float y = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "z");
+		float z = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		(*transform)->SetLocalPosition(x, y, z);
+	}
+	else if (argc == 4)
+	{
+		ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -4, "ZXEngine.Transform");
+		float x = (float)luaL_checknumber(L, -3);
+		float y = (float)luaL_checknumber(L, -2);
+		float z = (float)luaL_checknumber(L, -1);
+		(*transform)->SetLocalPosition(x, y, z);
+	}
+	else
+	{
+		ZXEngine::Debug::LogError("No matched lua warp function to call: SetLocalPosition");
+	}
+	return 0;
+}
+
+static int SetLocalEulerAngles(lua_State* L)
+{
+	int argc = lua_gettop(L);
+	if (argc == 2)
+	{
+		ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -2, "ZXEngine.Transform");
+		lua_getfield(L, -1, "x");
+		float x = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "y");
+		float y = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "z");
+		float z = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		(*transform)->SetLocalEulerAngles(x, y, z);
+	}
+	else if (argc == 4)
+	{
+		ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -4, "ZXEngine.Transform");
+		float x = (float)luaL_checknumber(L, -3);
+		float y = (float)luaL_checknumber(L, -2);
+		float z = (float)luaL_checknumber(L, -1);
+		(*transform)->SetLocalEulerAngles(x, y, z);
+	}
+	else
+	{
+		ZXEngine::Debug::LogError("No matched lua warp function to call: SetLocalEulerAngles");
+	}
+	return 0;
+}
+
+static int SetLocalRotation(lua_State* L)
+{
+	int argc = lua_gettop(L);
+	if (argc == 2)
+	{
+		ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -2, "ZXEngine.Transform");
+		lua_getfield(L, -1, "x");
+		float x = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "y");
+		float y = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "z");
+		float z = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "w");
+		float w = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		(*transform)->SetLocalRotation(ZXEngine::Quaternion(x, y, z, w));
+	}
+	else if (argc == 5)
+	{
+		ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -5, "ZXEngine.Transform");
+		float x = (float)luaL_checknumber(L, -4);
+		float y = (float)luaL_checknumber(L, -3);
+		float z = (float)luaL_checknumber(L, -2);
+		float w = (float)luaL_checknumber(L, -1);
+		(*transform)->SetLocalRotation(ZXEngine::Quaternion(x, y, z, w));
+	}
+	else
+	{
+		ZXEngine::Debug::LogError("No matched lua warp function to call: SetLocalRotation");
+	}
+	return 0;
+}
+
+static int GetPosition(lua_State* L)
+{
+	ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
+
+	ZXEngine::Vector3 data = (*transform)->GetPosition();
+	lua_newtable(L);
+	lua_pushnumber(L, data.x);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, data.y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, data.z);
+	lua_setfield(L, -2, "z");
+
+	return 1;
+}
+
+static int GetEulerAngles(lua_State* L)
+{
+	ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
+
+	ZXEngine::Vector3 data = (*transform)->GetEulerAngles();
+	lua_newtable(L);
+	lua_pushnumber(L, data.x);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, data.y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, data.z);
+	lua_setfield(L, -2, "z");
+
+	return 1;
+}
+
+static int GetRotation(lua_State* L)
+{
+	ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
+
+	ZXEngine::Quaternion data = (*transform)->GetRotation();
+	lua_newtable(L);
+	lua_pushnumber(L, data.x);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, data.y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, data.z);
+	lua_setfield(L, -2, "z");
+	lua_pushnumber(L, data.w);
+	lua_setfield(L, -2, "w");
+
+	return 1;
+}
+
 static int SetPosition(lua_State* L)
 {
-	// 接收Lua的self参数(即Transform)，因为是第一个参数，所以是第一个入栈的，后面还有3个参数，这个参数就在-4
-	ZXEngine::Transform** data = (ZXEngine::Transform**)luaL_checkudata(L, -4, "ZXEngine.Transform");
-	float x = (float)luaL_checknumber(L, -3);
-	float y = (float)luaL_checknumber(L, -2);
-	float z = (float)luaL_checknumber(L, -1);
-	(*data)->SetPosition(x, y, z);
+	int argc = lua_gettop(L);
+	if (argc == 2)
+	{
+		ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -2, "ZXEngine.Transform");
+		lua_getfield(L, -1, "x");
+		float x = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "y");
+		float y = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "z");
+		float z = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		(*transform)->SetPosition(x, y, z);
+	}
+	else if (argc == 4)
+	{
+		ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -4, "ZXEngine.Transform");
+		float x = (float)luaL_checknumber(L, -3);
+		float y = (float)luaL_checknumber(L, -2);
+		float z = (float)luaL_checknumber(L, -1);
+		(*transform)->SetPosition(x, y, z);
+	}
+	else
+	{
+		ZXEngine::Debug::LogError("No matched lua warp function to call: SetPosition");
+	}
 	return 0;
 }
 
 static int SetEulerAngles(lua_State* L)
 {
-	ZXEngine::Transform** data = (ZXEngine::Transform**)luaL_checkudata(L, -4, "ZXEngine.Transform");
-	float x = (float)luaL_checknumber(L, -3);
-	float y = (float)luaL_checknumber(L, -2);
-	float z = (float)luaL_checknumber(L, -1);
-	(*data)->SetEulerAngles(x, y, z);
+	int argc = lua_gettop(L);
+	if (argc == 2)
+	{
+		ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -2, "ZXEngine.Transform");
+		lua_getfield(L, -1, "x");
+		float x = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "y");
+		float y = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "z");
+		float z = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		(*transform)->SetEulerAngles(x, y, z);
+	}
+	else if (argc == 4)
+	{
+		ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -4, "ZXEngine.Transform");
+		float x = (float)luaL_checknumber(L, -3);
+		float y = (float)luaL_checknumber(L, -2);
+		float z = (float)luaL_checknumber(L, -1);
+		(*transform)->SetEulerAngles(x, y, z);
+	}
+	else
+	{
+		ZXEngine::Debug::LogError("No matched lua warp function to call: SetEulerAngles");
+	}
 	return 0;
 }
 
-static int GetEulerAngles(lua_State* L)
+static int SetRotation(lua_State* L)
 {
-	ZXEngine::Transform** data = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
-
-	ZXEngine::Vector3 eulerAngles = (*data)->GetEulerAngles();
-	lua_newtable(L);
-	lua_pushnumber(L, eulerAngles.x);
-	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, eulerAngles.y);
-	lua_setfield(L, -2, "y");
-	lua_pushnumber(L, eulerAngles.z);
-	lua_setfield(L, -2, "z");
-
-	return 1;
-}
-
-static int GetPosition(lua_State* L)
-{
-	ZXEngine::Transform** data = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
-
-	ZXEngine::Vector3 position = (*data)->GetPosition();
-	lua_newtable(L);
-	lua_pushnumber(L, position.x);
-	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, position.y);
-	lua_setfield(L, -2, "y");
-	lua_pushnumber(L, position.z);
-	lua_setfield(L, -2, "z");
-
-	return 1;
+	int argc = lua_gettop(L);
+	if (argc == 2)
+	{
+		ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -2, "ZXEngine.Transform");
+		lua_getfield(L, -1, "x");
+		float x = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "y");
+		float y = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "z");
+		float z = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "w");
+		float w = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		(*transform)->SetRotation(ZXEngine::Quaternion(x, y, z, w));
+	}
+	else if (argc == 5)
+	{
+		ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -5, "ZXEngine.Transform");
+		float x = (float)luaL_checknumber(L, -4);
+		float y = (float)luaL_checknumber(L, -3);
+		float z = (float)luaL_checknumber(L, -2);
+		float w = (float)luaL_checknumber(L, -1);
+		(*transform)->SetRotation(ZXEngine::Quaternion(x, y, z, w));
+	}
+	else
+	{
+		ZXEngine::Debug::LogError("No matched lua warp function to call: SetRotation");
+	}
+	return 0;
 }
 
 static int GetForward(lua_State* L)
@@ -114,10 +409,20 @@ static const luaL_Reg Transform_Funcs[] = {
 };
 
 static const luaL_Reg Transform_Funcs_Meta[] = {
+	{"GetLocalScale", GetLocalScale},
+	{"GetLocalPosition", GetLocalPosition},
+	{"GetLocalEulerAngles", GetLocalEulerAngles},
+	{"GetLocalRotation", GetLocalRotation},
+	{"SetLocalScale", SetLocalScale},
+	{"SetLocalPosition", SetLocalPosition},
+	{"SetLocalEulerAngles", SetLocalEulerAngles},
+	{"SetLocalRotation", SetLocalRotation},
+	{"GetPosition", GetPosition},
+	{"GetEulerAngles", GetEulerAngles},
+	{"GetRotation", GetRotation},
 	{"SetPosition", SetPosition},
 	{"SetEulerAngles", SetEulerAngles},
-	{"GetEulerAngles", GetEulerAngles},
-	{"GetPosition", GetPosition},
+	{"SetRotation", SetRotation},
 	{"GetForward", GetForward},
 	{"GetRight", GetRight},
 	{"GetUp", GetUp},
