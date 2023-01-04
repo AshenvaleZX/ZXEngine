@@ -355,7 +355,6 @@
     <ClInclude Include="..\..\CPPScripts\Scene.h" />
     <ClInclude Include="..\..\CPPScripts\SceneManager.h" />
     <ClInclude Include="..\..\CPPScripts\Shader.h" />
-    <ClInclude Include="..\..\CPPScripts\stb_image.h" />
     <ClInclude Include="..\..\CPPScripts\TextCharactersManager.h" />
     <ClInclude Include="..\..\CPPScripts\UITextRenderer.h" />
     <ClInclude Include="..\..\CPPScripts\Texture.h" />

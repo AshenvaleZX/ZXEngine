@@ -350,9 +350,6 @@
     <ClInclude Include="..\..\CPPScripts\Shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\stb_image.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\CPPScripts\GameObject.h">
       <Filter>头文件</Filter>
     </ClInclude>
