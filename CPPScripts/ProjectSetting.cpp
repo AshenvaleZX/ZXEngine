@@ -47,7 +47,7 @@ namespace ZXEngine
 		inspectorWidth = iWidth;
 		inspectorHeight = GlobalData::srcHeight + projectHeight;
 		mainBarWidth = GlobalData::srcWidth + hierarchyWidth + inspectorWidth;
-		mainBarHeight = 50;
+		mainBarHeight = 58;
 		srcWidth = mainBarWidth;
 		srcHeight = inspectorHeight + mainBarHeight;
 	}
