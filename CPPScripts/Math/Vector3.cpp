@@ -76,7 +76,7 @@ namespace ZXEngine
 
 	float Vector3::GetMagnitude() const
 	{
-		return sqrt(x * x + y * y + z * z);
+		return (float)sqrt(x * x + y * y + z * z);
 	}
 
 	float& Vector3::operator[] (int i)

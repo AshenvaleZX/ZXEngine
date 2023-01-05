@@ -100,7 +100,7 @@ namespace ZXEngine
 
 	float Vector4::GetMagnitude() const
 	{
-		return sqrt(x * x + y * y + z * z + w * w);
+		return (float)sqrt(x * x + y * y + z * z + w * w);
 	}
 
 	float& Vector4::operator[] (int i)

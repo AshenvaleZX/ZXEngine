@@ -61,7 +61,7 @@ namespace ZXEngine
 
 	float Vector2::GetMagnitude() const
 	{
-		return sqrt(x * x + y * y);
+		return (float)sqrt(x * x + y * y);
 	}
 
 	float& Vector2::operator[] (int i)
