@@ -46,6 +46,8 @@ namespace ZXEngine
 		static Vector3 GetRandomPerpendicular(const Vector3& v);
 		// 这个函数和GLM的LookAt函数效果是一样的
 		static Matrix4 GetLookToMatrix(const Vector3& pos, const Vector3& forward, const Vector3& up);
+		static float Distance(const Vector2& a, const Vector2& b);
+		static float Distance(const Vector3& a, const Vector3& b);
 
 		template<class T>
 		static T Min(T num1, T num2);

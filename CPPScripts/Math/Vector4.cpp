@@ -98,6 +98,11 @@ namespace ZXEngine
 		return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ", " + std::to_string(w) + ")";
 	}
 
+	float Vector4::GetMagnitude() const
+	{
+		return sqrt(x * x + y * y + z * z + w * w);
+	}
+
 	float& Vector4::operator[] (int i)
 	{
 		switch (i)

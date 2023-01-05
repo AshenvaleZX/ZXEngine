@@ -27,6 +27,7 @@ namespace ZXEngine
 		Vector3 Normalize() const;
 		void ToArray(float* array) const;
 		std::string ToString() const;
+		float GetMagnitude() const;
 
 		float& operator[] (int i);
 		const float& operator[] (int i) const;

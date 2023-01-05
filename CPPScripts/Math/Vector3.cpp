@@ -74,6 +74,11 @@ namespace ZXEngine
 		return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ")";
 	}
 
+	float Vector3::GetMagnitude() const
+	{
+		return sqrt(x * x + y * y + z * z);
+	}
+
 	float& Vector3::operator[] (int i)
 	{
 		switch (i)

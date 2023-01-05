@@ -298,4 +298,14 @@ namespace ZXEngine
 		
 		return viewMat * posMat;
 	}
+
+	float Math::Distance(const Vector2& a, const Vector2& b)
+	{
+		return (a - b).GetMagnitude();
+	}
+
+	float Math::Distance(const Vector3& a, const Vector3& b)
+	{
+		return (a - b).GetMagnitude();
+	}
 }
