@@ -36,6 +36,15 @@ namespace ZXEngine
 
 	private:
 		map<ComponentType, Component*> components = {};
+
+		void ParseTransform(json data);
+		void ParseMeshRenderer(json data);
+		void ParseCamera(json data);
+		void ParseLight(json data);
+		void ParseGameLogic(json data);
+		void ParseUITextRenderer(json data);
+		void ParseUITextureRenderer(json data);
+		void ParseParticleSystem(json data);
 	};
 
 	template<class T>

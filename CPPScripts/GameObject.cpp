@@ -10,91 +10,23 @@ namespace ZXEngine
 		for (auto component : prefab->components)
 		{
 			if (component["Type"] == "Transform")
-			{
-				Transform* transform = AddComponent<Transform>();
-
-				transform->SetLocalPosition(Vector3(component["Position"][0], component["Position"][1], component["Position"][2]));
-				transform->SetLocalEulerAngles(component["Rotation"][0], component["Rotation"][1], component["Rotation"][2]);
-				transform->SetLocalScale(Vector3(component["Scale"][0], component["Scale"][1], component["Scale"][2]));
-			}
+				ParseTransform(component);
 			else if (component["Type"] == "MeshRenderer")
-			{
-				MeshRenderer* meshRenderer = AddComponent<MeshRenderer>();
-				string p = "";
-
-				meshRenderer->castShadow = component["CastShadow"];
-				meshRenderer->receiveShadow = component["ReceiveShadow"];
-
-				// ²ÄÖÊ
-				if (component["Material"].is_null())
-				{
-					Debug::LogWarning("No material !");
-				}
-				else
-				{
-					p = Resources::JsonStrToString(component["Material"]);
-					MaterialStruct* matStruct = Resources::LoadMaterial(p);
-					meshRenderer->matetrial = new Material(matStruct);
-				}
-
-				// Mesh
-				if (component["Mesh"].is_null())
-				{
-					Debug::LogWarning("No meshs !");
-				}
-				else
-				{
-					p = Resources::JsonStrToString(component["Mesh"]);
-					meshRenderer->modelName = Resources::GetAssetName(p);
-					p = Resources::GetAssetFullPath(p);
-					meshRenderer->LoadModel(p);
-				}
-			}
+				ParseMeshRenderer(component);
 			else if (component["Type"] == "Camera")
-			{
-				Camera* camera = AddComponent<Camera>();
-				camera->Fov = component["FOV"];
-				camera->nearClipDis = component["NearClipDis"];
-				camera->farClipDis = component["FarClipDis"];
-				if (!component["Aspect"].is_null())
-					camera->aspect = component["Aspect"];
-			}
+				ParseCamera(component);
 			else if (component["Type"] == "Light")
-			{
-				Light* light = AddComponent<Light>();
-
-				light->color = Vector3(component["Color"][0], component["Color"][1], component["Color"][2]);
-				light->intensity = component["Intensity"];
-				light->type = component["LightType"];
-			}
+				ParseLight(component);
 			else if (component["Type"] == "GameLogic")
-			{
-				GameLogic* gameLogic = AddComponent<GameLogic>();
-				gameLogic->luaName = Resources::JsonStrToString(component["Lua"]);
-			}
+				ParseGameLogic(component);
 			else if (component["Type"] == "UITextRenderer")
-			{
-				UITextRenderer* uiTextRenderer = AddComponent<UITextRenderer>();
-				uiTextRenderer->text = component["Text"];
-				uiTextRenderer->color = Vector4(component["Color"][0], component["Color"][1], component["Color"][2], component["Color"][3]);
-			}
+				ParseUITextRenderer(component);
 			else if (component["Type"] == "UITextureRenderer")
-			{
-				UITextureRenderer* uiTextureRenderer = AddComponent<UITextureRenderer>();
-				string p = Resources::JsonStrToString(component["TexturePath"]);
-				uiTextureRenderer->SetTexture(Resources::GetAssetFullPath(p.c_str()).c_str());
-			}
+				ParseUITextureRenderer(component);
 			else if (component["Type"] == "ParticleSystem")
-			{
-				ParticleSystem* particleSystem = AddComponent<ParticleSystem>();
-				string p = Resources::JsonStrToString(component["TexturePath"]);
-				particleSystem->SetTexture(Resources::GetAssetFullPath(p.c_str()).c_str());
-				particleSystem->particleNum = component["ParticleNum"];
-				particleSystem->lifeTime = component["LifeTime"];
-				particleSystem->velocity = Vector3(component["Velocity"][0], component["Velocity"][1], component["Velocity"][2]);
-				particleSystem->offset = Vector3(component["StartOffset"][0], component["StartOffset"][1], component["StartOffset"][2]);
-				particleSystem->GenerateParticles();
-			}
+				ParseParticleSystem(component);
+			else
+				Debug::LogError("Try parse undefined component type: " + component["Type"]);
 		}
 
 		for (auto subPrefab : prefab->children)
@@ -109,5 +41,104 @@ namespace ZXEngine
 	{
 		component->gameObject = this;
 		components.insert(pair<ComponentType, Component*>(type, component));
+	}
+
+	void GameObject::ParseTransform(json data)
+	{
+		Transform* transform = AddComponent<Transform>();
+
+		transform->SetLocalPosition(Vector3(data["Position"][0], data["Position"][1], data["Position"][2]));
+		transform->SetLocalEulerAngles(data["Rotation"][0], data["Rotation"][1], data["Rotation"][2]);
+		transform->SetLocalScale(Vector3(data["Scale"][0], data["Scale"][1], data["Scale"][2]));
+	}
+
+	void GameObject::ParseMeshRenderer(json data)
+	{
+		MeshRenderer* meshRenderer = AddComponent<MeshRenderer>();
+		string p = "";
+
+		meshRenderer->castShadow = data["CastShadow"];
+		meshRenderer->receiveShadow = data["ReceiveShadow"];
+
+		// ²ÄÖÊ
+		if (data["Material"].is_null())
+		{
+			Debug::LogWarning("No material !");
+		}
+		else
+		{
+			p = Resources::JsonStrToString(data["Material"]);
+			MaterialStruct* matStruct = Resources::LoadMaterial(p);
+			meshRenderer->matetrial = new Material(matStruct);
+		}
+
+		// Mesh
+		if (data["Mesh"].is_null())
+		{
+			Debug::LogWarning("No meshs !");
+		}
+		else
+		{
+			p = Resources::JsonStrToString(data["Mesh"]);
+			meshRenderer->modelName = Resources::GetAssetName(p);
+			p = Resources::GetAssetFullPath(p);
+			meshRenderer->LoadModel(p);
+		}
+	}
+
+	void GameObject::ParseCamera(json data)
+	{
+		Camera* camera = AddComponent<Camera>();
+
+		camera->Fov = data["FOV"];
+		camera->nearClipDis = data["NearClipDis"];
+		camera->farClipDis = data["FarClipDis"];
+		if (!data["Aspect"].is_null())
+			camera->aspect = data["Aspect"];
+	}
+
+	void GameObject::ParseLight(json data)
+	{
+		Light* light = AddComponent<Light>();
+
+		light->color = Vector3(data["Color"][0], data["Color"][1], data["Color"][2]);
+		light->intensity = data["Intensity"];
+		light->type = data["LightType"];
+	}
+
+	void GameObject::ParseGameLogic(json data)
+	{
+		GameLogic* gameLogic = AddComponent<GameLogic>();
+
+		gameLogic->luaName = Resources::JsonStrToString(data["Lua"]);
+	}
+
+	void GameObject::ParseUITextRenderer(json data)
+	{
+		UITextRenderer* uiTextRenderer = AddComponent<UITextRenderer>();
+
+		uiTextRenderer->text = data["Text"];
+		uiTextRenderer->color = Vector4(data["Color"][0], data["Color"][1], data["Color"][2], data["Color"][3]);
+	}
+
+	void GameObject::ParseUITextureRenderer(json data)
+	{
+		UITextureRenderer* uiTextureRenderer = AddComponent<UITextureRenderer>();
+
+		string p = Resources::JsonStrToString(data["TexturePath"]);
+		uiTextureRenderer->SetTexture(Resources::GetAssetFullPath(p).c_str());
+	}
+
+	void GameObject::ParseParticleSystem(json data)
+	{
+		ParticleSystem* particleSystem = AddComponent<ParticleSystem>();
+
+		string p = Resources::JsonStrToString(data["TexturePath"]);
+		particleSystem->SetTexture(Resources::GetAssetFullPath(p).c_str());
+		particleSystem->particleNum = data["ParticleNum"];
+		particleSystem->lifeTime = data["LifeTime"];
+		particleSystem->velocity = Vector3(data["Velocity"][0], data["Velocity"][1], data["Velocity"][2]);
+		particleSystem->offset = Vector3(data["StartOffset"][0], data["StartOffset"][1], data["StartOffset"][2]);
+		particleSystem->GenerateParticles();
 	}
 }
