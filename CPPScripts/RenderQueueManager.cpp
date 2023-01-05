@@ -55,7 +55,7 @@ namespace ZXEngine
 
 	void RenderQueueManager::ClearAllRenderQueue()
 	{
-		for (auto iter : renderQueues)
+		for (auto& iter : renderQueues)
 		{
 			iter.second->ClearRenderer();
 		}

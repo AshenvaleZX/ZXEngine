@@ -3,6 +3,7 @@
 
 namespace ZXEngine
 {
+	class Camera;
 	class MeshRenderer;
 	class RenderQueue
 	{
@@ -12,10 +13,11 @@ namespace ZXEngine
 
 		int queue = 0;
 		void AddRenderer(MeshRenderer* meshRenderer);
-		list<MeshRenderer*> GetRenderers();
+		vector<MeshRenderer*> GetRenderers();
 		void ClearRenderer();
+		void Sort(Camera* camera);
 
 	private:
-		list<MeshRenderer*> renderers;
+		vector<MeshRenderer*> renderers;
 	};
 }
