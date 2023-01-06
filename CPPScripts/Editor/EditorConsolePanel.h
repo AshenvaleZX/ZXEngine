@@ -15,5 +15,8 @@ namespace ZXEngine
 	private:
 		Texture* logIcons[3];
 		const ImVec2 iconSize = ImVec2(20, 20);
+		bool showMessage = true;
+		bool showWarning = true;
+		bool showError = true;
 	};
 }
