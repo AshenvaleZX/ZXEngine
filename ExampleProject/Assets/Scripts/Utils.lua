@@ -24,6 +24,19 @@ function Utils:Clamp(num, min, max)
     return math.max(math.min(num, max), min)
 end
 
+local logType = 0
+local function TypeLog(msg)
+    if logType == 1 then
+        Debug.Log(msg)
+    elseif logType == 2 then
+        Debug.LogWarning(msg)
+    elseif logType == 3 then
+        Debug.LogError(msg)
+    else
+        print(msg)
+    end
+end
+
 local function GetKeyValueStr(v, depth)
     if type(v) == 'string' then
         return string.format('%q', v)
@@ -44,30 +57,30 @@ end
 
 local function GetTableStr(t, depth)
     if t == nil then
-        Debug.Log('printTable: nil table')
+        TypeLog('printTable: nil table')
         return
     end
 
     local depth = depth or 1
     if depth > 9 then
-        Debug.Log('too many depth; ignore')
+        TypeLog('too many depth; ignore')
         return
     end
 
-    Debug.Log(string.format('%s{', string.rep('    ', depth - 1)))
+    TypeLog(string.format('%s{', string.rep('    ', depth - 1)))
     for k, v in pairs(t) do
         if type(v) == 'table' then
-            Debug.Log(string.format('%s[%s] = ', string.rep('    ', depth), GetKeyValueStr(k, depth + 1)))
+            TypeLog(string.format('%s[%s] = ', string.rep('    ', depth), GetKeyValueStr(k, depth + 1)))
             GetTableStr(v, depth + 1)
-            Debug.Log(',')
+            TypeLog(',')
         else
-            Debug.Log(string.format('%s[%s] = %s,', string.rep('    ', depth), GetKeyValueStr(k, depth + 1), GetKeyValueStr(v, depth + 1)))
+            TypeLog(string.format('%s[%s] = %s,', string.rep('    ', depth), GetKeyValueStr(k, depth + 1), GetKeyValueStr(v, depth + 1)))
         end
     end
-    Debug.Log(string.rep('    ', depth - 1) .. '}')
+    TypeLog(string.rep('    ', depth - 1) .. '}')
 end
 
-function fprint(s, ...)
+local function fprint(s, ...)
     if type(s) ~= 'string' then
         return
     end
@@ -99,13 +112,13 @@ function fprint(s, ...)
         if type(sarg) == 'table' then
             if argLocal[i] - 1 > 0 then
                 local subs = string.sub(s, start, argLocal[i] - 1)
-                Debug.Log(string.format(subs, table.unpack(data)))
+                TypeLog(string.format(subs, table.unpack(data)))
                 data = {}
             end
             start = argLocal[i] + 2
             GetTableStr(sarg)
             if i == length then
-                Debug.Log(string.sub(s, start, -1))
+                TypeLog(string.sub(s, start, -1))
             end
         else
             sarg = tostring(sarg)
@@ -115,8 +128,23 @@ function fprint(s, ...)
 
     if #argLocal > 0 and argLocal[length] - 1 >= 0 then
         local subs = string.sub(s, start, -1)
-        Debug.Log(string.format(subs, table.unpack(data)))
+        TypeLog(string.format(subs, table.unpack(data)))
     elseif #argLocal == 0 then
-        Debug.Log(s)
+        TypeLog(s)
     end
+end
+
+function Log(s, ...)
+    logType = 1
+    fprint(s, ...)
+end
+
+function LogWarning(s, ...)
+    logType = 2
+    fprint(s, ...)
+end
+
+function LogError(s, ...)
+    logType = 3
+    fprint(s, ...)
 end

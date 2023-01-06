@@ -6,4 +6,6 @@ require("GameLogicMgr")
 require("EventMgr")
 require("EngineEventMgr")
 
-fprint("Lua init, version: %s", _VERSION)
+Log("Lua init, version: %s", _VERSION)
+LogWarning("Log Warning Test")
+LogError("Log Error Test")

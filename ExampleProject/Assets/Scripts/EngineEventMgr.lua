@@ -5,11 +5,11 @@ EngineEvent.events = {}
 -- 注册C++引擎事件
 function EngineEvent:AddEventHandler(id, handler, table)
     if not id or type(id) ~= "number" then
-        fprint("EngineEvent parameter in addlistener function has to be number, %s not right.", type(id))
+        LogError("EngineEvent parameter in addlistener function has to be number, %s not right.", type(id))
         return
     end
     if not handler or type(handler) ~= "function" then
-        fprint("Handler parameter in addlistener function has to be function, %s not right", type(handler))
+        LogError("Handler parameter in addlistener function has to be function, %s not right", type(handler))
         return
     end
     if not self.events[id] then
