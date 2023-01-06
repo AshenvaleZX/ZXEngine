@@ -2,6 +2,13 @@
 
 namespace ZXEngine
 {
+	enum class LogType
+	{
+		Message,
+		Warning,
+		Error,
+	};
+
 	enum class RenderQueueType
 	{ 
 		Qpaque = 1000, 

@@ -19,11 +19,48 @@ namespace ZXEngine
 		return mInstance;
 	}
 
-	EditorDataManager::EditorDataManager()
+	void EditorDataManager::AddLog(LogType type, string msg)
 	{
-		selectedGO = nullptr;
-		selectedAsset = nullptr;
-		curAssetInfo = nullptr;
+		auto newLog = new LogInfo();
+		newLog->type = type;
+		newLog->data = msg;
+
+		if (type == LogType::Message)
+			messageSize++;
+		else if (type == LogType::Warning)
+			warningSize++;
+		else if (type == LogType::Error)
+			errorSize++;
+
+		if (logHead == nullptr)
+		{
+			logSize++;
+			logHead = newLog;
+			logTail = newLog;
+		}
+		else
+		{
+			logTail->next = newLog;
+			logTail = newLog;
+
+			if (logSize >= maxLogSize)
+			{
+				if (logHead->type == LogType::Message)
+					messageSize--;
+				else if (logHead->type == LogType::Warning)
+					warningSize--;
+				else if (logHead->type == LogType::Error)
+					errorSize--;
+
+				auto tmpLog = logHead;
+				logHead = logHead->next;
+				delete tmpLog;
+			}
+			else
+			{
+				logSize++;
+			}
+		}
 	}
 
 	void EditorDataManager::SetSelectedGO(GameObject* go)

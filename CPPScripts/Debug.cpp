@@ -1,22 +1,32 @@
 #include "Debug.h"
 #include <iostream>
-#include "Time.h"
+#include "PublicEnum.h"
+#include "Editor/EditorDataManager.h"
 
 namespace ZXEngine
 {
 	void Debug::Log(std::string message)
 	{
 		std::cout << "Log:     " << message << std::endl;
+#ifdef ZX_EDITOR
+		EditorDataManager::GetInstance()->AddLog(LogType::Message, message);
+#endif
 	}
 
 	void Debug::LogWarning(std::string message)
 	{
 		std::cout << "Warning: " << message << std::endl;
+#ifdef ZX_EDITOR
+		EditorDataManager::GetInstance()->AddLog(LogType::Warning, message);
+#endif
 	}
 
 	void Debug::LogError(std::string message)
 	{
 		std::cout << "Error:   " << message << std::endl;
+#ifdef ZX_EDITOR
+		EditorDataManager::GetInstance()->AddLog(LogType::Error, message);
+#endif
 	}
 
 #ifdef ZX_DEBUG

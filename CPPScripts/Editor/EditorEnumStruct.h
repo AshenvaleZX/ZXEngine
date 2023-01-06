@@ -33,6 +33,13 @@ namespace ZXEngine
 		vector<EditorAssetNode*> children;
 	};
 
+	struct LogInfo
+	{
+		LogType type;
+		string data;
+		LogInfo* next;
+	};
+
 	struct AssetScriptInfo
 	{
 		string name;

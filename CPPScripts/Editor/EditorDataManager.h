@@ -14,13 +14,21 @@ namespace ZXEngine
 		static EditorDataManager* mInstance;
 
 	public:
-		GameObject* selectedGO;
-		EditorAssetNode* selectedAsset;
-		void* curAssetInfo;
+		GameObject* selectedGO = nullptr;
+		EditorAssetNode* selectedAsset = nullptr;
+		void* curAssetInfo = nullptr;
+		LogInfo* logHead = nullptr;
+		LogInfo* logTail = nullptr;
+		int logSize = 0;
+		int messageSize = 0;
+		int warningSize = 0;
+		int errorSize = 0;
+		const int maxLogSize = 128;
 
-		EditorDataManager();
+		EditorDataManager() {};
 		~EditorDataManager() {};
 
+		void AddLog(LogType type, string msg);
 		void SetSelectedGO(GameObject* go);
 		void SetSelectedAsset(EditorAssetNode* asset);
 

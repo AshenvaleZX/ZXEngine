@@ -15,6 +15,9 @@ namespace ZXEngine
 {
 	void Game::Play()
 	{
+#ifdef ZX_EDITOR
+		EditorDataManager::Create();
+#endif
 		ProjectSetting::InitSetting("../../ExampleProject");
 		EventManager::Create();
 		RenderEngine::Create();
@@ -24,7 +27,6 @@ namespace ZXEngine
 		SceneManager::Create();
 #ifdef ZX_EDITOR
 		EditorGUIManager::Create();
-		EditorDataManager::Create();
 		EditorInputManager::Create();
 #endif
 
