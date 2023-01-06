@@ -163,7 +163,7 @@ namespace ZXEngine
 	void EditorAssetPreviewer::RenderToQuad()
 	{
 		RenderAPI::GetInstance()->SwitchFrameBuffer(0);
-		RenderAPI::GetInstance()->SetViewPort(ProjectSetting::inspectorWidth, ProjectSetting::inspectorWidth, ProjectSetting::projectWidth, 0);
+		RenderAPI::GetInstance()->SetViewPort(ProjectSetting::inspectorWidth, ProjectSetting::inspectorWidth, ProjectSetting::srcWidth - ProjectSetting::inspectorWidth, 0);
 		RenderAPI::GetInstance()->EnableDepthTest(false);
 		RenderAPI::GetInstance()->EnableDepthWrite(false);
 		previewQuad->Use();

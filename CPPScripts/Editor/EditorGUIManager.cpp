@@ -7,6 +7,7 @@
 #include "EditorInspectorPanel.h"
 #include "EditorHierarchyPanel.h"
 #include "EditorAssetPreviewer.h"
+#include "EditorConsolePanel.h"
 
 namespace ZXEngine
 {
@@ -37,6 +38,7 @@ namespace ZXEngine
 		allPanels.push_back(new EditorMainBarPanel());
 		allPanels.push_back(new EditorInspectorPanel());
 		allPanels.push_back(new EditorHierarchyPanel());
+		allPanels.push_back(new EditorConsolePanel());
 		assetPreviewer = new EditorAssetPreviewer();
 	}
 

@@ -158,6 +158,7 @@
     <ClCompile Include="..\..\CPPScripts\Editor\EditorHierarchyPanel.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorInputManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorInspectorPanel.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorConsolePanel.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorMainBarPanel.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorAssetPreviewer.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorProjectPanel.cpp" />
@@ -262,6 +263,7 @@
     <ClInclude Include="..\..\CPPScripts\Editor\EditorHierarchyPanel.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorInputManager.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorInspectorPanel.h" />
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorConsolePanel.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorMainBarPanel.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorAssetPreviewer.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorPanel.h" />

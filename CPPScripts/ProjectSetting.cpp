@@ -12,6 +12,8 @@ namespace ZXEngine
 	// Editor
 	unsigned int ProjectSetting::hierarchyWidth;
 	unsigned int ProjectSetting::hierarchyHeight;
+	unsigned int ProjectSetting::consoleWidth;
+	unsigned int ProjectSetting::consoleHeight;
 	unsigned int ProjectSetting::projectWidth;
 	unsigned int ProjectSetting::projectHeight;
 	unsigned int ProjectSetting::inspectorWidth;
@@ -42,7 +44,9 @@ namespace ZXEngine
 	{
 		hierarchyWidth = hWidth;
 		hierarchyHeight = GlobalData::srcHeight;
-		projectWidth = GlobalData::srcWidth + hierarchyWidth;
+		consoleWidth = (GlobalData::srcWidth + hierarchyWidth) / 3;
+		consoleHeight = pHeight;
+		projectWidth = GlobalData::srcWidth + hierarchyWidth - consoleWidth;
 		projectHeight = pHeight;
 		inspectorWidth = iWidth;
 		inspectorHeight = GlobalData::srcHeight + projectHeight;

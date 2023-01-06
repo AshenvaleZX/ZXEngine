@@ -14,6 +14,8 @@ namespace ZXEngine
 		// Editor
 		static unsigned int hierarchyWidth;
 		static unsigned int hierarchyHeight;
+		static unsigned int consoleWidth;
+		static unsigned int consoleHeight;
 		static unsigned int projectWidth;
 		static unsigned int projectHeight;
 		static unsigned int inspectorWidth;
