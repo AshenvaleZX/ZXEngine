@@ -110,7 +110,9 @@ namespace ZXEngine
 	{
 		GameLogic* gameLogic = AddComponent<GameLogic>();
 
-		gameLogic->luaName = Resources::JsonStrToString(data["Lua"]);
+		string p = Resources::JsonStrToString(data["Lua"]);
+		gameLogic->luaName = Resources::GetAssetName(p);
+		gameLogic->luaFullPath = Resources::GetAssetFullPath(p);
 	}
 
 	void GameObject::ParseUITextRenderer(json data)

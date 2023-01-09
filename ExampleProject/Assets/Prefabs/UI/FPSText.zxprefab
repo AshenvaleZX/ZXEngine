@@ -16,7 +16,7 @@
         },
         {
             "Type": "GameLogic",
-            "Lua": "ShowFPS"
+            "Lua": "Scripts/ShowFPS.lua"
         }
     ]
 }

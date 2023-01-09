@@ -28,8 +28,7 @@ namespace ZXEngine
 	void GameLogic::Start()
 	{
 		lua_State* L = LuaManager::GetInstance()->GetState();
-		string p = "Scripts/" + luaName + ".lua";
-		auto suc = luaL_dofile(L, Resources::GetAssetFullPath(p).c_str());
+		auto suc = luaL_dofile(L, luaFullPath.c_str());
 		if (suc == LUA_OK)
 		{
 			// 这里dofile成功后，lua代码的最后一行是return table，此时栈顶是一个table

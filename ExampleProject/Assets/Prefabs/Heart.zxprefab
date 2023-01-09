@@ -17,7 +17,7 @@
         },
         {
             "Type": "GameLogic",
-            "Lua": "ObjectMove"
+            "Lua": "Scripts/ObjectMove.lua"
         }
     ]
 }

@@ -23,7 +23,7 @@
         },
         {
             "Type": "GameLogic",
-            "Lua": "ObjectMove2"
+            "Lua": "Scripts/ObjectMove2.lua"
         },
         {
             "Type": "ParticleSystem",

@@ -12,6 +12,7 @@ namespace ZXEngine
 	public:
 		int luaID = 0;
 		string luaName;
+		string luaFullPath;
 
 		GameLogic();
 		~GameLogic();

@@ -16,7 +16,7 @@
         },
         {
             "Type": "GameLogic",
-            "Lua": "CameraMove"
+            "Lua": "Scripts/CameraMove.lua"
         }
     ]
 }
