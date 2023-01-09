@@ -8,5 +8,6 @@ namespace ZXEngine
 	{
 	public:
 		static std::vector<std::string> StringSplit(std::string oriStr, char p);
+		static std::string ConvertPathToWindowsFormat(std::string path);
 	};
 }

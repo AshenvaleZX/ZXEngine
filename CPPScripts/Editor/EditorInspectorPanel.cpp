@@ -9,6 +9,7 @@
 #include "../UITextRenderer.h"
 #include "../UITextureRenderer.h"
 #include "../ParticleSystem.h"
+#include <windows.h>
 
 namespace ZXEngine
 {
@@ -232,7 +233,9 @@ namespace ZXEngine
 		ImGui::SameLine();
 		if (ImGui::Button(component->luaName.c_str()))
 		{
-			Debug::Log("Click Lua");
+			string path = Utils::ConvertPathToWindowsFormat(component->luaFullPath);
+			std::wstring wsStr = std::wstring(path.begin(), path.end());
+			ShellExecute(NULL, NULL, wsStr.c_str(), NULL, NULL, SW_SHOW);
 		}
 	}
 

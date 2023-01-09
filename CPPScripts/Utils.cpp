@@ -1,4 +1,5 @@
 #include "Utils.h"
+#include <algorithm>
 
 namespace ZXEngine
 {
@@ -22,4 +23,10 @@ namespace ZXEngine
         }
         return elems;
 	}
+
+    std::string Utils::ConvertPathToWindowsFormat(std::string path)
+    {
+        std::replace(path.begin(), path.end(), '/', '\\');
+        return path;
+    }
 }
