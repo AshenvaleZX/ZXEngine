@@ -18,8 +18,8 @@ namespace ZXEngine
 		bool receiveShadow = false;
 		string modelName = "";
 		Material* matetrial = nullptr;
-		unsigned int verticesNum = 0;
-		unsigned int trianglesNum = 0;
+		size_t verticesNum = 0;
+		size_t trianglesNum = 0;
 		vector<Mesh*> meshes;
 		// 在xyz方向上最远的点，0-5分别对应+x, -x, +y, -y, +z, -z
 		Vertex extremeVertices[6];

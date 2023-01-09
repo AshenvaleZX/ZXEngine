@@ -33,12 +33,6 @@ namespace ZXEngine
 			ImVec4 selectBtnColor = ImVec4(btnColor.x - 0.1f, btnColor.y - 0.1f, btnColor.z - 0.1f, 1.0f);
 			ImVec4 textColor = style.Colors[ImGuiCol_Text];
 			ImVec4 selectTextColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-			// 当前选中的id
-			static unsigned int selected = -1;
-			// 文件名大小
-			ImVec2 nameSize(72.0f, 20.0f);
-			// 文件icon大小
-			ImVec2 iconSize(64.0f, 64.0f);
 			// 当前路径节点，如果当前节点不是文件夹，就用当前节点的父节点
 			auto curPathNode = curNode->extension == "" ? curNode : curNode->parent;
 
@@ -52,7 +46,7 @@ namespace ZXEngine
 				tmpPathNode = tmpPathNode->parent;
 			}
 			// 倒叙绘制，从root到当前位置
-			for (unsigned int i = pathNodes.size(); i > 0; i--)
+			for (auto i = pathNodes.size(); i > 0; i--)
 			{
 				ImGui::SameLine(); 
 				if (ImGui::SmallButton(pathNodes[i - 1]->name.c_str()))
@@ -71,7 +65,7 @@ namespace ZXEngine
 			ImGui::Separator();
 
 			// 当前路径文件数量
-			unsigned int childNum = curPathNode->children.size();
+			size_t childNum = curPathNode->children.size();
 			// 当前窗口的x最大值(右边界位置)
 			float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
 			// 记录当前绘制的一排文件名
@@ -80,7 +74,7 @@ namespace ZXEngine
 			int rowIdx = 0;
 			// 记录当前选中的文件在当前这一行里是第几个
 			int curRowIdx = -1;
-			for (unsigned int i = 0; i < childNum; i++)
+			for (size_t i = 0; i < childNum; i++)
 			{
 				auto node = curPathNode->children[i];
 				if (i == selected)
@@ -124,7 +118,7 @@ namespace ZXEngine
 				{
 					rowIdx = 0;
 					// 绘制下一行文件前，先把这一行的文件名绘制出来
-					for (unsigned int j = 0; j < fileNames.size(); j++)
+					for (size_t j = 0; j < fileNames.size(); j++)
 					{
 						if (j > 0)
 							ImGui::SameLine();

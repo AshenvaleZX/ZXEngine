@@ -7,7 +7,7 @@ namespace ZXEngine
 		name = prefab->name;
 		layer = prefab->layer;
 
-		for (auto component : prefab->components)
+		for (auto& component : prefab->components)
 		{
 			if (component["Type"] == "Transform")
 				ParseTransform(component);

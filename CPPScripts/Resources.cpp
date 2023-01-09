@@ -24,7 +24,7 @@ namespace ZXEngine
 
 	string Resources::GetAssetLocalPath(string path)
 	{
-		int s = path.find("Assets");
+		size_t s = path.find("Assets");
 		if (s > 0)
 			return path.substr(s + 7, path.length() - s - 7);
 		else
@@ -33,8 +33,8 @@ namespace ZXEngine
 
 	string Resources::GetAssetName(string path)
 	{
-		int s = path.rfind("/");
-		int e = path.rfind(".");
+		size_t s = path.rfind("/");
+		size_t e = path.rfind(".");
 		return path.substr(s + 1, e - s - 1);
 	}
 

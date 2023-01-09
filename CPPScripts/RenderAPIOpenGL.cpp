@@ -217,34 +217,39 @@ namespace ZXEngine
 			// convert stream into string
 			shaderCode = shaderStream.str();
 
-			int hasDirLight = shaderCode.find("DirLight");
-			int hasPointLight = shaderCode.find("PointLight");
-			if (hasDirLight > 0)
+			// 这里数字类型用的是string库里的专用类型，因为string库的find，substr等操作返回的这些数据类型和具体编译环境有关
+			// 特别是find，网上很多地方说没找到就会返回-1，其实这个说法不准确，因为find的函数定义返回的类型是size_t
+			// 而size_t是一个无符号整数(具体多少位取决于编译环境)，一个无符号整数变成-1，是因为溢出了，实际上没找到的时候真正返回的是npos
+			// 其实直接用int来处理也行，会自动隐式转换，也可以用-1来判断是否找到，但是这样会有编译的Warning
+			// 为了在各种编译环境下不出错，这里直接采用原定义中的string::size_type和string::npos是最保险的，并且不会有Warning
+			string::size_type hasDirLight = shaderCode.find("DirLight");
+			string::size_type hasPointLight = shaderCode.find("PointLight");
+			if (hasDirLight != string::npos)
 				info.lightType = LightType::Directional;
-			else if (hasPointLight > 0)
+			else if (hasPointLight != string::npos)
 				info.lightType = LightType::Point;
 			else
 				info.lightType = LightType::None;
 
-			int hasDirShadow = shaderCode.find("_DepthMap");
-			int hasPointShadow = shaderCode.find("_DepthCubeMap");
-			if (hasDirShadow > 0)
+			string::size_type hasDirShadow = shaderCode.find("_DepthMap");
+			string::size_type hasPointShadow = shaderCode.find("_DepthCubeMap");
+			if (hasDirShadow != string::npos)
 				info.shadowType = ShadowType::Directional;
-			else if (hasPointShadow > 0)
+			else if (hasPointShadow != string::npos)
 				info.shadowType = ShadowType::Point;
 			else
 				info.shadowType = ShadowType::None;
 
-			int vs_begin = shaderCode.find("#vs_begin") + 9;
-			int vs_end = shaderCode.find("#vs_end");
+			string::size_type vs_begin = shaderCode.find("#vs_begin") + 9;
+			string::size_type vs_end = shaderCode.find("#vs_end");
 			vertexCode = shaderCode.substr(vs_begin, vs_end - vs_begin);
 
-			int gs_begin = shaderCode.find("#gs_begin") + 9;
-			int gs_end = shaderCode.find("#gs_end");
+			string::size_type gs_begin = shaderCode.find("#gs_begin") + 9;
+			string::size_type gs_end = shaderCode.find("#gs_end");
 			geometryCode = shaderCode.substr(gs_begin, gs_end - gs_begin);
 
-			int fs_begin = shaderCode.find("#fs_begin") + 9;
-			int fs_end = shaderCode.find("#fs_end");
+			string::size_type fs_begin = shaderCode.find("#fs_begin") + 9;
+			string::size_type fs_end = shaderCode.find("#fs_end");
 			fragmentCode = shaderCode.substr(fs_begin, fs_end - fs_begin);
 		}
 		catch (ifstream::failure e)
@@ -328,7 +333,7 @@ namespace ZXEngine
 	{
 		width = width == 0 ? GlobalData::srcWidth : width;
 		height = height == 0 ? GlobalData::srcHeight : height;
-		FrameBufferObject* FBO = new FrameBufferObject();
+		FrameBufferObject* FBO = new FrameBufferObject(type);
 		if (type == FrameBufferType::Normal)
 		{
 			unsigned int FBO_ID;

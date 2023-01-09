@@ -107,7 +107,7 @@ namespace ZXEngine
 		shader->SetMat4("view", mat_V);
 		shader->SetMat4("projection", mat_P);
 
-		unsigned int textureNum = material->textures.size();
+		unsigned int textureNum = (unsigned int)material->textures.size();
 		for (unsigned int i = 0; i < textureNum; i++)
 		{
 			shader->SetTexture(material->textures[i].first, material->textures[i].second->GetID(), i);

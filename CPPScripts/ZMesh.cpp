@@ -19,6 +19,6 @@ namespace ZXEngine
 
 	void Mesh::Use()
 	{
-		RenderAPI::GetInstance()->SetMesh(VAO, indices.size());
+		RenderAPI::GetInstance()->SetMesh(VAO, (unsigned int)indices.size());
 	}
 }

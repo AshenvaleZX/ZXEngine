@@ -11,6 +11,9 @@
 #include <algorithm>
 #include <filesystem>
 #include <nlohmann/json.hpp>
+#ifdef ZX_EDITOR
+#include <windows.h>
+#endif
 
 using std::string; 
 using std::cout;
