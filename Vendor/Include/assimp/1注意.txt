@@ -1,1 +1,1 @@
-这里的config.h文件是手动从E:\CodeFromThirdParty\Assimp-5.0.1\build\include\assimp拷过来的
+assimp工程的include里面只有config.h.in，这里的config.h文件是CMake之后生成到指定构建地址里的include\assimp里拷过来的
