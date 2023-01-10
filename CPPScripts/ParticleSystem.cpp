@@ -36,7 +36,7 @@ namespace ZXEngine
 
 		// 粒子生产的时间间隔
 		float interval = lifeTime / (float)particleNum;
-		long long curTime = Time::curTime_milli;
+		float curTime = Time::curTime;
 		int genNum = 0;
 		if (lastGenTime == 0)
 		{
@@ -46,7 +46,7 @@ namespace ZXEngine
 		else
 		{
 			// 上一次生产粒子的时间
-			float delta = (float)(curTime - lastGenTime) / 1000.0f;
+			float delta = curTime - lastGenTime;
 			// 如果相差时间大于了生产间隔，那么根据相差的这段时间，计算这一帧应该生产的数量
 			if (delta > interval)
 				genNum = (int)(delta / interval);
