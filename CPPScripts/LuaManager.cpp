@@ -6,19 +6,6 @@ namespace ZXEngine
 {
 	LuaManager* LuaManager::mInstance = nullptr;
 
-	LuaManager::LuaManager()
-	{
-		L = luaL_newstate();  /* create state */
-		luaL_openlibs(L);  /* open standard libraries */
-		luaL_openMyLibs(L); /* 加载自定义库 */
-
-		// 执行Lua启动脚本
-		auto suc = luaL_dofile(L, Resources::GetAssetFullPath("Scripts/Init.lua").c_str());
-		// 输出错误日志
-		if (suc != LUA_OK)
-			Debug::Log(lua_tostring(L, -1));
-	}
-
 	void LuaManager::Create()
 	{
 		mInstance = new LuaManager();
@@ -87,6 +74,35 @@ namespace ZXEngine
 		}
 	}
 
+	LuaManager::LuaManager()
+	{
+		InitLuaState();
+	}
+
+	lua_State* LuaManager::GetState()
+	{
+		return L;
+	}
+
+	void LuaManager::InitLuaState()
+	{
+		L = luaL_newstate();  /* create state */
+		luaL_openlibs(L);  /* open standard libraries */
+		luaL_openMyLibs(L); /* 加载自定义库 */
+
+		// 执行Lua启动脚本
+		auto suc = luaL_dofile(L, Resources::GetAssetFullPath("Scripts/Init.lua").c_str());
+		// 输出错误日志
+		if (suc != LUA_OK)
+			Debug::Log(lua_tostring(L, -1));
+	}
+
+	void LuaManager::RestartLuaState()
+	{
+		lua_close(L);
+		InitLuaState();
+	}
+
 	void LuaManager::CallFunction(const char* table, const char* func, const char* msg, bool self)
 	{
 		// global table名入栈
@@ -119,10 +135,5 @@ namespace ZXEngine
 	void LuaManager::CallGlobalFunction(const char* func, const char* msg)
 	{
 		CallFunction(LUA_GNAME, func, msg, false);
-	}
-	
-	lua_State* LuaManager::GetState()
-	{
-		return L;
 	}
 }

@@ -3,6 +3,7 @@
 #include "../GameLogicManager.h"
 #include "../Time.h"
 #include "../SceneManager.h"
+#include "../LuaManager.h"
 
 namespace ZXEngine
 {
@@ -78,6 +79,7 @@ namespace ZXEngine
 					Time::curTime = 0.0f;
 					EditorDataManager::isGamePause = false;
 					SceneManager::GetInstance()->ReloadScene();
+					LuaManager::GetInstance()->RestartLuaState();
 				}
 				EditorDataManager::isGameStart = !EditorDataManager::isGameStart;
 			}
