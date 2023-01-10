@@ -14,7 +14,7 @@ namespace ZXEngine
 		vector<GameObject*> gameObjects;
 
 		Scene(SceneStruct* sceneStruct);
-		~Scene() {};
+		~Scene();
 
 		void Render();
 

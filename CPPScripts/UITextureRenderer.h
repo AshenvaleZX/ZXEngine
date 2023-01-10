@@ -19,7 +19,7 @@ namespace ZXEngine
 
 	public:
 		UITextureRenderer() {};
-		~UITextureRenderer() {};
+		~UITextureRenderer();
 
 		virtual ComponentType GetInsType();
 

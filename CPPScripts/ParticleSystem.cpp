@@ -20,6 +20,9 @@ namespace ZXEngine
 	ParticleSystem::~ParticleSystem()
 	{
 		ParticleSystemManager::GetInstance()->RemoveParticleSystem(this);
+
+		for (auto particle : particles)
+			delete particle;
 	}
 
 	ComponentType ParticleSystem::GetInsType()

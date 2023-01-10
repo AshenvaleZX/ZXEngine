@@ -23,6 +23,14 @@ namespace ZXEngine
 		return ComponentType::UITextureRenderer;
 	}
 
+	UITextureRenderer::~UITextureRenderer()
+	{
+		if (texture != nullptr)
+			delete texture;
+		if (textureMesh != nullptr)
+			delete textureMesh;
+	}
+
 	ComponentType UITextureRenderer::GetInsType()
 	{
 		return ComponentType::UITextureRenderer;

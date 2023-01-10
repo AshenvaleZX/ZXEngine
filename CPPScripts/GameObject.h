@@ -25,7 +25,7 @@ namespace ZXEngine
 		vector<GameObject*> children;
 
 		GameObject(PrefabStruct* prefab);
-		~GameObject() {};
+		~GameObject();
 
 		template<class T> 
 		inline T* GetComponent();

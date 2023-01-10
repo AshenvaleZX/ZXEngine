@@ -37,6 +37,32 @@ namespace ZXEngine
 		}
 	}
 
+	GameObject::~GameObject()
+	{
+		for (auto& iter : components)
+		{
+			if (iter.first == ComponentType::Transform)
+				delete static_cast<Transform*>(iter.second);
+			else if (iter.first == ComponentType::MeshRenderer)
+				delete static_cast<MeshRenderer*>(iter.second);
+			else if (iter.first == ComponentType::Camera)
+				delete static_cast<Camera*>(iter.second);
+			else if (iter.first == ComponentType::Light)
+				delete static_cast<Light*>(iter.second);
+			else if (iter.first == ComponentType::GameLogic)
+				delete static_cast<GameLogic*>(iter.second);
+			else if (iter.first == ComponentType::UITextRenderer)
+				delete static_cast<UITextRenderer*>(iter.second);
+			else if (iter.first == ComponentType::UITextureRenderer)
+				delete static_cast<UITextureRenderer*>(iter.second);
+			else if (iter.first == ComponentType::ParticleSystem)
+				delete static_cast<ParticleSystem*>(iter.second);
+		}
+
+		for (auto child : children)
+			delete child;
+	}
+
 	void GameObject::AddComponent(ComponentType type, Component* component)
 	{
 		component->gameObject = this;

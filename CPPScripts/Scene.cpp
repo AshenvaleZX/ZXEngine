@@ -17,6 +17,16 @@ namespace ZXEngine
 			gameObjects.push_back(new GameObject(prefab));
 		}
 	}
+
+	Scene::~Scene()
+	{
+		delete skyBox;
+
+		for (auto gameObject : gameObjects)
+		{
+			delete gameObject;
+		}
+	}
 	
 	void Scene::Render()
 	{
