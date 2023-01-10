@@ -58,7 +58,7 @@ namespace ZXEngine
 		if (posX > ProjectSetting::hierarchyWidth && posX < ProjectSetting::hierarchyWidth + GlobalData::srcWidth
 			&& posY > ProjectSetting::mainBarHeight && posY < ProjectSetting::mainBarHeight + GlobalData::srcHeight)
 			return EditorAreaType::Game;
-		else if (posX > ProjectSetting::projectWidth && posY > ProjectSetting::mainBarHeight + ProjectSetting::inspectorHeight)
+		else if (posX > ProjectSetting::srcWidth - ProjectSetting::inspectorWidth && posY > ProjectSetting::mainBarHeight + ProjectSetting::inspectorHeight)
 			return EditorAreaType::AssetPreview;
 		else
 			return EditorAreaType::None;
