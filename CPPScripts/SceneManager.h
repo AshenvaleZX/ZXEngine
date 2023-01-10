@@ -4,22 +4,37 @@
 
 namespace ZXEngine
 {
+	struct SceneInfo
+	{
+		string path;
+		Scene* scene = nullptr;
+		~SceneInfo() { delete scene; };
+	};
+
 	class SceneManager
 	{
 	public:
-		SceneManager() {};
-		~SceneManager() {};
-
 		static void Create();
 		static SceneManager* GetInstance();
-
-		Scene* GetCurScene();
-		void SetCurScene(const char* path);
 
 	private:
 		static SceneManager* mInstance;
 
-		map<string, Scene> scenes;
-		Scene* curScene = nullptr;
+	public:
+		SceneManager() {};
+		~SceneManager() {};
+
+		Scene* GetScene(string name);
+		void LoadScene(string path, bool switchNow = true);
+		void SwitchScene(string name);
+		void DeleteScene(string name);
+		void ReloadScene();
+		Scene* GetCurScene();
+
+	private:
+		SceneInfo* curScene = nullptr;
+		map<string, SceneInfo*> scenes;
+
+		SceneInfo* GetSceneInfo(string name);
 	};
 }
