@@ -7,6 +7,8 @@
 
 namespace ZXEngine
 {
+	bool EditorDataManager::isGameStart = false;
+	bool EditorDataManager::isGamePause = false;
 	EditorDataManager* EditorDataManager::mInstance = nullptr;
 
 	void EditorDataManager::Create()

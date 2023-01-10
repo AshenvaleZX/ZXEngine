@@ -50,7 +50,7 @@ void main()
 {           
     vec3 color = texture(texture1, fs_in.TexCoords).rgb;
     // ambient
-    vec3 ambient = 0.05 * color;
+    vec3 ambient = 0.15 * color;
     // diffuse
     vec3 lightDir = normalize(pointLight.position - fs_in.WorldPos);
     vec3 normal = normalize(fs_in.Normal);

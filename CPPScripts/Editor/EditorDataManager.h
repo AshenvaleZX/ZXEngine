@@ -9,6 +9,8 @@ namespace ZXEngine
 	public:
 		static void Create();
 		static EditorDataManager* GetInstance();
+		static bool isGameStart;
+		static bool isGamePause;
 
 	private:
 		static EditorDataManager* mInstance;
@@ -17,6 +19,7 @@ namespace ZXEngine
 		GameObject* selectedGO = nullptr;
 		EditorAssetNode* selectedAsset = nullptr;
 		void* curAssetInfo = nullptr;
+
 		LogInfo* logHead = nullptr;
 		LogInfo* logTail = nullptr;
 		int logSize = 0;

@@ -1,7 +1,19 @@
 #include "EditorMainBarPanel.h"
+#include "EditorDataManager.h"
+#include "../GameLogicManager.h"
+#include "../Time.h"
+#include "../SceneManager.h"
 
 namespace ZXEngine
 {
+	EditorMainBarPanel::EditorMainBarPanel()
+	{
+		ImGuiStyle& style = ImGui::GetStyle();
+		ImVec4 btnColor = style.Colors[ImGuiCol_Button];
+		selectBtnColor = ImVec4(btnColor.x - 0.1f, btnColor.y - 0.1f, btnColor.z - 0.1f, 1.0f);
+		selectTextColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+	}
+
 	void EditorMainBarPanel::DrawPanel()
 	{
 		// 面板大小和位置
@@ -50,17 +62,59 @@ namespace ZXEngine
 			// 计算3个按钮要居中的话，第一个按钮的起始位置
 			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset);
 
-			ImVec2 buttonSize = ImVec2(22.0f, 22.0f);
+			bool isPop = false;
+			// Play
+			if (EditorDataManager::isGameStart)
+			{
+				isPop = true;
+				ImGui::PushStyleColor(ImGuiCol_Text, selectTextColor);
+				ImGui::PushStyleColor(ImGuiCol_Button, selectBtnColor);
+			}
 			if (ImGui::Button(">>", buttonSize))
-				Debug::Log("Click Begin");
+			{
+				// 关掉游戏运行的时候，重置暂停按钮
+				if (EditorDataManager::isGameStart)
+				{
+					Time::curTime = 0.0f;
+					EditorDataManager::isGamePause = false;
+					SceneManager::GetInstance()->ReloadScene();
+				}
+				EditorDataManager::isGameStart = !EditorDataManager::isGameStart;
+			}
+			if (isPop)
+			{
+				isPop = false;
+				ImGui::PopStyleColor(2);
+			}
 
+			// Pause
+			if (EditorDataManager::isGamePause)
+			{
+				isPop = true;
+				ImGui::PushStyleColor(ImGuiCol_Text, selectTextColor);
+				ImGui::PushStyleColor(ImGuiCol_Button, selectBtnColor);
+			}
 			ImGui::SameLine();
 			if (ImGui::Button("||", buttonSize))
-				Debug::Log("Click Pause");
+			{
+				EditorDataManager::isGamePause = !EditorDataManager::isGamePause;
+			}
+			if (isPop)
+			{
+				isPop = false;
+				ImGui::PopStyleColor(2);
+			}
 
+			// Step
 			ImGui::SameLine();
 			if (ImGui::Button(">|", buttonSize))
-				Debug::Log("Click Continue");
+			{
+				if (EditorDataManager::isGameStart && EditorDataManager::isGamePause)
+				{
+					Time::UpdateCurTime();
+					GameLogicManager::GetInstance()->Update();
+				}
+			}
 		}
 		ImGui::End();
 	}

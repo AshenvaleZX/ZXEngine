@@ -55,7 +55,12 @@ namespace ZXEngine
 		EditorInputManager::GetInstance()->Update();
 #endif
 
+#ifdef ZX_EDITOR
+		if (EditorDataManager::isGameStart && !EditorDataManager::isGamePause)
+			GameLogicManager::GetInstance()->Update();
+#else
 		GameLogicManager::GetInstance()->Update();
+#endif
 	}
 
 	void Game::Render()
