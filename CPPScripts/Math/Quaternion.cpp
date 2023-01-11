@@ -134,6 +134,16 @@ namespace ZXEngine
 			0, 0, 0, 1);
 	}
 
+	bool Quaternion::operator== (const Quaternion& q) const
+	{
+		return x == q.x && y == q.y && z == q.z && w == q.w;
+	}
+
+	bool Quaternion::operator!= (const Quaternion& q) const
+	{
+		return x != q.x || y != q.y || z != q.z || w != q.w;
+	}
+
 	Quaternion Quaternion::operator* (const Quaternion& q) const
 	{
 		// ²Î¿¼: https://www.mathworks.com/help/aeroblks/quaternionmultiplication.html

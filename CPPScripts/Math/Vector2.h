@@ -27,6 +27,8 @@ namespace ZXEngine
 
 		float& operator[] (int i);
 		const float& operator[] (int i) const;
+		bool operator== (const Vector2& v) const;
+		bool operator!= (const Vector2& v) const;
 		Vector2& operator= (const Vector2& v);
 		Vector2 operator+ (const Vector2& v) const;
 		Vector2 operator- (const Vector2& v) const;

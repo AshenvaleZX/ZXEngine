@@ -28,6 +28,8 @@ namespace ZXEngine
 		void SetEulerAngles(const Vector3& eulerAngles);
 		Matrix4 ToMatrix() const;
 
+		bool operator== (const Quaternion& q) const;
+		bool operator!= (const Quaternion& q) const;
 		Quaternion operator* (const Quaternion& q) const;
 		Quaternion& operator*= (const Quaternion& q);
 
