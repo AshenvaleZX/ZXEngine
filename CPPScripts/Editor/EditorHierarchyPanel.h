@@ -11,6 +11,7 @@ namespace ZXEngine
 		~EditorHierarchyPanel() {};
 
 		virtual void DrawPanel();
+		virtual void ResetPanel();
 
 	private:
 		int nodeIdx = 0;

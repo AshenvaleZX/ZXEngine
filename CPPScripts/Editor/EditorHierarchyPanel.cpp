@@ -23,6 +23,11 @@ namespace ZXEngine
 		ImGui::End();
 	}
 
+	void EditorHierarchyPanel::ResetPanel()
+	{
+		selectedGO = nullptr;
+	}
+
 	void EditorHierarchyPanel::DrawNode(GameObject* gameObject)
 	{
 		nodeIdx++;

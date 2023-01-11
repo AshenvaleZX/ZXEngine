@@ -26,6 +26,7 @@ namespace ZXEngine
 		void BeginEditorRender();
 		void EditorRender();
 		void EndEditorRender();
+		void ResetPanels();
 
 	private:
 		vector<EditorPanel*> allPanels;

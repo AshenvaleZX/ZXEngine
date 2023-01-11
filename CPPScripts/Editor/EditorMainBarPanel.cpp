@@ -1,5 +1,6 @@
 #include "EditorMainBarPanel.h"
 #include "EditorDataManager.h"
+#include "EditorGUIManager.h"
 #include "../GameLogicManager.h"
 #include "../Time.h"
 #include "../SceneManager.h"
@@ -78,6 +79,8 @@ namespace ZXEngine
 				{
 					Time::curTime = 0.0f;
 					EditorDataManager::isGamePause = false;
+					EditorDataManager::GetInstance()->selectedGO = nullptr;
+					EditorGUIManager::GetInstance()->ResetPanels();
 					SceneManager::GetInstance()->ReloadScene();
 					LuaManager::GetInstance()->RestartLuaState();
 				}

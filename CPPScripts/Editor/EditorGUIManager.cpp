@@ -73,4 +73,10 @@ namespace ZXEngine
 	{
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
+
+	void EditorGUIManager::ResetPanels()
+	{
+		for (auto panel : allPanels)
+			panel->ResetPanel();
+	}
 }

@@ -15,5 +15,6 @@ namespace ZXEngine
 		~EditorPanel() {};
 
 		virtual void DrawPanel() = 0;
+		virtual void ResetPanel() {};
 	};
 }
