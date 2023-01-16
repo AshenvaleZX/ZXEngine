@@ -11,6 +11,7 @@ namespace ZXEngine
 	class Mesh;
 	class Shader;
 	class Camera;
+	class RenderStateSetting;
 	class RenderPassAfterEffectRendering : public RenderPass
 	{
 	public:
@@ -22,6 +23,7 @@ namespace ZXEngine
 	private:
 		Mesh* screenQuad;
 		map<string, Shader*> aeShaders;
+		RenderStateSetting* renderState;
 
 		void CreateShader(string name, string path);
 		Shader* GetShader(string name);

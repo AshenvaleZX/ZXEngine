@@ -7,6 +7,7 @@
 #include "../ProjectSetting.h"
 #include "../FBOManager.h"
 #include "../CubeMap.h"
+#include "../RenderStateSetting.h"
 
 namespace ZXEngine
 {
@@ -32,6 +33,9 @@ namespace ZXEngine
 		InitPreviewQuad();
 		previewQuadShader = new Shader(Resources::GetAssetFullPath("Shaders/RenderTexture.zxshader", true).c_str());
 		previewModelShader = new Shader(Resources::GetAssetFullPath("Shaders/ModelPreview.zxshader", true).c_str());
+
+		renderState = new RenderStateSetting();
+		renderState->clearColor = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
 
 		FBOManager::GetInstance()->CreateFBO("AssetPreview", FrameBufferType::Normal, previewSize, previewSize);
 	}
@@ -72,13 +76,12 @@ namespace ZXEngine
 	void EditorAssetPreviewer::Draw()
 	{
 		FBOManager::GetInstance()->SwitchFBO("AssetPreview");
+		auto renderAPI = RenderAPI::GetInstance();
 		// ViewPort的Size和偏移量是基于当前的FBO，而不是基于当前的进程窗口，这一点很重要
-		RenderAPI::GetInstance()->SetViewPort(previewSize, previewSize);
-		RenderAPI::GetInstance()->EnableDepthTest(true);
-		RenderAPI::GetInstance()->EnableDepthWrite(true);
-		RenderAPI::GetInstance()->SetClearColor(Vector4(0.2f, 0.2f, 0.2f, 1.0f));
-		RenderAPI::GetInstance()->ClearFrameBuffer();
-		RenderAPI::GetInstance()->SetClearColor(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+		renderAPI->SetViewPort(previewSize, previewSize);
+		renderAPI->SetRenderState(renderState);
+		// 清理上一帧数据，刷新背景颜色
+		renderAPI->ClearFrameBuffer();
 
 		auto curAsset = EditorDataManager::GetInstance()->selectedAsset;
 		auto curAssetInfo = EditorDataManager::GetInstance()->curAssetInfo;

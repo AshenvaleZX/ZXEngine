@@ -8,6 +8,7 @@
 #include "RenderQueueManager.h"
 #include "MeshRenderer.h"
 #include "GlobalData.h"
+#include "RenderStateSetting.h"
 
 namespace ZXEngine
 {
@@ -16,6 +17,7 @@ namespace ZXEngine
 		// 这个是用在OpenGL的几何着色器里的，OpenGL是右手坐标系，所以这个得用基于右手坐标系的
 		shadowProj = Math::PerspectiveRH(Math::Deg2Rad(90.0f), (float)GlobalData::depthCubeMapWidth / (float)GlobalData::depthCubeMapWidth, GlobalData::shadowCubeMapNearPlane, GlobalData::shadowCubeMapFarPlane);
 		shadowCubeMapShader = new Shader(Resources::GetAssetFullPath("Shaders/PointShadowDepth.zxshader", true).c_str());
+		renderState = new RenderStateSetting();
 		FBOManager::GetInstance()->CreateFBO("ShadowCubeMap", FrameBufferType::ShadowCubeMap, GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
 	}
 	
@@ -41,15 +43,15 @@ namespace ZXEngine
 
 	void RenderPassShadowGeneration::RenderShadowCubeMap(Light* light)
 	{
+		auto renderAPI = RenderAPI::GetInstance();
 		// 切换到shadow FBO
 		FBOManager::GetInstance()->SwitchFBO("ShadowCubeMap");
 		// ViewPort改成渲染CubeMap的正方形
-		RenderAPI::GetInstance()->SetViewPort(GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
-		// 开启深度测试和写入
-		RenderAPI::GetInstance()->EnableDepthTest(true);
-		RenderAPI::GetInstance()->EnableDepthWrite(true);
+		renderAPI->SetViewPort(GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
+		// 切换到阴影渲染设置
+		renderAPI->SetRenderState(renderState);
 		// 清理上一帧数据
-		RenderAPI::GetInstance()->ClearDepthBuffer();
+		renderAPI->ClearDepthBuffer();
 
 		// 基于左手坐标系构建6个方向上的VP矩阵
 		Vector3 lightPos = light->GetTransform()->GetPosition();

@@ -9,6 +9,7 @@ namespace ZXEngine
 	class CubeMap;
 	class GameObject;
 	class MeshRenderer;
+	class RenderStateSetting;
 	class EditorAssetPreviewer
 	{
 	public:
@@ -38,6 +39,7 @@ namespace ZXEngine
 		Shader* previewModelShader;
 		MeshRenderer* materialSphere;
 		CubeMap* shadowCubeMap;
+		RenderStateSetting* renderState;
 
 		void RenderMaterialPreview(AssetMaterialInfo* info);
 		void RenderModelPreview(AssetModelInfo* info);

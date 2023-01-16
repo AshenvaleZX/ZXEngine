@@ -6,6 +6,7 @@ namespace ZXEngine
 	class Camera;
 	class Shader;
 	class ParticleSystem;
+	class RenderStateSetting;
 	class ParticleSystemManager
 	{
 	public:
@@ -29,5 +30,6 @@ namespace ZXEngine
 	private:
 		Shader* shader;
 		list<ParticleSystem*> allParticleSystem;
+		RenderStateSetting* renderState;
 	};
 }

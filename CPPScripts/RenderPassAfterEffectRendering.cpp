@@ -4,6 +4,7 @@
 #include "ZShader.h"
 #include "Resources.h"
 #include "FBOManager.h"
+#include "RenderStateSetting.h"
 
 namespace ZXEngine
 {
@@ -14,13 +15,16 @@ namespace ZXEngine
 		InitKawaseBlur();
 		InitExtractBrightArea();
 		InitBloomBlend(true);
+
+		renderState = new RenderStateSetting();
+		renderState->depthTest = false;
+		renderState->depthWrite = false;
 	}
 
 	void RenderPassAfterEffectRendering::Render(Camera* camera)
 	{
-		// 关闭深度测试和写入，整个后处理Pass都不需要关心深度
-		RenderAPI::GetInstance()->EnableDepthTest(false);
-		RenderAPI::GetInstance()->EnableDepthWrite(false);
+		// 切换后处理渲染设置
+		RenderAPI::GetInstance()->SetRenderState(renderState);
 		// 整个后处理都在这个覆盖屏幕的四边形上渲染
 		screenQuad->Use();
 

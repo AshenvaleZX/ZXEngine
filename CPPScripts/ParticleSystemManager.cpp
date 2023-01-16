@@ -4,6 +4,7 @@
 #include "ZCamera.h"
 #include "Transform.h"
 #include "Resources.h"
+#include "RenderStateSetting.h"
 
 namespace ZXEngine
 {
@@ -23,6 +24,11 @@ namespace ZXEngine
 	{
 		VAO = RenderAPI::GetInstance()->GenerateParticleMesh();
 		shader = new Shader(Resources::GetAssetFullPath("Shaders/Particle.zxshader", true).c_str());
+
+		renderState = new RenderStateSetting();
+		renderState->depthWrite = false;
+		renderState->srcFactor = BlendOption::SRC_ALPHA;
+		renderState->dstFactor = BlendOption::ONE;
 	}
 
 	void ParticleSystemManager::Update()
@@ -35,10 +41,8 @@ namespace ZXEngine
 
 	void ParticleSystemManager::Render(Camera* camera)
 	{
-		// 不写入深度，否则粒子之间会相互遮挡。但是要做深度测试，否则会错误遮挡前面的对象
-		RenderAPI::GetInstance()->EnableDepthWrite(false);
-		// 渲染粒子时只向颜色缓冲区叠加颜色
-		RenderAPI::GetInstance()->SetBlendMode(BlendOption::SRC_ALPHA, BlendOption::ONE);
+		// 切换粒子系统渲染设置
+		RenderAPI::GetInstance()->SetRenderState(renderState);
 
 		Vector3 camPos = camera->GetTransform()->GetPosition();
 		Matrix4 mat_V = camera->GetViewMatrix();
@@ -51,10 +55,6 @@ namespace ZXEngine
 		{
 			particleSystem->Render(shader, camPos);
 		}
-
-		// 还原设置
-		RenderAPI::GetInstance()->EnableDepthWrite(true);
-		RenderAPI::GetInstance()->SetBlendMode(BlendOption::SRC_ALPHA, BlendOption::ONE_MINUS_SRC_ALPHA);
 	}
 
 	void ParticleSystemManager::AddParticleSystem(ParticleSystem* ps)

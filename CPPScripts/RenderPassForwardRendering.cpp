@@ -10,6 +10,7 @@
 #include "CubeMap.h"
 #include "GlobalData.h"
 #include "ParticleSystemManager.h"
+#include "RenderStateSetting.h"
 
 namespace ZXEngine
 {
@@ -17,27 +18,30 @@ namespace ZXEngine
 	{
 		InitSkyBox();
 		skyBoxShader = new Shader(Resources::GetAssetFullPath("Shaders/SkyBox.zxshader", true).c_str());
+
+		skyBoxRenderState = new RenderStateSetting();
+		skyBoxRenderState->depthTest = false;
+		skyBoxRenderState->depthWrite = false;
+
+		opaqueRenderState = new RenderStateSetting();
 	}
 
 	void RenderPassForwardRendering::Render(Camera* camera)
 	{
+		auto renderAPI = RenderAPI::GetInstance();
 		// 切换到主FBO
 		FBOManager::GetInstance()->SwitchFBO("Main");
 		// ViewPort设置为窗口大小
-		RenderAPI::GetInstance()->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight);
-		// 开启深度测试
-		RenderAPI::GetInstance()->EnableDepthTest(true);
-		// 妈的，深度写入的状态设置居然是跨FBO的，在渲染其它FBO时的设置也会影响这里，所以在Clear深度缓冲之前，为了确保没问题先开启一下深度写入，因为Clear深度缓冲需要在开启深度写入状态下执行
-		RenderAPI::GetInstance()->EnableDepthWrite(true);
+		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight);
 		// 清理上一帧数据
-		RenderAPI::GetInstance()->ClearFrameBuffer();
-
-		// 关闭深度写入，渲染天空盒
-		RenderAPI::GetInstance()->EnableDepthWrite(false);
+		renderAPI->ClearFrameBuffer();
+		
+		// 渲染天空盒
+		renderAPI->SetRenderState(skyBoxRenderState);
 		RenderSkyBox(camera);
-		// 重新打开深度写入
-		RenderAPI::GetInstance()->EnableDepthWrite(true);
 
+		// 渲染不透明队列
+		renderAPI->SetRenderState(opaqueRenderState);
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Qpaque);
 		renderQueue->Sort(camera);
 
