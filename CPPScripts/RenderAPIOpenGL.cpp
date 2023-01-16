@@ -14,13 +14,14 @@ namespace ZXEngine
 		Debug::Log("Graphic API: OpenGL");
 		Debug::Log("Version: " + to_string(majorVersion) + "." + to_string(minorVersion));
 
+		glEnable(GL_CULL_FACE);
 		glDepthMask(GL_TRUE);
 		glEnable(GL_DEPTH_TEST);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		InitBlendMap();
+		InitGLConstMap();
 		targetState = new RenderStateSetting();
 		curRealState = new RenderStateSetting();
 	}
@@ -49,6 +50,16 @@ namespace ZXEngine
 	void RenderAPIOpenGL::SetClearColor(const Vector4& color)
 	{
 		targetState->clearColor = color;
+	}
+
+	void RenderAPIOpenGL::EnableFaceCull(bool enable)
+	{
+		targetState->faceCull = enable;
+	}
+
+	void RenderAPIOpenGL::SetFaceCullMode(FaceCullOption mode)
+	{
+		targetState->faceCullOption = mode;
 	}
 
 	void RenderAPIOpenGL::SwitchFrameBuffer(unsigned int id)
@@ -796,6 +807,17 @@ namespace ZXEngine
 		if (curRealState->srcFactor != targetState->srcFactor || curRealState->dstFactor != targetState->dstFactor)
 			glBlendFunc(BlendMap[targetState->srcFactor], BlendMap[targetState->dstFactor]);
 
+		if (curRealState->faceCull != targetState->faceCull)
+		{
+			if (targetState->faceCull)
+				glEnable(GL_CULL_FACE);
+			else
+				glDisable(GL_CULL_FACE);
+		}
+
+		if (curRealState->faceCullOption != targetState->faceCullOption)
+			glCullFace(FaceCullMap[targetState->faceCullOption]);
+
 		if (curRealState->clearColor != targetState->clearColor)
 			glClearColor(targetState->clearColor.r, targetState->clearColor.g, targetState->clearColor.b, targetState->clearColor.a);
 
@@ -808,7 +830,7 @@ namespace ZXEngine
 		*curRealState = *targetState;
 	}
 
-	void RenderAPIOpenGL::InitBlendMap()
+	void RenderAPIOpenGL::InitGLConstMap()
 	{
 		BlendMap =
 		{
@@ -826,6 +848,13 @@ namespace ZXEngine
 			{ BlendOption::ONE_MINUS_CONSTANT_COLOR,GL_ONE_MINUS_CONSTANT_COLOR },
 			{ BlendOption::CONSTANT_ALPHA,			GL_CONSTANT_ALPHA			},
 			{ BlendOption::ONE_MINUS_CONSTANT_ALPHA,GL_ONE_MINUS_CONSTANT_ALPHA	},
+		};
+
+		FaceCullMap =
+		{
+			{ FaceCullOption::Back,			GL_BACK			  },
+			{ FaceCullOption::Front,		GL_FRONT		  },
+			{ FaceCullOption::FrontAndBack,	GL_FRONT_AND_BACK },
 		};
 	}
 }

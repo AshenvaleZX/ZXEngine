@@ -28,6 +28,8 @@ namespace ZXEngine
 		virtual void EnableDepthWrite(bool enable) = 0;
 		virtual void SetBlendMode(BlendOption sfactor, BlendOption dfactor) = 0;
 		virtual void SetClearColor(const Vector4& color) = 0;
+		virtual void EnableFaceCull(bool enable) = 0;
+		virtual void SetFaceCullMode(FaceCullOption mode) = 0;
 
 		// äÖÈ¾²Ù×÷
 		virtual void SwitchFrameBuffer(unsigned int id) = 0;

@@ -69,6 +69,13 @@ namespace ZXEngine
 		OpenGLDrawElements,
 	};
 
+	enum class FaceCullOption
+	{
+		Back,
+		Front,
+		FrontAndBack,
+	};
+
 	enum class BlendOption
 	{
 		ZERO,

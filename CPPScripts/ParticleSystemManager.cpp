@@ -29,6 +29,7 @@ namespace ZXEngine
 		renderState->depthWrite = false;
 		renderState->srcFactor = BlendOption::SRC_ALPHA;
 		renderState->dstFactor = BlendOption::ONE;
+		renderState->faceCull = false;
 	}
 
 	void ParticleSystemManager::Update()

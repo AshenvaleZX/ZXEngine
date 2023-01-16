@@ -16,6 +16,8 @@ namespace ZXEngine
 		virtual void EnableDepthWrite(bool enable);
 		virtual void SetBlendMode(BlendOption sfactor, BlendOption dfactor);
 		virtual void SetClearColor(const Vector4& color);
+		virtual void EnableFaceCull(bool enable);
+		virtual void SetFaceCullMode(FaceCullOption mode);
 
 		// äÖÈ¾²Ù×÷
 		virtual void SwitchFrameBuffer(unsigned int id);
@@ -79,6 +81,7 @@ namespace ZXEngine
 		unsigned int primitiveSize = 0;
 
 		map<BlendOption, int> BlendMap;
-		void InitBlendMap();
+		map<FaceCullOption, int> FaceCullMap;
+		void InitGLConstMap();
 	};
 }
