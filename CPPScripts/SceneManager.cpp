@@ -22,7 +22,6 @@ namespace ZXEngine
 		auto sceneInfo = GetSceneInfo(name);
 		if (sceneInfo == nullptr)
 		{
-			Debug::LogError("Get a nonexistent scene: " + name);
 			return nullptr;
 		}
 		else
@@ -47,7 +46,7 @@ namespace ZXEngine
 		}
 		else
 		{
-			Debug::LogError("Load scene failed: " + path);
+			Debug::LogWarning("Attempt to load an existing scene: " + path);
 		}
 	}
 
@@ -70,7 +69,7 @@ namespace ZXEngine
 		}
 		else
 		{
-			Debug::LogWarning("Try to delete a nonexistent scene: " + name);
+			Debug::LogWarning("Attempt to delete a nonexistent scene: " + name);
 		}
 	}
 
