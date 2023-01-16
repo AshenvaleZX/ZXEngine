@@ -1,5 +1,6 @@
 #include "RenderAPIOpenGL.h"
 #include "GlobalData.h"
+#include "RenderStateSetting.h"
 
 namespace ZXEngine
 {
@@ -13,26 +14,41 @@ namespace ZXEngine
 		Debug::Log("Graphic API: OpenGL");
 		Debug::Log("Version: " + to_string(majorVersion) + "." + to_string(minorVersion));
 
+		glDepthMask(GL_TRUE);
+		glEnable(GL_DEPTH_TEST);
+
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		InitBlendMap();
+		targetState = new RenderStateSetting();
+		curRealState = new RenderStateSetting();
+	}
+	
+	void RenderAPIOpenGL::SetRenderState(RenderStateSetting* state)
+	{
+		*targetState = *state;
 	}
 
 	void RenderAPIOpenGL::EnableDepthTest(bool enable)
 	{
-		if (enable)
-			glEnable(GL_DEPTH_TEST);
-		else
-			glDisable(GL_DEPTH_TEST);
+		targetState->depthTest = enable;
 	}
 
 	void RenderAPIOpenGL::EnableDepthWrite(bool enable)
 	{
-		if (enable)
-			glDepthMask(GL_TRUE);
-		else
-			glDepthMask(GL_FALSE);
+		targetState->depthWrite = enable;
+	}
+
+	void RenderAPIOpenGL::SetBlendMode(BlendOption sfactor, BlendOption dfactor)
+	{
+		targetState->srcFactor = sfactor;
+		targetState->dstFactor = dfactor;
+	}
+
+	void RenderAPIOpenGL::SetClearColor(const Vector4& color)
+	{
+		targetState->clearColor = color;
 	}
 
 	void RenderAPIOpenGL::SwitchFrameBuffer(unsigned int id)
@@ -45,33 +61,66 @@ namespace ZXEngine
 		glViewport(xOffset, yOffset, width, height);
 	}
 
-	void RenderAPIOpenGL::SetBlendMode(BlendOption sfactor, BlendOption dfactor)
-	{
-		glBlendFunc(BlendMap[sfactor], BlendMap[dfactor]);
-	}
-
-	void RenderAPIOpenGL::SetClearColor(const Vector4& color)
-	{
-		glClearColor(color.r, color.g, color.b, color.a);
-	}
-
 	void RenderAPIOpenGL::ClearFrameBuffer()
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		ClearColorBuffer();
+		ClearDepthBuffer();
+		ClearStencilBuffer();
 	}
 
 	void RenderAPIOpenGL::ClearColorBuffer()
 	{
+		ClearColorBuffer(targetState->clearColor);
+	}
+
+	void RenderAPIOpenGL::ClearColorBuffer(const Vector4& color)
+	{
+		if (curRealState->clearColor != color)
+		{
+			glClearColor(color.r, color.g, color.b, color.a);
+			curRealState->clearColor = color;
+		}
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
 	void RenderAPIOpenGL::ClearDepthBuffer()
 	{
+		ClearDepthBuffer(targetState->clearDepth);
+	}
+
+	void RenderAPIOpenGL::ClearDepthBuffer(float depth)
+	{
+		if (curRealState->clearDepth != depth)
+		{
+			glClearDepth(depth);
+			curRealState->clearDepth = depth;
+		}
+		// Clear Depth之前必须开启深度测试和写入
+		if (!curRealState->depthTest)
+		{
+			glEnable(GL_DEPTH_TEST);
+			curRealState->depthTest = true;
+		}
+		if (!curRealState->depthWrite)
+		{
+			glDepthMask(GL_TRUE);
+			curRealState->depthWrite = true;
+		}
 		glClear(GL_DEPTH_BUFFER_BIT);
 	}
 
 	void RenderAPIOpenGL::ClearStencilBuffer()
 	{
+		ClearStencilBuffer(targetState->clearStencil);
+	}
+
+	void RenderAPIOpenGL::ClearStencilBuffer(int stencil)
+	{
+		if (curRealState->clearStencil != stencil)
+		{
+			glClearStencil(stencil);
+			curRealState->clearStencil = stencil;
+		}
 		glClear(GL_STENCIL_BUFFER_BIT);
 	}
 
@@ -522,6 +571,8 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::Draw()
 	{
+		UpdateRenderState();
+
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, primitiveSize, GL_UNSIGNED_INT, 0);
 		// 绘制完重置一下(不重置也行，不过及时重置避免出问题)
@@ -534,6 +585,8 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::Draw(unsigned int VAO, unsigned int size, DrawType type)
 	{
+		UpdateRenderState();
+		
 		glBindVertexArray(VAO);
 
 		if (type == DrawType::OpenGLDrawArrays)
@@ -722,6 +775,38 @@ namespace ZXEngine
 		glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 	}
 
+	void RenderAPIOpenGL::UpdateRenderState()
+	{
+		if (curRealState->depthTest != targetState->depthTest)
+		{
+			if (targetState->depthTest)
+				glEnable(GL_DEPTH_TEST);
+			else
+				glDisable(GL_DEPTH_TEST);
+		}
+
+		if (curRealState->depthWrite != targetState->depthWrite)
+		{
+			if (targetState->depthWrite)
+				glDepthMask(GL_TRUE);
+			else
+				glDepthMask(GL_FALSE);
+		}
+
+		if (curRealState->srcFactor != targetState->srcFactor || curRealState->dstFactor != targetState->dstFactor)
+			glBlendFunc(BlendMap[targetState->srcFactor], BlendMap[targetState->dstFactor]);
+
+		if (curRealState->clearColor != targetState->clearColor)
+			glClearColor(targetState->clearColor.r, targetState->clearColor.g, targetState->clearColor.b, targetState->clearColor.a);
+
+		if (curRealState->clearDepth != targetState->clearDepth)
+			glClearDepth(targetState->clearDepth);
+
+		if (curRealState->clearStencil != targetState->clearStencil)
+			glClearStencil(targetState->clearStencil);
+
+		*curRealState = *targetState;
+	}
 
 	void RenderAPIOpenGL::InitBlendMap()
 	{

@@ -355,6 +355,7 @@
     <ClInclude Include="..\..\CPPScripts\RenderPassUIRendering.h" />
     <ClInclude Include="..\..\CPPScripts\RenderQueue.h" />
     <ClInclude Include="..\..\CPPScripts\RenderQueueManager.h" />
+    <ClInclude Include="..\..\CPPScripts\RenderStateSetting.h" />
     <ClInclude Include="..\..\CPPScripts\Resources.h" />
     <ClInclude Include="..\..\CPPScripts\Scene.h" />
     <ClInclude Include="..\..\CPPScripts\SceneManager.h" />

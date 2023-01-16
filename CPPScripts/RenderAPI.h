@@ -3,33 +3,42 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
-#include "PublicEnum.h"
 #include "PublicStruct.h"
 #include "FrameBufferObject.h"
 
 namespace ZXEngine
 {
+	class RenderStateSetting;
 	class RenderAPI
 	{
+	public:
+		static void Creat();
+		static RenderAPI* GetInstance();
+	private:
+		static RenderAPI* mInstance;
+
 	public:
 		RenderAPI() {};
 		~RenderAPI() {};
 
-		static void Creat();
-		static RenderAPI* GetInstance();
-
 		// 渲染状态设置
 		virtual void InitRenderSetting() = 0;
+		virtual void SetRenderState(RenderStateSetting* state) = 0;
 		virtual void EnableDepthTest(bool enable) = 0;
 		virtual void EnableDepthWrite(bool enable) = 0;
-		virtual void SwitchFrameBuffer(unsigned int id) = 0;
-		virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0) = 0;
 		virtual void SetBlendMode(BlendOption sfactor, BlendOption dfactor) = 0;
 		virtual void SetClearColor(const Vector4& color) = 0;
+
+		// 渲染操作
+		virtual void SwitchFrameBuffer(unsigned int id) = 0;
+		virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0) = 0;
 		virtual void ClearFrameBuffer() = 0;
 		virtual void ClearColorBuffer() = 0;
+		virtual void ClearColorBuffer(const Vector4& color) = 0;
 		virtual void ClearDepthBuffer() = 0;
+		virtual void ClearDepthBuffer(float depth) = 0;
 		virtual void ClearStencilBuffer() = 0;
+		virtual void ClearStencilBuffer(int stencil) = 0;
 		virtual void CheckError() = 0;
 
 		// 资源加载相关
@@ -72,6 +81,6 @@ namespace ZXEngine
 		virtual void SetShaderCubeMap(unsigned int ID, string name, unsigned int textureID, unsigned int idx) = 0;
 
 	private:
-		static RenderAPI* mInstance;
+		virtual void UpdateRenderState() = 0;
 	};
 }

@@ -11,16 +11,22 @@ namespace ZXEngine
 
 		// 渲染状态设置
 		virtual void InitRenderSetting();
+		virtual void SetRenderState(RenderStateSetting* state);
 		virtual void EnableDepthTest(bool enable);
 		virtual void EnableDepthWrite(bool enable);
-		virtual void SwitchFrameBuffer(unsigned int id);
-		virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0);
 		virtual void SetBlendMode(BlendOption sfactor, BlendOption dfactor);
 		virtual void SetClearColor(const Vector4& color);
+
+		// 渲染操作
+		virtual void SwitchFrameBuffer(unsigned int id);
+		virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0);
 		virtual void ClearFrameBuffer();
 		virtual void ClearColorBuffer();
+		virtual void ClearColorBuffer(const Vector4& color);
 		virtual void ClearDepthBuffer();
+		virtual void ClearDepthBuffer(float depth);
 		virtual void ClearStencilBuffer();
+		virtual void ClearStencilBuffer(int stencil);
 		virtual void CheckError();
 
 		// 资源加载相关
@@ -63,6 +69,11 @@ namespace ZXEngine
 		virtual void SetShaderCubeMap(unsigned int ID, string name, unsigned int textureID, unsigned int idx);
 
 	private:
+		virtual void UpdateRenderState();
+
+	private:
+		RenderStateSetting* targetState = nullptr;
+		RenderStateSetting* curRealState = nullptr;
 		unsigned int VAO = 0;
 		// 与VAO对应的图元数量
 		unsigned int primitiveSize = 0;
