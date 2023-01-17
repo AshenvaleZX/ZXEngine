@@ -74,6 +74,7 @@ namespace ZXEngine
 		virtual void UpdateRenderState();
 
 	private:
+		bool stateDirty = false;
 		RenderStateSetting* targetState = nullptr;
 		RenderStateSetting* curRealState = nullptr;
 		unsigned int VAO = 0;

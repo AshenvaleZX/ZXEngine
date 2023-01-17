@@ -29,37 +29,44 @@ namespace ZXEngine
 	void RenderAPIOpenGL::SetRenderState(RenderStateSetting* state)
 	{
 		*targetState = *state;
+		stateDirty = true;
 	}
 
 	void RenderAPIOpenGL::EnableDepthTest(bool enable)
 	{
 		targetState->depthTest = enable;
+		stateDirty = true;
 	}
 
 	void RenderAPIOpenGL::EnableDepthWrite(bool enable)
 	{
 		targetState->depthWrite = enable;
+		stateDirty = true;
 	}
 
 	void RenderAPIOpenGL::SetBlendMode(BlendOption sfactor, BlendOption dfactor)
 	{
 		targetState->srcFactor = sfactor;
 		targetState->dstFactor = dfactor;
+		stateDirty = true;
 	}
 
 	void RenderAPIOpenGL::SetClearColor(const Vector4& color)
 	{
 		targetState->clearColor = color;
+		stateDirty = true;
 	}
 
 	void RenderAPIOpenGL::EnableFaceCull(bool enable)
 	{
 		targetState->faceCull = enable;
+		stateDirty = true;
 	}
 
 	void RenderAPIOpenGL::SetFaceCullMode(FaceCullOption mode)
 	{
 		targetState->faceCullOption = mode;
+		stateDirty = true;
 	}
 
 	void RenderAPIOpenGL::SwitchFrameBuffer(unsigned int id)
@@ -90,6 +97,7 @@ namespace ZXEngine
 		{
 			glClearColor(color.r, color.g, color.b, color.a);
 			curRealState->clearColor = color;
+			stateDirty = true;
 		}
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
@@ -105,17 +113,20 @@ namespace ZXEngine
 		{
 			glClearDepth(depth);
 			curRealState->clearDepth = depth;
+			stateDirty = true;
 		}
 		// Clear Depth之前必须开启深度测试和写入
 		if (!curRealState->depthTest)
 		{
 			glEnable(GL_DEPTH_TEST);
 			curRealState->depthTest = true;
+			stateDirty = true;
 		}
 		if (!curRealState->depthWrite)
 		{
 			glDepthMask(GL_TRUE);
 			curRealState->depthWrite = true;
+			stateDirty = true;
 		}
 		glClear(GL_DEPTH_BUFFER_BIT);
 	}
@@ -131,6 +142,7 @@ namespace ZXEngine
 		{
 			glClearStencil(stencil);
 			curRealState->clearStencil = stencil;
+			stateDirty = true;
 		}
 		glClear(GL_STENCIL_BUFFER_BIT);
 	}
@@ -788,6 +800,11 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::UpdateRenderState()
 	{
+		if (stateDirty)
+			stateDirty = false;
+		else
+			return;
+
 		if (curRealState->depthTest != targetState->depthTest)
 		{
 			if (targetState->depthTest)
