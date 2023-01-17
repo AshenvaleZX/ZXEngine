@@ -13,9 +13,18 @@ namespace ZXEngine
 		return renderers;
 	}
 
-	void RenderQueue::ClearRenderer()
+	BatchMap RenderQueue::GetBatches()
+	{
+		return batches;
+	}
+
+	void RenderQueue::Clear()
 	{
 		renderers.clear();
+
+		for (auto& batch : batches)
+			batch.second.clear();
+		batches.clear();
 	}
 
 	void RenderQueue::Sort(Camera* camera)
@@ -28,5 +37,13 @@ namespace ZXEngine
 			auto bDis = Math::Distance(bPos, cPos);
 			return aDis < bDis;
 		});
+	}
+
+	void RenderQueue::Batch()
+	{
+		for (auto renderer : renderers)
+		{
+			batches[renderer->matetrial->shader->GetID()].push_back(renderer);
+		}
 	}
 }

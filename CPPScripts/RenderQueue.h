@@ -1,6 +1,8 @@
 #pragma once
 #include "pubh.h"
 
+#define BatchMap map<unsigned int, vector<MeshRenderer*>>
+
 namespace ZXEngine
 {
 	class Camera;
@@ -14,10 +16,13 @@ namespace ZXEngine
 		int queue = 0;
 		void AddRenderer(MeshRenderer* meshRenderer);
 		vector<MeshRenderer*> GetRenderers();
-		void ClearRenderer();
+		BatchMap GetBatches();
+		void Clear();
 		void Sort(Camera* camera);
+		void Batch();
 
 	private:
 		vector<MeshRenderer*> renderers;
+		BatchMap batches;
 	};
 }

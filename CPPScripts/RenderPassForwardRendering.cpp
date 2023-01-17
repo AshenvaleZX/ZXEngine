@@ -44,60 +44,67 @@ namespace ZXEngine
 		renderAPI->SetRenderState(opaqueRenderState);
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Qpaque);
 		renderQueue->Sort(camera);
+		renderQueue->Batch();
 
-		Matrix4 mat_V = camera->GetViewMatrix();
-		Matrix4 mat_P = camera->GetProjectionMatrix();
-		for (auto renderer : renderQueue->GetRenderers())
+		auto mat_V = camera->GetViewMatrix();
+		auto mat_P = camera->GetProjectionMatrix();
+
+		for (auto& batch : renderQueue->GetBatches())
 		{
-			Material* material = renderer->matetrial;
-			Shader* shader = material->shader;
-			Matrix4 mat_M = renderer->GetTransform()->GetModelMatrix();
+			auto shader = batch.second[0]->matetrial->shader;
 			shader->Use();
-			shader->SetMat4("model", mat_M);
 			shader->SetMat4("view", mat_V);
 			shader->SetMat4("projection", mat_P);
 
-			unsigned int textureNum = (unsigned int)material->textures.size();
-			for (unsigned int i = 0; i < textureNum; i++)
+			for (auto renderer : batch.second)
 			{
-				shader->SetTexture(material->textures[i].first, material->textures[i].second->GetID(), i);
-			}
+				auto material = renderer->matetrial;
 
-			// 光源
-			if (shader->GetLightType() == LightType::Directional)
-			{
-				Light* light = Light::GetAllLights()[0];
-				shader->SetVec3("viewPos", camera->GetTransform()->GetPosition());
-				shader->SetVec3("dirLight.direction", light->GetTransform()->GetForward());
-				shader->SetVec3("dirLight.color", light->color);
-				shader->SetFloat("dirLight.intensity", light->intensity);
-			}
-			else if (shader->GetLightType() == LightType::Point)
-			{
-				Light* light = Light::GetAllLights()[0];
-				shader->SetVec3("viewPos", camera->GetTransform()->GetPosition());
-				shader->SetVec3("pointLight.position", light->GetTransform()->GetPosition());
-				shader->SetVec3("pointLight.color", light->color);
-				shader->SetFloat("pointLight.intensity", light->intensity);
-			}
+				auto mat_M = renderer->GetTransform()->GetModelMatrix();
+				shader->SetMat4("model", mat_M);
 
-			// 阴影
-			if (renderer->receiveShadow)
-			{
-				Light* light = Light::GetAllLights()[0];
-				if (light->type == LightType::Directional)
+				unsigned int textureNum = (unsigned int)material->textures.size();
+				for (unsigned int i = 0; i < textureNum; i++)
 				{
-
+					shader->SetTexture(material->textures[i].first, material->textures[i].second->GetID(), i);
 				}
-				else if (light->type == LightType::Point)
+
+				// 光源
+				if (shader->GetLightType() == LightType::Directional)
 				{
-					// 之前已经把纹理编号设置到 textureNum - 1 了，所以这里是textureNum
-					shader->SetCubeMap("_DepthCubeMap", FBOManager::GetInstance()->GetFBO("ShadowCubeMap")->DepthBuffer, textureNum);
-					shader->SetFloat("_FarPlane", GlobalData::shadowCubeMapFarPlane);
+					Light* light = Light::GetAllLights()[0];
+					shader->SetVec3("viewPos", camera->GetTransform()->GetPosition());
+					shader->SetVec3("dirLight.direction", light->GetTransform()->GetForward());
+					shader->SetVec3("dirLight.color", light->color);
+					shader->SetFloat("dirLight.intensity", light->intensity);
 				}
-			}
+				else if (shader->GetLightType() == LightType::Point)
+				{
+					Light* light = Light::GetAllLights()[0];
+					shader->SetVec3("viewPos", camera->GetTransform()->GetPosition());
+					shader->SetVec3("pointLight.position", light->GetTransform()->GetPosition());
+					shader->SetVec3("pointLight.color", light->color);
+					shader->SetFloat("pointLight.intensity", light->intensity);
+				}
 
-			renderer->Draw();
+				// 阴影
+				if (renderer->receiveShadow)
+				{
+					Light* light = Light::GetAllLights()[0];
+					if (light->type == LightType::Directional)
+					{
+
+					}
+					else if (light->type == LightType::Point)
+					{
+						// 之前已经把纹理编号设置到 textureNum - 1 了，所以这里是textureNum
+						shader->SetCubeMap("_DepthCubeMap", FBOManager::GetInstance()->GetFBO("ShadowCubeMap")->DepthBuffer, textureNum);
+						shader->SetFloat("_FarPlane", GlobalData::shadowCubeMapFarPlane);
+					}
+				}
+
+				renderer->Draw();
+			}
 		}
 
 		ParticleSystemManager::GetInstance()->Update();

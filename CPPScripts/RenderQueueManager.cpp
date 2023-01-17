@@ -57,7 +57,7 @@ namespace ZXEngine
 	{
 		for (auto& iter : renderQueues)
 		{
-			iter.second->ClearRenderer();
+			iter.second->Clear();
 		}
 	}
 
