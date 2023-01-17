@@ -267,9 +267,9 @@ namespace ZXEngine
 		return textureID;
 	}
 
-	ShaderInfo RenderAPIOpenGL::LoadAndCompileShader(const char* path)
+	ShaderInfo* RenderAPIOpenGL::LoadAndCompileShader(const char* path)
 	{
-		ShaderInfo info{};
+		ShaderInfo* info = new ShaderInfo();
 		string shaderCode;
 		string vertexCode;
 		string fragmentCode;
@@ -297,20 +297,20 @@ namespace ZXEngine
 			string::size_type hasDirLight = shaderCode.find("DirLight");
 			string::size_type hasPointLight = shaderCode.find("PointLight");
 			if (hasDirLight != string::npos)
-				info.lightType = LightType::Directional;
+				info->lightType = LightType::Directional;
 			else if (hasPointLight != string::npos)
-				info.lightType = LightType::Point;
+				info->lightType = LightType::Point;
 			else
-				info.lightType = LightType::None;
+				info->lightType = LightType::None;
 
 			string::size_type hasDirShadow = shaderCode.find("_DepthMap");
 			string::size_type hasPointShadow = shaderCode.find("_DepthCubeMap");
 			if (hasDirShadow != string::npos)
-				info.shadowType = ShadowType::Directional;
+				info->shadowType = ShadowType::Directional;
 			else if (hasPointShadow != string::npos)
-				info.shadowType = ShadowType::Point;
+				info->shadowType = ShadowType::Point;
 			else
-				info.shadowType = ShadowType::None;
+				info->shadowType = ShadowType::None;
 
 			string::size_type vs_begin = shaderCode.find("#vs_begin") + 9;
 			string::size_type vs_end = shaderCode.find("#vs_end");
@@ -367,7 +367,7 @@ namespace ZXEngine
 		if (geometryCode.length() > 1)
 			glDeleteShader(geometry);
 
-		info.ID = ID;
+		info->ID = ID;
 
 		return info;
 	}

@@ -5,10 +5,13 @@ namespace ZXEngine
 {
 	class Shader
 	{
+	private:
+		static vector<ShaderInfo*> loadedShaders;
+
 	public:
 		string name;
 
-		Shader(const char* path);
+		Shader(const string& path);
 		~Shader();
 
 		unsigned int GetID();
@@ -31,9 +34,7 @@ namespace ZXEngine
 		void SetCubeMap(string name, unsigned int textureID, unsigned int idx);
 
 	private:
-		unsigned int ID;
 		int renderQueue;
-		LightType lightType;
-		ShadowType shadowType;
+		ShaderInfo* info = nullptr;
 	};
 }

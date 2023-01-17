@@ -13,7 +13,9 @@ namespace ZXEngine
 	
 	struct ShaderInfo
 	{
-		unsigned int ID;
+		string path;
+		unsigned int ID = 0;
+		int referenceCount = 1;
 		LightType lightType;
 		ShadowType shadowType;
 	};
