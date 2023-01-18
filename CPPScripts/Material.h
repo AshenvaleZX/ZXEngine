@@ -8,7 +8,8 @@ namespace ZXEngine
 	class Material
 	{
 	public:
-		string name = "";
+		string name;
+		string path;
 		Shader* shader = nullptr;
 		vector<pair<string, Texture*>> textures;
 

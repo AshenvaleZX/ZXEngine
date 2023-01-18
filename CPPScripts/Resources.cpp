@@ -130,6 +130,7 @@ namespace ZXEngine
 	MaterialStruct* Resources::LoadMaterial(string path, bool isBuiltIn)
 	{
 		MaterialStruct* matStruct = new MaterialStruct;
+		matStruct->path = path;
 		matStruct->name = GetAssetName(path);
 
 		json data = Resources::GetAssetData(path, isBuiltIn);
