@@ -1,5 +1,5 @@
 #include "UITextureRenderer.h"
-#include "ZMesh.h"
+#include "StaticMesh.h"
 #include "ZShader.h"
 #include "Resources.h"
 #include "GlobalData.h"
@@ -57,7 +57,7 @@ namespace ZXEngine
 		textureMesh = CreateTextureMesh();
 	}
 
-	Mesh* UITextureRenderer::CreateTextureMesh()
+	StaticMesh* UITextureRenderer::CreateTextureMesh()
 	{
 		if (texture == nullptr)
 			return nullptr;
@@ -96,6 +96,6 @@ namespace ZXEngine
 			vertex.TexCoords = coords[i];
 			vertices.push_back(vertex);
 		}
-		return new Mesh(vertices, indices);
+		return new StaticMesh(vertices, indices);
 	}
 }

@@ -5,8 +5,8 @@
 
 namespace ZXEngine
 {
-	class Mesh;
 	class Shader;
+	class StaticMesh;
 	class UITextureRenderer : public Component
 	{
 #ifdef ZX_EDITOR
@@ -28,8 +28,8 @@ namespace ZXEngine
 
 	private:
 		Texture* texture = nullptr;
-		Mesh* textureMesh = nullptr;
+		StaticMesh* textureMesh = nullptr;
 
-		Mesh* CreateTextureMesh();
+		StaticMesh* CreateTextureMesh();
 	};
 }

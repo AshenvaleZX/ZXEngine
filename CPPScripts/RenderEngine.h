@@ -5,8 +5,6 @@
 
 namespace ZXEngine
 {
-	class Mesh;
-	class Shader;
 	class Camera;
 	class RenderEngine
 	{

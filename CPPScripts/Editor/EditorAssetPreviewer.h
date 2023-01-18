@@ -4,10 +4,10 @@
 
 namespace ZXEngine
 {
-	class Mesh;
 	class Shader;
 	class CubeMap;
 	class GameObject;
+	class StaticMesh;
 	class MeshRenderer;
 	class RenderStateSetting;
 	class EditorAssetPreviewer
@@ -34,7 +34,7 @@ namespace ZXEngine
 		const float standardScaleSensitivity = 0.05f;
 		const unsigned int previewSize = 512;
 		GameObject* cameraGO;
-		Mesh* previewQuad;
+		StaticMesh* previewQuad;
 		Shader* previewQuadShader;
 		Shader* previewModelShader;
 		MeshRenderer* materialSphere;

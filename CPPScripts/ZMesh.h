@@ -6,23 +6,19 @@ namespace ZXEngine
 {
 	class Mesh
 	{
-    public:
-        vector<Vertex> vertices;
-        vector<unsigned int> indices;
+	public:
+		// Vertex Array Object
+		unsigned int VAO;
+		// Vertex Buffer Objects
+		unsigned int VBO;
+		// Element Buffer Objects
+		unsigned int EBO;
 
-        // Vertex Array Object
-        unsigned int VAO;
+		vector<Vertex> vertices;
+		vector<unsigned int> indices;
 
-        Mesh(vector<Vertex> vertices, vector<unsigned int> indices);
-        ~Mesh();
-        
-        // 把当前Mesh数据注册到OpenGL状态机
-        void Use();
+		~Mesh();
 
-    private:
-        // Vertex Buffer Objects
-        unsigned int VBO;
-        // Element Buffer Objects
-        unsigned int EBO;
-    };
+		virtual void Use() = 0;
+	};
 }

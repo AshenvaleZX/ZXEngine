@@ -118,7 +118,7 @@ namespace ZXEngine
 			}
 		}
 
-		auto newMesh = new Mesh(newVertices, newIndices);
+		auto newMesh = new StaticMesh(newVertices, newIndices);
 		temporaryMeshPool.push_back(newMesh);
 		auto newMeshRenderer = GetTemporaryRenderer();
 		newMeshRenderer->matetrial = batchRenderers[0]->matetrial;

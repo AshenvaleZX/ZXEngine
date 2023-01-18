@@ -6,8 +6,8 @@
 
 namespace ZXEngine
 {
-	class Mesh;
 	class Camera;
+	class StaticMesh;
 	class MeshRenderer;
 	class RenderObject;
 	class RenderQueue
@@ -33,7 +33,7 @@ namespace ZXEngine
 		// 当前使用数量
 		int rendererPoolIdx = 0;
 		// 记录动态合批产生的临时Mesh，每帧delete
-		list<Mesh*> temporaryMeshPool;
+		list<StaticMesh*> temporaryMeshPool;
 
 		void DynamicBatch(RendererList& batchRenderers);
 		MeshRenderer* MergeMeshs(RendererList& batchRenderers);

@@ -8,9 +8,9 @@
 
 namespace ZXEngine
 {
-	class Mesh;
 	class Shader;
 	class Camera;
+	class StaticMesh;
 	class RenderStateSetting;
 	class RenderPassAfterEffectRendering : public RenderPass
 	{
@@ -21,7 +21,7 @@ namespace ZXEngine
 		virtual void Render(Camera* camera);
 
 	private:
-		Mesh* screenQuad;
+		StaticMesh* screenQuad;
 		map<string, Shader*> aeShaders;
 		RenderStateSetting* renderState;
 

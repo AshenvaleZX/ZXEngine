@@ -240,6 +240,6 @@ namespace ZXEngine
 			vertex.TexCoords = coords[i];
 			vertices.push_back(vertex);
 		}
-		previewQuad = new Mesh(vertices, indices);
+		previewQuad = new StaticMesh(vertices, indices);
 	}
 }

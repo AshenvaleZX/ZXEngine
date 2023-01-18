@@ -3,9 +3,9 @@
 
 namespace ZXEngine
 {
-	class Mesh;
 	class Shader;
 	class Camera;
+	class StaticMesh;
 	class RenderStateSetting;
 	class RenderPassForwardRendering : public RenderPass
 	{
@@ -16,7 +16,7 @@ namespace ZXEngine
 		virtual void Render(Camera* camera);
 
 	private:
-		Mesh* skyBox;
+		StaticMesh* skyBox;
 		Shader* skyBoxShader;
 		RenderStateSetting* skyBoxRenderState;
 		RenderStateSetting* opaqueRenderState;

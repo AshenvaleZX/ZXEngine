@@ -160,7 +160,7 @@ namespace ZXEngine
 			vertex.TexCoords = Vector2(1);
 			vertices.push_back(vertex);
 		}
-		skyBox = new Mesh(vertices, indices);
+		skyBox = new StaticMesh(vertices, indices);
 	}
 
 	void RenderPassForwardRendering::RenderSkyBox(Camera* camera)

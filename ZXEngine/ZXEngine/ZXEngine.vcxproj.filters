@@ -60,7 +60,7 @@
     <ClCompile Include="..\..\CPPScripts\MeshRenderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\ZMesh.cpp">
+    <ClCompile Include="..\..\CPPScripts\StaticMesh.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\RenderEngine.cpp">
@@ -336,6 +336,9 @@
     <ClCompile Include="..\..\CPPScripts\Editor\EditorConsolePanel.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\ZMesh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">
@@ -383,7 +386,7 @@
     <ClInclude Include="..\..\CPPScripts\Debug.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\ZMesh.h">
+    <ClInclude Include="..\..\CPPScripts\StaticMesh.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\RenderEngine.h">
@@ -684,6 +687,9 @@
       <Filter>Editor</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\RenderStateSetting.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\ZMesh.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

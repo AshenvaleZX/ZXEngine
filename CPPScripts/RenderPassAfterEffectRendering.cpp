@@ -1,6 +1,6 @@
 #include "RenderPassAfterEffectRendering.h"
 #include "RenderAPI.h"
-#include "ZMesh.h"
+#include "StaticMesh.h"
 #include "ZShader.h"
 #include "Resources.h"
 #include "FBOManager.h"
@@ -93,7 +93,7 @@ namespace ZXEngine
 			vertex.TexCoords = coords[i];
 			vertices.push_back(vertex);
 		}
-		screenQuad = new Mesh(vertices, indices);
+		screenQuad = new StaticMesh(vertices, indices);
 	}
 
 	void RenderPassAfterEffectRendering::InitExtractBrightArea(bool isFinal)

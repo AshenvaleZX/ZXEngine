@@ -1,7 +1,7 @@
 #pragma once
 #include "Component.h"
-#include "ZMesh.h"
 #include "Material.h"
+#include "StaticMesh.h"
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -42,7 +42,7 @@ namespace ZXEngine
 	private:
 		// Processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
 		void ProcessNode(aiNode* node, const aiScene* scene);
-		Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
+		StaticMesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
 		void CheckExtremeVertex(const Vertex& vertex);
 	};
 }

@@ -79,7 +79,7 @@ namespace ZXEngine
         }
     }
 
-    Mesh* MeshRenderer::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+    StaticMesh* MeshRenderer::ProcessMesh(aiMesh* mesh, const aiScene* scene)
     {
         // data to fill
         vector<Vertex> vertices;
@@ -154,7 +154,7 @@ namespace ZXEngine
             }
         }
 
-        return new Mesh(vertices, indices);
+        return new StaticMesh(vertices, indices);
     }
 
     void MeshRenderer::CheckExtremeVertex(const Vertex& vertex)
