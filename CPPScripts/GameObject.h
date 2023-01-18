@@ -20,10 +20,11 @@ namespace ZXEngine
 #endif
 	public:
 		string name;
-		unsigned int layer;
+		unsigned int layer = 0;
 		GameObject* parent = nullptr;
 		vector<GameObject*> children;
 
+		GameObject() {};
 		GameObject(PrefabStruct* prefab);
 		~GameObject();
 

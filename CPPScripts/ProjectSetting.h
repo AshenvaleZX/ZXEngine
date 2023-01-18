@@ -10,6 +10,7 @@ namespace ZXEngine
 		static unsigned int srcHeight;
 		static string defaultScene;
 		static string projectPath;
+		static bool enableDynamicBatch;
 
 		// Editor
 		static unsigned int hierarchyWidth;
