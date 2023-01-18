@@ -37,6 +37,9 @@ namespace ZXEngine
 		// 计算逆矩阵
 		static Matrix3 Inverse(const Matrix3& mat);
 		static Matrix4 Inverse(const Matrix4& mat);
+		// 计算转置矩阵
+		static Matrix3 Transpose(const Matrix3& mat);
+		static Matrix4 Transpose(const Matrix4& mat);
 		// 向量点乘
 		static float Dot(const Vector3& left, const Vector3& right);
 		// 向量叉乘

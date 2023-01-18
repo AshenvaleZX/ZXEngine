@@ -218,6 +218,23 @@ namespace ZXEngine
 			inv30 * oneOverDeterminant, inv31 * oneOverDeterminant, inv32 * oneOverDeterminant, inv33 * oneOverDeterminant);
 	}
 
+	Matrix3 Math::Transpose(const Matrix3& mat)
+	{
+		return Matrix3(
+			mat.m00, mat.m10, mat.m20,
+			mat.m01, mat.m11, mat.m21,
+			mat.m02, mat.m12, mat.m22);
+	}
+
+	Matrix4 Math::Transpose(const Matrix4& mat)
+	{
+		return Matrix4(
+			mat.m00, mat.m10, mat.m20, mat.m30,
+			mat.m01, mat.m11, mat.m21, mat.m31,
+			mat.m02, mat.m12, mat.m22, mat.m32,
+			mat.m03, mat.m13, mat.m23, mat.m33);
+	}
+
 	float Math::Dot(const Vector3& left, const Vector3& right)
 	{
 		return left.x * right.x + left.y + right.y + left.z + right.z;
