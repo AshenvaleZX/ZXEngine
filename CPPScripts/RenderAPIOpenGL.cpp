@@ -633,7 +633,12 @@ namespace ZXEngine
 		this->primitiveSize = size;
 	}
 
-	void RenderAPIOpenGL::SetUpMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, vector<Vertex> vertices, vector<unsigned int> indices)
+	void RenderAPIOpenGL::DeleteMesh(unsigned int VAO)
+	{
+		glDeleteVertexArrays(1, &VAO);
+	}
+
+	void RenderAPIOpenGL::SetUpStaticMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, vector<Vertex> vertices, vector<unsigned int> indices)
 	{
 		// create buffers/arrays
 		glGenVertexArrays(1, &VAO);
@@ -670,11 +675,6 @@ namespace ZXEngine
 
 		// 设置完记得还原一下
 		glBindVertexArray(0);
-	}
-
-	void RenderAPIOpenGL::DeleteMesh(unsigned int VAO)
-	{
-		glDeleteVertexArrays(1, &VAO);
 	}
 
 	void RenderAPIOpenGL::SetUpDynamicMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, unsigned int vertexSize, unsigned int indexSize)

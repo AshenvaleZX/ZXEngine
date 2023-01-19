@@ -17,7 +17,7 @@ namespace ZXEngine
 
 	void DynamicMesh::UpdateData(vector<Vertex> vertices, vector<unsigned int> indices)
 	{
-		if (vertices.size() != vertexSize || indices.size() != indexSize)
+		if (vertices.size() > vertexSize || indices.size() > indexSize)
 		{
 			Debug::LogError("Update dynamic mesh data failed, error data size!");
 			return;
