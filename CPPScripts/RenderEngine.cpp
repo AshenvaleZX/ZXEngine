@@ -12,6 +12,7 @@
 #include "FBOManager.h"
 #include "ParticleSystemManager.h"
 #include "ProjectSetting.h"
+#include "RenderAPIVulkan.h"
 
 namespace ZXEngine
 {
@@ -51,14 +52,26 @@ namespace ZXEngine
 		GlobalData::srcHeight = height;
 		RenderAPI::GetInstance()->SetViewPort(width, height);
 #endif
+
+#ifdef ZX_API_VULKAN
+		auto api = reinterpret_cast<RenderAPIVulkan*>(glfwGetWindowUserPointer(window));
+		api->windowResized = true;
+#endif
 	}
 
 	void RenderEngine::InitWindow()
 	{
 		glfwInit();
+
+#ifdef ZX_API_OPENGL
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#endif
+
+#ifdef ZX_API_VULKAN
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+#endif
 
 		window = glfwCreateWindow(ProjectSetting::srcWidth, ProjectSetting::srcHeight, "ZXEngine", NULL, NULL);
 		if (window == NULL)
@@ -67,7 +80,15 @@ namespace ZXEngine
 			glfwTerminate();
 			return;
 		}
+
+#ifdef ZX_API_OPENGL
 		glfwMakeContextCurrent(window);
+#endif
+
+#ifdef ZX_API_VULKAN
+		glfwSetWindowUserPointer(window, RenderAPI::GetInstance());
+#endif
+
 		glfwSetFramebufferSizeCallback(window, FrameBufferSizeCallback);
 
 		// glad: load all OpenGL function pointers
