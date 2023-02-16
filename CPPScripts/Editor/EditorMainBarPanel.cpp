@@ -5,6 +5,8 @@
 #include "../Time.h"
 #include "../SceneManager.h"
 #include "../LuaManager.h"
+#include "../Resources.h"
+#include "../Vulkan/SPIRVCompiler.h"
 
 namespace ZXEngine
 {
@@ -51,6 +53,16 @@ namespace ZXEngine
 				{
 					if (ImGui::MenuItem("Project Settings"))
 						Debug::Log("Click Project Settings");
+
+					ImGui::EndMenu();
+				}
+				if (ImGui::BeginMenu("Assets"))
+				{
+					if (ImGui::MenuItem("Compile All Shader for Vulkan"))
+					{
+						SPIRVCompiler::CompileAllShader(Resources::GetAssetsPath());
+						Debug::Log("The compilation of all shaders is complete.");
+					}
 
 					ImGui::EndMenu();
 				}

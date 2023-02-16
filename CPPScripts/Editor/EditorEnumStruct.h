@@ -28,8 +28,8 @@ namespace ZXEngine
 		string path;
 		string name;
 		string extension;
-		AssetType type;
-		EditorAssetNode* parent;
+		AssetType type = AssetType::Other;
+		EditorAssetNode* parent = nullptr;
 		vector<EditorAssetNode*> children;
 	};
 

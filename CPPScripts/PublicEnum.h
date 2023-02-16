@@ -2,6 +2,13 @@
 
 namespace ZXEngine
 {
+	enum class ShaderStage
+	{
+		Vertex,
+		Geometry,
+		Fragment,
+	};
+
 	enum class LogType
 	{
 		Message,

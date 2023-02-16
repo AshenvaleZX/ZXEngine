@@ -242,6 +242,7 @@
     <ClCompile Include="..\..\CPPScripts\Resources.cpp" />
     <ClCompile Include="..\..\CPPScripts\Scene.cpp" />
     <ClCompile Include="..\..\CPPScripts\SceneManager.cpp" />
+    <ClCompile Include="..\..\CPPScripts\ShaderParser.cpp" />
     <ClCompile Include="..\..\CPPScripts\TextCharactersManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\UITextRenderer.cpp" />
     <ClCompile Include="..\..\CPPScripts\Texture.cpp" />
@@ -249,6 +250,7 @@
     <ClCompile Include="..\..\CPPScripts\Transform.cpp" />
     <ClCompile Include="..\..\CPPScripts\UITextureRenderer.cpp" />
     <ClCompile Include="..\..\CPPScripts\Utils.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Vulkan\SPIRVCompiler.cpp" />
     <ClCompile Include="..\..\CPPScripts\ZCamera.cpp" />
     <ClCompile Include="..\..\CPPScripts\StaticMesh.cpp" />
     <ClCompile Include="..\..\CPPScripts\ZMesh.cpp" />
@@ -363,6 +365,7 @@
     <ClInclude Include="..\..\CPPScripts\Scene.h" />
     <ClInclude Include="..\..\CPPScripts\SceneManager.h" />
     <ClInclude Include="..\..\CPPScripts\Shader.h" />
+    <ClInclude Include="..\..\CPPScripts\ShaderParser.h" />
     <ClInclude Include="..\..\CPPScripts\TextCharactersManager.h" />
     <ClInclude Include="..\..\CPPScripts\UITextRenderer.h" />
     <ClInclude Include="..\..\CPPScripts\Texture.h" />
@@ -370,6 +373,7 @@
     <ClInclude Include="..\..\CPPScripts\Transform.h" />
     <ClInclude Include="..\..\CPPScripts\UITextureRenderer.h" />
     <ClInclude Include="..\..\CPPScripts\Utils.h" />
+    <ClInclude Include="..\..\CPPScripts\Vulkan\SPIRVCompiler.h" />
     <ClInclude Include="..\..\CPPScripts\ZCamera.h" />
     <ClInclude Include="..\..\CPPScripts\StaticMesh.h" />
     <ClInclude Include="..\..\CPPScripts\ZMesh.h" />

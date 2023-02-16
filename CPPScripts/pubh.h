@@ -31,6 +31,7 @@ using std::make_pair;
 using std::vector;
 using std::endl;
 using std::ifstream;
+using std::ofstream;
 using std::stringstream;
 using std::to_string;
 using json = nlohmann::json;

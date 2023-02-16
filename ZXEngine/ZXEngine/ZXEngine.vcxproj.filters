@@ -28,6 +28,9 @@
     <Filter Include="Editor">
       <UniqueIdentifier>{925d5f95-bb96-4598-81bd-91393859b792}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Vulkan">
+      <UniqueIdentifier>{dc46173f-d973-4a85-a567-8de47d9e0a7e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Vendor\Src\glad.c">
@@ -340,6 +343,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\RenderAPIVulkan.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Vulkan\SPIRVCompiler.cpp">
+      <Filter>Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\ShaderParser.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -696,6 +705,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\RenderAPIVulkan.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Vulkan\SPIRVCompiler.h">
+      <Filter>Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\ShaderParser.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
