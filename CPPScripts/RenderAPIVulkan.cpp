@@ -31,6 +31,96 @@ namespace ZXEngine
         InitImmediateCommand();
     }
 
+    unsigned int RenderAPIVulkan::LoadTexture(const char* path, int& width, int& height)
+    {
+        int nrComponents;
+        unsigned char* pixels = stbi_load(path, &width, &height, &nrComponents, STBI_rgb_alpha);
+
+        VkDeviceSize imageSize = VkDeviceSize(width * height * 4);
+        VulkanBuffer stagingBuffer = CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_CPU_ONLY);
+
+        // 把数据拷贝到stagingBuffer
+        void* data;
+        void* pixelsPtr = pixels; // 为memcpy转换一下指针类型
+        vmaMapMemory(vmaAllocator, stagingBuffer.allocation, &data);
+        memcpy(data, pixelsPtr, static_cast<size_t>(imageSize));
+        vmaUnmapMemory(vmaAllocator, stagingBuffer.allocation);
+
+        stbi_image_free(pixels);
+
+        uint32_t mipLevels = GetMipMapLevels(width, height);
+
+        VulkanImage image = CreateImage(width, height, mipLevels, msaaSamplesCount,
+            VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
+            // 这里我们要从一个stagingBuffer接收数据，所以要写一个VK_IMAGE_USAGE_TRANSFER_DST_BIT
+            // 又因为我们要生成mipmap，需要从这个原image读数据，所以又再加一个VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+            // 然后再写一个VK_IMAGE_USAGE_SAMPLED_BIT表示会用于shader代码采样纹理
+            VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+            VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+
+        TransitionImageLayout(image.image, 
+            // 从初始的Layout转换到接收stagingBuffer数据的Layout
+            VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+            mipLevels,
+            // 从硬盘加载的图像默认都是Color
+            VK_IMAGE_ASPECT_COLOR_BIT,
+            // 转换可以直接开始，没有限制
+            VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
+            // 图像Transfer的写入操作需要在这个转换之后进行
+            VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT);
+
+        // 把数据从stagingBuffer复制到image
+        ImmediatelyExecute([=](VkCommandBuffer cmd)
+        {
+            VkBufferImageCopy region{};
+            // 从buffer读取数据的起始偏移量
+            region.bufferOffset = 0;
+            // 这两个参数明确像素在内存里的布局方式，如果我们只是简单的紧密排列数据，就填0
+            region.bufferRowLength = 0;
+            region.bufferImageHeight = 0;
+            // 下面4个参数都是在设置我们要把数据拷贝到image的哪一部分
+            region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            region.imageSubresource.mipLevel = 0;
+            region.imageSubresource.baseArrayLayer = 0;
+            region.imageSubresource.layerCount = 1;
+            // 这个也是在设置我们要把图像拷贝到哪一部分
+            // 如果是整张图片，offset就全是0，extent就直接是图像高宽
+            region.imageOffset = { 0, 0, 0 };
+            region.imageExtent = { (uint32_t)width, (uint32_t)height, 1 };
+
+            vkCmdCopyBufferToImage(
+                cmd,
+                stagingBuffer.buffer,
+                image.image,
+                // image当前的layout
+                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                1, &region
+            );
+        });
+
+        GenerateMipMaps(image.image, VK_FORMAT_R8G8B8A8_SRGB, width, height, mipLevels);
+
+        DestroyBuffer(stagingBuffer);
+
+        VkImageView imageView = CreateImageView(image.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
+
+        unsigned int textureID = GetNextTextureIndex();
+        auto texture = GetTextureByIndex(textureID);
+        texture->inUse = true;
+        texture->image = image;
+        texture->imageView = imageView;
+
+        return textureID;
+    }
+
+    void RenderAPIVulkan::DeleteTexture(unsigned int id)
+    {
+        auto texture = GetTextureByIndex(id);
+        DestroyImageView(texture->imageView);
+        DestroyImage(texture->image);
+        texture->inUse = false;
+    }
+
     void RenderAPIVulkan::DeleteMesh(unsigned int VAO)
     {
         auto meshBuffer = GetVAOByIndex(VAO);
@@ -158,6 +248,26 @@ namespace ZXEngine
     VulkanVAO* RenderAPIVulkan::GetVAOByIndex(unsigned int idx)
     {
         return VulkanVAOArray[idx];
+    }
+
+    unsigned int RenderAPIVulkan::GetNextTextureIndex()
+    {
+        unsigned int length = (unsigned int)VulkanTextureArray.size();
+
+        for (unsigned int i = 0; i < length; i++)
+        {
+            if (!VulkanTextureArray[i]->inUse)
+                return i;
+        }
+
+        VulkanTextureArray.push_back(new VulkanTexture());
+
+        return length;
+    }
+
+    VulkanTexture* RenderAPIVulkan::GetTextureByIndex(unsigned int idx)
+    {
+        return VulkanTextureArray[idx];
     }
 
 
@@ -708,6 +818,241 @@ namespace ZXEngine
     }
 
 
+    VulkanBuffer RenderAPIVulkan::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage)
+    {
+        VkBufferCreateInfo bufferInfo = {};
+        bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        bufferInfo.size = size;
+        bufferInfo.usage = usage;
+
+        VmaAllocationCreateInfo allocationInfo = {};
+        allocationInfo.usage = memoryUsage;
+
+        VulkanBuffer newBuffer;
+        vmaCreateBuffer(vmaAllocator, &bufferInfo, &allocationInfo, &newBuffer.buffer, &newBuffer.allocation, nullptr);
+        return newBuffer;
+    }
+
+    void RenderAPIVulkan::DestroyBuffer(VulkanBuffer buffer)
+    {
+        vmaDestroyBuffer(vmaAllocator, buffer.buffer, buffer.allocation);
+    }
+
+    VulkanImage RenderAPIVulkan::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage)
+    {
+        VkImageCreateInfo imageInfo{};
+        imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+        imageInfo.imageType = VK_IMAGE_TYPE_2D;
+        imageInfo.extent.width = width;
+        imageInfo.extent.height = height;
+        // 纹理第三个维度的像素数量，如果不是3D纹理应该都是1
+        imageInfo.extent.depth = 1;
+        imageInfo.mipLevels = mipLevels;
+        imageInfo.arrayLayers = 1;
+        imageInfo.format = format;
+        // VK_IMAGE_TILING_LINEAR: texel以行为主序排列为数组
+        // VK_IMAGE_TILING_OPTIMAL: texel按照Vulkan的具体实现来定义的一种顺序排列，以实现最佳访问
+        // 这个和layout不一样，一旦设置之后是固定的不能改，如果CPU需要读取这个数据，就设置为VK_IMAGE_TILING_LINEAR
+        // 如果只是GPU使用，就设置为VK_IMAGE_TILING_OPTIMAL性能更好
+        imageInfo.tiling = tiling;
+        // 这里只能填VK_IMAGE_LAYOUT_UNDEFINED或者VK_IMAGE_LAYOUT_PREINITIALIZED
+        // VK_IMAGE_LAYOUT_UNDEFINED意味着第一次transition数据的时候数据会被丢弃
+        // VK_IMAGE_LAYOUT_PREINITIALIZED是第一次transition数据的时候数据会被保留
+        // 不是很懂这个什么意思，如果是一个用来从CPU写入数据，然后transfer到其它VkImage的stagingImage，就要用VK_IMAGE_LAYOUT_PREINITIALIZED
+        imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        imageInfo.usage = usage;
+        imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        // 这个只影响当作attachments使用的VkImage(自己创建的frame buffer才支持这个，交换链用的那个默认buffer不支持)
+        imageInfo.samples = numSamples;
+        // 可以加一些标志，给特殊用途的图像做优化，比如3D的稀疏(sparse)图像
+        imageInfo.flags = 0; // Optional
+
+        VmaAllocationCreateInfo allocationInfo = {};
+        allocationInfo.usage = memoryUsage;
+
+        VulkanImage newImage;
+        vmaCreateImage(vmaAllocator, &imageInfo, &allocationInfo, &newImage.image, &newImage.allocation, nullptr);
+        return newImage;
+    }
+
+    void RenderAPIVulkan::DestroyImage(VulkanImage image)
+    {
+        vmaDestroyImage(vmaAllocator, image.image, image.allocation);
+    }
+
+    void RenderAPIVulkan::GenerateMipMaps(VkImage image, VkFormat format, int32_t width, int32_t height, uint32_t mipLevels)
+    {
+        // 生成mipmap有2种方式
+        // 一种是用一些外部的接口，比如stb_image_resize，去生成每一层的图像数据，然后把每一层都当原始图像那样填入数据
+        // 我们这里用另一种方式，用vkCmdBlitImage来处理，这个是用于复制，缩放和filter图像数据的
+        // 在一个循环里，把level 0(原图)数据缩小一倍blit到level 1，然后1到2，2到3这样
+
+        // 先检查图像格式是否支持linear blitting
+        VkFormatProperties formatProperties;
+        vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &formatProperties);
+        if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
+            throw std::runtime_error("texture image format does not support linear blitting!");
+
+        ImmediatelyExecute([=](VkCommandBuffer cmd)
+        {
+            VkImageMemoryBarrier barrier{};
+            barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+            barrier.image = image;
+            barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            barrier.subresourceRange.baseArrayLayer = 0;
+            barrier.subresourceRange.layerCount = 1;
+            barrier.subresourceRange.levelCount = 1;
+
+            int32_t mipWidth = width;
+            int32_t mipHeight = height;
+            // 注意循环是从1开始的
+            for (uint32_t i = 1; i < mipLevels; i++)
+            {
+                // 先把第i-1级(0是原图)的layout转成TRANSFER_SRC_OPTIMAL
+                barrier.subresourceRange.baseMipLevel = i - 1;
+                // 原layout，其实image一开始创建的时候每一级mipmap都设置为VK_IMAGE_LAYOUT_UNDEFINED了
+                // 但是每一级mipmap会先作为目标图像接收数据，再作为原图像向下一级传输数据
+                // 所以这里第i-1级mipmap，相当于是这一次Blit操作的原数据，也是这个循环里面第二次被使用(第一次被使用是作为目标图像)
+                // 所以这里要从TRANSFER_DST_OPTIMAL转换到TRANSFER_SRC_OPTIMAL
+                barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+                barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+                // 这个image的数据写入应该在这个Barrier之前完成
+                barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+                // 这个Barrier之后就可以读这个image的数据了
+                barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+                vkCmdPipelineBarrier(cmd,
+                    // 指定应该在Barrier之前完成的操作，在管线里的哪个stage
+                    VK_PIPELINE_STAGE_TRANSFER_BIT,
+                    // 指定应该等待Barrier的操作，在管线里的哪个stage
+                    VK_PIPELINE_STAGE_TRANSFER_BIT,
+                    0, 0, nullptr, 0, nullptr, 1, &barrier
+                );
+
+                // 配置Blit操作，整个Blit操作就是把同一个image第i-1级mipmap的数据缩小一半复制到第i级
+                VkImageBlit blit{};
+                // 操作原图像的(0,0)到(width, height)
+                blit.srcOffsets[0] = { 0, 0, 0 };
+                blit.srcOffsets[1] = { mipWidth, mipHeight, 1 };
+                // 操作原图像的Color
+                blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                // 操作原图像mipmap等级的i-1
+                blit.srcSubresource.mipLevel = i - 1;
+                // 暂时没用
+                blit.srcSubresource.baseArrayLayer = 0;
+                blit.srcSubresource.layerCount = 1;
+                // 复制到目标图像的(0,0)到(width/2, height/2)，如果小于1的话等于1
+                blit.dstOffsets[0] = { 0, 0, 0 };
+                blit.dstOffsets[1] = { mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1 };
+                // 操作目标图像的Color
+                blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                // 复制到目标图像的mipmap等级i
+                blit.dstSubresource.mipLevel = i;
+                // 暂时没用
+                blit.dstSubresource.baseArrayLayer = 0;
+                blit.dstSubresource.layerCount = 1;
+
+                // 添加Bilt操作指令，这里原图像和目标图像设置为同一个，因为是同一个image的不同mipmap层操作
+                vkCmdBlitImage(cmd,
+                    image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                    image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                    1, &blit, VK_FILTER_LINEAR
+                );
+
+                // Blit完之后，这个Barrier所对应的i-1级mipmap就结束任务了，可以提供给shader读取了
+                // 所以layout从TRANSFER_SRC_OPTIMAL转换到SHADER_READ_ONLY_OPTIMAL
+                barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+                barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                // 这个image第i-1级mipmap的数据读取操作应该在这个Barrier之前完成
+                barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+                barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+                vkCmdPipelineBarrier(cmd,
+                    // 结合前面的srcAccessMask
+                    // transfer阶段的transfer读取操作应该在这个Barrier之前执行
+                    VK_PIPELINE_STAGE_TRANSFER_BIT,
+                    // 结合前面的dstAccessMask
+                    // fragment shader阶段的shader读取操作应该在这个Barrier之后执行
+                    VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+                    0, 0, nullptr, 0, nullptr, 1, &barrier
+                );
+
+                if (mipWidth > 1) mipWidth /= 2;
+                if (mipHeight > 1) mipHeight /= 2;
+            }
+
+            // 循环结束后还有最后一级的mipmap需要处理
+            barrier.subresourceRange.baseMipLevel = mipLevels - 1;
+            // 因为最后一级只接收数据，不需要从它复制数据到其它地方，所以最后的layout就是TRANSFER_DST_OPTIMAL
+            barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+            // 需要转换成shader读取用的SHADER_READ_ONLY_OPTIMAL
+            barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            // 这个Barrier之前需要完成最后一级mipmap的数据写入
+            barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            // shader读取数据需要在这个Barrier之后才能开始
+            barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+            
+            vkCmdPipelineBarrier(cmd,
+                // 结合前面的srcAccessMask
+                // transfer阶段的transfer写入操作应该在这个Barrier之前执行
+                VK_PIPELINE_STAGE_TRANSFER_BIT,
+                // 结合前面的dstAccessMask
+                // fragment shader阶段的读取操作需要在这个Barrier之后才能开始
+                VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+                0, 0, nullptr, 0, nullptr, 1, &barrier
+            );
+        });
+    }
+
+    VkImageView RenderAPIVulkan::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)
+    {
+        VkImageViewCreateInfo createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        createInfo.image = image;
+        createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        createInfo.format = format;
+
+        // components字段允许调整颜色通道的最终的映射逻辑
+        // 比如，我们可以将所有颜色通道映射为红色通道，以实现单色纹理，我们也可以将通道映射具体的常量数值0和1
+        // 这里用默认的
+        createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+
+        // subresourceRangle字段用于描述图像的使用目标是什么，以及可以被访问的有效区域
+        // 这个图像用作填充color还是depth stencil等
+        createInfo.subresourceRange.aspectMask = aspectFlags;
+        // mipmap
+        createInfo.subresourceRange.baseMipLevel = 0;
+        createInfo.subresourceRange.levelCount = mipLevels;
+        // 没有multiple layer (如果在写VR，就需要创建支持多层的交换链。并且通过不同的层为每一个图像创建多个视图，以满足不同层的图像在左右眼渲染时对视图的需要)
+        createInfo.subresourceRange.baseArrayLayer = 0;
+        createInfo.subresourceRange.layerCount = 1;
+
+        VkImageView imageView;
+        if (vkCreateImageView(device, &createInfo, nullptr, &imageView) != VK_SUCCESS)
+            throw std::runtime_error("failed to create image views!");
+        return imageView;
+    }
+
+    void RenderAPIVulkan::DestroyImageView(VkImageView imageView)
+    {
+        vkDestroyImageView(device, imageView, nullptr);
+    }
+
+
+    uint32_t RenderAPIVulkan::GetMipMapLevels(int width, int height)
+    {
+        // 计算mipmap等级
+        // 通常把图片高宽缩小一半就是一级，直到缩不动
+        // 先max找出高宽像素里比较大的，然后用log2计算可以被2除几次，再向下取整就是这张图可以缩小多少次了
+        // 最后加1是因为原图也要一个等级
+        return static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
+    }
+
     void RenderAPIVulkan::InitImmediateCommand()
     {
         VkCommandBufferAllocateInfo allocInfo{};
@@ -743,5 +1088,41 @@ namespace ZXEngine
 
         vkWaitForFences(device, 1, &immediateExeFence, VK_TRUE, UINT64_MAX);
         vkResetFences(device, 1, &immediateExeFence);
+    }
+
+    void RenderAPIVulkan::TransitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels, VkImageAspectFlags aspectMask, VkPipelineStageFlags srcStage, VkAccessFlags srcAccessMask, VkPipelineStageFlags dstStage, VkAccessFlags dstAccessMask)
+    {
+        ImmediatelyExecute([=](VkCommandBuffer cmd)
+        {
+            VkImageMemoryBarrier barrier = {};
+            barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+            barrier.oldLayout = oldLayout;
+            barrier.newLayout = newLayout;
+            // 这两个参数是用于转换队列簇所有权的，如果我们不做这个转换，一定要明确填入VK_QUEUE_FAMILY_IGNORED
+            barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrier.image = image;
+            // mipmap
+            barrier.subresourceRange.baseMipLevel = 0;
+            barrier.subresourceRange.levelCount = mipLevels;
+            // 非Image数组
+            barrier.subresourceRange.baseArrayLayer = 0;
+            barrier.subresourceRange.layerCount = 1;
+            // Image用途(Color, Depth, Stencil)
+            barrier.subresourceRange.aspectMask = aspectMask;
+            barrier.srcAccessMask = srcAccessMask;
+            barrier.dstAccessMask = dstAccessMask;
+
+            vkCmdPipelineBarrier(cmd, srcStage, dstStage,
+                // 这个参数填0或者VK_DEPENDENCY_BY_REGION_BIT，后者意味着允许读取到目前为止已写入的资源部分
+                0,
+                // VkMemoryBarrier数组
+                0, nullptr,
+                // VkBufferMemoryBarrier数组
+                0, nullptr,
+                // VkImageMemoryBarrier数组
+                1, &barrier
+            );
+        });
     }
 }

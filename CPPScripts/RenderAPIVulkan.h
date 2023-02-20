@@ -33,13 +33,33 @@ namespace ZXEngine
     };
 
     // 交换链的三大类属性设置
-    struct SwapChainSupportDetails {
+    struct SwapChainSupportDetails
+    {
         // 基本的surface功能属性(min/max number of images in swap chain, min/max width and height of images)
         VkSurfaceCapabilitiesKHR capabilities;
         // Surface格式(pixel format, color space)
         vector<VkSurfaceFormatKHR> formats;
         // 有效的presentation模式
         vector<VkPresentModeKHR> presentModes;
+    };
+
+    struct VulkanImage
+    {
+        VkImage image = VK_NULL_HANDLE;
+        VmaAllocation allocation = VK_NULL_HANDLE;
+    };
+
+    struct VulkanBuffer
+    {
+        VkBuffer buffer = VK_NULL_HANDLE;
+        VmaAllocation allocation = VK_NULL_HANDLE;
+    };
+
+    struct VulkanTexture
+    {
+        VulkanImage image;
+        VkImageView imageView = VK_NULL_HANDLE;
+        bool inUse = false;
     };
 
     struct VulkanVAO
@@ -60,6 +80,9 @@ namespace ZXEngine
         RenderAPIVulkan();
         ~RenderAPIVulkan() {};
 
+        virtual unsigned int LoadTexture(const char* path, int& width, int& height);
+        virtual void DeleteTexture(unsigned int id);
+
         virtual void DeleteMesh(unsigned int VAO);
         virtual void SetUpStaticMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, vector<Vertex> vertices, vector<unsigned int> indices);
 
@@ -69,9 +92,12 @@ namespace ZXEngine
     /// </summary>
     private:
         vector<VulkanVAO*> VulkanVAOArray;
+        vector<VulkanTexture*> VulkanTextureArray;
 
         unsigned int GetNextVAOIndex();
         VulkanVAO* GetVAOByIndex(unsigned int idx);
+        unsigned int GetNextTextureIndex();
+        VulkanTexture* GetTextureByIndex(unsigned int idx);
 
 
     /// <summary>
@@ -147,6 +173,21 @@ namespace ZXEngine
 
 
     /// <summary>
+    /// Vulkan资源创建相关接口
+    /// </summary>
+    private:
+        VulkanBuffer CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage);
+        void DestroyBuffer(VulkanBuffer buffer);
+
+        VulkanImage CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage);
+        void DestroyImage(VulkanImage image);
+        void GenerateMipMaps(VkImage image, VkFormat format, int32_t width, int32_t height, uint32_t mipLevels);
+
+        VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
+        void DestroyImageView(VkImageView imageView);
+
+
+    /// <summary>
     /// 其它辅助接口
     /// </summary>
     public:
@@ -156,7 +197,9 @@ namespace ZXEngine
         VkFence immediateExeFence;
         VkCommandBuffer immediateExeCmd;
 
+        uint32_t GetMipMapLevels(int width, int height);
         void InitImmediateCommand();
         void ImmediatelyExecute(std::function<void(VkCommandBuffer cmd)>&& function);
+        void TransitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels, VkImageAspectFlags aspectMask, VkPipelineStageFlags srcStage, VkAccessFlags srcAccessMask, VkPipelineStageFlags dstStage, VkAccessFlags dstAccessMask);
     };
 }
