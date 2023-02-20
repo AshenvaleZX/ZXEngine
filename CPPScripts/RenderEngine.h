@@ -1,10 +1,6 @@
 #pragma once
 #include "pubh.h"
 #include <glad/glad.h>
-#ifdef ZX_API_VULKAN
-// 用GLFW的话这里就不要自己去include Vulkan的头文件，用这个宏定义，让GLFW自己去处理，不然有些接口有问题
-#define GLFW_INCLUDE_VULKAN
-#endif
 #include <GLFW/glfw3.h>
 
 namespace ZXEngine

@@ -27,6 +27,137 @@ namespace ZXEngine
         CreateMemoryAllocator();
         CreateSurface();
         CreateSwapChain();
+
+        InitImmediateCommand();
+    }
+
+    void RenderAPIVulkan::DeleteMesh(unsigned int VAO)
+    {
+        auto meshBuffer = GetVAOByIndex(VAO);
+        meshBuffer->inUse = false;
+        vmaDestroyBuffer(vmaAllocator, meshBuffer->indexBuffer, meshBuffer->indexBufferAlloc);
+        vmaDestroyBuffer(vmaAllocator, meshBuffer->vertexBuffer, meshBuffer->vertexBufferAlloc);
+    }
+
+    void RenderAPIVulkan::SetUpStaticMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, vector<Vertex> vertices, vector<unsigned int> indices)
+    {
+        VAO = GetNextVAOIndex();
+        auto meshBuffer = GetVAOByIndex(VAO);
+
+        // ----------------------------------------------- Vertex Buffer -----------------------------------------------
+        VkDeviceSize vertexBufferSize = sizeof(Vertex) * vertices.size();
+
+        // 建立StagingBuffer
+        VkBufferCreateInfo vertexStagingBufferInfo = {};
+        vertexStagingBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        vertexStagingBufferInfo.size = vertexBufferSize;
+        vertexStagingBufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+        vertexStagingBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+        VmaAllocationCreateInfo vmaAllocInfo = {};
+        vmaAllocInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
+
+        VkBuffer vertexStagingBuffer;
+        VmaAllocation vertexStagingBufferAlloc;
+        vmaCreateBuffer(vmaAllocator, &vertexStagingBufferInfo, &vmaAllocInfo, &vertexStagingBuffer, &vertexStagingBufferAlloc, nullptr);
+
+        // 拷贝数据到StagingBuffer
+        void* vertexData;
+        vmaMapMemory(vmaAllocator, vertexStagingBufferAlloc, &vertexData);
+        memcpy(vertexData, vertices.data(), vertices.size() * sizeof(Vertex));
+        vmaUnmapMemory(vmaAllocator, vertexStagingBufferAlloc);
+
+        // 建立VertexBuffer
+        VkBufferCreateInfo vertexBufferInfo = {};
+        vertexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        vertexBufferInfo.size = vertexBufferSize;
+        vertexBufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+        vertexBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE; // 只有一个队列簇使用
+
+        vmaAllocInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+
+        vmaCreateBuffer(vmaAllocator, &vertexBufferInfo, &vmaAllocInfo, &meshBuffer->vertexBuffer, &meshBuffer->vertexBufferAlloc, nullptr);
+
+        // 从StagingBuffer拷贝到VertexBuffer
+        ImmediatelyExecute([=](VkCommandBuffer cmd)
+        {
+            VkBufferCopy copy = {};
+            copy.dstOffset = 0;
+            copy.srcOffset = 0;
+            copy.size = vertexBufferSize;
+            vkCmdCopyBuffer(cmd, vertexStagingBuffer, meshBuffer->vertexBuffer, 1, &copy);
+        });
+
+        // 销毁StagingBuffer
+        vmaDestroyBuffer(vmaAllocator, vertexStagingBuffer, vertexStagingBufferAlloc);
+
+        // ----------------------------------------------- Index Buffer -----------------------------------------------
+        VkDeviceSize indexBufferSize = sizeof(unsigned int) * indices.size();
+
+        // 建立StagingBuffer
+        VkBufferCreateInfo indexStagingBufferInfo = {};
+        indexStagingBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        indexStagingBufferInfo.size = indexBufferSize;
+        indexStagingBufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+        indexStagingBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+        vmaAllocInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
+
+        VkBuffer indexStagingBuffer;
+        VmaAllocation indexStagingBufferAlloc;
+        vmaCreateBuffer(vmaAllocator, &indexStagingBufferInfo, &vmaAllocInfo, &indexStagingBuffer, &indexStagingBufferAlloc, nullptr);
+
+        // 拷贝数据到StagingBuffer
+        void* indexData;
+        vmaMapMemory(vmaAllocator, indexStagingBufferAlloc, &indexData);
+        memcpy(indexData, indices.data(), indices.size() * sizeof(unsigned int));
+        vmaUnmapMemory(vmaAllocator, indexStagingBufferAlloc);
+
+        // 建立IndexBuffer
+        VkBufferCreateInfo indexBufferInfo = {};
+        indexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        indexBufferInfo.size = indexBufferSize;
+        indexBufferInfo.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+        indexBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE; // 只有一个队列簇使用
+
+        vmaAllocInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+
+        vmaCreateBuffer(vmaAllocator, &indexBufferInfo, &vmaAllocInfo, &meshBuffer->indexBuffer, &meshBuffer->indexBufferAlloc, nullptr);
+
+        // 从StagingBuffer拷贝到IndexBuffer
+        ImmediatelyExecute([=](VkCommandBuffer cmd)
+        {
+            VkBufferCopy copy = {};
+            copy.dstOffset = 0;
+            copy.srcOffset = 0;
+            copy.size = indexBufferSize;
+            vkCmdCopyBuffer(cmd, indexStagingBuffer, meshBuffer->indexBuffer, 1, &copy);
+        });
+
+        // 销毁StagingBuffer
+        vmaDestroyBuffer(vmaAllocator, indexStagingBuffer, indexStagingBufferAlloc);
+
+        meshBuffer->inUse = true;
+    }
+
+    unsigned int RenderAPIVulkan::GetNextVAOIndex()
+    {
+        unsigned int length = (unsigned int)VulkanVAOArray.size();
+        
+        for (unsigned int i = 0; i < length; i++)
+        {
+            if (!VulkanVAOArray[i]->inUse)
+                return i;
+        }
+
+        VulkanVAOArray.push_back(new VulkanVAO());
+
+        return length;
+    }
+
+    VulkanVAO* RenderAPIVulkan::GetVAOByIndex(unsigned int idx)
+    {
+        return VulkanVAOArray[idx];
     }
 
 
@@ -574,5 +705,43 @@ namespace ZXEngine
         {
             return capabilities.currentExtent;
         }
+    }
+
+
+    void RenderAPIVulkan::InitImmediateCommand()
+    {
+        VkCommandBufferAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandPool = commandPool;
+        allocInfo.commandBufferCount = 1;
+        vkAllocateCommandBuffers(device, &allocInfo, &immediateExeCmd);
+
+        VkFenceCreateInfo fenceInfo{};
+        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+        // 创建时立刻设置为signaled状态(否则第一次永远等不到)
+        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+        vkCreateFence(device, &fenceInfo, nullptr, &immediateExeFence);
+    }
+
+    void RenderAPIVulkan::ImmediatelyExecute(std::function<void(VkCommandBuffer cmd)>&& function)
+    {
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+        vkBeginCommandBuffer(immediateExeCmd, &beginInfo);
+
+        function(immediateExeCmd);
+
+        vkEndCommandBuffer(immediateExeCmd);
+
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &immediateExeCmd;
+        vkQueueSubmit(graphicsQueue, 1, &submitInfo, immediateExeFence);
+
+        vkWaitForFences(device, 1, &immediateExeFence, VK_TRUE, UINT64_MAX);
+        vkResetFences(device, 1, &immediateExeFence);
     }
 }

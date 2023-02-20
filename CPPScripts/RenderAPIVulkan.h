@@ -1,5 +1,8 @@
 #pragma once
-#include "pubh.h"
+// 用GLFW的话这里就不要自己去include Vulkan的头文件，用这个宏定义，让GLFW自己去处理，不然有些接口有问题
+// 这个宏定义要写在#include <GLFW/glfw3.h>之前
+#define GLFW_INCLUDE_VULKAN
+#include "RenderAPI.h"
 #include "vk_mem_alloc.h"
 
 namespace ZXEngine
@@ -39,15 +42,41 @@ namespace ZXEngine
         vector<VkPresentModeKHR> presentModes;
     };
 
+    struct VulkanVAO
+    {
+        VkBuffer indexBuffer = VK_NULL_HANDLE;
+        VmaAllocation indexBufferAlloc = VK_NULL_HANDLE;
+        VkBuffer vertexBuffer = VK_NULL_HANDLE;
+        VmaAllocation vertexBufferAlloc = VK_NULL_HANDLE;
+        bool inUse = false;
+    };
+
     class RenderAPIVulkan
     {
+    /// <summary>
+    /// 标准RenderAPI接口
+    /// </summary>
     public:
         RenderAPIVulkan();
         ~RenderAPIVulkan() {};
 
-    public:
-        bool windowResized = false;
+        virtual void DeleteMesh(unsigned int VAO);
+        virtual void SetUpStaticMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, vector<Vertex> vertices, vector<unsigned int> indices);
 
+
+    /// <summary>
+    /// 实现标准RenderAPI接口的辅助函数及变量
+    /// </summary>
+    private:
+        vector<VulkanVAO*> VulkanVAOArray;
+
+        unsigned int GetNextVAOIndex();
+        VulkanVAO* GetVAOByIndex(unsigned int idx);
+
+
+    /// <summary>
+    /// 仅启动时一次性初始化的核心Vulkan组件及相关变量
+    /// </summary>
     private:
         // 是否开启验证层
         bool validationLayersEnabled = false;
@@ -115,5 +144,19 @@ namespace ZXEngine
         VkPresentModeKHR ChooseSwapPresentMode(const vector<VkPresentModeKHR> availablePresentModes);
         // 选择交换链图像分辨率
         VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+
+
+    /// <summary>
+    /// 其它辅助接口
+    /// </summary>
+    public:
+        bool windowResized = false;
+
+    private:
+        VkFence immediateExeFence;
+        VkCommandBuffer immediateExeCmd;
+
+        void InitImmediateCommand();
+        void ImmediatelyExecute(std::function<void(VkCommandBuffer cmd)>&& function);
     };
 }
