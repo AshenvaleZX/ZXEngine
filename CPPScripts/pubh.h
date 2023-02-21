@@ -23,6 +23,7 @@
 using std::string; 
 using std::cout;
 using std::list;
+using std::array;
 using std::map;
 using std::set;
 using std::unordered_map;

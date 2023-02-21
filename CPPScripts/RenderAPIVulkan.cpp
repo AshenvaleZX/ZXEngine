@@ -1,5 +1,6 @@
 #include "RenderAPIVulkan.h"
 #include "RenderEngine.h"
+#include "GlobalData.h"
 
 // VMA的官方文档里说需要在一个CPP文件里定义这个宏定义，否则可能会有异常
 // 见:https://gpuopen-librariesandsdks.github.io/VulkanMemoryAllocator/html/quick_start.html#quick_start_project_setup
@@ -27,6 +28,7 @@ namespace ZXEngine
         CreateMemoryAllocator();
         CreateSurface();
         CreateSwapChain();
+        CreateAllRenderPass();
 
         InitImmediateCommand();
     }
@@ -50,7 +52,7 @@ namespace ZXEngine
 
         uint32_t mipLevels = GetMipMapLevels(width, height);
 
-        VulkanImage image = CreateImage(width, height, mipLevels, msaaSamplesCount,
+        VulkanImage image = CreateImage(width, height, mipLevels, VK_SAMPLE_COUNT_1_BIT,
             VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
             // 这里我们要从一个stagingBuffer接收数据，所以要写一个VK_IMAGE_USAGE_TRANSFER_DST_BIT
             // 又因为我们要生成mipmap，需要从这个原image读数据，所以又再加一个VK_IMAGE_USAGE_TRANSFER_SRC_BIT
@@ -120,7 +122,7 @@ namespace ZXEngine
         DestroyImage(texture->image);
         texture->inUse = false;
     }
-
+    
     void RenderAPIVulkan::DeleteMesh(unsigned int VAO)
     {
         auto meshBuffer = GetVAOByIndex(VAO);
@@ -1041,6 +1043,89 @@ namespace ZXEngine
     void RenderAPIVulkan::DestroyImageView(VkImageView imageView)
     {
         vkDestroyImageView(device, imageView, nullptr);
+    }
+
+    void RenderAPIVulkan::CreateAllRenderPass()
+    {
+        allVulkanRenderPass.resize((size_t)RenderPassType::MAX);
+
+        allVulkanRenderPass[(size_t)RenderPassType::Normal] = CreateRenderPass(RenderPassType::Normal);
+    }
+
+    VkRenderPass RenderAPIVulkan::CreateRenderPass(RenderPassType type)
+    {
+        if (type == RenderPassType::Normal)
+        {
+            VkAttachmentDescription colorAttachment = {};
+            colorAttachment.format = VK_FORMAT_R8G8B8A8_SRGB;
+            colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+            // 上面那个设置是用于color和depth的，stencil的单独一个
+            colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+            VkAttachmentDescription depthAttachment = {};
+            depthAttachment.format = VK_FORMAT_D16_UNORM;
+            depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+            depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            // 因为绘制完成后我们不会再使用depth buffer了，所以这里不关心
+            depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+            VkAttachmentReference colorAttachmentRef = {};
+            colorAttachmentRef.attachment = 0;
+            colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+            VkAttachmentReference depthAttachmentRef = {};
+            depthAttachmentRef.attachment = 1;
+            depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+            VkSubpassDescription subpassInfo = {};
+            subpassInfo.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+            // 指定color buffer的引用，这个引用以及它的索引(上面的attachment = 0)直接对应到片元着色器里的layout(location = 0) out vec4 outColor
+            subpassInfo.pColorAttachments = &colorAttachmentRef;
+            subpassInfo.colorAttachmentCount = 1;
+            subpassInfo.pDepthStencilAttachment = &depthAttachmentRef;
+
+            VkSubpassDependency dependency{};
+            dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+            dependency.dstSubpass = 0;
+            dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+            dependency.srcAccessMask = 0;
+            dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+            dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+
+            array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
+            VkRenderPassCreateInfo renderPassInfo{};
+            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+            // 前面创建VkAttachmentReference的时候，那个索引attachment指的就是在这个pAttachments数组里的索引
+            renderPassInfo.pAttachments = attachments.data();
+            renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+            renderPassInfo.pSubpasses = &subpassInfo;
+            renderPassInfo.subpassCount = 1;
+            renderPassInfo.pDependencies = &dependency;
+            renderPassInfo.dependencyCount = 1;
+
+            VkRenderPass renderPass;
+            if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
+                throw std::runtime_error("failed to create render pass!");
+        }
+    }
+
+    VkRenderPass RenderAPIVulkan::GetRenderPass(RenderPassType type)
+    {
+        return allVulkanRenderPass[(size_t)type];
+    }
+
+    void RenderAPIVulkan::DestroyRenderPass(VkRenderPass renderPass)
+    {
+        vkDestroyRenderPass(device, renderPass, nullptr);
     }
 
 

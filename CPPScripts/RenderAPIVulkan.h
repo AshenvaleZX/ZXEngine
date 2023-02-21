@@ -43,15 +43,15 @@ namespace ZXEngine
         vector<VkPresentModeKHR> presentModes;
     };
 
-    struct VulkanImage
-    {
-        VkImage image = VK_NULL_HANDLE;
-        VmaAllocation allocation = VK_NULL_HANDLE;
-    };
-
     struct VulkanBuffer
     {
         VkBuffer buffer = VK_NULL_HANDLE;
+        VmaAllocation allocation = VK_NULL_HANDLE;
+    };
+
+    struct VulkanImage
+    {
+        VkImage image = VK_NULL_HANDLE;
         VmaAllocation allocation = VK_NULL_HANDLE;
     };
 
@@ -69,6 +69,12 @@ namespace ZXEngine
         VkBuffer vertexBuffer = VK_NULL_HANDLE;
         VmaAllocation vertexBufferAlloc = VK_NULL_HANDLE;
         bool inUse = false;
+    };
+
+    enum class RenderPassType
+    {
+        Normal,
+        MAX,
     };
 
     class RenderAPIVulkan
@@ -176,6 +182,8 @@ namespace ZXEngine
     /// Vulkan资源创建相关接口
     /// </summary>
     private:
+        vector<VkRenderPass> allVulkanRenderPass;
+
         VulkanBuffer CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage);
         void DestroyBuffer(VulkanBuffer buffer);
 
@@ -185,6 +193,11 @@ namespace ZXEngine
 
         VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
         void DestroyImageView(VkImageView imageView);
+
+        void CreateAllRenderPass();
+        VkRenderPass CreateRenderPass(RenderPassType type);
+        VkRenderPass GetRenderPass(RenderPassType type);
+        void DestroyRenderPass(VkRenderPass renderPass);
 
 
     /// <summary>
