@@ -88,6 +88,7 @@ namespace ZXEngine
 
         virtual unsigned int LoadTexture(const char* path, int& width, int& height);
         virtual void DeleteTexture(unsigned int id);
+        virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
 
         virtual void DeleteMesh(unsigned int VAO);
         virtual void SetUpStaticMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, vector<Vertex> vertices, vector<unsigned int> indices);

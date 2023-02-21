@@ -123,6 +123,42 @@ namespace ZXEngine
         texture->inUse = false;
     }
     
+    FrameBufferObject* RenderAPIVulkan::CreateFrameBufferObject(FrameBufferType type, unsigned int width, unsigned int height)
+    {
+        width = width == 0 ? GlobalData::srcWidth : width;
+        height = height == 0 ? GlobalData::srcHeight : height;
+        FrameBufferObject* FBO = new FrameBufferObject(type);
+
+        if (type == FrameBufferType::Normal)
+        {
+            VulkanImage colorImage = CreateImage(width, height, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
+                VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+            VkImageView colorImageView = CreateImageView(colorImage.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+
+            VulkanImage depthImage = CreateImage(width, height, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D16_UNORM, VK_IMAGE_TILING_OPTIMAL,
+                VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+            VkImageView depthImageView = CreateImageView(depthImage.image, VK_FORMAT_D16_UNORM, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+
+            array<VkImageView, 2> attachments = { colorImageView, depthImageView };
+
+            VkFramebufferCreateInfo framebufferInfo{};
+            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            // 指定可以兼容的render pass(这个frame buffer和指定的render pass的attachment的数量和类型需要一致)
+            framebufferInfo.renderPass = GetRenderPass(RenderPassType::Normal);
+            framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+            framebufferInfo.pAttachments = attachments.data();
+            framebufferInfo.width = width;
+            framebufferInfo.height = height;
+            framebufferInfo.layers = 1;
+
+            VkFramebuffer frameBuffer;
+            if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &frameBuffer) != VK_SUCCESS)
+                throw std::runtime_error("failed to create framebuffer!");
+        }
+
+        return FBO;
+    }
+
     void RenderAPIVulkan::DeleteMesh(unsigned int VAO)
     {
         auto meshBuffer = GetVAOByIndex(VAO);
