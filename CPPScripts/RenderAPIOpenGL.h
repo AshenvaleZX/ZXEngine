@@ -6,7 +6,7 @@ namespace ZXEngine
 	class RenderAPIOpenGL : public RenderAPI
 	{
 	public:
-		RenderAPIOpenGL() {};
+		RenderAPIOpenGL();
 		~RenderAPIOpenGL() {};
 
 		// ‰÷»æ◊¥Ã¨…Ë÷√

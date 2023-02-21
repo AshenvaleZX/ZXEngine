@@ -1,10 +1,24 @@
 #include "RenderAPIOpenGL.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <stb_image.h>
 #include "GlobalData.h"
 #include "RenderStateSetting.h"
 #include "ShaderParser.h"
 
 namespace ZXEngine
 {
+	RenderAPIOpenGL::RenderAPIOpenGL()
+	{
+		// glad: load all OpenGL function pointers
+		// ---------------------------------------
+		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+		{
+			Debug::LogError("Failed to initialize GLAD");
+			return;
+		}
+	}
+
 	void RenderAPIOpenGL::InitRenderSetting()
 	{
 		// 获取当前OpenGL版本并输出

@@ -91,14 +91,6 @@ namespace ZXEngine
 
 		glfwSetFramebufferSizeCallback(window, FrameBufferSizeCallback);
 
-		// glad: load all OpenGL function pointers
-		// ---------------------------------------
-		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-		{
-			std::cout << "Failed to initialize GLAD" << std::endl;
-			return;
-		}
-		
 		EventManager::GetInstance()->AddEventHandler((int)EventType::KEY_ESCAPE_PRESS, std::bind(&RenderEngine::CloseWindow, this, std::placeholders::_1));
 	}
 

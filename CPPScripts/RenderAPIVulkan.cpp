@@ -1,6 +1,7 @@
 #include "RenderAPIVulkan.h"
 #include "RenderEngine.h"
 #include "GlobalData.h"
+#include <stb_image.h>
 
 // VMA的官方文档里说需要在一个CPP文件里定义这个宏定义，否则可能会有异常
 // 见:https://gpuopen-librariesandsdks.github.io/VulkanMemoryAllocator/html/quick_start.html#quick_start_project_setup
