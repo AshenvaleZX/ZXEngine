@@ -155,6 +155,10 @@ namespace ZXEngine
             if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &frameBuffer) != VK_SUCCESS)
                 throw std::runtime_error("failed to create framebuffer!");
         }
+        else
+        {
+            Debug::LogError("Invalide frame buffer type.");
+        }
 
         return FBO;
     }
@@ -1090,6 +1094,8 @@ namespace ZXEngine
 
     VkRenderPass RenderAPIVulkan::CreateRenderPass(RenderPassType type)
     {
+        VkRenderPass renderPass = {};
+
         if (type == RenderPassType::Normal)
         {
             VkAttachmentDescription colorAttachment = {};
@@ -1148,10 +1154,15 @@ namespace ZXEngine
             renderPassInfo.pDependencies = &dependency;
             renderPassInfo.dependencyCount = 1;
 
-            VkRenderPass renderPass;
             if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
                 throw std::runtime_error("failed to create render pass!");
         }
+        else
+        {
+            Debug::LogError("Invalide render pass type.");
+        }
+
+        return renderPass;
     }
 
     VkRenderPass RenderAPIVulkan::GetRenderPass(RenderPassType type)
