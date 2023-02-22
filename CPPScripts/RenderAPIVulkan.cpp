@@ -2,6 +2,8 @@
 #include "RenderEngine.h"
 #include "GlobalData.h"
 #include <stb_image.h>
+#include "ShaderParser.h"
+#include "Resources.h"
 
 // VMA的官方文档里说需要在一个CPP文件里定义这个宏定义，否则可能会有异常
 // 见:https://gpuopen-librariesandsdks.github.io/VulkanMemoryAllocator/html/quick_start.html#quick_start_project_setup
@@ -123,7 +125,133 @@ namespace ZXEngine
         DestroyImage(texture->image);
         texture->inUse = false;
     }
-    
+
+    ShaderInfo* RenderAPIVulkan::LoadAndCompileShader(const char* path)
+    {
+        // 设置shader代码
+        auto shaderModules = CreateShaderModules(path);
+        vector<VkPipelineShaderStageCreateInfo> shaderStages;
+        for (auto& shaderModule : shaderModules)
+        {
+            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            shaderStageInfo.stage = shaderModule.first;
+            shaderStageInfo.module = shaderModule.second;
+            shaderStageInfo.pName = "main";
+            shaderStages.push_back(shaderStageInfo);
+        }
+
+        // 设置顶点输入格式
+        VkPipelineVertexInputStateCreateInfo vertexInputInfo = GetVertexInputInfo();
+
+        // 设置图元
+        VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo = {};
+        inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+        inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
+
+        // View Port和Scissor设置为动态变化的，每帧绘制时决定
+        vector<VkDynamicState> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+        VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
+        dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        dynamicStateInfo.pDynamicStates = dynamicStates.data();
+        dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
+
+        // 设置光栅化阶段
+        VkPipelineRasterizationStateCreateInfo rasterizationInfo = {};
+        rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+        // 如果depthClampEnable设置为VK_TRUE，超过远近裁剪面的片元会进行收敛，而不是丢弃它们
+        rasterizationInfo.depthClampEnable = VK_FALSE;
+        // 如果rasterizerDiscardEnable设置为VK_TRUE，那么几何图元永远不会传递到光栅化阶段
+        // 这是禁止任何数据输出到framebuffer的方法
+        rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
+        // 设置片元如何从几何模型中产生，如果不是FILL，需要开启GPU feature
+        // VK_POLYGON_MODE_FILL: 多边形区域填充
+        // VK_POLYGON_MODE_LINE: 多边形边缘线框绘制
+        // VK_POLYGON_MODE_POINT : 多边形顶点作为描点绘制
+        rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
+        rasterizationInfo.lineWidth = 1.0f;
+        // 开启背面裁剪
+        rasterizationInfo.cullMode = VK_CULL_MODE_BACK_BIT;
+        // 顶点逆时针为正面
+        rasterizationInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+        // 渲染阴影的偏移配置
+        rasterizationInfo.depthBiasEnable = VK_FALSE;
+        rasterizationInfo.depthBiasConstantFactor = 0.0f;
+        rasterizationInfo.depthBiasClamp = 0.0f;
+        rasterizationInfo.depthBiasSlopeFactor = 0.0f;
+
+        // 设置Shader采样纹理的MSAA(不是输出到屏幕上的MSAA)，需要创建逻辑设备的时候开启VkPhysicalDeviceFeatures里的sampleRateShading才能生效，暂时关闭
+        VkPipelineMultisampleStateCreateInfo multisampleInfo = {};
+        multisampleInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+        multisampleInfo.sampleShadingEnable = VK_FALSE;
+        // 这个是调整sampleShading效果的，越接近1效果越平滑，越接近0性能越好
+        multisampleInfo.minSampleShading = 1.0f;
+        multisampleInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+        multisampleInfo.pSampleMask = nullptr;
+        multisampleInfo.alphaToCoverageEnable = VK_FALSE;
+        multisampleInfo.alphaToOneEnable = VK_FALSE;
+
+        // Color Blend
+        VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+        colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+        colorBlendAttachment.blendEnable = VK_TRUE;
+        colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+        colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+        colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+        colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+        colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+        colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+        VkPipelineColorBlendStateCreateInfo colorBlending{};
+        colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+        colorBlending.logicOpEnable = VK_FALSE;
+        colorBlending.logicOp = VK_LOGIC_OP_COPY;
+        colorBlending.pAttachments = &colorBlendAttachment;
+        colorBlending.attachmentCount = 1;
+
+        // 深度和模板配置
+        VkPipelineDepthStencilStateCreateInfo depthStencilInfo = {};
+        depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+        // Depth
+        depthStencilInfo.depthTestEnable = VK_TRUE;
+        depthStencilInfo.depthWriteEnable = VK_TRUE;
+        depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS;
+        depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
+        depthStencilInfo.minDepthBounds = 0.0f;
+        depthStencilInfo.maxDepthBounds = 1.0f;
+        // Stencil
+        depthStencilInfo.stencilTestEnable = VK_FALSE;
+        depthStencilInfo.front = {};
+        depthStencilInfo.back = {};
+
+
+        VkGraphicsPipelineCreateInfo pipelineInfo{};
+        pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+        pipelineInfo.pStages = shaderStages.data();
+        pipelineInfo.stageCount = shaderStages.size();
+        pipelineInfo.pVertexInputState = &vertexInputInfo;
+        pipelineInfo.pInputAssemblyState = &inputAssemblyInfo;
+        pipelineInfo.pDynamicState = &dynamicStateInfo;
+        pipelineInfo.pRasterizationState = &rasterizationInfo;
+        pipelineInfo.pMultisampleState = &multisampleInfo;
+        pipelineInfo.pColorBlendState = &colorBlending;
+        pipelineInfo.pDepthStencilState = &depthStencilInfo;
+        // pipelineInfo.layout = pipelineLayout; // Todo
+        // pipelineInfo.renderPass = renderPass; // Todo
+        pipelineInfo.subpass = 0;
+        pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+        pipelineInfo.basePipelineIndex = -1;
+
+        VkPipeline pipeLine;
+        if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeLine) != VK_SUCCESS)
+            throw std::runtime_error("failed to create graphics pipeline!");
+
+        DestroyShaderModules(shaderModules);
+
+        ShaderInfo* info = new ShaderInfo();
+        return info;
+    }
+
     FrameBufferObject* RenderAPIVulkan::CreateFrameBufferObject(FrameBufferType type, unsigned int width, unsigned int height)
     {
         width = width == 0 ? GlobalData::srcWidth : width;
@@ -1176,6 +1304,53 @@ namespace ZXEngine
         vkDestroyRenderPass(device, renderPass, nullptr);
     }
 
+    VkShaderModule RenderAPIVulkan::CreateShaderModule(vector<char> code)
+    {
+        VkShaderModuleCreateInfo createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        // 这里需要确保数据满足uint32_t的对齐要求,存储在vector中，默认分配器已经确保数据满足最差情况下的对齐要求
+        createInfo.codeSize = code.size();
+        // 转换为Vulkan要求的uint32_t指针
+        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+
+        VkShaderModule shaderModule;
+        if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+            throw std::runtime_error("failed to create shader module!");
+
+        return shaderModule;
+    }
+
+    ShaderModuleSet RenderAPIVulkan::CreateShaderModules(const string& path)
+    {
+        ShaderData data = {};
+        ShaderParser::ParseFile(path, data);
+        string prePath = path.substr(0, path.length() - 9);
+        ShaderModuleSet shaderModules;
+
+        auto vertShader = Resources::LoadBinaryFile(prePath + ".vert.spv");
+        auto vertModule = CreateShaderModule(vertShader);
+        shaderModules.insert(make_pair(VK_SHADER_STAGE_VERTEX_BIT, vertModule));
+
+        auto fragShader = Resources::LoadBinaryFile(prePath + ".frag.spv");
+        auto fragModule = CreateShaderModule(fragShader);
+        shaderModules.insert(make_pair(VK_SHADER_STAGE_FRAGMENT_BIT, fragModule));
+
+        if (data.geometryCode.length() > 0)
+        {
+            auto geomShader = Resources::LoadBinaryFile(prePath + ".geom.spv");
+            auto geomModule = CreateShaderModule(geomShader);
+            shaderModules.insert(make_pair(VK_SHADER_STAGE_GEOMETRY_BIT, geomModule));
+        }
+
+        return shaderModules;
+    }
+
+    void RenderAPIVulkan::DestroyShaderModules(ShaderModuleSet shaderModules)
+    {
+        for (auto& shaderModule : shaderModules)
+            vkDestroyShaderModule(device, shaderModule.second, nullptr);
+    }
+
 
     uint32_t RenderAPIVulkan::GetMipMapLevels(int width, int height)
     {
@@ -1257,5 +1432,47 @@ namespace ZXEngine
                 1, &barrier
             );
         });
+    }
+
+    VkPipelineVertexInputStateCreateInfo RenderAPIVulkan::GetVertexInputInfo()
+    {
+        VkVertexInputBindingDescription bindingDescription{};
+        bindingDescription.binding = 0;
+        bindingDescription.stride = sizeof(Vertex);
+        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+        array<VkVertexInputAttributeDescription, 5> attributeDescriptions = {};
+        attributeDescriptions[0].binding = 0;
+        attributeDescriptions[0].location = 0;
+        attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[0].offset = offsetof(Vertex, Position);
+
+        attributeDescriptions[1].binding = 0;
+        attributeDescriptions[1].location = 0;
+        attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[1].offset = offsetof(Vertex, Normal);
+
+        attributeDescriptions[2].binding = 0;
+        attributeDescriptions[2].location = 0;
+        attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
+        attributeDescriptions[2].offset = offsetof(Vertex, TexCoords);
+
+        attributeDescriptions[3].binding = 0;
+        attributeDescriptions[3].location = 0;
+        attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[3].offset = offsetof(Vertex, Tangent);
+
+        attributeDescriptions[4].binding = 0;
+        attributeDescriptions[4].location = 0;
+        attributeDescriptions[4].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[4].offset = offsetof(Vertex, Bitangent);
+
+        VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
+        vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+        vertexInputInfo.vertexBindingDescriptionCount = 1;
+        vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+        vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+
+        return vertexInputInfo;
     }
 }

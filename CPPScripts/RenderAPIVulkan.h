@@ -29,6 +29,7 @@ namespace ZXEngine
 
         virtual unsigned int LoadTexture(const char* path, int& width, int& height);
         virtual void DeleteTexture(unsigned int id);
+        virtual ShaderInfo* LoadAndCompileShader(const char* path);
         virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
 
         virtual void DeleteMesh(unsigned int VAO);
@@ -141,6 +142,10 @@ namespace ZXEngine
         VkRenderPass GetRenderPass(RenderPassType type);
         void DestroyRenderPass(VkRenderPass renderPass);
 
+        VkShaderModule CreateShaderModule(vector<char> code);
+        ShaderModuleSet CreateShaderModules(const string& path);
+        void DestroyShaderModules(ShaderModuleSet shaderModules);
+
 
     /// <summary>
     /// 其它辅助接口
@@ -156,5 +161,7 @@ namespace ZXEngine
         void InitImmediateCommand();
         void ImmediatelyExecute(std::function<void(VkCommandBuffer cmd)>&& function);
         void TransitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels, VkImageAspectFlags aspectMask, VkPipelineStageFlags srcStage, VkAccessFlags srcAccessMask, VkPipelineStageFlags dstStage, VkAccessFlags dstAccessMask);
+        
+        VkPipelineVertexInputStateCreateInfo GetVertexInputInfo();
     };
 }
