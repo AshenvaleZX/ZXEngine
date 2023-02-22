@@ -46,13 +46,17 @@ namespace ZXEngine
 		// 把硬盘上的路径转为Assets下的路径
 		static string GetAssetLocalPath(string path);
 		static string GetAssetName(string path);
+
 		static json LoadJson(string path);
+		static string JsonStrToString(json data);
+		static string LoadTextFile(string path);
+		static vector<char> LoadBinaryFile(string path);
+
 		static SceneStruct* LoadScene(string path);
 		static PrefabStruct* LoadPrefab(string path, bool isBuiltIn = false);
 		static MaterialStruct* LoadMaterial(string path, bool isBuiltIn = false);
 		static vector<string> LoadCubeMap(json data, bool isBuiltIn = false);
 
-		static string JsonStrToString(json data);
 
 	private:
 		static string assetsPath;
