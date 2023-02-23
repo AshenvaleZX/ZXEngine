@@ -29,7 +29,7 @@ namespace ZXEngine
 
         virtual unsigned int LoadTexture(const char* path, int& width, int& height);
         virtual void DeleteTexture(unsigned int id);
-        virtual ShaderInfo* LoadAndCompileShader(const char* path);
+        virtual ShaderReference* LoadAndCompileShader(const char* path);
         virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
 
         virtual void DeleteMesh(unsigned int VAO);

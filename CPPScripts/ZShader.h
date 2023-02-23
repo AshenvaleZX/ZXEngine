@@ -6,7 +6,7 @@ namespace ZXEngine
 	class Shader
 	{
 	private:
-		static vector<ShaderInfo*> loadedShaders;
+		static vector<ShaderReference*> loadedShaders;
 
 	public:
 		string name;
@@ -35,6 +35,6 @@ namespace ZXEngine
 
 	private:
 		int renderQueue;
-		ShaderInfo* info = nullptr;
+		ShaderReference* reference = nullptr;
 	};
 }

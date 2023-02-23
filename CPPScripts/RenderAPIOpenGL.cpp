@@ -282,32 +282,28 @@ namespace ZXEngine
 		return textureID;
 	}
 
-	ShaderInfo* RenderAPIOpenGL::LoadAndCompileShader(const char* path)
+	ShaderReference* RenderAPIOpenGL::LoadAndCompileShader(const char* path)
 	{
-		ShaderData data = {};
-		ShaderParser::ParseFile(path, data);
-
-		ShaderInfo* info = new ShaderInfo();
-		info->lightType = data.lightType;
-		info->shadowType = data.shadowType;
+		string vertCode, geomCode, fragCode;
+		ShaderParser::ParseShaderCode(path, vertCode, geomCode, fragCode);
 
 		// vertex shader
-		const char* vShaderCode = data.vertexCode.c_str();
+		const char* vShaderCode = vertCode.c_str();
 		unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertex, 1, &vShaderCode, NULL);
 		glCompileShader(vertex);
 		CheckCompileErrors(vertex, "VERTEX");
 		// fragment Shader
-		const char* fShaderCode = data.fragmentCode.c_str();
+		const char* fShaderCode = fragCode.c_str();
 		unsigned int fragment = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(fragment, 1, &fShaderCode, NULL);
 		glCompileShader(fragment);
 		CheckCompileErrors(fragment, "FRAGMENT");
 		// if geometry shader is given, compile geometry shader
 		unsigned int geometry = 0;
-		if (data.geometryCode.length() > 1)
+		if (geomCode.length() > 1)
 		{
-			const char* gShaderCode = data.geometryCode.c_str();
+			const char* gShaderCode = geomCode.c_str();
 			geometry = glCreateShader(GL_GEOMETRY_SHADER);
 			glShaderSource(geometry, 1, &gShaderCode, NULL);
 			glCompileShader(geometry);
@@ -317,19 +313,21 @@ namespace ZXEngine
 		unsigned int ID = glCreateProgram();
 		glAttachShader(ID, vertex);
 		glAttachShader(ID, fragment);
-		if (data.geometryCode.length() > 1)
+		if (geomCode.length() > 1)
 			glAttachShader(ID, geometry);
 		glLinkProgram(ID);
 		CheckCompileErrors(ID, "PROGRAM");
 		// delete the shaders as they're linked into our program now and no longer necessery
 		glDeleteShader(vertex);
 		glDeleteShader(fragment);
-		if (data.geometryCode.length() > 1)
+		if (geomCode.length() > 1)
 			glDeleteShader(geometry);
 
-		info->ID = ID;
+		ShaderReference* reference = new ShaderReference();
+		reference->ID = ID;
+		reference->shaderInfo = ShaderParser::GetShaderInfo(path);
 
-		return info;
+		return reference;
 	}
 
 	void RenderAPIOpenGL::DeleteShaderProgram(unsigned int id)

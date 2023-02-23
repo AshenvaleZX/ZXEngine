@@ -126,7 +126,7 @@ namespace ZXEngine
         texture->inUse = false;
     }
 
-    ShaderInfo* RenderAPIVulkan::LoadAndCompileShader(const char* path)
+    ShaderReference* RenderAPIVulkan::LoadAndCompileShader(const char* path)
     {
         // ÉèÖÃshader´úÂë
         auto shaderModules = CreateShaderModules(path);
@@ -212,8 +212,8 @@ namespace ZXEngine
 
         DestroyShaderModules(shaderModules);
 
-        ShaderInfo* info = new ShaderInfo();
-        return info;
+        ShaderReference* reference = new ShaderReference();
+        return reference;
     }
 
     FrameBufferObject* RenderAPIVulkan::CreateFrameBufferObject(FrameBufferType type, unsigned int width, unsigned int height)
@@ -1286,8 +1286,9 @@ namespace ZXEngine
 
     ShaderModuleSet RenderAPIVulkan::CreateShaderModules(const string& path)
     {
-        ShaderData data = {};
-        ShaderParser::ParseFile(path, data);
+        string vertCode, geomCode, fragCode;
+        ShaderParser::ParseShaderCode(path, vertCode, geomCode, fragCode);
+
         string prePath = path.substr(0, path.length() - 9);
         ShaderModuleSet shaderModules;
 
@@ -1299,7 +1300,7 @@ namespace ZXEngine
         auto fragModule = CreateShaderModule(fragShader);
         shaderModules.insert(make_pair(VK_SHADER_STAGE_FRAGMENT_BIT, fragModule));
 
-        if (data.geometryCode.length() > 0)
+        if (geomCode.length() > 0)
         {
             auto geomShader = Resources::LoadBinaryFile(prePath + ".geom.spv");
             auto geomModule = CreateShaderModule(geomShader);

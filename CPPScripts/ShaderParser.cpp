@@ -33,11 +33,12 @@ namespace ZXEngine
 		{ "Equal",	CompareOption::EQUAL  }, { "NotEqual", CompareOption::NOT_EQUAL },
 	};
 
-	void ShaderParser::ParseFile(string path, ShaderData& data)
+	ShaderInfo ShaderParser::GetShaderInfo(const string& path)
 	{
-		string shaderCode = Resources::LoadTextFile(path);
+		ShaderInfo info;
 
-		ShaderStateSet stateSet = GetShaderStateSet(shaderCode);
+		string shaderCode = Resources::LoadTextFile(path);
+		info.stateSet = GetShaderStateSet(shaderCode);
 
 		// 这里数字类型用的是string库里的专用类型，因为string库的find，substr等操作返回的这些数据类型和具体编译环境有关
 		// 特别是find，网上很多地方说没找到就会返回-1，其实这个说法不准确，因为find的函数定义返回的类型是size_t
@@ -47,32 +48,39 @@ namespace ZXEngine
 		string::size_type hasDirLight = shaderCode.find("DirLight");
 		string::size_type hasPointLight = shaderCode.find("PointLight");
 		if (hasDirLight != string::npos)
-			data.lightType = LightType::Directional;
+			info.lightType = LightType::Directional;
 		else if (hasPointLight != string::npos)
-			data.lightType = LightType::Point;
+			info.lightType = LightType::Point;
 		else
-			data.lightType = LightType::None;
+			info.lightType = LightType::None;
 
 		string::size_type hasDirShadow = shaderCode.find("_DepthMap");
 		string::size_type hasPointShadow = shaderCode.find("_DepthCubeMap");
 		if (hasDirShadow != string::npos)
-			data.shadowType = ShadowType::Directional;
+			info.shadowType = ShadowType::Directional;
 		else if (hasPointShadow != string::npos)
-			data.shadowType = ShadowType::Point;
+			info.shadowType = ShadowType::Point;
 		else
-			data.shadowType = ShadowType::None;
+			info.shadowType = ShadowType::None;
+
+		return info;
+	}
+
+	void ShaderParser::ParseShaderCode(const string& path, string& vertCode, string& geomCode, string& fragCode)
+	{
+		string shaderCode = Resources::LoadTextFile(path);
 
 		string::size_type vs_begin = shaderCode.find("#vs_begin") + 9;
 		string::size_type vs_end = shaderCode.find("#vs_end");
-		data.vertexCode = shaderCode.substr(vs_begin, vs_end - vs_begin);
+		vertCode = shaderCode.substr(vs_begin, vs_end - vs_begin);
 
 		string::size_type gs_begin = shaderCode.find("#gs_begin") + 9;
 		string::size_type gs_end = shaderCode.find("#gs_end");
-		data.geometryCode = shaderCode.substr(gs_begin, gs_end - gs_begin);
+		geomCode = shaderCode.substr(gs_begin, gs_end - gs_begin);
 
 		string::size_type fs_begin = shaderCode.find("#fs_begin") + 9;
 		string::size_type fs_end = shaderCode.find("#fs_end");
-		data.fragmentCode = shaderCode.substr(fs_begin, fs_end - fs_begin);
+		fragCode = shaderCode.substr(fs_begin, fs_end - fs_begin);
 	}
 
 	string ShaderParser::TranslateToVulkan(const string& originCode)

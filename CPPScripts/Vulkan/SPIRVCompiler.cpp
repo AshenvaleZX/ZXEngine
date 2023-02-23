@@ -18,21 +18,21 @@ namespace ZXEngine
 
 	void SPIRVCompiler::CompileShader(const filesystem::path& path)
 	{
-		ShaderData data = {};
-		ShaderParser::ParseFile(path.string(), data);
+		string vertCode, geomCode, fragCode;
+		ShaderParser::ParseShaderCode(path.string(), vertCode, geomCode, fragCode);
 
-		if (data.vertexCode.empty())
+		if (vertCode.empty())
 			Debug::LogError("Empty vertex shader: " + path.string());
 		else
-			GenerateSPIRVFile(path, data.vertexCode, ShaderStage::Vertex);
+			GenerateSPIRVFile(path, vertCode, ShaderStage::Vertex);
 
-		if (data.fragmentCode.empty())
+		if (geomCode.empty())
 			Debug::LogError("Empty fragment shader: " + path.string());
 		else
-			GenerateSPIRVFile(path, data.fragmentCode, ShaderStage::Fragment);
+			GenerateSPIRVFile(path, geomCode, ShaderStage::Fragment);
 
-		if (!data.geometryCode.empty())
-			GenerateSPIRVFile(path, data.geometryCode, ShaderStage::Geometry);
+		if (!fragCode.empty())
+			GenerateSPIRVFile(path, fragCode, ShaderStage::Geometry);
 	}
 
 	void SPIRVCompiler::GenerateSPIRVFile(const filesystem::path& path, const string& code, ShaderStage stage)

@@ -7,7 +7,8 @@ namespace ZXEngine
 	class ShaderParser
 	{
 	public:
-		static void ParseFile(string path, ShaderData& data);
+		static ShaderInfo GetShaderInfo(const string& path);
+		static void ParseShaderCode(const string& path, string& vertCode, string& geomCode, string& fragCode);
 		static string TranslateToVulkan(const string& originCode);
 
 	private:

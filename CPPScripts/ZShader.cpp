@@ -3,43 +3,43 @@
 
 namespace ZXEngine
 {
-	vector<ShaderInfo*> Shader::loadedShaders;
+	vector<ShaderReference*> Shader::loadedShaders;
 
 	Shader::Shader(const string& path)
 	{
 		name = Resources::GetAssetName(path);
 		renderQueue = (int)RenderQueueType::Qpaque;
 
-		for (auto shaderInfo : loadedShaders)
+		for (auto shaderReference : loadedShaders)
 		{
-			if (path == shaderInfo->path)
+			if (path == shaderReference->path)
 			{
 				// 如果已加载过，直接引用
-				info = shaderInfo;
+				reference = shaderReference;
 				// 引用计数+1
-				info->referenceCount++;
+				reference->referenceCount++;
 				break;
 			}
 		}
 		// 如果没有加载过，执行真正的加载和编译
-		if (info == nullptr)
+		if (reference == nullptr)
 		{
-			info = RenderAPI::GetInstance()->LoadAndCompileShader(path.c_str());
-			info->path = path;
-			loadedShaders.push_back(info);
+			reference = RenderAPI::GetInstance()->LoadAndCompileShader(path.c_str());
+			reference->path = path;
+			loadedShaders.push_back(reference);
 		}
 	}
 
 	Shader::~Shader()
 	{
-		info->referenceCount--;
+		reference->referenceCount--;
 		// 引用计数归零后执行真正的删除操作
-		if (info->referenceCount == 0)
+		if (reference->referenceCount == 0)
 		{
 			size_t pos = -1;
 			for (size_t i = 0; i < loadedShaders.size(); i++)
 			{
-				if (loadedShaders[i]->ID == info->ID)
+				if (loadedShaders[i]->ID == reference->ID)
 				{
 					pos = i;
 					break;
@@ -49,29 +49,29 @@ namespace ZXEngine
 			{
 				// 执行清理操作
 				loadedShaders.erase(loadedShaders.begin() + pos);
-				RenderAPI::GetInstance()->DeleteShaderProgram(info->ID);
-				delete info;
+				RenderAPI::GetInstance()->DeleteShaderProgram(reference->ID);
+				delete reference;
 			}
 			else
 			{
-				Debug::LogWarning("Free shader failed: " + info->path);
+				Debug::LogWarning("Free shader failed: " + reference->path);
 			}
 		}
 	}
 
 	unsigned int Shader::GetID()
 	{
-		return info->ID;
+		return reference->ID;
 	}
 
 	LightType Shader::GetLightType()
 	{
-		return info->lightType;
+		return reference->shaderInfo.lightType;
 	}
 
 	ShadowType Shader::GetShadowType()
 	{
-		return info->shadowType;
+		return reference->shaderInfo.shadowType;
 	}
 
 	int Shader::GetRenderQueue()
@@ -81,58 +81,58 @@ namespace ZXEngine
 
 	void Shader::Use()
 	{
-		RenderAPI::GetInstance()->UseShader(info->ID);
+		RenderAPI::GetInstance()->UseShader(reference->ID);
 	}
 	void Shader::SetBool(string name, bool value)
 	{
-		RenderAPI::GetInstance()->SetShaderBool(info->ID, name, value);
+		RenderAPI::GetInstance()->SetShaderBool(reference->ID, name, value);
 	}
 	void Shader::SetInt(string name, int value)
 	{
-		RenderAPI::GetInstance()->SetShaderInt(info->ID, name, value);
+		RenderAPI::GetInstance()->SetShaderInt(reference->ID, name, value);
 	}
 	void Shader::SetFloat(string name, float value)
 	{
-		RenderAPI::GetInstance()->SetShaderFloat(info->ID, name, value);
+		RenderAPI::GetInstance()->SetShaderFloat(reference->ID, name, value);
 	}
 	void Shader::SetVec2(string name, Vector2 value)
 	{
-		RenderAPI::GetInstance()->SetShaderVec2(info->ID, name, value);
+		RenderAPI::GetInstance()->SetShaderVec2(reference->ID, name, value);
 	}
 	void Shader::SetVec2(string name, float x, float y)
 	{
-		RenderAPI::GetInstance()->SetShaderVec2(info->ID, name, x, y);
+		RenderAPI::GetInstance()->SetShaderVec2(reference->ID, name, x, y);
 	}
 	void Shader::SetVec3(string name, Vector3 value)
 	{
-		RenderAPI::GetInstance()->SetShaderVec3(info->ID, name, value);
+		RenderAPI::GetInstance()->SetShaderVec3(reference->ID, name, value);
 	}
 	void Shader::SetVec3(string name, float x, float y, float z)
 	{
-		RenderAPI::GetInstance()->SetShaderVec3(info->ID, name, x, y, z);
+		RenderAPI::GetInstance()->SetShaderVec3(reference->ID, name, x, y, z);
 	}
 	void Shader::SetVec4(string name, Vector4 value)
 	{
-		RenderAPI::GetInstance()->SetShaderVec4(info->ID, name, value);
+		RenderAPI::GetInstance()->SetShaderVec4(reference->ID, name, value);
 	}
 	void Shader::SetVec4(string name, float x, float y, float z, float w)
 	{
-		RenderAPI::GetInstance()->SetShaderVec4(info->ID, name, x, y, z, w);
+		RenderAPI::GetInstance()->SetShaderVec4(reference->ID, name, x, y, z, w);
 	}
 	void Shader::SetMat3(string name, Matrix3 value)
 	{
-		RenderAPI::GetInstance()->SetShaderMat3(info->ID, name, value);
+		RenderAPI::GetInstance()->SetShaderMat3(reference->ID, name, value);
 	}
 	void Shader::SetMat4(string name, Matrix4 value)
 	{
-		RenderAPI::GetInstance()->SetShaderMat4(info->ID, name, value);
+		RenderAPI::GetInstance()->SetShaderMat4(reference->ID, name, value);
 	}
 	void Shader::SetTexture(string name, unsigned int textureID, unsigned int idx)
 	{
-		RenderAPI::GetInstance()->SetShaderTexture(info->ID, name, textureID, idx);
+		RenderAPI::GetInstance()->SetShaderTexture(reference->ID, name, textureID, idx);
 	}
 	void Shader::SetCubeMap(string name, unsigned int textureID, unsigned int idx)
 	{
-		RenderAPI::GetInstance()->SetShaderCubeMap(info->ID, name, textureID, idx);
+		RenderAPI::GetInstance()->SetShaderCubeMap(reference->ID, name, textureID, idx);
 	}
 }
