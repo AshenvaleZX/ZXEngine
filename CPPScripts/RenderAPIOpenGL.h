@@ -14,7 +14,7 @@ namespace ZXEngine
 		virtual void SetRenderState(RenderStateSetting* state);
 		virtual void EnableDepthTest(bool enable);
 		virtual void EnableDepthWrite(bool enable);
-		virtual void SetBlendMode(BlendOption sfactor, BlendOption dfactor);
+		virtual void SetBlendMode(BlendFactor sfactor, BlendFactor dfactor);
 		virtual void SetClearColor(const Vector4& color);
 		virtual void EnableFaceCull(bool enable);
 		virtual void SetFaceCullMode(FaceCullOption mode);
@@ -81,7 +81,7 @@ namespace ZXEngine
 		// 与VAO对应的图元数量
 		unsigned int primitiveSize = 0;
 
-		map<BlendOption, int> BlendMap;
+		map<BlendFactor, int> BlendMap;
 		map<FaceCullOption, int> FaceCullMap;
 		void InitGLConstMap();
 	};

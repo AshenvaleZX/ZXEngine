@@ -83,7 +83,7 @@ namespace ZXEngine
 		FrontAndBack,
 	};
 
-	enum class BlendOption
+	enum class BlendFactor
 	{
 		ZERO,
 		ONE,

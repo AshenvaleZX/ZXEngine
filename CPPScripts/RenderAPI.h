@@ -23,7 +23,7 @@ namespace ZXEngine
 		virtual void SetRenderState(RenderStateSetting* state) = 0;
 		virtual void EnableDepthTest(bool enable) = 0;
 		virtual void EnableDepthWrite(bool enable) = 0;
-		virtual void SetBlendMode(BlendOption sfactor, BlendOption dfactor) = 0;
+		virtual void SetBlendMode(BlendFactor sfactor, BlendFactor dfactor) = 0;
 		virtual void SetClearColor(const Vector4& color) = 0;
 		virtual void EnableFaceCull(bool enable) = 0;
 		virtual void SetFaceCullMode(FaceCullOption mode) = 0;

@@ -27,8 +27,8 @@ namespace ZXEngine
 
 		renderState = new RenderStateSetting();
 		renderState->depthWrite = false;
-		renderState->srcFactor = BlendOption::SRC_ALPHA;
-		renderState->dstFactor = BlendOption::ONE;
+		renderState->srcFactor = BlendFactor::SRC_ALPHA;
+		renderState->dstFactor = BlendFactor::ONE;
 		renderState->faceCull = false;
 	}
 

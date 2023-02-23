@@ -59,7 +59,7 @@ namespace ZXEngine
 		stateDirty = true;
 	}
 
-	void RenderAPIOpenGL::SetBlendMode(BlendOption sfactor, BlendOption dfactor)
+	void RenderAPIOpenGL::SetBlendMode(BlendFactor sfactor, BlendFactor dfactor)
 	{
 		targetState->srcFactor = sfactor;
 		targetState->dstFactor = dfactor;
@@ -811,20 +811,20 @@ namespace ZXEngine
 	{
 		BlendMap =
 		{
-			{ BlendOption::ZERO,					GL_ZERO						},
-			{ BlendOption::ONE,						GL_ONE						},
-			{ BlendOption::SRC_COLOR,				GL_SRC_COLOR				},
-			{ BlendOption::ONE_MINUS_SRC_COLOR,		GL_ONE_MINUS_SRC_COLOR		},
-			{ BlendOption::DST_COLOR,				GL_DST_COLOR				},
-			{ BlendOption::ONE_MINUS_DST_COLOR,		GL_ONE_MINUS_DST_COLOR		},
-			{ BlendOption::SRC_ALPHA,				GL_SRC_ALPHA				},
-			{ BlendOption::ONE_MINUS_SRC_ALPHA,		GL_ONE_MINUS_SRC_ALPHA		},
-			{ BlendOption::DST_ALPHA,				GL_DST_ALPHA				},
-			{ BlendOption::ONE_MINUS_DST_ALPHA,		GL_ONE_MINUS_DST_ALPHA		},
-			{ BlendOption::CONSTANT_COLOR,			GL_CONSTANT_COLOR			},
-			{ BlendOption::ONE_MINUS_CONSTANT_COLOR,GL_ONE_MINUS_CONSTANT_COLOR },
-			{ BlendOption::CONSTANT_ALPHA,			GL_CONSTANT_ALPHA			},
-			{ BlendOption::ONE_MINUS_CONSTANT_ALPHA,GL_ONE_MINUS_CONSTANT_ALPHA	},
+			{ BlendFactor::ZERO,					GL_ZERO						},
+			{ BlendFactor::ONE,						GL_ONE						},
+			{ BlendFactor::SRC_COLOR,				GL_SRC_COLOR				},
+			{ BlendFactor::ONE_MINUS_SRC_COLOR,		GL_ONE_MINUS_SRC_COLOR		},
+			{ BlendFactor::DST_COLOR,				GL_DST_COLOR				},
+			{ BlendFactor::ONE_MINUS_DST_COLOR,		GL_ONE_MINUS_DST_COLOR		},
+			{ BlendFactor::SRC_ALPHA,				GL_SRC_ALPHA				},
+			{ BlendFactor::ONE_MINUS_SRC_ALPHA,		GL_ONE_MINUS_SRC_ALPHA		},
+			{ BlendFactor::DST_ALPHA,				GL_DST_ALPHA				},
+			{ BlendFactor::ONE_MINUS_DST_ALPHA,		GL_ONE_MINUS_DST_ALPHA		},
+			{ BlendFactor::CONSTANT_COLOR,			GL_CONSTANT_COLOR			},
+			{ BlendFactor::ONE_MINUS_CONSTANT_COLOR,GL_ONE_MINUS_CONSTANT_COLOR },
+			{ BlendFactor::CONSTANT_ALPHA,			GL_CONSTANT_ALPHA			},
+			{ BlendFactor::ONE_MINUS_CONSTANT_ALPHA,GL_ONE_MINUS_CONSTANT_ALPHA	},
 		};
 
 		FaceCullMap =
