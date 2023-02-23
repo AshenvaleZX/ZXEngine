@@ -30,4 +30,14 @@ namespace ZXEngine
 		LightType lightType;
 		ShadowType shadowType;
 	};
+
+	struct ShaderStateSet
+	{
+		BlendOption blendOp			 = BlendOption::ADD;
+		BlendFactor srcFactor		 = BlendFactor::SRC_ALPHA;
+		BlendFactor dstFactor		 = BlendFactor::ONE_MINUS_SRC_ALPHA;
+		FaceCullOption cull			 = FaceCullOption::Back;
+		CompareOption depthCompareOp = CompareOption::LESS;
+		bool depthWrite				 = true;
+	};
 }

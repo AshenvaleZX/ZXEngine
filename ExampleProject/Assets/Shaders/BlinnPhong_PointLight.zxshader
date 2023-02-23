@@ -1,3 +1,11 @@
+#st_begin {
+    Blend SrcAlpha OneMinusSrcAlpha
+    BlendOp Add
+    Cull Front
+    ZTest Less
+    ZWrite On
+} #st_end
+
 #vs_begin
 #version 460 core
 layout (location = 0) in vec3 aPos;

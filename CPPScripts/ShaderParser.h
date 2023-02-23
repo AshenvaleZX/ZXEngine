@@ -9,5 +9,8 @@ namespace ZXEngine
 	public:
 		static void ParseFile(string path, ShaderData& data);
 		static string TranslateToVulkan(const string& originCode);
+
+	private:
+		static ShaderStateSet GetShaderStateSet(const string& code);
 	};
 }

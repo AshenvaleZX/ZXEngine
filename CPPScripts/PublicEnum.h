@@ -78,9 +78,31 @@ namespace ZXEngine
 
 	enum class FaceCullOption
 	{
+		None,
 		Back,
 		Front,
 		FrontAndBack,
+	};
+
+	enum class CompareOption
+	{
+		NEVER,
+		LESS,
+		EQUAL,
+		LESS_OR_EQUAL,
+		GREATER,
+		NOT_EQUAL,
+		GREATER_OR_EQUAL,
+		ALWAYS,
+	};
+
+	enum class BlendOption
+	{
+		ADD,
+		SUBTRACT,
+		REVERSE_SUBTRACT,
+		MIN,
+		MAX,
 	};
 
 	enum class BlendFactor
