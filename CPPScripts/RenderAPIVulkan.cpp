@@ -145,52 +145,16 @@ namespace ZXEngine
         VkPipelineVertexInputStateCreateInfo vertexInputInfo = GetVertexInputInfo();
 
         // 设置图元
-        VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo = {};
-        inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-        inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-        inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
-
-        // View Port和Scissor设置为动态变化的，每帧绘制时决定
-        vector<VkDynamicState> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
-        VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
-        dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-        dynamicStateInfo.pDynamicStates = dynamicStates.data();
-        dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
+        VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo = GetAssemblyInfo(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+        
+        // View Port和Scissor设置为动态，每帧绘制时决定
+        VkPipelineDynamicStateCreateInfo dynamicStateInfo = GetDynamicStateInfo({ VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR });
 
         // 设置光栅化阶段
-        VkPipelineRasterizationStateCreateInfo rasterizationInfo = {};
-        rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-        // 如果depthClampEnable设置为VK_TRUE，超过远近裁剪面的片元会进行收敛，而不是丢弃它们
-        rasterizationInfo.depthClampEnable = VK_FALSE;
-        // 如果rasterizerDiscardEnable设置为VK_TRUE，那么几何图元永远不会传递到光栅化阶段
-        // 这是禁止任何数据输出到framebuffer的方法
-        rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
-        // 设置片元如何从几何模型中产生，如果不是FILL，需要开启GPU feature
-        // VK_POLYGON_MODE_FILL: 多边形区域填充
-        // VK_POLYGON_MODE_LINE: 多边形边缘线框绘制
-        // VK_POLYGON_MODE_POINT : 多边形顶点作为描点绘制
-        rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
-        rasterizationInfo.lineWidth = 1.0f;
-        // 开启背面裁剪
-        rasterizationInfo.cullMode = VK_CULL_MODE_BACK_BIT;
-        // 顶点逆时针为正面
-        rasterizationInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-        // 渲染阴影的偏移配置
-        rasterizationInfo.depthBiasEnable = VK_FALSE;
-        rasterizationInfo.depthBiasConstantFactor = 0.0f;
-        rasterizationInfo.depthBiasClamp = 0.0f;
-        rasterizationInfo.depthBiasSlopeFactor = 0.0f;
+        VkPipelineRasterizationStateCreateInfo rasterizationInfo = GetRasterizationInfo(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE);
 
         // 设置Shader采样纹理的MSAA(不是输出到屏幕上的MSAA)，需要创建逻辑设备的时候开启VkPhysicalDeviceFeatures里的sampleRateShading才能生效，暂时关闭
-        VkPipelineMultisampleStateCreateInfo multisampleInfo = {};
-        multisampleInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-        multisampleInfo.sampleShadingEnable = VK_FALSE;
-        // 这个是调整sampleShading效果的，越接近1效果越平滑，越接近0性能越好
-        multisampleInfo.minSampleShading = 1.0f;
-        multisampleInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-        multisampleInfo.pSampleMask = nullptr;
-        multisampleInfo.alphaToCoverageEnable = VK_FALSE;
-        multisampleInfo.alphaToOneEnable = VK_FALSE;
+        VkPipelineMultisampleStateCreateInfo multisampleInfo = GetPipelineMultisampleInfo(VK_SAMPLE_COUNT_1_BIT);
 
         // Color Blend
         VkPipelineColorBlendAttachmentState colorBlendAttachment{};
@@ -228,7 +192,7 @@ namespace ZXEngine
         VkGraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
         pipelineInfo.pStages = shaderStages.data();
-        pipelineInfo.stageCount = shaderStages.size();
+        pipelineInfo.stageCount = (uint32_t)shaderStages.size();
         pipelineInfo.pVertexInputState = &vertexInputInfo;
         pipelineInfo.pInputAssemblyState = &inputAssemblyInfo;
         pipelineInfo.pDynamicState = &dynamicStateInfo;
@@ -1474,5 +1438,62 @@ namespace ZXEngine
         vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
 
         return vertexInputInfo;
+    }
+
+    VkPipelineInputAssemblyStateCreateInfo RenderAPIVulkan::GetAssemblyInfo(VkPrimitiveTopology topology)
+    {
+        VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo = {};
+        inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+        inputAssemblyInfo.topology = topology;
+        inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
+        return inputAssemblyInfo;
+    }
+
+    VkPipelineDynamicStateCreateInfo RenderAPIVulkan::GetDynamicStateInfo(vector<VkDynamicState> dynamicStates)
+    {
+        VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
+        dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        dynamicStateInfo.pDynamicStates = dynamicStates.data();
+        dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
+        return dynamicStateInfo;
+    }
+
+    VkPipelineRasterizationStateCreateInfo RenderAPIVulkan::GetRasterizationInfo(VkCullModeFlagBits cullMode, VkFrontFace frontFace)
+    {
+        VkPipelineRasterizationStateCreateInfo rasterizationInfo = {};
+        rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+        // 如果depthClampEnable设置为VK_TRUE，超过远近裁剪面的片元会进行收敛，而不是丢弃它们
+        rasterizationInfo.depthClampEnable = VK_FALSE;
+        // 如果rasterizerDiscardEnable设置为VK_TRUE，那么几何图元永远不会传递到光栅化阶段
+        // 这是禁止任何数据输出到framebuffer的方法
+        rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
+        // 设置片元如何从几何模型中产生，如果不是FILL，需要开启GPU feature
+        // VK_POLYGON_MODE_FILL: 多边形区域填充
+        // VK_POLYGON_MODE_LINE: 多边形边缘线框绘制
+        // VK_POLYGON_MODE_POINT : 多边形顶点作为描点绘制
+        rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
+        rasterizationInfo.lineWidth = 1.0f;
+        rasterizationInfo.cullMode = cullMode;
+        rasterizationInfo.frontFace = frontFace;
+        // 渲染阴影的偏移配置
+        rasterizationInfo.depthBiasEnable = VK_FALSE;
+        rasterizationInfo.depthBiasConstantFactor = 0.0f;
+        rasterizationInfo.depthBiasClamp = 0.0f;
+        rasterizationInfo.depthBiasSlopeFactor = 0.0f;
+        return rasterizationInfo;
+    }
+
+    VkPipelineMultisampleStateCreateInfo RenderAPIVulkan::GetPipelineMultisampleInfo(VkSampleCountFlagBits rasterizationSamples)
+    {
+        VkPipelineMultisampleStateCreateInfo multisampleInfo = {};
+        multisampleInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+        multisampleInfo.sampleShadingEnable = (rasterizationSamples & VK_SAMPLE_COUNT_1_BIT ? VK_TRUE : VK_FALSE);
+        multisampleInfo.rasterizationSamples = rasterizationSamples;
+        // 这个是调整sampleShading效果的，越接近1效果越平滑，越接近0性能越好
+        multisampleInfo.minSampleShading = 1.0f;
+        multisampleInfo.pSampleMask = VK_NULL_HANDLE;
+        multisampleInfo.alphaToCoverageEnable = VK_FALSE;
+        multisampleInfo.alphaToOneEnable = VK_FALSE;
+        return multisampleInfo;
     }
 }

@@ -163,5 +163,9 @@ namespace ZXEngine
         void TransitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels, VkImageAspectFlags aspectMask, VkPipelineStageFlags srcStage, VkAccessFlags srcAccessMask, VkPipelineStageFlags dstStage, VkAccessFlags dstAccessMask);
         
         VkPipelineVertexInputStateCreateInfo GetVertexInputInfo();
+        VkPipelineInputAssemblyStateCreateInfo GetAssemblyInfo(VkPrimitiveTopology topology);
+        VkPipelineDynamicStateCreateInfo GetDynamicStateInfo(vector<VkDynamicState> dynamicStates);
+        VkPipelineRasterizationStateCreateInfo GetRasterizationInfo(VkCullModeFlagBits cullMode, VkFrontFace frontFace);
+        VkPipelineMultisampleStateCreateInfo GetPipelineMultisampleInfo(VkSampleCountFlagBits rasterizationSamples);
     };
 }
