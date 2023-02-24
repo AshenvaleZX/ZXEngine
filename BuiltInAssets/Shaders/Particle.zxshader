@@ -1,38 +1,37 @@
-#vs_begin
-#version 460 core
-layout (location = 0) in vec2 aPos;
-layout (location = 1) in vec2 aTexCoords;
-
-out vec2 TexCoords;
-out vec4 ParticleColor;
-
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-uniform vec4 _Color;
-
-void main()
+Vertex
 {
-    TexCoords = aTexCoords;
-    ParticleColor = _Color;
-    gl_Position = projection * view * model * vec4(aPos, 0.0, 1.0);
+    #version 460 core
+    layout (location = 0) in vec2 aPos;
+    layout (location = 1) in vec2 aTexCoords;
+
+    layout (location = 0) out vec2 TexCoords;
+    layout (location = 1) out vec4 ParticleColor;
+
+    uniform mat4 model;
+    uniform mat4 view;
+    uniform mat4 projection;
+    uniform vec4 _Color;
+
+    void main()
+    {
+        TexCoords = aTexCoords;
+        ParticleColor = _Color;
+        gl_Position = projection * view * model * vec4(aPos, 0.0, 1.0);
+    }
 }
-#vs_end
 
-#gs_begin
-#gs_end
-
-#fs_begin
-#version 460 core
-in vec2 TexCoords;
-in vec4 ParticleColor;
-
-out vec4 FragColor;
-
-uniform sampler2D _Sprite;
-
-void main()
+Fragment
 {
-    FragColor = (vec4(1, 1, 1, texture(_Sprite, TexCoords).r) * ParticleColor);
+    #version 460 core
+    layout (location = 0) in vec2 TexCoords;
+    layout (location = 1) in vec4 ParticleColor;
+
+    layout (location = 0) out vec4 FragColor;
+
+    uniform sampler2D _Sprite;
+
+    void main()
+    {
+        FragColor = (vec4(1, 1, 1, texture(_Sprite, TexCoords).r) * ParticleColor);
+    }
 }
-#fs_end

@@ -1,68 +1,63 @@
-#vs_begin
-#version 460 core
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aNormal;
-layout (location = 2) in vec2 aTexCoords;
-
-out VS_OUT {
-    vec3 WorldPos;
-    vec3 Normal;
-    vec2 TexCoords;
-} vs_out;
-
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-
-void main()
+Vertex
 {
-    vs_out.WorldPos = vec3(model * vec4(aPos, 1.0));
-    vs_out.Normal = transpose(inverse(mat3(model))) * aNormal;
-    vs_out.TexCoords = aTexCoords;
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
+    #version 460 core
+    layout (location = 0) in vec3 aPos;
+    layout (location = 1) in vec3 aNormal;
+    layout (location = 2) in vec2 aTexCoords;
+
+    layout (location = 0) out vec3 WorldPos;
+    layout (location = 1) out vec3 Normal;
+    layout (location = 2) out vec2 TexCoords;
+
+    uniform mat4 model;
+    uniform mat4 view;
+    uniform mat4 projection;
+
+    void main()
+    {
+        WorldPos = vec3(model * vec4(aPos, 1.0));
+        Normal = transpose(inverse(mat3(model))) * aNormal;
+        TexCoords = aTexCoords;
+        gl_Position = projection * view * model * vec4(aPos, 1.0);
+    }
 }
-#vs_end
 
-#gs_begin
-#gs_end
+Fragment
+{
+    #version 460 core
+    layout (location = 0) in vec3 WorldPos;
+    layout (location = 1) in vec3 Normal;
+    layout (location = 2) in vec2 TexCoords;
 
-#fs_begin
-#version 460 core
-out vec4 FragColor;
+    layout (location = 0) out vec4 FragColor;
 
-in VS_OUT {
-    vec3 WorldPos;
-    vec3 Normal;
-    vec2 TexCoords;
-} fs_in;
+    struct DirLight {
+        vec3 direction;
+        vec3 color;
+        float intensity;
+    };
 
-struct DirLight {
-    vec3 direction;
-    vec3 color;
-    float intensity;
-};
+    uniform sampler2D texture1;
+    uniform vec3 viewPos;
+    uniform DirLight dirLight;
 
-uniform sampler2D texture1;
-uniform vec3 viewPos;
-uniform DirLight dirLight;
+    void main()
+    {           
+        vec3 color = texture(texture1, TexCoords).rgb;
+        // ambient
+        vec3 ambient = 0.15 * color;
+        // diffuse
+        vec3 lightDir = normalize(dirLight.direction);
+        vec3 normal = normalize(Normal);
+        float diff = max(dot(lightDir, normal), 0.0);
+        vec3 diffuse = diff * color;
+        // specular
+        vec3 viewDir = normalize(viewPos - WorldPos);
+        vec3 reflectDir = reflect(-lightDir, normal);
+        vec3 halfwayDir = normalize(lightDir + viewDir);  
+        float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+        vec3 specular = vec3(1) * spec; // assuming bright white light color
 
-void main()
-{           
-    vec3 color = texture(texture1, fs_in.TexCoords).rgb;
-    // ambient
-    vec3 ambient = 0.15 * color;
-    // diffuse
-    vec3 lightDir = normalize(dirLight.direction);
-    vec3 normal = normalize(fs_in.Normal);
-    float diff = max(dot(lightDir, normal), 0.0);
-    vec3 diffuse = diff * color;
-    // specular
-    vec3 viewDir = normalize(viewPos - fs_in.WorldPos);
-    vec3 reflectDir = reflect(-lightDir, normal);
-    vec3 halfwayDir = normalize(lightDir + viewDir);  
-    float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
-    vec3 specular = vec3(1) * spec; // assuming bright white light color
-
-    FragColor = vec4(ambient + diffuse + specular, 1.0);
+        FragColor = vec4(ambient + diffuse + specular, 1.0);
+    }
 }
-#fs_end

@@ -1,33 +1,33 @@
-#vs_begin
-#version 460 core
-layout (location = 0) in vec3 aPos;
-layout (location = 2) in vec2 aTexCoords;
-
-out vec2 TexCoords;
-
-uniform mat4 projection;
-
-void main()
+Vertex
 {
-    gl_Position = projection * vec4(aPos.xy, 0.0, 1.0);
-    TexCoords = aTexCoords;
+    #version 460 core
+    layout (location = 0) in vec3 aPos;
+    layout (location = 2) in vec2 aTexCoords;
+
+    layout (location = 0) out vec2 TexCoords;
+
+    uniform mat4 projection;
+
+    void main()
+    {
+        gl_Position = projection * vec4(aPos.xy, 0.0, 1.0);
+        TexCoords = aTexCoords;
+    }
 }
-#vs_end
 
-#gs_begin
-#gs_end
+Fragment
+{
+    #version 460 core
+    layout (location = 0) in vec2 TexCoords;
+    
+    layout (location = 0) out vec4 color;
 
-#fs_begin
-#version 460 core
-in vec2 TexCoords;
-out vec4 color;
+    uniform sampler2D _Text;
+    uniform vec3 _TextColor;
 
-uniform sampler2D _Text;
-uniform vec3 _TextColor;
-
-void main()
-{    
-    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(_Text, TexCoords).r);
-    color = vec4(_TextColor, 1.0) * sampled;
+    void main()
+    {    
+        vec4 sampled = vec4(1.0, 1.0, 1.0, texture(_Text, TexCoords).r);
+        color = vec4(_TextColor, 1.0) * sampled;
+    }
 }
-#fs_end

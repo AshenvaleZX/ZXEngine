@@ -1,37 +1,36 @@
-#vs_begin
-#version 460 core
-layout (location = 0) in vec3 aPos;
-layout (location = 2) in vec2 aTexCoords;
-
-out vec2 TexCoords;
-
-void main()
+Vertex
 {
-    TexCoords = aTexCoords;    
-    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
+    #version 460 core
+    layout (location = 0) in vec3 aPos;
+    layout (location = 2) in vec2 aTexCoords;
+
+    layout (location = 0) out vec2 TexCoords;
+
+    void main()
+    {
+        TexCoords = aTexCoords;    
+        gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
+    }
 }
-#vs_end
 
-#gs_begin
-#gs_end
+Fragment
+{
+    #version 460 core
+    layout (location = 0) in vec2 TexCoords;
 
-#fs_begin
-#version 460 core
-out vec4 FragColor;
+    layout (location = 0) out vec4 FragColor;
 
-in vec2 TexCoords;
+    uniform sampler2D _RenderTexture;
 
-uniform sampler2D _RenderTexture;
-
-void main()
-{             
-    vec3 color = texture(_RenderTexture, TexCoords).rgb;
-    // 计算出一个亮度值，灰度转换公式参考：https://en.wikipedia.org/wiki/Grayscale
-    float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
-    // 只要高亮部分
-    if(brightness >= 1.0)
-        FragColor = vec4(color, 1.0);
-    else
-        FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    void main()
+    {             
+        vec3 color = texture(_RenderTexture, TexCoords).rgb;
+        // 计算出一个亮度值，灰度转换公式参考：https://en.wikipedia.org/wiki/Grayscale
+        float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
+        // 只要高亮部分
+        if(brightness >= 1.0)
+            FragColor = vec4(color, 1.0);
+        else
+            FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    }
 }
-#fs_end

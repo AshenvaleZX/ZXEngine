@@ -70,17 +70,9 @@ namespace ZXEngine
 	{
 		string shaderCode = Resources::LoadTextFile(path);
 
-		string::size_type vs_begin = shaderCode.find("#vs_begin") + 9;
-		string::size_type vs_end = shaderCode.find("#vs_end");
-		vertCode = shaderCode.substr(vs_begin, vs_end - vs_begin);
-
-		string::size_type gs_begin = shaderCode.find("#gs_begin") + 9;
-		string::size_type gs_end = shaderCode.find("#gs_end");
-		geomCode = shaderCode.substr(gs_begin, gs_end - gs_begin);
-
-		string::size_type fs_begin = shaderCode.find("#fs_begin") + 9;
-		string::size_type fs_end = shaderCode.find("#fs_end");
-		fragCode = shaderCode.substr(fs_begin, fs_end - fs_begin);
+		vertCode = GetCodeBlock(shaderCode, "Vertex");
+		geomCode = GetCodeBlock(shaderCode, "Geometry");
+		fragCode = GetCodeBlock(shaderCode, "Fragment");
 	}
 
 	string ShaderParser::TranslateToVulkan(const string& originCode)
@@ -92,15 +84,13 @@ namespace ZXEngine
 
 	ShaderStateSet ShaderParser::GetShaderStateSet(const string& code)
 	{
-		string::size_type st_begin = code.find("#st_begin");
-		string::size_type st_end = code.find("#st_end");
-
 		ShaderStateSet stateSet;
-		if (st_begin == string::npos or st_end == string::npos)
+
+		string settingBlock = GetCodeBlock(code, "Setting");
+		if (settingBlock.empty())
 			return stateSet;
 
-		string stSegment = code.substr(st_begin, st_end - st_begin);
-		auto lines = Utils::StringSplit(stSegment, '\n');
+		auto lines = Utils::StringSplit(settingBlock, '\n');
 
 		for (auto& line : lines)
 		{
@@ -134,5 +124,38 @@ namespace ZXEngine
 		}
 
 		return stateSet;
+	}
+
+	string ShaderParser::GetCodeBlock(const string& code, const string& blockName)
+	{
+		auto begin = code.find(blockName);
+		if (begin == string::npos)
+			return "";
+
+		int level = 0;
+		size_t s = 0, e = 0;
+
+		for (size_t i = begin; i < code.size(); i++)
+		{
+			if (code[i] == '{')
+			{
+				level++;
+				if (level == 1)
+				{
+					s = i;
+				}
+			}
+			else if (code[i] == '}')
+			{
+				level--;
+				if (level == 0)
+				{
+					e = i;
+					break;
+				}
+			}
+		}
+
+		return code.substr(s + 1, e - s - 1);
 	}
 }
