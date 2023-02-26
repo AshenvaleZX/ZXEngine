@@ -10,33 +10,33 @@
 
 ​       下面是一些图片展示，引擎页面如图，和Unity编辑器类似。上面是主菜单栏，中间是游戏画面窗口，左边是展示场景中GameObject的Hierarchy面板，下面左边是展示当前打开项目的Assets文件目录的Project面板，中间是展示日志的Console面板，右边是展示当前选中对象详细信息的Inspector面板。
 
-![](Documents/Images/Engine Show 1.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%201.png)
 
 ​       当前选中了场景中的Sun对象，Inspector面板就展示这个GameObject所挂载的Component信息。
 
 ​       点击主菜单栏的开始按钮，游戏开始运行，此时能看到场景中物体动了起来，粒子系统也开始工作。此时选中一个材质，Inspectors面板就开始展示材质信息和材质球。
 
-![](Documents/Images/Engine Show 2.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%202.png)
 
 ​       再选中一个模型，Inspector面板就展示模型信息和模型预览。
 
-![](Documents/Images/Engine Show 3.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%203.png)
 
 ​       下面是点击图像展示图像信息。
 
-![](Documents/Images/Engine Show 4.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%204.png)
 
 ​       下面是分别点击zxshader和Lua后Inspector上的代码预览。
 
-![](Documents/Images/Engine Show 5.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%205.png)
 
-![](Documents/Images/Engine Show 6.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%206.png)
 
-​       GamePlay层的Lua代码示例
+###        GamePlay层的Lua代码示例
 
 ​       以控制GameObject旋转移动举例，创建一个Lua代码，用GameLogic组件挂在到一个GameObject对象上：
 
-![](Documents/Images/GameLogic.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/GameLogic.png)
 
 ​       然后Lua代码大致如下：
 
@@ -66,8 +66,6 @@ end
 
 return ObjectMove
 ```
-
-​       引擎页面如图
 
 ​       写一些碎碎念，当是记录一下心路历程吧：
 
