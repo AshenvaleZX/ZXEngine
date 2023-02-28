@@ -18,8 +18,13 @@ namespace ZXEngine
 
 	void SPIRVCompiler::CompileShader(const filesystem::path& path)
 	{
+		string shaderCode = Resources::LoadTextFile(path.string());
 		string vertCode, geomCode, fragCode;
-		ShaderParser::ParseShaderCode(path.string(), vertCode, geomCode, fragCode);
+		ShaderParser::ParseShaderCode(shaderCode, vertCode, geomCode, fragCode);
+
+		vertCode = ShaderParser::TranslateToVulkan(vertCode);
+		geomCode = ShaderParser::TranslateToVulkan(geomCode);
+		fragCode = ShaderParser::TranslateToVulkan(fragCode);
 
 		if (vertCode.empty())
 			Debug::LogError("Empty vertex shader: " + path.string());

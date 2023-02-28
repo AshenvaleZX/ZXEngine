@@ -159,10 +159,11 @@ namespace ZXEngine
 
     ShaderReference* RenderAPIVulkan::LoadAndCompileShader(const char* path)
     {
-        auto shaderInfo = ShaderParser::GetShaderInfo(path);
+        string shaderCode = Resources::LoadTextFile(path);
+        auto shaderInfo = ShaderParser::GetShaderInfo(shaderCode);
 
         // …Ë÷√shader¥˙¬Î
-        auto shaderModules = CreateShaderModules(path);
+        auto shaderModules = CreateShaderModules(path, shaderCode);
         vector<VkPipelineShaderStageCreateInfo> shaderStages;
         for (auto& shaderModule : shaderModules)
         {
@@ -1317,10 +1318,10 @@ namespace ZXEngine
         return shaderModule;
     }
 
-    ShaderModuleSet RenderAPIVulkan::CreateShaderModules(const string& path)
+    ShaderModuleSet RenderAPIVulkan::CreateShaderModules(const string& path, const string& code)
     {
         string vertCode, geomCode, fragCode;
-        ShaderParser::ParseShaderCode(path, vertCode, geomCode, fragCode);
+        ShaderParser::ParseShaderCode(code, vertCode, geomCode, fragCode);
 
         string prePath = path.substr(0, path.length() - 9);
         ShaderModuleSet shaderModules;

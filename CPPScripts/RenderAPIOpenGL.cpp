@@ -5,6 +5,7 @@
 #include "GlobalData.h"
 #include "RenderStateSetting.h"
 #include "ShaderParser.h"
+#include "Resources.h"
 
 namespace ZXEngine
 {
@@ -284,8 +285,9 @@ namespace ZXEngine
 
 	ShaderReference* RenderAPIOpenGL::LoadAndCompileShader(const char* path)
 	{
+		string shaderCode = Resources::LoadTextFile(path);
 		string vertCode, geomCode, fragCode;
-		ShaderParser::ParseShaderCode(path, vertCode, geomCode, fragCode);
+		ShaderParser::ParseShaderCode(shaderCode, vertCode, geomCode, fragCode);
 
 		vertCode = ShaderParser::TranslateToOpenGL(vertCode);
 		geomCode = ShaderParser::TranslateToOpenGL(geomCode);
@@ -329,7 +331,7 @@ namespace ZXEngine
 
 		ShaderReference* reference = new ShaderReference();
 		reference->ID = ID;
-		reference->shaderInfo = ShaderParser::GetShaderInfo(path);
+		reference->shaderInfo = ShaderParser::GetShaderInfo(shaderCode);
 
 		return reference;
 	}
