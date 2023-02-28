@@ -1,4 +1,5 @@
 #include "Material.h"
+#include "ZShader.h"
 
 namespace ZXEngine
 {

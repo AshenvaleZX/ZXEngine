@@ -8,6 +8,8 @@
 #include "../FBOManager.h"
 #include "../CubeMap.h"
 #include "../RenderStateSetting.h"
+#include "../ZShader.h"
+#include "../RenderEngineProperties.h"
 
 namespace ZXEngine
 {
@@ -104,44 +106,24 @@ namespace ZXEngine
 
 		auto material = info->material;
 		auto shader = material->shader;
-
 		shader->Use();
-		shader->SetMat4("model", mat_M);
-		shader->SetMat4("view", mat_V);
-		shader->SetMat4("projection", mat_P);
 
-		unsigned int textureNum = (unsigned int)material->textures.size();
-		for (unsigned int i = 0; i < textureNum; i++)
-		{
-			shader->SetTexture(material->textures[i].first, material->textures[i].second->GetID(), i);
-		}
+		shader->SetMaterialProperties(material);
 
-		// 固定光源
-		if (shader->GetLightType() == LightType::Directional)
-		{
-			shader->SetVec3("viewPos", camera->GetTransform()->GetPosition());
-			shader->SetVec3("dirLight.direction", Vector3(1.0f, 1.0f, -1.0f).Normalize());
-			shader->SetVec3("dirLight.color", Vector3(1.0f, 1.0f, 1.0f));
-			shader->SetFloat("dirLight.intensity", 1.0f);
-		}
-		else if (shader->GetLightType() == LightType::Point)
-		{
-			shader->SetVec3("viewPos", camera->GetTransform()->GetPosition());
-			shader->SetVec3("pointLight.position", Vector3(10.0f, 10.0f, -10.0f));
-			shader->SetVec3("pointLight.color", Vector3(1.0f, 1.0f, 1.0f));
-			shader->SetFloat("pointLight.intensity", 1.0f);
-		}
+		auto engineProperties = RenderEngineProperties::GetInstance();
+		engineProperties->matM = mat_M;
+		engineProperties->matV = mat_V;
+		engineProperties->matP = mat_P;
 
-		// 无阴影，即阴影贴图纯白，不产生遮挡
-		if (shader->GetShadowType() == ShadowType::Directional)
-		{
+		// 固定参数模拟环境
+		engineProperties->camPos = camera->GetTransform()->GetPosition();
+		engineProperties->lightPos = Vector3(10.0f, 10.0f, -10.0f);
+		engineProperties->lightDir = Vector3(1.0f, 1.0f, -1.0f).Normalize();
+		engineProperties->lightColor = Vector3(1.0f, 1.0f, 1.0f);
+		engineProperties->lightIntensity = 1.0f;
+		engineProperties->shadowCubeMap = shadowCubeMap->GetID();
 
-		}
-		else if (shader->GetShadowType() == ShadowType::Point)
-		{
-			shader->SetCubeMap("_DepthCubeMap", shadowCubeMap->GetID(), textureNum);
-			shader->SetFloat("_FarPlane", 100.0f);
-		}
+		shader->SetEngineProperties();
 
 		materialSphere->Draw();
 	}
@@ -155,9 +137,9 @@ namespace ZXEngine
 		Matrix4 mat_P = camera->GetProjectionMatrix();
 
 		previewModelShader->Use();
-		previewModelShader->SetMat4("model", mat_M);
-		previewModelShader->SetMat4("view", mat_V);
-		previewModelShader->SetMat4("projection", mat_P);
+		previewModelShader->SetMat4("ENGINE_Model", mat_M);
+		previewModelShader->SetMat4("ENGINE_View", mat_V);
+		previewModelShader->SetMat4("ENGINE_Projection", mat_P);
 		previewModelShader->SetVec3("_Direction", Vector3(1.0f, 1.0f, -1.0f).Normalize());
 
 		info->meshRenderer->Draw();

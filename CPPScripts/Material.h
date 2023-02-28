@@ -1,10 +1,11 @@
 #pragma once
-#include "ZShader.h"
+#include "pubh.h"
 #include "Texture.h"
 #include "Resources.h"
 
 namespace ZXEngine
 {
+	class Shader;
 	class Material
 	{
 	public:

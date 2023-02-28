@@ -1,6 +1,7 @@
 #include "RenderPassForwardRendering.h"
 #include "ZCamera.h"
 #include "RenderQueueManager.h"
+#include "ZShader.h"
 #include "Material.h"
 #include "MeshRenderer.h"
 #include "Transform.h"
@@ -11,6 +12,7 @@
 #include "GlobalData.h"
 #include "ParticleSystemManager.h"
 #include "RenderStateSetting.h"
+#include "RenderEngineProperties.h"
 
 namespace ZXEngine
 {
@@ -46,62 +48,22 @@ namespace ZXEngine
 		renderQueue->Sort(camera);
 		renderQueue->Batch();
 
-		auto mat_V = camera->GetViewMatrix();
-		auto mat_P = camera->GetProjectionMatrix();
+		RenderEngineProperties::GetInstance()->SetCameraProperties(camera);
+		RenderEngineProperties::GetInstance()->SetLightProperties(Light::GetAllLights()[0]);
+		RenderEngineProperties::GetInstance()->SetShadowCubeMap(FBOManager::GetInstance()->GetFBO("ShadowCubeMap")->DepthBuffer);
 
 		for (auto& batch : renderQueue->GetBatches())
 		{
 			auto shader = batch.second[0]->matetrial->shader;
 			shader->Use();
-			shader->SetMat4("view", mat_V);
-			shader->SetMat4("projection", mat_P);
 
 			for (auto renderer : batch.second)
 			{
 				auto material = renderer->matetrial;
+				shader->SetMaterialProperties(material);
 
-				auto mat_M = renderer->GetTransform()->GetModelMatrix();
-				shader->SetMat4("model", mat_M);
-
-				unsigned int textureNum = (unsigned int)material->textures.size();
-				for (unsigned int i = 0; i < textureNum; i++)
-				{
-					shader->SetTexture(material->textures[i].first, material->textures[i].second->GetID(), i);
-				}
-
-				// 光源
-				if (shader->GetLightType() == LightType::Directional)
-				{
-					Light* light = Light::GetAllLights()[0];
-					shader->SetVec3("viewPos", camera->GetTransform()->GetPosition());
-					shader->SetVec3("dirLight.direction", light->GetTransform()->GetForward());
-					shader->SetVec3("dirLight.color", light->color);
-					shader->SetFloat("dirLight.intensity", light->intensity);
-				}
-				else if (shader->GetLightType() == LightType::Point)
-				{
-					Light* light = Light::GetAllLights()[0];
-					shader->SetVec3("viewPos", camera->GetTransform()->GetPosition());
-					shader->SetVec3("pointLight.position", light->GetTransform()->GetPosition());
-					shader->SetVec3("pointLight.color", light->color);
-					shader->SetFloat("pointLight.intensity", light->intensity);
-				}
-
-				// 阴影
-				if (renderer->receiveShadow)
-				{
-					Light* light = Light::GetAllLights()[0];
-					if (light->type == LightType::Directional)
-					{
-
-					}
-					else if (light->type == LightType::Point)
-					{
-						// 之前已经把纹理编号设置到 textureNum - 1 了，所以这里是textureNum
-						shader->SetCubeMap("_DepthCubeMap", FBOManager::GetInstance()->GetFBO("ShadowCubeMap")->DepthBuffer, textureNum);
-						shader->SetFloat("_FarPlane", GlobalData::shadowCubeMapFarPlane);
-					}
-				}
+				RenderEngineProperties::GetInstance()->SetRendererProperties(renderer);
+				shader->SetEngineProperties();
 
 				renderer->Draw();
 			}
@@ -170,9 +132,9 @@ namespace ZXEngine
 		Matrix4 mat_P = camera->GetProjectionMatrix();
 
 		skyBoxShader->Use();
-		skyBoxShader->SetMat4("view", mat_V);
-		skyBoxShader->SetMat4("projection", mat_P);
-		skyBoxShader->SetCubeMap("skybox", SceneManager::GetInstance()->GetCurScene()->skyBox->GetID(), 0);
+		skyBoxShader->SetMat4("ENGINE_View", mat_V);
+		skyBoxShader->SetMat4("ENGINE_Projection", mat_P);
+		skyBoxShader->SetCubeMap("_Skybox", SceneManager::GetInstance()->GetCurScene()->skyBox->GetID(), 0);
 		
 		skyBox->Use();
 

@@ -1,5 +1,6 @@
 #include "RenderQueue.h"
 #include "GameObject.h"
+#include "ZShader.h"
 #include "ProjectSetting.h"
 
 namespace ZXEngine

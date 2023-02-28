@@ -3,6 +3,8 @@
 
 namespace ZXEngine
 {
+	class Material;
+	class RenderEngineProperties;
 	class Shader
 	{
 	private:
@@ -19,6 +21,8 @@ namespace ZXEngine
 		ShadowType GetShadowType();
 		int GetRenderQueue();
 		void Use();
+		void SetEngineProperties();
+		void SetMaterialProperties(Material* material);
 		void SetBool(string name, bool value);
 		void SetInt(string name, int value);
 		void SetFloat(string name, float value);
@@ -34,7 +38,12 @@ namespace ZXEngine
 		void SetCubeMap(string name, unsigned int textureID, unsigned int idx);
 
 	private:
+		uint16_t textureIdx = 0;
 		int renderQueue;
 		ShaderReference* reference = nullptr;
+		RenderEngineProperties* engineProperties = nullptr;
+
+		void SetEngineProperty(const string& name, ShaderPropertyType type);
+		void SetMaterialProperty(const string& name, ShaderPropertyType type);
 	};
 }

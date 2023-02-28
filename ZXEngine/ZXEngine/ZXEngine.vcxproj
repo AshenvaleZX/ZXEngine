@@ -232,6 +232,7 @@
     <ClCompile Include="..\..\CPPScripts\RenderAPIOpenGL.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPIVulkan.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderEngine.cpp" />
+    <ClCompile Include="..\..\CPPScripts\RenderEngineProperties.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderPassAfterEffectRendering.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderPassForwardRendering.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderPassManager.cpp" />
@@ -352,6 +353,7 @@
     <ClInclude Include="..\..\CPPScripts\RenderAPIOpenGL.h" />
     <ClInclude Include="..\..\CPPScripts\RenderAPIVulkan.h" />
     <ClInclude Include="..\..\CPPScripts\RenderEngine.h" />
+    <ClInclude Include="..\..\CPPScripts\RenderEngineProperties.h" />
     <ClInclude Include="..\..\CPPScripts\RenderPass.h" />
     <ClInclude Include="..\..\CPPScripts\RenderPassAfterEffectRendering.h" />
     <ClInclude Include="..\..\CPPScripts\RenderPassForwardRendering.h" />

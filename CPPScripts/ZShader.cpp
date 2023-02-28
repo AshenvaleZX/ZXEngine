@@ -1,5 +1,9 @@
 #include "ZShader.h"
+#include "Material.h"
 #include "Resources.h"
+#include "RenderEngineProperties.h"
+#include "GlobalData.h"
+#include "FBOManager.h"
 
 namespace ZXEngine
 {
@@ -9,6 +13,7 @@ namespace ZXEngine
 	{
 		name = Resources::GetAssetName(path);
 		renderQueue = (int)RenderQueueType::Qpaque;
+		engineProperties = RenderEngineProperties::GetInstance();
 
 		for (auto shaderReference : loadedShaders)
 		{
@@ -83,6 +88,58 @@ namespace ZXEngine
 	{
 		RenderAPI::GetInstance()->UseShader(reference->ID);
 	}
+
+	void Shader::SetEngineProperties()
+	{
+		for (auto& property : reference->shaderInfo.vertProperties)
+			SetEngineProperty(property.first, property.second);
+
+		for (auto& property : reference->shaderInfo.fragProperties)
+			SetEngineProperty(property.first, property.second);
+	}
+
+	void Shader::SetEngineProperty(const string& name, ShaderPropertyType type)
+	{
+		if (type == ShaderPropertyType::ENGINE_MODEL)
+			SetMat4(name, engineProperties->matM);
+		else if (type == ShaderPropertyType::ENGINE_VIEW)
+			SetMat4(name, engineProperties->matV);
+		else if (type == ShaderPropertyType::ENGINE_PROJECTION)
+			SetMat4(name, engineProperties->matP);
+		else if (type == ShaderPropertyType::ENGINE_CAMERA_POS)
+			SetVec3(name, engineProperties->camPos);
+		else if (type == ShaderPropertyType::ENGINE_LIGHT_POS)
+			SetVec3(name, engineProperties->lightPos);
+		else if (type == ShaderPropertyType::ENGINE_LIGHT_DIR)
+			SetVec3(name, engineProperties->lightDir);
+		else if (type == ShaderPropertyType::ENGINE_LIGHT_COLOR)
+			SetVec3(name, engineProperties->lightColor);
+		else if (type == ShaderPropertyType::ENGINE_LIGHT_INTENSITY)
+			SetFloat(name, engineProperties->lightIntensity);
+		else if (type == ShaderPropertyType::ENGINE_FAR_PLANE)
+			SetFloat(name, GlobalData::shadowCubeMapFarPlane);
+		else if (type == ShaderPropertyType::ENGINE_DEPTH_CUBE_MAP)
+		{
+			// 先设置SetMaterialProperties获得引擎纹理的初始textureIdx，然后++
+			SetCubeMap(name, engineProperties->shadowCubeMap, textureIdx);
+			textureIdx++;
+		}
+	}
+
+	void Shader::SetMaterialProperties(Material* material)
+	{
+		uint16_t textureNum = (uint16_t)material->textures.size();
+		for (uint16_t i = 0; i < textureNum; i++)
+			SetTexture(material->textures[i].first, material->textures[i].second->GetID(), i);
+
+		textureIdx = textureNum;
+	}
+
+	void Shader::SetMaterialProperty(const string& name, ShaderPropertyType type)
+	{
+
+	}
+
 	void Shader::SetBool(string name, bool value)
 	{
 		RenderAPI::GetInstance()->SetShaderBool(reference->ID, name, value);

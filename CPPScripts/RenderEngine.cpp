@@ -13,6 +13,7 @@
 #include "ParticleSystemManager.h"
 #include "ProjectSetting.h"
 #include "RenderAPIVulkan.h"
+#include "RenderEngineProperties.h"
 
 namespace ZXEngine
 {
@@ -21,6 +22,7 @@ namespace ZXEngine
 	void RenderEngine::Create()
 	{
 		mInstance = new RenderEngine();
+		RenderEngineProperties::Create();
 		RenderQueueManager::Creat();
 		RenderAPI::Creat();
 		RenderAPI::GetInstance()->InitRenderSetting();
