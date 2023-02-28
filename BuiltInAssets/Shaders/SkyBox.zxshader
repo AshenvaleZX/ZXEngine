@@ -1,31 +1,53 @@
 Vertex
 {
-    #version 460 core
-    layout (location = 0) in vec3 aPos;
-
-    layout (location = 0) out vec3 TexCoords;
-
-    uniform mat4 view;
-    uniform mat4 projection;
-
-    void main()
+    Input
     {
-        TexCoords = aPos;
-        gl_Position = projection * view * vec4(aPos, 1.0);
+        0 vec3 aPos
+    }
+
+    Output
+    {
+        0 vec3 TexCoords
+    }
+
+    Properties
+    {
+        using ENGINE_View
+        using ENGINE_Projection
+    }
+
+    Program
+    {
+        void main()
+        {
+            TexCoords = aPos;
+            gl_Position = ENGINE_Projection * ENGINE_View * vec4(aPos, 1.0);
+        }
     }
 }
 
 Fragment
 {
-    #version 460 core
-    layout (location = 0) in vec3 TexCoords;
-
-    layout (location = 0) out vec4 FragColor;
-
-    uniform samplerCube skybox;
-
-    void main()
+    Input
     {
-        FragColor = texture(skybox, TexCoords);
+        0 vec3 TexCoords
+    }
+
+    Output
+    {
+        0 vec4 FragColor
+    }
+
+    Properties
+    {
+        samplerCube _Skybox
+    }
+
+    Program
+    {
+        void main()
+        {
+            FragColor = texture(_Skybox, TexCoords);
+        }
     }
 }

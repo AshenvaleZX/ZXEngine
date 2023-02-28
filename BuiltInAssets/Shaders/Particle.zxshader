@@ -1,37 +1,59 @@
 Vertex
 {
-    #version 460 core
-    layout (location = 0) in vec2 aPos;
-    layout (location = 1) in vec2 aTexCoords;
-
-    layout (location = 0) out vec2 TexCoords;
-    layout (location = 1) out vec4 ParticleColor;
-
-    uniform mat4 model;
-    uniform mat4 view;
-    uniform mat4 projection;
-    uniform vec4 _Color;
-
-    void main()
+    Input
     {
-        TexCoords = aTexCoords;
-        ParticleColor = _Color;
-        gl_Position = projection * view * model * vec4(aPos, 0.0, 1.0);
+        0 vec2 aPos
+        1 vec2 aTexCoords
+    }
+
+    Output
+    {
+        0 vec2 TexCoords
+        1 vec4 ParticleColor
+    }
+
+    Properties
+    {
+        using ENGINE_Model
+        using ENGINE_View
+        using ENGINE_Projection
+        vec4 _Color;
+    }
+
+    Program
+    {
+        void main()
+        {
+            TexCoords = aTexCoords;
+            ParticleColor = _Color;
+            gl_Position = ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 0.0, 1.0);
+        }
     }
 }
 
 Fragment
 {
-    #version 460 core
-    layout (location = 0) in vec2 TexCoords;
-    layout (location = 1) in vec4 ParticleColor;
-
-    layout (location = 0) out vec4 FragColor;
-
-    uniform sampler2D _Sprite;
-
-    void main()
+    Input
     {
-        FragColor = (vec4(1, 1, 1, texture(_Sprite, TexCoords).r) * ParticleColor);
+        0 vec2 TexCoords
+        1 vec4 ParticleColor
+    }
+
+    Output
+    {
+        0 vec4 FragColor
+    }
+
+    Properties
+    {
+        sampler2D _Sprite;
+    }
+
+    Program
+    {
+        void main()
+        {
+            FragColor = (vec4(1, 1, 1, texture(_Sprite, TexCoords).r) * ParticleColor);
+        }
     }
 }

@@ -1,42 +1,64 @@
 Vertex
 {
-    #version 460 core
-    layout (location = 0) in vec3 aPos;
-    layout (location = 1) in vec3 aNormal;
-
-    layout (location = 0) out vec3 Normal;
-
-    uniform mat4 model;
-    uniform mat4 view;
-    uniform mat4 projection;
-
-    void main()
+    Input
     {
-        Normal = transpose(inverse(mat3(model))) * aNormal;
-        gl_Position = projection * view * model * vec4(aPos, 1.0);
+        0 vec3 aPos
+        1 vec3 aNormal
+    }
+
+    Output
+    {
+        0 vec3 Normal
+    }
+
+    Properties
+    {
+        using ENGINE_Model
+        using ENGINE_View
+        using ENGINE_Projection
+    }
+
+    Program
+    {
+        void main()
+        {
+            Normal = transpose(inverse(mat3(ENGINE_Model))) * aNormal;
+            gl_Position = ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 1.0);
+        }
     }
 }
 
 Fragment
 {
-    #version 460 core
-    layout (location = 0) in vec3 Normal;
-
-    layout (location = 0) out vec4 FragColor;
-
-    uniform vec3 _Direction;
-
-    void main()
+    Input
     {
-        vec3 color = vec3(0.5, 0.5, 0.5);
-        // ambient
-        vec3 ambient = 0.05 * color;
-        // diffuse
-        vec3 lightDir = normalize(_Direction);
-        vec3 normal = normalize(Normal);
-        float diff = max(dot(lightDir, normal), 0.0);
-        vec3 diffuse = diff * color;
+        0 vec3 Normal
+    }
 
-        FragColor = vec4(ambient + diffuse, 1.0);
+    Output
+    {
+        0 vec4 FragColor
+    }
+
+    Properties
+    {
+        vec3 _Direction;
+    }
+
+    Program
+    {
+        void main()
+        {
+            vec3 color = vec3(0.5, 0.5, 0.5);
+            // ambient
+            vec3 ambient = 0.05 * color;
+            // diffuse
+            vec3 lightDir = normalize(_Direction);
+            vec3 normal = normalize(Normal);
+            float diff = max(dot(lightDir, normal), 0.0);
+            vec3 diffuse = diff * color;
+
+            FragColor = vec4(ambient + diffuse, 1.0);
+        }
     }
 }

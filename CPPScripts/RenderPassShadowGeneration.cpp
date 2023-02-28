@@ -83,7 +83,7 @@ namespace ZXEngine
 				continue;
 
 			Matrix4 mat_M = renderer->GetTransform()->GetModelMatrix();
-			shadowCubeMapShader->SetMat4("_Model", mat_M);
+			shadowCubeMapShader->SetMat4("ENGINE_Model", mat_M);
 
 			renderer->Draw();
 		}

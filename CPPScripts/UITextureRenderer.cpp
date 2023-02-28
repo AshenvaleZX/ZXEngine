@@ -15,7 +15,7 @@ namespace ZXEngine
 
 		Matrix4 mat_P = Math::Orthographic(0.0f, (float)GlobalData::srcWidth, 0.0f, (float)GlobalData::srcHeight);
 		shader->Use();
-		shader->SetMat4("projection", mat_P);
+		shader->SetMat4("ENGINE_Projection", mat_P);
 	}
 
 	ComponentType UITextureRenderer::GetType()
@@ -40,7 +40,7 @@ namespace ZXEngine
 	{
 		Matrix4 mat_M = GetTransform()->GetModelMatrix();
 		shader->Use();
-		shader->SetMat4("model", mat_M);
+		shader->SetMat4("ENGINE_Model", mat_M);
 		shader->SetTexture("_Texture", texture->GetID(), 0);
 		textureMesh->Use();
 		RenderAPI::GetInstance()->Draw();

@@ -9,64 +9,80 @@ Setting
 
 Vertex
 {
-    #version 460 core
-    layout (location = 0) in vec3 aPos;
-    layout (location = 1) in vec3 aNormal;
-    layout (location = 2) in vec2 aTexCoords;
-
-    layout (location = 0) out vec3 WorldPos;
-    layout (location = 1) out vec3 Normal;
-    layout (location = 2) out vec2 TexCoords;
-
-    uniform mat4 model;
-    uniform mat4 view;
-    uniform mat4 projection;
-
-    void main()
+    Input
     {
-        WorldPos = vec3(model * vec4(aPos, 1.0));
-        Normal = transpose(inverse(mat3(model))) * aNormal;
-        TexCoords = aTexCoords;
-        gl_Position = projection * view * model * vec4(aPos, 1.0);
+        0 vec3 aPos
+        1 vec3 aNormal
+        2 vec2 aTexCoords
+    }
+
+    Output
+    {
+        0 vec3 WorldPos
+        1 vec3 Normal
+        2 vec2 TexCoords
+    }
+
+    Properties
+    {
+        using ENGINE_Model
+        using ENGINE_View
+        using ENGINE_Projection
+    }
+
+    Program
+    {
+        void main()
+        {
+            WorldPos = vec3(ENGINE_Model * vec4(aPos, 1.0));
+            Normal = transpose(inverse(mat3(ENGINE_Model))) * aNormal;
+            TexCoords = aTexCoords;
+            gl_Position = ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 1.0);
+        }
     }
 }
 
 Fragment
 {
-    #version 460 core
-    layout (location = 0) in vec3 WorldPos;
-    layout (location = 1) in vec3 Normal;
-    layout (location = 2) in vec2 TexCoords;
+    Input
+    {
+        0 vec3 WorldPos
+        1 vec3 Normal
+        2 vec2 TexCoords
+    }
 
-    layout (location = 0) out vec4 FragColor;
+    Output
+    {
+        0 vec4 FragColor
+    }
 
-    struct PointLight {
-        vec3 position;
-        vec3 color;
-        float intensity;
-    };
+    Properties
+    {
+        using ENGINE_Light_Pos
+        using ENGINE_Camera_Pos
+        sampler2D _Texture1
+    }
 
-    uniform sampler2D texture1;
-    uniform vec3 viewPos;
-    uniform PointLight pointLight;
+    Program
+    {
+        void main()
+        {           
+            vec3 color = texture(_Texture1, TexCoords).rgb;
+            // ambient
+            vec3 ambient = 0.15 * color;
+            // diffuse
+            vec3 lightDir = normalize(ENGINE_Light_Pos - WorldPos);
+            vec3 normal = normalize(Normal);
+            float diff = max(dot(lightDir, normal), 0.0);
+            vec3 diffuse = diff * color;
+            // specular
+            vec3 viewDir = normalize(ENGINE_Camera_Pos - WorldPos);
+            vec3 reflectDir = reflect(-lightDir, normal);
+            vec3 halfwayDir = normalize(lightDir + viewDir);  
+            float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+            vec3 specular = vec3(1) * spec; // assuming bright white light color
 
-    void main()
-    {           
-        vec3 color = texture(texture1, TexCoords).rgb;
-        // ambient
-        vec3 ambient = 0.15 * color;
-        // diffuse
-        vec3 lightDir = normalize(pointLight.position - WorldPos);
-        vec3 normal = normalize(Normal);
-        float diff = max(dot(lightDir, normal), 0.0);
-        vec3 diffuse = diff * color;
-        // specular
-        vec3 viewDir = normalize(viewPos - WorldPos);
-        vec3 reflectDir = reflect(-lightDir, normal);
-        vec3 halfwayDir = normalize(lightDir + viewDir);  
-        float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
-        vec3 specular = vec3(1) * spec; // assuming bright white light color
-
-        FragColor = vec4(ambient + diffuse + specular, 1.0);
+            FragColor = vec4(ambient + diffuse + specular, 1.0);
+        }
     }
 }

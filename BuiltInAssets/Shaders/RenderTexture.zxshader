@@ -1,29 +1,48 @@
 Vertex
 {
-    #version 460 core
-    layout (location = 0) in vec3 aPos;
-    layout (location = 2) in vec2 aTexCoords;
-
-    layout (location = 0) out vec2 TexCoords;
-
-    void main()
+    Input
     {
-        TexCoords = aTexCoords;    
-        gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
+        0 vec3 aPos
+        2 vec2 aTexCoords
+    }
+
+    Output
+    {
+        0 vec2 TexCoords
+    }
+
+    Program
+    {
+        void main()
+        {
+            TexCoords = aTexCoords;    
+            gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
+        }
     }
 }
 
 Fragment
 {
-    #version 460 core
-    layout (location = 0) in vec2 TexCoords;
-
-    layout (location = 0) out vec4 FragColor;
-
-    uniform sampler2D _RenderTexture;
-
-    void main()
+    Input
     {
-        FragColor = texture(_RenderTexture, TexCoords);
+        0 vec2 TexCoords
+    }
+
+    Output
+    {
+        0 vec4 FragColor
+    }
+
+    Properties
+    {
+        sampler2D _RenderTexture
+    }
+
+    Program
+    {
+        void main()
+        {
+            FragColor = texture(_RenderTexture, TexCoords);
+        }
     }
 }

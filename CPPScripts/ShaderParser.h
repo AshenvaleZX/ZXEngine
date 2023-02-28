@@ -8,7 +8,9 @@ namespace ZXEngine
 	{
 	public:
 		static ShaderInfo GetShaderInfo(const string& path);
+		static PropertyMap GetProperties(const string& stageCode);
 		static void ParseShaderCode(const string& path, string& vertCode, string& geomCode, string& fragCode);
+		static string TranslateToOpenGL(const string& originCode);
 		static string TranslateToVulkan(const string& originCode);
 
 	private:

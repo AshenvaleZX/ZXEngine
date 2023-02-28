@@ -33,6 +33,30 @@ namespace ZXEngine
 		{ "Equal",	CompareOption::EQUAL  }, { "NotEqual", CompareOption::NOT_EQUAL },
 	};
 
+	map<string, ShaderPropertyType> shaderPropertyMap =
+	{
+		{ "vec2", ShaderPropertyType::VEC2 }, { "vec3",  ShaderPropertyType::VEC3  }, { "vec4", ShaderPropertyType::VEC4 }, 
+		{ "mat2", ShaderPropertyType::MAT2 }, { "mat3",  ShaderPropertyType::MAT3  }, { "mat4", ShaderPropertyType::MAT4 },
+		{ "int",  ShaderPropertyType::INT  }, { "float", ShaderPropertyType::FLOAT }, { "bool", ShaderPropertyType::BOOL },
+
+		{ "sampler", ShaderPropertyType::SAMPLER }, { "sampler2D", ShaderPropertyType::SAMPLER_2D }, { "samplerCube", ShaderPropertyType::SAMPLER_CUBE },
+
+		{ "ENGINE_Model",       ShaderPropertyType::ENGINE_MODEL       }, { "ENGINE_View",            ShaderPropertyType::ENGINE_VIEW            },
+		{ "ENGINE_Projection",  ShaderPropertyType::ENGINE_PROJECTION  }, { "ENGINE_Camera_Pos",      ShaderPropertyType::ENGINE_CAMERA_POS      },
+		{ "ENGINE_Light_Pos",   ShaderPropertyType::ENGINE_LIGHT_POS   }, { "ENGINE_Light_Dir",       ShaderPropertyType::ENGINE_LIGHT_DIR       },
+		{ "ENGINE_Light_Color", ShaderPropertyType::ENGINE_LIGHT_COLOR }, { "ENGINE_Light_Intensity", ShaderPropertyType::ENGINE_LIGHT_INTENSITY },
+		{ "ENGINE_Depth_Map",   ShaderPropertyType::ENGINE_DEPTH_MAP   }, { "ENGINE_Depth_Cube_Map",  ShaderPropertyType::ENGINE_DEPTH_CUBE_MAP  },
+		{ "ENGINE_Far_Plane",   ShaderPropertyType::ENGINE_FAR_PLANE   },
+	};
+
+	map<string, string> enginePropertiesTypeMap =
+	{
+		{ "ENGINE_Model",          "mat4"        }, { "ENGINE_View",            "mat4"  }, { "ENGINE_Projection", "mat4"      }, 
+		{ "ENGINE_Camera_Pos",     "vec3"        }, { "ENGINE_Light_Pos",       "vec3"  }, { "ENGINE_Light_Dir",  "vec3"      }, 
+		{ "ENGINE_Light_Color",    "vec3"        }, { "ENGINE_Light_Intensity", "float" }, { "ENGINE_Depth_Map",  "sampler2D" }, 
+		{ "ENGINE_Depth_Cube_Map", "samplerCube" }, { "ENGINE_Far_Plane",       "float" },
+	};
+
 	ShaderInfo ShaderParser::GetShaderInfo(const string& path)
 	{
 		ShaderInfo info;
@@ -45,8 +69,8 @@ namespace ZXEngine
 		// 而size_t是一个无符号整数(具体多少位取决于编译环境)，一个无符号整数变成-1，是因为溢出了，实际上没找到的时候真正返回的是npos
 		// 其实直接用int来处理也行，会自动隐式转换，也可以用-1来判断是否找到，但是这样会有编译的Warning
 		// 为了在各种编译环境下不出错，这里直接采用原定义中的string::size_type和string::npos是最保险的，并且不会有Warning
-		string::size_type hasDirLight = shaderCode.find("DirLight");
-		string::size_type hasPointLight = shaderCode.find("PointLight");
+		string::size_type hasDirLight = shaderCode.find("ENGINE_Light_Dir");
+		string::size_type hasPointLight = shaderCode.find("ENGINE_Light_Pos");
 		if (hasDirLight != string::npos)
 			info.lightType = LightType::Directional;
 		else if (hasPointLight != string::npos)
@@ -54,8 +78,8 @@ namespace ZXEngine
 		else
 			info.lightType = LightType::None;
 
-		string::size_type hasDirShadow = shaderCode.find("_DepthMap");
-		string::size_type hasPointShadow = shaderCode.find("_DepthCubeMap");
+		string::size_type hasDirShadow = shaderCode.find("ENGINE_Depth_Map");
+		string::size_type hasPointShadow = shaderCode.find("ENGINE_Depth_Cube_Map");
 		if (hasDirShadow != string::npos)
 			info.shadowType = ShadowType::Directional;
 		else if (hasPointShadow != string::npos)
@@ -63,7 +87,35 @@ namespace ZXEngine
 		else
 			info.shadowType = ShadowType::None;
 
+		info.vertProperties = GetProperties(GetCodeBlock(shaderCode, "Vertex"));
+		info.fragProperties = GetProperties(GetCodeBlock(shaderCode, "Fragment"));
+
 		return info;
+	}
+
+	PropertyMap ShaderParser::GetProperties(const string& stageCode)
+	{
+		PropertyMap propertyMap;
+
+		string propertiesBlock = GetCodeBlock(stageCode, "Properties");
+		if (propertiesBlock.empty())
+			return propertyMap;
+
+		auto lines = Utils::StringSplit(propertiesBlock, '\n');
+
+		for (auto& line : lines)
+		{
+			auto words = Utils::ExtractWords(line);
+
+			if (words.size() == 0)
+				continue;
+			else if (words[0] == "using")
+				propertyMap.insert(pair(words[1], shaderPropertyMap[words[1]]));
+			else
+				propertyMap.insert(pair(words[1], shaderPropertyMap[words[0]]));
+		}
+
+		return propertyMap;
 	}
 
 	void ShaderParser::ParseShaderCode(const string& path, string& vertCode, string& geomCode, string& fragCode)
@@ -73,6 +125,63 @@ namespace ZXEngine
 		vertCode = GetCodeBlock(shaderCode, "Vertex");
 		geomCode = GetCodeBlock(shaderCode, "Geometry");
 		fragCode = GetCodeBlock(shaderCode, "Fragment");
+	}
+
+	string ShaderParser::TranslateToOpenGL(const string& originCode)
+	{
+		if (originCode.empty())
+			return "";
+
+		string glCode = "#version 460 core\n\n";
+
+		string gsInOutBlock = GetCodeBlock(originCode, "GSInOut");
+		if (!gsInOutBlock.empty())
+		{
+			auto lines = Utils::StringSplit(gsInOutBlock, '\n');
+			for (auto& line : lines)
+				glCode += line + ";\n";
+			glCode += "\n";
+		}
+
+		string inputBlock = GetCodeBlock(originCode, "Input");
+		auto lines = Utils::StringSplit(inputBlock, '\n');
+		for (auto& line : lines)
+		{
+			auto words = Utils::ExtractWords(line);
+			if (words.size() >= 3 && words[0] != "//")
+				glCode += "layout (location = " + words[0] + ") in " + words[1] + " " + words[2] + ";\n";
+		}
+		glCode += "\n";
+
+		string outputBlock = GetCodeBlock(originCode, "Output");
+		lines = Utils::StringSplit(outputBlock, '\n');
+		for (auto& line : lines)
+		{
+			auto words = Utils::ExtractWords(line);
+			if (words.size() >= 3 && words[0] != "//")
+				glCode += "layout (location = " + words[0] + ") out " + words[1] + " " + words[2] + ";\n";
+		}
+		glCode += "\n";
+
+		string propertiesBlock = GetCodeBlock(originCode, "Properties");
+		lines = Utils::StringSplit(propertiesBlock, '\n');
+		for (auto& line : lines)
+		{
+			auto words = Utils::ExtractWords(line);
+			if (words.size() == 0)
+				continue;
+			else if (words[0] == "//")
+				continue;
+			else if (words[0] == "using")
+				glCode += "uniform " + enginePropertiesTypeMap[words[1]] + " " + words[1] + ";\n";
+			else
+				glCode += "uniform " + words[0] + " " + words[1] + ";\n";
+		}
+		glCode += "\n";
+
+		glCode += GetCodeBlock(originCode, "Program");
+
+		return glCode;
 	}
 
 	string ShaderParser::TranslateToVulkan(const string& originCode)

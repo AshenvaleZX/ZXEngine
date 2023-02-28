@@ -107,7 +107,7 @@ namespace ZXEngine
 				Matrix4 scale = Math::Scale(Matrix4(1), Vector3(2.0f));
 				Matrix4 mat_M = model * rotate * scale;
 
-				shader->SetMat4("model", mat_M);
+				shader->SetMat4("ENGINE_Model", mat_M);
 				shader->SetVec4("_Color", particle->color);
 
 				RenderAPI::GetInstance()->Draw(VAO, 6, DrawType::OpenGLDrawArrays);

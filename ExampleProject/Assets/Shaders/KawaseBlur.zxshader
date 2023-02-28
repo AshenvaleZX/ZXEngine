@@ -1,40 +1,59 @@
 Vertex
 {
-    #version 460 core
-    layout (location = 0) in vec3 aPos;
-    layout (location = 2) in vec2 aTexCoords;
-
-    layout (location = 0) out vec2 TexCoords;
-
-    void main()
+    Input
     {
-        TexCoords = aTexCoords;    
-        gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
+        0 vec3 aPos
+        2 vec2 aTexCoords
+    }
+
+    Output
+    {
+        0 vec2 TexCoords
+    }
+
+    Program
+    {
+        void main()
+        {
+            TexCoords = aTexCoords;    
+            gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
+        }
     }
 }
 
 Fragment
 {
-    #version 460 core
-    layout (location = 0) in vec2 TexCoords;
+    Input
+    {
+        0 vec2 TexCoords
+    }
 
-    layout (location = 0) out vec4 FragColor;
+    Output
+    {
+        0 vec4 FragColor
+    }
 
-    // 当前是第几次模糊
-    uniform int _BlurTimes;
-    // 采样偏移距离，1表示偏移1像素
-    uniform float _TexOffset;
-    // 原图
-    uniform sampler2D _RenderTexture;
+    Properties
+    {
+        // 当前是第几次模糊
+        int _BlurTimes
+        // 采样偏移距离，1表示偏移1像素
+        float _TexOffset
+        // 原图
+        sampler2D _RenderTexture
+    }
 
-    void main()
-    {             
-        vec2 texOffset = _BlurTimes * _TexOffset / textureSize(_RenderTexture, 0);
-        vec3 color = vec3(0, 0, 0);
-        color += texture(_RenderTexture, TexCoords + vec2( texOffset.x,  texOffset.y)).rgb * 0.25;
-        color += texture(_RenderTexture, TexCoords + vec2( texOffset.x, -texOffset.y)).rgb * 0.25;
-        color += texture(_RenderTexture, TexCoords + vec2(-texOffset.x,  texOffset.y)).rgb * 0.25;
-        color += texture(_RenderTexture, TexCoords + vec2(-texOffset.x, -texOffset.y)).rgb * 0.25;
-        FragColor = vec4(color, 1.0);
+    Program
+    {
+        void main()
+        {             
+            vec2 texOffset = _BlurTimes * _TexOffset / textureSize(_RenderTexture, 0);
+            vec3 color = vec3(0, 0, 0);
+            color += texture(_RenderTexture, TexCoords + vec2( texOffset.x,  texOffset.y)).rgb * 0.25;
+            color += texture(_RenderTexture, TexCoords + vec2( texOffset.x, -texOffset.y)).rgb * 0.25;
+            color += texture(_RenderTexture, TexCoords + vec2(-texOffset.x,  texOffset.y)).rgb * 0.25;
+            color += texture(_RenderTexture, TexCoords + vec2(-texOffset.x, -texOffset.y)).rgb * 0.25;
+            FragColor = vec4(color, 1.0);
+        }
     }
 }

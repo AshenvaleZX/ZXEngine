@@ -49,8 +49,8 @@ namespace ZXEngine
 		Matrix4 mat_V = camera->GetViewMatrix();
 		Matrix4 mat_P = camera->GetProjectionMatrix();
 		shader->Use();
-		shader->SetMat4("view", mat_V);
-		shader->SetMat4("projection", mat_P);
+		shader->SetMat4("ENGINE_View", mat_V);
+		shader->SetMat4("ENGINE_Projection", mat_P);
 
 		for (auto particleSystem : allParticleSystem)
 		{

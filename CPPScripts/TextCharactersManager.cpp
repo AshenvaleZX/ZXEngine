@@ -29,7 +29,7 @@ namespace ZXEngine
         Matrix4 mat_P = Math::Orthographic(0.0f, (float)GlobalData::srcWidth, 0.0f, (float)GlobalData::srcHeight);
         textShader = new Shader(Resources::GetAssetFullPath("Shaders/TextRenderer.zxshader", true).c_str());
         textShader->Use();
-        textShader->SetMat4("projection", mat_P);
+        textShader->SetMat4("ENGINE_Projection", mat_P);
 
         // МгдизжЗћ
         LoadCharacters();

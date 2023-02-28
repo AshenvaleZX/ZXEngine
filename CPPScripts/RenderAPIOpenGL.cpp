@@ -287,6 +287,10 @@ namespace ZXEngine
 		string vertCode, geomCode, fragCode;
 		ShaderParser::ParseShaderCode(path, vertCode, geomCode, fragCode);
 
+		vertCode = ShaderParser::TranslateToOpenGL(vertCode);
+		geomCode = ShaderParser::TranslateToOpenGL(geomCode);
+		fragCode = ShaderParser::TranslateToOpenGL(fragCode);
+
 		// vertex shader
 		const char* vShaderCode = vertCode.c_str();
 		unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);

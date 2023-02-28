@@ -3,6 +3,8 @@
 
 namespace ZXEngine
 {
+#define PropertyMap map<string, ShaderPropertyType>
+
 	struct Vertex {
 		Vector3 Position;
 		Vector3 Normal;
@@ -27,6 +29,9 @@ namespace ZXEngine
 		LightType lightType   = LightType::None;
 		ShadowType shadowType = ShadowType::None;
 		ShaderStateSet stateSet;
+		PropertyMap vertProperties;
+		PropertyMap geomProperties;
+		PropertyMap fragProperties;
 	};
 
 	struct ShaderReference

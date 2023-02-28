@@ -1,32 +1,54 @@
 Vertex
 {
-    #version 460 core
-    layout (location = 0) in vec3 aPos;
-    layout (location = 2) in vec2 aTexCoords;
-
-    layout (location = 0) out vec2 TexCoords;
-
-    uniform mat4 model;
-    uniform mat4 projection;
-
-    void main()
+    Input
     {
-        gl_Position = projection * model * vec4(aPos.xy, 0.0, 1.0);
-        TexCoords = aTexCoords;
+        0 vec3 aPos
+        2 vec2 aTexCoords
+    }
+
+    Output
+    {
+        0 vec2 TexCoords
+    }
+
+    Properties
+    {
+        using ENGINE_Model
+        using ENGINE_Projection
+    }
+
+    Program
+    {
+        void main()
+        {
+            gl_Position = ENGINE_Projection * ENGINE_Model * vec4(aPos.xy, 0.0, 1.0);
+            TexCoords = aTexCoords;
+        }
     }
 }
 
 Fragment
 {
-    #version 460 core
-    layout (location = 0) in vec2 TexCoords;
-    
-    layout (location = 0) out vec4 color;
+    Input
+    {
+        0 vec2 TexCoords
+    }
 
-    uniform sampler2D _Texture;
+    Output
+    {
+        0 vec4 color
+    }
 
-    void main()
-    {    
-        color = texture(_Texture, TexCoords);
+    Properties
+    {
+        sampler2D _Texture
+    }
+
+    Program
+    {
+        void main()
+        {    
+            color = texture(_Texture, TexCoords);
+        }
     }
 }
