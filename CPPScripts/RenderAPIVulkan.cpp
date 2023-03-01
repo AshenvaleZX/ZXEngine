@@ -162,91 +162,11 @@ namespace ZXEngine
         string shaderCode = Resources::LoadTextFile(path);
         auto shaderInfo = ShaderParser::GetShaderInfo(shaderCode);
 
-        // 设置shader代码
-        auto shaderModules = CreateShaderModules(path, shaderInfo);
-        vector<VkPipelineShaderStageCreateInfo> shaderStages;
-        for (auto& shaderModule : shaderModules)
-        {
-            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
-            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-            shaderStageInfo.stage = shaderModule.first;
-            shaderStageInfo.module = shaderModule.second;
-            shaderStageInfo.pName = "main";
-            shaderStages.push_back(shaderStageInfo);
-        }
+        VkDescriptorSetLayout descriptorSetLayout = {};
+        VkPipelineLayout pipelineLayout = {};
+        VkPipeline pipeLine = CreatePipeline(path, shaderInfo, descriptorSetLayout, pipelineLayout);
 
-        // 设置顶点输入格式
-        VkPipelineVertexInputStateCreateInfo vertexInputInfo = GetVertexInputInfo();
-
-        // 设置图元
-        VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo = GetAssemblyInfo(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
-        
-        // View Port和Scissor设置为动态，每帧绘制时决定
-        VkPipelineDynamicStateCreateInfo dynamicStateInfo = GetDynamicStateInfo({ VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR });
-
-        // 设置光栅化阶段
-        VkPipelineRasterizationStateCreateInfo rasterizationInfo = GetRasterizationInfo(vkFaceCullOptionMap[shaderInfo.stateSet.cull], VK_FRONT_FACE_COUNTER_CLOCKWISE);
-
-        // 设置Shader采样纹理的MSAA(不是输出到屏幕上的MSAA)，需要创建逻辑设备的时候开启VkPhysicalDeviceFeatures里的sampleRateShading才能生效，暂时关闭
-        VkPipelineMultisampleStateCreateInfo multisampleInfo = GetPipelineMultisampleInfo(VK_SAMPLE_COUNT_1_BIT);
-
-        // Color Blend
-        VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-        colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-        colorBlendAttachment.blendEnable = VK_TRUE;
-        colorBlendAttachment.srcColorBlendFactor = vkBlendFactorMap[shaderInfo.stateSet.srcFactor];
-        colorBlendAttachment.dstColorBlendFactor = vkBlendFactorMap[shaderInfo.stateSet.dstFactor];
-        colorBlendAttachment.colorBlendOp = vkBlendOptionMap[shaderInfo.stateSet.blendOp];
-        colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-        colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-        colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
-        VkPipelineColorBlendStateCreateInfo colorBlending{};
-        colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-        colorBlending.logicOpEnable = VK_FALSE;
-        colorBlending.logicOp = VK_LOGIC_OP_COPY;
-        colorBlending.pAttachments = &colorBlendAttachment;
-        colorBlending.attachmentCount = 1;
-
-        // 深度和模板配置
-        VkPipelineDepthStencilStateCreateInfo depthStencilInfo = {};
-        depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-        // Depth
-        depthStencilInfo.depthWriteEnable = shaderInfo.stateSet.depthWrite ? VK_TRUE : VK_FALSE;
-        depthStencilInfo.depthTestEnable = shaderInfo.stateSet.depthCompareOp == CompareOption::ALWAYS ? VK_TRUE : VK_FALSE;
-        depthStencilInfo.depthCompareOp = vkDepthTestOptionMap[shaderInfo.stateSet.depthCompareOp];
-        depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
-        depthStencilInfo.minDepthBounds = 0.0f;
-        depthStencilInfo.maxDepthBounds = 1.0f;
-        // Stencil
-        depthStencilInfo.stencilTestEnable = VK_FALSE;
-        depthStencilInfo.front = {};
-        depthStencilInfo.back = {};
-
-        VkDescriptorSetLayout descriptorSetLayout = GetDescriptorSetLayout(shaderInfo);
-        VkPipelineLayout pipelineLayout = GetPipelineLayout(descriptorSetLayout);
-
-        VkGraphicsPipelineCreateInfo pipelineInfo{};
-        pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-        pipelineInfo.pStages = shaderStages.data();
-        pipelineInfo.stageCount = (uint32_t)shaderStages.size();
-        pipelineInfo.pVertexInputState = &vertexInputInfo;
-        pipelineInfo.pInputAssemblyState = &inputAssemblyInfo;
-        pipelineInfo.pDynamicState = &dynamicStateInfo;
-        pipelineInfo.pRasterizationState = &rasterizationInfo;
-        pipelineInfo.pMultisampleState = &multisampleInfo;
-        pipelineInfo.pColorBlendState = &colorBlending;
-        pipelineInfo.pDepthStencilState = &depthStencilInfo;
-        pipelineInfo.layout = pipelineLayout;
-        // pipelineInfo.renderPass = renderPass; // Todo
-        pipelineInfo.subpass = 0;
-        pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
-        pipelineInfo.basePipelineIndex = -1;
-
-        VkPipeline pipeLine;
-        if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeLine) != VK_SUCCESS)
-            throw std::runtime_error("failed to create graphics pipeline!");
-
-        DestroyShaderModules(shaderModules);
+        VkDescriptorPool descriptorPool = CreateDescriptorPool(shaderInfo);
 
         ShaderReference* reference = new ShaderReference();
         return reference;
@@ -1304,6 +1224,158 @@ namespace ZXEngine
         vkDestroyRenderPass(device, renderPass, nullptr);
     }
 
+    VkPipeline RenderAPIVulkan::CreatePipeline(const string& path, const ShaderInfo& shaderInfo, VkDescriptorSetLayout& descriptorSetLayout, VkPipelineLayout& pipelineLayout)
+    {
+        auto shaderModules = CreateShaderModules(path, shaderInfo);
+        vector<VkPipelineShaderStageCreateInfo> shaderStages;
+        for (auto& shaderModule : shaderModules)
+        {
+            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            shaderStageInfo.stage = shaderModule.first;
+            shaderStageInfo.module = shaderModule.second;
+            shaderStageInfo.pName = "main";
+            shaderStages.push_back(shaderStageInfo);
+        }
+
+        // 设置顶点输入格式
+        VkPipelineVertexInputStateCreateInfo vertexInputInfo = GetVertexInputInfo();
+
+        // 设置图元
+        VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo = GetAssemblyInfo(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+
+        // View Port和Scissor设置为动态，每帧绘制时决定
+        VkPipelineDynamicStateCreateInfo dynamicStateInfo = GetDynamicStateInfo({ VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR });
+
+        // 设置光栅化阶段
+        VkPipelineRasterizationStateCreateInfo rasterizationInfo = GetRasterizationInfo(vkFaceCullOptionMap[shaderInfo.stateSet.cull], VK_FRONT_FACE_COUNTER_CLOCKWISE);
+
+        // 设置Shader采样纹理的MSAA(不是输出到屏幕上的MSAA)，需要创建逻辑设备的时候开启VkPhysicalDeviceFeatures里的sampleRateShading才能生效，暂时关闭
+        VkPipelineMultisampleStateCreateInfo multisampleInfo = GetPipelineMultisampleInfo(VK_SAMPLE_COUNT_1_BIT);
+
+        // Color Blend
+        VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+        colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+        colorBlendAttachment.blendEnable = VK_TRUE;
+        colorBlendAttachment.srcColorBlendFactor = vkBlendFactorMap[shaderInfo.stateSet.srcFactor];
+        colorBlendAttachment.dstColorBlendFactor = vkBlendFactorMap[shaderInfo.stateSet.dstFactor];
+        colorBlendAttachment.colorBlendOp = vkBlendOptionMap[shaderInfo.stateSet.blendOp];
+        colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+        colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+        colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+        VkPipelineColorBlendStateCreateInfo colorBlending{};
+        colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+        colorBlending.logicOpEnable = VK_FALSE;
+        colorBlending.logicOp = VK_LOGIC_OP_COPY;
+        colorBlending.pAttachments = &colorBlendAttachment;
+        colorBlending.attachmentCount = 1;
+
+        // 深度和模板配置
+        VkPipelineDepthStencilStateCreateInfo depthStencilInfo = {};
+        depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+        // Depth
+        depthStencilInfo.depthWriteEnable = shaderInfo.stateSet.depthWrite ? VK_TRUE : VK_FALSE;
+        depthStencilInfo.depthTestEnable = shaderInfo.stateSet.depthCompareOp == CompareOption::ALWAYS ? VK_TRUE : VK_FALSE;
+        depthStencilInfo.depthCompareOp = vkDepthTestOptionMap[shaderInfo.stateSet.depthCompareOp];
+        depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
+        depthStencilInfo.minDepthBounds = 0.0f;
+        depthStencilInfo.maxDepthBounds = 1.0f;
+        // Stencil
+        depthStencilInfo.stencilTestEnable = VK_FALSE;
+        depthStencilInfo.front = {};
+        depthStencilInfo.back = {};
+
+        descriptorSetLayout = CreateDescriptorSetLayout(shaderInfo);
+        pipelineLayout = CreatePipelineLayout(descriptorSetLayout);
+
+        VkGraphicsPipelineCreateInfo pipelineInfo{};
+        pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+        pipelineInfo.pStages = shaderStages.data();
+        pipelineInfo.stageCount = (uint32_t)shaderStages.size();
+        pipelineInfo.pVertexInputState = &vertexInputInfo;
+        pipelineInfo.pInputAssemblyState = &inputAssemblyInfo;
+        pipelineInfo.pDynamicState = &dynamicStateInfo;
+        pipelineInfo.pRasterizationState = &rasterizationInfo;
+        pipelineInfo.pMultisampleState = &multisampleInfo;
+        pipelineInfo.pColorBlendState = &colorBlending;
+        pipelineInfo.pDepthStencilState = &depthStencilInfo;
+        pipelineInfo.layout = pipelineLayout;
+        pipelineInfo.renderPass = GetRenderPass(RenderPassType::Normal);
+        pipelineInfo.subpass = 0;
+        pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+        pipelineInfo.basePipelineIndex = -1;
+
+        VkPipeline pipeLine;
+        if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeLine) != VK_SUCCESS)
+            throw std::runtime_error("failed to create graphics pipeline!");
+
+        DestroyShaderModules(shaderModules);
+
+        return pipeLine;
+    }
+
+    VkDescriptorPool RenderAPIVulkan::CreateDescriptorPool(const ShaderInfo& info)
+    {
+        vector<VkDescriptorPoolSize> poolSizes = {};
+
+        if (!info.vertProperties.baseProperties.empty())
+        {
+            VkDescriptorPoolSize poolSize = {};
+            poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            poolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
+            poolSizes.push_back(poolSize);
+        }
+        for (auto& texture : info.vertProperties.textureProperties)
+        {
+            VkDescriptorPoolSize poolSize = {};
+            poolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            poolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
+            poolSizes.push_back(poolSize);
+        }
+
+        if (!info.geomProperties.baseProperties.empty())
+        {
+            VkDescriptorPoolSize poolSize = {};
+            poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            poolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
+            poolSizes.push_back(poolSize);
+        }
+        for (auto& texture : info.geomProperties.textureProperties)
+        {
+            VkDescriptorPoolSize poolSize = {};
+            poolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            poolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
+            poolSizes.push_back(poolSize);
+        }
+
+        if (!info.fragProperties.baseProperties.empty())
+        {
+            VkDescriptorPoolSize poolSize = {};
+            poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            poolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
+            poolSizes.push_back(poolSize);
+        }
+        for (auto& texture : info.fragProperties.textureProperties)
+        {
+            VkDescriptorPoolSize poolSize = {};
+            poolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            poolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
+            poolSizes.push_back(poolSize);
+        }
+
+        VkDescriptorPool descriptorPool = {};
+        VkDescriptorPoolCreateInfo poolInfo{};
+        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        poolInfo.pPoolSizes = poolSizes.data();
+        poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+        poolInfo.maxSets = MAX_FRAMES_IN_FLIGHT;
+        poolInfo.flags = 0;
+        if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) 
+            throw std::runtime_error("failed to create descriptor pool!");
+
+        return descriptorPool;
+    }
+
     VkShaderModule RenderAPIVulkan::CreateShaderModule(vector<char> code)
     {
         VkShaderModuleCreateInfo createInfo = {};
@@ -1531,7 +1603,7 @@ namespace ZXEngine
         return multisampleInfo;
     }
 
-    VkDescriptorSetLayout RenderAPIVulkan::GetDescriptorSetLayout(const ShaderInfo& info)
+    VkDescriptorSetLayout RenderAPIVulkan::CreateDescriptorSetLayout(const ShaderInfo& info)
     {
         vector<VkDescriptorSetLayoutBinding> bindings = {};
 
@@ -1586,7 +1658,7 @@ namespace ZXEngine
         return descriptorSetLayout;
     }
 
-    VkPipelineLayout RenderAPIVulkan::GetPipelineLayout(const VkDescriptorSetLayout& descriptorSetLayout)
+    VkPipelineLayout RenderAPIVulkan::CreatePipelineLayout(const VkDescriptorSetLayout& descriptorSetLayout)
     {
         VkPipelineLayout pipelineLayout = {};
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};

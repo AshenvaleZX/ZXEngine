@@ -122,7 +122,7 @@ namespace ZXEngine
 
 
     /// <summary>
-    /// Vulkan资源创建相关接口
+    /// Vulkan资源创建相关接口(这些接口Create出来的需要手动Destroy)
     /// </summary>
     private:
         vector<VkRenderPass> allVulkanRenderPass;
@@ -141,6 +141,12 @@ namespace ZXEngine
         VkRenderPass CreateRenderPass(RenderPassType type);
         VkRenderPass GetRenderPass(RenderPassType type);
         void DestroyRenderPass(VkRenderPass renderPass);
+
+        VkPipeline CreatePipeline(const string& path, const ShaderInfo& shaderInfo, VkDescriptorSetLayout& descriptorSetLayout, VkPipelineLayout& pipelineLayout);
+        
+        VkDescriptorSetLayout CreateDescriptorSetLayout(const ShaderInfo& info);
+        VkPipelineLayout CreatePipelineLayout(const VkDescriptorSetLayout& descriptorSetLayout);
+        VkDescriptorPool CreateDescriptorPool(const ShaderInfo& info);
 
         VkShaderModule CreateShaderModule(vector<char> code);
         ShaderModuleSet CreateShaderModules(const string& path, const ShaderInfo& info);
@@ -167,7 +173,5 @@ namespace ZXEngine
         VkPipelineDynamicStateCreateInfo GetDynamicStateInfo(vector<VkDynamicState> dynamicStates);
         VkPipelineRasterizationStateCreateInfo GetRasterizationInfo(VkCullModeFlagBits cullMode, VkFrontFace frontFace);
         VkPipelineMultisampleStateCreateInfo GetPipelineMultisampleInfo(VkSampleCountFlagBits rasterizationSamples);
-        VkDescriptorSetLayout GetDescriptorSetLayout(const ShaderInfo& info);
-        VkPipelineLayout GetPipelineLayout(const VkDescriptorSetLayout& descriptorSetLayout);
     };
 }

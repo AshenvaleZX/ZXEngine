@@ -9,6 +9,9 @@
 
 namespace ZXEngine
 {
+    // 在GPU渲染画面的时候，CPU可以处理的帧数
+    const uint32_t MAX_FRAMES_IN_FLIGHT = 2;
+
     enum class RenderPassType
     {
         Normal,
