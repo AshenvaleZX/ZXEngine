@@ -101,8 +101,15 @@ namespace ZXEngine
 		else
 			info.shadowType = ShadowType::None;
 
-		info.vertProperties = GetProperties(GetCodeBlock(code, "Vertex"));
-		info.fragProperties = GetProperties(GetCodeBlock(code, "Fragment"));
+		string vertCode, geomCode, fragCode;
+		ParseShaderCode(code, vertCode, geomCode, fragCode);
+
+		info.stages = ZX_SHADER_STAGE_VERTEX_BIT | ZX_SHADER_STAGE_FRAGMENT_BIT;
+		if (!geomCode.empty())
+			info.stages |= ZX_SHADER_STAGE_GEOMETRY_BIT;
+
+		info.vertProperties = GetProperties(vertCode);
+		info.fragProperties = GetProperties(fragCode);
 
 		return info;
 	}

@@ -163,7 +163,7 @@ namespace ZXEngine
         auto shaderInfo = ShaderParser::GetShaderInfo(shaderCode);
 
         // …Ë÷√shader¥˙¬Î
-        auto shaderModules = CreateShaderModules(path, shaderCode);
+        auto shaderModules = CreateShaderModules(path, shaderInfo);
         vector<VkPipelineShaderStageCreateInfo> shaderStages;
         for (auto& shaderModule : shaderModules)
         {
@@ -1320,11 +1320,8 @@ namespace ZXEngine
         return shaderModule;
     }
 
-    ShaderModuleSet RenderAPIVulkan::CreateShaderModules(const string& path, const string& code)
+    ShaderModuleSet RenderAPIVulkan::CreateShaderModules(const string& path, const ShaderInfo& info)
     {
-        string vertCode, geomCode, fragCode;
-        ShaderParser::ParseShaderCode(code, vertCode, geomCode, fragCode);
-
         string prePath = path.substr(0, path.length() - 9);
         ShaderModuleSet shaderModules;
 
@@ -1336,7 +1333,7 @@ namespace ZXEngine
         auto fragModule = CreateShaderModule(fragShader);
         shaderModules.insert(make_pair(VK_SHADER_STAGE_FRAGMENT_BIT, fragModule));
 
-        if (geomCode.length() > 0)
+        if (info.stages & ZX_SHADER_STAGE_GEOMETRY_BIT)
         {
             auto geomShader = Resources::LoadBinaryFile(prePath + ".geom.spv");
             auto geomModule = CreateShaderModule(geomShader);

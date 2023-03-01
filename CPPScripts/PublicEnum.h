@@ -2,12 +2,12 @@
 
 namespace ZXEngine
 {
-	enum class ShaderStage
-	{
-		Vertex,
-		Geometry,
-		Fragment,
-	};
+	typedef enum ShaderStageFlagBit {
+		ZX_SHADER_STAGE_VERTEX_BIT = 0x00000001,
+		ZX_SHADER_STAGE_GEOMETRY_BIT = 0x00000002,
+		ZX_SHADER_STAGE_FRAGMENT_BIT = 0x00000004,
+	} ShaderStageFlagBit;
+	typedef uint32_t ShaderStageFlags;
 
 	enum class LogType
 	{

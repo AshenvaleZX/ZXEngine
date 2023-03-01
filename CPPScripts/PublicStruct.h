@@ -35,6 +35,7 @@ namespace ZXEngine
 		LightType lightType   = LightType::None;
 		ShadowType shadowType = ShadowType::None;
 		ShaderStateSet stateSet;
+		ShaderStageFlags stages;
 		ShaderPropertiesInfo vertProperties;
 		ShaderPropertiesInfo geomProperties;
 		ShaderPropertiesInfo fragProperties;

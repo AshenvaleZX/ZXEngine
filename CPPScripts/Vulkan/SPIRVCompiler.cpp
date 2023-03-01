@@ -32,27 +32,27 @@ namespace ZXEngine
 		if (vertCode.empty())
 			Debug::LogError("Empty vertex shader: " + path.string());
 		else
-			GenerateSPIRVFile(path, vertCode, ShaderStage::Vertex);
+			GenerateSPIRVFile(path, vertCode, ZX_SHADER_STAGE_VERTEX_BIT);
 
 		if (fragCode.empty())
 			Debug::LogError("Empty fragment shader: " + path.string());
 		else
-			GenerateSPIRVFile(path, fragCode, ShaderStage::Fragment);
+			GenerateSPIRVFile(path, fragCode, ZX_SHADER_STAGE_FRAGMENT_BIT);
 
 		if (!geomCode.empty())
-			GenerateSPIRVFile(path, geomCode, ShaderStage::Geometry);
+			GenerateSPIRVFile(path, geomCode, ZX_SHADER_STAGE_GEOMETRY_BIT);
 	}
 
-	void SPIRVCompiler::GenerateSPIRVFile(const filesystem::path& path, const string& code, ShaderStage stage)
+	void SPIRVCompiler::GenerateSPIRVFile(const filesystem::path& path, const string& code, ShaderStageFlagBit stage)
 	{
 		string fileName = path.stem().string();
 		string folderPath = path.parent_path().string();
 		string extension = "";
-		if (stage == ShaderStage::Vertex)
+		if (stage == ZX_SHADER_STAGE_VERTEX_BIT)
 			extension = "vert";
-		else if (stage == ShaderStage::Geometry)
+		else if (stage == ZX_SHADER_STAGE_GEOMETRY_BIT)
 			extension = "geom";
-		else if (stage == ShaderStage::Fragment)
+		else if (stage == ZX_SHADER_STAGE_FRAGMENT_BIT)
 			extension = "frag";
 
 		string writeTempPath = folderPath + "/" + fileName + "." + extension;

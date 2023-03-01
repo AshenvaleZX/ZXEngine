@@ -143,7 +143,7 @@ namespace ZXEngine
         void DestroyRenderPass(VkRenderPass renderPass);
 
         VkShaderModule CreateShaderModule(vector<char> code);
-        ShaderModuleSet CreateShaderModules(const string& path, const string& code);
+        ShaderModuleSet CreateShaderModules(const string& path, const ShaderInfo& info);
         void DestroyShaderModules(ShaderModuleSet shaderModules);
 
 
