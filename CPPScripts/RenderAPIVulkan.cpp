@@ -222,6 +222,8 @@ namespace ZXEngine
         depthStencilInfo.front = {};
         depthStencilInfo.back = {};
 
+        VkDescriptorSetLayout descriptorSetLayout = GetDescriptorSetLayout(shaderInfo);
+        VkPipelineLayout pipelineLayout = GetPipelineLayout(descriptorSetLayout);
 
         VkGraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -234,7 +236,7 @@ namespace ZXEngine
         pipelineInfo.pMultisampleState = &multisampleInfo;
         pipelineInfo.pColorBlendState = &colorBlending;
         pipelineInfo.pDepthStencilState = &depthStencilInfo;
-        // pipelineInfo.layout = pipelineLayout; // Todo
+        pipelineInfo.layout = pipelineLayout;
         // pipelineInfo.renderPass = renderPass; // Todo
         pipelineInfo.subpass = 0;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
@@ -1530,5 +1532,75 @@ namespace ZXEngine
         multisampleInfo.alphaToCoverageEnable = VK_FALSE;
         multisampleInfo.alphaToOneEnable = VK_FALSE;
         return multisampleInfo;
+    }
+
+    VkDescriptorSetLayout RenderAPIVulkan::GetDescriptorSetLayout(const ShaderInfo& info)
+    {
+        vector<VkDescriptorSetLayoutBinding> bindings = {};
+
+        if (!info.vertProperties.baseProperties.empty())
+        {
+            VkDescriptorSetLayoutBinding uboBinding{};
+            uboBinding.binding = static_cast<uint32_t>(bindings.size());
+            uboBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            uboBinding.descriptorCount = 1;
+            uboBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+            bindings.push_back(uboBinding);
+        }
+
+        for (auto& texture : info.vertProperties.textureProperties)
+        {
+            VkDescriptorSetLayoutBinding samplerBinding = {};
+            samplerBinding.binding = static_cast<uint32_t>(bindings.size());
+            samplerBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            samplerBinding.descriptorCount = 1;
+            samplerBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+            bindings.push_back(samplerBinding);
+        }
+
+        if (!info.fragProperties.baseProperties.empty())
+        {
+            VkDescriptorSetLayoutBinding uboBinding{};
+            uboBinding.binding = static_cast<uint32_t>(bindings.size());
+            uboBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            uboBinding.descriptorCount = 1;
+            uboBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+            bindings.push_back(uboBinding);
+        }
+
+        for (auto& texture : info.fragProperties.textureProperties)
+        {
+            VkDescriptorSetLayoutBinding samplerBinding = {};
+            samplerBinding.binding = static_cast<uint32_t>(bindings.size());
+            samplerBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            samplerBinding.descriptorCount = 1;
+            samplerBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+            bindings.push_back(samplerBinding);
+        }
+
+        VkDescriptorSetLayout descriptorSetLayout = {};
+        VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        layoutInfo.pBindings = bindings.data();
+        layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+        if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS)
+            throw std::runtime_error("failed to create descriptor set layout!");
+
+        return descriptorSetLayout;
+    }
+
+    VkPipelineLayout RenderAPIVulkan::GetPipelineLayout(const VkDescriptorSetLayout& descriptorSetLayout)
+    {
+        VkPipelineLayout pipelineLayout = {};
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
+        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
+        pipelineLayoutInfo.setLayoutCount = 1;
+        pipelineLayoutInfo.pPushConstantRanges = nullptr;
+        pipelineLayoutInfo.pushConstantRangeCount = 0;
+        if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
+            throw std::runtime_error("failed to create pipeline layout!");
+
+        return pipelineLayout;
     }
 }
