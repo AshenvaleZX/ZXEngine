@@ -11,6 +11,7 @@ namespace ZXEngine
 		static string defaultScene;
 		static string projectPath;
 		static bool enableDynamicBatch;
+		static bool preserveIntermediateShader;
 
 		// Editor
 		static unsigned int hierarchyWidth;

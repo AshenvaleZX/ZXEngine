@@ -57,6 +57,22 @@ namespace ZXEngine
 		{ "ENGINE_Depth_Cube_Map", "samplerCube" }, { "ENGINE_Far_Plane",       "float" },
 	};
 
+	map<ShaderPropertyType, string> propertyTypeToGLSLType =
+	{
+		{ ShaderPropertyType::BOOL, "bool" }, { ShaderPropertyType::INT,  "int"  }, { ShaderPropertyType::FLOAT, "float" },
+		{ ShaderPropertyType::VEC2, "vec2" }, { ShaderPropertyType::VEC3, "vec3" }, { ShaderPropertyType::VEC4,  "vec4"  },
+		{ ShaderPropertyType::MAT2, "mat2" }, { ShaderPropertyType::MAT3, "mat3" }, { ShaderPropertyType::MAT4,  "mat4"  },
+
+		{ ShaderPropertyType::SAMPLER, "sampler" }, { ShaderPropertyType::SAMPLER_2D, "sampler2D" }, { ShaderPropertyType::SAMPLER_CUBE, "samplerCube" },
+
+		{ ShaderPropertyType::ENGINE_MODEL,       "mat4"      }, { ShaderPropertyType::ENGINE_VIEW,            "mat4"        }, 
+		{ ShaderPropertyType::ENGINE_PROJECTION,  "mat4"      }, { ShaderPropertyType::ENGINE_CAMERA_POS,      "vec3"        }, 
+		{ ShaderPropertyType::ENGINE_LIGHT_POS,   "vec3"      }, { ShaderPropertyType::ENGINE_LIGHT_DIR,       "vec3"        },
+		{ ShaderPropertyType::ENGINE_LIGHT_COLOR, "vec3"      }, { ShaderPropertyType::ENGINE_LIGHT_INTENSITY, "float"       },
+		{ ShaderPropertyType::ENGINE_DEPTH_MAP,   "sampler2D" }, { ShaderPropertyType::ENGINE_DEPTH_CUBE_MAP,  "samplerCube" },
+		{ ShaderPropertyType::ENGINE_FAR_PLANE,   "float"     },
+	};
+
 	ShaderInfo ShaderParser::GetShaderInfo(const string& code)
 	{
 		ShaderInfo info;
@@ -91,13 +107,19 @@ namespace ZXEngine
 		return info;
 	}
 
-	PropertyMap ShaderParser::GetProperties(const string& stageCode)
+	bool ShaderParser::IsBasePropertyType(ShaderPropertyType type)
 	{
-		PropertyMap propertyMap;
+		return !(type == ShaderPropertyType::SAMPLER || type == ShaderPropertyType::SAMPLER_2D || type == ShaderPropertyType::SAMPLER_CUBE
+			|| type == ShaderPropertyType::ENGINE_DEPTH_MAP || type == ShaderPropertyType::ENGINE_DEPTH_CUBE_MAP);
+	}
+
+	ShaderPropertiesInfo ShaderParser::GetProperties(const string& stageCode)
+	{
+		ShaderPropertiesInfo propertiesInfo;
 
 		string propertiesBlock = GetCodeBlock(stageCode, "Properties");
 		if (propertiesBlock.empty())
-			return propertyMap;
+			return propertiesInfo;
 
 		auto lines = Utils::StringSplit(propertiesBlock, '\n');
 
@@ -107,13 +129,27 @@ namespace ZXEngine
 
 			if (words.size() == 0)
 				continue;
+			else if (words[0] == "//")
+				continue;
 			else if (words[0] == "using")
-				propertyMap.insert(pair(words[1], shaderPropertyMap[words[1]]));
+			{
+				auto type = shaderPropertyMap[words[1]];
+				if (IsBasePropertyType(type))
+					propertiesInfo.baseProperties.insert(pair(words[1], type));
+				else
+					propertiesInfo.textureProperties.insert(pair(words[1], type));
+			}
 			else
-				propertyMap.insert(pair(words[1], shaderPropertyMap[words[0]]));
+			{
+				auto type = shaderPropertyMap[words[0]];
+				if (IsBasePropertyType(type))
+					propertiesInfo.baseProperties.insert(pair(words[1], type));
+				else
+					propertiesInfo.textureProperties.insert(pair(words[1], type));
+			}
 		}
 
-		return propertyMap;
+		return propertiesInfo;
 	}
 
 	void ShaderParser::ParseShaderCode(const string& code, string& vertCode, string& geomCode, string& fragCode)
@@ -180,10 +216,58 @@ namespace ZXEngine
 		return glCode;
 	}
 
-	string ShaderParser::TranslateToVulkan(const string& originCode)
+	string ShaderParser::TranslateToVulkan(const string& originCode, const ShaderPropertiesInfo& info, int& binding)
 	{
-		// ÔÝÎ´ÊµÏÖ
-		string vkCode = originCode;
+		if (originCode.empty())
+			return "";
+
+		string vkCode = "#version 460 core\n\n";
+
+		string inputBlock = GetCodeBlock(originCode, "Input");
+		auto lines = Utils::StringSplit(inputBlock, '\n');
+		for (auto& line : lines)
+		{
+			auto words = Utils::ExtractWords(line);
+			if (words.size() >= 3 && words[0] != "//")
+				vkCode += "layout (location = " + words[0] + ") in " + words[1] + " " + words[2] + ";\n";
+		}
+		vkCode += "\n";
+
+		string outputBlock = GetCodeBlock(originCode, "Output");
+		lines = Utils::StringSplit(outputBlock, '\n');
+		for (auto& line : lines)
+		{
+			auto words = Utils::ExtractWords(line);
+			if (words.size() >= 3 && words[0] != "//")
+				vkCode += "layout (location = " + words[0] + ") out " + words[1] + " " + words[2] + ";\n";
+		}
+		vkCode += "\n";
+
+		if (!info.baseProperties.empty())
+		{
+			vkCode += "layout (binding = " + to_string(binding) + ") uniform UniformBufferObject {\n";
+			for (auto& property : info.baseProperties)
+				vkCode += "    " + propertyTypeToGLSLType[property.second] + " " + property.first + ";\n";
+			vkCode += "} _UBO;\n";
+			binding++;
+		}
+		vkCode += "\n";
+
+		for (auto& property : info.textureProperties)
+		{
+			vkCode += "layout (binding = " + to_string(binding) + ") uniform " + propertyTypeToGLSLType[property.second] + " " + property.first + ";\n";
+			binding++;
+		}
+		vkCode += "\n";
+
+		string programBlock = GetCodeBlock(originCode, "Program");
+		if (!info.baseProperties.empty())
+		{
+			for (auto& property : info.baseProperties)
+				Utils::ReplaceAllString(programBlock, property.first, "_UBO." + property.first);
+		}
+		vkCode += programBlock;
+
 		return vkCode;
 	}
 

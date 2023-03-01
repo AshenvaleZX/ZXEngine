@@ -91,10 +91,13 @@ namespace ZXEngine
 
 	void Shader::SetEngineProperties()
 	{
-		for (auto& property : reference->shaderInfo.vertProperties)
+		for (auto& property : reference->shaderInfo.vertProperties.baseProperties)
 			SetEngineProperty(property.first, property.second);
-
-		for (auto& property : reference->shaderInfo.fragProperties)
+		for (auto& property : reference->shaderInfo.vertProperties.textureProperties)
+			SetEngineProperty(property.first, property.second);
+		for (auto& property : reference->shaderInfo.fragProperties.baseProperties)
+			SetEngineProperty(property.first, property.second);
+		for (auto& property : reference->shaderInfo.fragProperties.textureProperties)
 			SetEngineProperty(property.first, property.second);
 	}
 

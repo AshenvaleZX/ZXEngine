@@ -5,3 +5,7 @@ ZXEngine/ZXEngine/Debug
 ZXEngine/ZXEngine/x64
 ZXEngine/ZXEngine/imgui.ini
 *.code-workspace
+*.spv
+*.vert
+*.geom
+*.frag

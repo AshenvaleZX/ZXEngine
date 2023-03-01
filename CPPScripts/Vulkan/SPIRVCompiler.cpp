@@ -1,6 +1,7 @@
 #include "SPIRVCompiler.h"
 #include "../Resources.h"
 #include "../ShaderParser.h"
+#include "../ProjectSetting.h"
 
 namespace ZXEngine
 {
@@ -21,23 +22,25 @@ namespace ZXEngine
 		string shaderCode = Resources::LoadTextFile(path.string());
 		string vertCode, geomCode, fragCode;
 		ShaderParser::ParseShaderCode(shaderCode, vertCode, geomCode, fragCode);
+		ShaderInfo info = ShaderParser::GetShaderInfo(shaderCode);
 
-		vertCode = ShaderParser::TranslateToVulkan(vertCode);
-		geomCode = ShaderParser::TranslateToVulkan(geomCode);
-		fragCode = ShaderParser::TranslateToVulkan(fragCode);
+		int bindingIdx = 0;
+		vertCode = ShaderParser::TranslateToVulkan(vertCode, info.vertProperties, bindingIdx);
+		geomCode = ShaderParser::TranslateToVulkan(geomCode, info.geomProperties, bindingIdx);
+		fragCode = ShaderParser::TranslateToVulkan(fragCode, info.fragProperties, bindingIdx);
 
 		if (vertCode.empty())
 			Debug::LogError("Empty vertex shader: " + path.string());
 		else
 			GenerateSPIRVFile(path, vertCode, ShaderStage::Vertex);
 
-		if (geomCode.empty())
+		if (fragCode.empty())
 			Debug::LogError("Empty fragment shader: " + path.string());
 		else
-			GenerateSPIRVFile(path, geomCode, ShaderStage::Fragment);
+			GenerateSPIRVFile(path, fragCode, ShaderStage::Fragment);
 
-		if (!fragCode.empty())
-			GenerateSPIRVFile(path, fragCode, ShaderStage::Geometry);
+		if (!geomCode.empty())
+			GenerateSPIRVFile(path, geomCode, ShaderStage::Geometry);
 	}
 
 	void SPIRVCompiler::GenerateSPIRVFile(const filesystem::path& path, const string& code, ShaderStage stage)
@@ -52,9 +55,8 @@ namespace ZXEngine
 		else if (stage == ShaderStage::Fragment)
 			extension = "frag";
 
-		string writeTempPath = folderPath + "/temp." + extension;
-		string outputTempPath = folderPath + "/" + extension + ".spv";
-		string outputFinalPath = folderPath + "/" + fileName + "." + extension + ".spv";
+		string writeTempPath = folderPath + "/" + fileName + "." + extension;
+		string outputFinalPath = writeTempPath + ".spv";
 
 		ofstream writer;
 		try
@@ -69,14 +71,12 @@ namespace ZXEngine
 		}
 
 		// 用Vulkan工具生成SPIR-V文件
-		string command = "..\\..\\Tools\\glslangValidator.exe -V " + Utils::ConvertPathToWindowsFormat(writeTempPath);
+		string command = "..\\..\\Tools\\glslangValidator.exe -V " + Utils::ConvertPathToWindowsFormat(writeTempPath) + " -o " + Utils::ConvertPathToWindowsFormat(outputFinalPath);
 		std::system(command.c_str());
-		// 重命名文件
-		if (!(std::rename(outputTempPath.c_str(), outputFinalPath.c_str()) == 0))
-			Debug::LogError("Rename SPIR-V file failed: " + path.string());
 		// 删除临时文件
-		if (!(std::remove(writeTempPath.c_str()) == 0))
-			Debug::LogError("Remove temporary SPIR-V file failed: " + path.string());
+		if (!ProjectSetting::preserveIntermediateShader)
+			if (!(std::remove(writeTempPath.c_str()) == 0))
+				Debug::LogError("Remove temporary SPIR-V file failed: " + path.string());
 	}
 
 	/*

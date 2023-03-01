@@ -9,6 +9,7 @@ namespace ZXEngine
 	string ProjectSetting::defaultScene;
 	string ProjectSetting::projectPath;
 	bool ProjectSetting::enableDynamicBatch;
+	bool ProjectSetting::preserveIntermediateShader;
 
 	// Editor
 	unsigned int ProjectSetting::hierarchyWidth;
@@ -33,6 +34,7 @@ namespace ZXEngine
 		GlobalData::srcHeight = data["WindowSize"][1];
 		defaultScene = Resources::JsonStrToString(data["DefaultScene"]);
 		enableDynamicBatch = data["DynamicBatch"];
+		preserveIntermediateShader = data["PreserveIntermediateShader"];
 
 #ifdef ZX_EDITOR
 		SetWindowSize(200, 200, 200);

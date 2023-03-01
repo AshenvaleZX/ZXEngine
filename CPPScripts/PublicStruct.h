@@ -23,15 +23,21 @@ namespace ZXEngine
 		bool depthWrite              = true;
 	};
 
+	struct ShaderPropertiesInfo
+	{
+		PropertyMap baseProperties;
+		PropertyMap textureProperties;
+	};
+
 	// Shader类中记录信息的结构体
 	struct ShaderInfo
 	{
 		LightType lightType   = LightType::None;
 		ShadowType shadowType = ShadowType::None;
 		ShaderStateSet stateSet;
-		PropertyMap vertProperties;
-		PropertyMap geomProperties;
-		PropertyMap fragProperties;
+		ShaderPropertiesInfo vertProperties;
+		ShaderPropertiesInfo geomProperties;
+		ShaderPropertiesInfo fragProperties;
 	};
 
 	struct ShaderReference

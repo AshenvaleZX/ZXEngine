@@ -1,5 +1,6 @@
 {
     "WindowSize": [1280, 720],
     "DefaultScene": "Scenes/MyWorld.zxscene",
-    "DynamicBatch": false
+    "DynamicBatch": false,
+    "PreserveIntermediateShader": true
 }

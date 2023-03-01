@@ -52,6 +52,20 @@ namespace ZXEngine
         return words;
     }
 
+    void Utils::ReplaceAllString(std::string& oriStr, const std::string& srcStr, const std::string& dstStr)
+    {
+        size_t offset = 0;
+        size_t pos = oriStr.find(srcStr, 0);
+        size_t srcL = srcStr.length();
+        size_t dstL = dstStr.length();
+        while (pos != std::string::npos)
+        {
+            oriStr.replace(pos, srcL, dstStr);
+            offset = pos + dstL;
+            pos = oriStr.find(srcStr, offset);
+        }
+    }
+
     std::string Utils::ConvertPathToWindowsFormat(std::string path)
     {
         std::replace(path.begin(), path.end(), '/', '\\');
