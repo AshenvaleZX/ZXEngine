@@ -139,6 +139,8 @@ namespace ZXEngine
         VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
         void DestroyImageView(VkImageView imageView);
 
+        VkSampler CreateSampler(uint32_t mipLevels);
+
         void CreateAllRenderPass();
         VkRenderPass CreateRenderPass(RenderPassType type);
         VkRenderPass GetRenderPass(RenderPassType type);

@@ -139,12 +139,14 @@ namespace ZXEngine
         DestroyBuffer(stagingBuffer);
 
         VkImageView imageView = CreateImageView(image.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
+        VkSampler sampler = CreateSampler(mipLevels);
 
         unsigned int textureID = GetNextTextureIndex();
         auto texture = GetTextureByIndex(textureID);
         texture->inUse = true;
         texture->image = image;
         texture->imageView = imageView;
+        texture->sampler = sampler;
 
         return textureID;
     }
@@ -1134,6 +1136,37 @@ namespace ZXEngine
     void RenderAPIVulkan::DestroyImageView(VkImageView imageView)
     {
         vkDestroyImageView(device, imageView, nullptr);
+    }
+
+    VkSampler RenderAPIVulkan::CreateSampler(uint32_t mipLevels)
+    {
+        VkSamplerCreateInfo samplerInfo{};
+        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        samplerInfo.magFilter = VK_FILTER_LINEAR;
+        samplerInfo.minFilter = VK_FILTER_LINEAR;
+        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        // 开启各向异性filter
+        samplerInfo.anisotropyEnable = VK_TRUE;
+        samplerInfo.maxAnisotropy = maxSamplerAnisotropy;
+        samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+        // 这里填false，纹理采样坐标范围就是正常的[0, 1)，如果填true，就会变成[0, texWidth)和[0, texHeight)，绝大部分情况下都是用[0, 1)
+        samplerInfo.unnormalizedCoordinates = VK_FALSE;
+        // 一般用不到这个，某些场景，比如shadow map的percentage-closer filtering会用到
+        samplerInfo.compareEnable = VK_FALSE;
+        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+        // mipmap设置
+        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        samplerInfo.mipLodBias = 0.0f;
+        samplerInfo.minLod = 0.0f;
+        samplerInfo.maxLod = static_cast<float>(mipLevels);
+
+        VkSampler sampler;
+        if (vkCreateSampler(device, &samplerInfo, nullptr, &sampler) != VK_SUCCESS)
+            throw std::runtime_error("failed to create texture sampler!");
+
+        return sampler;
     }
 
     void RenderAPIVulkan::CreateAllRenderPass()

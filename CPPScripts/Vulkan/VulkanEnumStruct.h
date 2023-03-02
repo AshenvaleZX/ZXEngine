@@ -53,6 +53,7 @@ namespace ZXEngine
     {
         VulkanImage image;
         VkImageView imageView = VK_NULL_HANDLE;
+        VkSampler sampler = VK_NULL_HANDLE;
         bool inUse = false;
     };
 
