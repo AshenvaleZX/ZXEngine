@@ -132,6 +132,8 @@ namespace ZXEngine
         VulkanBuffer CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage);
         void DestroyBuffer(VulkanBuffer buffer);
 
+        UniformBuffer CreateUniformBuffer(PropertyMap properties);
+
         VulkanImage CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage);
         void DestroyImage(VulkanImage image);
         void GenerateMipMaps(VkImage image, VkFormat format, int32_t width, int32_t height, uint32_t mipLevels);

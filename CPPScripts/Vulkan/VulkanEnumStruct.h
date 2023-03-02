@@ -43,6 +43,12 @@ namespace ZXEngine
         VmaAllocation allocation = VK_NULL_HANDLE;
     };
 
+    struct UniformBuffer
+    {
+        VulkanBuffer buffer;
+        void* mappedAddress;
+    };
+
     struct VulkanImage
     {
         VkImage image = VK_NULL_HANDLE;

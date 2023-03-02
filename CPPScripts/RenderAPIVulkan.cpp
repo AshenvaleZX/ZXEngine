@@ -73,7 +73,7 @@ namespace ZXEngine
         unsigned char* pixels = stbi_load(path, &width, &height, &nrComponents, STBI_rgb_alpha);
 
         VkDeviceSize imageSize = VkDeviceSize(width * height * 4);
-        VulkanBuffer stagingBuffer = CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_CPU_ONLY);
+        VulkanBuffer stagingBuffer = CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
 
         // 把数据拷贝到stagingBuffer
         void* data;
@@ -931,6 +931,43 @@ namespace ZXEngine
     void RenderAPIVulkan::DestroyBuffer(VulkanBuffer buffer)
     {
         vmaDestroyBuffer(vmaAllocator, buffer.buffer, buffer.allocation);
+    }
+
+    UniformBuffer RenderAPIVulkan::CreateUniformBuffer(PropertyMap properties)
+    {
+        size_t bufferSize = 0;
+
+        for (auto& property : properties)
+        {
+            if (property.second == ShaderPropertyType::BOOL)
+                bufferSize += sizeof(bool);
+            else if (property.second == ShaderPropertyType::INT)
+                bufferSize += sizeof(int);
+            else if (property.second == ShaderPropertyType::FLOAT || property.second == ShaderPropertyType::ENGINE_LIGHT_INTENSITY
+                || property.second == ShaderPropertyType::ENGINE_FAR_PLANE)
+                bufferSize += sizeof(float);
+            else if (property.second == ShaderPropertyType::VEC2)
+                bufferSize += sizeof(float) * 2;
+            else if (property.second == ShaderPropertyType::VEC3 || property.second == ShaderPropertyType::ENGINE_CAMERA_POS
+                || property.second == ShaderPropertyType::ENGINE_LIGHT_POS || property.second == ShaderPropertyType::ENGINE_LIGHT_DIR
+                || property.second == ShaderPropertyType::ENGINE_LIGHT_COLOR)
+                bufferSize += sizeof(float) * 3;
+            else if (property.second == ShaderPropertyType::VEC4)
+                bufferSize += sizeof(float) * 4;
+            else if (property.second == ShaderPropertyType::MAT2)
+                bufferSize += sizeof(float) * 4;
+            else if (property.second == ShaderPropertyType::MAT3)
+                bufferSize += sizeof(float) * 9;
+            else if (property.second == ShaderPropertyType::MAT4 || property.second == ShaderPropertyType::ENGINE_MODEL
+                || property.second == ShaderPropertyType::ENGINE_VIEW || property.second == ShaderPropertyType::ENGINE_PROJECTION)
+                bufferSize += sizeof(float) * 16;
+        }
+
+        UniformBuffer uniformBuffer = {};
+        uniformBuffer.buffer = CreateBuffer(static_cast<VkDeviceSize>(bufferSize), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VMA_MEMORY_USAGE_AUTO);
+        vmaMapMemory(vmaAllocator, uniformBuffer.buffer.allocation, &uniformBuffer.mappedAddress);
+
+        return uniformBuffer;
     }
 
     VulkanImage RenderAPIVulkan::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage)
