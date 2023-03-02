@@ -170,6 +170,28 @@ namespace ZXEngine
 
         VkDescriptorPool descriptorPool = CreateDescriptorPool(shaderInfo);
 
+        vector<UniformBuffer> vertUniformBuffers = {};
+        vector<UniformBuffer> geomUniformBuffers = {};
+        vector<UniformBuffer> fragUniformBuffers = {};
+        for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+        {
+            if (!shaderInfo.vertProperties.baseProperties.empty())
+            {
+                UniformBuffer uniformBuffer = CreateUniformBuffer(shaderInfo.vertProperties.baseProperties);
+                vertUniformBuffers.push_back(uniformBuffer);
+            }
+            if (!shaderInfo.geomProperties.baseProperties.empty())
+            {
+                UniformBuffer uniformBuffer = CreateUniformBuffer(shaderInfo.geomProperties.baseProperties);
+                geomUniformBuffers.push_back(uniformBuffer);
+            }
+            if (!shaderInfo.fragProperties.baseProperties.empty())
+            {
+                UniformBuffer uniformBuffer = CreateUniformBuffer(shaderInfo.fragProperties.baseProperties);
+                fragUniformBuffers.push_back(uniformBuffer);
+            }
+        }
+
         ShaderReference* reference = new ShaderReference();
         return reference;
     }
@@ -964,7 +986,8 @@ namespace ZXEngine
         }
 
         UniformBuffer uniformBuffer = {};
-        uniformBuffer.buffer = CreateBuffer(static_cast<VkDeviceSize>(bufferSize), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VMA_MEMORY_USAGE_AUTO);
+        uniformBuffer.size = static_cast<VkDeviceSize>(bufferSize);
+        uniformBuffer.buffer = CreateBuffer(uniformBuffer.size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VMA_MEMORY_USAGE_AUTO);
         vmaMapMemory(vmaAllocator, uniformBuffer.buffer.allocation, &uniformBuffer.mappedAddress);
 
         return uniformBuffer;

@@ -45,6 +45,7 @@ namespace ZXEngine
 
     struct UniformBuffer
     {
+        VkDeviceSize size;
         VulkanBuffer buffer;
         void* mappedAddress;
     };
