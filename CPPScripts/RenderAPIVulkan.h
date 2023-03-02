@@ -57,6 +57,8 @@ namespace ZXEngine
         bool validationLayersEnabled = false;
         // MSAA采样点数量
         VkSampleCountFlagBits msaaSamplesCount = VK_SAMPLE_COUNT_1_BIT;
+        // 硬件支持多少倍的各项异性采样
+        float maxSamplerAnisotropy = 1.0f;
 
         // Vulkan实例
         VkInstance vkInstance = VK_NULL_HANDLE;
@@ -111,8 +113,8 @@ namespace ZXEngine
         bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
         // 获取物理设备所支持的交换链信息
         SwapChainSupportDetails GetSwapChainSupportDetails(VkPhysicalDevice device);
-        // 获取硬件支持的最大超采样数量(一个像素几个采样点)
-        VkSampleCountFlagBits GetMaxUsableSampleCount();
+        // 获取硬件设备属性
+        void GetPhysicalDeviceProperties();
         // 选择交换链图像格式和色彩空间
         VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const vector<VkSurfaceFormatKHR>& availableFormats);
         // 选择交换链的展示模式
