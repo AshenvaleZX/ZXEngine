@@ -110,6 +110,10 @@ namespace ZXEngine
 
 		info.vertProperties = GetProperties(vertCode);
 		info.fragProperties = GetProperties(fragCode);
+		if (!geomCode.empty())
+			info.geomProperties = GetProperties(geomCode);
+
+		SetupBindings(info);
 
 		return info;
 	}
@@ -141,18 +145,24 @@ namespace ZXEngine
 			else if (words[0] == "using")
 			{
 				auto type = shaderPropertyMap[words[1]];
+				ShaderProperty property = {};
+				property.name = words[1];
+				property.type = type;
 				if (IsBasePropertyType(type))
-					propertiesInfo.baseProperties.insert(pair(words[1], type));
+					propertiesInfo.baseProperties.push_back(property);
 				else
-					propertiesInfo.textureProperties.insert(pair(words[1], type));
+					propertiesInfo.textureProperties.push_back(property);
 			}
 			else
 			{
 				auto type = shaderPropertyMap[words[0]];
+				ShaderProperty property = {};
+				property.name = words[1];
+				property.type = type;
 				if (IsBasePropertyType(type))
-					propertiesInfo.baseProperties.insert(pair(words[1], type));
+					propertiesInfo.baseProperties.push_back(property);
 				else
-					propertiesInfo.textureProperties.insert(pair(words[1], type));
+					propertiesInfo.textureProperties.push_back(property);
 			}
 		}
 
@@ -223,7 +233,7 @@ namespace ZXEngine
 		return glCode;
 	}
 
-	string ShaderParser::TranslateToVulkan(const string& originCode, const ShaderPropertiesInfo& info, int& binding)
+	string ShaderParser::TranslateToVulkan(const string& originCode, const ShaderPropertiesInfo& info)
 	{
 		if (originCode.empty())
 			return "";
@@ -252,18 +262,16 @@ namespace ZXEngine
 
 		if (!info.baseProperties.empty())
 		{
-			vkCode += "layout (binding = " + to_string(binding) + ") uniform UniformBufferObject {\n";
+			vkCode += "layout (binding = " + to_string(info.baseProperties[0].binding) + ") uniform UniformBufferObject {\n";
 			for (auto& property : info.baseProperties)
-				vkCode += "    " + propertyTypeToGLSLType[property.second] + " " + property.first + ";\n";
+				vkCode += "    " + propertyTypeToGLSLType[property.type] + " " + property.name + ";\n";
 			vkCode += "} _UBO;\n";
-			binding++;
 		}
 		vkCode += "\n";
 
 		for (auto& property : info.textureProperties)
 		{
-			vkCode += "layout (binding = " + to_string(binding) + ") uniform " + propertyTypeToGLSLType[property.second] + " " + property.first + ";\n";
-			binding++;
+			vkCode += "layout (binding = " + to_string(property.binding) + ") uniform " + propertyTypeToGLSLType[property.type] + " " + property.name + ";\n";
 		}
 		vkCode += "\n";
 
@@ -271,7 +279,7 @@ namespace ZXEngine
 		if (!info.baseProperties.empty())
 		{
 			for (auto& property : info.baseProperties)
-				Utils::ReplaceAllString(programBlock, property.first, "_UBO." + property.first);
+				Utils::ReplaceAllString(programBlock, property.name, "_UBO." + property.name);
 		}
 		vkCode += programBlock;
 
@@ -353,5 +361,46 @@ namespace ZXEngine
 		}
 
 		return code.substr(s + 1, e - s - 1);
+	}
+
+	void ShaderParser::SetupBindings(ShaderInfo& info)
+	{
+		uint32_t binding = 0;
+
+		if (!info.vertProperties.baseProperties.empty())
+		{
+			for (auto& property : info.vertProperties.baseProperties)
+				property.binding = binding;
+			binding++;
+		}
+		for (auto& property : info.vertProperties.textureProperties)
+		{
+			property.binding = binding;
+			binding++;
+		}
+
+		if (!info.geomProperties.baseProperties.empty())
+		{
+			for (auto& property : info.geomProperties.baseProperties)
+				property.binding = binding;
+			binding++;
+		}
+		for (auto& property : info.geomProperties.textureProperties)
+		{
+			property.binding = binding;
+			binding++;
+		}
+
+		if (!info.fragProperties.baseProperties.empty())
+		{
+			for (auto& property : info.fragProperties.baseProperties)
+				property.binding = binding;
+			binding++;
+		}
+		for (auto& property : info.fragProperties.textureProperties)
+		{
+			property.binding = binding;
+			binding++;
+		}
 	}
 }

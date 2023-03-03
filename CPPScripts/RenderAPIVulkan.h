@@ -132,7 +132,7 @@ namespace ZXEngine
         VulkanBuffer CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage);
         void DestroyBuffer(VulkanBuffer buffer);
 
-        UniformBuffer CreateUniformBuffer(PropertyMap properties);
+        UniformBuffer CreateUniformBuffer(const vector<ShaderProperty>& properties);
 
         VulkanImage CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage);
         void DestroyImage(VulkanImage image);

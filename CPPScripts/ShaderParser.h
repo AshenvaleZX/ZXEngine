@@ -12,10 +12,11 @@ namespace ZXEngine
 		static ShaderPropertiesInfo GetProperties(const string& stageCode);
 		static void ParseShaderCode(const string& code, string& vertCode, string& geomCode, string& fragCode);
 		static string TranslateToOpenGL(const string& originCode);
-		static string TranslateToVulkan(const string& originCode, const ShaderPropertiesInfo& info, int& binding);
+		static string TranslateToVulkan(const string& originCode, const ShaderPropertiesInfo& info);
 
 	private:
 		static ShaderStateSet GetShaderStateSet(const string& code);
 		static string GetCodeBlock(const string& code, const string& blockName);
+		static void SetupBindings(ShaderInfo& info);
 	};
 }

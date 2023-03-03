@@ -955,33 +955,33 @@ namespace ZXEngine
         vmaDestroyBuffer(vmaAllocator, buffer.buffer, buffer.allocation);
     }
 
-    UniformBuffer RenderAPIVulkan::CreateUniformBuffer(PropertyMap properties)
+    UniformBuffer RenderAPIVulkan::CreateUniformBuffer(const vector<ShaderProperty>& properties)
     {
         size_t bufferSize = 0;
 
         for (auto& property : properties)
         {
-            if (property.second == ShaderPropertyType::BOOL)
+            if (property.type == ShaderPropertyType::BOOL)
                 bufferSize += sizeof(bool);
-            else if (property.second == ShaderPropertyType::INT)
+            else if (property.type == ShaderPropertyType::INT)
                 bufferSize += sizeof(int);
-            else if (property.second == ShaderPropertyType::FLOAT || property.second == ShaderPropertyType::ENGINE_LIGHT_INTENSITY
-                || property.second == ShaderPropertyType::ENGINE_FAR_PLANE)
+            else if (property.type == ShaderPropertyType::FLOAT || property.type == ShaderPropertyType::ENGINE_LIGHT_INTENSITY
+                || property.type == ShaderPropertyType::ENGINE_FAR_PLANE)
                 bufferSize += sizeof(float);
-            else if (property.second == ShaderPropertyType::VEC2)
+            else if (property.type == ShaderPropertyType::VEC2)
                 bufferSize += sizeof(float) * 2;
-            else if (property.second == ShaderPropertyType::VEC3 || property.second == ShaderPropertyType::ENGINE_CAMERA_POS
-                || property.second == ShaderPropertyType::ENGINE_LIGHT_POS || property.second == ShaderPropertyType::ENGINE_LIGHT_DIR
-                || property.second == ShaderPropertyType::ENGINE_LIGHT_COLOR)
+            else if (property.type == ShaderPropertyType::VEC3 || property.type == ShaderPropertyType::ENGINE_CAMERA_POS
+                || property.type == ShaderPropertyType::ENGINE_LIGHT_POS || property.type == ShaderPropertyType::ENGINE_LIGHT_DIR
+                || property.type == ShaderPropertyType::ENGINE_LIGHT_COLOR)
                 bufferSize += sizeof(float) * 3;
-            else if (property.second == ShaderPropertyType::VEC4)
+            else if (property.type == ShaderPropertyType::VEC4)
                 bufferSize += sizeof(float) * 4;
-            else if (property.second == ShaderPropertyType::MAT2)
+            else if (property.type == ShaderPropertyType::MAT2)
                 bufferSize += sizeof(float) * 4;
-            else if (property.second == ShaderPropertyType::MAT3)
+            else if (property.type == ShaderPropertyType::MAT3)
                 bufferSize += sizeof(float) * 9;
-            else if (property.second == ShaderPropertyType::MAT4 || property.second == ShaderPropertyType::ENGINE_MODEL
-                || property.second == ShaderPropertyType::ENGINE_VIEW || property.second == ShaderPropertyType::ENGINE_PROJECTION)
+            else if (property.type == ShaderPropertyType::MAT4 || property.type == ShaderPropertyType::ENGINE_MODEL
+                || property.type == ShaderPropertyType::ENGINE_VIEW || property.type == ShaderPropertyType::ENGINE_PROJECTION)
                 bufferSize += sizeof(float) * 16;
         }
 

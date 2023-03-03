@@ -24,10 +24,9 @@ namespace ZXEngine
 		ShaderParser::ParseShaderCode(shaderCode, vertCode, geomCode, fragCode);
 		ShaderInfo info = ShaderParser::GetShaderInfo(shaderCode);
 
-		int bindingIdx = 0;
-		vertCode = ShaderParser::TranslateToVulkan(vertCode, info.vertProperties, bindingIdx);
-		geomCode = ShaderParser::TranslateToVulkan(geomCode, info.geomProperties, bindingIdx);
-		fragCode = ShaderParser::TranslateToVulkan(fragCode, info.fragProperties, bindingIdx);
+		vertCode = ShaderParser::TranslateToVulkan(vertCode, info.vertProperties);
+		geomCode = ShaderParser::TranslateToVulkan(geomCode, info.geomProperties);
+		fragCode = ShaderParser::TranslateToVulkan(fragCode, info.fragProperties);
 
 		if (vertCode.empty())
 			Debug::LogError("Empty vertex shader: " + path.string());

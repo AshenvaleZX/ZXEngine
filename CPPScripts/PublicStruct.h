@@ -3,8 +3,6 @@
 
 namespace ZXEngine
 {
-#define PropertyMap map<string, ShaderPropertyType>
-
 	struct Vertex {
 		Vector3 Position;
 		Vector3 Normal;
@@ -23,10 +21,17 @@ namespace ZXEngine
 		bool depthWrite              = true;
 	};
 
+	struct ShaderProperty
+	{
+		uint32_t binding = 0; // Only for Vulkan now
+		string name;
+		ShaderPropertyType type;
+	};
+
 	struct ShaderPropertiesInfo
 	{
-		PropertyMap baseProperties;
-		PropertyMap textureProperties;
+		vector<ShaderProperty> baseProperties;
+		vector<ShaderProperty> textureProperties;
 	};
 
 	// Shader类中记录信息的结构体
