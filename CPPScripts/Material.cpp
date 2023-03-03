@@ -14,6 +14,12 @@ namespace ZXEngine
 			Texture* texture = new Texture(textureStruct->path.c_str());
 			textures.push_back(make_pair(textureStruct->uniformName, texture));
 		}
+
+		map<string, uint32_t> textureIDs;
+		for (auto& texture : textures)
+			textureIDs.insert(pair(texture.first, static_cast<uint32_t>(texture.second->GetID())));
+
+		RenderAPI::GetInstance()->SetUpMaterial(shader->reference, textureIDs);
 	}
 
 	Material::~Material()

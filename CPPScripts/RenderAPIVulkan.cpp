@@ -141,7 +141,7 @@ namespace ZXEngine
         VkImageView imageView = CreateImageView(image.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
         VkSampler sampler = CreateSampler(mipLevels);
 
-        unsigned int textureID = GetNextTextureIndex();
+        uint32_t textureID = GetNextTextureIndex();
         auto texture = GetTextureByIndex(textureID);
         texture->inUse = true;
         texture->image = image;
@@ -164,36 +164,120 @@ namespace ZXEngine
         string shaderCode = Resources::LoadTextFile(path);
         auto shaderInfo = ShaderParser::GetShaderInfo(shaderCode);
 
-        VkDescriptorSetLayout descriptorSetLayout = {};
-        VkPipelineLayout pipelineLayout = {};
-        VkPipeline pipeLine = CreatePipeline(path, shaderInfo, descriptorSetLayout, pipelineLayout);
+        uint32_t pipelineID = GetNextPipelineIndex();
+        auto pipeline = GetPipelineByIndex(pipelineID);
 
-        VkDescriptorPool descriptorPool = CreateDescriptorPool(shaderInfo);
+        pipeline->pipeline = CreatePipeline(path, shaderInfo, pipeline->descriptorSetLayout, pipeline->pipelineLayout);
+        pipeline->descriptorPool = CreateDescriptorPool(shaderInfo);
 
-        vector<UniformBuffer> vertUniformBuffers = {};
-        vector<UniformBuffer> geomUniformBuffers = {};
-        vector<UniformBuffer> fragUniformBuffers = {};
         for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
             if (!shaderInfo.vertProperties.baseProperties.empty())
             {
                 UniformBuffer uniformBuffer = CreateUniformBuffer(shaderInfo.vertProperties.baseProperties);
-                vertUniformBuffers.push_back(uniformBuffer);
+                pipeline->vertUniformBuffers.push_back(uniformBuffer);
             }
             if (!shaderInfo.geomProperties.baseProperties.empty())
             {
                 UniformBuffer uniformBuffer = CreateUniformBuffer(shaderInfo.geomProperties.baseProperties);
-                geomUniformBuffers.push_back(uniformBuffer);
+                pipeline->geomUniformBuffers.push_back(uniformBuffer);
             }
             if (!shaderInfo.fragProperties.baseProperties.empty())
             {
                 UniformBuffer uniformBuffer = CreateUniformBuffer(shaderInfo.fragProperties.baseProperties);
-                fragUniformBuffers.push_back(uniformBuffer);
+                pipeline->fragUniformBuffers.push_back(uniformBuffer);
             }
         }
 
+        pipeline->inUse = true;
+
         ShaderReference* reference = new ShaderReference();
+        reference->ID = pipelineID;
+        reference->shaderInfo = shaderInfo;
         return reference;
+    }
+
+    // 这个函数完成的任务是通过vkUpdateDescriptorSets把真正的物理Uniform Buffer和Image与VkPipeline绑定起来
+    void RenderAPIVulkan::SetUpMaterial(ShaderReference* shaderReference, const map<string, uint32_t>& textures)
+    {
+        auto pipeline = GetPipelineByIndex(shaderReference->ID);
+
+        vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, pipeline->descriptorSetLayout);
+        pipeline->descriptorSets = CreateDescriptorSets(pipeline->descriptorPool, layouts);
+
+        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+        {
+            vector<VkWriteDescriptorSet> writeDescriptorSets;
+
+            if (!pipeline->vertUniformBuffers.empty())
+                writeDescriptorSets.push_back(GetWriteDescriptorSet(pipeline->descriptorSets[i], pipeline->vertUniformBuffers[i]));
+            if (!pipeline->geomUniformBuffers.empty())
+                writeDescriptorSets.push_back(GetWriteDescriptorSet(pipeline->descriptorSets[i], pipeline->geomUniformBuffers[i]));
+            if (!pipeline->fragUniformBuffers.empty())
+                writeDescriptorSets.push_back(GetWriteDescriptorSet(pipeline->descriptorSets[i], pipeline->fragUniformBuffers[i]));
+
+            for (auto& textureProperty : shaderReference->shaderInfo.vertProperties.textureProperties)
+            {
+                uint32_t textureIdx = 0;
+                auto iter = textures.find(textureProperty.name);
+                if (iter != textures.end())
+                    textureIdx = iter->second;
+                else
+                    Debug::LogError("No texture matched !");
+                
+                auto texture = GetTextureByIndex(textureIdx);
+                writeDescriptorSets.push_back(GetWriteDescriptorSet(pipeline->descriptorSets[i], texture, textureProperty.binding));
+            }
+            for (auto& textureProperty : shaderReference->shaderInfo.fragProperties.textureProperties)
+            {
+                uint32_t textureIdx = 0;
+                auto iter = textures.find(textureProperty.name);
+                if (iter != textures.end())
+                    textureIdx = iter->second;
+                else
+                    Debug::LogError("No texture matched !");
+
+                auto texture = GetTextureByIndex(textureIdx);
+                writeDescriptorSets.push_back(GetWriteDescriptorSet(pipeline->descriptorSets[i], texture, textureProperty.binding));
+            }
+
+            vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
+        }
+    }
+
+    VkWriteDescriptorSet RenderAPIVulkan::GetWriteDescriptorSet(VkDescriptorSet descriptorSet, const UniformBuffer& uniformBuffer)
+    {
+        VkDescriptorBufferInfo bufferInfo = {};
+        bufferInfo.buffer = uniformBuffer.buffer.buffer;
+        bufferInfo.offset = 0;
+        bufferInfo.range = uniformBuffer.size;
+        VkWriteDescriptorSet writeDescriptorSet = {};
+        writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        writeDescriptorSet.dstSet = descriptorSet;
+        writeDescriptorSet.dstBinding = uniformBuffer.binding;
+        // 描述符集是描述符的数组，这个指定我们这次要从第几个描述符开始更新
+        writeDescriptorSet.dstArrayElement = 0;
+        writeDescriptorSet.descriptorCount = 1;
+        writeDescriptorSet.pBufferInfo = &bufferInfo;
+        return writeDescriptorSet;
+    }
+
+    VkWriteDescriptorSet RenderAPIVulkan::GetWriteDescriptorSet(VkDescriptorSet descriptorSet, VulkanTexture* texture, uint32_t binding)
+    {
+        VkDescriptorImageInfo imageInfo{};
+        imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        imageInfo.imageView = texture->imageView;
+        imageInfo.sampler = texture->sampler;
+        VkWriteDescriptorSet writeDescriptorSet = {};
+        writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        writeDescriptorSet.dstSet = descriptorSet;
+        writeDescriptorSet.dstBinding = binding;
+        writeDescriptorSet.dstArrayElement = 0;
+        writeDescriptorSet.descriptorCount = 1;
+        writeDescriptorSet.pImageInfo = &imageInfo;
+        return writeDescriptorSet;
     }
 
     FrameBufferObject* RenderAPIVulkan::CreateFrameBufferObject(FrameBufferType type, unsigned int width, unsigned int height)
@@ -345,11 +429,11 @@ namespace ZXEngine
         meshBuffer->inUse = true;
     }
 
-    unsigned int RenderAPIVulkan::GetNextVAOIndex()
+    uint32_t RenderAPIVulkan::GetNextVAOIndex()
     {
-        unsigned int length = (unsigned int)VulkanVAOArray.size();
+        uint32_t length = (uint32_t)VulkanVAOArray.size();
         
-        for (unsigned int i = 0; i < length; i++)
+        for (uint32_t i = 0; i < length; i++)
         {
             if (!VulkanVAOArray[i]->inUse)
                 return i;
@@ -360,16 +444,16 @@ namespace ZXEngine
         return length;
     }
 
-    VulkanVAO* RenderAPIVulkan::GetVAOByIndex(unsigned int idx)
+    VulkanVAO* RenderAPIVulkan::GetVAOByIndex(uint32_t idx)
     {
         return VulkanVAOArray[idx];
     }
 
-    unsigned int RenderAPIVulkan::GetNextTextureIndex()
+    uint32_t RenderAPIVulkan::GetNextTextureIndex()
     {
-        unsigned int length = (unsigned int)VulkanTextureArray.size();
+        uint32_t length = (uint32_t)VulkanTextureArray.size();
 
-        for (unsigned int i = 0; i < length; i++)
+        for (uint32_t i = 0; i < length; i++)
         {
             if (!VulkanTextureArray[i]->inUse)
                 return i;
@@ -380,9 +464,29 @@ namespace ZXEngine
         return length;
     }
 
-    VulkanTexture* RenderAPIVulkan::GetTextureByIndex(unsigned int idx)
+    VulkanTexture* RenderAPIVulkan::GetTextureByIndex(uint32_t idx)
     {
         return VulkanTextureArray[idx];
+    }
+
+    uint32_t RenderAPIVulkan::GetNextPipelineIndex()
+    {
+        uint32_t length = (uint32_t)VulkanPipelineArray.size();
+
+        for (uint32_t i = 0; i < length; i++)
+        {
+            if (!VulkanPipelineArray[i]->inUse)
+                return i;
+        }
+
+        VulkanPipelineArray.push_back(new VulkanPipeline());
+
+        return length;
+    }
+
+    VulkanPipeline* RenderAPIVulkan::GetPipelineByIndex(uint32_t idx)
+    {
+        return VulkanPipelineArray[idx];
     }
 
 
@@ -957,6 +1061,12 @@ namespace ZXEngine
 
     UniformBuffer RenderAPIVulkan::CreateUniformBuffer(const vector<ShaderProperty>& properties)
     {
+        UniformBuffer uniformBuffer = {};
+        if (properties.empty())
+        {
+            Debug::LogError("Try to create empty uniform buffer !");
+            return uniformBuffer;
+        }
         size_t bufferSize = 0;
 
         for (auto& property : properties)
@@ -985,7 +1095,7 @@ namespace ZXEngine
                 bufferSize += sizeof(float) * 16;
         }
 
-        UniformBuffer uniformBuffer = {};
+        uniformBuffer.binding = properties[0].binding;
         uniformBuffer.size = static_cast<VkDeviceSize>(bufferSize);
         uniformBuffer.buffer = CreateBuffer(uniformBuffer.size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VMA_MEMORY_USAGE_AUTO);
         vmaMapMemory(vmaAllocator, uniformBuffer.buffer.allocation, &uniformBuffer.mappedAddress);
@@ -1480,7 +1590,7 @@ namespace ZXEngine
         allocInfo.descriptorSetCount = static_cast<uint32_t>(descriptorSetLayouts.size());
 
         vector<VkDescriptorSet> descriptorSets;
-        descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
+        descriptorSets.resize(descriptorSetLayouts.size());
         if (vkAllocateDescriptorSets(device, &allocInfo, descriptorSets.data()) != VK_SUCCESS)
             throw std::runtime_error("failed to allocate descriptor sets!");
 
@@ -1720,8 +1830,8 @@ namespace ZXEngine
 
         if (!info.vertProperties.baseProperties.empty())
         {
-            VkDescriptorSetLayoutBinding uboBinding{};
-            uboBinding.binding = static_cast<uint32_t>(bindings.size());
+            VkDescriptorSetLayoutBinding uboBinding = {};
+            uboBinding.binding = info.vertProperties.baseProperties[0].binding;
             uboBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             uboBinding.descriptorCount = 1;
             uboBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
@@ -1731,7 +1841,7 @@ namespace ZXEngine
         for (auto& texture : info.vertProperties.textureProperties)
         {
             VkDescriptorSetLayoutBinding samplerBinding = {};
-            samplerBinding.binding = static_cast<uint32_t>(bindings.size());
+            samplerBinding.binding = texture.binding;
             samplerBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             samplerBinding.descriptorCount = 1;
             samplerBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
@@ -1741,7 +1851,7 @@ namespace ZXEngine
         if (!info.fragProperties.baseProperties.empty())
         {
             VkDescriptorSetLayoutBinding uboBinding{};
-            uboBinding.binding = static_cast<uint32_t>(bindings.size());
+            uboBinding.binding = info.fragProperties.baseProperties[0].binding;
             uboBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             uboBinding.descriptorCount = 1;
             uboBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -1751,7 +1861,7 @@ namespace ZXEngine
         for (auto& texture : info.fragProperties.textureProperties)
         {
             VkDescriptorSetLayoutBinding samplerBinding = {};
-            samplerBinding.binding = static_cast<uint32_t>(bindings.size());
+            samplerBinding.binding = texture.binding;
             samplerBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             samplerBinding.descriptorCount = 1;
             samplerBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;

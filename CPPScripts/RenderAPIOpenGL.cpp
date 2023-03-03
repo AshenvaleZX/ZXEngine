@@ -341,6 +341,11 @@ namespace ZXEngine
 		glDeleteProgram(id);
 	}
 
+	void RenderAPIOpenGL::SetUpMaterial(ShaderReference* shaderReference, const map<string, uint32_t>& textures)
+	{
+		// OpenGL不需要实现这个接口
+	}
+
 	void RenderAPIOpenGL::CheckCompileErrors(unsigned int shader, string type)
 	{
 		int success;

@@ -45,7 +45,8 @@ namespace ZXEngine
 
     struct UniformBuffer
     {
-        VkDeviceSize size;
+        uint32_t binding = 0;
+        VkDeviceSize size = 0;
         VulkanBuffer buffer;
         void* mappedAddress;
     };
@@ -70,6 +71,19 @@ namespace ZXEngine
         VmaAllocation indexBufferAlloc = VK_NULL_HANDLE;
         VkBuffer vertexBuffer = VK_NULL_HANDLE;
         VmaAllocation vertexBufferAlloc = VK_NULL_HANDLE;
+        bool inUse = false;
+    };
+
+    struct VulkanPipeline
+    {
+        VkPipeline pipeline;
+        VkPipelineLayout pipelineLayout;
+        VkDescriptorSetLayout descriptorSetLayout;
+        VkDescriptorPool descriptorPool;
+        vector<VkDescriptorSet> descriptorSets;
+        vector<UniformBuffer> vertUniformBuffers;
+        vector<UniformBuffer> geomUniformBuffers;
+        vector<UniformBuffer> fragUniformBuffers;
         bool inUse = false;
     };
 }

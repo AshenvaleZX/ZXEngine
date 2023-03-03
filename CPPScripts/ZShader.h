@@ -7,6 +7,7 @@ namespace ZXEngine
 	class RenderEngineProperties;
 	class Shader
 	{
+		friend class Material;
 	private:
 		static vector<ShaderReference*> loadedShaders;
 

@@ -30,6 +30,7 @@ namespace ZXEngine
         virtual unsigned int LoadTexture(const char* path, int& width, int& height);
         virtual void DeleteTexture(unsigned int id);
         virtual ShaderReference* LoadAndCompileShader(const char* path);
+        virtual void SetUpMaterial(ShaderReference* shaderReference, const map<string, uint32_t>& textures);
         virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
 
         virtual void DeleteMesh(unsigned int VAO);
@@ -42,11 +43,14 @@ namespace ZXEngine
     private:
         vector<VulkanVAO*> VulkanVAOArray;
         vector<VulkanTexture*> VulkanTextureArray;
+        vector<VulkanPipeline*> VulkanPipelineArray;
 
-        unsigned int GetNextVAOIndex();
-        VulkanVAO* GetVAOByIndex(unsigned int idx);
-        unsigned int GetNextTextureIndex();
-        VulkanTexture* GetTextureByIndex(unsigned int idx);
+        uint32_t GetNextVAOIndex();
+        VulkanVAO* GetVAOByIndex(uint32_t idx);
+        uint32_t GetNextTextureIndex();
+        VulkanTexture* GetTextureByIndex(uint32_t idx);
+        uint32_t GetNextPipelineIndex();
+        VulkanPipeline* GetPipelineByIndex(uint32_t idx);
 
 
     /// <summary>
@@ -180,5 +184,8 @@ namespace ZXEngine
         VkPipelineDynamicStateCreateInfo GetDynamicStateInfo(vector<VkDynamicState> dynamicStates);
         VkPipelineRasterizationStateCreateInfo GetRasterizationInfo(VkCullModeFlagBits cullMode, VkFrontFace frontFace);
         VkPipelineMultisampleStateCreateInfo GetPipelineMultisampleInfo(VkSampleCountFlagBits rasterizationSamples);
+
+        VkWriteDescriptorSet GetWriteDescriptorSet(VkDescriptorSet descriptorSet, const UniformBuffer& uniformBuffer);
+        VkWriteDescriptorSet GetWriteDescriptorSet(VkDescriptorSet descriptorSet, VulkanTexture* texture, uint32_t binding);
     };
 }

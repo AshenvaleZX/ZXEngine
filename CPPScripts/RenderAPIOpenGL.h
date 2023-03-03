@@ -37,6 +37,7 @@ namespace ZXEngine
 		virtual unsigned int LoadCubeMap(vector<string> faces);
 		virtual unsigned int GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data);
 		virtual ShaderReference* LoadAndCompileShader(const char* path);
+		virtual void SetUpMaterial(ShaderReference* shaderReference, const map<string, uint32_t>& textures);
 		virtual void DeleteShaderProgram(unsigned int id);
 		virtual void CheckCompileErrors(unsigned int shader, std::string type);
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
