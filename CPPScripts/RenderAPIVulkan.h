@@ -153,6 +153,7 @@ namespace ZXEngine
         VkDescriptorSetLayout CreateDescriptorSetLayout(const ShaderInfo& info);
         VkPipelineLayout CreatePipelineLayout(const VkDescriptorSetLayout& descriptorSetLayout);
         VkDescriptorPool CreateDescriptorPool(const ShaderInfo& info);
+        vector<VkDescriptorSet> CreateDescriptorSets(VkDescriptorPool descriptorPool, const vector<VkDescriptorSetLayout>& descriptorSetLayouts);
 
         VkShaderModule CreateShaderModule(vector<char> code);
         ShaderModuleSet CreateShaderModules(const string& path, const ShaderInfo& info);

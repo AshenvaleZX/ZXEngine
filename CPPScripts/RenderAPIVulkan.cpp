@@ -1471,6 +1471,22 @@ namespace ZXEngine
         return descriptorPool;
     }
 
+    vector<VkDescriptorSet> RenderAPIVulkan::CreateDescriptorSets(VkDescriptorPool descriptorPool, const vector<VkDescriptorSetLayout>& descriptorSetLayouts)
+    {
+        VkDescriptorSetAllocateInfo allocInfo = {};
+        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+        allocInfo.descriptorPool = descriptorPool;
+        allocInfo.pSetLayouts = descriptorSetLayouts.data();
+        allocInfo.descriptorSetCount = static_cast<uint32_t>(descriptorSetLayouts.size());
+
+        vector<VkDescriptorSet> descriptorSets;
+        descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
+        if (vkAllocateDescriptorSets(device, &allocInfo, descriptorSets.data()) != VK_SUCCESS)
+            throw std::runtime_error("failed to allocate descriptor sets!");
+
+        return descriptorSets;
+    }
+
     VkShaderModule RenderAPIVulkan::CreateShaderModule(vector<char> code)
     {
         VkShaderModuleCreateInfo createInfo = {};
