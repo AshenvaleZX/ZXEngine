@@ -5,12 +5,17 @@ namespace ZXEngine
 {
 	class RenderAPIOpenGL : public RenderAPI
 	{
+	/// <summary>
+	/// 标准RenderAPI接口
+	/// </summary>
 	public:
 		RenderAPIOpenGL();
 		~RenderAPIOpenGL() {};
 
+		virtual void BeginFrame();
+		virtual void EndFrame();
+
 		// 渲染状态设置
-		virtual void InitRenderSetting();
 		virtual void SetRenderState(RenderStateSetting* state);
 		virtual void EnableDepthTest(bool enable);
 		virtual void EnableDepthWrite(bool enable);
@@ -29,7 +34,6 @@ namespace ZXEngine
 		virtual void ClearDepthBuffer(float depth);
 		virtual void ClearStencilBuffer();
 		virtual void ClearStencilBuffer(int stencil);
-		virtual void CheckError();
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path, int& width, int& height);
@@ -71,9 +75,9 @@ namespace ZXEngine
 		virtual void SetShaderTexture(unsigned int ID, string name, unsigned int textureID, unsigned int idx);
 		virtual void SetShaderCubeMap(unsigned int ID, string name, unsigned int textureID, unsigned int idx);
 
-	private:
-		virtual void UpdateRenderState();
-
+	/// <summary>
+	/// 实现标准RenderAPI接口的内部接口与变量
+	/// </summary>
 	private:
 		bool stateDirty = false;
 		RenderStateSetting* targetState = nullptr;
@@ -85,5 +89,8 @@ namespace ZXEngine
 		map<BlendFactor, int> BlendMap;
 		map<FaceCullOption, int> FaceCullMap;
 		void InitGLConstMap();
+
+		void CheckError();
+		void UpdateRenderState();
 	};
 }

@@ -25,7 +25,6 @@ namespace ZXEngine
 		RenderEngineProperties::Create();
 		RenderQueueManager::Creat();
 		RenderAPI::Creat();
-		RenderAPI::GetInstance()->InitRenderSetting();
 		FBOManager::Create();
 		ParticleSystemManager::Create();
 		RenderPassManager::Create();
@@ -114,7 +113,7 @@ namespace ZXEngine
 
 	void RenderEngine::BeginRender()
 	{
-		
+		RenderAPI::GetInstance()->BeginFrame();
 	}
 
 	void RenderEngine::Render(Camera* camera)
@@ -128,8 +127,7 @@ namespace ZXEngine
 
 	void RenderEngine::EndRender()
 	{
-		// OpenGL异常不会主动抛出，每帧结束检测一下
-		RenderAPI::GetInstance()->CheckError();
+		RenderAPI::GetInstance()->EndFrame();
 		// 交换前后缓冲区，poll事件
 		SwapBufferAndPollPollEvents();
 	}

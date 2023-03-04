@@ -18,8 +18,10 @@ namespace ZXEngine
 		RenderAPI() {};
 		~RenderAPI() {};
 
+		virtual void BeginFrame() = 0;
+		virtual void EndFrame() = 0;
+
 		// 渲染状态设置
-		virtual void InitRenderSetting() = 0;
 		virtual void SetRenderState(RenderStateSetting* state) = 0;
 		virtual void EnableDepthTest(bool enable) = 0;
 		virtual void EnableDepthWrite(bool enable) = 0;
@@ -38,7 +40,6 @@ namespace ZXEngine
 		virtual void ClearDepthBuffer(float depth) = 0;
 		virtual void ClearStencilBuffer() = 0;
 		virtual void ClearStencilBuffer(int stencil) = 0;
-		virtual void CheckError() = 0;
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path, int& width, int& height) = 0;
@@ -79,8 +80,5 @@ namespace ZXEngine
 		virtual void SetShaderMat4(unsigned int ID, string name, const Matrix4& value) = 0;
 		virtual void SetShaderTexture(unsigned int ID, string name, unsigned int textureID, unsigned int idx) = 0;
 		virtual void SetShaderCubeMap(unsigned int ID, string name, unsigned int textureID, unsigned int idx) = 0;
-
-	private:
-		virtual void UpdateRenderState() = 0;
 	};
 }

@@ -68,6 +68,16 @@ namespace ZXEngine
         InitImmediateCommand();
     }
 
+    void RenderAPIVulkan::BeginFrame()
+    {
+
+    }
+
+    void RenderAPIVulkan::EndFrame()
+    {
+        currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+    }
+
     unsigned int RenderAPIVulkan::LoadTexture(const char* path, int& width, int& height)
     {
         int nrComponents;

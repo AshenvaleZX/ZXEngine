@@ -27,6 +27,9 @@ namespace ZXEngine
         RenderAPIVulkan();
         ~RenderAPIVulkan() {};
 
+        virtual void BeginFrame();
+        virtual void EndFrame();
+
         virtual unsigned int LoadTexture(const char* path, int& width, int& height);
         virtual void DeleteTexture(unsigned int id);
         virtual ShaderReference* LoadAndCompileShader(const char* path);
@@ -63,6 +66,8 @@ namespace ZXEngine
         VkSampleCountFlagBits msaaSamplesCount = VK_SAMPLE_COUNT_1_BIT;
         // 硬件支持多少倍的各项异性采样
         float maxSamplerAnisotropy = 1.0f;
+        // 当前是MAX_FRAMES_IN_FLIGHT中的第几帧
+        uint32_t currentFrame = 0;
 
         // Vulkan实例
         VkInstance vkInstance = VK_NULL_HANDLE;

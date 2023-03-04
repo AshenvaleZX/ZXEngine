@@ -18,10 +18,7 @@ namespace ZXEngine
 			Debug::LogError("Failed to initialize GLAD");
 			return;
 		}
-	}
 
-	void RenderAPIOpenGL::InitRenderSetting()
-	{
 		// 获取当前OpenGL版本并输出
 		int majorVersion;
 		int minorVersion;
@@ -41,7 +38,17 @@ namespace ZXEngine
 		targetState = new RenderStateSetting();
 		curRealState = new RenderStateSetting();
 	}
-	
+
+	void RenderAPIOpenGL::BeginFrame()
+	{
+
+	}
+
+	void RenderAPIOpenGL::EndFrame()
+	{
+		CheckError();
+	}
+
 	void RenderAPIOpenGL::SetRenderState(RenderStateSetting* state)
 	{
 		*targetState = *state;
