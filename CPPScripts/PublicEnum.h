@@ -44,6 +44,7 @@ namespace ZXEngine
 
 	enum class FrameBufferType
 	{
+		Present, // For swap chain
 		Normal,
 		HigthPrecision,
 		Color,

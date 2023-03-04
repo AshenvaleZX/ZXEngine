@@ -14,6 +14,7 @@ namespace ZXEngine
 
     enum class RenderPassType
     {
+        Present, // For swap chain
         Normal,
         MAX,
     };

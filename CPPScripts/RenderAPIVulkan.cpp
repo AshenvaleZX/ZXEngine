@@ -63,6 +63,7 @@ namespace ZXEngine
         CreateSurface();
         CreateSwapChain();
         CreateAllRenderPass();
+        CreatePresentFrameBuffer();
 
         InitImmediateCommand();
     }
@@ -750,6 +751,35 @@ namespace ZXEngine
         swapChainExtent = extent;
     }
 
+    void RenderAPIVulkan::CreatePresentFrameBuffer()
+    {
+        presentFrameBuffers.resize(swapChainImages.size());
+        swapChainImageViews.resize(swapChainImages.size());
+        for (size_t i = 0; i < swapChainImages.size(); i++)
+        {
+            swapChainImageViews[i] = CreateImageView(swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+
+            VulkanImage colorImage = CreateImage(swapChainExtent.width, swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, swapChainImageFormat, VK_IMAGE_TILING_OPTIMAL,
+                VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+            VkImageView colorImageView = CreateImageView(colorImage.image, swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+
+            array<VkImageView, 2> attachments = { colorImageView, swapChainImageViews[i] };
+
+            VkFramebufferCreateInfo framebufferInfo{};
+            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            framebufferInfo.renderPass = GetRenderPass(RenderPassType::Present);
+            framebufferInfo.pAttachments = attachments.data();
+            framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+            framebufferInfo.width = swapChainExtent.width;
+            framebufferInfo.height = swapChainExtent.height;
+            // layer是指定图像数组中的层数，交换链图像是单个图像，因此层数为1
+            framebufferInfo.layers = 1;
+
+            if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &presentFrameBuffers[i]) != VK_SUCCESS)
+                throw std::runtime_error("failed to create framebuffer!");
+        }
+    }
+
 
     // ----------------------------------------建立Vulkan对象的辅助函数----------------------------------------
 
@@ -1343,6 +1373,7 @@ namespace ZXEngine
     {
         allVulkanRenderPass.resize((size_t)RenderPassType::MAX);
 
+        allVulkanRenderPass[(size_t)RenderPassType::Present] = CreateRenderPass(RenderPassType::Present);
         allVulkanRenderPass[(size_t)RenderPassType::Normal] = CreateRenderPass(RenderPassType::Normal);
     }
 
@@ -1350,6 +1381,63 @@ namespace ZXEngine
     {
         VkRenderPass renderPass = {};
 
+        if (type == RenderPassType::Present)
+        {
+            VkAttachmentDescription colorAttachment = {};
+            colorAttachment.format = VK_FORMAT_R8G8B8A8_SRGB;
+            colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+            colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+            VkAttachmentDescription colorAttachmentResolve = {};
+            colorAttachmentResolve.format = swapChainImageFormat;
+            colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
+            colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+            colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+            VkAttachmentReference colorAttachmentRef{};
+            colorAttachmentRef.attachment = 0;
+            colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+            VkAttachmentReference colorAttachmentResolveRef{};
+            colorAttachmentResolveRef.attachment = 1;
+            colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+            VkSubpassDescription subpassInfo = {};
+            subpassInfo.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+            subpassInfo.pColorAttachments = &colorAttachmentRef;
+            subpassInfo.colorAttachmentCount = 1;
+            subpassInfo.pResolveAttachments = &colorAttachmentResolveRef;
+
+            VkSubpassDependency dependency = {};
+            dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+            dependency.dstSubpass = 0;
+            dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+            dependency.srcAccessMask = 0;
+            dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+            dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+            array<VkAttachmentDescription, 2> attachments = { colorAttachment, colorAttachmentResolve };
+            VkRenderPassCreateInfo renderPassInfo{};
+            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+            renderPassInfo.pAttachments = attachments.data();
+            renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+            renderPassInfo.pSubpasses = &subpassInfo;
+            renderPassInfo.subpassCount = 1;
+            renderPassInfo.pDependencies = &dependency;
+            renderPassInfo.dependencyCount = 1;
+
+            if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
+                throw std::runtime_error("failed to create render pass!");
+        }
         if (type == RenderPassType::Normal)
         {
             VkAttachmentDescription colorAttachment = {};
@@ -1389,7 +1477,7 @@ namespace ZXEngine
             subpassInfo.colorAttachmentCount = 1;
             subpassInfo.pDepthStencilAttachment = &depthAttachmentRef;
 
-            VkSubpassDependency dependency{};
+            VkSubpassDependency dependency = {};
             dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
             dependency.dstSubpass = 0;
             dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;

@@ -80,10 +80,14 @@ namespace ZXEngine
         VkQueue graphicsQueue = VK_NULL_HANDLE;
         // 展示队列
         VkQueue presentQueue = VK_NULL_HANDLE;
+        // 提供给交换链显示画面的Frame Buffer
+        vector<VkFramebuffer> presentFrameBuffers;
         // 交换链
         VkSwapchainKHR swapChain = VK_NULL_HANDLE;
-        // 交换链上的图像(创建交换链的时候自动创建，销毁交换链的时候自动销毁)
+        // 交换链Image(创建交换链的时候自动创建，销毁交换链的时候自动销毁)
         vector<VkImage> swapChainImages;
+        // 交换链ImageView，手动创建，手动销毁
+        vector<VkImageView> swapChainImageViews;
         // 交换链上图像的格式
         VkFormat swapChainImageFormat;
         // 交换链上图像的大小
@@ -100,6 +104,7 @@ namespace ZXEngine
         void CreateMemoryAllocator();
         void CreateSurface();
         void CreateSwapChain();
+        void CreatePresentFrameBuffer();
 
         // ----------------------------------------建立Vulkan对象的辅助函数----------------------------------------
 
