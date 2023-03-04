@@ -113,7 +113,7 @@ namespace ZXEngine
 		if (!geomCode.empty())
 			info.geomProperties = GetProperties(geomCode);
 
-		SetupBindings(info);
+		SetUpProperties(info);
 
 		return info;
 	}
@@ -122,6 +122,37 @@ namespace ZXEngine
 	{
 		return !(type == ShaderPropertyType::SAMPLER || type == ShaderPropertyType::SAMPLER_2D || type == ShaderPropertyType::SAMPLER_CUBE
 			|| type == ShaderPropertyType::ENGINE_DEPTH_MAP || type == ShaderPropertyType::ENGINE_DEPTH_CUBE_MAP);
+	}
+
+	uint32_t ShaderParser::GetPropertySize(ShaderPropertyType type)
+	{
+		if (type == ShaderPropertyType::BOOL)
+			return sizeof(bool);
+		else if (type == ShaderPropertyType::INT)
+			return sizeof(int);
+		else if (type == ShaderPropertyType::FLOAT || type == ShaderPropertyType::ENGINE_LIGHT_INTENSITY
+			|| type == ShaderPropertyType::ENGINE_FAR_PLANE)
+			return sizeof(float);
+		else if (type == ShaderPropertyType::VEC2)
+			return sizeof(float) * 2;
+		else if (type == ShaderPropertyType::VEC3 || type == ShaderPropertyType::ENGINE_CAMERA_POS
+			|| type == ShaderPropertyType::ENGINE_LIGHT_POS || type == ShaderPropertyType::ENGINE_LIGHT_DIR
+			|| type == ShaderPropertyType::ENGINE_LIGHT_COLOR)
+			return sizeof(float) * 3;
+		else if (type == ShaderPropertyType::VEC4)
+			return sizeof(float) * 4;
+		else if (type == ShaderPropertyType::MAT2)
+			return sizeof(float) * 4;
+		else if (type == ShaderPropertyType::MAT3)
+			return sizeof(float) * 9;
+		else if (type == ShaderPropertyType::MAT4 || type == ShaderPropertyType::ENGINE_MODEL
+			|| type == ShaderPropertyType::ENGINE_VIEW || type == ShaderPropertyType::ENGINE_PROJECTION)
+			return sizeof(float) * 16;
+		else
+		{
+			Debug::LogError("Invalid shader property type !");
+			return 0;
+		}
 	}
 
 	ShaderPropertiesInfo ShaderParser::GetProperties(const string& stageCode)
@@ -263,8 +294,11 @@ namespace ZXEngine
 		if (!info.baseProperties.empty())
 		{
 			vkCode += "layout (binding = " + to_string(info.baseProperties[0].binding) + ") uniform UniformBufferObject {\n";
-			for (auto& property : info.baseProperties)
+			for (size_t i = 0; i < info.baseProperties.size(); i++)
+			{
+				auto& property = info.baseProperties[i];
 				vkCode += "    " + propertyTypeToGLSLType[property.type] + " " + property.name + ";\n";
+			}
 			vkCode += "} _UBO;\n";
 		}
 		vkCode += "\n";
@@ -363,14 +397,19 @@ namespace ZXEngine
 		return code.substr(s + 1, e - s - 1);
 	}
 
-	void ShaderParser::SetupBindings(ShaderInfo& info)
+	void ShaderParser::SetUpProperties(ShaderInfo& info)
 	{
 		uint32_t binding = 0;
 
 		if (!info.vertProperties.baseProperties.empty())
 		{
+			uint32_t offset = 0;
 			for (auto& property : info.vertProperties.baseProperties)
+			{
+				property.offset = offset;
 				property.binding = binding;
+				offset += GetPropertySize(property.type);
+			}
 			binding++;
 		}
 		for (auto& property : info.vertProperties.textureProperties)
@@ -381,8 +420,13 @@ namespace ZXEngine
 
 		if (!info.geomProperties.baseProperties.empty())
 		{
+			uint32_t offset = 0;
 			for (auto& property : info.geomProperties.baseProperties)
+			{
+				property.offset = offset;
 				property.binding = binding;
+				offset += GetPropertySize(property.type);
+			}
 			binding++;
 		}
 		for (auto& property : info.geomProperties.textureProperties)
@@ -393,8 +437,13 @@ namespace ZXEngine
 
 		if (!info.fragProperties.baseProperties.empty())
 		{
+			uint32_t offset = 0;
 			for (auto& property : info.fragProperties.baseProperties)
+			{
+				property.offset = offset;
 				property.binding = binding;
+				offset += GetPropertySize(property.type);
+			}
 			binding++;
 		}
 		for (auto& property : info.fragProperties.textureProperties)

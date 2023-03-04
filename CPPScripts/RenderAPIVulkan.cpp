@@ -1110,30 +1110,7 @@ namespace ZXEngine
         size_t bufferSize = 0;
 
         for (auto& property : properties)
-        {
-            if (property.type == ShaderPropertyType::BOOL)
-                bufferSize += sizeof(bool);
-            else if (property.type == ShaderPropertyType::INT)
-                bufferSize += sizeof(int);
-            else if (property.type == ShaderPropertyType::FLOAT || property.type == ShaderPropertyType::ENGINE_LIGHT_INTENSITY
-                || property.type == ShaderPropertyType::ENGINE_FAR_PLANE)
-                bufferSize += sizeof(float);
-            else if (property.type == ShaderPropertyType::VEC2)
-                bufferSize += sizeof(float) * 2;
-            else if (property.type == ShaderPropertyType::VEC3 || property.type == ShaderPropertyType::ENGINE_CAMERA_POS
-                || property.type == ShaderPropertyType::ENGINE_LIGHT_POS || property.type == ShaderPropertyType::ENGINE_LIGHT_DIR
-                || property.type == ShaderPropertyType::ENGINE_LIGHT_COLOR)
-                bufferSize += sizeof(float) * 3;
-            else if (property.type == ShaderPropertyType::VEC4)
-                bufferSize += sizeof(float) * 4;
-            else if (property.type == ShaderPropertyType::MAT2)
-                bufferSize += sizeof(float) * 4;
-            else if (property.type == ShaderPropertyType::MAT3)
-                bufferSize += sizeof(float) * 9;
-            else if (property.type == ShaderPropertyType::MAT4 || property.type == ShaderPropertyType::ENGINE_MODEL
-                || property.type == ShaderPropertyType::ENGINE_VIEW || property.type == ShaderPropertyType::ENGINE_PROJECTION)
-                bufferSize += sizeof(float) * 16;
-        }
+            bufferSize += ShaderParser::GetPropertySize(property.type);
 
         uniformBuffer.binding = properties[0].binding;
         uniformBuffer.size = static_cast<VkDeviceSize>(bufferSize);
