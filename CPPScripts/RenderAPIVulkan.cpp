@@ -152,14 +152,7 @@ namespace ZXEngine
         VkImageView imageView = CreateImageView(image.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
         VkSampler sampler = CreateSampler(mipLevels);
 
-        uint32_t textureID = GetNextTextureIndex();
-        auto texture = GetTextureByIndex(textureID);
-        texture->inUse = true;
-        texture->image = image;
-        texture->imageView = imageView;
-        texture->sampler = sampler;
-
-        return textureID;
+        return CreateVulkanTexture(image, imageView, sampler);
     }
 
     void RenderAPIVulkan::DeleteTexture(unsigned int id)
@@ -299,13 +292,20 @@ namespace ZXEngine
 
         if (type == FrameBufferType::Normal)
         {
+            FBO->ID = GetNextFBOIndex();
+            auto vulkanFBO = GetFBOByIndex(FBO->ID);
+
             VulkanImage colorImage = CreateImage(width, height, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
                 VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
             VkImageView colorImageView = CreateImageView(colorImage.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+            VkSampler colorSampler = CreateSampler(1);
+            FBO->ColorBuffer = CreateVulkanTexture(colorImage, colorImageView, colorSampler);
 
             VulkanImage depthImage = CreateImage(width, height, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D16_UNORM, VK_IMAGE_TILING_OPTIMAL,
                 VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
             VkImageView depthImageView = CreateImageView(depthImage.image, VK_FORMAT_D16_UNORM, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+            VkSampler depthSampler = CreateSampler(1);
+            FBO->DepthBuffer = CreateVulkanTexture(depthImage, depthImageView, depthSampler);
 
             array<VkImageView, 2> attachments = { colorImageView, depthImageView };
 
@@ -319,9 +319,10 @@ namespace ZXEngine
             framebufferInfo.height = height;
             framebufferInfo.layers = 1;
 
-            VkFramebuffer frameBuffer;
-            if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &frameBuffer) != VK_SUCCESS)
+            if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &vulkanFBO->frameBuffer) != VK_SUCCESS)
                 throw std::runtime_error("failed to create framebuffer!");
+
+            vulkanFBO->inUse = true;
         }
         else
         {
@@ -544,6 +545,26 @@ namespace ZXEngine
     VulkanVAO* RenderAPIVulkan::GetVAOByIndex(uint32_t idx)
     {
         return VulkanVAOArray[idx];
+    }
+
+    uint32_t RenderAPIVulkan::GetNextFBOIndex()
+    {
+        uint32_t length = (uint32_t)VulkanFBOArray.size();
+
+        for (uint32_t i = 0; i < length; i++)
+        {
+            if (!VulkanFBOArray[i]->inUse)
+                return i;
+        }
+
+        VulkanFBOArray.push_back(new VulkanFBO());
+
+        return length;
+    }
+
+    VulkanFBO* RenderAPIVulkan::GetFBOByIndex(uint32_t idx)
+    {
+        return VulkanFBOArray[idx];
     }
 
     uint32_t RenderAPIVulkan::GetNextTextureIndex()
@@ -1461,6 +1482,17 @@ namespace ZXEngine
             throw std::runtime_error("failed to create texture sampler!");
 
         return sampler;
+    }
+
+    uint32_t RenderAPIVulkan::CreateVulkanTexture(VulkanImage image, VkImageView imageView, VkSampler sampler)
+    {
+        uint32_t textureID = GetNextTextureIndex();
+        auto texture = GetTextureByIndex(textureID);
+        texture->inUse = true;
+        texture->image = image;
+        texture->imageView = imageView;
+        texture->sampler = sampler;
+        return textureID;
     }
 
     void RenderAPIVulkan::CreateAllRenderPass()

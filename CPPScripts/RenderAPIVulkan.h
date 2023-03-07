@@ -58,11 +58,14 @@ namespace ZXEngine
     /// </summary>
     private:
         vector<VulkanVAO*> VulkanVAOArray;
+        vector<VulkanFBO*> VulkanFBOArray;
         vector<VulkanTexture*> VulkanTextureArray;
         vector<VulkanPipeline*> VulkanPipelineArray;
 
         uint32_t GetNextVAOIndex();
         VulkanVAO* GetVAOByIndex(uint32_t idx);
+        uint32_t GetNextFBOIndex();
+        VulkanFBO* GetFBOByIndex(uint32_t idx);
         uint32_t GetNextTextureIndex();
         VulkanTexture* GetTextureByIndex(uint32_t idx);
         uint32_t GetNextPipelineIndex();
@@ -170,6 +173,8 @@ namespace ZXEngine
         void DestroyImageView(VkImageView imageView);
 
         VkSampler CreateSampler(uint32_t mipLevels);
+
+        uint32_t CreateVulkanTexture(VulkanImage image, VkImageView imageView, VkSampler sampler);
 
         void CreateAllRenderPass();
         VkRenderPass CreateRenderPass(RenderPassType type);

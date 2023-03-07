@@ -66,6 +66,12 @@ namespace ZXEngine
         bool inUse = false;
     };
 
+    struct VulkanFBO
+    {
+        VkFramebuffer frameBuffer;
+        bool inUse = false;
+    };
+
     struct VulkanVAO
     {
         VkBuffer indexBuffer = VK_NULL_HANDLE;
