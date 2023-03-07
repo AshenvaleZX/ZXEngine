@@ -702,74 +702,74 @@ namespace ZXEngine
 	{
 		glUseProgram(ID);
 	}
-	void RenderAPIOpenGL::SetShaderBool(unsigned int ID, string name, bool value)
+	void RenderAPIOpenGL::SetShaderBool(ShaderReference* reference, const string& name, bool value)
 	{
-		glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
+		glUniform1i(glGetUniformLocation(reference->ID, name.c_str()), (int)value);
 	}
-	void RenderAPIOpenGL::SetShaderInt(unsigned int ID, string name, int value)
+	void RenderAPIOpenGL::SetShaderInt(ShaderReference* reference, const string& name, int value)
 	{
-		glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+		glUniform1i(glGetUniformLocation(reference->ID, name.c_str()), value);
 	}
-	void RenderAPIOpenGL::SetShaderFloat(unsigned int ID, string name, float value)
+	void RenderAPIOpenGL::SetShaderFloat(ShaderReference* reference, const string& name, float value)
 	{
-		glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+		glUniform1f(glGetUniformLocation(reference->ID, name.c_str()), value);
 	}
-	void RenderAPIOpenGL::SetShaderVec2(unsigned int ID, string name, const Vector2& value)
+	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, const Vector2& value)
 	{
 		float* array = new float[2];
 		value.ToArray(array);
-		glUniform2fv(glGetUniformLocation(ID, name.c_str()), 1, array);
+		glUniform2fv(glGetUniformLocation(reference->ID, name.c_str()), 1, array);
 		delete[] array;
 	}
-	void RenderAPIOpenGL::SetShaderVec2(unsigned int ID, string name, float x, float y)
+	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, float x, float y)
 	{
-		glUniform2f(glGetUniformLocation(ID, name.c_str()), x, y);
+		glUniform2f(glGetUniformLocation(reference->ID, name.c_str()), x, y);
 	}
-	void RenderAPIOpenGL::SetShaderVec3(unsigned int ID, string name, const Vector3& value)
+	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, const Vector3& value)
 	{
 		float* array = new float[3];
 		value.ToArray(array);
-		glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, array);
+		glUniform3fv(glGetUniformLocation(reference->ID, name.c_str()), 1, array);
 		delete[] array;
 	}
-	void RenderAPIOpenGL::SetShaderVec3(unsigned int ID, string name, float x, float y, float z)
+	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, float x, float y, float z)
 	{
-		glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
+		glUniform3f(glGetUniformLocation(reference->ID, name.c_str()), x, y, z);
 	}
-	void RenderAPIOpenGL::SetShaderVec4(unsigned int ID, string name, const Vector4& value)
+	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, const Vector4& value)
 	{
 		float* array = new float[4];
 		value.ToArray(array);
-		glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, array);
+		glUniform4fv(glGetUniformLocation(reference->ID, name.c_str()), 1, array);
 		delete[] array;
 	}
-	void RenderAPIOpenGL::SetShaderVec4(unsigned int ID, string name, float x, float y, float z, float w)
+	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, float x, float y, float z, float w)
 	{
-		glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
+		glUniform4f(glGetUniformLocation(reference->ID, name.c_str()), x, y, z, w);
 	}
-	void RenderAPIOpenGL::SetShaderMat3(unsigned int ID, string name, const Matrix3& mat)
+	void RenderAPIOpenGL::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& mat)
 	{
 		float* array = new float[9];
 		mat.ToColumnMajorArray(array);
-		glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, array);
+		glUniformMatrix3fv(glGetUniformLocation(reference->ID, name.c_str()), 1, GL_FALSE, array);
 		delete[] array;
 	}
-	void RenderAPIOpenGL::SetShaderMat4(unsigned int ID, string name, const Matrix4& mat)
+	void RenderAPIOpenGL::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& mat)
 	{
 		float* array = new float[16];
 		mat.ToColumnMajorArray(array);
-		glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, array);
+		glUniformMatrix4fv(glGetUniformLocation(reference->ID, name.c_str()), 1, GL_FALSE, array);
 		delete[] array;
 	}
-	void RenderAPIOpenGL::SetShaderTexture(unsigned int ID, string name, unsigned int textureID, unsigned int idx)
+	void RenderAPIOpenGL::SetShaderTexture(ShaderReference* reference, const string& name, unsigned int textureID, unsigned int idx)
 	{
-		glUniform1i(glGetUniformLocation(ID, name.c_str()), idx);
+		glUniform1i(glGetUniformLocation(reference->ID, name.c_str()), idx);
 		glActiveTexture(GL_TEXTURE0 + idx);
 		glBindTexture(GL_TEXTURE_2D, textureID);
 	}
-	void RenderAPIOpenGL::SetShaderCubeMap(unsigned int ID, string name, unsigned int textureID, unsigned int idx)
+	void RenderAPIOpenGL::SetShaderCubeMap(ShaderReference* reference, const string& name, unsigned int textureID, unsigned int idx)
 	{
-		glUniform1i(glGetUniformLocation(ID, name.c_str()), idx);
+		glUniform1i(glGetUniformLocation(reference->ID, name.c_str()), idx);
 		glActiveTexture(GL_TEXTURE0 + idx);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 	}

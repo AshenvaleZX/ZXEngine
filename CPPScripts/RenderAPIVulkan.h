@@ -38,6 +38,19 @@ namespace ZXEngine
 
         virtual void DeleteMesh(unsigned int VAO);
         virtual void SetUpStaticMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, vector<Vertex> vertices, vector<unsigned int> indices);
+        
+        // Shader…Ë÷√
+        virtual void SetShaderBool(ShaderReference* reference, const string& name, bool value);
+        virtual void SetShaderInt(ShaderReference* reference, const string& name, int value);
+        virtual void SetShaderFloat(ShaderReference* reference, const string& name, float value);
+        virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector2& value);
+        virtual void SetShaderVector(ShaderReference* reference, const string& name, float x, float y);
+        virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector3& value);
+        virtual void SetShaderVector(ShaderReference* reference, const string& name, float x, float y, float z);
+        virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector4& value);
+        virtual void SetShaderVector(ShaderReference* reference, const string& name, float x, float y, float z, float w);
+        virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& value);
+        virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& value);
 
 
     /// <summary>
@@ -54,6 +67,7 @@ namespace ZXEngine
         VulkanTexture* GetTextureByIndex(uint32_t idx);
         uint32_t GetNextPipelineIndex();
         VulkanPipeline* GetPipelineByIndex(uint32_t idx);
+        void* GetShaderPropertyAddress(ShaderReference* reference, const string& name);
 
 
     /// <summary>

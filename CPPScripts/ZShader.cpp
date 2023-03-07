@@ -145,54 +145,54 @@ namespace ZXEngine
 
 	void Shader::SetBool(string name, bool value)
 	{
-		RenderAPI::GetInstance()->SetShaderBool(reference->ID, name, value);
+		RenderAPI::GetInstance()->SetShaderBool(reference, name, value);
 	}
 	void Shader::SetInt(string name, int value)
 	{
-		RenderAPI::GetInstance()->SetShaderInt(reference->ID, name, value);
+		RenderAPI::GetInstance()->SetShaderInt(reference, name, value);
 	}
 	void Shader::SetFloat(string name, float value)
 	{
-		RenderAPI::GetInstance()->SetShaderFloat(reference->ID, name, value);
+		RenderAPI::GetInstance()->SetShaderFloat(reference, name, value);
 	}
 	void Shader::SetVec2(string name, Vector2 value)
 	{
-		RenderAPI::GetInstance()->SetShaderVec2(reference->ID, name, value);
+		RenderAPI::GetInstance()->SetShaderVector(reference, name, value);
 	}
 	void Shader::SetVec2(string name, float x, float y)
 	{
-		RenderAPI::GetInstance()->SetShaderVec2(reference->ID, name, x, y);
+		RenderAPI::GetInstance()->SetShaderVector(reference, name, x, y);
 	}
 	void Shader::SetVec3(string name, Vector3 value)
 	{
-		RenderAPI::GetInstance()->SetShaderVec3(reference->ID, name, value);
+		RenderAPI::GetInstance()->SetShaderVector(reference, name, value);
 	}
 	void Shader::SetVec3(string name, float x, float y, float z)
 	{
-		RenderAPI::GetInstance()->SetShaderVec3(reference->ID, name, x, y, z);
+		RenderAPI::GetInstance()->SetShaderVector(reference, name, x, y, z);
 	}
 	void Shader::SetVec4(string name, Vector4 value)
 	{
-		RenderAPI::GetInstance()->SetShaderVec4(reference->ID, name, value);
+		RenderAPI::GetInstance()->SetShaderVector(reference, name, value);
 	}
 	void Shader::SetVec4(string name, float x, float y, float z, float w)
 	{
-		RenderAPI::GetInstance()->SetShaderVec4(reference->ID, name, x, y, z, w);
+		RenderAPI::GetInstance()->SetShaderVector(reference, name, x, y, z, w);
 	}
 	void Shader::SetMat3(string name, Matrix3 value)
 	{
-		RenderAPI::GetInstance()->SetShaderMat3(reference->ID, name, value);
+		RenderAPI::GetInstance()->SetShaderMatrix(reference, name, value);
 	}
 	void Shader::SetMat4(string name, Matrix4 value)
 	{
-		RenderAPI::GetInstance()->SetShaderMat4(reference->ID, name, value);
+		RenderAPI::GetInstance()->SetShaderMatrix(reference, name, value);
 	}
 	void Shader::SetTexture(string name, unsigned int textureID, unsigned int idx)
 	{
-		RenderAPI::GetInstance()->SetShaderTexture(reference->ID, name, textureID, idx);
+		RenderAPI::GetInstance()->SetShaderTexture(reference, name, textureID, idx);
 	}
 	void Shader::SetCubeMap(string name, unsigned int textureID, unsigned int idx)
 	{
-		RenderAPI::GetInstance()->SetShaderCubeMap(reference->ID, name, textureID, idx);
+		RenderAPI::GetInstance()->SetShaderCubeMap(reference, name, textureID, idx);
 	}
 }
