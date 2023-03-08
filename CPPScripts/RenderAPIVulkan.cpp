@@ -83,6 +83,11 @@ namespace ZXEngine
         // Vulkan不需要实现这个接口
     }
 
+    void RenderAPIVulkan::SwitchFrameBuffer(unsigned int id)
+    {
+        curFBOIdx = id;
+    }
+
     unsigned int RenderAPIVulkan::LoadTexture(const char* path, int& width, int& height)
     {
         int nrComponents;

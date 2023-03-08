@@ -33,6 +33,8 @@ namespace ZXEngine
         // 渲染状态设置
         virtual void SetRenderState(RenderStateSetting* state);
 
+        virtual void SwitchFrameBuffer(unsigned int id);
+
         // 资源加载相关
         virtual unsigned int LoadTexture(const char* path, int& width, int& height);
         virtual void DeleteTexture(unsigned int id);
@@ -57,26 +59,6 @@ namespace ZXEngine
         virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& value);
         virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& value);
         virtual void SetShaderTexture(ShaderReference* reference, const string& name, unsigned int textureID, unsigned int idx);
-
-
-    /// <summary>
-    /// 实现标准RenderAPI接口的辅助函数及变量
-    /// </summary>
-    private:
-        vector<VulkanVAO*> VulkanVAOArray;
-        vector<VulkanFBO*> VulkanFBOArray;
-        vector<VulkanTexture*> VulkanTextureArray;
-        vector<VulkanPipeline*> VulkanPipelineArray;
-
-        uint32_t GetNextVAOIndex();
-        VulkanVAO* GetVAOByIndex(uint32_t idx);
-        uint32_t GetNextFBOIndex();
-        VulkanFBO* GetFBOByIndex(uint32_t idx);
-        uint32_t GetNextTextureIndex();
-        VulkanTexture* GetTextureByIndex(uint32_t idx);
-        uint32_t GetNextPipelineIndex();
-        VulkanPipeline* GetPipelineByIndex(uint32_t idx);
-        void* GetShaderPropertyAddress(ShaderReference* reference, const string& name);
 
 
     /// <summary>
@@ -164,7 +146,24 @@ namespace ZXEngine
     /// Vulkan资源创建相关接口(这些接口Create出来的需要手动Destroy)
     /// </summary>
     private:
+        uint32_t curFBOIdx = 0;
+
+        vector<VulkanVAO*> VulkanVAOArray;
+        vector<VulkanFBO*> VulkanFBOArray;
+        vector<VulkanTexture*> VulkanTextureArray;
+        vector<VulkanPipeline*> VulkanPipelineArray;
+
         vector<VkRenderPass> allVulkanRenderPass;
+
+        uint32_t GetNextVAOIndex();
+        VulkanVAO* GetVAOByIndex(uint32_t idx);
+        uint32_t GetNextFBOIndex();
+        VulkanFBO* GetFBOByIndex(uint32_t idx);
+        uint32_t GetNextTextureIndex();
+        VulkanTexture* GetTextureByIndex(uint32_t idx);
+        uint32_t GetNextPipelineIndex();
+        VulkanPipeline* GetPipelineByIndex(uint32_t idx);
+        void* GetShaderPropertyAddress(ShaderReference* reference, const string& name);
 
         VulkanBuffer CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage);
         void DestroyBuffer(VulkanBuffer buffer);
