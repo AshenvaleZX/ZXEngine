@@ -527,6 +527,40 @@ namespace ZXEngine
         delete[] array;
     }
 
+    // Vulkan不需要第4个参数
+    void RenderAPIVulkan::SetShaderTexture(ShaderReference* reference, const string& name, unsigned int textureID, unsigned int idx)
+    {
+        auto pipeline = GetPipelineByIndex(reference->ID);
+
+        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+        {
+            vector<VkWriteDescriptorSet> writeDescriptorSets;
+
+            auto texture = GetTextureByIndex(textureID);
+            uint32_t binding = UINT32_MAX;
+
+            for (auto& textureProperty : reference->shaderInfo.vertProperties.textureProperties)
+                if (name == textureProperty.name)
+                    binding = textureProperty.binding;
+
+            // 没找到的话继续
+            if (binding == UINT32_MAX)
+                for (auto& textureProperty : reference->shaderInfo.fragProperties.textureProperties)
+                    if (name == textureProperty.name)
+                        binding = textureProperty.binding;
+
+            if (binding == UINT32_MAX)
+            {
+                Debug::LogError("No texture found named: " + name);
+                return;
+            }
+
+            writeDescriptorSets.push_back(GetWriteDescriptorSet(pipeline->descriptorSets[i], texture, binding));
+
+            vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
+        }
+    }
+
     uint32_t RenderAPIVulkan::GetNextVAOIndex()
     {
         uint32_t length = (uint32_t)VulkanVAOArray.size();

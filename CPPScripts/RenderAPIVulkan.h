@@ -51,6 +51,7 @@ namespace ZXEngine
         virtual void SetShaderVector(ShaderReference* reference, const string& name, float x, float y, float z, float w);
         virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& value);
         virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& value);
+        virtual void SetShaderTexture(ShaderReference* reference, const string& name, unsigned int textureID, unsigned int idx);
 
 
     /// <summary>
