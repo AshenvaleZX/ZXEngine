@@ -39,6 +39,10 @@ namespace ZXEngine
 		renderState = new RenderStateSetting();
 		renderState->clearColor = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
 
+		previewQuadRenderState = new RenderStateSetting();
+		previewQuadRenderState->depthTest = false;
+		previewQuadRenderState->depthWrite = false;
+
 		FBOManager::GetInstance()->CreateFBO("AssetPreview", FrameBufferType::Normal, previewSize, previewSize);
 	}
 
@@ -49,6 +53,8 @@ namespace ZXEngine
 		delete materialSphere;
 		delete previewQuadShader;
 		delete previewModelShader;
+		delete renderState;
+		delete previewQuadRenderState;
 	}
 
 	bool EditorAssetPreviewer::Check()
@@ -147,15 +153,15 @@ namespace ZXEngine
 
 	void EditorAssetPreviewer::RenderToQuad()
 	{
-		RenderAPI::GetInstance()->SwitchFrameBuffer(0);
-		RenderAPI::GetInstance()->SetViewPort(ProjectSetting::inspectorWidth, ProjectSetting::inspectorWidth, ProjectSetting::srcWidth - ProjectSetting::inspectorWidth, 0);
-		RenderAPI::GetInstance()->EnableDepthTest(false);
-		RenderAPI::GetInstance()->EnableDepthWrite(false);
+		auto renderAPI = RenderAPI::GetInstance();
+		renderAPI->SwitchFrameBuffer(0);
+		renderAPI->SetViewPort(ProjectSetting::inspectorWidth, ProjectSetting::inspectorWidth, ProjectSetting::srcWidth - ProjectSetting::inspectorWidth, 0);
+		renderAPI->SetRenderState(previewQuadRenderState);
 		previewQuad->Use();
 		previewQuadShader->Use();
 		previewQuadShader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("AssetPreview")->ColorBuffer, 0);
-		RenderAPI::GetInstance()->Draw();
-		RenderAPI::GetInstance()->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight, ProjectSetting::hierarchyWidth, ProjectSetting::projectHeight);
+		renderAPI->Draw();
+		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight, ProjectSetting::hierarchyWidth, ProjectSetting::projectHeight);
 	}
 
 	void EditorAssetPreviewer::Reset(float size)

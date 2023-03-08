@@ -30,12 +30,17 @@ namespace ZXEngine
         virtual void BeginFrame();
         virtual void EndFrame();
 
+        // 渲染状态设置
+        virtual void SetRenderState(RenderStateSetting* state);
+
+        // 资源加载相关
         virtual unsigned int LoadTexture(const char* path, int& width, int& height);
         virtual void DeleteTexture(unsigned int id);
         virtual ShaderReference* LoadAndCompileShader(const char* path);
         virtual void SetUpMaterial(ShaderReference* shaderReference, const map<string, uint32_t>& textures);
         virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
 
+        // Mesh设置
         virtual void DeleteMesh(unsigned int VAO);
         virtual void SetUpStaticMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, vector<Vertex> vertices, vector<unsigned int> indices);
         

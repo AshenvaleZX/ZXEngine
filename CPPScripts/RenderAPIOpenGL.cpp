@@ -55,43 +55,6 @@ namespace ZXEngine
 		stateDirty = true;
 	}
 
-	void RenderAPIOpenGL::EnableDepthTest(bool enable)
-	{
-		targetState->depthTest = enable;
-		stateDirty = true;
-	}
-
-	void RenderAPIOpenGL::EnableDepthWrite(bool enable)
-	{
-		targetState->depthWrite = enable;
-		stateDirty = true;
-	}
-
-	void RenderAPIOpenGL::SetBlendMode(BlendFactor sfactor, BlendFactor dfactor)
-	{
-		targetState->srcFactor = sfactor;
-		targetState->dstFactor = dfactor;
-		stateDirty = true;
-	}
-
-	void RenderAPIOpenGL::SetClearColor(const Vector4& color)
-	{
-		targetState->clearColor = color;
-		stateDirty = true;
-	}
-
-	void RenderAPIOpenGL::EnableFaceCull(bool enable)
-	{
-		targetState->faceCull = enable;
-		stateDirty = true;
-	}
-
-	void RenderAPIOpenGL::SetFaceCullMode(FaceCullOption mode)
-	{
-		targetState->faceCullOption = mode;
-		stateDirty = true;
-	}
-
 	void RenderAPIOpenGL::SwitchFrameBuffer(unsigned int id)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, id);

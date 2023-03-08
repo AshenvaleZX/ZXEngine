@@ -40,6 +40,7 @@ namespace ZXEngine
 		MeshRenderer* materialSphere;
 		CubeMap* shadowCubeMap;
 		RenderStateSetting* renderState;
+		RenderStateSetting* previewQuadRenderState;
 
 		void RenderMaterialPreview(AssetMaterialInfo* info);
 		void RenderModelPreview(AssetModelInfo* info);
