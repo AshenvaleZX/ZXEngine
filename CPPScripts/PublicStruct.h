@@ -63,4 +63,12 @@ namespace ZXEngine
 		int referenceCount = 1;
 		ShaderInfo shaderInfo;
 	};
+
+	struct ViewPortInfo
+	{
+		uint32_t width = 0;
+		uint32_t height = 0;
+		int32_t xOffset = 0;
+		int32_t yOffset = 0;
+	};
 }

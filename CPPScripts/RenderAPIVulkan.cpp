@@ -88,6 +88,48 @@ namespace ZXEngine
         curFBOIdx = id;
     }
 
+    void RenderAPIVulkan::SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset, unsigned int yOffset)
+    {
+        viewPortInfo.width = width;
+        viewPortInfo.height = height;
+        viewPortInfo.xOffset = xOffset;
+        viewPortInfo.yOffset = yOffset;
+    }
+
+    void RenderAPIVulkan::ClearFrameBuffer(const ClearInfo& clearInfo)
+    {
+        ImmediatelyExecute([=](VkCommandBuffer cmd)
+        {
+            auto FBO = GetFBOByIndex(curFBOIdx);
+
+            vector<VkClearValue> clearValues = {};
+            if (clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
+            {
+                VkClearValue clearValue = {};
+                clearValue.color = { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a };
+                clearValues.push_back(clearValue);
+            }
+            if ((clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT) | (clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_STENCIL_BIT))
+            {
+                VkClearValue clearValue = {};
+                clearValue.depthStencil = { clearInfo.depth, clearInfo.stencil };
+                clearValues.push_back(clearValue);
+            }
+
+            VkRenderPassBeginInfo renderPassInfo = {};
+            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+            renderPassInfo.renderPass = GetRenderPass(FBO->renderPassType);
+            renderPassInfo.framebuffer = FBO->frameBuffer;
+            renderPassInfo.renderArea.offset = { viewPortInfo.xOffset, viewPortInfo.yOffset };
+            renderPassInfo.renderArea.extent = { viewPortInfo.width, viewPortInfo.height };
+            renderPassInfo.pClearValues = clearValues.data();
+            renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+
+            vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+            vkCmdEndRenderPass(cmd);
+        });
+    }
+
     unsigned int RenderAPIVulkan::LoadTexture(const char* path, int& width, int& height)
     {
         int nrComponents;
@@ -304,6 +346,8 @@ namespace ZXEngine
         {
             FBO->ID = GetNextFBOIndex();
             auto vulkanFBO = GetFBOByIndex(FBO->ID);
+            vulkanFBO->bufferType = FrameBufferType::Normal;
+            vulkanFBO->renderPassType = RenderPassType::Normal;
 
             VulkanImage colorImage = CreateImage(width, height, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
                 VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);

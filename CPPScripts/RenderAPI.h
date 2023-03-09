@@ -23,11 +23,13 @@ namespace ZXEngine
 
 		// 渲染状态设置
 		virtual void SetRenderState(RenderStateSetting* state) = 0;
-
-		// 渲染操作
-		virtual void SwitchFrameBuffer(unsigned int id) = 0;
 		virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0) = 0;
+
+		// FrameBuffer相关
+		virtual void SwitchFrameBuffer(unsigned int id) = 0;
 		virtual void ClearFrameBuffer(const ClearInfo& clearInfo) = 0;
+		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0) = 0;
+		virtual void DeleteBuffer(unsigned int id) = 0;
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path, int& width, int& height) = 0;
@@ -37,9 +39,7 @@ namespace ZXEngine
 		virtual ShaderReference* LoadAndCompileShader(const char* path) = 0;
 		virtual void SetUpMaterial(ShaderReference* shaderReference, const map<string, uint32_t>& textures) = 0;
 		virtual void DeleteShaderProgram(unsigned int id) = 0;
-		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0) = 0;
 		virtual unsigned int GenerateParticleMesh() = 0;
-		virtual void DeleteBuffer(unsigned int id) = 0;
 
 		// DrawCall
 		virtual void Draw() = 0;
