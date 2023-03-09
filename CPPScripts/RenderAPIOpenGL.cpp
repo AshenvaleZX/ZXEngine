@@ -65,16 +65,16 @@ namespace ZXEngine
 		glViewport(xOffset, yOffset, width, height);
 	}
 
-	void RenderAPIOpenGL::ClearFrameBuffer()
+	void RenderAPIOpenGL::ClearFrameBuffer(const ClearInfo& clearInfo)
 	{
-		ClearColorBuffer();
-		ClearDepthBuffer();
-		ClearStencilBuffer();
-	}
+		if (clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
+			ClearColorBuffer(clearInfo.color);
 
-	void RenderAPIOpenGL::ClearColorBuffer()
-	{
-		ClearColorBuffer(targetState->clearColor);
+		if (clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT)
+			ClearDepthBuffer(clearInfo.depth);
+
+		if (clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_STENCIL_BIT)
+			ClearStencilBuffer(clearInfo.stencil);
 	}
 
 	void RenderAPIOpenGL::ClearColorBuffer(const Vector4& color)
@@ -86,11 +86,6 @@ namespace ZXEngine
 			stateDirty = true;
 		}
 		glClear(GL_COLOR_BUFFER_BIT);
-	}
-
-	void RenderAPIOpenGL::ClearDepthBuffer()
-	{
-		ClearDepthBuffer(targetState->clearDepth);
 	}
 
 	void RenderAPIOpenGL::ClearDepthBuffer(float depth)
@@ -115,11 +110,6 @@ namespace ZXEngine
 			stateDirty = true;
 		}
 		glClear(GL_DEPTH_BUFFER_BIT);
-	}
-
-	void RenderAPIOpenGL::ClearStencilBuffer()
-	{
-		ClearStencilBuffer(targetState->clearStencil);
 	}
 
 	void RenderAPIOpenGL::ClearStencilBuffer(int stencil)

@@ -19,6 +19,8 @@ namespace ZXEngine
 		renderState = new RenderStateSetting();
 		renderState->depthTest = false;
 		renderState->depthWrite = false;
+
+		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT | ZX_CLEAR_FRAME_BUFFER_STENCIL_BIT;
 	}
 
 	void RenderPassAfterEffectRendering::Render(Camera* camera)
@@ -106,7 +108,7 @@ namespace ZXEngine
 	string RenderPassAfterEffectRendering::BlitExtractBrightArea(string sourceFBO, bool isFinal)
 	{
 		FBOManager::GetInstance()->SwitchFBO(isFinal ? ScreenBuffer : ExtractBrightArea);
-		RenderAPI::GetInstance()->ClearFrameBuffer();
+		RenderAPI::GetInstance()->ClearFrameBuffer(clearInfo);
 		auto shader = GetShader(ExtractBrightArea);
 		shader->Use();
 		shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(sourceFBO)->ColorBuffer, 0);

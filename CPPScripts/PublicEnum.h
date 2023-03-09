@@ -2,12 +2,20 @@
 
 namespace ZXEngine
 {
+	typedef uint32_t FrameBufferClearFlags;
+	typedef enum FrameBufferClearFlagBit {
+		ZX_CLEAR_FRAME_BUFFER_NONE_BIT = 0x00000000,
+		ZX_CLEAR_FRAME_BUFFER_COLOR_BIT = 0x00000001,
+		ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT = 0x00000002,
+		ZX_CLEAR_FRAME_BUFFER_STENCIL_BIT = 0x00000004,
+	} FrameBufferClearFlagBit;
+
+	typedef uint32_t ShaderStageFlags;
 	typedef enum ShaderStageFlagBit {
 		ZX_SHADER_STAGE_VERTEX_BIT = 0x00000001,
 		ZX_SHADER_STAGE_GEOMETRY_BIT = 0x00000002,
 		ZX_SHADER_STAGE_FRAGMENT_BIT = 0x00000004,
 	} ShaderStageFlagBit;
-	typedef uint32_t ShaderStageFlags;
 
 	enum class LogType
 	{

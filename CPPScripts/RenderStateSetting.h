@@ -12,7 +12,7 @@ namespace ZXEngine
 		BlendFactor dstFactor = BlendFactor::ONE_MINUS_SRC_ALPHA;
 		Vector4 clearColor = Vector4();
 		float clearDepth = 1.0f;
-		int clearStencil = 0;
+		uint32_t clearStencil = 0;
 		bool faceCull = true;
 		FaceCullOption faceCullOption = FaceCullOption::Back;
 	};

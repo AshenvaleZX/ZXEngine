@@ -27,13 +27,7 @@ namespace ZXEngine
 		// 渲染操作
 		virtual void SwitchFrameBuffer(unsigned int id) = 0;
 		virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0) = 0;
-		virtual void ClearFrameBuffer() = 0;
-		virtual void ClearColorBuffer() = 0;
-		virtual void ClearColorBuffer(const Vector4& color) = 0;
-		virtual void ClearDepthBuffer() = 0;
-		virtual void ClearDepthBuffer(float depth) = 0;
-		virtual void ClearStencilBuffer() = 0;
-		virtual void ClearStencilBuffer(int stencil) = 0;
+		virtual void ClearFrameBuffer(const ClearInfo& clearInfo) = 0;
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path, int& width, int& height) = 0;

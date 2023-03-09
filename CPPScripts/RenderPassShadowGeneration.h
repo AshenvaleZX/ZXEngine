@@ -1,5 +1,6 @@
 #pragma once
 #include "RenderPass.h"
+#include "PublicStruct.h"
 
 namespace ZXEngine
 {
@@ -19,6 +20,7 @@ namespace ZXEngine
 		vector<Matrix4> shadowTransforms;
 		Shader* shadowCubeMapShader;
 		RenderStateSetting* renderState;
+		ClearInfo clearInfo;
 
 		void RenderShadowMap(Light* light);
 		void RenderShadowCubeMap(Light* light);

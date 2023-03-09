@@ -43,6 +43,9 @@ namespace ZXEngine
 		previewQuadRenderState->depthTest = false;
 		previewQuadRenderState->depthWrite = false;
 
+		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT | ZX_CLEAR_FRAME_BUFFER_STENCIL_BIT;
+		clearInfo.color = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
+
 		FBOManager::GetInstance()->CreateFBO("AssetPreview", FrameBufferType::Normal, previewSize, previewSize);
 	}
 
@@ -89,7 +92,7 @@ namespace ZXEngine
 		renderAPI->SetViewPort(previewSize, previewSize);
 		renderAPI->SetRenderState(renderState);
 		// 清理上一帧数据，刷新背景颜色
-		renderAPI->ClearFrameBuffer();
+		renderAPI->ClearFrameBuffer(clearInfo);
 
 		auto curAsset = EditorDataManager::GetInstance()->selectedAsset;
 		auto curAssetInfo = EditorDataManager::GetInstance()->curAssetInfo;

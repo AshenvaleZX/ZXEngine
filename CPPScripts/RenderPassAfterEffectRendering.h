@@ -1,5 +1,6 @@
 #pragma once
 #include "RenderPass.h"
+#include "PublicStruct.h"
 
 #define ExtractBrightArea "ExtractBrightArea"
 #define GaussianBlur "GaussianBlur"
@@ -24,6 +25,7 @@ namespace ZXEngine
 		StaticMesh* screenQuad;
 		map<string, Shader*> aeShaders;
 		RenderStateSetting* renderState;
+		ClearInfo clearInfo;
 
 		void CreateShader(string name, string path);
 		Shader* GetShader(string name);

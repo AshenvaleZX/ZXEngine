@@ -1,5 +1,6 @@
 #pragma once
 #include "RenderPass.h"
+#include "PublicStruct.h"
 
 namespace ZXEngine
 {
@@ -20,6 +21,7 @@ namespace ZXEngine
 		Shader* skyBoxShader;
 		RenderStateSetting* skyBoxRenderState;
 		RenderStateSetting* opaqueRenderState;
+		ClearInfo clearInfo;
 
 		void InitSkyBox();
 		void RenderSkyBox(Camera* camera);

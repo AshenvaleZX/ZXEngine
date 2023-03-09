@@ -1,5 +1,6 @@
 #pragma once
 #include "../pubh.h"
+#include "../PublicStruct.h"
 #include "EditorEnumStruct.h"
 
 namespace ZXEngine
@@ -41,6 +42,7 @@ namespace ZXEngine
 		CubeMap* shadowCubeMap;
 		RenderStateSetting* renderState;
 		RenderStateSetting* previewQuadRenderState;
+		ClearInfo clearInfo;
 
 		void RenderMaterialPreview(AssetMaterialInfo* info);
 		void RenderModelPreview(AssetModelInfo* info);

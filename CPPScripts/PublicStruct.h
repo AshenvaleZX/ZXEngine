@@ -3,12 +3,21 @@
 
 namespace ZXEngine
 {
-	struct Vertex {
+	struct Vertex 
+	{
 		Vector3 Position;
 		Vector3 Normal;
 		Vector2 TexCoords;
 		Vector3 Tangent;
 		Vector3 Bitangent;
+	};
+
+	struct ClearInfo
+	{
+		FrameBufferClearFlags clearFlags = ZX_CLEAR_FRAME_BUFFER_NONE_BIT;
+		Vector4 color                    = Vector4();
+		float depth                      = 1.0f;
+		uint32_t stencil                 = 0;
 	};
 
 	struct ShaderStateSet
