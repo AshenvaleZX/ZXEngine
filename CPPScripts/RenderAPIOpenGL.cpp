@@ -516,16 +516,13 @@ namespace ZXEngine
 		return VAO;
 	}
 
-	void RenderAPIOpenGL::DeleteBuffer(unsigned int id)
-	{
-		glDeleteBuffers(1, &id);
-	}
-
 	void RenderAPIOpenGL::Draw()
 	{
 		UpdateRenderState();
 
-		glBindVertexArray(VAO);
+		auto meshBuffer = GetVAOByIndex(VAO);
+
+		glBindVertexArray(meshBuffer->VAO);
 		glDrawElements(GL_TRIANGLES, primitiveSize, GL_UNSIGNED_INT, 0);
 		// 绘制完重置一下(不重置也行，不过及时重置避免出问题)
 		glBindVertexArray(0);
@@ -539,7 +536,9 @@ namespace ZXEngine
 	{
 		UpdateRenderState();
 		
-		glBindVertexArray(VAO);
+		auto meshBuffer = GetVAOByIndex(VAO);
+
+		glBindVertexArray(meshBuffer->VAO);
 
 		if (type == DrawType::OpenGLDrawArrays)
 			glDrawArrays(GL_TRIANGLES, 0, size);
@@ -564,25 +563,34 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::DeleteMesh(unsigned int VAO)
 	{
-		glDeleteVertexArrays(1, &VAO);
+		auto meshBuffer = GetVAOByIndex(VAO);
+
+		glDeleteBuffers(1, &meshBuffer->VBO);
+		glDeleteBuffers(1, &meshBuffer->EBO);
+		glDeleteVertexArrays(1, &meshBuffer->VAO);
+
+		meshBuffer->inUse = false;
 	}
 
-	void RenderAPIOpenGL::SetUpStaticMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, vector<Vertex> vertices, vector<unsigned int> indices)
+	void RenderAPIOpenGL::SetUpStaticMesh(unsigned int& VAO, vector<Vertex> vertices, vector<unsigned int> indices)
 	{
-		// create buffers/arrays
-		glGenVertexArrays(1, &VAO);
-		glGenBuffers(1, &VBO);
-		glGenBuffers(1, &EBO);
+		VAO = GetNextVAOIndex();
+		auto meshBuffer = GetVAOByIndex(VAO);
 
-		glBindVertexArray(VAO);
+		// create buffers/arrays
+		glGenVertexArrays(1, &meshBuffer->VAO);
+		glGenBuffers(1, &meshBuffer->VBO);
+		glGenBuffers(1, &meshBuffer->EBO);
+
+		glBindVertexArray(meshBuffer->VAO);
 		// load data into vertex buffers
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, meshBuffer->VBO);
 		// A great thing about structs is that their memory layout is sequential for all its items.
 		// The effect is that we can simply pass a pointer to the struct and it translates perfectly to a Vector3/2 array which
 		// again translates to 3/2 floats which translates to a byte array.
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshBuffer->EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
 		// set the vertex attribute pointers
@@ -604,20 +612,25 @@ namespace ZXEngine
 
 		// 设置完记得还原一下
 		glBindVertexArray(0);
+
+		meshBuffer->inUse = true;
 	}
 
-	void RenderAPIOpenGL::SetUpDynamicMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, unsigned int vertexSize, unsigned int indexSize)
+	void RenderAPIOpenGL::SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize)
 	{
-		glGenVertexArrays(1, &VAO);
-		glGenBuffers(1, &VBO);
-		glGenBuffers(1, &EBO);
+		VAO = GetNextVAOIndex();
+		auto meshBuffer = GetVAOByIndex(VAO);
 
-		glBindVertexArray(VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glGenVertexArrays(1, &meshBuffer->VAO);
+		glGenBuffers(1, &meshBuffer->VBO);
+		glGenBuffers(1, &meshBuffer->EBO);
+
+		glBindVertexArray(meshBuffer->VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, meshBuffer->VBO);
 		// 设置为GL_DYNAMIC_DRAW，这里暂时不初始化数据，后面通过UpdateDynamicMesh更新数据
 		glBufferData(GL_ARRAY_BUFFER, vertexSize * sizeof(Vertex), NULL, GL_DYNAMIC_DRAW);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshBuffer->EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize * sizeof(unsigned int), NULL, GL_DYNAMIC_DRAW);
 
 		glEnableVertexAttribArray(0);
@@ -632,19 +645,23 @@ namespace ZXEngine
 		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
 
 		glBindVertexArray(0);
+
+		meshBuffer->inUse = true;
 	}
 
-	void RenderAPIOpenGL::UpdateDynamicMesh(unsigned int VAO, unsigned int VBO, unsigned int EBO, vector<Vertex> vertices, vector<unsigned int> indices)
+	void RenderAPIOpenGL::UpdateDynamicMesh(unsigned int VAO, vector<Vertex> vertices, vector<unsigned int> indices)
 	{
+		auto meshBuffer = GetVAOByIndex(VAO);
+
 		// 切换到指定VAO
-		glBindVertexArray(VAO);
+		glBindVertexArray(meshBuffer->VAO);
 
 		// 更新VBO数据
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, meshBuffer->VBO);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), &vertices[0]);
 
 		// 更新EBO数据
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshBuffer->EBO);
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indices.size() * sizeof(unsigned int), &indices[0]);
 
 		// 还原
@@ -802,5 +819,25 @@ namespace ZXEngine
 			{ FaceCullOption::Front,		GL_FRONT		  },
 			{ FaceCullOption::FrontAndBack,	GL_FRONT_AND_BACK },
 		};
+	}
+
+	uint32_t RenderAPIOpenGL::GetNextVAOIndex()
+	{
+		uint32_t length = (uint32_t)OpenGLVAOArray.size();
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!OpenGLVAOArray[i]->inUse)
+				return i;
+		}
+
+		OpenGLVAOArray.push_back(new OpenGLVAO());
+
+		return length;
+	}
+
+	OpenGLVAO* RenderAPIOpenGL::GetVAOByIndex(uint32_t idx)
+	{
+		return OpenGLVAOArray[idx];
 	}
 }

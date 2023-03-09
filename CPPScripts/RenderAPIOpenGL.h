@@ -1,5 +1,6 @@
 #pragma once
 #include "RenderAPI.h"
+#include "OpenGLEnumStruct.h"
 
 namespace ZXEngine
 {
@@ -23,7 +24,6 @@ namespace ZXEngine
 		virtual void SwitchFrameBuffer(unsigned int id);
 		virtual void ClearFrameBuffer(const ClearInfo& clearInfo);
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
-		virtual void DeleteBuffer(unsigned int id);
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path, int& width, int& height);
@@ -42,9 +42,9 @@ namespace ZXEngine
 		// Mesh设置
 		virtual void SetMesh(unsigned int VAO, unsigned int size);
 		virtual void DeleteMesh(unsigned int VAO);
-		virtual void SetUpStaticMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, vector<Vertex> vertices, vector<unsigned int> indices);
-		virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, unsigned int vertexSize, unsigned int indexSize);
-		virtual void UpdateDynamicMesh(unsigned int VAO, unsigned int VBO, unsigned int EBO, vector<Vertex> vertices, vector<unsigned int> indices);
+		virtual void SetUpStaticMesh(unsigned int& VAO, vector<Vertex> vertices, vector<unsigned int> indices);
+		virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize);
+		virtual void UpdateDynamicMesh(unsigned int VAO, vector<Vertex> vertices, vector<unsigned int> indices);
 
 		// Shader设置
 		virtual void UseShader(unsigned int ID);
@@ -73,9 +73,15 @@ namespace ZXEngine
 		// 与VAO对应的图元数量
 		unsigned int primitiveSize = 0;
 
+		vector<OpenGLVAO*> OpenGLVAOArray;
+
 		map<BlendFactor, int> BlendMap;
 		map<FaceCullOption, int> FaceCullMap;
+
 		void InitGLConstMap();
+
+		uint32_t GetNextVAOIndex();
+		OpenGLVAO* GetVAOByIndex(uint32_t idx);
 
 		void CheckError();
 		void CheckCompileErrors(unsigned int shader, std::string type);

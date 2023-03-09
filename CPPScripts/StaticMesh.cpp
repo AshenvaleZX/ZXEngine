@@ -7,7 +7,7 @@ namespace ZXEngine
 		this->vertices = vertices;
 		this->indices = indices;
 
-		RenderAPI::GetInstance()->SetUpStaticMesh(VAO, VBO, EBO, vertices, indices);
+		RenderAPI::GetInstance()->SetUpStaticMesh(VAO, vertices, indices);
 	}
 
 	void StaticMesh::Use()

@@ -29,7 +29,6 @@ namespace ZXEngine
 		virtual void SwitchFrameBuffer(unsigned int id) = 0;
 		virtual void ClearFrameBuffer(const ClearInfo& clearInfo) = 0;
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0) = 0;
-		virtual void DeleteBuffer(unsigned int id) = 0;
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path, int& width, int& height) = 0;
@@ -48,9 +47,9 @@ namespace ZXEngine
 		// Mesh设置
 		virtual void SetMesh(unsigned int VAO, unsigned int size) = 0;
 		virtual void DeleteMesh(unsigned int VAO) = 0;
-		virtual void SetUpStaticMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, vector<Vertex> vertices, vector<unsigned int> indices) = 0;
-		virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, unsigned int vertexSize, unsigned int indexSize) = 0;
-		virtual void UpdateDynamicMesh(unsigned int VAO, unsigned int VBO, unsigned int EBO, vector<Vertex> vertices, vector<unsigned int> indices) = 0;
+		virtual void SetUpStaticMesh(unsigned int& VAO, vector<Vertex> vertices, vector<unsigned int> indices) = 0;
+		virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize) = 0;
+		virtual void UpdateDynamicMesh(unsigned int VAO, vector<Vertex> vertices, vector<unsigned int> indices) = 0;
 
 		// Shader设置
 		virtual void UseShader(unsigned int ID) = 0;

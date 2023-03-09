@@ -342,6 +342,7 @@
     <ClInclude Include="..\..\CPPScripts\Mesh.h" />
     <ClInclude Include="..\..\CPPScripts\MeshRenderer.h" />
     <ClInclude Include="..\..\CPPScripts\Model.h" />
+    <ClInclude Include="..\..\CPPScripts\OpenGLEnumStruct.h" />
     <ClInclude Include="..\..\CPPScripts\ParticleGenerator.h" />
     <ClInclude Include="..\..\CPPScripts\ParticleSystem.h" />
     <ClInclude Include="..\..\CPPScripts\ParticleSystemManager.h" />

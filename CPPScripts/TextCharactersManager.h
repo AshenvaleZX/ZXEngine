@@ -33,14 +33,6 @@ namespace ZXEngine
 		void UpdateCharacterMesh(vector<Vertex> vertices, vector<unsigned int> indices);
 		void DrawCharacter();
 
-		// 渲染一个字符用的
-		// Vertex Arrays Objects
-		unsigned int VAO;
-		// Vertex Buffer Objects
-		unsigned int VBO;
-		// Element Buffer Objects
-		unsigned int EBO;
-
 	private:
 		static TextCharactersManager* mInstance;
 		Shader* textShader = nullptr;

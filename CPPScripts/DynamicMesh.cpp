@@ -7,7 +7,7 @@ namespace ZXEngine
 		this->vertexSize = vertexSize;
 		this->indexSize = indexSize;
 
-		RenderAPI::GetInstance()->SetUpDynamicMesh(VAO, VBO, EBO, vertexSize, indexSize);
+		RenderAPI::GetInstance()->SetUpDynamicMesh(VAO, vertexSize, indexSize);
 	}
 
 	void DynamicMesh::Use()
@@ -26,6 +26,6 @@ namespace ZXEngine
 		this->vertices = vertices;
 		this->indices = indices;
 
-		RenderAPI::GetInstance()->UpdateDynamicMesh(VAO, VBO, EBO, vertices, indices);
+		RenderAPI::GetInstance()->UpdateDynamicMesh(VAO, vertices, indices);
 	}
 }
