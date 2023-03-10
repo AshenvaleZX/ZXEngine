@@ -390,11 +390,23 @@ namespace ZXEngine
     {
         auto meshBuffer = GetVAOByIndex(VAO);
         meshBuffer->inUse = false;
+
+        if (meshBuffer->indexBufferAddress != nullptr)
+        {
+            vmaUnmapMemory(vmaAllocator, meshBuffer->indexBufferAlloc);
+            meshBuffer->indexBufferAddress = nullptr;
+        }
         vmaDestroyBuffer(vmaAllocator, meshBuffer->indexBuffer, meshBuffer->indexBufferAlloc);
+
+        if (meshBuffer->vertexBufferAddress != nullptr)
+        {
+            vmaUnmapMemory(vmaAllocator, meshBuffer->vertexBufferAlloc);
+            meshBuffer->vertexBufferAddress = nullptr;
+        }
         vmaDestroyBuffer(vmaAllocator, meshBuffer->vertexBuffer, meshBuffer->vertexBufferAlloc);
     }
 
-    void RenderAPIVulkan::SetUpStaticMesh(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, vector<Vertex> vertices, vector<unsigned int> indices)
+    void RenderAPIVulkan::SetUpStaticMesh(unsigned int& VAO, vector<Vertex> vertices, vector<unsigned int> indices)
     {
         VAO = GetNextVAOIndex();
         auto meshBuffer = GetVAOByIndex(VAO);
@@ -493,6 +505,50 @@ namespace ZXEngine
         vmaDestroyBuffer(vmaAllocator, indexStagingBuffer, indexStagingBufferAlloc);
 
         meshBuffer->inUse = true;
+    }
+
+    void RenderAPIVulkan::SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize)
+    {
+        VAO = GetNextVAOIndex();
+        auto meshBuffer = GetVAOByIndex(VAO);
+
+        VmaAllocationCreateInfo vmaAllocInfo = {};
+        vmaAllocInfo.usage = VMA_MEMORY_USAGE_AUTO;
+
+        // VertexBuffer
+        VkDeviceSize vertexBufferSize = sizeof(Vertex) * vertexSize;
+
+        VkBufferCreateInfo vertexBufferInfo = {};
+        vertexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        vertexBufferInfo.size = vertexBufferSize;
+        vertexBufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+        vertexBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+        vmaCreateBuffer(vmaAllocator, &vertexBufferInfo, &vmaAllocInfo, &meshBuffer->vertexBuffer, &meshBuffer->vertexBufferAlloc, nullptr);
+        vmaMapMemory(vmaAllocator, meshBuffer->vertexBufferAlloc, &meshBuffer->vertexBufferAddress);
+
+        // IndexBuffer
+        VkDeviceSize indexBufferSize = sizeof(unsigned int) * indexSize;
+
+        VkBufferCreateInfo indexBufferInfo = {};
+        indexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        indexBufferInfo.size = indexBufferSize;
+        indexBufferInfo.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+        indexBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+        vmaCreateBuffer(vmaAllocator, &indexBufferInfo, &vmaAllocInfo, &meshBuffer->indexBuffer, &meshBuffer->indexBufferAlloc, nullptr);
+        vmaMapMemory(vmaAllocator, meshBuffer->indexBufferAlloc, &meshBuffer->indexBufferAddress);
+
+        meshBuffer->inUse = true;
+    }
+
+    void RenderAPIVulkan::UpdateDynamicMesh(unsigned int VAO, vector<Vertex> vertices, vector<unsigned int> indices)
+    {
+        VAO = GetNextVAOIndex();
+        auto meshBuffer = GetVAOByIndex(VAO);
+
+        memcpy(meshBuffer->vertexBufferAddress, vertices.data(), vertices.size() * sizeof(Vertex));
+        memcpy(meshBuffer->indexBufferAddress, indices.data(), indices.size() * sizeof(unsigned int));
     }
 
     void RenderAPIVulkan::SetShaderBool(ShaderReference* reference, const string& name, bool value)
