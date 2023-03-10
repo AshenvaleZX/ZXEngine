@@ -13,7 +13,5 @@ namespace ZXEngine
 		vector<unsigned int> indices;
 
 		~Mesh();
-
-		virtual void Use() = 0;
 	};
 }

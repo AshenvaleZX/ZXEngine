@@ -28,7 +28,6 @@ namespace ZXEngine
 		// 切换后处理渲染设置
 		RenderAPI::GetInstance()->SetRenderState(renderState);
 		// 整个后处理都在这个覆盖屏幕的四边形上渲染
-		screenQuad->Use();
 
 		// 提取画面高亮部分
 		string res1 = BlitExtractBrightArea("Main");
@@ -112,7 +111,7 @@ namespace ZXEngine
 		auto shader = GetShader(ExtractBrightArea);
 		shader->Use();
 		shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(sourceFBO)->ColorBuffer, 0);
-		RenderAPI::GetInstance()->Draw();
+		RenderAPI::GetInstance()->Draw(screenQuad->VAO);
 		// 返回输出的FBO名字
 		return ExtractBrightArea;
 	}
@@ -139,7 +138,7 @@ namespace ZXEngine
 			string colorFBO = i == 0 ? sourceFBO : pingpongBuffer[!isHorizontal];
 			shader->SetBool("_Horizontal", isHorizontal);
 			shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(colorFBO)->ColorBuffer, 0);
-			RenderAPI::GetInstance()->Draw();
+			RenderAPI::GetInstance()->Draw(screenQuad->VAO);
 			isHorizontal = !isHorizontal;
 		}
 		// 返回最终输出的FBO名字
@@ -166,7 +165,7 @@ namespace ZXEngine
 			string colorFBO = i == 0 ? sourceFBO : pingpongBuffer[!isSwitch];
 			shader->SetInt("_BlurTimes", i+1);
 			shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(colorFBO)->ColorBuffer, 0);
-			RenderAPI::GetInstance()->Draw();
+			RenderAPI::GetInstance()->Draw(screenQuad->VAO);
 			isSwitch = !isSwitch;
 		}
 		// 返回最终输出的FBO名字
@@ -187,7 +186,7 @@ namespace ZXEngine
 		shader->Use();
 		shader->SetTexture("_BrightBlur", FBOManager::GetInstance()->GetFBO(blurFBO)->ColorBuffer, 0);
 		shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(originFBO)->ColorBuffer, 1);
-		RenderAPI::GetInstance()->Draw();
+		RenderAPI::GetInstance()->Draw(screenQuad->VAO);
 		return BloomBlend;
 	}
 }

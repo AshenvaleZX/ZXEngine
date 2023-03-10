@@ -38,18 +38,16 @@ namespace ZXEngine
 		virtual ShaderReference* LoadAndCompileShader(const char* path) = 0;
 		virtual void SetUpMaterial(ShaderReference* shaderReference, const map<string, uint32_t>& textures) = 0;
 		virtual void DeleteShaderProgram(unsigned int id) = 0;
-		virtual unsigned int GenerateParticleMesh() = 0;
 
 		// DrawCall
-		virtual void Draw() = 0;
-		virtual void Draw(unsigned int VAO, unsigned int size, DrawType type) = 0;
+		virtual void Draw(uint32_t VAO) = 0;
 
 		// Mesh…Ë÷√
-		virtual void SetMesh(unsigned int VAO, unsigned int size) = 0;
 		virtual void DeleteMesh(unsigned int VAO) = 0;
 		virtual void SetUpStaticMesh(unsigned int& VAO, vector<Vertex> vertices, vector<unsigned int> indices) = 0;
 		virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize) = 0;
 		virtual void UpdateDynamicMesh(unsigned int VAO, vector<Vertex> vertices, vector<unsigned int> indices) = 0;
+		virtual void GenerateParticleMesh(unsigned int& VAO) = 0;
 
 		// Shader…Ë÷√
 		virtual void UseShader(unsigned int ID) = 0;

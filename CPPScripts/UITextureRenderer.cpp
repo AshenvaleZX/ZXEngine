@@ -42,8 +42,7 @@ namespace ZXEngine
 		shader->Use();
 		shader->SetMat4("ENGINE_Model", mat_M);
 		shader->SetTexture("_Texture", texture->GetID(), 0);
-		textureMesh->Use();
-		RenderAPI::GetInstance()->Draw();
+		RenderAPI::GetInstance()->Draw(textureMesh->VAO);
 	}
 
 	void UITextureRenderer::SetTexture(const char* path)

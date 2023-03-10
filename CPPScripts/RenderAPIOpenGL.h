@@ -33,18 +33,16 @@ namespace ZXEngine
 		virtual ShaderReference* LoadAndCompileShader(const char* path);
 		virtual void SetUpMaterial(ShaderReference* shaderReference, const map<string, uint32_t>& textures);
 		virtual void DeleteShaderProgram(unsigned int id);
-		virtual unsigned int GenerateParticleMesh();
 
 		// DrawCall
-		virtual void Draw();
-		virtual void Draw(unsigned int VAO, unsigned int size, DrawType type);
+		virtual void Draw(uint32_t VAO);
 
 		// Mesh设置
-		virtual void SetMesh(unsigned int VAO, unsigned int size);
 		virtual void DeleteMesh(unsigned int VAO);
 		virtual void SetUpStaticMesh(unsigned int& VAO, vector<Vertex> vertices, vector<unsigned int> indices);
 		virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize);
 		virtual void UpdateDynamicMesh(unsigned int VAO, vector<Vertex> vertices, vector<unsigned int> indices);
+		virtual void GenerateParticleMesh(unsigned int& VAO);
 
 		// Shader设置
 		virtual void UseShader(unsigned int ID);
@@ -69,9 +67,6 @@ namespace ZXEngine
 		bool stateDirty = false;
 		RenderStateSetting* targetState = nullptr;
 		RenderStateSetting* curRealState = nullptr;
-		unsigned int VAO = 0;
-		// 与VAO对应的图元数量
-		unsigned int primitiveSize = 0;
 
 		vector<OpenGLVAO*> OpenGLVAOArray;
 

@@ -79,12 +79,6 @@ namespace ZXEngine
 		ParticleSystem,
 	};
 
-	enum class DrawType
-	{
-		OpenGLDrawArrays,
-		OpenGLDrawElements,
-	};
-
 	enum class FaceCullOption
 	{
 		None,

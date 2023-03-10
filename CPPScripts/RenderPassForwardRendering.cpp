@@ -138,8 +138,6 @@ namespace ZXEngine
 		skyBoxShader->SetMat4("ENGINE_Projection", mat_P);
 		skyBoxShader->SetCubeMap("_Skybox", SceneManager::GetInstance()->GetCurScene()->skyBox->GetID(), 0);
 		
-		skyBox->Use();
-
-		RenderAPI::GetInstance()->Draw();
+		RenderAPI::GetInstance()->Draw(skyBox->VAO);
 	}
 }

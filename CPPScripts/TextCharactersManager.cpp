@@ -114,7 +114,6 @@ namespace ZXEngine
 
     void TextCharactersManager::DrawCharacter()
     {
-        characterMesh->Use();
-        RenderAPI::GetInstance()->Draw();
+        RenderAPI::GetInstance()->Draw(characterMesh->VAO);
     }
 }

@@ -11,6 +11,9 @@ namespace ZXEngine
 		uint32_t VBO = 0;
 		// Element Buffer Objects
 		uint32_t EBO = 0;
+
+		uint32_t size = 0;
+		bool indexed = true;
 		bool inUse = false;
 	};
 }

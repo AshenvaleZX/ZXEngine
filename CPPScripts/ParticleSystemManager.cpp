@@ -22,7 +22,7 @@ namespace ZXEngine
 
 	ParticleSystemManager::ParticleSystemManager()
 	{
-		VAO = RenderAPI::GetInstance()->GenerateParticleMesh();
+		RenderAPI::GetInstance()->GenerateParticleMesh(VAO);
 		shader = new Shader(Resources::GetAssetFullPath("Shaders/Particle.zxshader", true).c_str());
 
 		renderState = new RenderStateSetting();

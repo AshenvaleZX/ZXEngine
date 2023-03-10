@@ -9,7 +9,6 @@ namespace ZXEngine
     public:
         DynamicMesh(unsigned int vertexSize, unsigned int indexSize);
 
-        virtual void Use();
         void UpdateData(vector<Vertex> vertices, vector<unsigned int> indices);
 
     private:

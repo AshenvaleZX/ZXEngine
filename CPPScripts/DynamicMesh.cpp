@@ -10,11 +10,6 @@ namespace ZXEngine
 		RenderAPI::GetInstance()->SetUpDynamicMesh(VAO, vertexSize, indexSize);
 	}
 
-	void DynamicMesh::Use()
-	{
-		RenderAPI::GetInstance()->SetMesh(VAO, indexSize);
-	}
-
 	void DynamicMesh::UpdateData(vector<Vertex> vertices, vector<unsigned int> indices)
 	{
 		if (vertices.size() > vertexSize || indices.size() > indexSize)

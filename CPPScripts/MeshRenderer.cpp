@@ -32,8 +32,7 @@ namespace ZXEngine
     {
         for (auto mesh : meshes)
         {
-            mesh->Use();
-            RenderAPI::GetInstance()->Draw();
+            RenderAPI::GetInstance()->Draw(mesh->VAO);
         }
     }
 

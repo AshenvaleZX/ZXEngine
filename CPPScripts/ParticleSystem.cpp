@@ -110,7 +110,7 @@ namespace ZXEngine
 				shader->SetMat4("ENGINE_Model", mat_M);
 				shader->SetVec4("_Color", particle->color);
 
-				RenderAPI::GetInstance()->Draw(VAO, 6, DrawType::OpenGLDrawArrays);
+				RenderAPI::GetInstance()->Draw(VAO);
 			}
 		}
 	}

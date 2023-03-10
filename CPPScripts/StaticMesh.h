@@ -8,7 +8,5 @@ namespace ZXEngine
 	{
     public:
         StaticMesh(vector<Vertex> vertices, vector<unsigned int> indices);
-        
-        virtual void Use();
     };
 }

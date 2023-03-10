@@ -486,10 +486,13 @@ namespace ZXEngine
 		return FBO;
 	}
 
-	unsigned int RenderAPIOpenGL::GenerateParticleMesh()
+	void RenderAPIOpenGL::GenerateParticleMesh(unsigned int& VAO)
 	{
-		unsigned int VAO;
-		unsigned int VBO;
+		VAO = GetNextVAOIndex();
+		auto meshBuffer = GetVAOByIndex(VAO);
+		meshBuffer->indexed = false;
+		meshBuffer->size = 6;
+
 		float particleQuad[] = {
 			// pos        // tex coord
 			-0.5f,  0.5f, 0.0f, 1.0f,
@@ -500,11 +503,11 @@ namespace ZXEngine
 			 0.5f,  0.5f, 1.0f, 1.0f,
 			 0.5f, -0.5f, 1.0f, 0.0f
 		};
-		glGenVertexArrays(1, &VAO);
-		glGenBuffers(1, &VBO);
-		glBindVertexArray(VAO);
+		glGenVertexArrays(1, &meshBuffer->VAO);
+		glGenBuffers(1, &meshBuffer->VBO);
+		glBindVertexArray(meshBuffer->VAO);
 		// Fill mesh buffer
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, meshBuffer->VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(particleQuad), particleQuad, GL_STATIC_DRAW);
 		// Set mesh attributes
 		glEnableVertexAttribArray(0);
@@ -512,53 +515,27 @@ namespace ZXEngine
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 		glBindVertexArray(0);
-
-		return VAO;
 	}
 
-	void RenderAPIOpenGL::Draw()
+	void RenderAPIOpenGL::Draw(uint32_t VAO)
 	{
 		UpdateRenderState();
 
 		auto meshBuffer = GetVAOByIndex(VAO);
 
 		glBindVertexArray(meshBuffer->VAO);
-		glDrawElements(GL_TRIANGLES, primitiveSize, GL_UNSIGNED_INT, 0);
+
+		if (meshBuffer->indexed)
+			glDrawElements(GL_TRIANGLES, meshBuffer->size, GL_UNSIGNED_INT, 0);
+		else
+			glDrawArrays(GL_TRIANGLES, 0, meshBuffer->size);
+
 		// 绘制完重置一下(不重置也行，不过及时重置避免出问题)
 		glBindVertexArray(0);
 
 #ifdef ZX_DEBUG
 		Debug::drawCallCount++;
 #endif
-	}
-
-	void RenderAPIOpenGL::Draw(unsigned int VAO, unsigned int size, DrawType type)
-	{
-		UpdateRenderState();
-		
-		auto meshBuffer = GetVAOByIndex(VAO);
-
-		glBindVertexArray(meshBuffer->VAO);
-
-		if (type == DrawType::OpenGLDrawArrays)
-			glDrawArrays(GL_TRIANGLES, 0, size);
-		else if (type == DrawType::OpenGLDrawElements)
-			glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, 0);
-		else
-			Debug::LogError("Wrong draw type: " + to_string((int)type));
-
-		glBindVertexArray(0);
-
-#ifdef ZX_DEBUG
-		Debug::drawCallCount++;
-#endif
-	}
-
-	// Mesh设置
-	void RenderAPIOpenGL::SetMesh(unsigned int VAO, unsigned int size)
-	{
-		this->VAO = VAO;
-		this->primitiveSize = size;
 	}
 
 	void RenderAPIOpenGL::DeleteMesh(unsigned int VAO)
@@ -576,6 +553,8 @@ namespace ZXEngine
 	{
 		VAO = GetNextVAOIndex();
 		auto meshBuffer = GetVAOByIndex(VAO);
+		meshBuffer->indexed = true;
+		meshBuffer->size = static_cast<uint32_t>(indices.size());
 
 		// create buffers/arrays
 		glGenVertexArrays(1, &meshBuffer->VAO);
@@ -620,6 +599,8 @@ namespace ZXEngine
 	{
 		VAO = GetNextVAOIndex();
 		auto meshBuffer = GetVAOByIndex(VAO);
+		meshBuffer->indexed = true;
+		meshBuffer->size = indexSize;
 
 		glGenVertexArrays(1, &meshBuffer->VAO);
 		glGenBuffers(1, &meshBuffer->VBO);

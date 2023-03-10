@@ -9,9 +9,4 @@ namespace ZXEngine
 
 		RenderAPI::GetInstance()->SetUpStaticMesh(VAO, vertices, indices);
 	}
-
-	void StaticMesh::Use()
-	{
-		RenderAPI::GetInstance()->SetMesh(VAO, (unsigned int)indices.size());
-	}
 }
