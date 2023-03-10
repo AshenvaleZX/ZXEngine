@@ -215,7 +215,7 @@ namespace ZXEngine
         texture->inUse = false;
     }
 
-    ShaderReference* RenderAPIVulkan::LoadAndCompileShader(const char* path)
+    ShaderReference* RenderAPIVulkan::LoadAndSetUpShader(const char* path)
     {
         string shaderCode = Resources::LoadTextFile(path);
         auto shaderInfo = ShaderParser::GetShaderInfo(shaderCode);
@@ -299,6 +299,25 @@ namespace ZXEngine
 
             vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
         }
+    }
+
+    void RenderAPIVulkan::DeleteShader(unsigned int id)
+    {
+        auto pipeline = GetPipelineByIndex(id);
+
+        vkDestroyDescriptorPool(device, pipeline->descriptorPool, VK_NULL_HANDLE);
+        vkDestroyDescriptorSetLayout(device, pipeline->descriptorSetLayout, VK_NULL_HANDLE);
+        vkDestroyPipeline(device, pipeline->pipeline, VK_NULL_HANDLE);
+        vkDestroyPipelineLayout(device, pipeline->pipelineLayout, VK_NULL_HANDLE);
+
+        for (auto& uniformBuffer : pipeline->vertUniformBuffers)
+            DestroyBuffer(uniformBuffer.buffer);
+        for (auto& uniformBuffer : pipeline->geomUniformBuffers)
+            DestroyBuffer(uniformBuffer.buffer);
+        for (auto& uniformBuffer : pipeline->fragUniformBuffers)
+            DestroyBuffer(uniformBuffer.buffer);
+
+        pipeline->inUse = false;
     }
 
     VkWriteDescriptorSet RenderAPIVulkan::GetWriteDescriptorSet(VkDescriptorSet descriptorSet, const UniformBuffer& uniformBuffer)

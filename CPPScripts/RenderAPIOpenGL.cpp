@@ -243,7 +243,7 @@ namespace ZXEngine
 		return textureID;
 	}
 
-	ShaderReference* RenderAPIOpenGL::LoadAndCompileShader(const char* path)
+	ShaderReference* RenderAPIOpenGL::LoadAndSetUpShader(const char* path)
 	{
 		string shaderCode = Resources::LoadTextFile(path);
 		string vertCode, geomCode, fragCode;
@@ -296,7 +296,7 @@ namespace ZXEngine
 		return reference;
 	}
 
-	void RenderAPIOpenGL::DeleteShaderProgram(unsigned int id)
+	void RenderAPIOpenGL::DeleteShader(unsigned int id)
 	{
 		glDeleteProgram(id);
 	}

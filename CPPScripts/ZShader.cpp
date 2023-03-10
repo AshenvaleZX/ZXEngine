@@ -29,7 +29,7 @@ namespace ZXEngine
 		// 如果没有加载过，执行真正的加载和编译
 		if (reference == nullptr)
 		{
-			reference = RenderAPI::GetInstance()->LoadAndCompileShader(path.c_str());
+			reference = RenderAPI::GetInstance()->LoadAndSetUpShader(path.c_str());
 			reference->path = path;
 			loadedShaders.push_back(reference);
 		}
@@ -54,7 +54,7 @@ namespace ZXEngine
 			{
 				// 执行清理操作
 				loadedShaders.erase(loadedShaders.begin() + pos);
-				RenderAPI::GetInstance()->DeleteShaderProgram(reference->ID);
+				RenderAPI::GetInstance()->DeleteShader(reference->ID);
 				delete reference;
 			}
 			else
