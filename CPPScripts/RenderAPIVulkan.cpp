@@ -207,6 +207,53 @@ namespace ZXEngine
         return CreateVulkanTexture(image, imageView, sampler);
     }
 
+    unsigned int RenderAPIVulkan::GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data)
+    {
+        // 一个文本纹理像素只有8字节
+        VkDeviceSize imageSize = VkDeviceSize(width * height);
+        VulkanBuffer stagingBuffer = CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
+
+        // 把数据拷贝到stagingBuffer
+        void* ptr;
+        vmaMapMemory(vmaAllocator, stagingBuffer.allocation, &ptr);
+        memcpy(ptr, data, static_cast<size_t>(imageSize));
+        vmaUnmapMemory(vmaAllocator, stagingBuffer.allocation);
+
+        VulkanImage image = CreateImage(width, height, 1, VK_SAMPLE_COUNT_1_BIT,
+            VK_FORMAT_R8_UINT, VK_IMAGE_TILING_OPTIMAL,
+            VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+            VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+
+        // 同LoadTexture
+        TransitionImageLayout(image.image,
+            VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1,
+            VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
+            VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT);
+
+        ImmediatelyExecute([=](VkCommandBuffer cmd)
+        {
+            VkBufferImageCopy region{};
+            region.bufferOffset = 0;
+            region.bufferRowLength = 0;
+            region.bufferImageHeight = 0;
+            region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            region.imageSubresource.mipLevel = 0;
+            region.imageSubresource.baseArrayLayer = 0;
+            region.imageSubresource.layerCount = 1;
+            region.imageOffset = { 0, 0, 0 };
+            region.imageExtent = { (uint32_t)width, (uint32_t)height, 1 };
+
+            vkCmdCopyBufferToImage(cmd, stagingBuffer.buffer, image.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+        });
+
+        DestroyBuffer(stagingBuffer);
+
+        VkImageView imageView = CreateImageView(image.image, VK_FORMAT_R8_UINT, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+        VkSampler sampler = CreateSampler(1);
+
+        return CreateVulkanTexture(image, imageView, sampler);
+    }
+
     void RenderAPIVulkan::DeleteTexture(unsigned int id)
     {
         auto texture = GetTextureByIndex(id);

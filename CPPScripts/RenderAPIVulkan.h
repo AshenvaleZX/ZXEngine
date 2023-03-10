@@ -42,6 +42,7 @@ namespace ZXEngine
         // 资源加载相关
         virtual unsigned int LoadTexture(const char* path, int& width, int& height);
         virtual void DeleteTexture(unsigned int id);
+        virtual unsigned int GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data);
         virtual ShaderReference* LoadAndSetUpShader(const char* path);
         virtual void SetUpMaterial(ShaderReference* shaderReference, const map<string, uint32_t>& textures);
         virtual void DeleteShader(unsigned int id);
