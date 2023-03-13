@@ -42,6 +42,7 @@ namespace ZXEngine
         // 资源加载相关
         virtual unsigned int LoadTexture(const char* path, int& width, int& height);
         virtual void DeleteTexture(unsigned int id);
+        virtual unsigned int LoadCubeMap(vector<string> faces);
         virtual unsigned int GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data);
         virtual ShaderReference* LoadAndSetUpShader(const char* path);
         virtual void SetUpMaterial(ShaderReference* shaderReference, const map<string, uint32_t>& textures);
@@ -177,11 +178,11 @@ namespace ZXEngine
 
         UniformBuffer CreateUniformBuffer(const vector<ShaderProperty>& properties);
 
-        VulkanImage CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage);
+        VulkanImage CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, uint32_t layers, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage);
         void DestroyImage(VulkanImage image);
         void GenerateMipMaps(VkImage image, VkFormat format, int32_t width, int32_t height, uint32_t mipLevels);
 
-        VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
+        VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageViewType viewType);
         void DestroyImageView(VkImageView imageView);
 
         VkSampler CreateSampler(uint32_t mipLevels);
@@ -219,7 +220,7 @@ namespace ZXEngine
         uint32_t GetMipMapLevels(int width, int height);
         void InitImmediateCommand();
         void ImmediatelyExecute(std::function<void(VkCommandBuffer cmd)>&& function);
-        void TransitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels, VkImageAspectFlags aspectMask, VkPipelineStageFlags srcStage, VkAccessFlags srcAccessMask, VkPipelineStageFlags dstStage, VkAccessFlags dstAccessMask);
+        void TransitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlags aspectMask, VkPipelineStageFlags srcStage, VkAccessFlags srcAccessMask, VkPipelineStageFlags dstStage, VkAccessFlags dstAccessMask);
 
         VkPipelineVertexInputStateCreateInfo GetVertexInputInfo();
         VkPipelineInputAssemblyStateCreateInfo GetAssemblyInfo(VkPrimitiveTopology topology);
