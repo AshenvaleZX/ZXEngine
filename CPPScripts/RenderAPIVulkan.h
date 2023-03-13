@@ -53,7 +53,8 @@ namespace ZXEngine
         virtual void SetUpStaticMesh(unsigned int& VAO, vector<Vertex> vertices, vector<unsigned int> indices);
         virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize);
         virtual void UpdateDynamicMesh(unsigned int VAO, vector<Vertex> vertices, vector<unsigned int> indices);
-        
+        virtual void GenerateParticleMesh(unsigned int& VAO);
+
         // Shader…Ë÷√
         virtual void SetShaderBool(ShaderReference* reference, const string& name, bool value);
         virtual void SetShaderInt(ShaderReference* reference, const string& name, int value);

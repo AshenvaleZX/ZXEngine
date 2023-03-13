@@ -692,6 +692,25 @@ namespace ZXEngine
         memcpy(meshBuffer->indexBufferAddress, indices.data(), indices.size() * sizeof(unsigned int));
     }
 
+    void RenderAPIVulkan::GenerateParticleMesh(unsigned int& VAO)
+    {
+        vector<Vertex> vertices =
+        {
+            { {  0.5f,  0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } },
+            { {  0.5f, -0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f } },
+            { { -0.5f,  0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f } },
+            { { -0.5f, -0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f } },
+        };
+
+        vector<uint32_t> indices =
+        {
+            2, 1, 3,
+            2, 0, 1,
+        };
+
+        SetUpStaticMesh(VAO, vertices, indices);
+    }
+
     void RenderAPIVulkan::SetShaderBool(ShaderReference* reference, const string& name, bool value)
     {
         void* valueAddress = GetShaderPropertyAddress(reference, name);
