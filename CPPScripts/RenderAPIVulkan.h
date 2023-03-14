@@ -4,20 +4,6 @@
 
 namespace ZXEngine
 {
-    // 需要的验证层
-    const vector<const char*> validationLayers =
-    {
-        // Vulkan SDK通过请求VK_LAYER_KHRONOS_validation层，来隐式的开启有所关于诊断的layers，从而避免明确的指定所有的明确的诊断层
-        "VK_LAYER_KHRONOS_validation"
-    };
-
-    // 需要用到的扩展
-    const vector<const char*> deviceExtensions =
-    {
-        // 交换链扩展名，这个的支持也就代表了是否支持将图像绘制到显示器上(不是所有GPU都可以拿来绘图)
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME
-    };
-
     class RenderAPIVulkan
     {
     /// <summary>
@@ -56,6 +42,7 @@ namespace ZXEngine
         virtual void GenerateParticleMesh(unsigned int& VAO);
 
         // Shader设置
+        virtual void UseShader(unsigned int ID);
         virtual void SetShaderBool(ShaderReference* reference, const string& name, bool value);
         virtual void SetShaderInt(ShaderReference* reference, const string& name, int value);
         virtual void SetShaderFloat(ShaderReference* reference, const string& name, float value);
@@ -157,6 +144,7 @@ namespace ZXEngine
     /// </summary>
     private:
         uint32_t curFBOIdx = 0;
+        uint32_t curPipeLineIdx = 0;
 
         vector<VulkanVAO*> VulkanVAOArray;
         vector<VulkanFBO*> VulkanFBOArray;

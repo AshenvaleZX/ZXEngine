@@ -712,6 +712,10 @@ namespace ZXEngine
         SetUpStaticMesh(VAO, vertices, indices);
     }
 
+    void RenderAPIVulkan::UseShader(unsigned int ID)
+    {
+        curPipeLineIdx = ID;
+    }
     void RenderAPIVulkan::SetShaderBool(ShaderReference* reference, const string& name, bool value)
     {
         void* valueAddress = GetShaderPropertyAddress(reference, name);
