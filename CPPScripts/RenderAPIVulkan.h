@@ -121,6 +121,7 @@ namespace ZXEngine
         void CreatePhysicalDevice();
         void CreateLogicalDevice();
         void CreateMemoryAllocator();
+        void CreateCommandPool();
         void CreateSurface();
         void CreateSwapChain();
         void CreatePresentFrameBuffer();
@@ -178,6 +179,8 @@ namespace ZXEngine
         void DestroyBuffer(VulkanBuffer buffer);
 
         UniformBuffer CreateUniformBuffer(const vector<ShaderProperty>& properties);
+
+        void AllocateCommandBuffers(vector<VkCommandBuffer>& commandBuffers);
 
         VulkanImage CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, uint32_t layers, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage);
         void DestroyImage(VulkanImage image);

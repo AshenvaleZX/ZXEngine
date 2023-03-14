@@ -60,6 +60,7 @@ namespace ZXEngine
         CreatePhysicalDevice();
         CreateLogicalDevice();
         CreateMemoryAllocator();
+        CreateCommandPool();
         CreateSurface();
         CreateSwapChain();
         CreateAllRenderPass();
@@ -841,7 +842,10 @@ namespace ZXEngine
                 return i;
         }
 
-        VulkanVAOArray.push_back(new VulkanVAO());
+        auto newVAO = new VulkanVAO();
+        newVAO->drawCommands.resize(MAX_FRAMES_IN_FLIGHT);
+        AllocateCommandBuffers(newVAO->drawCommands);
+        VulkanVAOArray.push_back(newVAO);
 
         return length;
     }
@@ -1090,6 +1094,24 @@ namespace ZXEngine
         vmaInfo.physicalDevice = physicalDevice;
         vmaInfo.device = device;
         vmaCreateAllocator(&vmaInfo, &vmaAllocator);
+    }
+
+    void RenderAPIVulkan::CreateCommandPool()
+    {
+        QueueFamilyIndices queueFamilyIndices = GetQueueFamilyIndices(physicalDevice);
+
+        VkCommandPoolCreateInfo poolInfo{};
+        poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        // 这个flags可要可不要，如果要多个flags的话用|即可
+        // VK_COMMAND_POOL_CREATE_TRANSIENT_BIT: 提示命令缓冲区非常频繁的重新记录新命令(可能会改变内存分配行为)
+        // VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT: 允许命令缓冲区单独重新记录，没有这个标志，所有的命令缓冲区都必须一起重置
+        poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+        // command buffer是通过在一个设备队列上提交它们来执行的，每个命令池只能分配在单一类型队列上提交的命令缓冲区
+        // 我们将记录用于绘图的命令，所以用graphicsFamily
+        poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamilyIdx;
+
+        if (vkCreateCommandPool(device, &poolInfo, nullptr, &commandPool) != VK_SUCCESS)
+            throw std::runtime_error("failed to create command pool!");
     }
 
     void RenderAPIVulkan::CreateSurface() {
@@ -1550,6 +1572,18 @@ namespace ZXEngine
         vmaMapMemory(vmaAllocator, uniformBuffer.buffer.allocation, &uniformBuffer.mappedAddress);
 
         return uniformBuffer;
+    }
+
+    void RenderAPIVulkan::AllocateCommandBuffers(vector<VkCommandBuffer>& commandBuffers)
+    {
+        VkCommandBufferAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.commandPool = commandPool;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
+
+        if (vkAllocateCommandBuffers(device, &allocInfo, commandBuffers.data()) != VK_SUCCESS)
+            throw std::runtime_error("failed to allocate command buffers!");
     }
 
     VulkanImage RenderAPIVulkan::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, uint32_t layers, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage)

@@ -82,6 +82,7 @@ namespace ZXEngine
         VkBuffer vertexBuffer = VK_NULL_HANDLE;
         VmaAllocation vertexBufferAlloc = VK_NULL_HANDLE;
         void* vertexBufferAddress = nullptr; // Only for dynamic mesh
+        vector<VkCommandBuffer> drawCommands;
         bool inUse = false;
     };
 
