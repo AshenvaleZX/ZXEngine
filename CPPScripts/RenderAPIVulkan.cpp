@@ -836,6 +836,11 @@ namespace ZXEngine
         }
     }
 
+    void RenderAPIVulkan::SetShaderCubeMap(ShaderReference* reference, const string& name, unsigned int textureID, unsigned int idx)
+    {
+        SetShaderTexture(reference, name, textureID, idx);
+    }
+
     uint32_t RenderAPIVulkan::GetNextVAOIndex()
     {
         uint32_t length = (uint32_t)VulkanVAOArray.size();
