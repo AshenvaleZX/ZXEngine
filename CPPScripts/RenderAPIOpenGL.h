@@ -34,8 +34,10 @@ namespace ZXEngine
 		virtual void SetUpMaterial(ShaderReference* shaderReference, const map<string, uint32_t>& textures);
 		virtual void DeleteShader(unsigned int id);
 
-		// DrawCall
+		// Draw
+		virtual uint32_t AllocateDrawCommand();
 		virtual void Draw(uint32_t VAO);
+		virtual void GenerateDrawCommand(uint32_t id);
 
 		// Mesh…Ë÷√
 		virtual void DeleteMesh(unsigned int VAO);

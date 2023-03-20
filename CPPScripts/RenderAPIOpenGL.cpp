@@ -517,6 +517,12 @@ namespace ZXEngine
 		glBindVertexArray(0);
 	}
 
+	uint32_t RenderAPIOpenGL::AllocateDrawCommand()
+	{
+		// OpenGL不需要这个接口
+		return 0;
+	}
+
 	void RenderAPIOpenGL::Draw(uint32_t VAO)
 	{
 		UpdateRenderState();
@@ -536,6 +542,11 @@ namespace ZXEngine
 #ifdef ZX_DEBUG
 		Debug::drawCallCount++;
 #endif
+	}
+
+	void RenderAPIOpenGL::GenerateDrawCommand(uint32_t id)
+	{
+		// OpenGL不需要这个接口
 	}
 
 	void RenderAPIOpenGL::DeleteMesh(unsigned int VAO)

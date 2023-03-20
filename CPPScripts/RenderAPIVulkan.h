@@ -4,7 +4,7 @@
 
 namespace ZXEngine
 {
-    class RenderAPIVulkan
+    class RenderAPIVulkan : public RenderAPI
     {
     /// <summary>
     /// 标准RenderAPI接口
@@ -33,6 +33,11 @@ namespace ZXEngine
         virtual ShaderReference* LoadAndSetUpShader(const char* path);
         virtual void SetUpMaterial(ShaderReference* shaderReference, const map<string, uint32_t>& textures);
         virtual void DeleteShader(unsigned int id);
+
+        // Draw
+        virtual uint32_t AllocateDrawCommand();
+        virtual void Draw(uint32_t VAO);
+        virtual void GenerateDrawCommand(uint32_t id);
 
         // Mesh设置
         virtual void DeleteMesh(unsigned int VAO);
@@ -151,6 +156,9 @@ namespace ZXEngine
         vector<VulkanFBO*> VulkanFBOArray;
         vector<VulkanTexture*> VulkanTextureArray;
         vector<VulkanPipeline*> VulkanPipelineArray;
+        vector<VulkanDrawCommand*> VulkanDrawCommandArray;
+
+        vector<pair<uint32_t, uint32_t>> drawIndexes;
 
         vector<VkRenderPass> allVulkanRenderPass;
 
@@ -162,6 +170,9 @@ namespace ZXEngine
         VulkanTexture* GetTextureByIndex(uint32_t idx);
         uint32_t GetNextPipelineIndex();
         VulkanPipeline* GetPipelineByIndex(uint32_t idx);
+        uint32_t GetNextDrawCommandIndex();
+        VulkanDrawCommand* GetDrawCommandByIndex(uint32_t idx);
+
         void* GetShaderPropertyAddress(ShaderReference* reference, const string& name);
 
         VulkanBuffer CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage);
@@ -170,6 +181,8 @@ namespace ZXEngine
         UniformBuffer CreateUniformBuffer(const vector<ShaderProperty>& properties);
 
         void AllocateCommandBuffers(vector<VkCommandBuffer>& commandBuffers);
+
+        VkFence CreateFence();
 
         VulkanImage CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, uint32_t layers, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage);
         void DestroyImage(VulkanImage image);

@@ -88,6 +88,12 @@ namespace ZXEngine
         bool inUse = false;
     };
 
+    struct VulkanDrawCommand
+    {
+        vector<VkCommandBuffer> commandBuffers;
+        bool inUse = false;
+    };
+
     struct VulkanVAO
     {
         VkBuffer indexBuffer = VK_NULL_HANDLE;
@@ -96,7 +102,7 @@ namespace ZXEngine
         VkBuffer vertexBuffer = VK_NULL_HANDLE;
         VmaAllocation vertexBufferAlloc = VK_NULL_HANDLE;
         void* vertexBufferAddress = nullptr; // Only for dynamic mesh
-        vector<VkCommandBuffer> drawCommands;
+        uint32_t size = 0;
         bool inUse = false;
     };
 

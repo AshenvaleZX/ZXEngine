@@ -528,6 +528,97 @@ namespace ZXEngine
         return FBO;
     }
 
+    uint32_t RenderAPIVulkan::AllocateDrawCommand()
+    {
+        return GetNextDrawCommandIndex();
+    }
+
+    void RenderAPIVulkan::Draw(uint32_t VAO)
+    {
+        drawIndexes.push_back(pair(curPipeLineIdx, VAO));
+    }
+
+    void RenderAPIVulkan::GenerateDrawCommand(uint32_t id)
+    {
+        auto curDrawCommand = GetDrawCommandByIndex(id);
+        auto commandBuffer = curDrawCommand->commandBuffers[currentFrame];
+
+        vkResetCommandBuffer(commandBuffer, 0);
+
+        VkCommandBufferBeginInfo beginInfo = {};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = 0;
+        beginInfo.pInheritanceInfo = VK_NULL_HANDLE;
+        if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
+            throw std::runtime_error("failed to begin recording command buffer!");
+
+        VkRenderPassBeginInfo renderPassInfo = {};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassInfo.renderPass = GetRenderPass(RenderPassType::Normal);
+        renderPassInfo.framebuffer = GetFBOByIndex(curFBOIdx)->frameBuffer;
+        // 这个render area定义了shader将要加载和存储的位置
+        renderPassInfo.renderArea.offset = { 0, 0 };
+        // 一般来说大小(extend)是和framebuffer的attachment一致的，如果小了会浪费，大了超出去的部分是一些未定义数值
+        renderPassInfo.renderArea.extent = swapChainExtent;
+        renderPassInfo.pClearValues = VK_NULL_HANDLE;
+        renderPassInfo.clearValueCount = 0;
+        vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+        VkViewport viewport = {};
+        viewport.x = static_cast<float>(viewPortInfo.xOffset);
+        viewport.y = static_cast<float>(viewPortInfo.yOffset);
+        viewport.width = static_cast<float>(viewPortInfo.width);
+        viewport.height = static_cast<float>(viewPortInfo.height);
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+        VkRect2D scissor = {};
+        scissor.offset = { viewPortInfo.xOffset, viewPortInfo.yOffset };
+        scissor.extent = { viewPortInfo.width, viewPortInfo.height };
+        vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+        for (auto& iter : drawIndexes)
+        {
+            auto vulkanVAO = GetVAOByIndex(iter.second);
+            auto pipeline = GetPipelineByIndex(iter.first);
+
+            auto commandBuffer = curDrawCommand->commandBuffers[currentFrame];
+
+            VkBuffer vertexBuffers[] = { vulkanVAO->vertexBuffer };
+            VkDeviceSize offsets[] = { 0 };
+            vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+
+            vkCmdBindIndexBuffer(commandBuffer, vulkanVAO->indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+
+            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipeline);
+
+            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout, 0, 1, &pipeline->descriptorSets[currentFrame], 0, VK_NULL_HANDLE);
+
+            vkCmdDrawIndexed(commandBuffer, vulkanVAO->size, 1, 0, 0, 0);
+        }
+
+        vkCmdEndRenderPass(commandBuffer);
+
+        if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
+            throw std::runtime_error("failed to record command buffer!");
+
+        VkSubmitInfo submitInfo = {};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.pCommandBuffers = &commandBuffer;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pWaitSemaphores = VK_NULL_HANDLE;
+        submitInfo.pWaitDstStageMask = VK_NULL_HANDLE;
+        submitInfo.waitSemaphoreCount = 0;
+        submitInfo.pSignalSemaphores = VK_NULL_HANDLE;
+        submitInfo.signalSemaphoreCount = 0;
+
+        if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
+            throw std::runtime_error("failed to submit draw command buffer!");
+
+        drawIndexes.clear();
+    }
+
     void RenderAPIVulkan::DeleteMesh(unsigned int VAO)
     {
         auto meshBuffer = GetVAOByIndex(VAO);
@@ -552,6 +643,7 @@ namespace ZXEngine
     {
         VAO = GetNextVAOIndex();
         auto meshBuffer = GetVAOByIndex(VAO);
+        meshBuffer->size = static_cast<uint32_t>(indices.size());
 
         // ----------------------------------------------- Vertex Buffer -----------------------------------------------
         VkDeviceSize vertexBufferSize = sizeof(Vertex) * vertices.size();
@@ -653,6 +745,7 @@ namespace ZXEngine
     {
         VAO = GetNextVAOIndex();
         auto meshBuffer = GetVAOByIndex(VAO);
+        meshBuffer->size = indexSize;
 
         VmaAllocationCreateInfo vmaAllocInfo = {};
         vmaAllocInfo.usage = VMA_MEMORY_USAGE_AUTO;
@@ -851,10 +944,7 @@ namespace ZXEngine
                 return i;
         }
 
-        auto newVAO = new VulkanVAO();
-        newVAO->drawCommands.resize(MAX_FRAMES_IN_FLIGHT);
-        AllocateCommandBuffers(newVAO->drawCommands);
-        VulkanVAOArray.push_back(newVAO);
+        VulkanVAOArray.push_back(new VulkanVAO());
 
         return length;
     }
@@ -882,6 +972,30 @@ namespace ZXEngine
     VulkanFBO* RenderAPIVulkan::GetFBOByIndex(uint32_t idx)
     {
         return VulkanFBOArray[idx];
+    }
+
+    uint32_t RenderAPIVulkan::GetNextDrawCommandIndex()
+    {
+        uint32_t length = (uint32_t)VulkanDrawCommandArray.size();
+
+        for (uint32_t i = 0; i < length; i++)
+        {
+            if (!VulkanDrawCommandArray[i]->inUse)
+                return i;
+        }
+
+        auto newDrawCommand = new VulkanDrawCommand();
+        newDrawCommand->commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+        AllocateCommandBuffers(newDrawCommand->commandBuffers);
+
+        VulkanDrawCommandArray.push_back(new VulkanDrawCommand());
+
+        return length;
+    }
+
+    VulkanDrawCommand* RenderAPIVulkan::GetDrawCommandByIndex(uint32_t idx)
+    {
+        return VulkanDrawCommandArray[idx];
     }
 
     uint32_t RenderAPIVulkan::GetNextTextureIndex()
@@ -1585,7 +1699,7 @@ namespace ZXEngine
 
     void RenderAPIVulkan::AllocateCommandBuffers(vector<VkCommandBuffer>& commandBuffers)
     {
-        VkCommandBufferAllocateInfo allocInfo{};
+        VkCommandBufferAllocateInfo allocInfo = {};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.commandPool = commandPool;
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -1593,6 +1707,19 @@ namespace ZXEngine
 
         if (vkAllocateCommandBuffers(device, &allocInfo, commandBuffers.data()) != VK_SUCCESS)
             throw std::runtime_error("failed to allocate command buffers!");
+    }
+
+    VkFence RenderAPIVulkan::CreateFence()
+    {
+        VkFence fence;
+        VkFenceCreateInfo fenceInfo = {};
+        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+        // 创建时立刻设置为signaled状态(否则第一次的vkWaitForFences永远等不到结果)
+        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+        if (vkCreateFence(device, &fenceInfo, nullptr, &fence) != VK_SUCCESS)
+            throw std::runtime_error("failed to create fence objects!");
+
+        return fence;
     }
 
     VulkanImage RenderAPIVulkan::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, uint32_t layers, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage)
