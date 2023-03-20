@@ -19,6 +19,7 @@ namespace ZXEngine
 		shadowCubeMapShader = new Shader(Resources::GetAssetFullPath("Shaders/PointShadowDepth.zxshader", true).c_str());
 		renderState = new RenderStateSetting();
 		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT;
+		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand();
 		FBOManager::GetInstance()->CreateFBO("ShadowCubeMap", FrameBufferType::ShadowCubeMap, GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
 	}
 	
@@ -88,5 +89,7 @@ namespace ZXEngine
 
 			renderer->Draw();
 		}
+
+		renderAPI->GenerateDrawCommand(drawCommandID);
 	}
 }

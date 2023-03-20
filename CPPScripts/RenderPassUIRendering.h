@@ -11,5 +11,8 @@ namespace ZXEngine
 		~RenderPassUIRendering() {};
 
 		virtual void Render(Camera* camera);
+
+	private:
+		uint32_t drawCommandID = 0;
 	};
 }

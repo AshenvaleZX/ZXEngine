@@ -16,6 +16,7 @@ namespace ZXEngine
 		virtual void Render(Camera* camera);
 
 	private:
+		uint32_t drawCommandID = 0;
 		Matrix4 shadowProj;
 		vector<Matrix4> shadowTransforms;
 		Shader* shadowCubeMapShader;

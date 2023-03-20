@@ -43,6 +43,7 @@ namespace ZXEngine
 		RenderStateSetting* renderState;
 		RenderStateSetting* previewQuadRenderState;
 		ClearInfo clearInfo;
+		uint32_t drawCommandID = 0;
 
 		void RenderMaterialPreview(AssetMaterialInfo* info);
 		void RenderModelPreview(AssetModelInfo* info);

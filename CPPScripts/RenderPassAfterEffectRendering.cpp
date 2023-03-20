@@ -21,6 +21,8 @@ namespace ZXEngine
 		renderState->depthWrite = false;
 
 		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT | ZX_CLEAR_FRAME_BUFFER_STENCIL_BIT;
+
+		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand();
 	}
 
 	void RenderPassAfterEffectRendering::Render(Camera* camera)
@@ -112,6 +114,7 @@ namespace ZXEngine
 		shader->Use();
 		shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(sourceFBO)->ColorBuffer, 0);
 		RenderAPI::GetInstance()->Draw(screenQuad->VAO);
+		RenderAPI::GetInstance()->GenerateDrawCommand(drawCommandID);
 		// 返回输出的FBO名字
 		return ExtractBrightArea;
 	}
@@ -139,6 +142,7 @@ namespace ZXEngine
 			shader->SetBool("_Horizontal", isHorizontal);
 			shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(colorFBO)->ColorBuffer, 0);
 			RenderAPI::GetInstance()->Draw(screenQuad->VAO);
+			RenderAPI::GetInstance()->GenerateDrawCommand(drawCommandID);
 			isHorizontal = !isHorizontal;
 		}
 		// 返回最终输出的FBO名字
@@ -166,6 +170,7 @@ namespace ZXEngine
 			shader->SetInt("_BlurTimes", i+1);
 			shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(colorFBO)->ColorBuffer, 0);
 			RenderAPI::GetInstance()->Draw(screenQuad->VAO);
+			RenderAPI::GetInstance()->GenerateDrawCommand(drawCommandID);
 			isSwitch = !isSwitch;
 		}
 		// 返回最终输出的FBO名字
@@ -187,6 +192,7 @@ namespace ZXEngine
 		shader->SetTexture("_BrightBlur", FBOManager::GetInstance()->GetFBO(blurFBO)->ColorBuffer, 0);
 		shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(originFBO)->ColorBuffer, 1);
 		RenderAPI::GetInstance()->Draw(screenQuad->VAO);
+		RenderAPI::GetInstance()->GenerateDrawCommand(drawCommandID);
 		return BloomBlend;
 	}
 }

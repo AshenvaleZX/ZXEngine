@@ -46,6 +46,8 @@ namespace ZXEngine
 		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT | ZX_CLEAR_FRAME_BUFFER_STENCIL_BIT;
 		clearInfo.color = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
 
+		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand();
+
 		FBOManager::GetInstance()->CreateFBO("AssetPreview", FrameBufferType::Normal, previewSize, previewSize);
 	}
 
@@ -101,6 +103,8 @@ namespace ZXEngine
 			RenderMaterialPreview(static_cast<AssetMaterialInfo*>(curAssetInfo));
 		else if (curAsset->type == AssetType::Model)
 			RenderModelPreview(static_cast<AssetModelInfo*>(curAssetInfo));
+
+		renderAPI->GenerateDrawCommand(drawCommandID);
 
 		RenderToQuad();
 	}
@@ -163,6 +167,7 @@ namespace ZXEngine
 		previewQuadShader->Use();
 		previewQuadShader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("AssetPreview")->ColorBuffer, 0);
 		renderAPI->Draw(previewQuad->VAO);
+		renderAPI->GenerateDrawCommand(drawCommandID);
 		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight, ProjectSetting::hierarchyWidth, ProjectSetting::projectHeight);
 	}
 

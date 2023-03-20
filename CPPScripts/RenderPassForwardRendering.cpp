@@ -28,6 +28,8 @@ namespace ZXEngine
 		opaqueRenderState = new RenderStateSetting();
 
 		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT | ZX_CLEAR_FRAME_BUFFER_STENCIL_BIT;
+
+		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand();
 	}
 
 	void RenderPassForwardRendering::Render(Camera* camera)
@@ -73,6 +75,8 @@ namespace ZXEngine
 
 		ParticleSystemManager::GetInstance()->Update();
 		ParticleSystemManager::GetInstance()->Render(camera);
+
+		renderAPI->GenerateDrawCommand(drawCommandID);
 
 		// 每次渲染完要清空，下次要渲染的时候再重新添加
 		RenderQueueManager::GetInstance()->ClearAllRenderQueue();

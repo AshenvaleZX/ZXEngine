@@ -11,6 +11,8 @@ namespace ZXEngine
 	{
 		UITextureRenderer::Init();
 		TextCharactersManager::Create();
+
+		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand();
 	}
 
 	void RenderPassUIRendering::Render(Camera* camera)
@@ -29,6 +31,8 @@ namespace ZXEngine
 			if (uiTextRenderer != nullptr)
 				uiTextRenderer->Render();
 		}
+
+		RenderAPI::GetInstance()->GenerateDrawCommand(drawCommandID);
 
 		RenderQueueManager::GetInstance()->ClearUIGameObjects();
 	}

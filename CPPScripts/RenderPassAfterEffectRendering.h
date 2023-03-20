@@ -22,6 +22,7 @@ namespace ZXEngine
 		virtual void Render(Camera* camera);
 
 	private:
+		uint32_t drawCommandID = 0;
 		StaticMesh* screenQuad;
 		map<string, Shader*> aeShaders;
 		RenderStateSetting* renderState;
