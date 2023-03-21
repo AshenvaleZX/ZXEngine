@@ -84,9 +84,12 @@ namespace ZXEngine
         // Vulkan不需要实现这个接口
     }
 
-    void RenderAPIVulkan::SwitchFrameBuffer(unsigned int id)
+    void RenderAPIVulkan::SwitchFrameBuffer(uint32_t id)
     {
-        curFBOIdx = id;
+        if (id == UINT32_MAX)
+            curFBOIdx = presentFBOIdx;
+        else
+            curFBOIdx = id;
     }
 
     void RenderAPIVulkan::SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset, unsigned int yOffset)

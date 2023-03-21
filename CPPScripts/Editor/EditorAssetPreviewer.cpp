@@ -161,7 +161,7 @@ namespace ZXEngine
 	void EditorAssetPreviewer::RenderToQuad()
 	{
 		auto renderAPI = RenderAPI::GetInstance();
-		renderAPI->SwitchFrameBuffer(0);
+		renderAPI->SwitchFrameBuffer(UINT32_MAX);
 		renderAPI->SetViewPort(ProjectSetting::inspectorWidth, ProjectSetting::inspectorWidth, ProjectSetting::srcWidth - ProjectSetting::inspectorWidth, 0);
 		renderAPI->SetRenderState(previewQuadRenderState);
 		previewQuadShader->Use();

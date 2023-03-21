@@ -21,7 +21,7 @@ namespace ZXEngine
         virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0);
 
         // FrameBufferœ‡πÿ
-        virtual void SwitchFrameBuffer(unsigned int id);
+        virtual void SwitchFrameBuffer(uint32_t id);
         virtual void ClearFrameBuffer(const ClearInfo& clearInfo);
         virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
 

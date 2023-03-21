@@ -27,7 +27,7 @@ namespace ZXEngine
 #ifdef ZX_EDITOR
 			RenderAPI::GetInstance()->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight, ProjectSetting::hierarchyWidth, ProjectSetting::projectHeight);
 #endif
-			RenderAPI::GetInstance()->SwitchFrameBuffer(0);
+			RenderAPI::GetInstance()->SwitchFrameBuffer(UINT32_MAX);
 			return;
 		}
 

@@ -55,9 +55,12 @@ namespace ZXEngine
 		stateDirty = true;
 	}
 
-	void RenderAPIOpenGL::SwitchFrameBuffer(unsigned int id)
+	void RenderAPIOpenGL::SwitchFrameBuffer(uint32_t id)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, id);
+		if (id == UINT32_MAX)
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		else
+			glBindFramebuffer(GL_FRAMEBUFFER, id);
 	}
 
 	void RenderAPIOpenGL::SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset, unsigned int yOffset)
