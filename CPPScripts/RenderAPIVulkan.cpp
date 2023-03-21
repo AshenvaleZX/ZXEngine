@@ -66,16 +66,56 @@ namespace ZXEngine
         CreateAllRenderPass();
         CreatePresentFrameBuffer();
 
+        presentImageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+        VkSemaphoreCreateInfo semaphoreInfo{};
+        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+            if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &presentImageAvailableSemaphores[i]) != VK_SUCCESS)
+                throw std::runtime_error("failed to create synchronization objects for a frame!");
+
         InitImmediateCommand();
     }
 
     void RenderAPIVulkan::BeginFrame()
     {
-
+        VkResult result = vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, presentImageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &curPresentImageIdx);
+        // 交换链和Surface已经不兼容了，不能继续用了，一般是窗口大小变化导致的
+        if (result == VK_ERROR_OUT_OF_DATE_KHR)
+        {
+            // 重新创建交换链来适配新的Surface
+            // 暂未实现
+            Debug::LogError("Need to implement swap chain recreation !");
+            return;
+        }
+        else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+            throw std::runtime_error("failed to acquire swap chain image!");
     }
 
     void RenderAPIVulkan::EndFrame()
     {
+        VkSwapchainKHR swapChains[] = { swapChain };
+        VkPresentInfoKHR presentInfo = {};
+        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+        presentInfo.pWaitSemaphores = VK_NULL_HANDLE;
+        presentInfo.waitSemaphoreCount = 0;
+        presentInfo.pSwapchains = swapChains;
+        presentInfo.swapchainCount = 1;
+        presentInfo.pImageIndices = &curPresentImageIdx;
+        presentInfo.pResults = VK_NULL_HANDLE;
+        
+        VkResult result = vkQueuePresentKHR(presentQueue, &presentInfo);
+        // VK_ERROR_OUT_OF_DATE_KHR表示交换链和Surface已经不兼容了，不能继续用了，必须重新创建交换链
+        // VK_SUBOPTIMAL_KHR表示交换链还是可以继续用，但是和Surface的某些属性匹配得不是很好，不重新创建也行
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || windowResized) 
+        {
+            windowResized = false;
+            // 重新创建交换链来适配新的Surface
+            // 暂未实现
+            Debug::LogError("Need to implement swap chain recreation !");
+        }
+        else if (result != VK_SUCCESS)
+            throw std::runtime_error("failed to present swap chain image!");
+
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 

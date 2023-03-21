@@ -94,6 +94,7 @@ namespace ZXEngine
         VkQueue presentQueue = VK_NULL_HANDLE;
         // 提供给交换链显示画面的Frame Buffer
         uint32_t presentFBOIdx = 0;
+
         // 交换链
         VkSwapchainKHR swapChain = VK_NULL_HANDLE;
         // 交换链Image(创建交换链的时候自动创建，销毁交换链的时候自动销毁)
@@ -104,6 +105,11 @@ namespace ZXEngine
         VkFormat swapChainImageFormat;
         // 交换链上图像的大小
         VkExtent2D swapChainExtent;
+        // 当前这一帧所用的Image在交换链里的索引
+        uint32_t curPresentImageIdx = 0;
+        // 交换链Image可用的信号量
+        vector<VkSemaphore> presentImageAvailableSemaphores;
+
         // 命令池
         VkCommandPool commandPool = VK_NULL_HANDLE;
 
