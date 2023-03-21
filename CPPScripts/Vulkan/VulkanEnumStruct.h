@@ -82,9 +82,15 @@ namespace ZXEngine
 
     struct VulkanFBO
     {
-        VkFramebuffer frameBuffer;
+        vector<VkFramebuffer> frameBuffers;
         FrameBufferType bufferType = FrameBufferType::Normal;
         RenderPassType renderPassType = RenderPassType::Normal;
+        bool inUse = false;
+    };
+
+    struct VulkanAttachmentBuffer
+    {
+        vector<uint32_t> attachmentBuffers;
         bool inUse = false;
     };
 

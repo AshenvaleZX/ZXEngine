@@ -93,7 +93,7 @@ namespace ZXEngine
         // 展示队列
         VkQueue presentQueue = VK_NULL_HANDLE;
         // 提供给交换链显示画面的Frame Buffer
-        vector<VkFramebuffer> presentFrameBuffers;
+        uint32_t presentFBOIdx = 0;
         // 交换链
         VkSwapchainKHR swapChain = VK_NULL_HANDLE;
         // 交换链Image(创建交换链的时候自动创建，销毁交换链的时候自动销毁)
@@ -154,6 +154,7 @@ namespace ZXEngine
 
         vector<VulkanVAO*> VulkanVAOArray;
         vector<VulkanFBO*> VulkanFBOArray;
+        vector<VulkanAttachmentBuffer*> VulkanAttachmentBufferArray;
         vector<VulkanTexture*> VulkanTextureArray;
         vector<VulkanPipeline*> VulkanPipelineArray;
         vector<VulkanDrawCommand*> VulkanDrawCommandArray;
@@ -166,6 +167,8 @@ namespace ZXEngine
         VulkanVAO* GetVAOByIndex(uint32_t idx);
         uint32_t GetNextFBOIndex();
         VulkanFBO* GetFBOByIndex(uint32_t idx);
+        uint32_t GetNextAttachmentBufferIndex();
+        VulkanAttachmentBuffer* GetAttachmentBufferByIndex(uint32_t idx);
         uint32_t GetNextTextureIndex();
         VulkanTexture* GetTextureByIndex(uint32_t idx);
         uint32_t GetNextPipelineIndex();

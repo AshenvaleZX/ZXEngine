@@ -120,7 +120,7 @@ namespace ZXEngine
             VkRenderPassBeginInfo renderPassInfo = {};
             renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
             renderPassInfo.renderPass = GetRenderPass(FBO->renderPassType);
-            renderPassInfo.framebuffer = FBO->frameBuffer;
+            renderPassInfo.framebuffer = FBO->frameBuffers[currentFrame];
             renderPassInfo.renderArea.offset = { viewPortInfo.xOffset, viewPortInfo.yOffset };
             renderPassInfo.renderArea.extent = { viewPortInfo.width, viewPortInfo.height };
             renderPassInfo.pClearValues = clearValues.data();
@@ -487,38 +487,125 @@ namespace ZXEngine
         if (type == FrameBufferType::Normal)
         {
             FBO->ID = GetNextFBOIndex();
+            FBO->ColorBuffer = GetNextAttachmentBufferIndex();
+            FBO->DepthBuffer = GetNextAttachmentBufferIndex();
+
             auto vulkanFBO = GetFBOByIndex(FBO->ID);
             vulkanFBO->bufferType = FrameBufferType::Normal;
             vulkanFBO->renderPassType = RenderPassType::Normal;
 
-            VulkanImage colorImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
-                VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
-            VkImageView colorImageView = CreateImageView(colorImage.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
-            VkSampler colorSampler = CreateSampler(1);
-            FBO->ColorBuffer = CreateVulkanTexture(colorImage, colorImageView, colorSampler);
+            auto colorAttachmentBuffer = GetAttachmentBufferByIndex(FBO->ColorBuffer);
+            auto depthAttachmentBuffer = GetAttachmentBufferByIndex(FBO->DepthBuffer);
 
-            VulkanImage depthImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D16_UNORM, VK_IMAGE_TILING_OPTIMAL,
-                VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
-            VkImageView depthImageView = CreateImageView(depthImage.image, VK_FORMAT_D16_UNORM, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_VIEW_TYPE_2D);
-            VkSampler depthSampler = CreateSampler(1);
-            FBO->DepthBuffer = CreateVulkanTexture(depthImage, depthImageView, depthSampler);
+            for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+            {
+                VulkanImage colorImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
+                    VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+                VkImageView colorImageView = CreateImageView(colorImage.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkSampler colorSampler = CreateSampler(1);
+                colorAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(colorImage, colorImageView, colorSampler);
 
-            array<VkImageView, 2> attachments = { colorImageView, depthImageView };
+                VulkanImage depthImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D16_UNORM, VK_IMAGE_TILING_OPTIMAL,
+                    VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+                VkImageView depthImageView = CreateImageView(depthImage.image, VK_FORMAT_D16_UNORM, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkSampler depthSampler = CreateSampler(1);
+                depthAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(depthImage, depthImageView, depthSampler);
 
-            VkFramebufferCreateInfo framebufferInfo{};
-            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-            // 指定可以兼容的render pass(这个frame buffer和指定的render pass的attachment的数量和类型需要一致)
-            framebufferInfo.renderPass = GetRenderPass(RenderPassType::Normal);
-            framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-            framebufferInfo.pAttachments = attachments.data();
-            framebufferInfo.width = width;
-            framebufferInfo.height = height;
-            framebufferInfo.layers = 1;
+                array<VkImageView, 2> attachments = { colorImageView, depthImageView };
 
-            if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &vulkanFBO->frameBuffer) != VK_SUCCESS)
-                throw std::runtime_error("failed to create framebuffer!");
+                VkFramebufferCreateInfo framebufferInfo{};
+                framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+                // 指定可以兼容的render pass(这个frame buffer和指定的render pass的attachment的数量和类型需要一致)
+                framebufferInfo.renderPass = GetRenderPass(RenderPassType::Normal);
+                framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+                framebufferInfo.pAttachments = attachments.data();
+                framebufferInfo.width = width;
+                framebufferInfo.height = height;
+                framebufferInfo.layers = 1;
+
+                if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &vulkanFBO->frameBuffers[i]) != VK_SUCCESS)
+                    throw std::runtime_error("failed to create framebuffer!");
+            }
 
             vulkanFBO->inUse = true;
+            colorAttachmentBuffer->inUse = true;
+            depthAttachmentBuffer->inUse = true;
+        }
+        else if (type == FrameBufferType::Color)
+        {
+            FBO->ID = GetNextFBOIndex();
+            FBO->ColorBuffer = GetNextAttachmentBufferIndex();
+            FBO->DepthBuffer = NULL;
+
+            auto vulkanFBO = GetFBOByIndex(FBO->ID);
+            vulkanFBO->bufferType = FrameBufferType::Color;
+            vulkanFBO->renderPassType = RenderPassType::Normal;
+
+            auto colorAttachmentBuffer = GetAttachmentBufferByIndex(FBO->ColorBuffer);
+
+            for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+            {
+                VulkanImage colorImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
+                    VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+                VkImageView colorImageView = CreateImageView(colorImage.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkSampler colorSampler = CreateSampler(1);
+                colorAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(colorImage, colorImageView, colorSampler);
+
+                array<VkImageView, 1> attachments = { colorImageView };
+
+                VkFramebufferCreateInfo framebufferInfo{};
+                framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+                framebufferInfo.renderPass = GetRenderPass(RenderPassType::Normal);
+                framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+                framebufferInfo.pAttachments = attachments.data();
+                framebufferInfo.width = width;
+                framebufferInfo.height = height;
+                framebufferInfo.layers = 1;
+
+                if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &vulkanFBO->frameBuffers[i]) != VK_SUCCESS)
+                    throw std::runtime_error("failed to create framebuffer!");
+            }
+
+            vulkanFBO->inUse = true;
+            colorAttachmentBuffer->inUse = true;
+        }
+        else if (type == FrameBufferType::ShadowCubeMap)
+        {
+            FBO->ID = GetNextFBOIndex();
+            FBO->ColorBuffer = NULL;
+            FBO->DepthBuffer = GetNextAttachmentBufferIndex();
+
+            auto vulkanFBO = GetFBOByIndex(FBO->ID);
+            vulkanFBO->bufferType = FrameBufferType::ShadowCubeMap;
+            vulkanFBO->renderPassType = RenderPassType::Normal;
+
+            auto depthAttachmentBuffer = GetAttachmentBufferByIndex(FBO->DepthBuffer);
+
+            for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+            {
+                VulkanImage depthImage = CreateImage(width, height, 1, 6, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D16_UNORM, VK_IMAGE_TILING_OPTIMAL,
+                    VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+                VkImageView depthImageView = CreateImageView(depthImage.image, VK_FORMAT_D16_UNORM, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_VIEW_TYPE_CUBE);
+                VkSampler depthSampler = CreateSampler(1);
+                depthAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(depthImage, depthImageView, depthSampler);
+
+                array<VkImageView, 1> attachments = { depthImageView };
+
+                VkFramebufferCreateInfo framebufferInfo{};
+                framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+                framebufferInfo.renderPass = GetRenderPass(RenderPassType::Normal);
+                framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+                framebufferInfo.pAttachments = attachments.data();
+                framebufferInfo.width = width;
+                framebufferInfo.height = height;
+                framebufferInfo.layers = 1;
+
+                if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &vulkanFBO->frameBuffers[i]) != VK_SUCCESS)
+                    throw std::runtime_error("failed to create framebuffer!");
+            }
+
+            vulkanFBO->inUse = true;
+            depthAttachmentBuffer->inUse = true;
         }
         else
         {
@@ -555,7 +642,7 @@ namespace ZXEngine
         VkRenderPassBeginInfo renderPassInfo = {};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         renderPassInfo.renderPass = GetRenderPass(RenderPassType::Normal);
-        renderPassInfo.framebuffer = GetFBOByIndex(curFBOIdx)->frameBuffer;
+        renderPassInfo.framebuffer = GetFBOByIndex(curFBOIdx)->frameBuffers[currentFrame];
         // 这个render area定义了shader将要加载和存储的位置
         renderPassInfo.renderArea.offset = { 0, 0 };
         // 一般来说大小(extend)是和framebuffer的attachment一致的，如果小了会浪费，大了超出去的部分是一些未定义数值
@@ -964,7 +1051,9 @@ namespace ZXEngine
                 return i;
         }
 
-        VulkanFBOArray.push_back(new VulkanFBO());
+        auto newFBO = new VulkanFBO();
+        newFBO->frameBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+        VulkanFBOArray.push_back(newFBO);
 
         return length;
     }
@@ -972,6 +1061,28 @@ namespace ZXEngine
     VulkanFBO* RenderAPIVulkan::GetFBOByIndex(uint32_t idx)
     {
         return VulkanFBOArray[idx];
+    }
+
+    uint32_t RenderAPIVulkan::GetNextAttachmentBufferIndex()
+    {
+        uint32_t length = (uint32_t)VulkanAttachmentBufferArray.size();
+
+        for (uint32_t i = 0; i < length; i++)
+        {
+            if (!VulkanAttachmentBufferArray[i]->inUse)
+                return i;
+        }
+
+        auto newAttachmentBuffer = new VulkanAttachmentBuffer();
+        newAttachmentBuffer->attachmentBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+        VulkanAttachmentBufferArray.push_back(newAttachmentBuffer);
+
+        return length;
+    }
+
+    VulkanAttachmentBuffer* RenderAPIVulkan::GetAttachmentBufferByIndex(uint32_t idx)
+    {
+        return VulkanAttachmentBufferArray[idx];
     }
 
     uint32_t RenderAPIVulkan::GetNextDrawCommandIndex()
@@ -1340,7 +1451,14 @@ namespace ZXEngine
 
     void RenderAPIVulkan::CreatePresentFrameBuffer()
     {
-        presentFrameBuffers.resize(swapChainImages.size());
+        presentFBOIdx = GetNextFBOIndex();
+        auto vulkanFBO = GetFBOByIndex(presentFBOIdx);
+        vulkanFBO->bufferType = FrameBufferType::Present;
+        vulkanFBO->renderPassType = RenderPassType::Normal;
+
+        vulkanFBO->frameBuffers.clear();
+        vulkanFBO->frameBuffers.resize(swapChainImages.size());
+
         swapChainImageViews.resize(swapChainImages.size());
         for (size_t i = 0; i < swapChainImages.size(); i++)
         {
@@ -1362,9 +1480,11 @@ namespace ZXEngine
             // layer是指定图像数组中的层数，交换链图像是单个图像，因此层数为1
             framebufferInfo.layers = 1;
 
-            if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &presentFrameBuffers[i]) != VK_SUCCESS)
+            if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &vulkanFBO->frameBuffers[i]) != VK_SUCCESS)
                 throw std::runtime_error("failed to create framebuffer!");
         }
+
+        vulkanFBO->inUse = true;
     }
 
 
