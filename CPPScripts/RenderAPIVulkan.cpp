@@ -1763,7 +1763,7 @@ namespace ZXEngine
         // 查一下有没有我们理想的格式和色彩空间组合，优先用这个
         for (const auto& availableFormat : availableFormats)
         {
-            if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+            if (availableFormat.format == VK_FORMAT_R8G8B8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
                 return availableFormat;
         }
 
@@ -2154,8 +2154,8 @@ namespace ZXEngine
         if (type == RenderPassType::Present)
         {
             VkAttachmentDescription colorAttachment = {};
-            colorAttachment.format = VK_FORMAT_R8G8B8A8_SRGB;
-            colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+            colorAttachment.format = swapChainImageFormat;
+            colorAttachment.samples = msaaSamplesCount;
             colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
             colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -2208,7 +2208,7 @@ namespace ZXEngine
             if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
                 throw std::runtime_error("failed to create render pass!");
         }
-        if (type == RenderPassType::Normal)
+        else if (type == RenderPassType::Normal)
         {
             VkAttachmentDescription colorAttachment = {};
             colorAttachment.format = VK_FORMAT_R8G8B8A8_SRGB;
