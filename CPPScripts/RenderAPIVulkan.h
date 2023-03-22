@@ -155,9 +155,6 @@ namespace ZXEngine
     /// Vulkan资源创建相关接口(这些接口Create出来的需要手动Destroy)
     /// </summary>
     private:
-        uint32_t curFBOIdx = 0;
-        uint32_t curPipeLineIdx = 0;
-
         vector<VulkanVAO*> VulkanVAOArray;
         vector<VulkanFBO*> VulkanFBOArray;
         vector<VulkanAttachmentBuffer*> VulkanAttachmentBufferArray;
@@ -228,10 +225,14 @@ namespace ZXEngine
         bool windowResized = false;
 
     private:
+        uint32_t curFBOIdx = 0;
+        uint32_t curPipeLineIdx = 0;
+
         VkFence immediateExeFence;
         VkCommandBuffer immediateExeCmd;
         ViewPortInfo viewPortInfo;
 
+        uint32_t GetCurFrameBufferIndex();
         uint32_t GetMipMapLevels(int width, int height);
         void InitImmediateCommand();
         void ImmediatelyExecute(std::function<void(VkCommandBuffer cmd)>&& function);

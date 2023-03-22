@@ -163,7 +163,7 @@ namespace ZXEngine
             VkRenderPassBeginInfo renderPassInfo = {};
             renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
             renderPassInfo.renderPass = GetRenderPass(FBO->renderPassType);
-            renderPassInfo.framebuffer = FBO->frameBuffers[currentFrame];
+            renderPassInfo.framebuffer = FBO->frameBuffers[GetCurFrameBufferIndex()];
             renderPassInfo.renderArea.offset = { viewPortInfo.xOffset, viewPortInfo.yOffset };
             renderPassInfo.renderArea.extent = { viewPortInfo.width, viewPortInfo.height };
             renderPassInfo.pClearValues = clearValues.data();
@@ -685,7 +685,7 @@ namespace ZXEngine
         VkRenderPassBeginInfo renderPassInfo = {};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         renderPassInfo.renderPass = GetRenderPass(RenderPassType::Normal);
-        renderPassInfo.framebuffer = GetFBOByIndex(curFBOIdx)->frameBuffers[currentFrame];
+        renderPassInfo.framebuffer = GetFBOByIndex(curFBOIdx)->frameBuffers[GetCurFrameBufferIndex()];
         // 这个render area定义了shader将要加载和存储的位置
         renderPassInfo.renderArea.offset = { 0, 0 };
         // 一般来说大小(extend)是和framebuffer的attachment一致的，如果小了会浪费，大了超出去的部分是一些未定义数值
@@ -2493,6 +2493,14 @@ namespace ZXEngine
             vkDestroyShaderModule(device, shaderModule.second, nullptr);
     }
 
+
+    uint32_t RenderAPIVulkan::GetCurFrameBufferIndex()
+    {
+        if (curFBOIdx == presentFBOIdx)
+            return curPresentImageIdx;
+        else
+            return currentFrame;
+    }
 
     uint32_t RenderAPIVulkan::GetMipMapLevels(int width, int height)
     {
