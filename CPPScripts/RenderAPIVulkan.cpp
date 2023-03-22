@@ -57,11 +57,11 @@ namespace ZXEngine
     {
         CreateVkInstance();
         CreateDebugMessenger();
+        CreateSurface();
         CreatePhysicalDevice();
         CreateLogicalDevice();
         CreateMemoryAllocator();
         CreateCommandPool();
-        CreateSurface();
         CreateSwapChain();
         CreateAllRenderPass();
         CreatePresentFrameBuffer();
