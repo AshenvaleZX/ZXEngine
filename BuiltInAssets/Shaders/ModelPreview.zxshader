@@ -42,7 +42,7 @@ Fragment
 
     Properties
     {
-        vec3 _Direction;
+        vec3 _Direction
     }
 
     Program

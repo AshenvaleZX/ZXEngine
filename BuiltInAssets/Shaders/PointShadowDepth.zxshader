@@ -65,8 +65,8 @@ Fragment
 
     Properties
     {
-        vec3 _LightPos;
-        float _FarPlane;
+        vec3 _LightPos
+        float _FarPlane
     }
 
     Program

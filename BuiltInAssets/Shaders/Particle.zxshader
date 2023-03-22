@@ -17,7 +17,7 @@ Vertex
         using ENGINE_Model
         using ENGINE_View
         using ENGINE_Projection
-        vec4 _Color;
+        vec4 _Color
     }
 
     Program
