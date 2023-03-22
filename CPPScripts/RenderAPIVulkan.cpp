@@ -746,6 +746,9 @@ namespace ZXEngine
         if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
             throw std::runtime_error("failed to submit draw command buffer!");
 
+        // 先临时这样处理一下同步问题
+        vkQueueWaitIdle(graphicsQueue);
+
         drawIndexes.clear();
     }
 
