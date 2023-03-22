@@ -518,6 +518,8 @@ namespace ZXEngine
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 		glBindVertexArray(0);
+
+		meshBuffer->inUse = true;
 	}
 
 	uint32_t RenderAPIOpenGL::AllocateDrawCommand()
