@@ -112,7 +112,7 @@ namespace ZXEngine
 		RenderAPI::GetInstance()->ClearFrameBuffer(clearInfo);
 		auto shader = GetShader(ExtractBrightArea);
 		shader->Use();
-		shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(sourceFBO)->ColorBuffer, 0);
+		shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(sourceFBO)->ColorBuffer, 0, true);
 		RenderAPI::GetInstance()->Draw(screenQuad->VAO);
 		RenderAPI::GetInstance()->GenerateDrawCommand(drawCommandID);
 		// 返回输出的FBO名字
@@ -140,7 +140,7 @@ namespace ZXEngine
 			FBOManager::GetInstance()->SwitchFBO(pingpongBuffer[isHorizontal]);
 			string colorFBO = i == 0 ? sourceFBO : pingpongBuffer[!isHorizontal];
 			shader->SetBool("_Horizontal", isHorizontal);
-			shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(colorFBO)->ColorBuffer, 0);
+			shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(colorFBO)->ColorBuffer, 0, true);
 			RenderAPI::GetInstance()->Draw(screenQuad->VAO);
 			RenderAPI::GetInstance()->GenerateDrawCommand(drawCommandID);
 			isHorizontal = !isHorizontal;
@@ -168,7 +168,7 @@ namespace ZXEngine
 			FBOManager::GetInstance()->SwitchFBO(pingpongBuffer[isSwitch]);
 			string colorFBO = i == 0 ? sourceFBO : pingpongBuffer[!isSwitch];
 			shader->SetInt("_BlurTimes", i+1);
-			shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(colorFBO)->ColorBuffer, 0);
+			shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(colorFBO)->ColorBuffer, 0, true);
 			RenderAPI::GetInstance()->Draw(screenQuad->VAO);
 			RenderAPI::GetInstance()->GenerateDrawCommand(drawCommandID);
 			isSwitch = !isSwitch;
@@ -189,8 +189,8 @@ namespace ZXEngine
 		FBOManager::GetInstance()->SwitchFBO(isFinal ? ScreenBuffer : BloomBlend);
 		auto shader = GetShader(BloomBlend);
 		shader->Use();
-		shader->SetTexture("_BrightBlur", FBOManager::GetInstance()->GetFBO(blurFBO)->ColorBuffer, 0);
-		shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(originFBO)->ColorBuffer, 1);
+		shader->SetTexture("_BrightBlur", FBOManager::GetInstance()->GetFBO(blurFBO)->ColorBuffer, 0, true);
+		shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(originFBO)->ColorBuffer, 1, true);
 		RenderAPI::GetInstance()->Draw(screenQuad->VAO);
 		RenderAPI::GetInstance()->GenerateDrawCommand(drawCommandID);
 		return BloomBlend;

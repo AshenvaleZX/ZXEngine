@@ -165,7 +165,7 @@ namespace ZXEngine
 		renderAPI->SetViewPort(ProjectSetting::inspectorWidth, ProjectSetting::inspectorWidth, ProjectSetting::srcWidth - ProjectSetting::inspectorWidth, 0);
 		renderAPI->SetRenderState(previewQuadRenderState);
 		previewQuadShader->Use();
-		previewQuadShader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("AssetPreview")->ColorBuffer, 0);
+		previewQuadShader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("AssetPreview")->ColorBuffer, 0, true);
 		renderAPI->Draw(previewQuad->VAO);
 		renderAPI->GenerateDrawCommand(drawCommandID);
 		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight, ProjectSetting::hierarchyWidth, ProjectSetting::projectHeight);

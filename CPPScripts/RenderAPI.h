@@ -64,7 +64,7 @@ namespace ZXEngine
 		virtual void SetShaderVector(ShaderReference* reference, const string& name, float x, float y, float z, float w) = 0;
 		virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& value) = 0;
 		virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& value) = 0;
-		virtual void SetShaderTexture(ShaderReference* reference, const string& name, unsigned int textureID, unsigned int idx) = 0;
-		virtual void SetShaderCubeMap(ShaderReference* reference, const string& name, unsigned int textureID, unsigned int idx) = 0;
+		virtual void SetShaderTexture(ShaderReference* reference, const string& name, uint32_t ID, uint32_t idx, bool isBuffer = false) = 0;
+		virtual void SetShaderCubeMap(ShaderReference* reference, const string& name, uint32_t ID, uint32_t idx, bool isBuffer = false) = 0;
 	};
 }

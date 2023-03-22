@@ -726,17 +726,17 @@ namespace ZXEngine
 		glUniformMatrix4fv(glGetUniformLocation(reference->ID, name.c_str()), 1, GL_FALSE, array);
 		delete[] array;
 	}
-	void RenderAPIOpenGL::SetShaderTexture(ShaderReference* reference, const string& name, unsigned int textureID, unsigned int idx)
+	void RenderAPIOpenGL::SetShaderTexture(ShaderReference* reference, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
 	{
 		glUniform1i(glGetUniformLocation(reference->ID, name.c_str()), idx);
 		glActiveTexture(GL_TEXTURE0 + idx);
-		glBindTexture(GL_TEXTURE_2D, textureID);
+		glBindTexture(GL_TEXTURE_2D, ID);
 	}
-	void RenderAPIOpenGL::SetShaderCubeMap(ShaderReference* reference, const string& name, unsigned int textureID, unsigned int idx)
+	void RenderAPIOpenGL::SetShaderCubeMap(ShaderReference* reference, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
 	{
 		glUniform1i(glGetUniformLocation(reference->ID, name.c_str()), idx);
 		glActiveTexture(GL_TEXTURE0 + idx);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
 	}
 
 	void RenderAPIOpenGL::UpdateRenderState()

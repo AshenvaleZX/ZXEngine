@@ -1029,13 +1029,17 @@ namespace ZXEngine
     }
 
     // Vulkan不需要第4个参数
-    void RenderAPIVulkan::SetShaderTexture(ShaderReference* reference, const string& name, unsigned int textureID, unsigned int idx)
+    void RenderAPIVulkan::SetShaderTexture(ShaderReference* reference, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
     {
         auto pipeline = GetPipelineByIndex(reference->ID);
 
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
             vector<VkWriteDescriptorSet> writeDescriptorSets;
+
+            uint32_t textureID = ID;
+            if (isBuffer)
+                textureID = GetAttachmentBufferByIndex(ID)->attachmentBuffers[i];
 
             auto texture = GetTextureByIndex(textureID);
             uint32_t binding = UINT32_MAX;
@@ -1062,9 +1066,9 @@ namespace ZXEngine
         }
     }
 
-    void RenderAPIVulkan::SetShaderCubeMap(ShaderReference* reference, const string& name, unsigned int textureID, unsigned int idx)
+    void RenderAPIVulkan::SetShaderCubeMap(ShaderReference* reference, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
     {
-        SetShaderTexture(reference, name, textureID, idx);
+        SetShaderTexture(reference, name, ID, idx, isBuffer);
     }
 
     uint32_t RenderAPIVulkan::GetNextVAOIndex()

@@ -35,8 +35,8 @@ namespace ZXEngine
 		void SetVec4(string name, float x, float y, float z, float w);
 		void SetMat3(string name, Matrix3 value);
 		void SetMat4(string name, Matrix4 value);
-		void SetTexture(string name, unsigned int textureID, unsigned int idx);
-		void SetCubeMap(string name, unsigned int textureID, unsigned int idx);
+		void SetTexture(string name, uint32_t ID, uint32_t idx, bool isBuffer = false);
+		void SetCubeMap(string name, uint32_t ID, uint32_t idx, bool isBuffer = false);
 
 	private:
 		uint16_t textureIdx = 0;
