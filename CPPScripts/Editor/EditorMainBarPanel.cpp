@@ -61,6 +61,7 @@ namespace ZXEngine
 					if (ImGui::MenuItem("Compile All Shader for Vulkan"))
 					{
 						SPIRVCompiler::CompileAllShader(Resources::GetAssetsPath());
+						SPIRVCompiler::CompileAllShader(Resources::GetAssetFullPath("Shaders", true));
 						Debug::Log("The compilation of all shaders is complete.");
 					}
 
