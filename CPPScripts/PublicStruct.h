@@ -35,6 +35,7 @@ namespace ZXEngine
 		uint32_t offset = 0; // Offset in uniform buffer, Only for Vulkan now
 		uint32_t binding = 0; // Only for Vulkan now
 		string name;
+		uint32_t arrayLength = 0;
 		ShaderPropertyType type;
 	};
 

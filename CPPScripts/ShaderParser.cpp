@@ -188,7 +188,7 @@ namespace ZXEngine
 			{
 				auto type = shaderPropertyMap[words[0]];
 				ShaderProperty property = {};
-				property.name = words[1];
+				GetPropertyNameAndArrayLength(words[1], property.name, property.arrayLength);
 				property.type = type;
 				if (IsBasePropertyType(type))
 					propertiesInfo.baseProperties.push_back(property);
@@ -271,6 +271,15 @@ namespace ZXEngine
 
 		string vkCode = "#version 460 core\n\n";
 
+		string gsInOutBlock = GetCodeBlock(originCode, "GSInOut");
+		if (!gsInOutBlock.empty())
+		{
+			auto lines = Utils::StringSplit(gsInOutBlock, '\n');
+			for (auto& line : lines)
+				vkCode += line + ";\n";
+			vkCode += "\n";
+		}
+
 		string inputBlock = GetCodeBlock(originCode, "Input");
 		auto lines = Utils::StringSplit(inputBlock, '\n');
 		for (auto& line : lines)
@@ -297,7 +306,10 @@ namespace ZXEngine
 			for (size_t i = 0; i < info.baseProperties.size(); i++)
 			{
 				auto& property = info.baseProperties[i];
-				vkCode += "    " + propertyTypeToGLSLType[property.type] + " " + property.name + ";\n";
+				if (property.arrayLength == 0)
+					vkCode += "    " + propertyTypeToGLSLType[property.type] + " " + property.name + ";\n";
+				else
+					vkCode += "    " + propertyTypeToGLSLType[property.type] + " " + property.name + "[" + to_string(property.arrayLength) + "];\n";
 			}
 			vkCode += "} _UBO;\n";
 		}
@@ -395,6 +407,29 @@ namespace ZXEngine
 		}
 
 		return code.substr(s + 1, e - s - 1);
+	}
+
+	void ShaderParser::GetPropertyNameAndArrayLength(const string& propertyStr, string& name, uint32_t& arrayLength)
+	{
+		size_t s = 0, e = 0;
+		for (size_t i = 0; i < propertyStr.size(); i++)
+		{
+			if (propertyStr[i] == '[')
+				s = i;
+			else if (propertyStr[i] == ']')
+				e = i;
+		}
+
+		// 不是数组变量
+		if (s == 0 || e == 0)
+		{
+			name = propertyStr;
+			return;
+		}
+
+		name = propertyStr.substr(0, s);
+		string lengthStr = propertyStr.substr(s + 1, e - s - 1);
+		arrayLength = static_cast<uint32_t>(std::stoi(lengthStr));
 	}
 
 	void ShaderParser::SetUpProperties(ShaderInfo& info)

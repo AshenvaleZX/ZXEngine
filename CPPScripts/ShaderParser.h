@@ -18,6 +18,7 @@ namespace ZXEngine
 	private:
 		static ShaderStateSet GetShaderStateSet(const string& code);
 		static string GetCodeBlock(const string& code, const string& blockName);
+		static void GetPropertyNameAndArrayLength(const string& propertyStr, string& name, uint32_t& arrayLength);
 		static void SetUpProperties(ShaderInfo& info);
 	};
 }
