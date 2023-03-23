@@ -180,7 +180,7 @@ namespace ZXEngine
         unsigned char* pixels = stbi_load(path, &width, &height, &nrComponents, STBI_rgb_alpha);
 
         VkDeviceSize imageSize = VkDeviceSize(width * height * 4);
-        VulkanBuffer stagingBuffer = CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
+        VulkanBuffer stagingBuffer = CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
 
         // 把数据拷贝到stagingBuffer
         void* data;
@@ -259,7 +259,7 @@ namespace ZXEngine
 
         VkDeviceSize singleImageSize = VkDeviceSize(texWidth * texHeight * 4);
         VkDeviceSize imageSize = singleImageSize * 6;
-        VulkanBuffer stagingBuffer = CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
+        VulkanBuffer stagingBuffer = CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
 
         // 把数据拷贝到stagingBuffer
         void* data;
@@ -330,7 +330,7 @@ namespace ZXEngine
     {
         // 一个文本纹理像素只有8字节
         VkDeviceSize imageSize = VkDeviceSize(width * height);
-        VulkanBuffer stagingBuffer = CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
+        VulkanBuffer stagingBuffer = CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
 
         // 把数据拷贝到stagingBuffer
         void* ptr;
@@ -887,6 +887,7 @@ namespace ZXEngine
 
         VmaAllocationCreateInfo vmaAllocInfo = {};
         vmaAllocInfo.usage = VMA_MEMORY_USAGE_AUTO;
+        vmaAllocInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
 
         // VertexBuffer
         VkDeviceSize vertexBufferSize = sizeof(Vertex) * vertexSize;
@@ -1831,7 +1832,7 @@ namespace ZXEngine
     }
 
 
-    VulkanBuffer RenderAPIVulkan::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage)
+    VulkanBuffer RenderAPIVulkan::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool map)
     {
         VkBufferCreateInfo bufferInfo = {};
         bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -1840,6 +1841,8 @@ namespace ZXEngine
 
         VmaAllocationCreateInfo allocationInfo = {};
         allocationInfo.usage = memoryUsage;
+        if (map)
+            allocationInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
 
         VulkanBuffer newBuffer;
         vmaCreateBuffer(vmaAllocator, &bufferInfo, &allocationInfo, &newBuffer.buffer, &newBuffer.allocation, nullptr);
@@ -1866,7 +1869,7 @@ namespace ZXEngine
 
         uniformBuffer.binding = properties[0].binding;
         uniformBuffer.size = static_cast<VkDeviceSize>(bufferSize);
-        uniformBuffer.buffer = CreateBuffer(uniformBuffer.size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VMA_MEMORY_USAGE_AUTO);
+        uniformBuffer.buffer = CreateBuffer(uniformBuffer.size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VMA_MEMORY_USAGE_AUTO, true);
         vmaMapMemory(vmaAllocator, uniformBuffer.buffer.allocation, &uniformBuffer.mappedAddress);
 
         return uniformBuffer;

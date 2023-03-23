@@ -181,7 +181,7 @@ namespace ZXEngine
 
         void* GetShaderPropertyAddress(ShaderReference* reference, const string& name);
 
-        VulkanBuffer CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage);
+        VulkanBuffer CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool map = false);
         void DestroyBuffer(VulkanBuffer buffer);
 
         UniformBuffer CreateUniformBuffer(const vector<ShaderProperty>& properties);
