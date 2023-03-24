@@ -1341,6 +1341,7 @@ namespace ZXEngine
         VkPhysicalDeviceFeatures deviceFeatures = {};
         // 启用对各向异性采样的支持
         deviceFeatures.samplerAnisotropy = VK_TRUE;
+        deviceFeatures.geometryShader = VK_TRUE;
 
         // 创建逻辑设备的信息
         VkDeviceCreateInfo createInfo = {};
@@ -2715,9 +2716,29 @@ namespace ZXEngine
             bindings.push_back(samplerBinding);
         }
 
+        if (!info.geomProperties.baseProperties.empty())
+        {
+            VkDescriptorSetLayoutBinding uboBinding = {};
+            uboBinding.binding = info.geomProperties.baseProperties[0].binding;
+            uboBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            uboBinding.descriptorCount = 1;
+            uboBinding.stageFlags = VK_SHADER_STAGE_GEOMETRY_BIT;
+            bindings.push_back(uboBinding);
+        }
+
+        for (auto& texture : info.geomProperties.textureProperties)
+        {
+            VkDescriptorSetLayoutBinding samplerBinding = {};
+            samplerBinding.binding = texture.binding;
+            samplerBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            samplerBinding.descriptorCount = 1;
+            samplerBinding.stageFlags = VK_SHADER_STAGE_GEOMETRY_BIT;
+            bindings.push_back(samplerBinding);
+        }
+
         if (!info.fragProperties.baseProperties.empty())
         {
-            VkDescriptorSetLayoutBinding uboBinding{};
+            VkDescriptorSetLayoutBinding uboBinding = {};
             uboBinding.binding = info.fragProperties.baseProperties[0].binding;
             uboBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             uboBinding.descriptorCount = 1;
