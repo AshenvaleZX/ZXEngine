@@ -330,6 +330,8 @@ namespace ZXEngine
     {
         // 一个文本纹理像素只有8字节
         VkDeviceSize imageSize = VkDeviceSize(width * height);
+        if (imageSize == 0)
+            throw std::runtime_error("Can't create texture with size 0 !");
         VulkanBuffer stagingBuffer = CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
 
         // 把数据拷贝到stagingBuffer

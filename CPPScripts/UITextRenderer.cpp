@@ -34,6 +34,11 @@ namespace ZXEngine
         string::const_iterator c;
         for (c = text.begin(); c != text.end(); c++)
         {
+#ifdef ZX_API_VULKAN
+            // 空格现在是空图像，我还没处理Vulkan里的0 size纹理问题
+            if (*c == ' ')
+                continue;
+#endif
             Character ch = TextCharactersManager::GetInstance()->Characters[*c];
 
             // 计算字符位置和大小
