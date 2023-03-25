@@ -241,8 +241,5 @@ namespace ZXEngine
         VkPipelineInputAssemblyStateCreateInfo GetAssemblyInfo(VkPrimitiveTopology topology);
         VkPipelineRasterizationStateCreateInfo GetRasterizationInfo(VkCullModeFlagBits cullMode);
         VkPipelineMultisampleStateCreateInfo GetPipelineMultisampleInfo(VkSampleCountFlagBits rasterizationSamples);
-
-        VkWriteDescriptorSet GetWriteDescriptorSet(VkDescriptorSet descriptorSet, const UniformBuffer& uniformBuffer);
-        VkWriteDescriptorSet GetWriteDescriptorSet(VkDescriptorSet descriptorSet, VulkanTexture* texture, uint32_t binding);
     };
 }

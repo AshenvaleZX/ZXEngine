@@ -435,11 +435,53 @@ namespace ZXEngine
             vector<VkWriteDescriptorSet> writeDescriptorSets;
 
             if (!pipeline->vertUniformBuffers.empty())
-                writeDescriptorSets.push_back(GetWriteDescriptorSet(pipeline->descriptorSets[i], pipeline->vertUniformBuffers[i]));
+            {
+                VkDescriptorBufferInfo bufferInfo = {};
+                bufferInfo.buffer = pipeline->vertUniformBuffers[i].buffer.buffer;
+                bufferInfo.offset = 0;
+                bufferInfo.range = pipeline->vertUniformBuffers[i].size;
+                VkWriteDescriptorSet writeDescriptorSet = {};
+                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
+                writeDescriptorSet.dstBinding = pipeline->vertUniformBuffers[i].binding;
+                writeDescriptorSet.dstArrayElement = 0;
+                writeDescriptorSet.descriptorCount = 1;
+                writeDescriptorSet.pBufferInfo = &bufferInfo;
+                writeDescriptorSets.push_back(writeDescriptorSet);
+            }
             if (!pipeline->geomUniformBuffers.empty())
-                writeDescriptorSets.push_back(GetWriteDescriptorSet(pipeline->descriptorSets[i], pipeline->geomUniformBuffers[i]));
+            {
+                VkDescriptorBufferInfo bufferInfo = {};
+                bufferInfo.buffer = pipeline->geomUniformBuffers[i].buffer.buffer;
+                bufferInfo.offset = 0;
+                bufferInfo.range = pipeline->geomUniformBuffers[i].size;
+                VkWriteDescriptorSet writeDescriptorSet = {};
+                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
+                writeDescriptorSet.dstBinding = pipeline->geomUniformBuffers[i].binding;
+                writeDescriptorSet.dstArrayElement = 0;
+                writeDescriptorSet.descriptorCount = 1;
+                writeDescriptorSet.pBufferInfo = &bufferInfo;
+                writeDescriptorSets.push_back(writeDescriptorSet);
+            }
             if (!pipeline->fragUniformBuffers.empty())
-                writeDescriptorSets.push_back(GetWriteDescriptorSet(pipeline->descriptorSets[i], pipeline->fragUniformBuffers[i]));
+            {
+                VkDescriptorBufferInfo bufferInfo = {};
+                bufferInfo.buffer = pipeline->fragUniformBuffers[i].buffer.buffer;
+                bufferInfo.offset = 0;
+                bufferInfo.range = pipeline->fragUniformBuffers[i].size;
+                VkWriteDescriptorSet writeDescriptorSet = {};
+                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
+                writeDescriptorSet.dstBinding = pipeline->fragUniformBuffers[i].binding;
+                writeDescriptorSet.dstArrayElement = 0;
+                writeDescriptorSet.descriptorCount = 1;
+                writeDescriptorSet.pBufferInfo = &bufferInfo;
+                writeDescriptorSets.push_back(writeDescriptorSet);
+            }
 
             for (auto& textureProperty : shaderReference->shaderInfo.vertProperties.textureProperties)
             {
@@ -451,7 +493,21 @@ namespace ZXEngine
                     Debug::LogError("No texture matched !");
                 
                 auto texture = GetTextureByIndex(textureIdx);
-                writeDescriptorSets.push_back(GetWriteDescriptorSet(pipeline->descriptorSets[i], texture, textureProperty.binding));
+
+                VkDescriptorImageInfo imageInfo{};
+                imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                imageInfo.imageView = texture->imageView;
+                imageInfo.sampler = texture->sampler;
+                VkWriteDescriptorSet writeDescriptorSet = {};
+                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
+                writeDescriptorSet.dstBinding = textureProperty.binding;
+                writeDescriptorSet.dstArrayElement = 0;
+                writeDescriptorSet.descriptorCount = 1;
+                writeDescriptorSet.pImageInfo = &imageInfo;
+
+                writeDescriptorSets.push_back(writeDescriptorSet);
             }
             for (auto& textureProperty : shaderReference->shaderInfo.fragProperties.textureProperties)
             {
@@ -463,7 +519,21 @@ namespace ZXEngine
                     Debug::LogError("No texture matched !");
 
                 auto texture = GetTextureByIndex(textureIdx);
-                writeDescriptorSets.push_back(GetWriteDescriptorSet(pipeline->descriptorSets[i], texture, textureProperty.binding));
+
+                VkDescriptorImageInfo imageInfo{};
+                imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                imageInfo.imageView = texture->imageView;
+                imageInfo.sampler = texture->sampler;
+                VkWriteDescriptorSet writeDescriptorSet = {};
+                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
+                writeDescriptorSet.dstBinding = textureProperty.binding;
+                writeDescriptorSet.dstArrayElement = 0;
+                writeDescriptorSet.descriptorCount = 1;
+                writeDescriptorSet.pImageInfo = &imageInfo;
+
+                writeDescriptorSets.push_back(writeDescriptorSet);
             }
 
             vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
@@ -487,41 +557,6 @@ namespace ZXEngine
             DestroyBuffer(uniformBuffer.buffer);
 
         pipeline->inUse = false;
-    }
-
-    VkWriteDescriptorSet RenderAPIVulkan::GetWriteDescriptorSet(VkDescriptorSet descriptorSet, const UniformBuffer& uniformBuffer)
-    {
-        VkDescriptorBufferInfo bufferInfo = {};
-        bufferInfo.buffer = uniformBuffer.buffer.buffer;
-        bufferInfo.offset = 0;
-        bufferInfo.range = uniformBuffer.size;
-        VkWriteDescriptorSet writeDescriptorSet = {};
-        writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        writeDescriptorSet.dstSet = descriptorSet;
-        writeDescriptorSet.dstBinding = uniformBuffer.binding;
-        // 描述符集是描述符的数组，这个指定我们这次要从第几个描述符开始更新
-        writeDescriptorSet.dstArrayElement = 0;
-        writeDescriptorSet.descriptorCount = 1;
-        writeDescriptorSet.pBufferInfo = &bufferInfo;
-        return writeDescriptorSet;
-    }
-
-    VkWriteDescriptorSet RenderAPIVulkan::GetWriteDescriptorSet(VkDescriptorSet descriptorSet, VulkanTexture* texture, uint32_t binding)
-    {
-        VkDescriptorImageInfo imageInfo{};
-        imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        imageInfo.imageView = texture->imageView;
-        imageInfo.sampler = texture->sampler;
-        VkWriteDescriptorSet writeDescriptorSet = {};
-        writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        writeDescriptorSet.dstSet = descriptorSet;
-        writeDescriptorSet.dstBinding = binding;
-        writeDescriptorSet.dstArrayElement = 0;
-        writeDescriptorSet.descriptorCount = 1;
-        writeDescriptorSet.pImageInfo = &imageInfo;
-        return writeDescriptorSet;
     }
 
     FrameBufferObject* RenderAPIVulkan::CreateFrameBufferObject(FrameBufferType type, unsigned int width, unsigned int height)
@@ -1069,7 +1104,20 @@ namespace ZXEngine
                 return;
             }
 
-            writeDescriptorSets.push_back(GetWriteDescriptorSet(pipeline->descriptorSets[i], texture, binding));
+            VkDescriptorImageInfo imageInfo{};
+            imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            imageInfo.imageView = texture->imageView;
+            imageInfo.sampler = texture->sampler;
+            VkWriteDescriptorSet writeDescriptorSet = {};
+            writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
+            writeDescriptorSet.dstBinding = binding;
+            writeDescriptorSet.dstArrayElement = 0;
+            writeDescriptorSet.descriptorCount = 1;
+            writeDescriptorSet.pImageInfo = &imageInfo;
+
+            writeDescriptorSets.push_back(writeDescriptorSet);
 
             vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
         }
