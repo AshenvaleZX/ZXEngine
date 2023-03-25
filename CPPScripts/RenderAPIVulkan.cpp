@@ -584,7 +584,7 @@ namespace ZXEngine
 
             auto vulkanFBO = GetFBOByIndex(FBO->ID);
             vulkanFBO->bufferType = FrameBufferType::Color;
-            vulkanFBO->renderPassType = RenderPassType::Normal;
+            vulkanFBO->renderPassType = RenderPassType::Color;
 
             auto colorAttachmentBuffer = GetAttachmentBufferByIndex(FBO->ColorBuffer);
 
@@ -600,7 +600,7 @@ namespace ZXEngine
 
                 VkFramebufferCreateInfo framebufferInfo{};
                 framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-                framebufferInfo.renderPass = GetRenderPass(RenderPassType::Normal);
+                framebufferInfo.renderPass = GetRenderPass(RenderPassType::Color);
                 framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
                 framebufferInfo.pAttachments = attachments.data();
                 framebufferInfo.width = width;
@@ -622,7 +622,7 @@ namespace ZXEngine
 
             auto vulkanFBO = GetFBOByIndex(FBO->ID);
             vulkanFBO->bufferType = FrameBufferType::ShadowCubeMap;
-            vulkanFBO->renderPassType = RenderPassType::Normal;
+            vulkanFBO->renderPassType = RenderPassType::ShadowCubeMap;
 
             auto depthAttachmentBuffer = GetAttachmentBufferByIndex(FBO->DepthBuffer);
 
@@ -638,7 +638,7 @@ namespace ZXEngine
 
                 VkFramebufferCreateInfo framebufferInfo{};
                 framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-                framebufferInfo.renderPass = GetRenderPass(RenderPassType::Normal);
+                framebufferInfo.renderPass = GetRenderPass(RenderPassType::ShadowCubeMap);
                 framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
                 framebufferInfo.pAttachments = attachments.data();
                 framebufferInfo.width = width;
@@ -1930,7 +1930,7 @@ namespace ZXEngine
         // 这个只影响当作attachments使用的VkImage(自己创建的frame buffer才支持这个，交换链用的那个默认buffer不支持)
         imageInfo.samples = numSamples;
         // 可以加一些标志，给特殊用途的图像做优化，比如3D的稀疏(sparse)图像
-        imageInfo.flags = 0; // Optional
+        imageInfo.flags = layers == 6 ? VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT : 0;
 
         VmaAllocationCreateInfo allocationInfo = {};
         allocationInfo.usage = memoryUsage;
@@ -2156,6 +2156,8 @@ namespace ZXEngine
 
         allVulkanRenderPass[(size_t)RenderPassType::Present] = CreateRenderPass(RenderPassType::Present);
         allVulkanRenderPass[(size_t)RenderPassType::Normal] = CreateRenderPass(RenderPassType::Normal);
+        allVulkanRenderPass[(size_t)RenderPassType::Color] = CreateRenderPass(RenderPassType::Color);
+        allVulkanRenderPass[(size_t)RenderPassType::ShadowCubeMap] = CreateRenderPass(RenderPassType::ShadowCubeMap);
     }
 
     VkRenderPass RenderAPIVulkan::CreateRenderPass(RenderPassType type)
@@ -2267,6 +2269,91 @@ namespace ZXEngine
             dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
             array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
+            VkRenderPassCreateInfo renderPassInfo{};
+            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+            // 前面创建VkAttachmentReference的时候，那个索引attachment指的就是在这个pAttachments数组里的索引
+            renderPassInfo.pAttachments = attachments.data();
+            renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+            renderPassInfo.pSubpasses = &subpassInfo;
+            renderPassInfo.subpassCount = 1;
+            renderPassInfo.pDependencies = &dependency;
+            renderPassInfo.dependencyCount = 1;
+
+            if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
+                throw std::runtime_error("failed to create render pass!");
+        }
+        else if (type == RenderPassType::Color)
+        {
+            VkAttachmentDescription colorAttachment = {};
+            colorAttachment.format = VK_FORMAT_R8G8B8A8_SRGB;
+            colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+            colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+            VkAttachmentReference colorAttachmentRef = {};
+            colorAttachmentRef.attachment = 0;
+            colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+            VkSubpassDescription subpassInfo = {};
+            subpassInfo.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+            subpassInfo.pColorAttachments = &colorAttachmentRef;
+            subpassInfo.colorAttachmentCount = 1;
+
+            VkSubpassDependency dependency = {};
+            dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+            dependency.dstSubpass = 0;
+            dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+            dependency.srcAccessMask = 0;
+            dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+            dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+
+            array<VkAttachmentDescription, 1> attachments = { colorAttachment };
+            VkRenderPassCreateInfo renderPassInfo{};
+            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+            // 前面创建VkAttachmentReference的时候，那个索引attachment指的就是在这个pAttachments数组里的索引
+            renderPassInfo.pAttachments = attachments.data();
+            renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+            renderPassInfo.pSubpasses = &subpassInfo;
+            renderPassInfo.subpassCount = 1;
+            renderPassInfo.pDependencies = &dependency;
+            renderPassInfo.dependencyCount = 1;
+
+            if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
+                throw std::runtime_error("failed to create render pass!");
+        }
+        else if (type == RenderPassType::ShadowCubeMap)
+        {
+            VkAttachmentDescription depthAttachment = {};
+            depthAttachment.format = VK_FORMAT_D16_UNORM;
+            depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+            depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+            VkAttachmentReference depthAttachmentRef = {};
+            depthAttachmentRef.attachment = 0;
+            depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+            VkSubpassDescription subpassInfo = {};
+            subpassInfo.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+            subpassInfo.pDepthStencilAttachment = &depthAttachmentRef;
+
+            VkSubpassDependency dependency = {};
+            dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+            dependency.dstSubpass = 0;
+            dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+            dependency.srcAccessMask = 0;
+            dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+            dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+
+            array<VkAttachmentDescription, 1> attachments = { depthAttachment };
             VkRenderPassCreateInfo renderPassInfo{};
             renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
             // 前面创建VkAttachmentReference的时候，那个索引attachment指的就是在这个pAttachments数组里的索引
