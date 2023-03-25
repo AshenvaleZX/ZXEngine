@@ -43,7 +43,7 @@ Fragment
 
     Properties
     {
-        sampler2D _Texture1;
+        sampler2D _Texture1
     }
 
     Program

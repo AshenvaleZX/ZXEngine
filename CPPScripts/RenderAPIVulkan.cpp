@@ -483,16 +483,25 @@ namespace ZXEngine
                 writeDescriptorSets.push_back(writeDescriptorSet);
             }
 
-            for (auto& textureProperty : shaderReference->shaderInfo.vertProperties.textureProperties)
+            for (auto& matTexture : textures)
             {
-                uint32_t textureIdx = 0;
-                auto iter = textures.find(textureProperty.name);
-                if (iter != textures.end())
-                    textureIdx = iter->second;
-                else
-                    Debug::LogError("No texture matched !");
-                
-                auto texture = GetTextureByIndex(textureIdx);
+                uint32_t binding = UINT32_MAX;
+                for (auto& textureProperty : shaderReference->shaderInfo.fragProperties.textureProperties)
+                    if (matTexture.first == textureProperty.name)
+                        binding = textureProperty.binding;
+
+                if (binding == UINT32_MAX)
+                    for (auto& textureProperty : shaderReference->shaderInfo.vertProperties.textureProperties)
+                        if (matTexture.first == textureProperty.name)
+                            binding = textureProperty.binding;
+
+                if (binding == UINT32_MAX)
+                {
+                    Debug::LogError("No texture named " + matTexture.first + " matched !");
+                    continue;
+                }
+
+                auto texture = GetTextureByIndex(matTexture.second);
 
                 VkDescriptorImageInfo imageInfo{};
                 imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -502,33 +511,7 @@ namespace ZXEngine
                 writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
                 writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                 writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
-                writeDescriptorSet.dstBinding = textureProperty.binding;
-                writeDescriptorSet.dstArrayElement = 0;
-                writeDescriptorSet.descriptorCount = 1;
-                writeDescriptorSet.pImageInfo = &imageInfo;
-
-                writeDescriptorSets.push_back(writeDescriptorSet);
-            }
-            for (auto& textureProperty : shaderReference->shaderInfo.fragProperties.textureProperties)
-            {
-                uint32_t textureIdx = 0;
-                auto iter = textures.find(textureProperty.name);
-                if (iter != textures.end())
-                    textureIdx = iter->second;
-                else
-                    Debug::LogError("No texture matched !");
-
-                auto texture = GetTextureByIndex(textureIdx);
-
-                VkDescriptorImageInfo imageInfo{};
-                imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo.imageView = texture->imageView;
-                imageInfo.sampler = texture->sampler;
-                VkWriteDescriptorSet writeDescriptorSet = {};
-                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
-                writeDescriptorSet.dstBinding = textureProperty.binding;
+                writeDescriptorSet.dstBinding = binding;
                 writeDescriptorSet.dstArrayElement = 0;
                 writeDescriptorSet.descriptorCount = 1;
                 writeDescriptorSet.pImageInfo = &imageInfo;
