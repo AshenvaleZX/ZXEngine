@@ -258,17 +258,6 @@ namespace ZXEngine
             textureData[i] = stbi_load(faces[i].c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 
         VkDeviceSize singleImageSize = VkDeviceSize(texWidth * texHeight * 4);
-        VkDeviceSize imageSize = singleImageSize * 6;
-        VulkanBuffer stagingBuffer = CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
-
-        // 把数据拷贝到stagingBuffer
-        void* data;
-        vmaMapMemory(vmaAllocator, stagingBuffer.allocation, &data);
-        memcpy(data, textureData[0], static_cast<size_t>(imageSize));
-        vmaUnmapMemory(vmaAllocator, stagingBuffer.allocation);
-
-        for (auto& texture : textureData)
-            stbi_image_free(texture);
 
         VulkanImage image = CreateImage(texWidth, texHeight, 1, 6, VK_SAMPLE_COUNT_1_BIT,
             VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
@@ -281,44 +270,56 @@ namespace ZXEngine
             VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
             VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT);
 
+        vector<VulkanBuffer> stagingBuffers;
+        for (uint32_t i = 0; i < 6; i++)
+            stagingBuffers.push_back(CreateBuffer(singleImageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true));
+        
         // 把数据从stagingBuffer复制到image
         ImmediatelyExecute([=](VkCommandBuffer cmd)
         {
-            array<VkBufferImageCopy, 6> bufferCopyRegions = {};
-
-            for (uint32_t i = 0; i < bufferCopyRegions.size(); i++)
+            for (uint32_t i = 0; i < 6; i++)
             {
-                // 从buffer读取数据的起始偏移量
-                bufferCopyRegions[i].bufferOffset = i * singleImageSize;
-                // 这两个参数明确像素在内存里的布局方式，如果我们只是简单的紧密排列数据，就填0
-                bufferCopyRegions[i].bufferRowLength = 0;
-                bufferCopyRegions[i].bufferImageHeight = 0;
-                // 下面4个参数都是在设置我们要把数据拷贝到image的哪一部分
-                bufferCopyRegions[i].imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-                bufferCopyRegions[i].imageSubresource.mipLevel = 0;
-                bufferCopyRegions[i].imageSubresource.baseArrayLayer = i;
-                bufferCopyRegions[i].imageSubresource.layerCount = 1;
-                bufferCopyRegions[i].imageOffset = { 0, 0, 0 };
-                bufferCopyRegions[i].imageExtent = { static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), 1 };
-            }
+                // 把数据拷贝到stagingBuffer
+                void* data;
+                void* pixelsPtr = textureData[i]; // 为memcpy转换一下指针类型
+                vmaMapMemory(vmaAllocator, stagingBuffers[i].allocation, &data);
+                memcpy(data, pixelsPtr, static_cast<size_t>(singleImageSize));
+                vmaUnmapMemory(vmaAllocator, stagingBuffers[i].allocation);
 
-            vkCmdCopyBufferToImage(cmd,
-                stagingBuffer.buffer,
-                image.image,
-                // image当前的layout
-                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                static_cast<uint32_t>(bufferCopyRegions.size()), 
-                bufferCopyRegions.data()
-            );
+                stbi_image_free(textureData[i]);
+
+                VkBufferImageCopy bufferCopyRegion = {};
+                // 从buffer读取数据的起始偏移量
+                bufferCopyRegion.bufferOffset = 0;
+                // 这两个参数明确像素在内存里的布局方式，如果我们只是简单的紧密排列数据，就填0
+                bufferCopyRegion.bufferRowLength = 0;
+                bufferCopyRegion.bufferImageHeight = 0;
+                // 下面4个参数都是在设置我们要把数据拷贝到image的哪一部分
+                bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                bufferCopyRegion.imageSubresource.mipLevel = 0;
+                bufferCopyRegion.imageSubresource.baseArrayLayer = i;
+                bufferCopyRegion.imageSubresource.layerCount = 1;
+                bufferCopyRegion.imageOffset = { 0, 0, 0 };
+                bufferCopyRegion.imageExtent = { static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), 1 };
+
+                vkCmdCopyBufferToImage(cmd,
+                    stagingBuffers[i].buffer,
+                    image.image,
+                    // image当前的layout
+                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                    1, &bufferCopyRegion
+                );
+            }
         });
+
+        for (auto& stagingBuffer : stagingBuffers)
+            DestroyBuffer(stagingBuffer);
 
         TransitionImageLayout(image.image,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
             VK_IMAGE_ASPECT_COLOR_BIT, 
             VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT,
             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_SHADER_READ_BIT);
-
-        DestroyBuffer(stagingBuffer);
 
         VkImageView imageView = CreateImageView(image.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_CUBE);
         VkSampler sampler = CreateSampler(1);
