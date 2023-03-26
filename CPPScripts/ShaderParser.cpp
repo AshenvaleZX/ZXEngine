@@ -441,9 +441,10 @@ namespace ZXEngine
 			uint32_t offset = 0;
 			for (auto& property : info.vertProperties.baseProperties)
 			{
+				property.size = GetPropertySize(property.type);
 				property.offset = offset;
 				property.binding = binding;
-				offset += GetPropertySize(property.type);
+				offset += property.size;
 			}
 			binding++;
 		}
@@ -458,9 +459,10 @@ namespace ZXEngine
 			uint32_t offset = 0;
 			for (auto& property : info.geomProperties.baseProperties)
 			{
+				property.size = GetPropertySize(property.type);
 				property.offset = offset;
 				property.binding = binding;
-				offset += GetPropertySize(property.type);
+				offset += property.size;
 			}
 			binding++;
 		}
@@ -475,9 +477,10 @@ namespace ZXEngine
 			uint32_t offset = 0;
 			for (auto& property : info.fragProperties.baseProperties)
 			{
+				property.size = GetPropertySize(property.type);
 				property.offset = offset;
 				property.binding = binding;
-				offset += GetPropertySize(property.type);
+				offset += property.size;
 			}
 			binding++;
 		}

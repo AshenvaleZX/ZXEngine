@@ -32,10 +32,11 @@ namespace ZXEngine
 
 	struct ShaderProperty
 	{
-		uint32_t offset = 0; // Offset in uniform buffer, Only for Vulkan now
-		uint32_t binding = 0; // Only for Vulkan now
 		string name;
-		uint32_t arrayLength = 0;
+		uint32_t size = 0;        // 单个属性大小
+		uint32_t offset = 0;      // Offset in uniform buffer, Only for Vulkan now
+		uint32_t binding = 0;     // Only for Vulkan now
+		uint32_t arrayLength = 0; // 属性数组长度
 		ShaderPropertyType type;
 	};
 
@@ -51,7 +52,7 @@ namespace ZXEngine
 		LightType lightType   = LightType::None;
 		ShadowType shadowType = ShadowType::None;
 		ShaderStateSet stateSet;
-		ShaderStageFlags stages;
+		ShaderStageFlags stages = 0;
 		ShaderPropertiesInfo vertProperties;
 		ShaderPropertiesInfo geomProperties;
 		ShaderPropertiesInfo fragProperties;

@@ -969,88 +969,78 @@ namespace ZXEngine
     {
         curPipeLineIdx = ID;
     }
-    void RenderAPIVulkan::SetShaderBool(ShaderReference* reference, const string& name, bool value)
+    void RenderAPIVulkan::SetShaderScalar(ShaderReference* reference, const string& name, bool value)
     {
         void* valueAddress = GetShaderPropertyAddress(reference, name);
         memcpy(valueAddress, &value, sizeof(value));
     }
-    void RenderAPIVulkan::SetShaderInt(ShaderReference* reference, const string& name, int value)
+    void RenderAPIVulkan::SetShaderScalar(ShaderReference* reference, const string& name, int value)
     {
         void* valueAddress = GetShaderPropertyAddress(reference, name);
         memcpy(valueAddress, &value, sizeof(value));
     }
-    void RenderAPIVulkan::SetShaderFloat(ShaderReference* reference, const string& name, float value)
+    void RenderAPIVulkan::SetShaderScalar(ShaderReference* reference, const string& name, float value)
     {
         void* valueAddress = GetShaderPropertyAddress(reference, name);
         memcpy(valueAddress, &value, sizeof(value));
     }
     void RenderAPIVulkan::SetShaderVector(ShaderReference* reference, const string& name, const Vector2& value)
     {
-        void* valueAddress = GetShaderPropertyAddress(reference, name);
-        float* array = new float[2];
-        value.ToArray(array);
-        memcpy(valueAddress, array, sizeof(float) * 2);
-        delete[] array;
+        SetShaderVector(reference, name, value, 0);
     }
-    void RenderAPIVulkan::SetShaderVector(ShaderReference* reference, const string& name, float x, float y)
+    void RenderAPIVulkan::SetShaderVector(ShaderReference* reference, const string& name, const Vector2& value, uint32_t idx)
     {
         void* valueAddress = GetShaderPropertyAddress(reference, name);
         float* array = new float[2];
-        array[0] = x;
-        array[1] = y;
+        value.ToArray(array);
         memcpy(valueAddress, array, sizeof(float) * 2);
         delete[] array;
     }
     void RenderAPIVulkan::SetShaderVector(ShaderReference* reference, const string& name, const Vector3& value)
     {
-        void* valueAddress = GetShaderPropertyAddress(reference, name);
-        float* array = new float[3];
-        value.ToArray(array);
-        memcpy(valueAddress, array, sizeof(float) * 3);
-        delete[] array;
+        SetShaderVector(reference, name, value, 0);
     }
-    void RenderAPIVulkan::SetShaderVector(ShaderReference* reference, const string& name, float x, float y, float z)
+    void RenderAPIVulkan::SetShaderVector(ShaderReference* reference, const string& name, const Vector3& value, uint32_t idx)
     {
         void* valueAddress = GetShaderPropertyAddress(reference, name);
         float* array = new float[3];
-        array[0] = x;
-        array[1] = y;
-        array[2] = z;
+        value.ToArray(array);
         memcpy(valueAddress, array, sizeof(float) * 3);
         delete[] array;
     }
     void RenderAPIVulkan::SetShaderVector(ShaderReference* reference, const string& name, const Vector4& value)
     {
-        void* valueAddress = GetShaderPropertyAddress(reference, name);
+        SetShaderVector(reference, name, value, 0);
+    }
+    void RenderAPIVulkan::SetShaderVector(ShaderReference* reference, const string& name, const Vector4& value, uint32_t idx)
+    {
+        void* valueAddress = GetShaderPropertyAddress(reference, name, idx);
         float* array = new float[4];
         value.ToArray(array);
         memcpy(valueAddress, array, sizeof(float) * 4);
         delete[] array;
     }
-    void RenderAPIVulkan::SetShaderVector(ShaderReference* reference, const string& name, float x, float y, float z, float w)
+    void RenderAPIVulkan::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& value)
     {
-        void* valueAddress = GetShaderPropertyAddress(reference, name);
-        float* array = new float[4];
-        array[0] = x;
-        array[1] = y;
-        array[2] = z;
-        array[3] = w;
-        memcpy(valueAddress, array, sizeof(float) * 4);
-        delete[] array;
+        SetShaderMatrix(reference, name, value, 0);
     }
-    void RenderAPIVulkan::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& mat)
+    void RenderAPIVulkan::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& value, uint32_t idx)
     {
-        void* valueAddress = GetShaderPropertyAddress(reference, name);
+        void* valueAddress = GetShaderPropertyAddress(reference, name, idx);
         float* array = new float[9];
-        mat.ToColumnMajorArray(array);
+        value.ToColumnMajorArray(array);
         memcpy(valueAddress, array, sizeof(float) * 9);
         delete[] array;
     }
-    void RenderAPIVulkan::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& mat)
+    void RenderAPIVulkan::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& value)
     {
-        void* valueAddress = GetShaderPropertyAddress(reference, name);
+        SetShaderMatrix(reference, name, value, 0);
+    }
+    void RenderAPIVulkan::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& value, uint32_t idx)
+    {
+        void* valueAddress = GetShaderPropertyAddress(reference, name, idx);
         float* array = new float[16];
-        mat.ToColumnMajorArray(array);
+        value.ToColumnMajorArray(array);
         memcpy(valueAddress, array, sizeof(float) * 16);
         delete[] array;
     }
@@ -1239,21 +1229,21 @@ namespace ZXEngine
         return VulkanPipelineArray[idx];
     }
 
-    void* RenderAPIVulkan::GetShaderPropertyAddress(ShaderReference* reference, const string& name)
+    void* RenderAPIVulkan::GetShaderPropertyAddress(ShaderReference* reference, const string& name, uint32_t idx)
     {
         VulkanPipeline* pipeline = GetPipelineByIndex(reference->ID);
 
         for (auto& property : reference->shaderInfo.vertProperties.baseProperties)
             if (name == property.name)
-                return reinterpret_cast<void*>(reinterpret_cast<char*>(pipeline->vertUniformBuffers[currentFrame].mappedAddress) + property.offset);
+                return reinterpret_cast<void*>(reinterpret_cast<char*>(pipeline->vertUniformBuffers[currentFrame].mappedAddress) + property.offset + property.size * idx);
 
         for (auto& property : reference->shaderInfo.geomProperties.baseProperties)
             if (name == property.name)
-                return reinterpret_cast<void*>(reinterpret_cast<char*>(pipeline->geomUniformBuffers[currentFrame].mappedAddress) + property.offset);
+                return reinterpret_cast<void*>(reinterpret_cast<char*>(pipeline->geomUniformBuffers[currentFrame].mappedAddress) + property.offset + property.size * idx);
 
         for (auto& property : reference->shaderInfo.fragProperties.baseProperties)
             if (name == property.name)
-                return reinterpret_cast<void*>(reinterpret_cast<char*>(pipeline->fragUniformBuffers[currentFrame].mappedAddress) + property.offset);
+                return reinterpret_cast<void*>(reinterpret_cast<char*>(pipeline->fragUniformBuffers[currentFrame].mappedAddress) + property.offset + property.size * idx);
 
         Debug::LogError("Could not find shader property named " + name);
 
@@ -1900,7 +1890,12 @@ namespace ZXEngine
         size_t bufferSize = 0;
 
         for (auto& property : properties)
-            bufferSize += ShaderParser::GetPropertySize(property.type);
+        {
+            if (property.arrayLength > 1)
+                bufferSize += static_cast<size_t>(ShaderParser::GetPropertySize(property.type) * property.arrayLength);
+            else
+                bufferSize += ShaderParser::GetPropertySize(property.type);
+        }
 
         uniformBuffer.binding = properties[0].binding;
         uniformBuffer.size = static_cast<VkDeviceSize>(bufferSize);

@@ -669,15 +669,15 @@ namespace ZXEngine
 	{
 		glUseProgram(ID);
 	}
-	void RenderAPIOpenGL::SetShaderBool(ShaderReference* reference, const string& name, bool value)
+	void RenderAPIOpenGL::SetShaderScalar(ShaderReference* reference, const string& name, bool value)
 	{
 		glUniform1i(glGetUniformLocation(reference->ID, name.c_str()), (int)value);
 	}
-	void RenderAPIOpenGL::SetShaderInt(ShaderReference* reference, const string& name, int value)
+	void RenderAPIOpenGL::SetShaderScalar(ShaderReference* reference, const string& name, int value)
 	{
 		glUniform1i(glGetUniformLocation(reference->ID, name.c_str()), value);
 	}
-	void RenderAPIOpenGL::SetShaderFloat(ShaderReference* reference, const string& name, float value)
+	void RenderAPIOpenGL::SetShaderScalar(ShaderReference* reference, const string& name, float value)
 	{
 		glUniform1f(glGetUniformLocation(reference->ID, name.c_str()), value);
 	}
@@ -688,9 +688,10 @@ namespace ZXEngine
 		glUniform2fv(glGetUniformLocation(reference->ID, name.c_str()), 1, array);
 		delete[] array;
 	}
-	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, float x, float y)
+	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, const Vector2& value, uint32_t idx)
 	{
-		glUniform2f(glGetUniformLocation(reference->ID, name.c_str()), x, y);
+		string arrayName = name + "[" + to_string(idx) + "]";
+		SetShaderVector(reference, arrayName, value);
 	}
 	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, const Vector3& value)
 	{
@@ -699,9 +700,10 @@ namespace ZXEngine
 		glUniform3fv(glGetUniformLocation(reference->ID, name.c_str()), 1, array);
 		delete[] array;
 	}
-	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, float x, float y, float z)
+	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, const Vector3& value, uint32_t idx)
 	{
-		glUniform3f(glGetUniformLocation(reference->ID, name.c_str()), x, y, z);
+		string arrayName = name + "[" + to_string(idx) + "]";
+		SetShaderVector(reference, arrayName, value);
 	}
 	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, const Vector4& value)
 	{
@@ -710,23 +712,34 @@ namespace ZXEngine
 		glUniform4fv(glGetUniformLocation(reference->ID, name.c_str()), 1, array);
 		delete[] array;
 	}
-	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, float x, float y, float z, float w)
+	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, const Vector4& value, uint32_t idx)
 	{
-		glUniform4f(glGetUniformLocation(reference->ID, name.c_str()), x, y, z, w);
+		string arrayName = name + "[" + to_string(idx) + "]";
+		SetShaderVector(reference, arrayName, value);
 	}
-	void RenderAPIOpenGL::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& mat)
+	void RenderAPIOpenGL::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& value)
 	{
 		float* array = new float[9];
-		mat.ToColumnMajorArray(array);
+		value.ToColumnMajorArray(array);
 		glUniformMatrix3fv(glGetUniformLocation(reference->ID, name.c_str()), 1, GL_FALSE, array);
 		delete[] array;
 	}
-	void RenderAPIOpenGL::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& mat)
+	void RenderAPIOpenGL::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& value, uint32_t idx)
+	{
+		string arrayName = name + "[" + to_string(idx) + "]";
+		SetShaderMatrix(reference, arrayName, value);
+	}
+	void RenderAPIOpenGL::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& value)
 	{
 		float* array = new float[16];
-		mat.ToColumnMajorArray(array);
+		value.ToColumnMajorArray(array);
 		glUniformMatrix4fv(glGetUniformLocation(reference->ID, name.c_str()), 1, GL_FALSE, array);
 		delete[] array;
+	}
+	void RenderAPIOpenGL::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& value, uint32_t idx)
+	{
+		string arrayName = name + "[" + to_string(idx) + "]";
+		SetShaderMatrix(reference, arrayName, value);
 	}
 	void RenderAPIOpenGL::SetShaderTexture(ShaderReference* reference, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
 	{

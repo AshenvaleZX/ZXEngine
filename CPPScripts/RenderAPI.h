@@ -53,17 +53,19 @@ namespace ZXEngine
 
 		// Shader…Ë÷√
 		virtual void UseShader(unsigned int ID) = 0;
-		virtual void SetShaderBool(ShaderReference* reference, const string& name, bool value) = 0;
-		virtual void SetShaderInt(ShaderReference* reference, const string& name, int value) = 0;
-		virtual void SetShaderFloat(ShaderReference* reference, const string& name, float value) = 0;
+		virtual void SetShaderScalar(ShaderReference* reference, const string& name, bool value) = 0;
+		virtual void SetShaderScalar(ShaderReference* reference, const string& name, int value) = 0;
+		virtual void SetShaderScalar(ShaderReference* reference, const string& name, float value) = 0;
 		virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector2& value) = 0;
-		virtual void SetShaderVector(ShaderReference* reference, const string& name, float x, float y) = 0;
+		virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector2& value, uint32_t idx) = 0;
 		virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector3& value) = 0;
-		virtual void SetShaderVector(ShaderReference* reference, const string& name, float x, float y, float z) = 0;
+		virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector3& value, uint32_t idx) = 0;
 		virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector4& value) = 0;
-		virtual void SetShaderVector(ShaderReference* reference, const string& name, float x, float y, float z, float w) = 0;
+		virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector4& value, uint32_t idx) = 0;
 		virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& value) = 0;
+		virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& value, uint32_t idx) = 0;
 		virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& value) = 0;
+		virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& value, uint32_t idx) = 0;
 		virtual void SetShaderTexture(ShaderReference* reference, const string& name, uint32_t ID, uint32_t idx, bool isBuffer = false) = 0;
 		virtual void SetShaderCubeMap(ShaderReference* reference, const string& name, uint32_t ID, uint32_t idx, bool isBuffer = false) = 0;
 	};

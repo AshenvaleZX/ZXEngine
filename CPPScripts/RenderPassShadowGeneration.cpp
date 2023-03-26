@@ -69,7 +69,7 @@ namespace ZXEngine
 		// ÉèÖÃshader
 		shadowCubeMapShader->Use();
 		for (unsigned int i = 0; i < 6; ++i)
-			shadowCubeMapShader->SetMat4("_ShadowMatrices[" + to_string(i) + "]", shadowTransforms[i]);
+			shadowCubeMapShader->SetMat4("_ShadowMatrices", shadowTransforms[i], i);
 		shadowCubeMapShader->SetFloat("_FarPlane", GlobalData::shadowCubeMapFarPlane);
 		shadowCubeMapShader->SetVec3("_LightPos", lightPos);
 
