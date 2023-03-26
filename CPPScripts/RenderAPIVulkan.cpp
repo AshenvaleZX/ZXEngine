@@ -681,7 +681,10 @@ namespace ZXEngine
 
     uint32_t RenderAPIVulkan::AllocateDrawCommand()
     {
-        return GetNextDrawCommandIndex();
+        uint32_t idx = GetNextDrawCommandIndex();
+        auto drawCmd = GetDrawCommandByIndex(idx);
+        drawCmd->inUse = true;
+        return idx;
     }
 
     void RenderAPIVulkan::Draw(uint32_t VAO)
@@ -1179,7 +1182,7 @@ namespace ZXEngine
         newDrawCommand->commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
         AllocateCommandBuffers(newDrawCommand->commandBuffers);
 
-        VulkanDrawCommandArray.push_back(new VulkanDrawCommand());
+        VulkanDrawCommandArray.push_back(newDrawCommand);
 
         return length;
     }
@@ -2196,7 +2199,7 @@ namespace ZXEngine
             VkAttachmentDescription colorAttachment = {};
             colorAttachment.format = swapChainImageFormat;
             colorAttachment.samples = msaaSamplesCount;
-            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -2253,7 +2256,7 @@ namespace ZXEngine
             VkAttachmentDescription colorAttachment = {};
             colorAttachment.format = VK_FORMAT_R8G8B8A8_SRGB;
             colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             // 上面那个设置是用于color和depth的，stencil的单独一个
             colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -2264,7 +2267,7 @@ namespace ZXEngine
             VkAttachmentDescription depthAttachment = {};
             depthAttachment.format = VK_FORMAT_D16_UNORM;
             depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-            depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             // 因为绘制完成后我们不会再使用depth buffer了，所以这里不关心
             depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
             depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -2314,7 +2317,7 @@ namespace ZXEngine
             VkAttachmentDescription colorAttachment = {};
             colorAttachment.format = VK_FORMAT_R8G8B8A8_SRGB;
             colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -2357,7 +2360,7 @@ namespace ZXEngine
             VkAttachmentDescription depthAttachment = {};
             depthAttachment.format = VK_FORMAT_D16_UNORM;
             depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-            depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
             depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
