@@ -394,6 +394,7 @@ namespace ZXEngine
 
         pipeline->pipeline = CreatePipeline(path, shaderInfo, pipeline->descriptorSetLayout, pipeline->pipelineLayout);
         pipeline->descriptorPool = CreateDescriptorPool(shaderInfo);
+        SetUpPipeline(pipeline);
 
         for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
@@ -427,61 +428,9 @@ namespace ZXEngine
     {
         auto pipeline = GetPipelineByIndex(shaderReference->ID);
 
-        vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, pipeline->descriptorSetLayout);
-        pipeline->descriptorSets = CreateDescriptorSets(pipeline->descriptorPool, layouts);
-
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
             vector<VkWriteDescriptorSet> writeDescriptorSets;
-
-            if (!pipeline->vertUniformBuffers.empty())
-            {
-                VkDescriptorBufferInfo bufferInfo = {};
-                bufferInfo.buffer = pipeline->vertUniformBuffers[i].buffer.buffer;
-                bufferInfo.offset = 0;
-                bufferInfo.range = pipeline->vertUniformBuffers[i].size;
-                VkWriteDescriptorSet writeDescriptorSet = {};
-                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
-                writeDescriptorSet.dstBinding = pipeline->vertUniformBuffers[i].binding;
-                writeDescriptorSet.dstArrayElement = 0;
-                writeDescriptorSet.descriptorCount = 1;
-                writeDescriptorSet.pBufferInfo = &bufferInfo;
-                writeDescriptorSets.push_back(writeDescriptorSet);
-            }
-            if (!pipeline->geomUniformBuffers.empty())
-            {
-                VkDescriptorBufferInfo bufferInfo = {};
-                bufferInfo.buffer = pipeline->geomUniformBuffers[i].buffer.buffer;
-                bufferInfo.offset = 0;
-                bufferInfo.range = pipeline->geomUniformBuffers[i].size;
-                VkWriteDescriptorSet writeDescriptorSet = {};
-                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
-                writeDescriptorSet.dstBinding = pipeline->geomUniformBuffers[i].binding;
-                writeDescriptorSet.dstArrayElement = 0;
-                writeDescriptorSet.descriptorCount = 1;
-                writeDescriptorSet.pBufferInfo = &bufferInfo;
-                writeDescriptorSets.push_back(writeDescriptorSet);
-            }
-            if (!pipeline->fragUniformBuffers.empty())
-            {
-                VkDescriptorBufferInfo bufferInfo = {};
-                bufferInfo.buffer = pipeline->fragUniformBuffers[i].buffer.buffer;
-                bufferInfo.offset = 0;
-                bufferInfo.range = pipeline->fragUniformBuffers[i].size;
-                VkWriteDescriptorSet writeDescriptorSet = {};
-                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
-                writeDescriptorSet.dstBinding = pipeline->fragUniformBuffers[i].binding;
-                writeDescriptorSet.dstArrayElement = 0;
-                writeDescriptorSet.descriptorCount = 1;
-                writeDescriptorSet.pBufferInfo = &bufferInfo;
-                writeDescriptorSets.push_back(writeDescriptorSet);
-            }
 
             for (auto& matTexture : textures)
             {
@@ -2565,6 +2514,68 @@ namespace ZXEngine
         DestroyShaderModules(shaderModules);
 
         return pipeLine;
+    }
+
+    void RenderAPIVulkan::SetUpPipeline(VulkanPipeline* pipeline)
+    {
+        vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, pipeline->descriptorSetLayout);
+        pipeline->descriptorSets = CreateDescriptorSets(pipeline->descriptorPool, layouts);
+
+        for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+        {
+            vector<VkWriteDescriptorSet> writeDescriptorSets;
+
+            if (!pipeline->vertUniformBuffers.empty())
+            {
+                VkDescriptorBufferInfo bufferInfo = {};
+                bufferInfo.buffer = pipeline->vertUniformBuffers[i].buffer.buffer;
+                bufferInfo.offset = 0;
+                bufferInfo.range = pipeline->vertUniformBuffers[i].size;
+                VkWriteDescriptorSet writeDescriptorSet = {};
+                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
+                writeDescriptorSet.dstBinding = pipeline->vertUniformBuffers[i].binding;
+                writeDescriptorSet.dstArrayElement = 0;
+                writeDescriptorSet.descriptorCount = 1;
+                writeDescriptorSet.pBufferInfo = &bufferInfo;
+                writeDescriptorSets.push_back(writeDescriptorSet);
+            }
+            if (!pipeline->geomUniformBuffers.empty())
+            {
+                VkDescriptorBufferInfo bufferInfo = {};
+                bufferInfo.buffer = pipeline->geomUniformBuffers[i].buffer.buffer;
+                bufferInfo.offset = 0;
+                bufferInfo.range = pipeline->geomUniformBuffers[i].size;
+                VkWriteDescriptorSet writeDescriptorSet = {};
+                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
+                writeDescriptorSet.dstBinding = pipeline->geomUniformBuffers[i].binding;
+                writeDescriptorSet.dstArrayElement = 0;
+                writeDescriptorSet.descriptorCount = 1;
+                writeDescriptorSet.pBufferInfo = &bufferInfo;
+                writeDescriptorSets.push_back(writeDescriptorSet);
+            }
+            if (!pipeline->fragUniformBuffers.empty())
+            {
+                VkDescriptorBufferInfo bufferInfo = {};
+                bufferInfo.buffer = pipeline->fragUniformBuffers[i].buffer.buffer;
+                bufferInfo.offset = 0;
+                bufferInfo.range = pipeline->fragUniformBuffers[i].size;
+                VkWriteDescriptorSet writeDescriptorSet = {};
+                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
+                writeDescriptorSet.dstBinding = pipeline->fragUniformBuffers[i].binding;
+                writeDescriptorSet.dstArrayElement = 0;
+                writeDescriptorSet.descriptorCount = 1;
+                writeDescriptorSet.pBufferInfo = &bufferInfo;
+                writeDescriptorSets.push_back(writeDescriptorSet);
+            }
+
+            vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
+        }
     }
 
     VkDescriptorPool RenderAPIVulkan::CreateDescriptorPool(const ShaderInfo& info)
