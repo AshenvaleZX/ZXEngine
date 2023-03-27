@@ -46,7 +46,7 @@ Fragment
 
     Properties
     {
-        sampler2D _Sprite;
+        sampler2D _Sprite
     }
 
     Program
