@@ -19,7 +19,7 @@ namespace ZXEngine
 	RenderPassForwardRendering::RenderPassForwardRendering()
 	{
 		InitSkyBox();
-		skyBoxShader = new Shader(Resources::GetAssetFullPath("Shaders/SkyBox.zxshader", true).c_str());
+		skyBoxShader = new Shader(Resources::GetAssetFullPath("Shaders/SkyBox.zxshader", true), FrameBufferType::Normal);
 
 		skyBoxRenderState = new RenderStateSetting();
 		skyBoxRenderState->depthTest = false;

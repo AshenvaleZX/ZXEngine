@@ -23,7 +23,7 @@ namespace ZXEngine
 	ParticleSystemManager::ParticleSystemManager()
 	{
 		RenderAPI::GetInstance()->GenerateParticleMesh(VAO);
-		shader = new Shader(Resources::GetAssetFullPath("Shaders/Particle.zxshader", true).c_str());
+		shader = new Shader(Resources::GetAssetFullPath("Shaders/Particle.zxshader", true), FrameBufferType::Normal);
 
 		renderState = new RenderStateSetting();
 		renderState->depthWrite = false;

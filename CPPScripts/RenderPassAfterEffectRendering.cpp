@@ -44,14 +44,14 @@ namespace ZXEngine
 		string res3 = BlitBloomBlend("Main", res2, true);
 	}
 
-	void RenderPassAfterEffectRendering::CreateShader(string name, string path)
+	void RenderPassAfterEffectRendering::CreateShader(string name, string path, FrameBufferType type)
 	{
 		if (aeShaders.count(name) > 0)
 		{
 			Debug::LogError("Try to add an existing shader");
 			return;
 		}
-		aeShaders.insert(pair<string, Shader*>(name, new Shader(Resources::GetAssetFullPath(path).c_str())));
+		aeShaders.insert(pair<string, Shader*>(name, new Shader(Resources::GetAssetFullPath(path), type)));
 	}
 
 	Shader* RenderPassAfterEffectRendering::GetShader(string name)
@@ -101,7 +101,7 @@ namespace ZXEngine
 
 	void RenderPassAfterEffectRendering::InitExtractBrightArea(bool isFinal)
 	{
-		CreateShader(ExtractBrightArea, "Shaders/ExtractBrightArea.zxshader");
+		CreateShader(ExtractBrightArea, "Shaders/ExtractBrightArea.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
 		if (!isFinal)
 			FBOManager::GetInstance()->CreateFBO(ExtractBrightArea, FrameBufferType::Color);
 	}
@@ -121,7 +121,7 @@ namespace ZXEngine
 
 	void RenderPassAfterEffectRendering::InitGaussianBlur(bool isFinal)
 	{
-		CreateShader(GaussianBlur, "Shaders/GaussianBlur.zxshader");
+		CreateShader(GaussianBlur, "Shaders/GaussianBlur.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
 		FBOManager::GetInstance()->CreateFBO("GaussianBlurVertical", FrameBufferType::Color);
 		FBOManager::GetInstance()->CreateFBO("GaussianBlurHorizontal", FrameBufferType::Color);
 	}
@@ -151,7 +151,7 @@ namespace ZXEngine
 
 	void RenderPassAfterEffectRendering::InitKawaseBlur(bool isFinal)
 	{
-		CreateShader(KawaseBlur, "Shaders/KawaseBlur.zxshader");
+		CreateShader(KawaseBlur, "Shaders/KawaseBlur.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
 		FBOManager::GetInstance()->CreateFBO("KawaseBlur0", FrameBufferType::Color);
 		FBOManager::GetInstance()->CreateFBO("KawaseBlur1", FrameBufferType::Color);
 	}
@@ -179,7 +179,7 @@ namespace ZXEngine
 
 	void RenderPassAfterEffectRendering::InitBloomBlend(bool isFinal)
 	{
-		CreateShader(BloomBlend, "Shaders/BloomBlend.zxshader");
+		CreateShader(BloomBlend, "Shaders/BloomBlend.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
 		if (!isFinal)
 			FBOManager::GetInstance()->CreateFBO(BloomBlend, FrameBufferType::Color);
 	}

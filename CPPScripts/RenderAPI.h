@@ -35,7 +35,7 @@ namespace ZXEngine
 		virtual void DeleteTexture(unsigned int id) = 0;
 		virtual unsigned int LoadCubeMap(vector<string> faces) = 0;
 		virtual unsigned int GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data) = 0;
-		virtual ShaderReference* LoadAndSetUpShader(const char* path) = 0;
+		virtual ShaderReference* LoadAndSetUpShader(const char* path, FrameBufferType type) = 0;
 		virtual void SetUpMaterial(ShaderReference* shaderReference, const map<string, uint32_t>& textures) = 0;
 		virtual void DeleteShader(unsigned int id) = 0;
 

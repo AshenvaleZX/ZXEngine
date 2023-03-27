@@ -7,7 +7,7 @@ namespace ZXEngine
 	{
 		name = matStruct->name;
 		path = matStruct->path;
-		shader = new Shader(matStruct->shaderPath.c_str());
+		shader = new Shader(matStruct->shaderPath, FrameBufferType::Normal);
 
 		for (auto textureStruct : matStruct->textures)
 		{

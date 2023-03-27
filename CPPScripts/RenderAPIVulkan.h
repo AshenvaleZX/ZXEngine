@@ -30,7 +30,7 @@ namespace ZXEngine
         virtual void DeleteTexture(unsigned int id);
         virtual unsigned int LoadCubeMap(vector<string> faces);
         virtual unsigned int GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data);
-        virtual ShaderReference* LoadAndSetUpShader(const char* path);
+        virtual ShaderReference* LoadAndSetUpShader(const char* path, FrameBufferType type);
         virtual void SetUpMaterial(ShaderReference* shaderReference, const map<string, uint32_t>& textures);
         virtual void DeleteShader(unsigned int id);
 
@@ -208,7 +208,7 @@ namespace ZXEngine
         VkRenderPass GetRenderPass(RenderPassType type);
         void DestroyRenderPass(VkRenderPass renderPass);
 
-        VkPipeline CreatePipeline(const string& path, const ShaderInfo& shaderInfo, VkDescriptorSetLayout& descriptorSetLayout, VkPipelineLayout& pipelineLayout);
+        VkPipeline CreatePipeline(const string& path, const ShaderInfo& shaderInfo, VkDescriptorSetLayout& descriptorSetLayout, VkPipelineLayout& pipelineLayout, RenderPassType renderPassType);
         void SetUpPipeline(VulkanPipeline* pipeline);
         
         VkDescriptorSetLayout CreateDescriptorSetLayout(const ShaderInfo& info);

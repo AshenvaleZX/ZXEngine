@@ -43,6 +43,12 @@ namespace ZXEngine
         { CompareOption::LESS_OR_EQUAL, VK_COMPARE_OP_LESS_OR_EQUAL }, { CompareOption::GREATER_OR_EQUAL, VK_COMPARE_OP_GREATER_OR_EQUAL },
     };
 
+    map<FrameBufferType, RenderPassType> vkFrameBufferTypeToRenderPassTypeMap =
+    {
+        { FrameBufferType::Present, RenderPassType::Present }, { FrameBufferType::Normal,        RenderPassType::Normal       },
+        { FrameBufferType::Color,   RenderPassType::Color   }, { FrameBufferType::ShadowCubeMap, RenderPassType::ShadowCubeMap},
+    };
+
     // 自定义的Debug回调函数，VKAPI_ATTR和VKAPI_CALL确保了正确的函数签名，从而被Vulkan调用
     static VKAPI_ATTR VkBool32 VKAPI_CALL VkDebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
     {
@@ -384,7 +390,7 @@ namespace ZXEngine
         texture->inUse = false;
     }
 
-    ShaderReference* RenderAPIVulkan::LoadAndSetUpShader(const char* path)
+    ShaderReference* RenderAPIVulkan::LoadAndSetUpShader(const char* path, FrameBufferType type)
     {
         string shaderCode = Resources::LoadTextFile(path);
         auto shaderInfo = ShaderParser::GetShaderInfo(shaderCode);
@@ -392,7 +398,7 @@ namespace ZXEngine
         uint32_t pipelineID = GetNextPipelineIndex();
         auto pipeline = GetPipelineByIndex(pipelineID);
 
-        pipeline->pipeline = CreatePipeline(path, shaderInfo, pipeline->descriptorSetLayout, pipeline->pipelineLayout);
+        pipeline->pipeline = CreatePipeline(path, shaderInfo, pipeline->descriptorSetLayout, pipeline->pipelineLayout, vkFrameBufferTypeToRenderPassTypeMap[type]);
         pipeline->descriptorPool = CreateDescriptorPool(shaderInfo);
         SetUpPipeline(pipeline);
 
@@ -1337,6 +1343,7 @@ namespace ZXEngine
         // 启用对各向异性采样的支持
         deviceFeatures.samplerAnisotropy = VK_TRUE;
         deviceFeatures.geometryShader = VK_TRUE;
+        deviceFeatures.sampleRateShading = VK_TRUE;
 
         // 创建逻辑设备的信息
         VkDeviceCreateInfo createInfo = {};
@@ -2385,7 +2392,7 @@ namespace ZXEngine
         vkDestroyRenderPass(device, renderPass, nullptr);
     }
 
-    VkPipeline RenderAPIVulkan::CreatePipeline(const string& path, const ShaderInfo& shaderInfo, VkDescriptorSetLayout& descriptorSetLayout, VkPipelineLayout& pipelineLayout)
+    VkPipeline RenderAPIVulkan::CreatePipeline(const string& path, const ShaderInfo& shaderInfo, VkDescriptorSetLayout& descriptorSetLayout, VkPipelineLayout& pipelineLayout, RenderPassType renderPassType)
     {
         auto shaderModules = CreateShaderModules(path, shaderInfo);
         vector<VkPipelineShaderStageCreateInfo> shaderStages;
@@ -2452,7 +2459,7 @@ namespace ZXEngine
         VkPipelineRasterizationStateCreateInfo rasterizationInfo = GetRasterizationInfo(vkFaceCullOptionMap[shaderInfo.stateSet.cull]);
         
         // 设置Shader采样纹理的MSAA(不是输出到屏幕上的MSAA)，需要创建逻辑设备的时候开启VkPhysicalDeviceFeatures里的sampleRateShading才能生效，暂时关闭
-        VkPipelineMultisampleStateCreateInfo multisampleInfo = GetPipelineMultisampleInfo(VK_SAMPLE_COUNT_1_BIT);
+        VkPipelineMultisampleStateCreateInfo multisampleInfo = GetPipelineMultisampleInfo(renderPassType == RenderPassType::Present ? msaaSamplesCount : VK_SAMPLE_COUNT_1_BIT);
 
         // Color Blend
         VkPipelineColorBlendAttachmentState colorBlendAttachment{};
@@ -2502,7 +2509,7 @@ namespace ZXEngine
         pipelineInfo.pColorBlendState = &colorBlending;
         pipelineInfo.pDepthStencilState = &depthStencilInfo;
         pipelineInfo.layout = pipelineLayout;
-        pipelineInfo.renderPass = GetRenderPass(RenderPassType::Normal);
+        pipelineInfo.renderPass = GetRenderPass(renderPassType);
         pipelineInfo.subpass = 0;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
         pipelineInfo.basePipelineIndex = -1;

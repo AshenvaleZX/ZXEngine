@@ -33,8 +33,8 @@ namespace ZXEngine
 		shadowCubeMap = new CubeMap(cubeMapPath);
 
 		InitPreviewQuad();
-		previewQuadShader = new Shader(Resources::GetAssetFullPath("Shaders/RenderTexture.zxshader", true).c_str());
-		previewModelShader = new Shader(Resources::GetAssetFullPath("Shaders/ModelPreview.zxshader", true).c_str());
+		previewQuadShader = new Shader(Resources::GetAssetFullPath("Shaders/RenderTexture.zxshader", true), FrameBufferType::Present);
+		previewModelShader = new Shader(Resources::GetAssetFullPath("Shaders/ModelPreview.zxshader", true), FrameBufferType::Normal);
 
 		renderState = new RenderStateSetting();
 		renderState->clearColor = Vector4(0.2f, 0.2f, 0.2f, 1.0f);

@@ -246,7 +246,7 @@ namespace ZXEngine
 		return textureID;
 	}
 
-	ShaderReference* RenderAPIOpenGL::LoadAndSetUpShader(const char* path)
+	ShaderReference* RenderAPIOpenGL::LoadAndSetUpShader(const char* path, FrameBufferType type)
 	{
 		string shaderCode = Resources::LoadTextFile(path);
 		string vertCode, geomCode, fragCode;

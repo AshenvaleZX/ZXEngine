@@ -14,7 +14,7 @@ namespace ZXEngine
 	public:
 		string name;
 
-		Shader(const string& path);
+		Shader(const string& path, FrameBufferType type);
 		~Shader();
 
 		unsigned int GetID();

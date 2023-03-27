@@ -9,7 +9,8 @@ namespace ZXEngine
 {
 	vector<ShaderReference*> Shader::loadedShaders;
 
-	Shader::Shader(const string& path)
+	// 第二个参数是因为Vulkan创建Pipeline的时候需要设置合适的RenderPass，如果之后Vulkan改成了Dynamic Rendering，这个参数就可以去掉了
+	Shader::Shader(const string& path, FrameBufferType type)
 	{
 		name = Resources::GetAssetName(path);
 		renderQueue = (int)RenderQueueType::Qpaque;
@@ -33,14 +34,14 @@ namespace ZXEngine
 			// 如果没有加载过，执行真正的加载和编译
 			if (reference == nullptr)
 			{
-				reference = RenderAPI::GetInstance()->LoadAndSetUpShader(path.c_str());
+				reference = RenderAPI::GetInstance()->LoadAndSetUpShader(path.c_str(), type);
 				reference->path = path;
 				loadedShaders.push_back(reference);
 			}
 		}
 		else
 		{
-			reference = RenderAPI::GetInstance()->LoadAndSetUpShader(path.c_str());
+			reference = RenderAPI::GetInstance()->LoadAndSetUpShader(path.c_str(), type);
 			reference->path = path;
 		}
 	}

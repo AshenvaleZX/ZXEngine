@@ -28,7 +28,7 @@ namespace ZXEngine
 		RenderStateSetting* renderState;
 		ClearInfo clearInfo;
 
-		void CreateShader(string name, string path);
+		void CreateShader(string name, string path, FrameBufferType type);
 		Shader* GetShader(string name);
 		void InitScreenQuad();
 
