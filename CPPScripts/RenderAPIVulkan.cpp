@@ -511,6 +511,8 @@ namespace ZXEngine
             FBO->DepthBuffer = GetNextAttachmentBufferIndex();
 
             auto vulkanFBO = GetFBOByIndex(FBO->ID);
+            vulkanFBO->colorAttachmentIdx = FBO->ColorBuffer;
+            vulkanFBO->depthAttachmentIdx = FBO->DepthBuffer;
             vulkanFBO->bufferType = FrameBufferType::Normal;
             vulkanFBO->renderPassType = RenderPassType::Normal;
 
@@ -524,7 +526,7 @@ namespace ZXEngine
                 VulkanImage colorImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
                 TransitionImageLayout(colorImage.image,
-                    VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                    VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_COLOR_BIT, 
                     VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
                     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
@@ -535,7 +537,7 @@ namespace ZXEngine
                 VulkanImage depthImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D16_UNORM, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
                 TransitionImageLayout(depthImage.image,
-                    VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                    VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_DEPTH_BIT,
                     VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
                     VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
@@ -570,6 +572,7 @@ namespace ZXEngine
             FBO->DepthBuffer = NULL;
 
             auto vulkanFBO = GetFBOByIndex(FBO->ID);
+            vulkanFBO->colorAttachmentIdx = FBO->ColorBuffer;
             vulkanFBO->bufferType = FrameBufferType::Color;
             vulkanFBO->renderPassType = RenderPassType::Color;
 
@@ -580,7 +583,7 @@ namespace ZXEngine
                 VulkanImage colorImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
                 TransitionImageLayout(colorImage.image,
-                    VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                    VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_COLOR_BIT,
                     VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
                     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
@@ -613,6 +616,7 @@ namespace ZXEngine
             FBO->DepthBuffer = GetNextAttachmentBufferIndex();
 
             auto vulkanFBO = GetFBOByIndex(FBO->ID);
+            vulkanFBO->depthAttachmentIdx = FBO->DepthBuffer;
             vulkanFBO->bufferType = FrameBufferType::ShadowCubeMap;
             vulkanFBO->renderPassType = RenderPassType::ShadowCubeMap;
 
@@ -623,7 +627,7 @@ namespace ZXEngine
                 VulkanImage depthImage = CreateImage(width, height, 1, 6, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D16_UNORM, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
                 TransitionImageLayout(depthImage.image,
-                    VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                    VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_DEPTH_BIT,
                     VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
                     VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
@@ -1518,7 +1522,7 @@ namespace ZXEngine
         presentFBOIdx = GetNextFBOIndex();
         auto vulkanFBO = GetFBOByIndex(presentFBOIdx);
         vulkanFBO->bufferType = FrameBufferType::Present;
-        vulkanFBO->renderPassType = RenderPassType::Normal;
+        vulkanFBO->renderPassType = RenderPassType::Present;
 
         vulkanFBO->frameBuffers.clear();
         vulkanFBO->frameBuffers.resize(swapChainImages.size());
@@ -2179,11 +2183,11 @@ namespace ZXEngine
             VkAttachmentDescription colorAttachment = {};
             colorAttachment.format = swapChainImageFormat;
             colorAttachment.samples = msaaSamplesCount;
-            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-            colorAttachment.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
             colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
             VkAttachmentDescription colorAttachmentResolve = {};
@@ -2193,7 +2197,7 @@ namespace ZXEngine
             colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-            colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+            colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
             colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
             VkAttachmentReference colorAttachmentRef{};
@@ -2241,8 +2245,9 @@ namespace ZXEngine
             // 上面那个设置是用于color和depth的，stencil的单独一个
             colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-            colorAttachment.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-            colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            // 渲染开始前和结束后Layout都是给Shader读取数据准备的，只在渲染中改成Attachment需要的Layout
+            colorAttachment.initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            colorAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
             VkAttachmentDescription depthAttachment = {};
             depthAttachment.format = VK_FORMAT_D16_UNORM;
@@ -2252,8 +2257,8 @@ namespace ZXEngine
             depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
             depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-            depthAttachment.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-            depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+            depthAttachment.initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            depthAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
             VkAttachmentReference colorAttachmentRef = {};
             colorAttachmentRef.attachment = 0;
@@ -2270,13 +2275,21 @@ namespace ZXEngine
             subpassInfo.colorAttachmentCount = 1;
             subpassInfo.pDepthStencilAttachment = &depthAttachmentRef;
 
-            VkSubpassDependency dependency = {};
-            dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-            dependency.dstSubpass = 0;
-            dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-            dependency.srcAccessMask = 0;
-            dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-            dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+            VkSubpassDependency beginDependency = {};
+            beginDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+            beginDependency.dstSubpass = 0;
+            beginDependency.srcStageMask = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
+            beginDependency.srcAccessMask = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+            beginDependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+            beginDependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+            VkSubpassDependency endDependency = {};
+            endDependency.srcSubpass = 0;
+            endDependency.dstSubpass = VK_SUBPASS_EXTERNAL;
+            endDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+            endDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+            endDependency.dstStageMask = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
+            endDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+            array<VkSubpassDependency, 2> dependencies = { beginDependency, endDependency };
 
             array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
             VkRenderPassCreateInfo renderPassInfo{};
@@ -2286,8 +2299,8 @@ namespace ZXEngine
             renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
             renderPassInfo.pSubpasses = &subpassInfo;
             renderPassInfo.subpassCount = 1;
-            renderPassInfo.pDependencies = &dependency;
-            renderPassInfo.dependencyCount = 1;
+            renderPassInfo.pDependencies = dependencies.data();
+            renderPassInfo.dependencyCount = static_cast<uint32_t>(dependencies.size());
 
             if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
                 throw std::runtime_error("failed to create render pass!");
@@ -2301,8 +2314,8 @@ namespace ZXEngine
             colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-            colorAttachment.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-            colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            colorAttachment.initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            colorAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
             VkAttachmentReference colorAttachmentRef = {};
             colorAttachmentRef.attachment = 0;
@@ -2313,13 +2326,21 @@ namespace ZXEngine
             subpassInfo.pColorAttachments = &colorAttachmentRef;
             subpassInfo.colorAttachmentCount = 1;
 
-            VkSubpassDependency dependency = {};
-            dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-            dependency.dstSubpass = 0;
-            dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-            dependency.srcAccessMask = 0;
-            dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-            dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+            VkSubpassDependency beginDependency = {};
+            beginDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+            beginDependency.dstSubpass = 0;
+            beginDependency.srcStageMask = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
+            beginDependency.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+            beginDependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+            beginDependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+            VkSubpassDependency endDependency = {};
+            endDependency.srcSubpass = 0;
+            endDependency.dstSubpass = VK_SUBPASS_EXTERNAL;
+            endDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+            endDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+            endDependency.dstStageMask = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
+            endDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+            array<VkSubpassDependency, 2> dependencies = { beginDependency, endDependency };
 
             array<VkAttachmentDescription, 1> attachments = { colorAttachment };
             VkRenderPassCreateInfo renderPassInfo{};
@@ -2329,8 +2350,8 @@ namespace ZXEngine
             renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
             renderPassInfo.pSubpasses = &subpassInfo;
             renderPassInfo.subpassCount = 1;
-            renderPassInfo.pDependencies = &dependency;
-            renderPassInfo.dependencyCount = 1;
+            renderPassInfo.pDependencies = dependencies.data();
+            renderPassInfo.dependencyCount = static_cast<uint32_t>(dependencies.size());
 
             if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
                 throw std::runtime_error("failed to create render pass!");
@@ -2344,8 +2365,8 @@ namespace ZXEngine
             depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
             depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-            depthAttachment.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-            depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+            depthAttachment.initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            depthAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
             VkAttachmentReference depthAttachmentRef = {};
             depthAttachmentRef.attachment = 0;
@@ -2355,13 +2376,21 @@ namespace ZXEngine
             subpassInfo.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
             subpassInfo.pDepthStencilAttachment = &depthAttachmentRef;
 
-            VkSubpassDependency dependency = {};
-            dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-            dependency.dstSubpass = 0;
-            dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-            dependency.srcAccessMask = 0;
-            dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-            dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+            VkSubpassDependency beginDependency = {};
+            beginDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+            beginDependency.dstSubpass = 0;
+            beginDependency.srcStageMask = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
+            beginDependency.srcAccessMask = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+            beginDependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+            beginDependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+            VkSubpassDependency endDependency = {};
+            endDependency.srcSubpass = 0;
+            endDependency.dstSubpass = VK_SUBPASS_EXTERNAL;
+            endDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+            endDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+            endDependency.dstStageMask = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
+            endDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+            array<VkSubpassDependency, 2> dependencies = { beginDependency, endDependency };
 
             array<VkAttachmentDescription, 1> attachments = { depthAttachment };
             VkRenderPassCreateInfo renderPassInfo{};
@@ -2371,8 +2400,8 @@ namespace ZXEngine
             renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
             renderPassInfo.pSubpasses = &subpassInfo;
             renderPassInfo.subpassCount = 1;
-            renderPassInfo.pDependencies = &dependency;
-            renderPassInfo.dependencyCount = 1;
+            renderPassInfo.pDependencies = dependencies.data();
+            renderPassInfo.dependencyCount = static_cast<uint32_t>(dependencies.size());
 
             if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
                 throw std::runtime_error("failed to create render pass!");
