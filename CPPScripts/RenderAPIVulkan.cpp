@@ -335,8 +335,8 @@ namespace ZXEngine
 
     unsigned int RenderAPIVulkan::GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data)
     {
-        // 一个文本纹理像素只有8字节
-        VkDeviceSize imageSize = VkDeviceSize(width * height);
+        // 本来一个像素只想用8bit的，但是Vulkan居然没有VK_FORMAT_R8_SFLOAT，只有VK_FORMAT_R16_SFLOAT，所以只能一个像素2字节了
+        VkDeviceSize imageSize = VkDeviceSize(width * height * 2);
         if (imageSize == 0)
             throw std::runtime_error("Can't create texture with size 0 !");
         VulkanBuffer stagingBuffer = CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
@@ -348,7 +348,7 @@ namespace ZXEngine
         vmaUnmapMemory(vmaAllocator, stagingBuffer.allocation);
 
         VulkanImage image = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT,
-            VK_FORMAT_R8_UINT, VK_IMAGE_TILING_OPTIMAL,
+            VK_FORMAT_R16_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
             VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
@@ -376,7 +376,7 @@ namespace ZXEngine
 
         DestroyBuffer(stagingBuffer);
 
-        VkImageView imageView = CreateImageView(image.image, VK_FORMAT_R8_UINT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+        VkImageView imageView = CreateImageView(image.image, VK_FORMAT_R16_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
         VkSampler sampler = CreateSampler(1);
 
         return CreateVulkanTexture(image, imageView, sampler);
