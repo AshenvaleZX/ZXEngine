@@ -100,10 +100,11 @@ namespace ZXEngine
     void RenderAPIVulkan::EndFrame()
     {
         VkSwapchainKHR swapChains[] = { swapChain };
+        VkSemaphore waitSemaphores[] = { presentImageAvailableSemaphores[currentFrame] };
         VkPresentInfoKHR presentInfo = {};
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-        presentInfo.pWaitSemaphores = VK_NULL_HANDLE;
-        presentInfo.waitSemaphoreCount = 0;
+        presentInfo.pWaitSemaphores = waitSemaphores;
+        presentInfo.waitSemaphoreCount = 1;
         presentInfo.pSwapchains = swapChains;
         presentInfo.swapchainCount = 1;
         presentInfo.pImageIndices = &curPresentImageIdx;
