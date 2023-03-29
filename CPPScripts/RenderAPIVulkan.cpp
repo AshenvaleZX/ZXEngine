@@ -1331,14 +1331,14 @@ namespace ZXEngine
     void RenderAPIVulkan::CreateLogicalDevice()
     {
         // 获取当前物理设备的队列簇索引
-        QueueFamilyIndices indices = GetQueueFamilyIndices(physicalDevice);
+        queueFamilyIndices = GetQueueFamilyIndices(physicalDevice);
 
         // 逻辑设备需要哪些Queue
         vector<VkDeviceQueueCreateInfo> queueCreateInfos;
         float queuePriority = 1.0f;
-        set<int> uniqueQueueFamilies = { indices.graphicsFamilyIdx, indices.presentFamilyIdx };
+        set<uint32_t> uniqueQueueFamilies = { queueFamilyIndices.graphics, queueFamilyIndices.present };
         // 有多个队列簇，遍历创建
-        for (int queueFamily : uniqueQueueFamilies)
+        for (uint32_t queueFamily : uniqueQueueFamilies)
         {
             VkDeviceQueueCreateInfo queueCreateInfo = {};
             queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -1390,8 +1390,8 @@ namespace ZXEngine
         // 逻辑设备创建的时候，队列也一起创建了，获取队列并保存下来方便之后调用
         // 参数是逻辑设备，队列簇，队列索引和存储获取队列变量句柄的指针
         // 因为我们只是从这个队列簇创建一个队列，所以需要使用索引0
-        vkGetDeviceQueue(device, indices.graphicsFamilyIdx, 0, &graphicsQueue);
-        vkGetDeviceQueue(device, indices.presentFamilyIdx, 0, &presentQueue);
+        vkGetDeviceQueue(device, queueFamilyIndices.graphics, 0, &graphicsQueue);
+        vkGetDeviceQueue(device, queueFamilyIndices.present, 0, &presentQueue);
     }
 
     void RenderAPIVulkan::CreateMemoryAllocator()
@@ -1406,8 +1406,6 @@ namespace ZXEngine
 
     void RenderAPIVulkan::CreateCommandPool()
     {
-        QueueFamilyIndices queueFamilyIndices = GetQueueFamilyIndices(physicalDevice);
-
         VkCommandPoolCreateInfo poolInfo{};
         poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         // 这个flags可要可不要，如果要多个flags的话用|即可
@@ -1416,7 +1414,7 @@ namespace ZXEngine
         poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
         // command buffer是通过在一个设备队列上提交它们来执行的，每个命令池只能分配在单一类型队列上提交的命令缓冲区
         // 我们将记录用于绘图的命令，所以用graphicsFamily
-        poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamilyIdx;
+        poolInfo.queueFamilyIndex = queueFamilyIndices.graphics;
 
         if (vkCreateCommandPool(device, &poolInfo, nullptr, &commandPool) != VK_SUCCESS)
             throw std::runtime_error("failed to create command pool!");
@@ -1467,20 +1465,19 @@ namespace ZXEngine
         createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
         // 指定如何处理跨多个队列簇的交换链图像
-        QueueFamilyIndices indices = GetQueueFamilyIndices(physicalDevice);
-        uint32_t queueFamilyIndices[] = { (uint32_t)indices.graphicsFamilyIdx, (uint32_t)indices.presentFamilyIdx };
+        uint32_t tmpQueueFamilyIndices[] = { queueFamilyIndices.graphics, queueFamilyIndices.present };
         // 如果graphics队列簇与presentation队列簇不同，会出现如下情形
         // 我们将从graphics队列中绘制交换链的图像，然后在另一个presentation队列中提交他们
         // 多队列处理图像有两种方法
         // VK_SHARING_MODE_EXCLUSIVE: 同一时间图像只能被一个队列簇占用，如果其他队列簇需要其所有权需要明确指定，这种方式提供了最好的性能
         // VK_SHARING_MODE_CONCURRENT: 图像可以被多个队列簇访问，不需要明确所有权从属关系
         // 如果队列簇不同，暂时使用concurrent模式，避免处理图像所有权从属关系的内容，因为这些会涉及不少概念
-        if (indices.graphicsFamilyIdx != indices.presentFamilyIdx)
+        if (queueFamilyIndices.graphics != queueFamilyIndices.present)
         {
             createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
             // Concurrent模式需要预先指定队列簇所有权从属关系，通过queueFamilyIndexCount和pQueueFamilyIndices参数进行共享
             createInfo.queueFamilyIndexCount = 2;
-            createInfo.pQueueFamilyIndices = queueFamilyIndices;
+            createInfo.pQueueFamilyIndices = tmpQueueFamilyIndices;
         }
         // 如果graphics队列簇和presentation队列簇相同，我们需要使用exclusive模式，因为concurrent模式需要至少两个不同的队列簇
         else
@@ -1688,19 +1685,19 @@ namespace ZXEngine
         vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
 
         // 遍历队列簇，获取支持我们需求的队列簇
-        int i = 0;
+        uint32_t i = 0;
         for (const auto& queueFamily : queueFamilies)
         {
             // 当前队列簇是否支持图形处理
             if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
-                indices.graphicsFamilyIdx = i;
+                indices.graphics = i;
 
             // 是否支持VkSurfaceKHR
             VkBool32 presentSupport = false;
             vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
             // 支持的话记录一下索引
             if (queueFamily.queueCount > 0 && presentSupport)
-                indices.presentFamilyIdx = i;
+                indices.present = i;
 
             // 注意这里支持surface和graphic的队列簇不一定是同一个
             // 后续使用这些队列簇的逻辑，要么固定按照支持surface和graphic的队列簇是两个不同的来处理(这样无论是不是同一个都不会出错)

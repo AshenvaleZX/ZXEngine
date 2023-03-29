@@ -6,6 +6,7 @@ namespace ZXEngine
 {
     class RenderAPIVulkan : public RenderAPI
     {
+        friend class EditorGUIManager;
     /// <summary>
     /// 标准RenderAPI接口
     /// </summary>
@@ -94,6 +95,8 @@ namespace ZXEngine
         VkQueue graphicsQueue = VK_NULL_HANDLE;
         // 展示队列
         VkQueue presentQueue = VK_NULL_HANDLE;
+        // 队列簇ID记录
+        QueueFamilyIndices queueFamilyIndices;
         // 提供给交换链显示画面的Frame Buffer
         uint32_t presentFBOIdx = 0;
 

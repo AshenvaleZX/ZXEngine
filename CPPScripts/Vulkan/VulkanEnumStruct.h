@@ -37,10 +37,10 @@ namespace ZXEngine
 
     struct QueueFamilyIndices
     {
-        int graphicsFamilyIdx = -1;
-        int presentFamilyIdx = -1;
+        uint32_t present = UINT32_MAX;
+        uint32_t graphics = UINT32_MAX;
 
-        bool isComplete() { return graphicsFamilyIdx >= 0 && presentFamilyIdx >= 0; }
+        bool isComplete() { return present != UINT32_MAX && graphics != UINT32_MAX; }
     };
 
     // 交换链的三大类属性设置
