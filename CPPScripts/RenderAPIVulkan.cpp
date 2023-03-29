@@ -398,6 +398,7 @@ namespace ZXEngine
         uint32_t pipelineID = GetNextPipelineIndex();
         auto pipeline = GetPipelineByIndex(pipelineID);
 
+        pipeline->name = path;
         pipeline->pipeline = CreatePipeline(path, shaderInfo, pipeline->descriptorSetLayout, pipeline->pipelineLayout, vkFrameBufferTypeToRenderPassTypeMap[type]);
         pipeline->descriptorPool = CreateDescriptorPool(shaderInfo);
 
@@ -523,7 +524,7 @@ namespace ZXEngine
             {
                 // 这里很多Attachment后面都可能会用于其它Shader采样，所以都加了VK_IMAGE_USAGE_SAMPLED_BIT
                 // 如果确定不会被用作采样的，可以不加VK_IMAGE_USAGE_SAMPLED_BIT，改成VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT提高性能
-                VulkanImage colorImage = CreateImage(width, height, 1, 1, msaaSamplesCount, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
+                VulkanImage colorImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
                 TransitionImageLayout(colorImage.image,
                     VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
@@ -534,7 +535,7 @@ namespace ZXEngine
                 VkSampler colorSampler = CreateSampler(1);
                 colorAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(colorImage, colorImageView, colorSampler);
 
-                VulkanImage depthImage = CreateImage(width, height, 1, 1, msaaSamplesCount, VK_FORMAT_D16_UNORM, VK_IMAGE_TILING_OPTIMAL,
+                VulkanImage depthImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D16_UNORM, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
                 TransitionImageLayout(depthImage.image,
                     VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
@@ -580,7 +581,7 @@ namespace ZXEngine
 
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
-                VulkanImage colorImage = CreateImage(width, height, 1, 1, msaaSamplesCount, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
+                VulkanImage colorImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
                 TransitionImageLayout(colorImage.image,
                     VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
@@ -2238,7 +2239,7 @@ namespace ZXEngine
         {
             VkAttachmentDescription colorAttachment = {};
             colorAttachment.format = VK_FORMAT_R8G8B8A8_SRGB;
-            colorAttachment.samples = msaaSamplesCount;
+            colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
             colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             // 上面那个设置是用于color和depth的，stencil的单独一个
@@ -2250,7 +2251,7 @@ namespace ZXEngine
 
             VkAttachmentDescription depthAttachment = {};
             depthAttachment.format = VK_FORMAT_D16_UNORM;
-            depthAttachment.samples = msaaSamplesCount;
+            depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
             depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             // 因为绘制完成后我们不会再使用depth buffer了，所以这里不关心
             depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -2308,7 +2309,7 @@ namespace ZXEngine
         {
             VkAttachmentDescription colorAttachment = {};
             colorAttachment.format = VK_FORMAT_R8G8B8A8_SRGB;
-            colorAttachment.samples = msaaSamplesCount;
+            colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
             colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -2490,7 +2491,7 @@ namespace ZXEngine
         VkPipelineRasterizationStateCreateInfo rasterizationInfo = GetRasterizationInfo(vkFaceCullOptionMap[shaderInfo.stateSet.cull]);
         
         // 设置Shader采样纹理的MSAA(不是输出到屏幕上的MSAA)，需要创建逻辑设备的时候开启VkPhysicalDeviceFeatures里的sampleRateShading才能生效，暂时关闭
-        VkPipelineMultisampleStateCreateInfo multisampleInfo = GetPipelineMultisampleInfo(renderPassType == RenderPassType::ShadowCubeMap ? VK_SAMPLE_COUNT_1_BIT : msaaSamplesCount);
+        VkPipelineMultisampleStateCreateInfo multisampleInfo = GetPipelineMultisampleInfo(renderPassType == RenderPassType::Present ? msaaSamplesCount : VK_SAMPLE_COUNT_1_BIT);
 
         // Color Blend
         VkPipelineColorBlendAttachmentState colorBlendAttachment{};

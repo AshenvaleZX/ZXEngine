@@ -118,6 +118,7 @@ namespace ZXEngine
 
     struct VulkanPipeline
     {
+        string name; // For debug
         VkPipeline pipeline;
         VkPipelineLayout pipelineLayout;
         VkDescriptorSetLayout descriptorSetLayout;
