@@ -14,11 +14,10 @@
 #include <algorithm>
 #include <filesystem>
 #include <nlohmann/json.hpp>
-#ifdef ZX_EDITOR
+
 // 防止windows.h里的宏定义max和min影响到其它库里的相同字段
 #define NOMINMAX
 #include <windows.h>
-#endif
 
 using std::string; 
 using std::cout;

@@ -9,9 +9,7 @@ namespace ZXEngine
 	class StaticMesh;
 	class UITextureRenderer : public Component
 	{
-#ifdef ZX_EDITOR
 		friend class EditorInspectorPanel;
-#endif
 	public:
 		static Shader* shader;
 		static void Init();

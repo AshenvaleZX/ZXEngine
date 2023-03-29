@@ -7,9 +7,11 @@
 #include "LuaManager.h"
 #include "GameLogicManager.h"
 #include "ProjectSetting.h"
+#ifdef ZX_EDITOR
 #include "Editor/EditorGUIManager.h"
 #include "Editor/EditorDataManager.h"
 #include "Editor/EditorInputManager.h"
+#endif
 
 namespace ZXEngine
 {
