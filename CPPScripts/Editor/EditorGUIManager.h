@@ -1,12 +1,8 @@
 #pragma once
-#include "../pubh.h"
-#include "../ImGui/imgui.h"
-#include "../ImGui/imgui_impl_glfw.h"
-#include "../ImGui/imgui_impl_opengl3.h"
+#include "EditorPanel.h"
 
 namespace ZXEngine
 {
-	class EditorPanel;
 	class EditorAssetPreviewer;
 	class EditorGUIManager
 	{
@@ -30,5 +26,11 @@ namespace ZXEngine
 
 	private:
 		vector<EditorPanel*> allPanels;
+
+#ifdef ZX_API_VULKAN
+		void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int width, int height);
+		void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data);
+		void FramePresent(ImGui_ImplVulkanH_Window* wd);
+#endif
 	};
 }

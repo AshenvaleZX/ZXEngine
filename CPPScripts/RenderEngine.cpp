@@ -102,7 +102,9 @@ namespace ZXEngine
 
 	void RenderEngine::SwapBufferAndPollPollEvents()
 	{
+#ifdef ZX_API_OPENGL
 		glfwSwapBuffers(window);
+#endif
 		glfwPollEvents();
 	}
 
