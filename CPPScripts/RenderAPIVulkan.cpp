@@ -153,30 +153,53 @@ namespace ZXEngine
         {
             auto FBO = GetFBOByIndex(curFBOIdx);
 
-            vector<VkClearValue> clearValues = {};
-            if (clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
-            {
-                VkClearValue clearValue = {};
-                clearValue.color = { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a };
-                clearValues.push_back(clearValue);
-            }
-            if ((clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT) | (clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_STENCIL_BIT))
-            {
-                VkClearValue clearValue = {};
-                clearValue.depthStencil = { clearInfo.depth, clearInfo.stencil };
-                clearValues.push_back(clearValue);
-            }
-
             VkRenderPassBeginInfo renderPassInfo = {};
             renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
             renderPassInfo.renderPass = GetRenderPass(FBO->renderPassType);
             renderPassInfo.framebuffer = FBO->frameBuffers[GetCurFrameBufferIndex()];
             renderPassInfo.renderArea.offset = { viewPortInfo.xOffset, viewPortInfo.yOffset };
             renderPassInfo.renderArea.extent = { viewPortInfo.width, viewPortInfo.height };
-            renderPassInfo.pClearValues = clearValues.data();
-            renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 
             vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+            vector<VkClearAttachment> clearAttachments = {};
+            if (clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
+            {
+                VkClearValue clearValue = {};
+                clearValue.color = { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a };
+                VkClearAttachment clearColorAttachment = {};
+                clearColorAttachment.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                clearColorAttachment.colorAttachment = 0;
+                clearColorAttachment.clearValue = clearValue;
+                clearAttachments.push_back(clearColorAttachment);
+            }
+            if (clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT)
+            {
+                VkClearValue clearValue = {};
+                clearValue.depthStencil = { clearInfo.depth, 0 };
+                VkClearAttachment clearDepthAttachment = {};
+                clearDepthAttachment.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+                clearDepthAttachment.clearValue = clearValue;
+                clearAttachments.push_back(clearDepthAttachment);
+            }
+            if (clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_STENCIL_BIT)
+            {
+                VkClearValue clearValue = {};
+                clearValue.depthStencil = { 0, clearInfo.stencil };
+                VkClearAttachment clearStencilAttachment = {};
+                clearStencilAttachment.aspectMask = VK_IMAGE_ASPECT_STENCIL_BIT;
+                clearStencilAttachment.clearValue = clearValue;
+                clearAttachments.push_back(clearStencilAttachment);
+            }
+
+            VkClearRect clearRect = {};
+            clearRect.baseArrayLayer = 0;
+            clearRect.layerCount = 1;
+            clearRect.rect.offset = VkOffset2D { viewPortInfo.xOffset, viewPortInfo.yOffset };
+            clearRect.rect.extent = VkExtent2D { viewPortInfo.width, viewPortInfo.height };
+
+            vkCmdClearAttachments(cmd, static_cast<uint32_t>(clearAttachments.size()), clearAttachments.data(), 1, &clearRect);
+
             vkCmdEndRenderPass(cmd);
         });
     }
