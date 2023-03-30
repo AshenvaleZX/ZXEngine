@@ -1,3 +1,4 @@
+#include "pubh.h"
 #include "Math.h"
 #include "Debug.h"
 
@@ -64,6 +65,11 @@ namespace ZXEngine
 		float m31 = 0;
 		float m32 = 1;
 		float m33 = 0;
+
+#ifdef ZX_API_VULKAN
+		// Vulkan的Y轴要反转一下，否则画面会颠倒
+		m11 *= -1;
+#endif
 
 		return Matrix4(
 			m00, m01, m02, m03,
