@@ -539,16 +539,17 @@ namespace ZXEngine
         {
             FBO->ID = GetNextFBOIndex();
             FBO->ColorBuffer = GetNextAttachmentBufferIndex();
+            auto colorAttachmentBuffer = GetAttachmentBufferByIndex(FBO->ColorBuffer);
+            colorAttachmentBuffer->inUse = true;
             FBO->DepthBuffer = GetNextAttachmentBufferIndex();
+            auto depthAttachmentBuffer = GetAttachmentBufferByIndex(FBO->DepthBuffer);
+            depthAttachmentBuffer->inUse = true;
 
             auto vulkanFBO = GetFBOByIndex(FBO->ID);
             vulkanFBO->colorAttachmentIdx = FBO->ColorBuffer;
             vulkanFBO->depthAttachmentIdx = FBO->DepthBuffer;
             vulkanFBO->bufferType = FrameBufferType::Normal;
             vulkanFBO->renderPassType = RenderPassType::Normal;
-
-            auto colorAttachmentBuffer = GetAttachmentBufferByIndex(FBO->ColorBuffer);
-            auto depthAttachmentBuffer = GetAttachmentBufferByIndex(FBO->DepthBuffer);
 
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
@@ -593,21 +594,19 @@ namespace ZXEngine
             }
 
             vulkanFBO->inUse = true;
-            colorAttachmentBuffer->inUse = true;
-            depthAttachmentBuffer->inUse = true;
         }
         else if (type == FrameBufferType::Color)
         {
             FBO->ID = GetNextFBOIndex();
             FBO->ColorBuffer = GetNextAttachmentBufferIndex();
+            auto colorAttachmentBuffer = GetAttachmentBufferByIndex(FBO->ColorBuffer);
+            colorAttachmentBuffer->inUse = true;
             FBO->DepthBuffer = NULL;
 
             auto vulkanFBO = GetFBOByIndex(FBO->ID);
             vulkanFBO->colorAttachmentIdx = FBO->ColorBuffer;
             vulkanFBO->bufferType = FrameBufferType::Color;
             vulkanFBO->renderPassType = RenderPassType::Color;
-
-            auto colorAttachmentBuffer = GetAttachmentBufferByIndex(FBO->ColorBuffer);
 
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
@@ -638,20 +637,19 @@ namespace ZXEngine
             }
 
             vulkanFBO->inUse = true;
-            colorAttachmentBuffer->inUse = true;
         }
         else if (type == FrameBufferType::ShadowCubeMap)
         {
             FBO->ID = GetNextFBOIndex();
             FBO->ColorBuffer = NULL;
             FBO->DepthBuffer = GetNextAttachmentBufferIndex();
+            auto depthAttachmentBuffer = GetAttachmentBufferByIndex(FBO->DepthBuffer);
+            depthAttachmentBuffer->inUse = true;
 
             auto vulkanFBO = GetFBOByIndex(FBO->ID);
             vulkanFBO->depthAttachmentIdx = FBO->DepthBuffer;
             vulkanFBO->bufferType = FrameBufferType::ShadowCubeMap;
             vulkanFBO->renderPassType = RenderPassType::ShadowCubeMap;
-
-            auto depthAttachmentBuffer = GetAttachmentBufferByIndex(FBO->DepthBuffer);
 
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
@@ -682,7 +680,6 @@ namespace ZXEngine
             }
 
             vulkanFBO->inUse = true;
-            depthAttachmentBuffer->inUse = true;
         }
         else
         {
