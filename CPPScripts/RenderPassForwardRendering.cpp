@@ -27,7 +27,7 @@ namespace ZXEngine
 
 		opaqueRenderState = new RenderStateSetting();
 
-		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT | ZX_CLEAR_FRAME_BUFFER_STENCIL_BIT;
+		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT;
 
 		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand();
 	}
