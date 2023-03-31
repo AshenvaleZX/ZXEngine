@@ -2,7 +2,7 @@ Setting
 {
     Blend SrcAlpha OneMinusSrcAlpha
     BlendOp Add
-    Cull Front
+    Cull Back
     ZTest Less
     ZWrite On
 }

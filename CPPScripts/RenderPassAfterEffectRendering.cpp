@@ -81,10 +81,18 @@ namespace ZXEngine
 			Vector2(0, 0),
 		};
 		vector<Vertex> vertices;
+		// 这里是直接手写的NDC坐标，所以需要考虑不同API的NDC坐标系差异，目前工程里OpenGL和Vulkan都以逆时针为图元正面
+		// 但是OpenGL的(-1,-1)在左下角，Y轴向上为正，Vulkan的(-1,-1)在左上角，Y轴向下为正，所以这里的顶点顺序要区分一下
 		vector<unsigned int> indices =
 		{
+#ifdef ZX_API_OPENGL
 			2, 3, 1,
 			2, 1, 0,
+#endif
+#ifdef ZX_API_VULKAN
+			3, 2, 0,
+			3, 0, 1,
+#endif
 		};
 		for (unsigned int i = 0; i < 4; i++)
 		{
