@@ -1,3 +1,9 @@
+Setting 
+{
+    ZTest Always
+    ZWrite Off
+}
+
 Vertex
 {
     Input

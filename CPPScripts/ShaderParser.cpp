@@ -369,7 +369,7 @@ namespace ZXEngine
 			}
 			else if (words[0] == "ZWrite")
 			{
-				stateSet.depthWrite = words[1] == "true";
+				stateSet.depthWrite = words[1] == "On";
 			}
 		}
 
