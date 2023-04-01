@@ -123,6 +123,36 @@ namespace ZXEngine
 		return resMat;
 	}
 
+	Matrix4 Math::Orthographic(float left, float right, float bottom, float top, float zNear, float zFar)
+	{
+		// 默认用左手坐标系的
+		return OrthographicLH(left, right, bottom, top, zNear, zFar);
+	}
+
+	Matrix4 Math::OrthographicLH(float left, float right, float bottom, float top, float zNear, float zFar)
+	{
+		Matrix4 resMat(1);
+		resMat.m00 = 2.0f / (right - left);
+		resMat.m11 = 2.0f / (top - bottom);
+		resMat.m22 = 2.0f / (zFar - zNear);
+		resMat.m03 = -(right + left) / (right - left);
+		resMat.m13 = -(top + bottom) / (top - bottom);
+		resMat.m23 = -(zFar + zNear) / (zFar - zNear);
+		return resMat;
+	}
+
+	Matrix4 Math::OrthographicRH(float left, float right, float bottom, float top, float zNear, float zFar)
+	{
+		Matrix4 resMat(1);
+		resMat.m00 = 2.0f / (right - left);
+		resMat.m11 = 2.0f / (top - bottom);
+		resMat.m22 = -2.0f / (zFar - zNear);
+		resMat.m03 = -(right + left) / (right - left);
+		resMat.m13 = -(top + bottom) / (top - bottom);
+		resMat.m23 = -(zFar + zNear) / (zFar - zNear);
+		return resMat;
+	}
+
 	Matrix4 Math::Translate(const Matrix4& oriMat, const Vector3& v)
 	{
 		Matrix4 resMat(oriMat);

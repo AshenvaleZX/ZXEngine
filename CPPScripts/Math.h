@@ -28,6 +28,9 @@ namespace ZXEngine
 		static Matrix4 PerspectiveRH(float fov, float aspect, float nearClip, float farClip);
 		// 计算正交投影矩阵
 		static Matrix4 Orthographic(float left, float right, float bottom, float top);
+		static Matrix4 Orthographic(float left, float right, float bottom, float top, float zNear, float zFar);
+		static Matrix4 OrthographicLH(float left, float right, float bottom, float top, float zNear, float zFar);
+		static Matrix4 OrthographicRH(float left, float right, float bottom, float top, float zNear, float zFar);
 		// 位移
 		static Matrix4 Translate(const Matrix4& oriMat, const Vector3& v);
 		// 旋转
