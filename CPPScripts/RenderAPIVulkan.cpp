@@ -1798,6 +1798,7 @@ namespace ZXEngine
         else { msaaSamplesCount = VK_SAMPLE_COUNT_1_BIT; }
 
         maxSamplerAnisotropy = physicalDeviceProperties.limits.maxSamplerAnisotropy;
+        minUniformBufferOffsetAlignment = physicalDeviceProperties.limits.minUniformBufferOffsetAlignment;
     }
 
     VkSurfaceFormatKHR RenderAPIVulkan::ChooseSwapSurfaceFormat(const vector<VkSurfaceFormatKHR>& availableFormats)
@@ -1898,18 +1899,22 @@ namespace ZXEngine
             Debug::LogError("Try to create empty uniform buffer !");
             return uniformBuffer;
         }
-        size_t bufferSize = 0;
 
+        VkDeviceSize bufferSize = 0;
         for (auto& property : properties)
         {
             if (property.arrayLength > 1)
-                bufferSize += static_cast<size_t>(ShaderParser::GetPropertySize(property.type) * property.arrayLength);
+                bufferSize += static_cast<VkDeviceSize>(ShaderParser::GetPropertySize(property.type) * property.arrayLength);
             else
-                bufferSize += ShaderParser::GetPropertySize(property.type);
+                bufferSize += static_cast<VkDeviceSize>(ShaderParser::GetPropertySize(property.type));
         }
+        // 让Uniform Buffer的大小和minUniformBufferOffsetAlignment对齐，我不太确定这个步骤是不是必要的
+        VkDeviceSize remainder = bufferSize % minUniformBufferOffsetAlignment;
+        if (remainder > 0)
+            bufferSize = bufferSize - remainder + minUniformBufferOffsetAlignment;
 
         uniformBuffer.binding = properties[0].binding;
-        uniformBuffer.size = static_cast<VkDeviceSize>(bufferSize);
+        uniformBuffer.size = bufferSize;
         uniformBuffer.buffer = CreateBuffer(uniformBuffer.size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VMA_MEMORY_USAGE_AUTO, true);
         vmaMapMemory(vmaAllocator, uniformBuffer.buffer.allocation, &uniformBuffer.mappedAddress);
 

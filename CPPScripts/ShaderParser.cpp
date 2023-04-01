@@ -126,6 +126,7 @@ namespace ZXEngine
 
 	uint32_t ShaderParser::GetPropertySize(ShaderPropertyType type)
 	{
+		// 这里要注意Vulkan的内存对齐规范: https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap15.html#interfaces-resources-layout
 		if (type == ShaderPropertyType::BOOL)
 			return sizeof(bool);
 		else if (type == ShaderPropertyType::INT)
@@ -138,12 +139,14 @@ namespace ZXEngine
 		else if (type == ShaderPropertyType::VEC3 || type == ShaderPropertyType::ENGINE_CAMERA_POS
 			|| type == ShaderPropertyType::ENGINE_LIGHT_POS || type == ShaderPropertyType::ENGINE_LIGHT_DIR
 			|| type == ShaderPropertyType::ENGINE_LIGHT_COLOR)
-			return sizeof(float) * 3;
+			// vec3在内存上是按vec4算的
+			return sizeof(float) * 4;
 		else if (type == ShaderPropertyType::VEC4)
 			return sizeof(float) * 4;
 		else if (type == ShaderPropertyType::MAT2)
 			return sizeof(float) * 4;
 		else if (type == ShaderPropertyType::MAT3)
+			// mat3没实用过，要注意可能存在的内存对齐问题
 			return sizeof(float) * 9;
 		else if (type == ShaderPropertyType::MAT4 || type == ShaderPropertyType::ENGINE_MODEL
 			|| type == ShaderPropertyType::ENGINE_VIEW || type == ShaderPropertyType::ENGINE_PROJECTION)

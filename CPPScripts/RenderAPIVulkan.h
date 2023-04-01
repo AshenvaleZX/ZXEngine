@@ -78,6 +78,7 @@ namespace ZXEngine
         float maxSamplerAnisotropy = 1.0f;
         // 当前是MAX_FRAMES_IN_FLIGHT中的第几帧
         uint32_t currentFrame = 0;
+        VkDeviceSize minUniformBufferOffsetAlignment = 8;
 
         // Vulkan实例
         VkInstance vkInstance = VK_NULL_HANDLE;
