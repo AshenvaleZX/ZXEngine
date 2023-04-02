@@ -70,6 +70,8 @@ namespace ZXEngine
     /// 仅启动时一次性初始化的核心Vulkan组件及相关变量
     /// </summary>
     private:
+        // 默认的纹理和FrameBuffer色彩空间
+        const VkFormat defaultImageFormat = VK_FORMAT_R8G8B8A8_UNORM;
         // 是否开启验证层
         bool validationLayersEnabled = false;
         // MSAA采样点数量
@@ -78,6 +80,7 @@ namespace ZXEngine
         float maxSamplerAnisotropy = 1.0f;
         // 当前是MAX_FRAMES_IN_FLIGHT中的第几帧
         uint32_t currentFrame = 0;
+        // 最小UBO对齐偏移量
         VkDeviceSize minUniformBufferOffsetAlignment = 8;
 
         // Vulkan实例
