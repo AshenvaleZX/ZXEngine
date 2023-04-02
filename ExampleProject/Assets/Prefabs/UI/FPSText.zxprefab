@@ -5,7 +5,7 @@
     [
         {
             "Type": "Transform",
-            "Position": [20, 680, 0],
+            "Position": [-620, 320, 0],
             "Rotation": [0, 0, 0],
             "Scale": [0.5, 1, 1]
         },

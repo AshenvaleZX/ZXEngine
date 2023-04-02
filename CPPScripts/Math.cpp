@@ -120,6 +120,12 @@ namespace ZXEngine
 		resMat.m22 = -1;
 		resMat.m03 = -(right + left) / (right - left);
 		resMat.m13 = -(top + bottom) / (top - bottom);
+
+#ifdef ZX_API_VULKAN
+		// Vulkan的Y轴要反转一下，否则画面会颠倒
+		resMat.m11 *= -1;
+#endif
+
 		return resMat;
 	}
 
@@ -138,6 +144,12 @@ namespace ZXEngine
 		resMat.m03 = -(right + left) / (right - left);
 		resMat.m13 = -(top + bottom) / (top - bottom);
 		resMat.m23 = -(zFar + zNear) / (zFar - zNear);
+
+#ifdef ZX_API_VULKAN
+		// Vulkan的Y轴要反转一下，否则画面会颠倒
+		resMat.m11 *= -1;
+#endif
+
 		return resMat;
 	}
 

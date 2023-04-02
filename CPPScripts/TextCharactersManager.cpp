@@ -26,7 +26,7 @@ namespace ZXEngine
         characterMesh = new DynamicMesh(4, 6);
 
         // ³õÊ¼»¯×Ö·ûäÖÈ¾Shader
-        Matrix4 mat_P = Math::Orthographic(0.0f, (float)GlobalData::srcWidth, 0.0f, (float)GlobalData::srcHeight);
+        Matrix4 mat_P = Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
         textShader = new Shader(Resources::GetAssetFullPath("Shaders/TextRenderer.zxshader", true), FrameBufferType::Present);
         textShader->Use();
         textShader->SetMat4("ENGINE_Projection", mat_P);

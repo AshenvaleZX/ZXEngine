@@ -13,7 +13,7 @@ namespace ZXEngine
 	{
 		shader = new Shader(Resources::GetAssetFullPath("Shaders/UITextureRenderer.zxshader", true), FrameBufferType::Present);
 
-		Matrix4 mat_P = Math::Orthographic(0.0f, (float)GlobalData::srcWidth, 0.0f, (float)GlobalData::srcHeight);
+		Matrix4 mat_P = Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
 		shader->Use();
 		shader->SetMat4("ENGINE_Projection", mat_P);
 	}
@@ -72,12 +72,13 @@ namespace ZXEngine
 			Vector3(-(width / 2),   height / 2 , 0),
 			Vector3(-(width / 2), -(height / 2), 0),
 		};
+		// GLSL的纹理采样坐标系Y轴是朝下的，HLSL是朝上的
 		Vector2 coords[4] =
 		{
-			Vector2(1, 1),
 			Vector2(1, 0),
-			Vector2(0, 1),
+			Vector2(1, 1),
 			Vector2(0, 0),
+			Vector2(0, 1),
 		};
 		vector<Vertex> vertices;
 		vector<unsigned int> indices =
