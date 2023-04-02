@@ -194,7 +194,11 @@ namespace ZXEngine
 
             VkClearRect clearRect = {};
             clearRect.baseArrayLayer = 0;
-            clearRect.layerCount = 1;
+            if (FBO->bufferType == FrameBufferType::ShadowCubeMap)
+                clearRect.layerCount = 6;
+            else
+                clearRect.layerCount = 1;
+
             clearRect.rect.offset = VkOffset2D { viewPortInfo.xOffset, viewPortInfo.yOffset };
             clearRect.rect.extent = VkExtent2D { viewPortInfo.width, viewPortInfo.height };
 
@@ -673,7 +677,7 @@ namespace ZXEngine
                 framebufferInfo.pAttachments = attachments.data();
                 framebufferInfo.width = width;
                 framebufferInfo.height = height;
-                framebufferInfo.layers = 1;
+                framebufferInfo.layers = 6;
 
                 if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &vulkanFBO->frameBuffers[i]) != VK_SUCCESS)
                     throw std::runtime_error("failed to create framebuffer!");
