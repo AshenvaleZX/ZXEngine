@@ -1252,15 +1252,15 @@ namespace ZXEngine
 
         for (auto& property : reference->shaderInfo.vertProperties.baseProperties)
             if (name == property.name)
-                return reinterpret_cast<void*>(reinterpret_cast<char*>(pipeline->vertUniformBuffers[currentFrame].mappedAddress) + property.offset + property.size * idx);
+                return reinterpret_cast<void*>(reinterpret_cast<char*>(pipeline->vertUniformBuffers[currentFrame].mappedAddress) + property.offset + property.arrayOffset * idx);
 
         for (auto& property : reference->shaderInfo.geomProperties.baseProperties)
             if (name == property.name)
-                return reinterpret_cast<void*>(reinterpret_cast<char*>(pipeline->geomUniformBuffers[currentFrame].mappedAddress) + property.offset + property.size * idx);
+                return reinterpret_cast<void*>(reinterpret_cast<char*>(pipeline->geomUniformBuffers[currentFrame].mappedAddress) + property.offset + property.arrayOffset * idx);
 
         for (auto& property : reference->shaderInfo.fragProperties.baseProperties)
             if (name == property.name)
-                return reinterpret_cast<void*>(reinterpret_cast<char*>(pipeline->fragUniformBuffers[currentFrame].mappedAddress) + property.offset + property.size * idx);
+                return reinterpret_cast<void*>(reinterpret_cast<char*>(pipeline->fragUniformBuffers[currentFrame].mappedAddress) + property.offset + property.arrayOffset * idx);
 
         Debug::LogError("Could not find shader property named " + name);
 
@@ -1904,14 +1904,7 @@ namespace ZXEngine
             return uniformBuffer;
         }
 
-        VkDeviceSize bufferSize = 0;
-        for (auto& property : properties)
-        {
-            if (property.arrayLength > 1)
-                bufferSize += static_cast<VkDeviceSize>(ShaderParser::GetPropertySize(property.type) * property.arrayLength);
-            else
-                bufferSize += static_cast<VkDeviceSize>(ShaderParser::GetPropertySize(property.type));
-        }
+        VkDeviceSize bufferSize = static_cast<VkDeviceSize>(properties[properties.size() - 1].offset + properties[properties.size() - 1].size);
         // 让Uniform Buffer的大小和minUniformBufferOffsetAlignment对齐，我不太确定这个步骤是不是必要的
         VkDeviceSize remainder = bufferSize % minUniformBufferOffsetAlignment;
         if (remainder > 0)

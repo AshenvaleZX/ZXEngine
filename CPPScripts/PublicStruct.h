@@ -30,13 +30,22 @@ namespace ZXEngine
 		bool depthWrite              = true;
 	};
 
+	struct UniformAlignInfo
+	{
+		uint32_t size = 0;
+		uint32_t align = 0;
+		uint32_t arrayOffset = 0;
+	};
+
 	struct ShaderProperty
 	{
 		string name;
-		uint32_t size = 0;        // 单个属性大小
+		uint32_t size = 0;        // 整个属性大小(可能是数组)
+		uint32_t align = 0;       // 单个属性的对齐标准
 		uint32_t offset = 0;      // Offset in uniform buffer, Only for Vulkan now
 		uint32_t binding = 0;     // Only for Vulkan now
 		uint32_t arrayLength = 0; // 属性数组长度
+		uint32_t arrayOffset = 0; // 如果是数组的话，一个属性在数组内的偏移量
 		ShaderPropertyType type;
 	};
 

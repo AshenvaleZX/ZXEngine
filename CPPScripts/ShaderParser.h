@@ -9,7 +9,7 @@ namespace ZXEngine
 	public:
 		static ShaderInfo GetShaderInfo(const string& code);
 		static bool IsBasePropertyType(ShaderPropertyType type);
-		static uint32_t GetPropertySize(ShaderPropertyType type);
+		static UniformAlignInfo GetPropertyAlignInfo(ShaderPropertyType type, uint32_t arrayLength);
 		static ShaderPropertiesInfo GetProperties(const string& stageCode);
 		static void ParseShaderCode(const string& code, string& vertCode, string& geomCode, string& fragCode);
 		static string TranslateToOpenGL(const string& originCode);

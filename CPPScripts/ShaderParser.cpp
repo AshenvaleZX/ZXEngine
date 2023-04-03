@@ -124,37 +124,62 @@ namespace ZXEngine
 			|| type == ShaderPropertyType::ENGINE_DEPTH_MAP || type == ShaderPropertyType::ENGINE_DEPTH_CUBE_MAP);
 	}
 
-	uint32_t ShaderParser::GetPropertySize(ShaderPropertyType type)
+	UniformAlignInfo ShaderParser::GetPropertyAlignInfo(ShaderPropertyType type, uint32_t arrayLength)
 	{
 		// 这里要注意Vulkan的内存对齐规范: https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap15.html#interfaces-resources-layout
-		if (type == ShaderPropertyType::BOOL)
-			return sizeof(bool);
-		else if (type == ShaderPropertyType::INT)
-			return sizeof(int);
-		else if (type == ShaderPropertyType::FLOAT || type == ShaderPropertyType::ENGINE_LIGHT_INTENSITY
-			|| type == ShaderPropertyType::ENGINE_FAR_PLANE)
-			return sizeof(float);
+		// 这里是按照std140标准实现的内存对齐
+
+		uint32_t std_size = sizeof(float);
+		UniformAlignInfo alignInfo = {};
+		if (type == ShaderPropertyType::BOOL || type == ShaderPropertyType::INT || type == ShaderPropertyType::FLOAT
+			|| type == ShaderPropertyType::ENGINE_LIGHT_INTENSITY || type == ShaderPropertyType::ENGINE_FAR_PLANE)
+			if (arrayLength == 0)
+				return { .size = std_size, .align = std_size };
+			else
+				return { .size = (std_size * 4) * (arrayLength - 1) + std_size, .align = std_size * 4, .arrayOffset = std_size * 4 };
+
 		else if (type == ShaderPropertyType::VEC2)
-			return sizeof(float) * 2;
+			if (arrayLength == 0)
+				return { .size = std_size * 2, .align = std_size * 2 };
+			else
+				return { .size = (std_size * 4) * (arrayLength - 1) + std_size * 2, .align = std_size * 4, .arrayOffset = std_size * 4 };
+
 		else if (type == ShaderPropertyType::VEC3 || type == ShaderPropertyType::ENGINE_CAMERA_POS
 			|| type == ShaderPropertyType::ENGINE_LIGHT_POS || type == ShaderPropertyType::ENGINE_LIGHT_DIR
 			|| type == ShaderPropertyType::ENGINE_LIGHT_COLOR)
-			// vec3在内存上是按vec4算的
-			return sizeof(float) * 4;
+			if (arrayLength == 0)
+				return { .size = std_size * 3, .align = std_size * 4 };
+			else
+				return { .size = (std_size * 4) * (arrayLength - 1) + std_size * 3, .align = std_size * 4, .arrayOffset = std_size * 4 };
+
 		else if (type == ShaderPropertyType::VEC4)
-			return sizeof(float) * 4;
+			if (arrayLength == 0)
+				return { .size = std_size * 4, .align = std_size * 4 };
+			else
+				return { .size = (std_size * 4) * arrayLength, .align = std_size * 4, .arrayOffset = std_size * 4 };
+
 		else if (type == ShaderPropertyType::MAT2)
-			return sizeof(float) * 4;
+			if (arrayLength == 0)
+				return { .size = std_size * (4 + 2), .align = std_size * 4 };
+			else
+				return { .size = std_size * ((arrayLength * 2 - 1) * 4 + 2), .align = std_size * 4, .arrayOffset = std_size * 4 * 2 };
+
 		else if (type == ShaderPropertyType::MAT3)
-			// mat3没实用过，要注意可能存在的内存对齐问题
-			return sizeof(float) * 9;
+			if (arrayLength == 0)
+				return { .size = std_size * (4 * 2 + 3), .align = std_size * 4 };
+			else
+				return { .size = std_size * ((arrayLength * 3 - 1) * 4 + 3), .align = std_size * 4, .arrayOffset = std_size * 4 * 3 };
+
 		else if (type == ShaderPropertyType::MAT4 || type == ShaderPropertyType::ENGINE_MODEL
 			|| type == ShaderPropertyType::ENGINE_VIEW || type == ShaderPropertyType::ENGINE_PROJECTION)
-			return sizeof(float) * 16;
+			if (arrayLength == 0)
+				return { .size = std_size * 16, .align = std_size * 4 };
+			else
+				return { .size = std_size * ((arrayLength * 4) * 4), .align = std_size * 4, .arrayOffset = std_size * 4 * 4 };
 		else
 		{
 			Debug::LogError("Invalid shader property type !");
-			return 0;
+			return {};
 		}
 	}
 
@@ -437,6 +462,7 @@ namespace ZXEngine
 
 	void ShaderParser::SetUpProperties(ShaderInfo& info)
 	{
+		// 这里是按照std140标准实现的内存对齐
 		uint32_t binding = 0;
 
 		if (!info.vertProperties.baseProperties.empty())
@@ -444,10 +470,18 @@ namespace ZXEngine
 			uint32_t offset = 0;
 			for (auto& property : info.vertProperties.baseProperties)
 			{
-				property.size = GetPropertySize(property.type);
-				property.offset = offset;
+				auto alignInfo = GetPropertyAlignInfo(property.type, property.arrayLength);
 				property.binding = binding;
-				offset += property.size;
+				property.size = alignInfo.size;
+				property.align = alignInfo.align;
+				property.arrayOffset = alignInfo.arrayOffset;
+				uint32_t remainder = offset % alignInfo.align;
+				if (remainder == 0)
+					property.offset = offset;
+				else
+					property.offset = offset - remainder + alignInfo.align;
+
+				offset = property.offset + property.size;
 			}
 			binding++;
 		}
@@ -462,10 +496,18 @@ namespace ZXEngine
 			uint32_t offset = 0;
 			for (auto& property : info.geomProperties.baseProperties)
 			{
-				property.size = GetPropertySize(property.type);
-				property.offset = offset;
+				auto alignInfo = GetPropertyAlignInfo(property.type, property.arrayLength);
 				property.binding = binding;
-				offset += property.size;
+				property.size = alignInfo.size;
+				property.align = alignInfo.align;
+				property.arrayOffset = alignInfo.arrayOffset;
+				uint32_t remainder = offset % alignInfo.align;
+				if (remainder == 0)
+					property.offset = offset;
+				else
+					property.offset = offset - remainder + alignInfo.align;
+
+				offset = property.offset + property.size;
 			}
 			binding++;
 		}
@@ -480,10 +522,18 @@ namespace ZXEngine
 			uint32_t offset = 0;
 			for (auto& property : info.fragProperties.baseProperties)
 			{
-				property.size = GetPropertySize(property.type);
-				property.offset = offset;
+				auto alignInfo = GetPropertyAlignInfo(property.type, property.arrayLength);
 				property.binding = binding;
-				offset += property.size;
+				property.size = alignInfo.size;
+				property.align = alignInfo.align;
+				property.arrayOffset = alignInfo.arrayOffset;
+				uint32_t remainder = offset % alignInfo.align;
+				if (remainder == 0)
+					property.offset = offset;
+				else
+					property.offset = offset - remainder + alignInfo.align;
+
+				offset = property.offset + property.size;
 			}
 			binding++;
 		}
