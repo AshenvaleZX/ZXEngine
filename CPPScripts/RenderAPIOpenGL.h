@@ -79,11 +79,6 @@ namespace ZXEngine
 
 		vector<OpenGLVAO*> OpenGLVAOArray;
 
-		map<BlendFactor, int> BlendMap;
-		map<FaceCullOption, int> FaceCullMap;
-
-		void InitGLConstMap();
-
 		uint32_t GetNextVAOIndex();
 		OpenGLVAO* GetVAOByIndex(uint32_t idx);
 
