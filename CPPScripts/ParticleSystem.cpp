@@ -3,6 +3,7 @@
 #include "Time.h"
 #include "RenderAPI.h"
 #include "ZShader.h"
+#include "Material.h"
 #include "Transform.h"
 
 namespace ZXEngine
@@ -77,10 +78,10 @@ namespace ZXEngine
 		}
 	}
 
-	void ParticleSystem::Render(Shader* shader, Vector3 viewPos)
+	void ParticleSystem::Render(Material* material, Vector3 viewPos)
 	{
 		unsigned int VAO = ParticleSystemManager::GetInstance()->VAO;
-		shader->SetTexture("_Sprite", textureID, 0);
+		material->SetTexture("_Sprite", textureID, 0);
 		bool caculateAngle = true;
 		float hypotenuse = 0;
 		float angle = 0;
@@ -107,8 +108,8 @@ namespace ZXEngine
 				Matrix4 scale = Math::Scale(Matrix4(1), Vector3(2.0f));
 				Matrix4 mat_M = model * rotate * scale;
 
-				shader->SetMat4("ENGINE_Model", mat_M);
-				shader->SetVec4("_Color", particle->color);
+				material->SetMatrix("ENGINE_Model", mat_M);
+				material->SetVector("_Color", particle->color);
 
 				RenderAPI::GetInstance()->Draw(VAO);
 			}

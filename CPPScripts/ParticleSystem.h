@@ -14,7 +14,7 @@ namespace ZXEngine
 		Particle() : position(0.0f), velocity(0.0f), color(1.0f), life(0.0f) {}
 	};
 
-	class Shader;
+	class Material;
 	class ParticleSystem : public Component
 	{
 		friend class EditorInspectorPanel;
@@ -37,7 +37,7 @@ namespace ZXEngine
 		virtual ComponentType GetInsType();
 
 		void Update();
-		void Render(Shader* shader, Vector3 viewPos);
+		void Render(Material* material, Vector3 viewPos);
 
 		void SetTexture(const char* path);
 		void GenerateParticles();

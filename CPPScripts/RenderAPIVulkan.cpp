@@ -4,6 +4,10 @@
 #include <stb_image.h>
 #include "ShaderParser.h"
 #include "Resources.h"
+#include "Texture.h"
+#include "ZShader.h"
+#include "Material.h"
+#include "MaterialData.h"
 
 // VMA的官方文档里说需要在一个CPP文件里定义这个宏定义，否则可能会有异常
 // 见:https://gpuopen-librariesandsdks.github.io/VulkanMemoryAllocator/html/quick_start.html#quick_start_project_setup
@@ -434,28 +438,6 @@ namespace ZXEngine
 
         pipeline->name = path;
         pipeline->pipeline = CreatePipeline(path, shaderInfo, pipeline->descriptorSetLayout, pipeline->pipelineLayout, vkFrameBufferTypeToRenderPassTypeMap[type]);
-        pipeline->descriptorPool = CreateDescriptorPool(shaderInfo);
-
-        for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-        {
-            if (!shaderInfo.vertProperties.baseProperties.empty())
-            {
-                UniformBuffer uniformBuffer = CreateUniformBuffer(shaderInfo.vertProperties.baseProperties);
-                pipeline->vertUniformBuffers.push_back(uniformBuffer);
-            }
-            if (!shaderInfo.geomProperties.baseProperties.empty())
-            {
-                UniformBuffer uniformBuffer = CreateUniformBuffer(shaderInfo.geomProperties.baseProperties);
-                pipeline->geomUniformBuffers.push_back(uniformBuffer);
-            }
-            if (!shaderInfo.fragProperties.baseProperties.empty())
-            {
-                UniformBuffer uniformBuffer = CreateUniformBuffer(shaderInfo.fragProperties.baseProperties);
-                pipeline->fragUniformBuffers.push_back(uniformBuffer);
-            }
-        }
-
-        SetUpPipeline(pipeline);
 
         pipeline->inUse = true;
 
@@ -465,16 +447,115 @@ namespace ZXEngine
         return reference;
     }
 
-    // 这个函数完成的任务是通过vkUpdateDescriptorSets把真正的物理Uniform Buffer和Image与VkPipeline绑定起来
-    void RenderAPIVulkan::SetUpMaterial(ShaderReference* shaderReference, const map<string, uint32_t>& textures)
+    uint32_t RenderAPIVulkan::CreateMaterialData()
+    {
+
+        uint32_t materialDataID = GetNextMaterialDataIndex();
+        auto materialData = GetMaterialDataByIndex(materialDataID);
+
+        materialData->inUse = true;
+
+        return materialDataID;
+    }
+
+    void RenderAPIVulkan::UseMaterialData(uint32_t ID)
+    {
+        curMaterialDataIdx = ID;
+    }
+
+    // 这个函数完成的任务是通过shaderReference里的信息来配置MaterialData，也就是用vkUpdateDescriptorSets把Image与VkPipeline绑定起来
+    void RenderAPIVulkan::SetUpMaterial(ShaderReference* shaderReference, MaterialData* materialData)
     {
         auto pipeline = GetPipelineByIndex(shaderReference->ID);
 
+        auto vulkanMaterialData = GetMaterialDataByIndex(materialData->GetID());
+        vulkanMaterialData->descriptorPool = CreateDescriptorPool(shaderReference->shaderInfo);
+
+        // 创建Uniform Buffer
+        for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+        {
+            if (!shaderReference->shaderInfo.vertProperties.baseProperties.empty())
+            {
+                UniformBuffer uniformBuffer = CreateUniformBuffer(shaderReference->shaderInfo.vertProperties.baseProperties);
+                vulkanMaterialData->vertUniformBuffers.push_back(uniformBuffer);
+            }
+            if (!shaderReference->shaderInfo.geomProperties.baseProperties.empty())
+            {
+                UniformBuffer uniformBuffer = CreateUniformBuffer(shaderReference->shaderInfo.geomProperties.baseProperties);
+                vulkanMaterialData->geomUniformBuffers.push_back(uniformBuffer);
+            }
+            if (!shaderReference->shaderInfo.fragProperties.baseProperties.empty())
+            {
+                UniformBuffer uniformBuffer = CreateUniformBuffer(shaderReference->shaderInfo.fragProperties.baseProperties);
+                vulkanMaterialData->fragUniformBuffers.push_back(uniformBuffer);
+            }
+        }
+
+        // 把Uniform Buffer绑定到DescriptorSet上
+        vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, pipeline->descriptorSetLayout);
+        vulkanMaterialData->descriptorSets = CreateDescriptorSets(vulkanMaterialData->descriptorPool, layouts);
+        for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+        {
+            vector<VkWriteDescriptorSet> writeDescriptorSets;
+
+            if (!vulkanMaterialData->vertUniformBuffers.empty())
+            {
+                VkDescriptorBufferInfo bufferInfo = {};
+                bufferInfo.buffer = vulkanMaterialData->vertUniformBuffers[i].buffer.buffer;
+                bufferInfo.offset = 0;
+                bufferInfo.range = vulkanMaterialData->vertUniformBuffers[i].size;
+                VkWriteDescriptorSet writeDescriptorSet = {};
+                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                writeDescriptorSet.dstSet = vulkanMaterialData->descriptorSets[i];
+                writeDescriptorSet.dstBinding = vulkanMaterialData->vertUniformBuffers[i].binding;
+                writeDescriptorSet.dstArrayElement = 0;
+                writeDescriptorSet.descriptorCount = 1;
+                writeDescriptorSet.pBufferInfo = &bufferInfo;
+                writeDescriptorSets.push_back(writeDescriptorSet);
+            }
+            if (!vulkanMaterialData->geomUniformBuffers.empty())
+            {
+                VkDescriptorBufferInfo bufferInfo = {};
+                bufferInfo.buffer = vulkanMaterialData->geomUniformBuffers[i].buffer.buffer;
+                bufferInfo.offset = 0;
+                bufferInfo.range = vulkanMaterialData->geomUniformBuffers[i].size;
+                VkWriteDescriptorSet writeDescriptorSet = {};
+                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                writeDescriptorSet.dstSet = vulkanMaterialData->descriptorSets[i];
+                writeDescriptorSet.dstBinding = vulkanMaterialData->geomUniformBuffers[i].binding;
+                writeDescriptorSet.dstArrayElement = 0;
+                writeDescriptorSet.descriptorCount = 1;
+                writeDescriptorSet.pBufferInfo = &bufferInfo;
+                writeDescriptorSets.push_back(writeDescriptorSet);
+            }
+            if (!vulkanMaterialData->fragUniformBuffers.empty())
+            {
+                VkDescriptorBufferInfo bufferInfo = {};
+                bufferInfo.buffer = vulkanMaterialData->fragUniformBuffers[i].buffer.buffer;
+                bufferInfo.offset = 0;
+                bufferInfo.range = vulkanMaterialData->fragUniformBuffers[i].size;
+                VkWriteDescriptorSet writeDescriptorSet = {};
+                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                writeDescriptorSet.dstSet = vulkanMaterialData->descriptorSets[i];
+                writeDescriptorSet.dstBinding = vulkanMaterialData->fragUniformBuffers[i].binding;
+                writeDescriptorSet.dstArrayElement = 0;
+                writeDescriptorSet.descriptorCount = 1;
+                writeDescriptorSet.pBufferInfo = &bufferInfo;
+                writeDescriptorSets.push_back(writeDescriptorSet);
+            }
+
+            vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
+        }
+
+        // 把纹理绑定到DescriptorSet上
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
             vector<VkWriteDescriptorSet> writeDescriptorSets;
 
-            for (auto& matTexture : textures)
+            for (auto& matTexture : materialData->textures)
             {
                 uint32_t binding = UINT32_MAX;
                 for (auto& textureProperty : shaderReference->shaderInfo.fragProperties.textureProperties)
@@ -492,7 +573,7 @@ namespace ZXEngine
                     continue;
                 }
 
-                auto texture = GetTextureByIndex(matTexture.second);
+                auto texture = GetTextureByIndex(matTexture.second->GetID());
 
                 VkDescriptorImageInfo imageInfo{};
                 imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -501,7 +582,7 @@ namespace ZXEngine
                 VkWriteDescriptorSet writeDescriptorSet = {};
                 writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
                 writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
+                writeDescriptorSet.dstSet = vulkanMaterialData->descriptorSets[i];
                 writeDescriptorSet.dstBinding = binding;
                 writeDescriptorSet.dstArrayElement = 0;
                 writeDescriptorSet.descriptorCount = 1;
@@ -512,25 +593,35 @@ namespace ZXEngine
 
             vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
         }
+
+        materialData->initialized = true;
     }
 
     void RenderAPIVulkan::DeleteShader(unsigned int id)
     {
         auto pipeline = GetPipelineByIndex(id);
 
-        vkDestroyDescriptorPool(device, pipeline->descriptorPool, VK_NULL_HANDLE);
         vkDestroyDescriptorSetLayout(device, pipeline->descriptorSetLayout, VK_NULL_HANDLE);
         vkDestroyPipeline(device, pipeline->pipeline, VK_NULL_HANDLE);
         vkDestroyPipelineLayout(device, pipeline->pipelineLayout, VK_NULL_HANDLE);
 
-        for (auto& uniformBuffer : pipeline->vertUniformBuffers)
+        pipeline->inUse = false;
+    }
+
+    void RenderAPIVulkan::DeleteMaterialData(uint32_t id)
+    {
+        auto vulkanMaterialData = GetMaterialDataByIndex(id);
+
+        vkDestroyDescriptorPool(device, vulkanMaterialData->descriptorPool, VK_NULL_HANDLE);
+
+        for (auto& uniformBuffer : vulkanMaterialData->vertUniformBuffers)
             DestroyBuffer(uniformBuffer.buffer);
-        for (auto& uniformBuffer : pipeline->geomUniformBuffers)
+        for (auto& uniformBuffer : vulkanMaterialData->geomUniformBuffers)
             DestroyBuffer(uniformBuffer.buffer);
-        for (auto& uniformBuffer : pipeline->fragUniformBuffers)
+        for (auto& uniformBuffer : vulkanMaterialData->fragUniformBuffers)
             DestroyBuffer(uniformBuffer.buffer);
 
-        pipeline->inUse = false;
+        vulkanMaterialData->inUse = false;
     }
 
     FrameBufferObject* RenderAPIVulkan::CreateFrameBufferObject(FrameBufferType type, unsigned int width, unsigned int height)
@@ -703,7 +794,7 @@ namespace ZXEngine
 
     void RenderAPIVulkan::Draw(uint32_t VAO)
     {
-        drawIndexes.push_back(pair(curPipeLineIdx, VAO));
+        drawIndexes.push_back({ .VAO = VAO, .pipelineID = curPipeLineIdx, .materialDataID = curMaterialDataIdx });
     }
 
     void RenderAPIVulkan::GenerateDrawCommand(uint32_t id)
@@ -749,8 +840,9 @@ namespace ZXEngine
 
         for (auto& iter : drawIndexes)
         {
-            auto vulkanVAO = GetVAOByIndex(iter.second);
-            auto pipeline = GetPipelineByIndex(iter.first);
+            auto vulkanVAO = GetVAOByIndex(iter.VAO);
+            auto pipeline = GetPipelineByIndex(iter.pipelineID);
+            auto materialData = GetMaterialDataByIndex(iter.materialDataID);
 
             auto commandBuffer = curDrawCommand->commandBuffers[currentFrame];
 
@@ -762,7 +854,7 @@ namespace ZXEngine
 
             vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipeline);
 
-            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout, 0, 1, &pipeline->descriptorSets[currentFrame], 0, VK_NULL_HANDLE);
+            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout, 0, 1, &materialData->descriptorSets[currentFrame], 0, VK_NULL_HANDLE);
 
             vkCmdDrawIndexed(commandBuffer, vulkanVAO->size, 1, 0, 0, 0);
         }
@@ -986,76 +1078,76 @@ namespace ZXEngine
     {
         curPipeLineIdx = ID;
     }
-    void RenderAPIVulkan::SetShaderScalar(ShaderReference* reference, const string& name, bool value)
+    void RenderAPIVulkan::SetShaderScalar(Material* material, const string& name, bool value)
     {
-        void* valueAddress = GetShaderPropertyAddress(reference, name);
+        void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
         memcpy(valueAddress, &value, sizeof(value));
     }
-    void RenderAPIVulkan::SetShaderScalar(ShaderReference* reference, const string& name, int value)
+    void RenderAPIVulkan::SetShaderScalar(Material* material, const string& name, int value)
     {
-        void* valueAddress = GetShaderPropertyAddress(reference, name);
+        void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
         memcpy(valueAddress, &value, sizeof(value));
     }
-    void RenderAPIVulkan::SetShaderScalar(ShaderReference* reference, const string& name, float value)
+    void RenderAPIVulkan::SetShaderScalar(Material* material, const string& name, float value)
     {
-        void* valueAddress = GetShaderPropertyAddress(reference, name);
+        void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
         memcpy(valueAddress, &value, sizeof(value));
     }
-    void RenderAPIVulkan::SetShaderVector(ShaderReference* reference, const string& name, const Vector2& value)
+    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector2& value)
     {
-        SetShaderVector(reference, name, value, 0);
+        SetShaderVector(material, name, value, 0);
     }
-    void RenderAPIVulkan::SetShaderVector(ShaderReference* reference, const string& name, const Vector2& value, uint32_t idx)
+    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector2& value, uint32_t idx)
     {
-        void* valueAddress = GetShaderPropertyAddress(reference, name);
+        void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
         float* array = new float[2];
         value.ToArray(array);
         memcpy(valueAddress, array, sizeof(float) * 2);
         delete[] array;
     }
-    void RenderAPIVulkan::SetShaderVector(ShaderReference* reference, const string& name, const Vector3& value)
+    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector3& value)
     {
-        SetShaderVector(reference, name, value, 0);
+        SetShaderVector(material, name, value, 0);
     }
-    void RenderAPIVulkan::SetShaderVector(ShaderReference* reference, const string& name, const Vector3& value, uint32_t idx)
+    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector3& value, uint32_t idx)
     {
-        void* valueAddress = GetShaderPropertyAddress(reference, name);
+        void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
         float* array = new float[3];
         value.ToArray(array);
         memcpy(valueAddress, array, sizeof(float) * 3);
         delete[] array;
     }
-    void RenderAPIVulkan::SetShaderVector(ShaderReference* reference, const string& name, const Vector4& value)
+    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector4& value)
     {
-        SetShaderVector(reference, name, value, 0);
+        SetShaderVector(material, name, value, 0);
     }
-    void RenderAPIVulkan::SetShaderVector(ShaderReference* reference, const string& name, const Vector4& value, uint32_t idx)
+    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector4& value, uint32_t idx)
     {
-        void* valueAddress = GetShaderPropertyAddress(reference, name, idx);
+        void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
         float* array = new float[4];
         value.ToArray(array);
         memcpy(valueAddress, array, sizeof(float) * 4);
         delete[] array;
     }
-    void RenderAPIVulkan::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& value)
+    void RenderAPIVulkan::SetShaderMatrix(Material* material, const string& name, const Matrix3& value)
     {
-        SetShaderMatrix(reference, name, value, 0);
+        SetShaderMatrix(material, name, value, 0);
     }
-    void RenderAPIVulkan::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& value, uint32_t idx)
+    void RenderAPIVulkan::SetShaderMatrix(Material* material, const string& name, const Matrix3& value, uint32_t idx)
     {
-        void* valueAddress = GetShaderPropertyAddress(reference, name, idx);
+        void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
         float* array = new float[9];
         value.ToColumnMajorArray(array);
         memcpy(valueAddress, array, sizeof(float) * 9);
         delete[] array;
     }
-    void RenderAPIVulkan::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& value)
+    void RenderAPIVulkan::SetShaderMatrix(Material* material, const string& name, const Matrix4& value)
     {
-        SetShaderMatrix(reference, name, value, 0);
+        SetShaderMatrix(material, name, value, 0);
     }
-    void RenderAPIVulkan::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& value, uint32_t idx)
+    void RenderAPIVulkan::SetShaderMatrix(Material* material, const string& name, const Matrix4& value, uint32_t idx)
     {
-        void* valueAddress = GetShaderPropertyAddress(reference, name, idx);
+        void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
         float* array = new float[16];
         value.ToColumnMajorArray(array);
         memcpy(valueAddress, array, sizeof(float) * 16);
@@ -1063,9 +1155,9 @@ namespace ZXEngine
     }
 
     // Vulkan不需要第4个参数
-    void RenderAPIVulkan::SetShaderTexture(ShaderReference* reference, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
+    void RenderAPIVulkan::SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
     {
-        auto pipeline = GetPipelineByIndex(reference->ID);
+        auto vulkanMaterialData = GetMaterialDataByIndex(material->data->GetID());
 
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
@@ -1078,13 +1170,13 @@ namespace ZXEngine
             auto texture = GetTextureByIndex(textureID);
             uint32_t binding = UINT32_MAX;
 
-            for (auto& textureProperty : reference->shaderInfo.vertProperties.textureProperties)
+            for (auto& textureProperty : material->shader->reference->shaderInfo.vertProperties.textureProperties)
                 if (name == textureProperty.name)
                     binding = textureProperty.binding;
 
             // 没找到的话继续
             if (binding == UINT32_MAX)
-                for (auto& textureProperty : reference->shaderInfo.fragProperties.textureProperties)
+                for (auto& textureProperty : material->shader->reference->shaderInfo.fragProperties.textureProperties)
                     if (name == textureProperty.name)
                         binding = textureProperty.binding;
 
@@ -1101,7 +1193,7 @@ namespace ZXEngine
             VkWriteDescriptorSet writeDescriptorSet = {};
             writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
             writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
+            writeDescriptorSet.dstSet = vulkanMaterialData->descriptorSets[i];
             writeDescriptorSet.dstBinding = binding;
             writeDescriptorSet.dstArrayElement = 0;
             writeDescriptorSet.descriptorCount = 1;
@@ -1113,9 +1205,9 @@ namespace ZXEngine
         }
     }
 
-    void RenderAPIVulkan::SetShaderCubeMap(ShaderReference* reference, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
+    void RenderAPIVulkan::SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
     {
-        SetShaderTexture(reference, name, ID, idx, isBuffer);
+        SetShaderTexture(material, name, ID, idx, isBuffer);
     }
 
     uint32_t RenderAPIVulkan::GetNextVAOIndex()
@@ -1246,21 +1338,41 @@ namespace ZXEngine
         return VulkanPipelineArray[idx];
     }
 
-    void* RenderAPIVulkan::GetShaderPropertyAddress(ShaderReference* reference, const string& name, uint32_t idx)
+    uint32_t RenderAPIVulkan::GetNextMaterialDataIndex()
     {
-        VulkanPipeline* pipeline = GetPipelineByIndex(reference->ID);
+        uint32_t length = (uint32_t)VulkanMaterialDataArray.size();
+
+        for (uint32_t i = 0; i < length; i++)
+        {
+            if (!VulkanMaterialDataArray[i]->inUse)
+                return i;
+        }
+
+        VulkanMaterialDataArray.push_back(new VulkanMaterialData());
+
+        return length;
+    }
+
+    VulkanMaterialData* RenderAPIVulkan::GetMaterialDataByIndex(uint32_t idx)
+    {
+        return VulkanMaterialDataArray[idx];
+    }
+
+    void* RenderAPIVulkan::GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx)
+    {
+        auto vulkanMaterialData = GetMaterialDataByIndex(materialDataID);
 
         for (auto& property : reference->shaderInfo.vertProperties.baseProperties)
             if (name == property.name)
-                return reinterpret_cast<void*>(reinterpret_cast<char*>(pipeline->vertUniformBuffers[currentFrame].mappedAddress) + property.offset + property.arrayOffset * idx);
+                return reinterpret_cast<void*>(reinterpret_cast<char*>(vulkanMaterialData->vertUniformBuffers[currentFrame].mappedAddress) + property.offset + property.arrayOffset * idx);
 
         for (auto& property : reference->shaderInfo.geomProperties.baseProperties)
             if (name == property.name)
-                return reinterpret_cast<void*>(reinterpret_cast<char*>(pipeline->geomUniformBuffers[currentFrame].mappedAddress) + property.offset + property.arrayOffset * idx);
+                return reinterpret_cast<void*>(reinterpret_cast<char*>(vulkanMaterialData->geomUniformBuffers[currentFrame].mappedAddress) + property.offset + property.arrayOffset * idx);
 
         for (auto& property : reference->shaderInfo.fragProperties.baseProperties)
             if (name == property.name)
-                return reinterpret_cast<void*>(reinterpret_cast<char*>(pipeline->fragUniformBuffers[currentFrame].mappedAddress) + property.offset + property.arrayOffset * idx);
+                return reinterpret_cast<void*>(reinterpret_cast<char*>(vulkanMaterialData->fragUniformBuffers[currentFrame].mappedAddress) + property.offset + property.arrayOffset * idx);
 
         Debug::LogError("Could not find shader property named " + name);
 
@@ -2578,68 +2690,6 @@ namespace ZXEngine
         DestroyShaderModules(shaderModules);
 
         return pipeLine;
-    }
-
-    void RenderAPIVulkan::SetUpPipeline(VulkanPipeline* pipeline)
-    {
-        vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, pipeline->descriptorSetLayout);
-        pipeline->descriptorSets = CreateDescriptorSets(pipeline->descriptorPool, layouts);
-
-        for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-        {
-            vector<VkWriteDescriptorSet> writeDescriptorSets;
-
-            if (!pipeline->vertUniformBuffers.empty())
-            {
-                VkDescriptorBufferInfo bufferInfo = {};
-                bufferInfo.buffer = pipeline->vertUniformBuffers[i].buffer.buffer;
-                bufferInfo.offset = 0;
-                bufferInfo.range = pipeline->vertUniformBuffers[i].size;
-                VkWriteDescriptorSet writeDescriptorSet = {};
-                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
-                writeDescriptorSet.dstBinding = pipeline->vertUniformBuffers[i].binding;
-                writeDescriptorSet.dstArrayElement = 0;
-                writeDescriptorSet.descriptorCount = 1;
-                writeDescriptorSet.pBufferInfo = &bufferInfo;
-                writeDescriptorSets.push_back(writeDescriptorSet);
-            }
-            if (!pipeline->geomUniformBuffers.empty())
-            {
-                VkDescriptorBufferInfo bufferInfo = {};
-                bufferInfo.buffer = pipeline->geomUniformBuffers[i].buffer.buffer;
-                bufferInfo.offset = 0;
-                bufferInfo.range = pipeline->geomUniformBuffers[i].size;
-                VkWriteDescriptorSet writeDescriptorSet = {};
-                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
-                writeDescriptorSet.dstBinding = pipeline->geomUniformBuffers[i].binding;
-                writeDescriptorSet.dstArrayElement = 0;
-                writeDescriptorSet.descriptorCount = 1;
-                writeDescriptorSet.pBufferInfo = &bufferInfo;
-                writeDescriptorSets.push_back(writeDescriptorSet);
-            }
-            if (!pipeline->fragUniformBuffers.empty())
-            {
-                VkDescriptorBufferInfo bufferInfo = {};
-                bufferInfo.buffer = pipeline->fragUniformBuffers[i].buffer.buffer;
-                bufferInfo.offset = 0;
-                bufferInfo.range = pipeline->fragUniformBuffers[i].size;
-                VkWriteDescriptorSet writeDescriptorSet = {};
-                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                writeDescriptorSet.dstSet = pipeline->descriptorSets[i];
-                writeDescriptorSet.dstBinding = pipeline->fragUniformBuffers[i].binding;
-                writeDescriptorSet.dstArrayElement = 0;
-                writeDescriptorSet.descriptorCount = 1;
-                writeDescriptorSet.pBufferInfo = &bufferInfo;
-                writeDescriptorSets.push_back(writeDescriptorSet);
-            }
-
-            vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
-        }
     }
 
     VkDescriptorPool RenderAPIVulkan::CreateDescriptorPool(const ShaderInfo& info)

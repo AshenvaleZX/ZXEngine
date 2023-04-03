@@ -18,6 +18,7 @@ namespace ZXEngine
 		bool receiveShadow = false;
 		string modelName = "";
 		Material* matetrial = nullptr;
+		Material* shadowCastMaterial = nullptr;
 		size_t verticesNum = 0;
 		size_t trianglesNum = 0;
 		vector<Mesh*> meshes;

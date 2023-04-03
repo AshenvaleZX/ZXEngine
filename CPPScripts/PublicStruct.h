@@ -1,21 +1,27 @@
 #pragma once
+#include <string>
+#include <vector>
+#include "Math.h"
 #include "PublicEnum.h"
+
+using std::string;
+using std::vector;
 
 namespace ZXEngine
 {
 	struct Vertex 
 	{
-		Vector3 Position;
-		Vector3 Normal;
-		Vector2 TexCoords;
-		Vector3 Tangent;
-		Vector3 Bitangent;
+		Vector3 Position  = {};
+		Vector3 Normal    = {};
+		Vector2 TexCoords = {};
+		Vector3 Tangent   = {};
+		Vector3 Bitangent = {};
 	};
 
 	struct ClearInfo
 	{
 		FrameBufferClearFlags clearFlags = ZX_CLEAR_FRAME_BUFFER_NONE_BIT;
-		Vector4 color                    = Vector4();
+		Vector4 color                    = {};
 		float depth                      = 1.0f;
 		uint32_t stencil                 = 0;
 	};
@@ -39,7 +45,7 @@ namespace ZXEngine
 
 	struct ShaderProperty
 	{
-		string name;
+		string name = "";
 		uint32_t size = 0;        // 整个属性大小(可能是数组)
 		uint32_t align = 0;       // 单个属性的对齐标准
 		uint32_t offset = 0;      // Offset in uniform buffer, Only for Vulkan now

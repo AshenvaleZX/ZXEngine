@@ -9,6 +9,7 @@
 #include "MeshRenderer.h"
 #include "GlobalData.h"
 #include "RenderStateSetting.h"
+#include "MaterialData.h"
 
 namespace ZXEngine
 {
@@ -66,16 +67,6 @@ namespace ZXEngine
 		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3( 0.0f,  0.0f, -1.0f), Vector3(0.0f, -1.0f,  0.0f)));
 		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3( 0.0f,  0.0f,  1.0f), Vector3(0.0f, -1.0f,  0.0f)));
 
-		// 设置shader
-		shadowCubeMapShader->Use();
-		for (unsigned int i = 0; i < 6; ++i)
-			shadowCubeMapShader->SetMat4("_ShadowMatrices", shadowTransforms[i], i);
-		shadowCubeMapShader->SetFloat("_FarPlane", GlobalData::shadowCubeMapFarPlane);
-		shadowCubeMapShader->SetVec3("_LightPos", lightPos);
-
-		// 用完立刻清除，下一帧还会生成
-		shadowTransforms.clear();
-
 		// 渲染投射阴影的物体
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Qpaque);
 		for (auto renderer : renderQueue->GetRenderers())
@@ -84,11 +75,22 @@ namespace ZXEngine
 			if (!renderer->castShadow)
 				continue;
 
+			if (renderer->shadowCastMaterial == nullptr)
+				renderer->shadowCastMaterial = new Material(shadowCubeMapShader);
+
+			renderer->shadowCastMaterial->Use();
 			Matrix4 mat_M = renderer->GetTransform()->GetModelMatrix();
-			shadowCubeMapShader->SetMat4("ENGINE_Model", mat_M);
+			renderer->shadowCastMaterial->SetMatrix("ENGINE_Model", mat_M);
+			for (unsigned int i = 0; i < 6; ++i)
+				renderer->shadowCastMaterial->SetMatrix("_ShadowMatrices", shadowTransforms[i], i);
+			renderer->shadowCastMaterial->SetScalar("_FarPlane", GlobalData::shadowCubeMapFarPlane);
+			renderer->shadowCastMaterial->SetVector("_LightPos", lightPos);
 
 			renderer->Draw();
 		}
+
+		// 用完立刻清除，下一帧还会生成
+		shadowTransforms.clear();
 
 		renderAPI->GenerateDrawCommand(drawCommandID);
 	}

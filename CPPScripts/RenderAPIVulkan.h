@@ -4,6 +4,8 @@
 
 namespace ZXEngine
 {
+    class Material;
+    class MaterialData;
     class RenderAPIVulkan : public RenderAPI
     {
         friend class EditorGUIManager;
@@ -32,8 +34,11 @@ namespace ZXEngine
         virtual unsigned int LoadCubeMap(vector<string> faces);
         virtual unsigned int GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data);
         virtual ShaderReference* LoadAndSetUpShader(const char* path, FrameBufferType type);
-        virtual void SetUpMaterial(ShaderReference* shaderReference, const map<string, uint32_t>& textures);
-        virtual void DeleteShader(unsigned int id);
+        virtual uint32_t CreateMaterialData();
+        virtual void UseMaterialData(uint32_t ID);
+        virtual void SetUpMaterial(ShaderReference* shaderReference, MaterialData* materialData);
+        virtual void DeleteShader(uint32_t id);
+        virtual void DeleteMaterialData(uint32_t id);
 
         // Draw
         virtual uint32_t AllocateDrawCommand();
@@ -49,21 +54,21 @@ namespace ZXEngine
 
         // Shader…Ë÷√
         virtual void UseShader(unsigned int ID);
-        virtual void SetShaderScalar(ShaderReference* reference, const string& name, bool value);
-        virtual void SetShaderScalar(ShaderReference* reference, const string& name, int value);
-        virtual void SetShaderScalar(ShaderReference* reference, const string& name, float value);
-        virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector2& value);
-        virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector2& value, uint32_t idx);
-        virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector3& value);
-        virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector3& value, uint32_t idx);
-        virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector4& value);
-        virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector4& value, uint32_t idx);
-        virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& value);
-        virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& value, uint32_t idx);
-        virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& value);
-        virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& value, uint32_t idx);
-        virtual void SetShaderTexture(ShaderReference* reference, const string& name, uint32_t ID, uint32_t idx, bool isBuffer = false);
-        virtual void SetShaderCubeMap(ShaderReference* reference, const string& name, uint32_t ID, uint32_t idx, bool isBuffer = false);
+        virtual void SetShaderScalar(Material* material, const string& name, bool value);
+        virtual void SetShaderScalar(Material* material, const string& name, int value);
+        virtual void SetShaderScalar(Material* material, const string& name, float value);
+        virtual void SetShaderVector(Material* material, const string& name, const Vector2& value);
+        virtual void SetShaderVector(Material* material, const string& name, const Vector2& value, uint32_t idx);
+        virtual void SetShaderVector(Material* material, const string& name, const Vector3& value);
+        virtual void SetShaderVector(Material* material, const string& name, const Vector3& value, uint32_t idx);
+        virtual void SetShaderVector(Material* material, const string& name, const Vector4& value);
+        virtual void SetShaderVector(Material* material, const string& name, const Vector4& value, uint32_t idx);
+        virtual void SetShaderMatrix(Material* material, const string& name, const Matrix3& value);
+        virtual void SetShaderMatrix(Material* material, const string& name, const Matrix3& value, uint32_t idx);
+        virtual void SetShaderMatrix(Material* material, const string& name, const Matrix4& value);
+        virtual void SetShaderMatrix(Material* material, const string& name, const Matrix4& value, uint32_t idx);
+        virtual void SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer = false);
+        virtual void SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer = false);
 
 
     /// <summary>
@@ -169,9 +174,10 @@ namespace ZXEngine
         vector<VulkanAttachmentBuffer*> VulkanAttachmentBufferArray;
         vector<VulkanTexture*> VulkanTextureArray;
         vector<VulkanPipeline*> VulkanPipelineArray;
+        vector<VulkanMaterialData*> VulkanMaterialDataArray;
         vector<VulkanDrawCommand*> VulkanDrawCommandArray;
 
-        vector<pair<uint32_t, uint32_t>> drawIndexes;
+        vector<VulkanDrawIndex> drawIndexes;
 
         vector<VkRenderPass> allVulkanRenderPass;
 
@@ -185,10 +191,12 @@ namespace ZXEngine
         VulkanTexture* GetTextureByIndex(uint32_t idx);
         uint32_t GetNextPipelineIndex();
         VulkanPipeline* GetPipelineByIndex(uint32_t idx);
+        uint32_t GetNextMaterialDataIndex();
+        VulkanMaterialData* GetMaterialDataByIndex(uint32_t idx);
         uint32_t GetNextDrawCommandIndex();
         VulkanDrawCommand* GetDrawCommandByIndex(uint32_t idx);
 
-        void* GetShaderPropertyAddress(ShaderReference* reference, const string& name, uint32_t idx = 0);
+        void* GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
 
         VulkanBuffer CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool map = false);
         void DestroyBuffer(VulkanBuffer buffer);
@@ -216,7 +224,6 @@ namespace ZXEngine
         void DestroyRenderPass(VkRenderPass renderPass);
 
         VkPipeline CreatePipeline(const string& path, const ShaderInfo& shaderInfo, VkDescriptorSetLayout& descriptorSetLayout, VkPipelineLayout& pipelineLayout, RenderPassType renderPassType);
-        void SetUpPipeline(VulkanPipeline* pipeline);
         
         VkDescriptorSetLayout CreateDescriptorSetLayout(const ShaderInfo& info);
         VkPipelineLayout CreatePipelineLayout(const VkDescriptorSetLayout& descriptorSetLayout);
@@ -237,6 +244,7 @@ namespace ZXEngine
     private:
         uint32_t curFBOIdx = 0;
         uint32_t curPipeLineIdx = 0;
+        uint32_t curMaterialDataIdx = 0;
 
         VkFence immediateExeFence;
         VkCommandBuffer immediateExeCmd;

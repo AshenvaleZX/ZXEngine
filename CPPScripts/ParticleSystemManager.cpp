@@ -2,9 +2,11 @@
 #include "ParticleSystem.h"
 #include "ZShader.h"
 #include "ZCamera.h"
+#include "Material.h"
 #include "Transform.h"
 #include "Resources.h"
 #include "RenderStateSetting.h"
+#include "RenderAPI.h"
 
 namespace ZXEngine
 {
@@ -23,7 +25,7 @@ namespace ZXEngine
 	ParticleSystemManager::ParticleSystemManager()
 	{
 		RenderAPI::GetInstance()->GenerateParticleMesh(VAO);
-		shader = new Shader(Resources::GetAssetFullPath("Shaders/Particle.zxshader", true), FrameBufferType::Normal);
+		material = new Material(new Shader(Resources::GetAssetFullPath("Shaders/Particle.zxshader", true), FrameBufferType::Normal));
 
 		renderState = new RenderStateSetting();
 		renderState->depthWrite = false;
@@ -48,13 +50,13 @@ namespace ZXEngine
 		Vector3 camPos = camera->GetTransform()->GetPosition();
 		Matrix4 mat_V = camera->GetViewMatrix();
 		Matrix4 mat_P = camera->GetProjectionMatrix();
-		shader->Use();
-		shader->SetMat4("ENGINE_View", mat_V);
-		shader->SetMat4("ENGINE_Projection", mat_P);
+		material->Use();
+		material->SetMatrix("ENGINE_View", mat_V);
+		material->SetMatrix("ENGINE_Projection", mat_P);
 
 		for (auto particleSystem : allParticleSystem)
 		{
-			particleSystem->Render(shader, camPos);
+			particleSystem->Render(material, camPos);
 		}
 	}
 

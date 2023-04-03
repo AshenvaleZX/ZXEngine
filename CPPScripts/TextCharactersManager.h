@@ -11,7 +11,7 @@ namespace ZXEngine
 		unsigned int Advance;	// Horizontal offset to advance to next glyph
 	};
 
-	class Shader;
+	class Material;
 	class DynamicMesh;
 	class TextCharactersManager
 	{
@@ -35,7 +35,7 @@ namespace ZXEngine
 
 	private:
 		static TextCharactersManager* mInstance;
-		Shader* textShader = nullptr;
+		Material* textMaterial = nullptr;
 		DynamicMesh* characterMesh = nullptr;
 
 		void LoadCharacters();

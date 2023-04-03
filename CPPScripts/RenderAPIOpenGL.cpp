@@ -6,6 +6,8 @@
 #include "RenderStateSetting.h"
 #include "ShaderParser.h"
 #include "Resources.h"
+#include "ZShader.h"
+#include "Material.h"
 
 namespace ZXEngine
 {
@@ -299,12 +301,28 @@ namespace ZXEngine
 		return reference;
 	}
 
-	void RenderAPIOpenGL::DeleteShader(unsigned int id)
+	void RenderAPIOpenGL::DeleteShader(uint32_t id)
 	{
 		glDeleteProgram(id);
 	}
 
-	void RenderAPIOpenGL::SetUpMaterial(ShaderReference* shaderReference, const map<string, uint32_t>& textures)
+	uint32_t RenderAPIOpenGL::CreateMaterialData()
+	{
+		// OpenGL不需要实现这个接口
+		return 0;
+	}
+
+	void RenderAPIOpenGL::UseMaterialData(uint32_t ID)
+	{
+		// OpenGL不需要实现这个接口
+	}
+
+	void RenderAPIOpenGL::SetUpMaterial(ShaderReference* shaderReference, MaterialData* materialData)
+	{
+		// OpenGL不需要实现这个接口
+	}
+	
+	void RenderAPIOpenGL::DeleteMaterialData(uint32_t id)
 	{
 		// OpenGL不需要实现这个接口
 	}
@@ -669,87 +687,87 @@ namespace ZXEngine
 	{
 		glUseProgram(ID);
 	}
-	void RenderAPIOpenGL::SetShaderScalar(ShaderReference* reference, const string& name, bool value)
+	void RenderAPIOpenGL::SetShaderScalar(Material* material, const string& name, bool value)
 	{
-		glUniform1i(glGetUniformLocation(reference->ID, name.c_str()), (int)value);
+		glUniform1i(glGetUniformLocation(material->shader->reference->ID, name.c_str()), (int)value);
 	}
-	void RenderAPIOpenGL::SetShaderScalar(ShaderReference* reference, const string& name, int value)
+	void RenderAPIOpenGL::SetShaderScalar(Material* material, const string& name, int value)
 	{
-		glUniform1i(glGetUniformLocation(reference->ID, name.c_str()), value);
+		glUniform1i(glGetUniformLocation(material->shader->reference->ID, name.c_str()), value);
 	}
-	void RenderAPIOpenGL::SetShaderScalar(ShaderReference* reference, const string& name, float value)
+	void RenderAPIOpenGL::SetShaderScalar(Material* material, const string& name, float value)
 	{
-		glUniform1f(glGetUniformLocation(reference->ID, name.c_str()), value);
+		glUniform1f(glGetUniformLocation(material->shader->reference->ID, name.c_str()), value);
 	}
-	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, const Vector2& value)
+	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector2& value)
 	{
 		float* array = new float[2];
 		value.ToArray(array);
-		glUniform2fv(glGetUniformLocation(reference->ID, name.c_str()), 1, array);
+		glUniform2fv(glGetUniformLocation(material->shader->reference->ID, name.c_str()), 1, array);
 		delete[] array;
 	}
-	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, const Vector2& value, uint32_t idx)
+	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector2& value, uint32_t idx)
 	{
 		string arrayName = name + "[" + to_string(idx) + "]";
-		SetShaderVector(reference, arrayName, value);
+		SetShaderVector(material, arrayName, value);
 	}
-	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, const Vector3& value)
+	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector3& value)
 	{
 		float* array = new float[3];
 		value.ToArray(array);
-		glUniform3fv(glGetUniformLocation(reference->ID, name.c_str()), 1, array);
+		glUniform3fv(glGetUniformLocation(material->shader->reference->ID, name.c_str()), 1, array);
 		delete[] array;
 	}
-	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, const Vector3& value, uint32_t idx)
+	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector3& value, uint32_t idx)
 	{
 		string arrayName = name + "[" + to_string(idx) + "]";
-		SetShaderVector(reference, arrayName, value);
+		SetShaderVector(material, arrayName, value);
 	}
-	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, const Vector4& value)
+	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector4& value)
 	{
 		float* array = new float[4];
 		value.ToArray(array);
-		glUniform4fv(glGetUniformLocation(reference->ID, name.c_str()), 1, array);
+		glUniform4fv(glGetUniformLocation(material->shader->reference->ID, name.c_str()), 1, array);
 		delete[] array;
 	}
-	void RenderAPIOpenGL::SetShaderVector(ShaderReference* reference, const string& name, const Vector4& value, uint32_t idx)
+	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector4& value, uint32_t idx)
 	{
 		string arrayName = name + "[" + to_string(idx) + "]";
-		SetShaderVector(reference, arrayName, value);
+		SetShaderVector(material, arrayName, value);
 	}
-	void RenderAPIOpenGL::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& value)
+	void RenderAPIOpenGL::SetShaderMatrix(Material* material, const string& name, const Matrix3& value)
 	{
 		float* array = new float[9];
 		value.ToColumnMajorArray(array);
-		glUniformMatrix3fv(glGetUniformLocation(reference->ID, name.c_str()), 1, GL_FALSE, array);
+		glUniformMatrix3fv(glGetUniformLocation(material->shader->reference->ID, name.c_str()), 1, GL_FALSE, array);
 		delete[] array;
 	}
-	void RenderAPIOpenGL::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& value, uint32_t idx)
+	void RenderAPIOpenGL::SetShaderMatrix(Material* material, const string& name, const Matrix3& value, uint32_t idx)
 	{
 		string arrayName = name + "[" + to_string(idx) + "]";
-		SetShaderMatrix(reference, arrayName, value);
+		SetShaderMatrix(material, arrayName, value);
 	}
-	void RenderAPIOpenGL::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& value)
+	void RenderAPIOpenGL::SetShaderMatrix(Material* material, const string& name, const Matrix4& value)
 	{
 		float* array = new float[16];
 		value.ToColumnMajorArray(array);
-		glUniformMatrix4fv(glGetUniformLocation(reference->ID, name.c_str()), 1, GL_FALSE, array);
+		glUniformMatrix4fv(glGetUniformLocation(material->shader->reference->ID, name.c_str()), 1, GL_FALSE, array);
 		delete[] array;
 	}
-	void RenderAPIOpenGL::SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& value, uint32_t idx)
+	void RenderAPIOpenGL::SetShaderMatrix(Material* material, const string& name, const Matrix4& value, uint32_t idx)
 	{
 		string arrayName = name + "[" + to_string(idx) + "]";
-		SetShaderMatrix(reference, arrayName, value);
+		SetShaderMatrix(material, arrayName, value);
 	}
-	void RenderAPIOpenGL::SetShaderTexture(ShaderReference* reference, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
+	void RenderAPIOpenGL::SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
 	{
-		glUniform1i(glGetUniformLocation(reference->ID, name.c_str()), idx);
+		glUniform1i(glGetUniformLocation(material->shader->reference->ID, name.c_str()), idx);
 		glActiveTexture(GL_TEXTURE0 + idx);
 		glBindTexture(GL_TEXTURE_2D, ID);
 	}
-	void RenderAPIOpenGL::SetShaderCubeMap(ShaderReference* reference, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
+	void RenderAPIOpenGL::SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
 	{
-		glUniform1i(glGetUniformLocation(reference->ID, name.c_str()), idx);
+		glUniform1i(glGetUniformLocation(material->shader->reference->ID, name.c_str()), idx);
 		glActiveTexture(GL_TEXTURE0 + idx);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
 	}

@@ -1,6 +1,7 @@
 #include "TextCharactersManager.h"
 #include "Resources.h"
 #include "ZShader.h"
+#include "Material.h"
 #include "DynamicMesh.h"
 #include "GlobalData.h"
 #include <ft2build.h>
@@ -27,9 +28,9 @@ namespace ZXEngine
 
         // ³õÊ¼»¯×Ö·ûäÖÈ¾Shader
         Matrix4 mat_P = Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
-        textShader = new Shader(Resources::GetAssetFullPath("Shaders/TextRenderer.zxshader", true), FrameBufferType::Present);
-        textShader->Use();
-        textShader->SetMat4("ENGINE_Projection", mat_P);
+        textMaterial = new Material(new Shader(Resources::GetAssetFullPath("Shaders/TextRenderer.zxshader", true), FrameBufferType::Present));
+        textMaterial->Use();
+        textMaterial->SetMatrix("ENGINE_Projection", mat_P);
 
         // ¼ÓÔØ×Ö·û
         LoadCharacters();
@@ -101,17 +102,17 @@ namespace ZXEngine
 
     void TextCharactersManager::BeginRender()
     {
-        textShader->Use();
+        textMaterial->Use();
     }
 
     void TextCharactersManager::SetColor(Vector3 color)
     {
-        textShader->SetVec3("_TextColor", color);
+        textMaterial->SetVector("_TextColor", color);
     }
 
     void TextCharactersManager::SetTexture(unsigned int ID)
     {
-        textShader->SetTexture("_Text", ID, 0);
+        textMaterial->SetTexture("_Text", ID, 0);
     }
 
     void TextCharactersManager::UpdateCharacterMesh(vector<Vertex> vertices, vector<unsigned int> indices)

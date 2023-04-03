@@ -5,7 +5,7 @@
 
 namespace ZXEngine
 {
-	class Shader;
+	class Material;
 	class CubeMap;
 	class GameObject;
 	class StaticMesh;
@@ -36,8 +36,8 @@ namespace ZXEngine
 		const unsigned int previewSize = 512;
 		GameObject* cameraGO;
 		StaticMesh* previewQuad;
-		Shader* previewQuadShader;
-		Shader* previewModelShader;
+		Material* previewQuadMaterial;
+		Material* previewModelMaterial;
 		MeshRenderer* materialSphere;
 		CubeMap* shadowCubeMap;
 		RenderStateSetting* renderState;

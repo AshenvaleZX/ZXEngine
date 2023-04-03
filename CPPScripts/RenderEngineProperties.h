@@ -8,7 +8,7 @@ namespace ZXEngine
 	class MeshRenderer;
 	class RenderEngineProperties
 	{
-		friend class Shader;
+		friend class Material;
 		friend class EditorAssetPreviewer;
 	public:
 		static void Create();

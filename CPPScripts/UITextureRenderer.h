@@ -5,13 +5,13 @@
 
 namespace ZXEngine
 {
-	class Shader;
+	class Material;
 	class StaticMesh;
 	class UITextureRenderer : public Component
 	{
 		friend class EditorInspectorPanel;
 	public:
-		static Shader* shader;
+		static Material* material;
 		static void Init();
 		static ComponentType GetType();
 

@@ -1,4 +1,5 @@
 #include "Texture.h"
+#include "RenderAPI.h"
 
 namespace ZXEngine
 {

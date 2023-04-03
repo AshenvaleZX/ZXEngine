@@ -10,6 +10,7 @@
 #include "../UITextureRenderer.h"
 #include "../ParticleSystem.h"
 #include "../ZShader.h"
+#include "../MaterialData.h"
 
 namespace ZXEngine
 {
@@ -88,7 +89,7 @@ namespace ZXEngine
 			Debug::Log("Click Shader");
 		}
 
-		for (auto& iter : material->textures)
+		for (auto& iter : material->data->textures)
 		{
 			unsigned int id = iter.second->GetID();
 			ImGui::Text(iter.first.c_str());

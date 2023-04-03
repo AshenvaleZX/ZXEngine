@@ -1,21 +1,22 @@
 #include "UITextureRenderer.h"
 #include "StaticMesh.h"
 #include "ZShader.h"
+#include "Material.h"
 #include "Resources.h"
 #include "GlobalData.h"
 #include "Transform.h"
 
 namespace ZXEngine
 {
-	Shader* UITextureRenderer::shader = nullptr;
+	Material* UITextureRenderer::material = nullptr;
 
 	void UITextureRenderer::Init()
 	{
-		shader = new Shader(Resources::GetAssetFullPath("Shaders/UITextureRenderer.zxshader", true), FrameBufferType::Present);
+		material = new Material(new Shader(Resources::GetAssetFullPath("Shaders/UITextureRenderer.zxshader", true), FrameBufferType::Present));
 
 		Matrix4 mat_P = Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
-		shader->Use();
-		shader->SetMat4("ENGINE_Projection", mat_P);
+		material->Use();
+		material->SetMatrix("ENGINE_Projection", mat_P);
 	}
 
 	ComponentType UITextureRenderer::GetType()
@@ -39,9 +40,9 @@ namespace ZXEngine
 	void UITextureRenderer::Render()
 	{
 		Matrix4 mat_M = GetTransform()->GetModelMatrix();
-		shader->Use();
-		shader->SetMat4("ENGINE_Model", mat_M);
-		shader->SetTexture("_Texture", texture->GetID(), 0);
+		material->Use();
+		material->SetMatrix("ENGINE_Model", mat_M);
+		material->SetTexture("_Texture", texture->GetID(), 0);
 		RenderAPI::GetInstance()->Draw(textureMesh->VAO);
 	}
 

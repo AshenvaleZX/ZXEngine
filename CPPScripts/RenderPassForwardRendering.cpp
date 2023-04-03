@@ -13,13 +13,14 @@
 #include "ParticleSystemManager.h"
 #include "RenderStateSetting.h"
 #include "RenderEngineProperties.h"
+#include "MaterialData.h"
 
 namespace ZXEngine
 {
 	RenderPassForwardRendering::RenderPassForwardRendering()
 	{
 		InitSkyBox();
-		skyBoxShader = new Shader(Resources::GetAssetFullPath("Shaders/SkyBox.zxshader", true), FrameBufferType::Normal);
+		skyBoxMaterial = new Material(new Shader(Resources::GetAssetFullPath("Shaders/SkyBox.zxshader", true), FrameBufferType::Normal));
 
 		skyBoxRenderState = new RenderStateSetting();
 		skyBoxRenderState->depthTest = false;
@@ -64,11 +65,12 @@ namespace ZXEngine
 			for (auto renderer : batch.second)
 			{
 				auto material = renderer->matetrial;
-				shader->SetMaterialProperties(material);
+				material->SetMaterialProperties();
 
 				RenderEngineProperties::GetInstance()->SetRendererProperties(renderer);
-				shader->SetEngineProperties();
+				material->SetEngineProperties();
 
+				material->data->Use();
 				renderer->Draw();
 			}
 		}
@@ -137,10 +139,10 @@ namespace ZXEngine
 		Matrix4 mat_V = Matrix4(Matrix3(camera->GetViewMatrix()));
 		Matrix4 mat_P = camera->GetProjectionMatrix();
 
-		skyBoxShader->Use();
-		skyBoxShader->SetMat4("ENGINE_View", mat_V);
-		skyBoxShader->SetMat4("ENGINE_Projection", mat_P);
-		skyBoxShader->SetCubeMap("_Skybox", SceneManager::GetInstance()->GetCurScene()->skyBox->GetID(), 0);
+		skyBoxMaterial->Use();
+		skyBoxMaterial->SetMatrix("ENGINE_View", mat_V);
+		skyBoxMaterial->SetMatrix("ENGINE_Projection", mat_P);
+		skyBoxMaterial->SetCubeMap("_Skybox", SceneManager::GetInstance()->GetCurScene()->skyBox->GetID(), 0);
 		
 		RenderAPI::GetInstance()->Draw(skyBox->VAO);
 	}

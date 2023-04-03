@@ -9,7 +9,7 @@
 
 namespace ZXEngine
 {
-	class Shader;
+	class Material;
 	class Camera;
 	class StaticMesh;
 	class RenderStateSetting;
@@ -24,12 +24,12 @@ namespace ZXEngine
 	private:
 		uint32_t drawCommandID = 0;
 		StaticMesh* screenQuad;
-		map<string, Shader*> aeShaders;
+		map<string, Material*> aeMaterials;
 		RenderStateSetting* renderState;
 		ClearInfo clearInfo;
 
-		void CreateShader(string name, string path, FrameBufferType type);
-		Shader* GetShader(string name);
+		void CreateMaterial(string name, string path, FrameBufferType type);
+		Material* GetMaterial(string name);
 		void InitScreenQuad();
 
 		// 提取画面高亮部分

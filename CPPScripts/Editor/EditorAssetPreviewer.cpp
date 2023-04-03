@@ -33,8 +33,8 @@ namespace ZXEngine
 		shadowCubeMap = new CubeMap(cubeMapPath);
 
 		InitPreviewQuad();
-		previewQuadShader = new Shader(Resources::GetAssetFullPath("Shaders/RenderTexture.zxshader", true), FrameBufferType::Present);
-		previewModelShader = new Shader(Resources::GetAssetFullPath("Shaders/ModelPreview.zxshader", true), FrameBufferType::Normal);
+		previewQuadMaterial = new Material(new Shader(Resources::GetAssetFullPath("Shaders/RenderTexture.zxshader", true), FrameBufferType::Present));
+		previewModelMaterial = new Material(new Shader(Resources::GetAssetFullPath("Shaders/ModelPreview.zxshader", true), FrameBufferType::Normal));
 
 		renderState = new RenderStateSetting();
 		renderState->clearColor = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
@@ -56,8 +56,8 @@ namespace ZXEngine
 		delete cameraGO;
 		delete shadowCubeMap;
 		delete materialSphere;
-		delete previewQuadShader;
-		delete previewModelShader;
+		delete previewQuadMaterial;
+		delete previewModelMaterial;
 		delete renderState;
 		delete previewQuadRenderState;
 	}
@@ -118,10 +118,9 @@ namespace ZXEngine
 		Matrix4 mat_P = camera->GetProjectionMatrix();
 
 		auto material = info->material;
-		auto shader = material->shader;
-		shader->Use();
+		material->Use();
 
-		shader->SetMaterialProperties(material);
+		material->SetMaterialProperties();
 
 		auto engineProperties = RenderEngineProperties::GetInstance();
 		engineProperties->matM = mat_M;
@@ -136,7 +135,7 @@ namespace ZXEngine
 		engineProperties->lightIntensity = 1.0f;
 		engineProperties->shadowCubeMap = shadowCubeMap->GetID();
 
-		shader->SetEngineProperties();
+		material->SetEngineProperties();
 
 		materialSphere->Draw();
 	}
@@ -149,11 +148,11 @@ namespace ZXEngine
 		Matrix4 mat_V = camera->GetViewMatrix();
 		Matrix4 mat_P = camera->GetProjectionMatrix();
 
-		previewModelShader->Use();
-		previewModelShader->SetMat4("ENGINE_Model", mat_M);
-		previewModelShader->SetMat4("ENGINE_View", mat_V);
-		previewModelShader->SetMat4("ENGINE_Projection", mat_P);
-		previewModelShader->SetVec3("_Direction", Vector3(1.0f, 1.0f, -1.0f).Normalize());
+		previewModelMaterial->Use();
+		previewModelMaterial->SetMatrix("ENGINE_Model", mat_M);
+		previewModelMaterial->SetMatrix("ENGINE_View", mat_V);
+		previewModelMaterial->SetMatrix("ENGINE_Projection", mat_P);
+		previewModelMaterial->SetVector("_Direction", Vector3(1.0f, 1.0f, -1.0f).Normalize());
 
 		info->meshRenderer->Draw();
 	}
@@ -164,8 +163,8 @@ namespace ZXEngine
 		renderAPI->SwitchFrameBuffer(UINT32_MAX);
 		renderAPI->SetViewPort(ProjectSetting::inspectorWidth, ProjectSetting::inspectorWidth, ProjectSetting::srcWidth - ProjectSetting::inspectorWidth, 0);
 		renderAPI->SetRenderState(previewQuadRenderState);
-		previewQuadShader->Use();
-		previewQuadShader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("AssetPreview")->ColorBuffer, 0, true);
+		previewQuadMaterial->Use();
+		previewQuadMaterial->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("AssetPreview")->ColorBuffer, 0, true);
 		renderAPI->Draw(previewQuad->VAO);
 		renderAPI->GenerateDrawCommand(drawCommandID);
 		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight, ProjectSetting::hierarchyWidth, ProjectSetting::projectHeight);

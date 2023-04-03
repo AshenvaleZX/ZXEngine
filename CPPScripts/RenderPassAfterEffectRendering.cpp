@@ -2,6 +2,7 @@
 #include "RenderAPI.h"
 #include "StaticMesh.h"
 #include "ZShader.h"
+#include "Material.h"
 #include "Resources.h"
 #include "FBOManager.h"
 #include "RenderStateSetting.h"
@@ -44,20 +45,20 @@ namespace ZXEngine
 		string res3 = BlitBloomBlend("Main", res2, true);
 	}
 
-	void RenderPassAfterEffectRendering::CreateShader(string name, string path, FrameBufferType type)
+	void RenderPassAfterEffectRendering::CreateMaterial(string name, string path, FrameBufferType type)
 	{
-		if (aeShaders.count(name) > 0)
+		if (aeMaterials.count(name) > 0)
 		{
 			Debug::LogError("Try to add an existing shader");
 			return;
 		}
-		aeShaders.insert(pair<string, Shader*>(name, new Shader(Resources::GetAssetFullPath(path), type)));
+		aeMaterials.insert(pair<string, Material*>(name, new Material(new Shader(Resources::GetAssetFullPath(path), type))));
 	}
 
-	Shader* RenderPassAfterEffectRendering::GetShader(string name)
+	Material* RenderPassAfterEffectRendering::GetMaterial(string name)
 	{
-		map<string, Shader*>::iterator iter = aeShaders.find(name);
-		if (iter != aeShaders.end())
+		map<string, Material*>::iterator iter = aeMaterials.find(name);
+		if (iter != aeMaterials.end())
 			return iter->second;
 		else
 			return nullptr;
@@ -109,7 +110,7 @@ namespace ZXEngine
 
 	void RenderPassAfterEffectRendering::InitExtractBrightArea(bool isFinal)
 	{
-		CreateShader(ExtractBrightArea, "Shaders/ExtractBrightArea.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
+		CreateMaterial(ExtractBrightArea, "Shaders/ExtractBrightArea.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
 		if (!isFinal)
 			FBOManager::GetInstance()->CreateFBO(ExtractBrightArea, FrameBufferType::Color);
 	}
@@ -117,9 +118,9 @@ namespace ZXEngine
 	string RenderPassAfterEffectRendering::BlitExtractBrightArea(string sourceFBO, bool isFinal)
 	{
 		FBOManager::GetInstance()->SwitchFBO(isFinal ? ScreenBuffer : ExtractBrightArea);
-		auto shader = GetShader(ExtractBrightArea);
-		shader->Use();
-		shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(sourceFBO)->ColorBuffer, 0, true);
+		auto material = GetMaterial(ExtractBrightArea);
+		material->Use();
+		material->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(sourceFBO)->ColorBuffer, 0, true);
 		RenderAPI::GetInstance()->Draw(screenQuad->VAO);
 		RenderAPI::GetInstance()->GenerateDrawCommand(drawCommandID);
 		// 返回输出的FBO名字
@@ -128,7 +129,7 @@ namespace ZXEngine
 
 	void RenderPassAfterEffectRendering::InitGaussianBlur(bool isFinal)
 	{
-		CreateShader(GaussianBlur, "Shaders/GaussianBlur.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
+		CreateMaterial(GaussianBlur, "Shaders/GaussianBlur.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
 		FBOManager::GetInstance()->CreateFBO("GaussianBlurVertical", FrameBufferType::Color);
 		FBOManager::GetInstance()->CreateFBO("GaussianBlurHorizontal", FrameBufferType::Color);
 	}
@@ -139,15 +140,15 @@ namespace ZXEngine
 	{
 		bool isHorizontal = true;
 		string pingpongBuffer[2] = { "GaussianBlurHorizontal", "GaussianBlurVertical" };
-		auto shader = GetShader(GaussianBlur);
-		shader->Use();
-		shader->SetFloat("_TexOffset", texOffset);
+		auto material = GetMaterial(GaussianBlur);
+		material->Use();
+		material->SetScalar("_TexOffset", texOffset);
 		for (int i = 0; i < blurTimes * 2; i++)
 		{
 			FBOManager::GetInstance()->SwitchFBO(pingpongBuffer[isHorizontal]);
 			string colorFBO = i == 0 ? sourceFBO : pingpongBuffer[!isHorizontal];
-			shader->SetBool("_Horizontal", isHorizontal);
-			shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(colorFBO)->ColorBuffer, 0, true);
+			material->SetScalar("_Horizontal", isHorizontal);
+			material->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(colorFBO)->ColorBuffer, 0, true);
 			RenderAPI::GetInstance()->Draw(screenQuad->VAO);
 			RenderAPI::GetInstance()->GenerateDrawCommand(drawCommandID);
 			isHorizontal = !isHorizontal;
@@ -158,7 +159,7 @@ namespace ZXEngine
 
 	void RenderPassAfterEffectRendering::InitKawaseBlur(bool isFinal)
 	{
-		CreateShader(KawaseBlur, "Shaders/KawaseBlur.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
+		CreateMaterial(KawaseBlur, "Shaders/KawaseBlur.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
 		FBOManager::GetInstance()->CreateFBO("KawaseBlur0", FrameBufferType::Color);
 		FBOManager::GetInstance()->CreateFBO("KawaseBlur1", FrameBufferType::Color);
 	}
@@ -167,15 +168,15 @@ namespace ZXEngine
 	{
 		bool isSwitch = true;
 		string pingpongBuffer[2] = { "KawaseBlur0", "KawaseBlur1" };
-		auto shader = GetShader(KawaseBlur);
-		shader->Use();
-		shader->SetFloat("_TexOffset", texOffset);
+		auto material = GetMaterial(KawaseBlur);
+		material->Use();
+		material->SetScalar("_TexOffset", texOffset);
 		for (int i = 0; i < blurTimes; i++)
 		{
 			FBOManager::GetInstance()->SwitchFBO(pingpongBuffer[isSwitch]);
 			string colorFBO = i == 0 ? sourceFBO : pingpongBuffer[!isSwitch];
-			shader->SetInt("_BlurTimes", i+1);
-			shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(colorFBO)->ColorBuffer, 0, true);
+			material->SetScalar("_BlurTimes", i+1);
+			material->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(colorFBO)->ColorBuffer, 0, true);
 			RenderAPI::GetInstance()->Draw(screenQuad->VAO);
 			RenderAPI::GetInstance()->GenerateDrawCommand(drawCommandID);
 			isSwitch = !isSwitch;
@@ -186,7 +187,7 @@ namespace ZXEngine
 
 	void RenderPassAfterEffectRendering::InitBloomBlend(bool isFinal)
 	{
-		CreateShader(BloomBlend, "Shaders/BloomBlend.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
+		CreateMaterial(BloomBlend, "Shaders/BloomBlend.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
 		if (!isFinal)
 			FBOManager::GetInstance()->CreateFBO(BloomBlend, FrameBufferType::Color);
 	}
@@ -194,10 +195,10 @@ namespace ZXEngine
 	string RenderPassAfterEffectRendering::BlitBloomBlend(string originFBO, string blurFBO, bool isFinal)
 	{
 		FBOManager::GetInstance()->SwitchFBO(isFinal ? ScreenBuffer : BloomBlend);
-		auto shader = GetShader(BloomBlend);
-		shader->Use();
-		shader->SetTexture("_BrightBlur", FBOManager::GetInstance()->GetFBO(blurFBO)->ColorBuffer, 0, true);
-		shader->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(originFBO)->ColorBuffer, 1, true);
+		auto material = GetMaterial(BloomBlend);
+		material->Use();
+		material->SetTexture("_BrightBlur", FBOManager::GetInstance()->GetFBO(blurFBO)->ColorBuffer, 0, true);
+		material->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(originFBO)->ColorBuffer, 1, true);
 		RenderAPI::GetInstance()->Draw(screenQuad->VAO);
 		RenderAPI::GetInstance()->GenerateDrawCommand(drawCommandID);
 		return BloomBlend;

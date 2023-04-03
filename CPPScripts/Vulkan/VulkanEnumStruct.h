@@ -98,6 +98,13 @@ namespace ZXEngine
         bool inUse = false;
     };
 
+    struct VulkanDrawIndex
+    {
+        uint32_t VAO = 0;
+        uint32_t pipelineID = 0;
+        uint32_t materialDataID = 0;
+    };
+
     struct VulkanDrawCommand
     {
         vector<VkCommandBuffer> commandBuffers;
@@ -119,10 +126,15 @@ namespace ZXEngine
     struct VulkanPipeline
     {
         string name; // For debug
-        VkPipeline pipeline;
-        VkPipelineLayout pipelineLayout;
-        VkDescriptorSetLayout descriptorSetLayout;
-        VkDescriptorPool descriptorPool;
+        VkPipeline pipeline = VK_NULL_HANDLE;
+        VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
+        VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
+        bool inUse = false;
+    };
+
+    struct VulkanMaterialData
+    {
+        VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
         vector<VkDescriptorSet> descriptorSets;
         vector<UniformBuffer> vertUniformBuffers;
         vector<UniformBuffer> geomUniformBuffers;

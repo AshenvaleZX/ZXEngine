@@ -1,9 +1,7 @@
 #include "ZShader.h"
-#include "Material.h"
+#include "RenderAPI.h"
 #include "Resources.h"
-#include "RenderEngineProperties.h"
 #include "GlobalData.h"
-#include "FBOManager.h"
 
 namespace ZXEngine
 {
@@ -14,7 +12,6 @@ namespace ZXEngine
 	{
 		name = Resources::GetAssetName(path);
 		renderQueue = (int)RenderQueueType::Qpaque;
-		engineProperties = RenderEngineProperties::GetInstance();
 
 		// Vulkan里因为涉及VkPipeline的一些相关资源创建问题，比如创建VkDescriptorSet的VkDescriptorPool需要提前设置分配数量
 		// 所以这里暂时就先不让多个材质共用一个Shader实例了
@@ -106,120 +103,5 @@ namespace ZXEngine
 	void Shader::Use()
 	{
 		RenderAPI::GetInstance()->UseShader(reference->ID);
-	}
-
-	void Shader::SetEngineProperties()
-	{
-		for (auto& property : reference->shaderInfo.vertProperties.baseProperties)
-			SetEngineProperty(property.name, property.type);
-		for (auto& property : reference->shaderInfo.vertProperties.textureProperties)
-			SetEngineProperty(property.name, property.type);
-		for (auto& property : reference->shaderInfo.fragProperties.baseProperties)
-			SetEngineProperty(property.name, property.type);
-		for (auto& property : reference->shaderInfo.fragProperties.textureProperties)
-			SetEngineProperty(property.name, property.type);
-	}
-
-	void Shader::SetEngineProperty(const string& name, ShaderPropertyType type)
-	{
-		if (type == ShaderPropertyType::ENGINE_MODEL)
-			SetMat4(name, engineProperties->matM);
-		else if (type == ShaderPropertyType::ENGINE_VIEW)
-			SetMat4(name, engineProperties->matV);
-		else if (type == ShaderPropertyType::ENGINE_PROJECTION)
-			SetMat4(name, engineProperties->matP);
-		else if (type == ShaderPropertyType::ENGINE_CAMERA_POS)
-			SetVec3(name, engineProperties->camPos);
-		else if (type == ShaderPropertyType::ENGINE_LIGHT_POS)
-			SetVec3(name, engineProperties->lightPos);
-		else if (type == ShaderPropertyType::ENGINE_LIGHT_DIR)
-			SetVec3(name, engineProperties->lightDir);
-		else if (type == ShaderPropertyType::ENGINE_LIGHT_COLOR)
-			SetVec3(name, engineProperties->lightColor);
-		else if (type == ShaderPropertyType::ENGINE_LIGHT_INTENSITY)
-			SetFloat(name, engineProperties->lightIntensity);
-		else if (type == ShaderPropertyType::ENGINE_FAR_PLANE)
-			SetFloat(name, GlobalData::shadowCubeMapFarPlane);
-		else if (type == ShaderPropertyType::ENGINE_DEPTH_CUBE_MAP)
-		{
-			// 先设置SetMaterialProperties获得引擎纹理的初始textureIdx，然后++
-			SetCubeMap(name, engineProperties->shadowCubeMap, textureIdx, true);
-			textureIdx++;
-		}
-	}
-
-	void Shader::SetMaterialProperties(Material* material)
-	{
-		uint16_t textureNum = (uint16_t)material->textures.size();
-		for (uint16_t i = 0; i < textureNum; i++)
-			SetTexture(material->textures[i].first, material->textures[i].second->GetID(), i);
-
-		textureIdx = textureNum;
-	}
-
-	void Shader::SetMaterialProperty(const string& name, ShaderPropertyType type)
-	{
-
-	}
-
-	void Shader::SetBool(string name, bool value)
-	{
-		RenderAPI::GetInstance()->SetShaderScalar(reference, name, value);
-	}
-	void Shader::SetInt(string name, int value)
-	{
-		RenderAPI::GetInstance()->SetShaderScalar(reference, name, value);
-	}
-	void Shader::SetFloat(string name, float value)
-	{
-		RenderAPI::GetInstance()->SetShaderScalar(reference, name, value);
-	}
-	void Shader::SetVec2(string name, Vector2 value)
-	{
-		RenderAPI::GetInstance()->SetShaderVector(reference, name, value);
-	}
-	void Shader::SetVec2(string name, Vector2 value, uint32_t idx)
-	{
-		RenderAPI::GetInstance()->SetShaderVector(reference, name, value, idx);
-	}
-	void Shader::SetVec3(string name, Vector3 value)
-	{
-		RenderAPI::GetInstance()->SetShaderVector(reference, name, value);
-	}
-	void Shader::SetVec3(string name, Vector3 value, uint32_t idx)
-	{
-		RenderAPI::GetInstance()->SetShaderVector(reference, name, value, idx);
-	}
-	void Shader::SetVec4(string name, Vector4 value)
-	{
-		RenderAPI::GetInstance()->SetShaderVector(reference, name, value);
-	}
-	void Shader::SetVec4(string name, Vector4 value, uint32_t idx)
-	{
-		RenderAPI::GetInstance()->SetShaderVector(reference, name, value, idx);
-	}
-	void Shader::SetMat3(string name, Matrix3 value)
-	{
-		RenderAPI::GetInstance()->SetShaderMatrix(reference, name, value);
-	}
-	void Shader::SetMat3(string name, Matrix3 value, uint32_t idx)
-	{
-		RenderAPI::GetInstance()->SetShaderMatrix(reference, name, value, idx);
-	}
-	void Shader::SetMat4(string name, Matrix4 value)
-	{
-		RenderAPI::GetInstance()->SetShaderMatrix(reference, name, value);
-	}
-	void Shader::SetMat4(string name, Matrix4 value, uint32_t idx)
-	{
-		RenderAPI::GetInstance()->SetShaderMatrix(reference, name, value, idx);
-	}
-	void Shader::SetTexture(string name, uint32_t ID, uint32_t idx, bool isBuffer)
-	{
-		RenderAPI::GetInstance()->SetShaderTexture(reference, name, ID, idx, isBuffer);
-	}
-	void Shader::SetCubeMap(string name, uint32_t ID, uint32_t idx, bool isBuffer)
-	{
-		RenderAPI::GetInstance()->SetShaderCubeMap(reference, name, ID, idx, isBuffer);
 	}
 }

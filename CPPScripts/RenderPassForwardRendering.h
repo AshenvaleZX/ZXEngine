@@ -4,7 +4,7 @@
 
 namespace ZXEngine
 {
-	class Shader;
+	class Material;
 	class Camera;
 	class StaticMesh;
 	class RenderStateSetting;
@@ -19,7 +19,7 @@ namespace ZXEngine
 	private:
 		uint32_t drawCommandID = 0;
 		StaticMesh* skyBox;
-		Shader* skyBoxShader;
+		Material* skyBoxMaterial;
 		RenderStateSetting* skyBoxRenderState;
 		RenderStateSetting* opaqueRenderState;
 		ClearInfo clearInfo;

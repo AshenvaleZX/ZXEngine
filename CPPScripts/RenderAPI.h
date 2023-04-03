@@ -5,6 +5,8 @@
 
 namespace ZXEngine
 {
+	class Material;
+	class MaterialData;
 	class RenderStateSetting;
 	class RenderAPI
 	{
@@ -36,8 +38,11 @@ namespace ZXEngine
 		virtual unsigned int LoadCubeMap(vector<string> faces) = 0;
 		virtual unsigned int GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data) = 0;
 		virtual ShaderReference* LoadAndSetUpShader(const char* path, FrameBufferType type) = 0;
-		virtual void SetUpMaterial(ShaderReference* shaderReference, const map<string, uint32_t>& textures) = 0;
-		virtual void DeleteShader(unsigned int id) = 0;
+		virtual uint32_t CreateMaterialData() = 0;
+		virtual void UseMaterialData(uint32_t ID) = 0;
+		virtual void SetUpMaterial(ShaderReference* shaderReference, MaterialData* materialData) = 0;
+		virtual void DeleteShader(uint32_t id) = 0;
+		virtual void DeleteMaterialData(uint32_t id) = 0;
 
 		// Draw
 		virtual uint32_t AllocateDrawCommand() = 0;
@@ -53,20 +58,20 @@ namespace ZXEngine
 
 		// Shader…Ë÷√
 		virtual void UseShader(unsigned int ID) = 0;
-		virtual void SetShaderScalar(ShaderReference* reference, const string& name, bool value) = 0;
-		virtual void SetShaderScalar(ShaderReference* reference, const string& name, int value) = 0;
-		virtual void SetShaderScalar(ShaderReference* reference, const string& name, float value) = 0;
-		virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector2& value) = 0;
-		virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector2& value, uint32_t idx) = 0;
-		virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector3& value) = 0;
-		virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector3& value, uint32_t idx) = 0;
-		virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector4& value) = 0;
-		virtual void SetShaderVector(ShaderReference* reference, const string& name, const Vector4& value, uint32_t idx) = 0;
-		virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& value) = 0;
-		virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix3& value, uint32_t idx) = 0;
-		virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& value) = 0;
-		virtual void SetShaderMatrix(ShaderReference* reference, const string& name, const Matrix4& value, uint32_t idx) = 0;
-		virtual void SetShaderTexture(ShaderReference* reference, const string& name, uint32_t ID, uint32_t idx, bool isBuffer = false) = 0;
-		virtual void SetShaderCubeMap(ShaderReference* reference, const string& name, uint32_t ID, uint32_t idx, bool isBuffer = false) = 0;
+		virtual void SetShaderScalar(Material* material, const string& name, bool value) = 0;
+		virtual void SetShaderScalar(Material* material, const string& name, int value) = 0;
+		virtual void SetShaderScalar(Material* material, const string& name, float value) = 0;
+		virtual void SetShaderVector(Material* material, const string& name, const Vector2& value) = 0;
+		virtual void SetShaderVector(Material* material, const string& name, const Vector2& value, uint32_t idx) = 0;
+		virtual void SetShaderVector(Material* material, const string& name, const Vector3& value) = 0;
+		virtual void SetShaderVector(Material* material, const string& name, const Vector3& value, uint32_t idx) = 0;
+		virtual void SetShaderVector(Material* material, const string& name, const Vector4& value) = 0;
+		virtual void SetShaderVector(Material* material, const string& name, const Vector4& value, uint32_t idx) = 0;
+		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix3& value) = 0;
+		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix3& value, uint32_t idx) = 0;
+		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix4& value) = 0;
+		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix4& value, uint32_t idx) = 0;
+		virtual void SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer = false) = 0;
+		virtual void SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer = false) = 0;
 	};
 }
