@@ -288,7 +288,7 @@ namespace ZXEngine
         return CreateVulkanTexture(image, imageView, sampler);
     }
 
-    unsigned int RenderAPIVulkan::LoadCubeMap(vector<string> faces)
+    unsigned int RenderAPIVulkan::LoadCubeMap(const vector<string>& faces)
     {
         array<stbi_uc*, 6> textureData = {};
         int texWidth = 0, texHeight = 0, texChannels = 0;
@@ -597,7 +597,7 @@ namespace ZXEngine
         materialData->initialized = true;
     }
 
-    void RenderAPIVulkan::DeleteShader(unsigned int id)
+    void RenderAPIVulkan::DeleteShader(uint32_t id)
     {
         auto pipeline = GetPipelineByIndex(id);
 
@@ -903,7 +903,7 @@ namespace ZXEngine
         vmaDestroyBuffer(vmaAllocator, meshBuffer->vertexBuffer, meshBuffer->vertexBufferAlloc);
     }
 
-    void RenderAPIVulkan::SetUpStaticMesh(unsigned int& VAO, vector<Vertex> vertices, vector<unsigned int> indices)
+    void RenderAPIVulkan::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
     {
         VAO = GetNextVAOIndex();
         auto meshBuffer = GetVAOByIndex(VAO);
@@ -1047,7 +1047,7 @@ namespace ZXEngine
         meshBuffer->inUse = true;
     }
 
-    void RenderAPIVulkan::UpdateDynamicMesh(unsigned int VAO, vector<Vertex> vertices, vector<unsigned int> indices)
+    void RenderAPIVulkan::UpdateDynamicMesh(unsigned int VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
     {
         auto meshBuffer = GetVAOByIndex(VAO);
 

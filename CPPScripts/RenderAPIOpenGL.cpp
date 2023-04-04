@@ -194,7 +194,7 @@ namespace ZXEngine
 		glDeleteTextures(1, &id);
 	}
 
-	unsigned int RenderAPIOpenGL::LoadCubeMap(vector<string> faces)
+	unsigned int RenderAPIOpenGL::LoadCubeMap(const vector<string>& faces)
 	{
 		unsigned int textureID;
 		glGenTextures(1, &textureID);
@@ -583,7 +583,7 @@ namespace ZXEngine
 		meshBuffer->inUse = false;
 	}
 
-	void RenderAPIOpenGL::SetUpStaticMesh(unsigned int& VAO, vector<Vertex> vertices, vector<unsigned int> indices)
+	void RenderAPIOpenGL::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
 	{
 		VAO = GetNextVAOIndex();
 		auto meshBuffer = GetVAOByIndex(VAO);
@@ -664,7 +664,7 @@ namespace ZXEngine
 		meshBuffer->inUse = true;
 	}
 
-	void RenderAPIOpenGL::UpdateDynamicMesh(unsigned int VAO, vector<Vertex> vertices, vector<unsigned int> indices)
+	void RenderAPIOpenGL::UpdateDynamicMesh(unsigned int VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
 	{
 		auto meshBuffer = GetVAOByIndex(VAO);
 
