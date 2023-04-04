@@ -250,6 +250,10 @@ namespace ZXEngine
 		ImGui::Text("Text  ");
 		ImGui::SameLine(); ImGui::InputTextMultiline("##text", text, 256);
 
+		float size = component->size;
+		ImGui::Text("Size  ");
+		ImGui::SameLine(); ImGui::DragFloat("##Size", &size, 0.1f, 0.0f, FLT_MAX);
+
 		Vector3 textColor = component->color;
 		ImVec4 color = ImVec4(textColor.r, textColor.g, textColor.b, 1.0f);
 		ImGui::Text("Color ");

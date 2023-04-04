@@ -7,12 +7,13 @@
             "Type": "Transform",
             "Position": [-75, 320, 0],
             "Rotation": [0, 0, 0],
-            "Scale": [0.5, 1, 1]
+            "Scale": [1, 1, 1]
         },
         {
             "Type": "UITextRenderer",
             "Text": "Demo Project",
-            "Color": [0.2, 1, 0.2, 1]
+            "Color": [0.2, 1, 0.2, 1],
+            "Size": 0.5
         }
     ]
 }

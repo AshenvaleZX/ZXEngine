@@ -12,7 +12,7 @@ static int SetText(lua_State* L)
 {
 	ZXEngine::UITextRenderer** data = (ZXEngine::UITextRenderer**)luaL_checkudata(L, -2, "ZXEngine.UITextRenderer");
 	string text = lua_tostring(L, -1);
-	(*data)->text = text;
+	(*data)->SetContent(text);
 	return 0;
 }
 

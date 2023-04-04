@@ -11,7 +11,7 @@ namespace ZXEngine
 		unsigned int Advance;	// Horizontal offset to advance to next glyph
 	};
 
-	class Material;
+	class Shader;
 	class DynamicMesh;
 	class TextCharactersManager
 	{
@@ -19,25 +19,17 @@ namespace ZXEngine
 		static void Create();
 		static TextCharactersManager* GetInstance();
 
+	private:
+		static TextCharactersManager* mInstance;
+
+	public:
+		Shader* textShader = nullptr;
+		map<char, Character> Characters;
+
 		TextCharactersManager();
 		~TextCharactersManager() {};
 
-		map<char, Character> Characters;
-
-		void BeginRender();
-		// 设置字符颜色
-		void SetColor(Vector3 color);
-		// 设置字符的字形(glyph)纹理
-		void SetTexture(unsigned int ID);
-		// 更新字符Mesh数据
-		void UpdateCharacterMesh(vector<Vertex> vertices, vector<unsigned int> indices);
-		void DrawCharacter();
-
 	private:
-		static TextCharactersManager* mInstance;
-		Material* textMaterial = nullptr;
-		DynamicMesh* characterMesh = nullptr;
-
 		void LoadCharacters();
 	};
 }

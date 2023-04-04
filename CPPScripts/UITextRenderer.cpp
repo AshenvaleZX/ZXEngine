@@ -3,6 +3,8 @@
 #include "TextCharactersManager.h"
 #include "DynamicMesh.h"
 #include "Transform.h"
+#include "GlobalData.h"
+#include "Material.h"
 
 namespace ZXEngine
 {
@@ -24,12 +26,38 @@ namespace ZXEngine
 
     void UITextRenderer::Render()
     {
-        TextCharactersManager::GetInstance()->BeginRender();
-        TextCharactersManager::GetInstance()->SetColor(color);
+        // 如果文本发生了变化，重新生成渲染数据
+        if (dirty)
+        {
+            for (auto material : textMaterials)
+                delete material;
+            textMaterials.clear();
+            GenerateRenderData();
+        }
 
-        float tmpX = this->GetTransform()->GetPosition().x;
-        float tmpY = this->GetTransform()->GetPosition().y;
-        float scale = this->GetTransform()->GetLocalScale().x;
+        auto renderAPI = RenderAPI::GetInstance();
+        for (size_t i = 0; i < length; i++)
+        {
+            textMaterials[i]->Use();
+            renderAPI->Draw(textMeshes[i]->VAO);
+        }
+    }
+
+    void UITextRenderer::SetContent(const string& text)
+    {
+        dirty = true;
+        this->text = text;
+    }
+
+    void UITextRenderer::GenerateRenderData()
+    {
+        float tmpX = 0, tmpY = 0;
+        Matrix4 mat_M = GetTransform()->GetModelMatrix();
+        Matrix4 mat_P = Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
+
+        auto characterMgr = TextCharactersManager::GetInstance();
+
+        length = 0;
         // 遍历字符串的每个字符
         string::const_iterator c;
         for (c = text.begin(); c != text.end(); c++)
@@ -39,14 +67,14 @@ namespace ZXEngine
             if (*c == ' ')
                 continue;
 #endif
-            Character ch = TextCharactersManager::GetInstance()->Characters[*c];
+            Character ch = characterMgr->Characters[*c];
 
             // 计算字符位置和大小
-            float xpos = tmpX + ch.Bearing[0] * scale;
-            float ypos = tmpY - (ch.Size[1] - ch.Bearing[1]) * scale;
-            float w = ch.Size[0] * scale;
-            float h = ch.Size[1] * scale;
-            
+            float xpos = tmpX + ch.Bearing[0] * size;
+            float ypos = tmpY - (ch.Size[1] - ch.Bearing[1]) * size;
+            float w = ch.Size[0] * size;
+            float h = ch.Size[1] * size;
+
             // 设置字符顶点数据
             Vector3 points[4] =
             {
@@ -66,14 +94,32 @@ namespace ZXEngine
                 vertex.TexCoords = GlyphCoords[i];
                 vertices.push_back(vertex);
             }
-            
-            // 设置字形(glyph)纹理
-            TextCharactersManager::GetInstance()->SetTexture(ch.TextureID);
-            TextCharactersManager::GetInstance()->UpdateCharacterMesh(vertices, GlyphIndices);
-            TextCharactersManager::GetInstance()->DrawCharacter();
+
+            // 更新字符Mesh
+            if (length >= textMeshes.size())
+            {
+                auto charMesh = new DynamicMesh(4, 6);
+                charMesh->UpdateData(vertices, GlyphIndices);
+                textMeshes.push_back(charMesh);
+            }
+            else
+            {
+                textMeshes[length]->UpdateData(vertices, GlyphIndices);
+            }
+
+            // 字符材质
+            auto charMaterial = new Material(characterMgr->textShader);
+            charMaterial->Use();
+            charMaterial->SetVector("_TextColor", color);
+            charMaterial->SetTexture("_Text", ch.TextureID, 0);
+            charMaterial->SetMatrix("ENGINE_Model", mat_M);
+            charMaterial->SetMatrix("ENGINE_Projection", mat_P);
+            textMaterials.push_back(charMaterial);
 
             // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-            tmpX += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+            tmpX += (ch.Advance >> 6) * size; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+
+            length++;
         }
     }
 }

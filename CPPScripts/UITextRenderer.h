@@ -13,16 +13,17 @@ namespace ZXEngine
 		1, 2, 3,
 	};
 
+	class Material;
+	class DynamicMesh;
 	class UITextRenderer : public Component
 	{
+		friend class EditorInspectorPanel;
 	public:
 		static ComponentType GetType();
 
 	public:
-		// 当前渲染的文本
-		string text;
-		// 字符颜色
 		Vector4 color;
+		float size = 1;
 
 		UITextRenderer();
 		~UITextRenderer() {};
@@ -30,5 +31,17 @@ namespace ZXEngine
 		virtual ComponentType GetInsType();
 
 		void Render();
+		void SetContent(const string& text);
+
+	private:
+		// 当前渲染的文本
+		string text = "";
+		vector<Material*> textMaterials;
+		vector<DynamicMesh*> textMeshes;
+		size_t length = 0;
+		// 文本是否发生了变化
+		bool dirty = false;
+
+		void GenerateRenderData();
 	};
 }

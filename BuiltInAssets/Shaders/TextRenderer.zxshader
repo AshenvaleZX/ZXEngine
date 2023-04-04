@@ -13,6 +13,7 @@ Vertex
 
     Properties
     {
+        using ENGINE_Model
         using ENGINE_Projection
     }
 
@@ -20,7 +21,7 @@ Vertex
     {
         void main()
         {
-            gl_Position = ENGINE_Projection * vec4(aPos.xy, 0.0, 1.0);
+            gl_Position = ENGINE_Projection * ENGINE_Model * vec4(aPos.xy, 0.0, 1.0);
             TexCoords = aTexCoords;
         }
     }
@@ -41,7 +42,7 @@ Fragment
     Properties
     {
         sampler2D _Text
-        vec3 _TextColor
+        vec4 _TextColor
     }
 
     Program
@@ -49,7 +50,7 @@ Fragment
         void main()
         {    
             vec4 sampled = vec4(1.0, 1.0, 1.0, texture(_Text, TexCoords).r);
-            color = vec4(_TextColor, 1.0) * sampled;
+            color = _TextColor * sampled;
         }
     }
 }
