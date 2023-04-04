@@ -8,15 +8,11 @@
 
 namespace ZXEngine
 {
-	Material* UITextureRenderer::material = nullptr;
+	Shader* UITextureRenderer::shader = nullptr;
 
 	void UITextureRenderer::Init()
 	{
-		material = new Material(new Shader(Resources::GetAssetFullPath("Shaders/UITextureRenderer.zxshader", true), FrameBufferType::Present));
-
-		Matrix4 mat_P = Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
-		material->Use();
-		material->SetMatrix("ENGINE_Projection", mat_P);
+		shader = new Shader(Resources::GetAssetFullPath("Shaders/UITextureRenderer.zxshader", true), FrameBufferType::Present);
 	}
 
 	ComponentType UITextureRenderer::GetType()
@@ -28,6 +24,8 @@ namespace ZXEngine
 	{
 		if (texture != nullptr)
 			delete texture;
+		if (material != nullptr)
+			delete material;
 		if (textureMesh != nullptr)
 			delete textureMesh;
 	}
@@ -42,7 +40,6 @@ namespace ZXEngine
 		Matrix4 mat_M = GetTransform()->GetModelMatrix();
 		material->Use();
 		material->SetMatrix("ENGINE_Model", mat_M);
-		material->SetTexture("_Texture", texture->GetID(), 0);
 		RenderAPI::GetInstance()->Draw(textureMesh->VAO);
 	}
 
@@ -52,15 +49,24 @@ namespace ZXEngine
 			delete texture;
 		texture = new Texture(path);
 
+		if (material != nullptr)
+			delete material;
 		if (textureMesh != nullptr)
 			delete textureMesh;
-		textureMesh = CreateTextureMesh();
+
+		CreateRenderData();
 	}
 
-	StaticMesh* UITextureRenderer::CreateTextureMesh()
+	void UITextureRenderer::CreateRenderData()
 	{
 		if (texture == nullptr)
-			return nullptr;
+			return;
+
+		Matrix4 mat_P = Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
+		material = new Material(shader);
+		material->Use();
+		material->SetMatrix("ENGINE_Projection", mat_P);
+		material->SetTexture("_Texture", texture->GetID(), 0);
 
 		float width = (float)texture->width;
 		float height = (float)texture->height;
@@ -97,6 +103,6 @@ namespace ZXEngine
 			vertex.TexCoords = coords[i];
 			vertices.push_back(vertex);
 		}
-		return new StaticMesh(vertices, indices);
+		textureMesh = new StaticMesh(vertices, indices);
 	}
 }

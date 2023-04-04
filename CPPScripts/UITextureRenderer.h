@@ -5,13 +5,14 @@
 
 namespace ZXEngine
 {
+	class Shader;
 	class Material;
 	class StaticMesh;
 	class UITextureRenderer : public Component
 	{
 		friend class EditorInspectorPanel;
 	public:
-		static Material* material;
+		static Shader* shader;
 		static void Init();
 		static ComponentType GetType();
 
@@ -26,8 +27,9 @@ namespace ZXEngine
 
 	private:
 		Texture* texture = nullptr;
+		Material* material = nullptr;
 		StaticMesh* textureMesh = nullptr;
 
-		StaticMesh* CreateTextureMesh();
+		void CreateRenderData();
 	};
 }
