@@ -12,6 +12,7 @@ namespace ZXEngine
 	{
 		name = matStruct->name;
 		path = matStruct->path;
+		isShareShader = false;
 		shader = new Shader(matStruct->shaderPath, FrameBufferType::Normal);
 		data = new MaterialData();
 
@@ -26,6 +27,11 @@ namespace ZXEngine
 
 	Material::Material(Shader* shader)
 	{
+		// 这里要注意一个问题，如果调用这个构造函数时，是直接把new Shader写在参数里的，如:
+		// new Material(new Shader(...))
+		// 那么会有一个问题，new的时候没有保存引用，最终会少一个delete，导致referenceCount至少大于1，这个shader永远不会被正真销毁
+		isShareShader = true;
+		shader->reference->referenceCount++;
 		this->shader = shader;
 		data = new MaterialData();
 		RenderAPI::GetInstance()->SetUpMaterial(this->shader->reference, data);
@@ -33,8 +39,12 @@ namespace ZXEngine
 
 	Material::~Material()
 	{
-		delete shader;
 		delete data;
+
+		if (isShareShader)
+			shader->reference->referenceCount--;
+		else
+			delete shader;
 	}
 
 	void Material::Use()

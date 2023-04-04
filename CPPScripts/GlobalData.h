@@ -12,6 +12,5 @@ namespace ZXEngine
 		static float shadowCubeMapNearPlane;
 		static float shadowCubeMapFarPlane;
 		static unsigned int depthCubeMapWidth;
-		static bool shaderReferenceOptimalEnabled;
 	};
 }

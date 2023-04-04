@@ -14,7 +14,6 @@ namespace ZXEngine
 		Shader* shader = nullptr;
 		MaterialData* data = nullptr;
 
-		Material() {};
 		Material(MaterialStruct* matStruct);
 		Material(Shader* shader);
 		~Material();
@@ -41,6 +40,8 @@ namespace ZXEngine
 		void SetCubeMap(string name, uint32_t ID, uint32_t idx, bool isBuffer = false);
 
 	private:
+		// 这个材质引用的Shader是还有其他地方引用，会影响材质销毁流程
+		bool isShareShader;
 		uint32_t textureIdx = 0;
 
 		void SetEngineProperty(const string& name, ShaderPropertyType type);
