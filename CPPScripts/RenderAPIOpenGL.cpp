@@ -11,6 +11,23 @@
 
 namespace ZXEngine
 {
+	map<BlendFactor, int> glBlendFactorMap =
+	{
+        { BlendFactor::ZERO,           GL_ZERO           }, { BlendFactor::ONE,						 GL_ONE                      },
+		{ BlendFactor::SRC_COLOR,      GL_SRC_COLOR      }, { BlendFactor::ONE_MINUS_SRC_COLOR,		 GL_ONE_MINUS_SRC_COLOR      },
+		{ BlendFactor::DST_COLOR,      GL_DST_COLOR      }, { BlendFactor::ONE_MINUS_DST_COLOR,		 GL_ONE_MINUS_DST_COLOR      },
+		{ BlendFactor::SRC_ALPHA,      GL_SRC_ALPHA      }, { BlendFactor::ONE_MINUS_SRC_ALPHA,		 GL_ONE_MINUS_SRC_ALPHA		 },
+		{ BlendFactor::DST_ALPHA,      GL_DST_ALPHA      }, { BlendFactor::ONE_MINUS_DST_ALPHA,		 GL_ONE_MINUS_DST_ALPHA		 },
+		{ BlendFactor::CONSTANT_COLOR, GL_CONSTANT_COLOR }, { BlendFactor::ONE_MINUS_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR },
+		{ BlendFactor::CONSTANT_ALPHA, GL_CONSTANT_ALPHA }, { BlendFactor::ONE_MINUS_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA },
+	};
+
+	map<FaceCullOption, int> glFaceCullOptionMap =
+	{
+		{ FaceCullOption::Back,			GL_BACK			  }, { FaceCullOption::Front, GL_FRONT },
+		{ FaceCullOption::FrontAndBack,	GL_FRONT_AND_BACK },
+	};
+
 	RenderAPIOpenGL::RenderAPIOpenGL()
 	{
 		// glad: load all OpenGL function pointers
@@ -36,7 +53,6 @@ namespace ZXEngine
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		InitGLConstMap();
 		targetState = new RenderStateSetting();
 		curRealState = new RenderStateSetting();
 	}
@@ -796,7 +812,7 @@ namespace ZXEngine
 		}
 
 		if (curRealState->srcFactor != targetState->srcFactor || curRealState->dstFactor != targetState->dstFactor)
-			glBlendFunc(BlendMap[targetState->srcFactor], BlendMap[targetState->dstFactor]);
+			glBlendFunc(glBlendFactorMap[targetState->srcFactor], glBlendFactorMap[targetState->dstFactor]);
 
 		if (curRealState->faceCull != targetState->faceCull)
 		{
@@ -807,7 +823,7 @@ namespace ZXEngine
 		}
 
 		if (curRealState->faceCullOption != targetState->faceCullOption)
-			glCullFace(FaceCullMap[targetState->faceCullOption]);
+			glCullFace(glFaceCullOptionMap[targetState->faceCullOption]);
 
 		if (curRealState->clearColor != targetState->clearColor)
 			glClearColor(targetState->clearColor.r, targetState->clearColor.g, targetState->clearColor.b, targetState->clearColor.a);
@@ -819,34 +835,6 @@ namespace ZXEngine
 			glClearStencil(targetState->clearStencil);
 
 		*curRealState = *targetState;
-	}
-
-	void RenderAPIOpenGL::InitGLConstMap()
-	{
-		BlendMap =
-		{
-			{ BlendFactor::ZERO,					GL_ZERO						},
-			{ BlendFactor::ONE,						GL_ONE						},
-			{ BlendFactor::SRC_COLOR,				GL_SRC_COLOR				},
-			{ BlendFactor::ONE_MINUS_SRC_COLOR,		GL_ONE_MINUS_SRC_COLOR		},
-			{ BlendFactor::DST_COLOR,				GL_DST_COLOR				},
-			{ BlendFactor::ONE_MINUS_DST_COLOR,		GL_ONE_MINUS_DST_COLOR		},
-			{ BlendFactor::SRC_ALPHA,				GL_SRC_ALPHA				},
-			{ BlendFactor::ONE_MINUS_SRC_ALPHA,		GL_ONE_MINUS_SRC_ALPHA		},
-			{ BlendFactor::DST_ALPHA,				GL_DST_ALPHA				},
-			{ BlendFactor::ONE_MINUS_DST_ALPHA,		GL_ONE_MINUS_DST_ALPHA		},
-			{ BlendFactor::CONSTANT_COLOR,			GL_CONSTANT_COLOR			},
-			{ BlendFactor::ONE_MINUS_CONSTANT_COLOR,GL_ONE_MINUS_CONSTANT_COLOR },
-			{ BlendFactor::CONSTANT_ALPHA,			GL_CONSTANT_ALPHA			},
-			{ BlendFactor::ONE_MINUS_CONSTANT_ALPHA,GL_ONE_MINUS_CONSTANT_ALPHA	},
-		};
-
-		FaceCullMap =
-		{
-			{ FaceCullOption::Back,			GL_BACK			  },
-			{ FaceCullOption::Front,		GL_FRONT		  },
-			{ FaceCullOption::FrontAndBack,	GL_FRONT_AND_BACK },
-		};
 	}
 
 	uint32_t RenderAPIOpenGL::GetNextVAOIndex()
