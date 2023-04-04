@@ -615,11 +615,15 @@ namespace ZXEngine
         vkDestroyDescriptorPool(device, vulkanMaterialData->descriptorPool, VK_NULL_HANDLE);
 
         for (auto& uniformBuffer : vulkanMaterialData->vertUniformBuffers)
-            DestroyBuffer(uniformBuffer.buffer);
+            DestroyUniformBuffer(uniformBuffer);
         for (auto& uniformBuffer : vulkanMaterialData->geomUniformBuffers)
-            DestroyBuffer(uniformBuffer.buffer);
+            DestroyUniformBuffer(uniformBuffer);
         for (auto& uniformBuffer : vulkanMaterialData->fragUniformBuffers)
-            DestroyBuffer(uniformBuffer.buffer);
+            DestroyUniformBuffer(uniformBuffer);
+        
+        vulkanMaterialData->vertUniformBuffers.clear();
+        vulkanMaterialData->geomUniformBuffers.clear();
+        vulkanMaterialData->fragUniformBuffers.clear();
 
         vulkanMaterialData->inUse = false;
     }
@@ -2028,6 +2032,12 @@ namespace ZXEngine
         vmaMapMemory(vmaAllocator, uniformBuffer.buffer.allocation, &uniformBuffer.mappedAddress);
 
         return uniformBuffer;
+    }
+
+    void RenderAPIVulkan::DestroyUniformBuffer(const UniformBuffer& uniformBuffer)
+    {
+        vmaUnmapMemory(vmaAllocator, uniformBuffer.buffer.allocation);
+        DestroyBuffer(uniformBuffer.buffer);
     }
 
     void RenderAPIVulkan::AllocateCommandBuffers(vector<VkCommandBuffer>& commandBuffers)
