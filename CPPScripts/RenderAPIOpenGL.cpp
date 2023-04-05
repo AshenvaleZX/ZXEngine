@@ -8,6 +8,7 @@
 #include "Resources.h"
 #include "ZShader.h"
 #include "Material.h"
+#include "MaterialData.h"
 
 namespace ZXEngine
 {
@@ -310,6 +311,8 @@ namespace ZXEngine
 		if (geomCode.length() > 1)
 			glDeleteShader(geometry);
 
+		materialDataInShaders.insert(pair(ID, new OpenGLMaterialData()));
+
 		ShaderReference* reference = new ShaderReference();
 		reference->ID = ID;
 		reference->shaderInfo = ShaderParser::GetShaderInfo(shaderCode);
@@ -319,18 +322,24 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::DeleteShader(uint32_t id)
 	{
+		delete materialDataInShaders[id];
+		materialDataInShaders.erase(id);
 		glDeleteProgram(id);
 	}
 
 	uint32_t RenderAPIOpenGL::CreateMaterialData()
 	{
-		// OpenGL不需要实现这个接口
-		return 0;
+		uint32_t idx = GetNextMaterialDataIndex();
+		auto materialData = GetMaterialDataByIndex(idx);
+
+		materialData->inUse = true;
+
+		return idx;
 	}
 
 	void RenderAPIOpenGL::UseMaterialData(uint32_t ID)
 	{
-		// OpenGL不需要实现这个接口
+		curMaterialDataID = ID;
 	}
 
 	void RenderAPIOpenGL::SetUpMaterial(ShaderReference* shaderReference, MaterialData* materialData)
@@ -340,7 +349,20 @@ namespace ZXEngine
 	
 	void RenderAPIOpenGL::DeleteMaterialData(uint32_t id)
 	{
-		// OpenGL不需要实现这个接口
+		auto materialData = GetMaterialDataByIndex(id);
+
+		materialData->intList.clear();
+		materialData->boolList.clear();
+		materialData->floatList.clear();
+		materialData->vec2List.clear();
+		materialData->vec3List.clear();
+		materialData->vec4List.clear();
+		materialData->mat3List.clear();
+		materialData->mat4List.clear();
+		materialData->textures.clear();
+		materialData->cubeMaps.clear();
+
+		materialData->inUse = false;
 	}
 
 	void RenderAPIOpenGL::CheckCompileErrors(unsigned int shader, string type)
@@ -565,6 +587,7 @@ namespace ZXEngine
 	void RenderAPIOpenGL::Draw(uint32_t VAO)
 	{
 		UpdateRenderState();
+		UpdateMaterialData();
 
 		auto meshBuffer = GetVAOByIndex(VAO);
 
@@ -701,89 +724,160 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::UseShader(unsigned int ID)
 	{
+		curShaderID = ID;
 		glUseProgram(ID);
 	}
+
+	// Boolean
 	void RenderAPIOpenGL::SetShaderScalar(Material* material, const string& name, bool value)
 	{
-		glUniform1i(glGetUniformLocation(material->shader->reference->ID, name.c_str()), (int)value);
+		auto materialData = GetMaterialDataByIndex(material->data->GetID());
+		materialData->boolList[name] = value;
 	}
+	void RenderAPIOpenGL::RealSetShaderScalar(const string& name, bool value)
+	{
+		glUniform1i(glGetUniformLocation(curShaderID, name.c_str()), (int)value);
+	}
+
+	// Integer
 	void RenderAPIOpenGL::SetShaderScalar(Material* material, const string& name, int value)
 	{
-		glUniform1i(glGetUniformLocation(material->shader->reference->ID, name.c_str()), value);
+		auto materialData = GetMaterialDataByIndex(material->data->GetID());
+		materialData->intList[name] = value;
 	}
+	void RenderAPIOpenGL::RealSetShaderScalar(const string& name, int value)
+	{
+		glUniform1i(glGetUniformLocation(curShaderID, name.c_str()), value);
+	}
+
+	// Float
 	void RenderAPIOpenGL::SetShaderScalar(Material* material, const string& name, float value)
 	{
-		glUniform1f(glGetUniformLocation(material->shader->reference->ID, name.c_str()), value);
+		auto materialData = GetMaterialDataByIndex(material->data->GetID());
+		materialData->floatList[name] = value;
 	}
+	void RenderAPIOpenGL::RealSetShaderScalar(const string& name, float value)
+	{
+		glUniform1f(glGetUniformLocation(curShaderID, name.c_str()), value);
+	}
+
+	// Vector2
 	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector2& value)
 	{
-		float* array = new float[2];
-		value.ToArray(array);
-		glUniform2fv(glGetUniformLocation(material->shader->reference->ID, name.c_str()), 1, array);
-		delete[] array;
+		auto materialData = GetMaterialDataByIndex(material->data->GetID());
+		materialData->vec2List[name] = value;
 	}
 	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector2& value, uint32_t idx)
 	{
 		string arrayName = name + "[" + to_string(idx) + "]";
 		SetShaderVector(material, arrayName, value);
 	}
+	void RenderAPIOpenGL::RealSetShaderVector(const string& name, const Vector2& value)
+	{
+		float* array = new float[2];
+		value.ToArray(array);
+		glUniform2fv(glGetUniformLocation(curShaderID, name.c_str()), 1, array);
+		delete[] array;
+	}
+
+	// Vector3
 	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector3& value)
 	{
-		float* array = new float[3];
-		value.ToArray(array);
-		glUniform3fv(glGetUniformLocation(material->shader->reference->ID, name.c_str()), 1, array);
-		delete[] array;
+		auto materialData = GetMaterialDataByIndex(material->data->GetID());
+		materialData->vec3List[name] = value;
 	}
 	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector3& value, uint32_t idx)
 	{
 		string arrayName = name + "[" + to_string(idx) + "]";
 		SetShaderVector(material, arrayName, value);
 	}
+	void RenderAPIOpenGL::RealSetShaderVector(const string& name, const Vector3& value)
+	{
+		float* array = new float[3];
+		value.ToArray(array);
+		glUniform3fv(glGetUniformLocation(curShaderID, name.c_str()), 1, array);
+		delete[] array;
+	}
+
+	// Vector4
 	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector4& value)
 	{
-		float* array = new float[4];
-		value.ToArray(array);
-		glUniform4fv(glGetUniformLocation(material->shader->reference->ID, name.c_str()), 1, array);
-		delete[] array;
+		auto materialData = GetMaterialDataByIndex(material->data->GetID());
+		materialData->vec4List[name] = value;
 	}
 	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector4& value, uint32_t idx)
 	{
 		string arrayName = name + "[" + to_string(idx) + "]";
 		SetShaderVector(material, arrayName, value);
 	}
+	void RenderAPIOpenGL::RealSetShaderVector(const string& name, const Vector4& value)
+	{
+		float* array = new float[4];
+		value.ToArray(array);
+		glUniform4fv(glGetUniformLocation(curShaderID, name.c_str()), 1, array);
+		delete[] array;
+	}
+
+	// Matrix3
 	void RenderAPIOpenGL::SetShaderMatrix(Material* material, const string& name, const Matrix3& value)
 	{
-		float* array = new float[9];
-		value.ToColumnMajorArray(array);
-		glUniformMatrix3fv(glGetUniformLocation(material->shader->reference->ID, name.c_str()), 1, GL_FALSE, array);
-		delete[] array;
+		auto materialData = GetMaterialDataByIndex(material->data->GetID());
+		materialData->mat3List[name] = value;
 	}
 	void RenderAPIOpenGL::SetShaderMatrix(Material* material, const string& name, const Matrix3& value, uint32_t idx)
 	{
 		string arrayName = name + "[" + to_string(idx) + "]";
 		SetShaderMatrix(material, arrayName, value);
 	}
+	void RenderAPIOpenGL::RealSetShaderMatrix(const string& name, const Matrix3& value)
+	{
+		float* array = new float[9];
+		value.ToColumnMajorArray(array);
+		glUniformMatrix3fv(glGetUniformLocation(curShaderID, name.c_str()), 1, GL_FALSE, array);
+		delete[] array;
+	}
+
+	// Matrix4
 	void RenderAPIOpenGL::SetShaderMatrix(Material* material, const string& name, const Matrix4& value)
 	{
-		float* array = new float[16];
-		value.ToColumnMajorArray(array);
-		glUniformMatrix4fv(glGetUniformLocation(material->shader->reference->ID, name.c_str()), 1, GL_FALSE, array);
-		delete[] array;
+		auto materialData = GetMaterialDataByIndex(material->data->GetID());
+		materialData->mat4List[name] = value;
 	}
 	void RenderAPIOpenGL::SetShaderMatrix(Material* material, const string& name, const Matrix4& value, uint32_t idx)
 	{
 		string arrayName = name + "[" + to_string(idx) + "]";
 		SetShaderMatrix(material, arrayName, value);
 	}
+	void RenderAPIOpenGL::RealSetShaderMatrix(const string& name, const Matrix4& value)
+	{
+		float* array = new float[16];
+		value.ToColumnMajorArray(array);
+		glUniformMatrix4fv(glGetUniformLocation(curShaderID, name.c_str()), 1, GL_FALSE, array);
+		delete[] array;
+	}
+
+	// Texture
 	void RenderAPIOpenGL::SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
 	{
-		glUniform1i(glGetUniformLocation(material->shader->reference->ID, name.c_str()), idx);
+		auto materialData = GetMaterialDataByIndex(material->data->GetID());
+		materialData->textures[name] = { ID, idx };
+	}
+	void RenderAPIOpenGL::RealSetShaderTexture(const string& name, uint32_t ID, uint32_t idx)
+	{
+		glUniform1i(glGetUniformLocation(curShaderID, name.c_str()), idx);
 		glActiveTexture(GL_TEXTURE0 + idx);
 		glBindTexture(GL_TEXTURE_2D, ID);
 	}
+
+	// Cube Map
 	void RenderAPIOpenGL::SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
 	{
-		glUniform1i(glGetUniformLocation(material->shader->reference->ID, name.c_str()), idx);
+		auto materialData = GetMaterialDataByIndex(material->data->GetID());
+		materialData->cubeMaps[name] = { ID, idx };
+	}
+	void RenderAPIOpenGL::RealSetShaderCubeMap(const string& name, uint32_t ID, uint32_t idx)
+	{
+		glUniform1i(glGetUniformLocation(curShaderID, name.c_str()), idx);
 		glActiveTexture(GL_TEXTURE0 + idx);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
 	}
@@ -837,6 +931,138 @@ namespace ZXEngine
 		*curRealState = *targetState;
 	}
 
+	void RenderAPIOpenGL::UpdateMaterialData()
+	{
+		auto shaderData = materialDataInShaders[curShaderID];
+		auto materialData = GetMaterialDataByIndex(curMaterialDataID);
+
+		for (auto& iter : materialData->intList)
+		{
+			bool update = false;
+			if (shaderData->intList.find(iter.first) == shaderData->intList.end())
+				update = true;
+			else if (shaderData->intList[iter.first] != iter.second)
+				update = true;
+
+			if (update)
+			{
+				shaderData->intList[iter.first] = iter.second;
+				RealSetShaderScalar(iter.first, iter.second);
+			}
+		}
+
+		for (auto& iter : materialData->boolList)
+		{
+			bool update = false;
+			if (shaderData->boolList.find(iter.first) == shaderData->boolList.end())
+				update = true;
+			else if (shaderData->boolList[iter.first] != iter.second)
+				update = true;
+
+			if (update)
+			{
+				shaderData->boolList[iter.first] = iter.second;
+				RealSetShaderScalar(iter.first, iter.second);
+			}
+		}
+
+		for (auto& iter : materialData->floatList)
+		{
+			bool update = false;
+			if (shaderData->floatList.find(iter.first) == shaderData->floatList.end())
+				update = true;
+			else if (shaderData->floatList[iter.first] != iter.second)
+				update = true;
+
+			if (update)
+			{
+				shaderData->floatList[iter.first] = iter.second;
+				RealSetShaderScalar(iter.first, iter.second);
+			}
+		}
+
+		for (auto& iter : materialData->vec2List)
+		{
+			bool update = false;
+			if (shaderData->vec2List.find(iter.first) == shaderData->vec2List.end())
+				update = true;
+			else if (shaderData->vec2List[iter.first] != iter.second)
+				update = true;
+
+			if (update)
+			{
+				shaderData->vec2List[iter.first] = iter.second;
+				RealSetShaderVector(iter.first, iter.second);
+			}
+		}
+
+		for (auto& iter : materialData->vec3List)
+		{
+			bool update = false;
+			if (shaderData->vec3List.find(iter.first) == shaderData->vec3List.end())
+				update = true;
+			else if (shaderData->vec3List[iter.first] != iter.second)
+				update = true;
+
+			if (update)
+			{
+				shaderData->vec3List[iter.first] = iter.second;
+				RealSetShaderVector(iter.first, iter.second);
+			}
+		}
+
+		for (auto& iter : materialData->vec4List)
+		{
+			bool update = false;
+			if (shaderData->vec4List.find(iter.first) == shaderData->vec4List.end())
+				update = true;
+			else if (shaderData->vec4List[iter.first] != iter.second)
+				update = true;
+
+			if (update)
+			{
+				shaderData->vec4List[iter.first] = iter.second;
+				RealSetShaderVector(iter.first, iter.second);
+			}
+		}
+
+		for (auto& iter : materialData->mat3List)
+		{
+			bool update = false;
+			if (shaderData->mat3List.find(iter.first) == shaderData->mat3List.end())
+				update = true;
+			else if (shaderData->mat3List[iter.first] != iter.second)
+				update = true;
+
+			if (update)
+			{
+				shaderData->mat3List[iter.first] = iter.second;
+				RealSetShaderMatrix(iter.first, iter.second);
+			}
+		}
+
+		for (auto& iter : materialData->mat4List)
+		{
+			bool update = false;
+			if (shaderData->mat4List.find(iter.first) == shaderData->mat4List.end())
+				update = true;
+			else if (shaderData->mat4List[iter.first] != iter.second)
+				update = true;
+
+			if (update)
+			{
+				shaderData->mat4List[iter.first] = iter.second;
+				RealSetShaderMatrix(iter.first, iter.second);
+			}
+		}
+
+		// OpenGL里glActiveTexture和glBindTexture是全局操作，会影响所有Shader，所以这里需要每次都做一下
+		for (auto& iter : materialData->textures)
+			RealSetShaderTexture(iter.first, iter.second[0], iter.second[1]);
+		for (auto& iter : materialData->cubeMaps)
+			RealSetShaderCubeMap(iter.first, iter.second[0], iter.second[1]);
+	}
+
 	uint32_t RenderAPIOpenGL::GetNextVAOIndex()
 	{
 		uint32_t length = (uint32_t)OpenGLVAOArray.size();
@@ -855,5 +1081,25 @@ namespace ZXEngine
 	OpenGLVAO* RenderAPIOpenGL::GetVAOByIndex(uint32_t idx)
 	{
 		return OpenGLVAOArray[idx];
+	}
+
+	uint32_t RenderAPIOpenGL::GetNextMaterialDataIndex()
+	{
+		uint32_t length = (uint32_t)OpenGLMaterialDataArray.size();
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!OpenGLMaterialDataArray[i]->inUse)
+				return i;
+		}
+
+		OpenGLMaterialDataArray.push_back(new OpenGLMaterialData());
+
+		return length;
+	}
+
+	OpenGLMaterialData* RenderAPIOpenGL::GetMaterialDataByIndex(uint32_t idx)
+	{
+		return OpenGLMaterialDataArray[idx];
 	}
 }

@@ -74,20 +74,38 @@ namespace ZXEngine
 	/// </summary>
 	private:
 		bool stateDirty = false;
+		uint32_t curShaderID = 0;
+		uint32_t curMaterialDataID = 0;
 		RenderStateSetting* targetState = nullptr;
 		RenderStateSetting* curRealState = nullptr;
 
 		vector<OpenGLVAO*> OpenGLVAOArray;
+		vector<OpenGLMaterialData*> OpenGLMaterialDataArray;
+		unordered_map<uint32_t, OpenGLMaterialData*> materialDataInShaders;
 
 		uint32_t GetNextVAOIndex();
 		OpenGLVAO* GetVAOByIndex(uint32_t idx);
+		uint32_t GetNextMaterialDataIndex();
+		OpenGLMaterialData* GetMaterialDataByIndex(uint32_t idx);
 
 		void CheckError();
 		void CheckCompileErrors(unsigned int shader, std::string type);
 		void UpdateRenderState();
+		void UpdateMaterialData();
 
 		void ClearColorBuffer(const Vector4& color);
 		void ClearDepthBuffer(float depth);
 		void ClearStencilBuffer(int stencil);
+
+		void RealSetShaderScalar(const string& name, bool value);
+		void RealSetShaderScalar(const string& name, int value);
+		void RealSetShaderScalar(const string& name, float value);
+		void RealSetShaderVector(const string& name, const Vector2& value);
+		void RealSetShaderVector(const string& name, const Vector3& value);
+		void RealSetShaderVector(const string& name, const Vector4& value);
+		void RealSetShaderMatrix(const string& name, const Matrix3& value);
+		void RealSetShaderMatrix(const string& name, const Matrix4& value);
+		void RealSetShaderTexture(const string& name, uint32_t ID, uint32_t idx);
+		void RealSetShaderCubeMap(const string& name, uint32_t ID, uint32_t idx);
 	};
 }
