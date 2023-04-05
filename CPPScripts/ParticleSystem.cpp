@@ -2,6 +2,7 @@
 #include "ParticleSystemManager.h"
 #include "Time.h"
 #include "RenderAPI.h"
+#include "ZCamera.h"
 #include "ZShader.h"
 #include "Material.h"
 #include "Transform.h"
@@ -23,7 +24,13 @@ namespace ZXEngine
 		ParticleSystemManager::GetInstance()->RemoveParticleSystem(this);
 
 		for (auto particle : particles)
+		{
+			delete particle->material;
 			delete particle;
+		}
+
+		if (textureID != 0)
+			RenderAPI::GetInstance()->DeleteTexture(textureID);
 	}
 
 	ComponentType ParticleSystem::GetInsType()
@@ -78,10 +85,12 @@ namespace ZXEngine
 		}
 	}
 
-	void ParticleSystem::Render(Material* material, Vector3 viewPos)
+	void ParticleSystem::Render(Camera* camera)
 	{
-		unsigned int VAO = ParticleSystemManager::GetInstance()->VAO;
-		material->SetTexture("_Sprite", textureID, 0);
+		Vector3 camPos = camera->GetTransform()->GetPosition();
+		Matrix4 mat_V = camera->GetViewMatrix();
+		Matrix4 mat_P = camera->GetProjectionMatrix();
+
 		bool caculateAngle = true;
 		float hypotenuse = 0;
 		float angle = 0;
@@ -91,14 +100,14 @@ namespace ZXEngine
 			{
 				if (caculateAngle)
 				{
-					hypotenuse = (float)sqrt(pow(viewPos.x - particle->position.x, 2) + pow(viewPos.z - particle->position.z, 2));
-					if (viewPos.z > particle->position.x)
+					hypotenuse = (float)sqrt(pow(camPos.x - particle->position.x, 2) + pow(camPos.z - particle->position.z, 2));
+					if (camPos.z > particle->position.x)
 					{
-						angle = asin((viewPos.x - particle->position.x) / hypotenuse);
+						angle = asin((camPos.x - particle->position.x) / hypotenuse);
 					}
 					else
 					{
-						angle = asin((particle->position.x - viewPos.x) / hypotenuse);
+						angle = asin((particle->position.x - camPos.x) / hypotenuse);
 					}
 					caculateAngle = false;
 				}
@@ -108,10 +117,13 @@ namespace ZXEngine
 				Matrix4 scale = Math::Scale(Matrix4(1), Vector3(2.0f));
 				Matrix4 mat_M = model * rotate * scale;
 
-				material->SetMatrix("ENGINE_Model", mat_M);
-				material->SetVector("_Color", particle->color);
+				particle->material->Use();
+				particle->material->SetMatrix("ENGINE_Model", mat_M);
+				particle->material->SetMatrix("ENGINE_View", mat_V);
+				particle->material->SetMatrix("ENGINE_Projection", mat_P);
+				particle->material->SetVector("_Color", particle->color);
 
-				RenderAPI::GetInstance()->Draw(VAO);
+				RenderAPI::GetInstance()->Draw(particle->VAO);
 			}
 		}
 	}
@@ -128,7 +140,14 @@ namespace ZXEngine
 	void ParticleSystem::GenerateParticles()
 	{
 		for (unsigned int i = 0; i < particleNum; ++i)
-			particles.push_back(new Particle());
+		{
+			auto particle = new Particle();
+			RenderAPI::GetInstance()->GenerateParticleMesh(particle->VAO);
+			particle->material = new Material(ParticleSystemManager::GetInstance()->shader);
+			particle->material->Use();
+			particle->material->SetTexture("_Sprite", textureID, 0);
+			particles.push_back(particle);
+		}
 	}
 
 	unsigned int ParticleSystem::GetUnusedParticleIndex()

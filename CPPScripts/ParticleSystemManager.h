@@ -4,7 +4,7 @@
 namespace ZXEngine
 {
 	class Camera;
-	class Material;
+	class Shader;
 	class ParticleSystem;
 	class RenderStateSetting;
 	class ParticleSystemManager
@@ -16,7 +16,7 @@ namespace ZXEngine
 		static ParticleSystemManager* mInstance;
 
 	public:
-		unsigned int VAO;
+		Shader* shader;
 
 		ParticleSystemManager();
 		~ParticleSystemManager() {};
@@ -28,7 +28,6 @@ namespace ZXEngine
 		void RemoveParticleSystem(ParticleSystem* ps);
 
 	private:
-		Material* material;
 		list<ParticleSystem*> allParticleSystem;
 		RenderStateSetting* renderState;
 	};

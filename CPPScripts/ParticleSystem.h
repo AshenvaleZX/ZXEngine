@@ -4,17 +4,18 @@
 
 namespace ZXEngine
 {
+	class Material;
 	struct Particle
 	{
+		uint32_t VAO = 0;
 		Vector3 position;
 		Vector3 velocity;
 		Vector4 color;
-		float life;
-
-		Particle() : position(0.0f), velocity(0.0f), color(1.0f), life(0.0f) {}
+		Material* material = nullptr;
+		float life = 0.0f;
 	};
 
-	class Material;
+	class Camera;
 	class ParticleSystem : public Component
 	{
 		friend class EditorInspectorPanel;
@@ -37,7 +38,7 @@ namespace ZXEngine
 		virtual ComponentType GetInsType();
 
 		void Update();
-		void Render(Material* material, Vector3 viewPos);
+		void Render(Camera* camera);
 
 		void SetTexture(const char* path);
 		void GenerateParticles();
