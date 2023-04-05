@@ -71,6 +71,20 @@ namespace ZXEngine
 			+"\n";
 	}
 
+	bool Matrix3::operator== (const Matrix3& v) const
+	{
+		return m00 == v.m00 && m01 == v.m01 && m02 == v.m02 
+			&& m10 == v.m10 && m11 == v.m11 && m12 == v.m12
+			&& m20 == v.m20 && m21 == v.m21 && m22 == v.m22;
+	}
+
+	bool Matrix3::operator!= (const Matrix3& v) const
+	{
+		return m00 != v.m00 || m01 != v.m01 || m02 != v.m02
+			&& m10 != v.m10 || m11 != v.m11 || m12 != v.m12
+			&& m20 != v.m20 || m21 != v.m21 || m22 != v.m22;
+	}
+
 	Vector3 Matrix3::operator* (const Vector3& v) const
 	{
 		float x = m00 * v.x + m01 * v.y + m02 * v.z;

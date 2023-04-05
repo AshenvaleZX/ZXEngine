@@ -84,6 +84,22 @@ namespace ZXEngine
 			+"\n";
 	}
 
+	bool Matrix4::operator== (const Matrix4& v) const
+	{
+		return m00 == v.m00 && m01 == v.m01 && m02 == v.m02 && m03 == v.m03
+			&& m10 == v.m10 && m11 == v.m11 && m12 == v.m12 && m13 == v.m13
+			&& m20 == v.m20 && m21 == v.m21 && m22 == v.m22 && m23 == v.m23
+			&& m30 == v.m30 && m31 == v.m31 && m32 == v.m32 && m33 == v.m33;
+	}
+
+	bool Matrix4::operator!= (const Matrix4& v) const
+	{
+		return m00 != v.m00 || m01 != v.m01 || m02 != v.m02 || m03 != v.m03
+			|| m10 != v.m10 || m11 != v.m11 || m12 != v.m12 || m13 != v.m13
+			|| m20 != v.m20 || m21 != v.m21 || m22 != v.m22 || m23 != v.m23
+			|| m30 != v.m30 || m31 != v.m31 || m32 != v.m32 || m33 != v.m33;
+	}
+
 	Vector4 Matrix4::operator* (const Vector4& v) const
 	{
 		float x = m00 * v.x + m01 * v.y + m02 * v.z + m03 * v.w;
