@@ -5,7 +5,7 @@
 namespace ZXEngine
 {
 	struct Character {
-		unsigned int TextureID;	// 字形纹理ID
+		uint32_t TextureID;	    // 字形纹理ID
 		unsigned int Size[2];	// Size of glyph
 		int Bearing[2];			// Offset from baseline to left/top of glyph
 		unsigned int Advance;	// Horizontal offset to advance to next glyph

@@ -67,23 +67,19 @@ namespace ZXEngine
                 Debug::LogError("ERROR::FREETYTPE: Failed to load Glyph");
                 continue;
             }
-#ifdef ZX_API_VULKAN
-            if (face->glyph->bitmap.width == 0 || face->glyph->bitmap.rows == 0)
-            {
-                Debug::LogWarning("Zero pixel glyph textures are not supported.");
-                continue;
-            }
-#endif
-            // generate texture
-            unsigned int textureID = RenderAPI::GetInstance()->GenerateTextTexture(face->glyph->bitmap.width, face->glyph->bitmap.rows, face->glyph->bitmap.buffer);
-            // now store character for later use
+
             Character character =
             {
-                textureID,
+                UINT32_MAX,
                 { face->glyph->bitmap.width, face->glyph->bitmap.rows },
                 { face->glyph->bitmap_left, face->glyph->bitmap_top },
                 static_cast<unsigned int>(face->glyph->advance.x)
             };
+
+            // 只生成有实际图像的字符纹理
+            if (face->glyph->bitmap.width > 0 && face->glyph->bitmap.rows > 0)
+                character.TextureID = RenderAPI::GetInstance()->GenerateTextTexture(face->glyph->bitmap.width, face->glyph->bitmap.rows, face->glyph->bitmap.buffer);
+
             Characters.insert(pair<char, Character>(c, character));
         }
 

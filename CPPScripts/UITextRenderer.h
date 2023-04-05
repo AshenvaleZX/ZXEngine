@@ -38,6 +38,7 @@ namespace ZXEngine
 		string text = "";
 		vector<Material*> textMaterials;
 		vector<DynamicMesh*> textMeshes;
+		// 实际分配了渲染资源的字符数量(不包括空格等无实际图像字符)
 		size_t length = 0;
 		// 文本是否发生了变化
 		bool dirty = false;
