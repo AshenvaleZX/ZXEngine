@@ -53,19 +53,19 @@ namespace ZXEngine
 
 		// Shader…Ë÷√
 		virtual void UseShader(unsigned int ID);
-		virtual void SetShaderScalar(Material* material, const string& name, bool value);
-		virtual void SetShaderScalar(Material* material, const string& name, int value);
-		virtual void SetShaderScalar(Material* material, const string& name, float value);
-		virtual void SetShaderVector(Material* material, const string& name, const Vector2& value);
-		virtual void SetShaderVector(Material* material, const string& name, const Vector2& value, uint32_t idx);
-		virtual void SetShaderVector(Material* material, const string& name, const Vector3& value);
-		virtual void SetShaderVector(Material* material, const string& name, const Vector3& value, uint32_t idx);
-		virtual void SetShaderVector(Material* material, const string& name, const Vector4& value);
-		virtual void SetShaderVector(Material* material, const string& name, const Vector4& value, uint32_t idx);
-		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix3& value);
-		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix3& value, uint32_t idx);
-		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix4& value);
-		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix4& value, uint32_t idx);
+		virtual void SetShaderScalar(Material* material, const string& name, int value, bool allBuffer = false);
+		virtual void SetShaderScalar(Material* material, const string& name, bool value, bool allBuffer = false);
+		virtual void SetShaderScalar(Material* material, const string& name, float value, bool allBuffer = false);
+		virtual void SetShaderVector(Material* material, const string& name, const Vector2& value, bool allBuffer = false);
+		virtual void SetShaderVector(Material* material, const string& name, const Vector2& value, uint32_t idx, bool allBuffer = false);
+		virtual void SetShaderVector(Material* material, const string& name, const Vector3& value, bool allBuffer = false);
+		virtual void SetShaderVector(Material* material, const string& name, const Vector3& value, uint32_t idx, bool allBuffer = false);
+		virtual void SetShaderVector(Material* material, const string& name, const Vector4& value, bool allBuffer = false);
+		virtual void SetShaderVector(Material* material, const string& name, const Vector4& value, uint32_t idx, bool allBuffer = false);
+		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix3& value, bool allBuffer = false);
+		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix3& value, uint32_t idx, bool allBuffer = false);
+		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix4& value, bool allBuffer = false);
+		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix4& value, uint32_t idx, bool allBuffer = false);
 		virtual void SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer = false);
 		virtual void SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer = false);
 

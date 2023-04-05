@@ -729,7 +729,7 @@ namespace ZXEngine
 	}
 
 	// Boolean
-	void RenderAPIOpenGL::SetShaderScalar(Material* material, const string& name, bool value)
+	void RenderAPIOpenGL::SetShaderScalar(Material* material, const string& name, bool value, bool allBuffer)
 	{
 		auto materialData = GetMaterialDataByIndex(material->data->GetID());
 		materialData->boolList[name] = value;
@@ -740,7 +740,7 @@ namespace ZXEngine
 	}
 
 	// Integer
-	void RenderAPIOpenGL::SetShaderScalar(Material* material, const string& name, int value)
+	void RenderAPIOpenGL::SetShaderScalar(Material* material, const string& name, int value, bool allBuffer)
 	{
 		auto materialData = GetMaterialDataByIndex(material->data->GetID());
 		materialData->intList[name] = value;
@@ -751,7 +751,7 @@ namespace ZXEngine
 	}
 
 	// Float
-	void RenderAPIOpenGL::SetShaderScalar(Material* material, const string& name, float value)
+	void RenderAPIOpenGL::SetShaderScalar(Material* material, const string& name, float value, bool allBuffer)
 	{
 		auto materialData = GetMaterialDataByIndex(material->data->GetID());
 		materialData->floatList[name] = value;
@@ -762,12 +762,12 @@ namespace ZXEngine
 	}
 
 	// Vector2
-	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector2& value)
+	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector2& value, bool allBuffer)
 	{
 		auto materialData = GetMaterialDataByIndex(material->data->GetID());
 		materialData->vec2List[name] = value;
 	}
-	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector2& value, uint32_t idx)
+	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector2& value, uint32_t idx, bool allBuffer)
 	{
 		string arrayName = name + "[" + to_string(idx) + "]";
 		SetShaderVector(material, arrayName, value);
@@ -781,12 +781,12 @@ namespace ZXEngine
 	}
 
 	// Vector3
-	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector3& value)
+	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector3& value, bool allBuffer)
 	{
 		auto materialData = GetMaterialDataByIndex(material->data->GetID());
 		materialData->vec3List[name] = value;
 	}
-	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector3& value, uint32_t idx)
+	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector3& value, uint32_t idx, bool allBuffer)
 	{
 		string arrayName = name + "[" + to_string(idx) + "]";
 		SetShaderVector(material, arrayName, value);
@@ -800,12 +800,12 @@ namespace ZXEngine
 	}
 
 	// Vector4
-	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector4& value)
+	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector4& value, bool allBuffer)
 	{
 		auto materialData = GetMaterialDataByIndex(material->data->GetID());
 		materialData->vec4List[name] = value;
 	}
-	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector4& value, uint32_t idx)
+	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector4& value, uint32_t idx, bool allBuffer)
 	{
 		string arrayName = name + "[" + to_string(idx) + "]";
 		SetShaderVector(material, arrayName, value);
@@ -819,12 +819,12 @@ namespace ZXEngine
 	}
 
 	// Matrix3
-	void RenderAPIOpenGL::SetShaderMatrix(Material* material, const string& name, const Matrix3& value)
+	void RenderAPIOpenGL::SetShaderMatrix(Material* material, const string& name, const Matrix3& value, bool allBuffer)
 	{
 		auto materialData = GetMaterialDataByIndex(material->data->GetID());
 		materialData->mat3List[name] = value;
 	}
-	void RenderAPIOpenGL::SetShaderMatrix(Material* material, const string& name, const Matrix3& value, uint32_t idx)
+	void RenderAPIOpenGL::SetShaderMatrix(Material* material, const string& name, const Matrix3& value, uint32_t idx, bool allBuffer)
 	{
 		string arrayName = name + "[" + to_string(idx) + "]";
 		SetShaderMatrix(material, arrayName, value);
@@ -838,12 +838,12 @@ namespace ZXEngine
 	}
 
 	// Matrix4
-	void RenderAPIOpenGL::SetShaderMatrix(Material* material, const string& name, const Matrix4& value)
+	void RenderAPIOpenGL::SetShaderMatrix(Material* material, const string& name, const Matrix4& value, bool allBuffer)
 	{
 		auto materialData = GetMaterialDataByIndex(material->data->GetID());
 		materialData->mat4List[name] = value;
 	}
-	void RenderAPIOpenGL::SetShaderMatrix(Material* material, const string& name, const Matrix4& value, uint32_t idx)
+	void RenderAPIOpenGL::SetShaderMatrix(Material* material, const string& name, const Matrix4& value, uint32_t idx, bool allBuffer)
 	{
 		string arrayName = name + "[" + to_string(idx) + "]";
 		SetShaderMatrix(material, arrayName, value);

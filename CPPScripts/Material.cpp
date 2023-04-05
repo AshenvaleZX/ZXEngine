@@ -114,57 +114,57 @@ namespace ZXEngine
 
 	}
 
-	void Material::SetScalar(string name, bool value)
+	void Material::SetScalar(string name, bool value, bool allBuffer)
 	{
-		RenderAPI::GetInstance()->SetShaderScalar(this, name, value);
+		RenderAPI::GetInstance()->SetShaderScalar(this, name, value, allBuffer);
 	}
-	void Material::SetScalar(string name, int value)
+	void Material::SetScalar(string name, int value, bool allBuffer)
 	{
-		RenderAPI::GetInstance()->SetShaderScalar(this, name, value);
+		RenderAPI::GetInstance()->SetShaderScalar(this, name, value, allBuffer);
 	}
-	void Material::SetScalar(string name, float value)
+	void Material::SetScalar(string name, float value, bool allBuffer)
 	{
-		RenderAPI::GetInstance()->SetShaderScalar(this, name, value);
+		RenderAPI::GetInstance()->SetShaderScalar(this, name, value, allBuffer);
 	}
-	void Material::SetVector(string name, Vector2 value)
+	void Material::SetVector(string name, Vector2 value, bool allBuffer)
 	{
-		RenderAPI::GetInstance()->SetShaderVector(this, name, value);
+		RenderAPI::GetInstance()->SetShaderVector(this, name, value, allBuffer);
 	}
-	void Material::SetVector(string name, Vector2 value, uint32_t idx)
+	void Material::SetVector(string name, Vector2 value, uint32_t idx, bool allBuffer)
 	{
-		RenderAPI::GetInstance()->SetShaderVector(this, name, value, idx);
+		RenderAPI::GetInstance()->SetShaderVector(this, name, value, idx, allBuffer);
 	}
-	void Material::SetVector(string name, Vector3 value)
+	void Material::SetVector(string name, Vector3 value, bool allBuffer)
 	{
-		RenderAPI::GetInstance()->SetShaderVector(this, name, value);
+		RenderAPI::GetInstance()->SetShaderVector(this, name, value, allBuffer);
 	}
-	void Material::SetVector(string name, Vector3 value, uint32_t idx)
+	void Material::SetVector(string name, Vector3 value, uint32_t idx, bool allBuffer)
 	{
-		RenderAPI::GetInstance()->SetShaderVector(this, name, value, idx);
+		RenderAPI::GetInstance()->SetShaderVector(this, name, value, idx, allBuffer);
 	}
-	void Material::SetVector(string name, Vector4 value)
+	void Material::SetVector(string name, Vector4 value, bool allBuffer)
 	{
-		RenderAPI::GetInstance()->SetShaderVector(this, name, value);
+		RenderAPI::GetInstance()->SetShaderVector(this, name, value, allBuffer);
 	}
-	void Material::SetVector(string name, Vector4 value, uint32_t idx)
+	void Material::SetVector(string name, Vector4 value, uint32_t idx, bool allBuffer)
 	{
-		RenderAPI::GetInstance()->SetShaderVector(this, name, value, idx);
+		RenderAPI::GetInstance()->SetShaderVector(this, name, value, idx, allBuffer);
 	}
-	void Material::SetMatrix(string name, Matrix3 value)
+	void Material::SetMatrix(string name, Matrix3 value, bool allBuffer)
 	{
-		RenderAPI::GetInstance()->SetShaderMatrix(this, name, value);
+		RenderAPI::GetInstance()->SetShaderMatrix(this, name, value, allBuffer);
 	}
-	void Material::SetMatrix(string name, Matrix3 value, uint32_t idx)
+	void Material::SetMatrix(string name, Matrix3 value, uint32_t idx, bool allBuffer)
 	{
-		RenderAPI::GetInstance()->SetShaderMatrix(this, name, value, idx);
+		RenderAPI::GetInstance()->SetShaderMatrix(this, name, value, idx, allBuffer);
 	}
-	void Material::SetMatrix(string name, Matrix4 value)
+	void Material::SetMatrix(string name, Matrix4 value, bool allBuffer)
 	{
-		RenderAPI::GetInstance()->SetShaderMatrix(this, name, value);
+		RenderAPI::GetInstance()->SetShaderMatrix(this, name, value, allBuffer);
 	}
-	void Material::SetMatrix(string name, Matrix4 value, uint32_t idx)
+	void Material::SetMatrix(string name, Matrix4 value, uint32_t idx, bool allBuffer)
 	{
-		RenderAPI::GetInstance()->SetShaderMatrix(this, name, value, idx);
+		RenderAPI::GetInstance()->SetShaderMatrix(this, name, value, idx, allBuffer);
 	}
 	void Material::SetTexture(string name, uint32_t ID, uint32_t idx, bool isBuffer)
 	{

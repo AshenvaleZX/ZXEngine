@@ -23,19 +23,19 @@ namespace ZXEngine
 
 		void SetEngineProperties();
 		void SetMaterialProperties();
-		void SetScalar(string name, bool value);
-		void SetScalar(string name, int value);
-		void SetScalar(string name, float value);
-		void SetVector(string name, Vector2 value);
-		void SetVector(string name, Vector2 value, uint32_t idx);
-		void SetVector(string name, Vector3 value);
-		void SetVector(string name, Vector3 value, uint32_t idx);
-		void SetVector(string name, Vector4 value);
-		void SetVector(string name, Vector4 value, uint32_t idx);
-		void SetMatrix(string name, Matrix3 value);
-		void SetMatrix(string name, Matrix3 value, uint32_t idx);
-		void SetMatrix(string name, Matrix4 value);
-		void SetMatrix(string name, Matrix4 value, uint32_t idx);
+		void SetScalar(string name, int value, bool allBuffer = false);
+		void SetScalar(string name, bool value, bool allBuffer = false);
+		void SetScalar(string name, float value, bool allBuffer = false);
+		void SetVector(string name, Vector2 value, bool allBuffer = false);
+		void SetVector(string name, Vector2 value, uint32_t idx, bool allBuffer = false);
+		void SetVector(string name, Vector3 value, bool allBuffer = false);
+		void SetVector(string name, Vector3 value, uint32_t idx, bool allBuffer = false);
+		void SetVector(string name, Vector4 value, bool allBuffer = false);
+		void SetVector(string name, Vector4 value, uint32_t idx, bool allBuffer = false);
+		void SetMatrix(string name, Matrix3 value, bool allBuffer = false);
+		void SetMatrix(string name, Matrix3 value, uint32_t idx, bool allBuffer = false);
+		void SetMatrix(string name, Matrix4 value, bool allBuffer = false);
+		void SetMatrix(string name, Matrix4 value, uint32_t idx, bool allBuffer = false);
 		void SetTexture(string name, uint32_t ID, uint32_t idx, bool isBuffer = false);
 		void SetCubeMap(string name, uint32_t ID, uint32_t idx, bool isBuffer = false);
 

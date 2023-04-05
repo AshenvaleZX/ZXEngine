@@ -65,7 +65,7 @@ namespace ZXEngine
 		Matrix4 mat_P = Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
 		material = new Material(shader);
 		material->Use();
-		material->SetMatrix("ENGINE_Projection", mat_P);
+		material->SetMatrix("ENGINE_Projection", mat_P, true);
 		material->SetTexture("_Texture", texture->GetID(), 0);
 
 		float width = (float)texture->width;

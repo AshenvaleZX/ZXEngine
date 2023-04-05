@@ -1082,79 +1082,151 @@ namespace ZXEngine
     {
         curPipeLineIdx = ID;
     }
-    void RenderAPIVulkan::SetShaderScalar(Material* material, const string& name, bool value)
+    void RenderAPIVulkan::SetShaderScalar(Material* material, const string& name, bool value, bool allBuffer)
     {
-        void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
-        memcpy(valueAddress, &value, sizeof(value));
+        if (allBuffer)
+        {
+            auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name);
+            for (auto valueAddress : valueAddresses)
+                memcpy(valueAddress, &value, sizeof(value));
+        }
+        else
+        {
+            void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
+            memcpy(valueAddress, &value, sizeof(value));
+        }
     }
-    void RenderAPIVulkan::SetShaderScalar(Material* material, const string& name, int value)
+    void RenderAPIVulkan::SetShaderScalar(Material* material, const string& name, int value, bool allBuffer)
     {
-        void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
-        memcpy(valueAddress, &value, sizeof(value));
+        if (allBuffer)
+        {
+            auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name);
+            for (auto valueAddress : valueAddresses)
+                memcpy(valueAddress, &value, sizeof(value));
+        }
+        else
+        {
+            void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
+            memcpy(valueAddress, &value, sizeof(value));
+        }
     }
-    void RenderAPIVulkan::SetShaderScalar(Material* material, const string& name, float value)
+    void RenderAPIVulkan::SetShaderScalar(Material* material, const string& name, float value, bool allBuffer)
     {
-        void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
-        memcpy(valueAddress, &value, sizeof(value));
+        if (allBuffer)
+        {
+            auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name);
+            for (auto valueAddress : valueAddresses)
+                memcpy(valueAddress, &value, sizeof(value));
+        }
+        else
+        {
+            void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
+            memcpy(valueAddress, &value, sizeof(value));
+        }
     }
-    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector2& value)
+    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector2& value, bool allBuffer)
     {
-        SetShaderVector(material, name, value, 0);
+        SetShaderVector(material, name, value, 0, allBuffer);
     }
-    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector2& value, uint32_t idx)
+    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector2& value, uint32_t idx, bool allBuffer)
     {
-        void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
         float* array = new float[2];
         value.ToArray(array);
-        memcpy(valueAddress, array, sizeof(float) * 2);
+        if (allBuffer)
+        {
+            auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+            for (auto valueAddress : valueAddresses)
+                memcpy(valueAddress, array, sizeof(float) * 2);
+        }
+        else
+        {
+            void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
+            memcpy(valueAddress, array, sizeof(float) * 2);
+        }
         delete[] array;
     }
-    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector3& value)
+    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector3& value, bool allBuffer)
     {
-        SetShaderVector(material, name, value, 0);
+        SetShaderVector(material, name, value, 0, allBuffer);
     }
-    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector3& value, uint32_t idx)
+    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector3& value, uint32_t idx, bool allBuffer)
     {
-        void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
         float* array = new float[3];
         value.ToArray(array);
-        memcpy(valueAddress, array, sizeof(float) * 3);
+        if (allBuffer)
+        {
+            auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+            for (auto valueAddress : valueAddresses)
+                memcpy(valueAddress, array, sizeof(float) * 3);
+        }
+        else
+        {
+            void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
+            memcpy(valueAddress, array, sizeof(float) * 3);
+        }
         delete[] array;
     }
-    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector4& value)
+    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector4& value, bool allBuffer)
     {
-        SetShaderVector(material, name, value, 0);
+        SetShaderVector(material, name, value, 0, allBuffer);
     }
-    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector4& value, uint32_t idx)
+    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector4& value, uint32_t idx, bool allBuffer)
     {
-        void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
         float* array = new float[4];
         value.ToArray(array);
-        memcpy(valueAddress, array, sizeof(float) * 4);
+        if (allBuffer)
+        {
+            auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+            for (auto valueAddress : valueAddresses)
+                memcpy(valueAddress, array, sizeof(float) * 4);
+        }
+        else
+        {
+            void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
+            memcpy(valueAddress, array, sizeof(float) * 4);
+        }
         delete[] array;
     }
-    void RenderAPIVulkan::SetShaderMatrix(Material* material, const string& name, const Matrix3& value)
+    void RenderAPIVulkan::SetShaderMatrix(Material* material, const string& name, const Matrix3& value, bool allBuffer)
     {
-        SetShaderMatrix(material, name, value, 0);
+        SetShaderMatrix(material, name, value, 0, allBuffer);
     }
-    void RenderAPIVulkan::SetShaderMatrix(Material* material, const string& name, const Matrix3& value, uint32_t idx)
+    void RenderAPIVulkan::SetShaderMatrix(Material* material, const string& name, const Matrix3& value, uint32_t idx, bool allBuffer)
     {
-        void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
         float* array = new float[9];
         value.ToColumnMajorArray(array);
-        memcpy(valueAddress, array, sizeof(float) * 9);
+        if (allBuffer)
+        {
+            auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+            for (auto valueAddress : valueAddresses)
+                memcpy(valueAddress, array, sizeof(float) * 9);
+        }
+        else
+        {
+            void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
+            memcpy(valueAddress, array, sizeof(float) * 9);
+        }
         delete[] array;
     }
-    void RenderAPIVulkan::SetShaderMatrix(Material* material, const string& name, const Matrix4& value)
+    void RenderAPIVulkan::SetShaderMatrix(Material* material, const string& name, const Matrix4& value, bool allBuffer)
     {
-        SetShaderMatrix(material, name, value, 0);
+        SetShaderMatrix(material, name, value, 0, allBuffer);
     }
-    void RenderAPIVulkan::SetShaderMatrix(Material* material, const string& name, const Matrix4& value, uint32_t idx)
+    void RenderAPIVulkan::SetShaderMatrix(Material* material, const string& name, const Matrix4& value, uint32_t idx, bool allBuffer)
     {
-        void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
         float* array = new float[16];
         value.ToColumnMajorArray(array);
-        memcpy(valueAddress, array, sizeof(float) * 16);
+        if (allBuffer)
+        {
+            auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+            for (auto valueAddress : valueAddresses)
+                memcpy(valueAddress, array, sizeof(float) * 16);
+        }
+        else
+        {
+            void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
+            memcpy(valueAddress, array, sizeof(float) * 16);
+        }
         delete[] array;
     }
 
@@ -1381,6 +1453,49 @@ namespace ZXEngine
         Debug::LogError("Could not find shader property named " + name);
 
         return nullptr;
+    }
+
+    vector<void*> RenderAPIVulkan::GetShaderPropertyAddressAllBuffer(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx)
+    {
+        vector<void*> addresses;
+        auto vulkanMaterialData = GetMaterialDataByIndex(materialDataID);
+
+        for (auto& property : reference->shaderInfo.vertProperties.baseProperties)
+        {
+            if (name == property.name)
+            {
+                uint32_t addressOffset = property.offset + property.arrayOffset * idx;
+                for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+                    addresses.push_back(reinterpret_cast<void*>(reinterpret_cast<char*>(vulkanMaterialData->vertUniformBuffers[i].mappedAddress) + addressOffset));
+                return addresses;
+            }
+        }
+
+        for (auto& property : reference->shaderInfo.geomProperties.baseProperties)
+        {
+            if (name == property.name)
+            {
+                uint32_t addressOffset = property.offset + property.arrayOffset * idx;
+                for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+                    addresses.push_back(reinterpret_cast<void*>(reinterpret_cast<char*>(vulkanMaterialData->geomUniformBuffers[i].mappedAddress) + addressOffset));
+                return addresses;
+            }
+        }
+
+        for (auto& property : reference->shaderInfo.fragProperties.baseProperties)
+        {
+            if (name == property.name)
+            {
+                uint32_t addressOffset = property.offset + property.arrayOffset * idx;
+                for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+                    addresses.push_back(reinterpret_cast<void*>(reinterpret_cast<char*>(vulkanMaterialData->fragUniformBuffers[i].mappedAddress) + addressOffset));
+                return addresses;
+            }
+        }
+
+        Debug::LogError("Could not find shader property named " + name);
+
+        return addresses;
     }
 
 
