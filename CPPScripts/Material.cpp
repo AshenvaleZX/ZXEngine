@@ -95,7 +95,7 @@ namespace ZXEngine
 		else if (type == ShaderPropertyType::ENGINE_DEPTH_CUBE_MAP)
 		{
 			// 先设置SetMaterialProperties获得引擎纹理的初始textureIdx，然后++
-			SetCubeMap(name, engineProperties->shadowCubeMap, textureIdx, true);
+			SetCubeMap(name, engineProperties->shadowCubeMap, textureIdx, false, true);
 			textureIdx++;
 		}
 	}
@@ -166,12 +166,12 @@ namespace ZXEngine
 	{
 		RenderAPI::GetInstance()->SetShaderMatrix(this, name, value, idx, allBuffer);
 	}
-	void Material::SetTexture(string name, uint32_t ID, uint32_t idx, bool isBuffer)
+	void Material::SetTexture(string name, uint32_t ID, uint32_t idx, bool allBuffer, bool isBuffer)
 	{
-		RenderAPI::GetInstance()->SetShaderTexture(this, name, ID, idx, isBuffer);
+		RenderAPI::GetInstance()->SetShaderTexture(this, name, ID, idx, allBuffer, isBuffer);
 	}
-	void Material::SetCubeMap(string name, uint32_t ID, uint32_t idx, bool isBuffer)
+	void Material::SetCubeMap(string name, uint32_t ID, uint32_t idx, bool allBuffer, bool isBuffer)
 	{
-		RenderAPI::GetInstance()->SetShaderCubeMap(this, name, ID, idx, isBuffer);
+		RenderAPI::GetInstance()->SetShaderCubeMap(this, name, ID, idx, allBuffer, isBuffer);
 	}
 }

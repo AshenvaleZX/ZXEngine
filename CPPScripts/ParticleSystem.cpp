@@ -145,7 +145,7 @@ namespace ZXEngine
 			RenderAPI::GetInstance()->GenerateParticleMesh(particle->VAO);
 			particle->material = new Material(ParticleSystemManager::GetInstance()->shader);
 			particle->material->Use();
-			particle->material->SetTexture("_Sprite", textureID, 0);
+			particle->material->SetTexture("_Sprite", textureID, 0, true);
 			particles.push_back(particle);
 		}
 	}

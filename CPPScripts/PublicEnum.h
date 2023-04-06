@@ -60,6 +60,16 @@ namespace ZXEngine
 		ShadowCubeMap,
 	};
 
+	enum class CommandType
+	{
+		NotCare,
+		ShadowGeneration,
+		ForwardRendering,
+		AfterEffectRendering,
+		UIRendering,
+		AssetPreviewer,
+	};
+
 	enum class GameObjectLayer
 	{
 		Default,

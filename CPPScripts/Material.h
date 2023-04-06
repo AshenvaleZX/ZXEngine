@@ -36,8 +36,8 @@ namespace ZXEngine
 		void SetMatrix(string name, Matrix3 value, uint32_t idx, bool allBuffer = false);
 		void SetMatrix(string name, Matrix4 value, bool allBuffer = false);
 		void SetMatrix(string name, Matrix4 value, uint32_t idx, bool allBuffer = false);
-		void SetTexture(string name, uint32_t ID, uint32_t idx, bool isBuffer = false);
-		void SetCubeMap(string name, uint32_t ID, uint32_t idx, bool isBuffer = false);
+		void SetTexture(string name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
+		void SetCubeMap(string name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
 
 	private:
 		// 这个材质引用的Shader是还有其他地方引用，会影响材质销毁流程

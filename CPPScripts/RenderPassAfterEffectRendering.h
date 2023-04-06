@@ -4,7 +4,6 @@
 
 #define ExtractBrightArea "ExtractBrightArea"
 #define GaussianBlur "GaussianBlur"
-#define KawaseBlur "KawaseBlur"
 #define BloomBlend "BloomBlend"
 
 namespace ZXEngine
@@ -22,11 +21,13 @@ namespace ZXEngine
 		virtual void Render(Camera* camera);
 
 	private:
-		uint32_t drawCommandID = 0;
 		StaticMesh* screenQuad;
+		map<string, uint32_t> aeCommands;
 		map<string, Material*> aeMaterials;
 		RenderStateSetting* renderState;
 
+		void CreateCommand(string name);
+		uint32_t GetCommand(const string& name);
 		void CreateMaterial(string name, string path, FrameBufferType type);
 		Material* GetMaterial(string name);
 		void InitScreenQuad();

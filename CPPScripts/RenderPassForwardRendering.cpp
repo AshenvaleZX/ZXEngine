@@ -28,7 +28,7 @@ namespace ZXEngine
 
 		opaqueRenderState = new RenderStateSetting();
 
-		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand();
+		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ForwardRendering);
 	}
 
 	void RenderPassForwardRendering::Render(Camera* camera)

@@ -12,7 +12,7 @@ namespace ZXEngine
 		UITextureRenderer::Init();
 		TextCharactersManager::Create();
 
-		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand();
+		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::UIRendering);
 	}
 
 	void RenderPassUIRendering::Render(Camera* camera)

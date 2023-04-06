@@ -42,7 +42,7 @@ namespace ZXEngine
         virtual void DeleteMaterialData(uint32_t id);
 
         // Draw
-        virtual uint32_t AllocateDrawCommand();
+        virtual uint32_t AllocateDrawCommand(CommandType commandType);
         virtual void Draw(uint32_t VAO);
         virtual void GenerateDrawCommand(uint32_t id);
 
@@ -68,8 +68,8 @@ namespace ZXEngine
         virtual void SetShaderMatrix(Material* material, const string& name, const Matrix3& value, uint32_t idx, bool allBuffer = false);
         virtual void SetShaderMatrix(Material* material, const string& name, const Matrix4& value, bool allBuffer = false);
         virtual void SetShaderMatrix(Material* material, const string& name, const Matrix4& value, uint32_t idx, bool allBuffer = false);
-        virtual void SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer = false);
-        virtual void SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer = false);
+        virtual void SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
+        virtual void SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
 
 
     /// <summary>
@@ -124,6 +124,8 @@ namespace ZXEngine
         uint32_t curPresentImageIdx = 0;
         // 交换链Image可用的信号量
         vector<VkSemaphore> presentImageAvailableSemaphores;
+        // 一帧绘制结束的Fence
+        vector<VkFence> inFlightFences;
 
         // 命令池
         VkCommandPool commandPool = VK_NULL_HANDLE;
@@ -178,9 +180,8 @@ namespace ZXEngine
         vector<VulkanMaterialData*> VulkanMaterialDataArray;
         vector<VulkanDrawCommand*> VulkanDrawCommandArray;
 
-        vector<VulkanDrawIndex> drawIndexes;
-
         vector<VkRenderPass> allVulkanRenderPass;
+        map<uint32_t, uint32_t> materialDatasToDelete;
 
         uint32_t GetNextVAOIndex();
         VulkanVAO* GetVAOByIndex(uint32_t idx);
@@ -206,9 +207,11 @@ namespace ZXEngine
         UniformBuffer CreateUniformBuffer(const vector<ShaderProperty>& properties);
         void DestroyUniformBuffer(const UniformBuffer& uniformBuffer);
 
+        void AllocateCommandBuffer(VkCommandBuffer& commandBuffers);
         void AllocateCommandBuffers(vector<VkCommandBuffer>& commandBuffers);
 
-        VkFence CreateFence();
+        void CreateVkFence(VkFence& fence);
+        void CreateVkSemaphore(VkSemaphore& semaphore);
 
         VulkanImage CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, uint32_t layers, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage);
         void DestroyImage(VulkanImage image);
@@ -237,6 +240,9 @@ namespace ZXEngine
         ShaderModuleSet CreateShaderModules(const string& path, const ShaderInfo& info);
         void DestroyShaderModules(ShaderModuleSet shaderModules);
 
+        void CheckDeleteMaterialData();
+        void RealDeleteMaterialData(uint32_t id);
+
 
     /// <summary>
     /// 其它辅助接口
@@ -252,6 +258,9 @@ namespace ZXEngine
         VkFence immediateExeFence;
         VkCommandBuffer immediateExeCmd;
         ViewPortInfo viewPortInfo;
+
+        vector<VulkanDrawIndex> drawIndexes;
+        vector<VkSemaphore> curWaitSemaphores;
 
         uint32_t GetCurFrameBufferIndex();
         uint32_t GetMipMapLevels(int width, int height);

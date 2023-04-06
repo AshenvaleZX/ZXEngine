@@ -76,18 +76,21 @@ namespace ZXEngine
         CreateAllRenderPass();
         CreatePresentFrameBuffer();
 
+        inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
         presentImageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-        VkSemaphoreCreateInfo semaphoreInfo{};
-        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-            if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &presentImageAvailableSemaphores[i]) != VK_SUCCESS)
-                throw std::runtime_error("failed to create synchronization objects for a frame!");
+        {
+            CreateVkFence(inFlightFences[i]);
+            CreateVkSemaphore(presentImageAvailableSemaphores[i]);
+        }
 
         InitImmediateCommand();
     }
 
     void RenderAPIVulkan::BeginFrame()
     {
+        vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+
         VkResult result = vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, presentImageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &curPresentImageIdx);
         // 交换链和Surface已经不兼容了，不能继续用了，一般是窗口大小变化导致的
         if (result == VK_ERROR_OUT_OF_DATE_KHR)
@@ -99,6 +102,8 @@ namespace ZXEngine
         }
         else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
             throw std::runtime_error("failed to acquire swap chain image!");
+
+        vkResetFences(device, 1, &inFlightFences[currentFrame]);
     }
 
     void RenderAPIVulkan::EndFrame()
@@ -126,6 +131,8 @@ namespace ZXEngine
         }
         else if (result != VK_SUCCESS)
             throw std::runtime_error("failed to present swap chain image!");
+
+        CheckDeleteMaterialData();
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
@@ -613,7 +620,36 @@ namespace ZXEngine
         pipeline->inUse = false;
     }
 
+    // Vulkan里不要立刻删除材质数据，因为Vulkan会同时处理多帧，调用删除的时候可能还有一帧正在并行处理
+    // 所以这里只是把材质数据标记为删除，等到同时渲染的帧全部结束的时候再真正删除
     void RenderAPIVulkan::DeleteMaterialData(uint32_t id)
+    {
+        // 这里第二个参数的意思是这个材质要等这么多帧才能删除
+        materialDatasToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT));
+    }
+
+    // 检查是否有材质数据可以删除
+    void RenderAPIVulkan::CheckDeleteMaterialData()
+    {
+        vector<uint32_t> deleteList = {};
+        for (auto& iter : materialDatasToDelete)
+        {
+            // 如果这个材质数据的等待帧数大于0，就减1帧
+            if (iter.second > 0)
+                iter.second--;
+            // 否则就删除
+            else
+                deleteList.push_back(iter.first);
+        }
+        for (auto id : deleteList)
+        {
+            RealDeleteMaterialData(id);
+            materialDatasToDelete.erase(id);
+        }
+    }
+
+    // 真正删除材质数据
+    void RenderAPIVulkan::RealDeleteMaterialData(uint32_t id)
     {
         auto vulkanMaterialData = GetMaterialDataByIndex(id);
 
@@ -802,10 +838,23 @@ namespace ZXEngine
         return FBO;
     }
 
-    uint32_t RenderAPIVulkan::AllocateDrawCommand()
+    uint32_t RenderAPIVulkan::AllocateDrawCommand(CommandType commandType)
     {
         uint32_t idx = GetNextDrawCommandIndex();
         auto drawCmd = GetDrawCommandByIndex(idx);
+        drawCmd->commandType = commandType;
+
+        if (commandType == CommandType::ShadowGeneration || commandType == CommandType::ForwardRendering ||
+            commandType == CommandType::AfterEffectRendering || commandType == CommandType::UIRendering)
+        {
+            for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+            {
+                VkSemaphore semaphore;
+                CreateVkSemaphore(semaphore);
+                drawCmd->drawCommands[i].signalSemaphores.push_back(semaphore);
+            }
+        }
+
         drawCmd->inUse = true;
         return idx;
     }
@@ -817,8 +866,9 @@ namespace ZXEngine
 
     void RenderAPIVulkan::GenerateDrawCommand(uint32_t id)
     {
-        auto curDrawCommand = GetDrawCommandByIndex(id);
-        auto commandBuffer = curDrawCommand->commandBuffers[currentFrame];
+        auto curDrawCommandObj = GetDrawCommandByIndex(id);
+        auto& curDrawCommand = curDrawCommandObj->drawCommands[currentFrame];
+        auto commandBuffer = curDrawCommand.commandBuffer;
 
         vkResetCommandBuffer(commandBuffer, 0);
 
@@ -882,8 +932,6 @@ namespace ZXEngine
             auto pipeline = GetPipelineByIndex(iter.pipelineID);
             auto materialData = GetMaterialDataByIndex(iter.materialDataID);
 
-            auto commandBuffer = curDrawCommand->commandBuffers[currentFrame];
-
             VkBuffer vertexBuffers[] = { vulkanVAO->vertexBuffer };
             VkDeviceSize offsets[] = { 0 };
             vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
@@ -902,21 +950,27 @@ namespace ZXEngine
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
             throw std::runtime_error("failed to record command buffer!");
 
+        vector<VkPipelineStageFlags> waitStages = {};
+        waitStages.resize(curWaitSemaphores.size(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
         VkSubmitInfo submitInfo = {};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.pCommandBuffers = &commandBuffer;
         submitInfo.commandBufferCount = 1;
-        submitInfo.pWaitSemaphores = VK_NULL_HANDLE;
-        submitInfo.pWaitDstStageMask = VK_NULL_HANDLE;
-        submitInfo.waitSemaphoreCount = 0;
-        submitInfo.pSignalSemaphores = VK_NULL_HANDLE;
-        submitInfo.signalSemaphoreCount = 0;
+        submitInfo.pWaitSemaphores = curWaitSemaphores.data();
+        submitInfo.pWaitDstStageMask = waitStages.data();
+        submitInfo.waitSemaphoreCount = static_cast<uint32_t>(curWaitSemaphores.size());
+        submitInfo.pSignalSemaphores = curDrawCommand.signalSemaphores.data();
+        submitInfo.signalSemaphoreCount = static_cast<uint32_t>(curDrawCommand.signalSemaphores.size());
 
-        if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
+        VkFence fence = VK_NULL_HANDLE;
+        if (curDrawCommandObj->commandType == CommandType::UIRendering)
+            fence = inFlightFences[currentFrame];
+
+        if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, fence) != VK_SUCCESS)
             throw std::runtime_error("failed to submit draw command buffer!");
 
-        // 先临时这样处理一下同步问题
-        vkQueueWaitIdle(graphicsQueue);
+        // 当前这个命令激发的信号量就是下个命令需要等待的
+        curWaitSemaphores = curDrawCommand.signalSemaphores;
 
         drawIndexes.clear();
     }
@@ -1265,17 +1319,64 @@ namespace ZXEngine
     }
 
     // Vulkan不需要第4个参数
-    void RenderAPIVulkan::SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
+    void RenderAPIVulkan::SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer, bool isBuffer)
     {
         auto vulkanMaterialData = GetMaterialDataByIndex(material->data->GetID());
 
-        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+        if (allBuffer)
+        {
+            for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+            {
+                vector<VkWriteDescriptorSet> writeDescriptorSets;
+
+                uint32_t textureID = ID;
+                if (isBuffer)
+                    textureID = GetAttachmentBufferByIndex(ID)->attachmentBuffers[i];
+
+                auto texture = GetTextureByIndex(textureID);
+                uint32_t binding = UINT32_MAX;
+
+                for (auto& textureProperty : material->shader->reference->shaderInfo.vertProperties.textureProperties)
+                    if (name == textureProperty.name)
+                        binding = textureProperty.binding;
+
+                // 没找到的话继续
+                if (binding == UINT32_MAX)
+                    for (auto& textureProperty : material->shader->reference->shaderInfo.fragProperties.textureProperties)
+                        if (name == textureProperty.name)
+                            binding = textureProperty.binding;
+
+                if (binding == UINT32_MAX)
+                {
+                    Debug::LogError("No texture found named: " + name);
+                    return;
+                }
+
+                VkDescriptorImageInfo imageInfo{};
+                imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                imageInfo.imageView = texture->imageView;
+                imageInfo.sampler = texture->sampler;
+                VkWriteDescriptorSet writeDescriptorSet = {};
+                writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                writeDescriptorSet.dstSet = vulkanMaterialData->descriptorSets[i];
+                writeDescriptorSet.dstBinding = binding;
+                writeDescriptorSet.dstArrayElement = 0;
+                writeDescriptorSet.descriptorCount = 1;
+                writeDescriptorSet.pImageInfo = &imageInfo;
+
+                writeDescriptorSets.push_back(writeDescriptorSet);
+
+                vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
+            }
+        }
+        else
         {
             vector<VkWriteDescriptorSet> writeDescriptorSets;
 
             uint32_t textureID = ID;
             if (isBuffer)
-                textureID = GetAttachmentBufferByIndex(ID)->attachmentBuffers[i];
+                textureID = GetAttachmentBufferByIndex(ID)->attachmentBuffers[currentFrame];
 
             auto texture = GetTextureByIndex(textureID);
             uint32_t binding = UINT32_MAX;
@@ -1303,7 +1404,7 @@ namespace ZXEngine
             VkWriteDescriptorSet writeDescriptorSet = {};
             writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
             writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            writeDescriptorSet.dstSet = vulkanMaterialData->descriptorSets[i];
+            writeDescriptorSet.dstSet = vulkanMaterialData->descriptorSets[currentFrame];
             writeDescriptorSet.dstBinding = binding;
             writeDescriptorSet.dstArrayElement = 0;
             writeDescriptorSet.descriptorCount = 1;
@@ -1315,9 +1416,9 @@ namespace ZXEngine
         }
     }
 
-    void RenderAPIVulkan::SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
+    void RenderAPIVulkan::SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer, bool isBuffer)
     {
-        SetShaderTexture(material, name, ID, idx, isBuffer);
+        SetShaderTexture(material, name, ID, idx, allBuffer, isBuffer);
     }
 
     uint32_t RenderAPIVulkan::GetNextVAOIndex()
@@ -1395,8 +1496,10 @@ namespace ZXEngine
         }
 
         auto newDrawCommand = new VulkanDrawCommand();
-        newDrawCommand->commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-        AllocateCommandBuffers(newDrawCommand->commandBuffers);
+        newDrawCommand->drawCommands.resize(MAX_FRAMES_IN_FLIGHT);
+        vector<VkCommandBuffer> commandBuffers = {};
+        for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+            AllocateCommandBuffer(newDrawCommand->drawCommands[i].commandBuffer);
 
         VulkanDrawCommandArray.push_back(newDrawCommand);
 
@@ -2189,6 +2292,18 @@ namespace ZXEngine
         DestroyBuffer(uniformBuffer.buffer);
     }
 
+    void RenderAPIVulkan::AllocateCommandBuffer(VkCommandBuffer& commandBuffer)
+    {
+        VkCommandBufferAllocateInfo allocInfo = {};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.commandPool = commandPool;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandBufferCount = 1;
+
+        if (vkAllocateCommandBuffers(device, &allocInfo, &commandBuffer) != VK_SUCCESS)
+            throw std::runtime_error("failed to allocate command buffers!");
+    }
+
     void RenderAPIVulkan::AllocateCommandBuffers(vector<VkCommandBuffer>& commandBuffers)
     {
         VkCommandBufferAllocateInfo allocInfo = {};
@@ -2201,17 +2316,22 @@ namespace ZXEngine
             throw std::runtime_error("failed to allocate command buffers!");
     }
 
-    VkFence RenderAPIVulkan::CreateFence()
+    void RenderAPIVulkan::CreateVkFence(VkFence& fence)
     {
-        VkFence fence;
         VkFenceCreateInfo fenceInfo = {};
         fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
         // 创建时立刻设置为signaled状态(否则第一次的vkWaitForFences永远等不到结果)
         fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
         if (vkCreateFence(device, &fenceInfo, nullptr, &fence) != VK_SUCCESS)
             throw std::runtime_error("failed to create fence objects!");
+    }
 
-        return fence;
+    void RenderAPIVulkan::CreateVkSemaphore(VkSemaphore& semaphore)
+    {
+        VkSemaphoreCreateInfo semaphoreInfo = {};
+        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+        if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &semaphore) != VK_SUCCESS)
+            throw std::runtime_error("failed to create synchronization objects for a frame!");
     }
 
     VulkanImage RenderAPIVulkan::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, uint32_t layers, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage)

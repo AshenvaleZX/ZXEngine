@@ -66,7 +66,7 @@ namespace ZXEngine
 		material = new Material(shader);
 		material->Use();
 		material->SetMatrix("ENGINE_Projection", mat_P, true);
-		material->SetTexture("_Texture", texture->GetID(), 0);
+		material->SetTexture("_Texture", texture->GetID(), 0, true);
 
 		float width = (float)texture->width;
 		float height = (float)texture->height;

@@ -43,7 +43,7 @@ namespace ZXEngine
 		previewQuadRenderState->depthTest = false;
 		previewQuadRenderState->depthWrite = false;
 
-		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand();
+		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::AssetPreviewer);
 
 		ClearInfo clearInfo = {};
 		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT;
@@ -164,7 +164,7 @@ namespace ZXEngine
 		renderAPI->SetViewPort(ProjectSetting::inspectorWidth, ProjectSetting::inspectorWidth, ProjectSetting::srcWidth - ProjectSetting::inspectorWidth, 0);
 		renderAPI->SetRenderState(previewQuadRenderState);
 		previewQuadMaterial->Use();
-		previewQuadMaterial->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("AssetPreview")->ColorBuffer, 0, true);
+		previewQuadMaterial->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("AssetPreview")->ColorBuffer, 0, false, true);
 		renderAPI->Draw(previewQuad->VAO);
 		renderAPI->GenerateDrawCommand(drawCommandID);
 		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight, ProjectSetting::hierarchyWidth, ProjectSetting::projectHeight);

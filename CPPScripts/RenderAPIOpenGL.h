@@ -41,7 +41,7 @@ namespace ZXEngine
 		virtual void DeleteMaterialData(uint32_t id);
 
 		// Draw
-		virtual uint32_t AllocateDrawCommand();
+		virtual uint32_t AllocateDrawCommand(CommandType commandType);
 		virtual void Draw(uint32_t VAO);
 		virtual void GenerateDrawCommand(uint32_t id);
 
@@ -67,8 +67,8 @@ namespace ZXEngine
 		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix3& value, uint32_t idx, bool allBuffer = false);
 		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix4& value, bool allBuffer = false);
 		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix4& value, uint32_t idx, bool allBuffer = false);
-		virtual void SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer = false);
-		virtual void SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer = false);
+		virtual void SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
+		virtual void SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
 
 	/// <summary>
 	/// 实现标准RenderAPI接口的内部接口与变量

@@ -113,7 +113,7 @@ namespace ZXEngine
             auto charMaterial = new Material(characterMgr->textShader);
             charMaterial->Use();
             charMaterial->SetVector("_TextColor", color);
-            charMaterial->SetTexture("_Text", ch.TextureID, 0);
+            charMaterial->SetTexture("_Text", ch.TextureID, 0, true);
             charMaterial->SetMatrix("ENGINE_Model", mat_M);
             charMaterial->SetMatrix("ENGINE_Projection", mat_P);
             textMaterials.push_back(charMaterial);

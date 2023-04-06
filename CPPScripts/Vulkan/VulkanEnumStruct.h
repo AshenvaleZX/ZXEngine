@@ -106,9 +106,16 @@ namespace ZXEngine
         uint32_t materialDataID = 0;
     };
 
+    struct VulkanCommand
+    {
+        VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
+        vector<VkSemaphore> signalSemaphores;
+    };
+
     struct VulkanDrawCommand
     {
-        vector<VkCommandBuffer> commandBuffers;
+        CommandType commandType = CommandType::NotCare;
+        vector<VulkanCommand> drawCommands;
         bool inUse = false;
     };
 

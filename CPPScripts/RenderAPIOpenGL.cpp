@@ -595,7 +595,7 @@ namespace ZXEngine
 		meshBuffer->inUse = true;
 	}
 
-	uint32_t RenderAPIOpenGL::AllocateDrawCommand()
+	uint32_t RenderAPIOpenGL::AllocateDrawCommand(CommandType commandType)
 	{
 		// OpenGL不需要这个接口
 		return 0;
@@ -874,7 +874,7 @@ namespace ZXEngine
 	}
 
 	// Texture
-	void RenderAPIOpenGL::SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
+	void RenderAPIOpenGL::SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer, bool isBuffer)
 	{
 		auto materialData = GetMaterialDataByIndex(material->data->GetID());
 		materialData->textures[name] = { ID, idx };
@@ -887,7 +887,7 @@ namespace ZXEngine
 	}
 
 	// Cube Map
-	void RenderAPIOpenGL::SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool isBuffer)
+	void RenderAPIOpenGL::SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer, bool isBuffer)
 	{
 		auto materialData = GetMaterialDataByIndex(material->data->GetID());
 		materialData->cubeMaps[name] = { ID, idx };
