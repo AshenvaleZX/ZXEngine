@@ -21,7 +21,6 @@ namespace ZXEngine
 		vector<Matrix4> shadowTransforms;
 		Shader* shadowCubeMapShader;
 		RenderStateSetting* renderState;
-		ClearInfo clearInfo;
 
 		void RenderShadowMap(Light* light);
 		void RenderShadowCubeMap(Light* light);

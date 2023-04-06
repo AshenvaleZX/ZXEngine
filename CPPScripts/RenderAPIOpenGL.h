@@ -24,8 +24,9 @@ namespace ZXEngine
 
 		// FrameBuffer相关
 		virtual void SwitchFrameBuffer(uint32_t id);
-		virtual void ClearFrameBuffer(const ClearInfo& clearInfo);
+		virtual void ClearFrameBuffer();
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
+		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, const ClearInfo& clearInfo, unsigned int width = 0, unsigned int height = 0);
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path, int& width, int& height);
@@ -74,6 +75,7 @@ namespace ZXEngine
 	/// </summary>
 	private:
 		bool stateDirty = false;
+		uint32_t curFBOID = 0;
 		uint32_t curShaderID = 0;
 		uint32_t curMaterialDataID = 0;
 		RenderStateSetting* targetState = nullptr;
@@ -82,6 +84,7 @@ namespace ZXEngine
 		vector<OpenGLVAO*> OpenGLVAOArray;
 		vector<OpenGLMaterialData*> OpenGLMaterialDataArray;
 		unordered_map<uint32_t, OpenGLMaterialData*> materialDataInShaders;
+		unordered_map<uint32_t, ClearInfo> FBOClearInfoMap;
 
 		uint32_t GetNextVAOIndex();
 		OpenGLVAO* GetVAOByIndex(uint32_t idx);

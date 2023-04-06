@@ -21,8 +21,6 @@ namespace ZXEngine
 		renderState->depthTest = false;
 		renderState->depthWrite = false;
 
-		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT;
-
 		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand();
 	}
 

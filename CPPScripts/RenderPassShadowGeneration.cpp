@@ -19,9 +19,11 @@ namespace ZXEngine
 		shadowProj = Math::PerspectiveRH(Math::Deg2Rad(90.0f), (float)GlobalData::depthCubeMapWidth / (float)GlobalData::depthCubeMapWidth, GlobalData::shadowCubeMapNearPlane, GlobalData::shadowCubeMapFarPlane);
 		shadowCubeMapShader = new Shader(Resources::GetAssetFullPath("Shaders/PointShadowDepth.zxshader", true), FrameBufferType::ShadowCubeMap);
 		renderState = new RenderStateSetting();
-		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT;
 		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand();
-		FBOManager::GetInstance()->CreateFBO("ShadowCubeMap", FrameBufferType::ShadowCubeMap, GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
+
+		ClearInfo clearInfo = {};
+		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT;
+		FBOManager::GetInstance()->CreateFBO("ShadowCubeMap", FrameBufferType::ShadowCubeMap, clearInfo, GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
 	}
 	
 	void RenderPassShadowGeneration::Render(Camera* camera)
@@ -54,7 +56,7 @@ namespace ZXEngine
 		// 切换到阴影渲染设置
 		renderAPI->SetRenderState(renderState);
 		// 清理上一帧数据
-		renderAPI->ClearFrameBuffer(clearInfo);
+		renderAPI->ClearFrameBuffer();
 
 		// 基于左手坐标系构建6个方向上的VP矩阵
 		Vector3 lightPos = light->GetTransform()->GetPosition();

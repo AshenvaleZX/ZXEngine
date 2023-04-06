@@ -11,7 +11,10 @@ namespace ZXEngine
 	void FBOManager::Create()
 	{
 		mInstance = new FBOManager();
-		mInstance->CreateFBO("Main", FrameBufferType::Normal);
+
+		ClearInfo clearInfo = {};
+		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT;
+		mInstance->CreateFBO("Main", FrameBufferType::Normal, clearInfo);
 	}
 
 	FBOManager* FBOManager::GetInstance()
@@ -19,7 +22,7 @@ namespace ZXEngine
 		return mInstance;
 	}
 
-	void FBOManager::SwitchFBO(string name)
+	void FBOManager::SwitchFBO(const string& name)
 	{
 		// 直接写入到默认的屏幕Buffer
 		if (name == ScreenBuffer)
@@ -38,17 +41,23 @@ namespace ZXEngine
 			RenderAPI::GetInstance()->SwitchFrameBuffer(FBO->ID);
 	}
 
-	void FBOManager::CreateFBO(string name, FrameBufferType type, unsigned int width, unsigned int height)
+	void FBOManager::CreateFBO(const string& name, FrameBufferType type, unsigned int width, unsigned int height)
+	{
+		ClearInfo clearInfo = {};
+		CreateFBO(name, type, clearInfo, width, height);
+	}
+
+	void FBOManager::CreateFBO(const string& name, FrameBufferType type, const ClearInfo& clearInfo, unsigned int width, unsigned int height)
 	{
 		if (allFBO.count(name) > 0)
 		{
 			Debug::LogError("Try to add an existing key-value");
 			return;
 		}
-		allFBO.insert(pair<string, FrameBufferObject*>(name, RenderAPI::GetInstance()->CreateFrameBufferObject(type, width, height)));
+		allFBO.insert(pair<string, FrameBufferObject*>(name, RenderAPI::GetInstance()->CreateFrameBufferObject(type, clearInfo, width, height)));
 	}
 
-	FrameBufferObject* FBOManager::GetFBO(string name)
+	FrameBufferObject* FBOManager::GetFBO(const string& name)
 	{
 		map<string, FrameBufferObject*>::iterator iter = allFBO.find(name);
 		if (iter != allFBO.end())

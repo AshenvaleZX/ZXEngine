@@ -56,6 +56,7 @@ namespace ZXEngine
 
 		targetState = new RenderStateSetting();
 		curRealState = new RenderStateSetting();
+		FBOClearInfoMap[0] = {};
 	}
 
 	void RenderAPIOpenGL::BeginFrame()
@@ -77,9 +78,15 @@ namespace ZXEngine
 	void RenderAPIOpenGL::SwitchFrameBuffer(uint32_t id)
 	{
 		if (id == UINT32_MAX)
+		{
+			curFBOID = 0;
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
 		else
+		{
+			curFBOID = id;
 			glBindFramebuffer(GL_FRAMEBUFFER, id);
+		}
 	}
 
 	void RenderAPIOpenGL::SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset, unsigned int yOffset)
@@ -87,8 +94,10 @@ namespace ZXEngine
 		glViewport(xOffset, yOffset, width, height);
 	}
 
-	void RenderAPIOpenGL::ClearFrameBuffer(const ClearInfo& clearInfo)
+	void RenderAPIOpenGL::ClearFrameBuffer()
 	{
+		auto& clearInfo = FBOClearInfoMap[curFBOID];
+
 		if (clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
 			ClearColorBuffer(clearInfo.color);
 
@@ -391,6 +400,12 @@ namespace ZXEngine
 
 	FrameBufferObject* RenderAPIOpenGL::CreateFrameBufferObject(FrameBufferType type, unsigned int width, unsigned int height)
 	{
+		ClearInfo clearInfo = {};
+		return CreateFrameBufferObject(type, clearInfo, width, height);
+	}
+
+	FrameBufferObject* RenderAPIOpenGL::CreateFrameBufferObject(FrameBufferType type, const ClearInfo& clearInfo, unsigned int width, unsigned int height)
+	{
 		width = width == 0 ? GlobalData::srcWidth : width;
 		height = height == 0 ? GlobalData::srcHeight : height;
 		FrameBufferObject* FBO = new FrameBufferObject(type);
@@ -541,6 +556,8 @@ namespace ZXEngine
 		{
 			Debug::LogError("Invalide frame buffer type.");
 		}
+
+		FBOClearInfoMap[FBO->ID] = clearInfo;
 
 		return FBO;
 	}

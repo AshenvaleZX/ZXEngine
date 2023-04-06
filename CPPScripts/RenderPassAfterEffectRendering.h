@@ -26,7 +26,6 @@ namespace ZXEngine
 		StaticMesh* screenQuad;
 		map<string, Material*> aeMaterials;
 		RenderStateSetting* renderState;
-		ClearInfo clearInfo;
 
 		void CreateMaterial(string name, string path, FrameBufferType type);
 		Material* GetMaterial(string name);

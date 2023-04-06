@@ -22,7 +22,6 @@ namespace ZXEngine
 		Material* skyBoxMaterial;
 		RenderStateSetting* skyBoxRenderState;
 		RenderStateSetting* opaqueRenderState;
-		ClearInfo clearInfo;
 
 		void InitSkyBox();
 		void RenderSkyBox(Camera* camera);

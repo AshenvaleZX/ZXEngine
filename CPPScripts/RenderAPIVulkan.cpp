@@ -151,8 +151,12 @@ namespace ZXEngine
         viewPortInfo.yOffset = yOffset;
     }
 
-    void RenderAPIVulkan::ClearFrameBuffer(const ClearInfo& clearInfo)
+    void RenderAPIVulkan::ClearFrameBuffer()
     {
+        // 这里实现了一个立刻Clear Frame Buffer的Vulkan版本，但是实际没有调用，因为在Vulkan里这样Clear是不太好的
+        // 性能更好的做法是在BeginRenderPass中，加载FrameBuffer的时候去Clear，所以这里就无需Clear了，这个接口只是为了兼容OpenGL
+
+        /*
         ImmediatelyExecute([=](VkCommandBuffer cmd)
         {
             auto FBO = GetFBOByIndex(curFBOIdx);
@@ -167,29 +171,29 @@ namespace ZXEngine
             vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
             vector<VkClearAttachment> clearAttachments = {};
-            if (clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
+            if (FBO->clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
             {
                 VkClearValue clearValue = {};
-                clearValue.color = { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a };
+                clearValue.color = { FBO->clearInfo.color.r, FBO->clearInfo.color.g, FBO->clearInfo.color.b, FBO->clearInfo.color.a };
                 VkClearAttachment clearColorAttachment = {};
                 clearColorAttachment.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
                 clearColorAttachment.colorAttachment = 0;
                 clearColorAttachment.clearValue = clearValue;
                 clearAttachments.push_back(clearColorAttachment);
             }
-            if (clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT)
+            if (FBO->clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT)
             {
                 VkClearValue clearValue = {};
-                clearValue.depthStencil = { clearInfo.depth, 0 };
+                clearValue.depthStencil = { FBO->clearInfo.depth, 0 };
                 VkClearAttachment clearDepthAttachment = {};
                 clearDepthAttachment.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
                 clearDepthAttachment.clearValue = clearValue;
                 clearAttachments.push_back(clearDepthAttachment);
             }
-            if (clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_STENCIL_BIT)
+            if (FBO->clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_STENCIL_BIT)
             {
                 VkClearValue clearValue = {};
-                clearValue.depthStencil = { 0, clearInfo.stencil };
+                clearValue.depthStencil = { 0, FBO->clearInfo.stencil };
                 VkClearAttachment clearStencilAttachment = {};
                 clearStencilAttachment.aspectMask = VK_IMAGE_ASPECT_STENCIL_BIT;
                 clearStencilAttachment.clearValue = clearValue;
@@ -210,6 +214,7 @@ namespace ZXEngine
 
             vkCmdEndRenderPass(cmd);
         });
+        //*/
     }
 
     unsigned int RenderAPIVulkan::LoadTexture(const char* path, int& width, int& height)
@@ -630,6 +635,12 @@ namespace ZXEngine
 
     FrameBufferObject* RenderAPIVulkan::CreateFrameBufferObject(FrameBufferType type, unsigned int width, unsigned int height)
     {
+        ClearInfo clearInfo = {};
+        return CreateFrameBufferObject(type, clearInfo, width, height);
+    }
+
+    FrameBufferObject* RenderAPIVulkan::CreateFrameBufferObject(FrameBufferType type, const ClearInfo& clearInfo, unsigned int width, unsigned int height)
+    {
         width = width == 0 ? GlobalData::srcWidth : width;
         height = height == 0 ? GlobalData::srcHeight : height;
         FrameBufferObject* FBO = new FrameBufferObject(type);
@@ -649,6 +660,7 @@ namespace ZXEngine
             vulkanFBO->depthAttachmentIdx = FBO->DepthBuffer;
             vulkanFBO->bufferType = FrameBufferType::Normal;
             vulkanFBO->renderPassType = RenderPassType::Normal;
+            vulkanFBO->clearInfo = clearInfo;
 
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
@@ -706,6 +718,7 @@ namespace ZXEngine
             vulkanFBO->colorAttachmentIdx = FBO->ColorBuffer;
             vulkanFBO->bufferType = FrameBufferType::Color;
             vulkanFBO->renderPassType = RenderPassType::Color;
+            vulkanFBO->clearInfo = clearInfo;
 
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
@@ -749,6 +762,7 @@ namespace ZXEngine
             vulkanFBO->depthAttachmentIdx = FBO->DepthBuffer;
             vulkanFBO->bufferType = FrameBufferType::ShadowCubeMap;
             vulkanFBO->renderPassType = RenderPassType::ShadowCubeMap;
+            vulkanFBO->clearInfo = clearInfo;
 
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
@@ -824,8 +838,28 @@ namespace ZXEngine
         renderPassInfo.renderArea.offset = { viewPortInfo.xOffset, viewPortInfo.yOffset };
         // 一般来说大小(extend)是和framebuffer的attachment一致的，如果小了会浪费，大了超出去的部分是一些未定义数值
         renderPassInfo.renderArea.extent = { viewPortInfo.width, viewPortInfo.height };
-        renderPassInfo.pClearValues = VK_NULL_HANDLE;
-        renderPassInfo.clearValueCount = 0;
+        if (curFBO->renderPassType == RenderPassType::Normal)
+        {
+            auto& clearInfo = curFBO->clearInfo;
+            array<VkClearValue, 2> clearValues = {};
+            clearValues[0].color = { { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a } };
+            clearValues[1].depthStencil = { clearInfo.depth, clearInfo.stencil };
+            renderPassInfo.pClearValues = clearValues.data();
+            renderPassInfo.clearValueCount = 2;
+        }
+        else if (curFBO->renderPassType == RenderPassType::ShadowCubeMap)
+        {
+            auto& clearInfo = curFBO->clearInfo;
+            VkClearValue clearValue = {};
+            clearValue.depthStencil.depth = clearInfo.depth;
+            renderPassInfo.pClearValues = &clearValue;
+            renderPassInfo.clearValueCount = 1;
+        }
+        else
+        {
+            renderPassInfo.pClearValues = VK_NULL_HANDLE;
+            renderPassInfo.clearValueCount = 0;
+        }
         vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
         VkViewport viewport = {};
@@ -2503,7 +2537,7 @@ namespace ZXEngine
             VkAttachmentDescription colorAttachment = {};
             colorAttachment.format = defaultImageFormat;
             colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
             colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             // 上面那个设置是用于color和depth的，stencil的单独一个
             colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -2515,7 +2549,7 @@ namespace ZXEngine
             VkAttachmentDescription depthAttachment = {};
             depthAttachment.format = VK_FORMAT_D16_UNORM;
             depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-            depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+            depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
             depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -2623,7 +2657,7 @@ namespace ZXEngine
             VkAttachmentDescription depthAttachment = {};
             depthAttachment.format = VK_FORMAT_D16_UNORM;
             depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-            depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+            depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
             depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;

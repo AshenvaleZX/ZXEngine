@@ -28,8 +28,6 @@ namespace ZXEngine
 
 		opaqueRenderState = new RenderStateSetting();
 
-		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT;
-
 		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand();
 	}
 
@@ -41,7 +39,7 @@ namespace ZXEngine
 		// ViewPort设置为窗口大小
 		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight);
 		// 清理上一帧数据
-		renderAPI->ClearFrameBuffer(clearInfo);
+		renderAPI->ClearFrameBuffer();
 		
 		// 渲染天空盒
 		renderAPI->SetRenderState(skyBoxRenderState);

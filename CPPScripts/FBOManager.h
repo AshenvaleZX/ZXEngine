@@ -1,5 +1,6 @@
 #pragma once
 #include "pubh.h"
+#include "PublicStruct.h"
 #include "FrameBufferObject.h"
 
 #define ScreenBuffer "Screen"
@@ -18,9 +19,10 @@ namespace ZXEngine
 		FBOManager() {};
 		~FBOManager() {};
 
-		void SwitchFBO(string name);
-		void CreateFBO(string name, FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
-		FrameBufferObject* GetFBO(string name);
+		void SwitchFBO(const string& name);
+		void CreateFBO(const string& name, FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
+		void CreateFBO(const string& name, FrameBufferType type, const ClearInfo& clearInfo, unsigned int width = 0, unsigned int height = 0);
+		FrameBufferObject* GetFBO(const string& name);
 
 	private:
 		map<string, FrameBufferObject*> allFBO;

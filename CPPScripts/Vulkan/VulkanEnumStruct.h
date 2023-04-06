@@ -89,6 +89,7 @@ namespace ZXEngine
         uint32_t depthAttachmentIdx = 0;
         FrameBufferType bufferType = FrameBufferType::Normal;
         RenderPassType renderPassType = RenderPassType::Normal;
+        ClearInfo clearInfo = {};
         bool inUse = false;
     };
 
