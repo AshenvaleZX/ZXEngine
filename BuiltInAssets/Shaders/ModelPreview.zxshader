@@ -3,7 +3,7 @@ Vertex
     Input
     {
         0 vec3 aPos
-        1 vec3 aNormal
+        2 vec3 aNormal
     }
 
     Output

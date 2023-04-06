@@ -10,7 +10,7 @@ Vertex
     Input
     {
         0 vec2 aPos
-        2 vec2 aTexCoords
+        1 vec2 aTexCoords
     }
 
     Output
