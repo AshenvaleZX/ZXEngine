@@ -2,5 +2,6 @@
     "WindowSize": [1280, 720],
     "DefaultScene": "Scenes/MyWorld.zxscene",
     "DynamicBatch": false,
-    "PreserveIntermediateShader": true
+    "PreserveIntermediateShader": true,
+    "EnableValidationLayer": false
 }
