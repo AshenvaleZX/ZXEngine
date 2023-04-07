@@ -57,6 +57,20 @@ namespace ZXEngine
 		allFBO.insert(pair<string, FrameBufferObject*>(name, RenderAPI::GetInstance()->CreateFrameBufferObject(type, clearInfo, width, height)));
 	}
 
+	void FBOManager::RecreateAllFollowWindowFBO()
+	{
+		for (auto& FBO : allFBO)
+		{
+			if (FBO.second->isFollowWindow)
+			{
+				auto tmpPtr = FBO.second;
+				RenderAPI::GetInstance()->DeleteFrameBufferObject(FBO.second);
+				FBO.second = RenderAPI::GetInstance()->CreateFrameBufferObject(FBO.second->type, FBO.second->clearInfo);
+				delete tmpPtr;
+			}
+		}
+	}
+
 	FrameBufferObject* FBOManager::GetFBO(const string& name)
 	{
 		map<string, FrameBufferObject*>::iterator iter = allFBO.find(name);

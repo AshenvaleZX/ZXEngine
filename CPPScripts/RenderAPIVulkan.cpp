@@ -9,6 +9,7 @@
 #include "Material.h"
 #include "MaterialData.h"
 #include "ProjectSetting.h"
+#include "FBOManager.h"
 
 // VMA的官方文档里说需要在一个CPP文件里定义这个宏定义，否则可能会有异常
 // 见:https://gpuopen-librariesandsdks.github.io/VulkanMemoryAllocator/html/quick_start.html#quick_start_project_setup
@@ -94,12 +95,7 @@ namespace ZXEngine
         VkResult result = vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, presentImageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &curPresentImageIdx);
         // 交换链和Surface已经不兼容了，不能继续用了，一般是窗口大小变化导致的
         if (result == VK_ERROR_OUT_OF_DATE_KHR)
-        {
-            // 重新创建交换链来适配新的Surface
-            // 暂未实现
-            Debug::LogError("Need to implement swap chain recreation !");
-            return;
-        }
+            RecreateSwapChain();
         else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
             throw std::runtime_error("failed to acquire swap chain image!");
 
@@ -123,18 +119,20 @@ namespace ZXEngine
         // VK_ERROR_OUT_OF_DATE_KHR表示交换链和Surface已经不兼容了，不能继续用了，必须重新创建交换链
         // VK_SUBOPTIMAL_KHR表示交换链还是可以继续用，但是和Surface的某些属性匹配得不是很好，不重新创建也行
         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || windowResized) 
-        {
-            windowResized = false;
-            // 重新创建交换链来适配新的Surface
-            // 暂未实现
-            Debug::LogError("Need to implement swap chain recreation !");
-        }
+            RecreateSwapChain();
         else if (result != VK_SUCCESS)
             throw std::runtime_error("failed to present swap chain image!");
 
         CheckDeleteMaterialData();
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+    }
+
+    void RenderAPIVulkan::OnWindowSizeChange(uint32_t width, uint32_t height)
+    {
+        newWindowWidth = width;
+        newWindowHeight = height;
+        windowResized = true;
     }
 
     void RenderAPIVulkan::SetRenderState(RenderStateSetting* state)
@@ -434,10 +432,7 @@ namespace ZXEngine
 
     void RenderAPIVulkan::DeleteTexture(unsigned int id)
     {
-        auto texture = GetTextureByIndex(id);
-        DestroyImageView(texture->imageView);
-        DestroyImage(texture->image);
-        texture->inUse = false;
+        DestroyTextureByIndex(id);
     }
 
     ShaderReference* RenderAPIVulkan::LoadAndSetUpShader(const char* path, FrameBufferType type)
@@ -677,9 +672,12 @@ namespace ZXEngine
 
     FrameBufferObject* RenderAPIVulkan::CreateFrameBufferObject(FrameBufferType type, const ClearInfo& clearInfo, unsigned int width, unsigned int height)
     {
+        FrameBufferObject* FBO = new FrameBufferObject(type);
+        FBO->clearInfo = clearInfo;
+        FBO->isFollowWindow = width == 0 || height == 0;
+        
         width = width == 0 ? GlobalData::srcWidth : width;
         height = height == 0 ? GlobalData::srcHeight : height;
-        FrameBufferObject* FBO = new FrameBufferObject(type);
 
         if (type == FrameBufferType::Normal)
         {
@@ -837,6 +835,11 @@ namespace ZXEngine
 
         return FBO;
     }
+
+    void RenderAPIVulkan::DeleteFrameBufferObject(FrameBufferObject* FBO)
+    {
+        DestroyFBOByIndex(FBO->ID);
+	}
 
     uint32_t RenderAPIVulkan::AllocateDrawCommand(CommandType commandType)
     {
@@ -1463,6 +1466,35 @@ namespace ZXEngine
         return VulkanFBOArray[idx];
     }
 
+    void RenderAPIVulkan::DestroyFBOByIndex(uint32_t idx)
+    {
+        auto vulkanFBO = VulkanFBOArray[idx];
+
+        for (auto iter : vulkanFBO->frameBuffers)
+        {
+			vkDestroyFramebuffer(device, iter, VK_NULL_HANDLE);
+		}
+        vulkanFBO->frameBuffers.clear();
+        vulkanFBO->frameBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+
+        if (vulkanFBO->colorAttachmentIdx != UINT32_MAX)
+        {
+            DestroyAttachmentBufferByIndex(vulkanFBO->colorAttachmentIdx);
+            vulkanFBO->colorAttachmentIdx = UINT32_MAX;
+        }
+        if (vulkanFBO->depthAttachmentIdx != UINT32_MAX)
+        {
+			DestroyAttachmentBufferByIndex(vulkanFBO->depthAttachmentIdx);
+			vulkanFBO->depthAttachmentIdx = UINT32_MAX;
+		}
+
+        vulkanFBO->bufferType = FrameBufferType::Normal;
+        vulkanFBO->renderPassType = RenderPassType::Normal;
+        vulkanFBO->clearInfo = {};
+
+        vulkanFBO->inUse = false;
+    }
+
     uint32_t RenderAPIVulkan::GetNextAttachmentBufferIndex()
     {
         uint32_t length = (uint32_t)VulkanAttachmentBufferArray.size();
@@ -1483,6 +1515,16 @@ namespace ZXEngine
     VulkanAttachmentBuffer* RenderAPIVulkan::GetAttachmentBufferByIndex(uint32_t idx)
     {
         return VulkanAttachmentBufferArray[idx];
+    }
+
+    void RenderAPIVulkan::DestroyAttachmentBufferByIndex(uint32_t idx)
+    {
+        auto colorAttachmentBuffer = VulkanAttachmentBufferArray[idx];
+        for (auto iter : colorAttachmentBuffer->attachmentBuffers)
+            DestroyTextureByIndex(iter);
+        colorAttachmentBuffer->attachmentBuffers.clear();
+        colorAttachmentBuffer->attachmentBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+        colorAttachmentBuffer->inUse = false;
     }
 
     uint32_t RenderAPIVulkan::GetNextDrawCommandIndex()
@@ -1529,6 +1571,19 @@ namespace ZXEngine
     VulkanTexture* RenderAPIVulkan::GetTextureByIndex(uint32_t idx)
     {
         return VulkanTextureArray[idx];
+    }
+
+    void RenderAPIVulkan::DestroyTextureByIndex(uint32_t idx)
+    {
+        auto texture = VulkanTextureArray[idx];
+        DestroyImageView(texture->imageView);
+        DestroyImage(texture->image);
+        if (texture->sampler != VK_NULL_HANDLE)
+        {
+            vkDestroySampler(device, texture->sampler, VK_NULL_HANDLE);
+            texture->sampler = VK_NULL_HANDLE;
+        }
+        texture->inUse = false;
     }
 
     uint32_t RenderAPIVulkan::GetNextPipelineIndex()
@@ -1917,10 +1972,17 @@ namespace ZXEngine
     void RenderAPIVulkan::CreatePresentFrameBuffer()
     {
         presentFBOIdx = GetNextFBOIndex();
+
+        uint32_t colorAttachmentIdx = GetNextAttachmentBufferIndex();
+        auto colorAttachmentBuffer = GetAttachmentBufferByIndex(colorAttachmentIdx);
+        colorAttachmentBuffer->attachmentBuffers.clear();
+        colorAttachmentBuffer->attachmentBuffers.resize(swapChainImages.size());
+        colorAttachmentBuffer->inUse = true;
+
         auto vulkanFBO = GetFBOByIndex(presentFBOIdx);
         vulkanFBO->bufferType = FrameBufferType::Present;
         vulkanFBO->renderPassType = RenderPassType::Present;
-
+        vulkanFBO->colorAttachmentIdx = colorAttachmentIdx;
         vulkanFBO->frameBuffers.clear();
         vulkanFBO->frameBuffers.resize(swapChainImages.size());
 
@@ -1932,6 +1994,7 @@ namespace ZXEngine
             VulkanImage colorImage = CreateImage(swapChainExtent.width, swapChainExtent.height, 1, 1, msaaSamplesCount, swapChainImageFormat, VK_IMAGE_TILING_OPTIMAL,
                 VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
             VkImageView colorImageView = CreateImageView(colorImage.image, swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+            colorAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(colorImage, colorImageView, VK_NULL_HANDLE);
 
             array<VkImageView, 2> attachments = { colorImageView, swapChainImageViews[i] };
 
@@ -1950,6 +2013,19 @@ namespace ZXEngine
         }
 
         vulkanFBO->inUse = true;
+    }
+
+    void RenderAPIVulkan::DestroyPresentFrameBuffer()
+    {
+        auto vulkanFBO = GetFBOByIndex(presentFBOIdx);
+        DestroyAttachmentBufferByIndex(vulkanFBO->colorAttachmentIdx);
+
+        for (auto iter : vulkanFBO->frameBuffers)
+			vkDestroyFramebuffer(device, iter, VK_NULL_HANDLE);
+		vulkanFBO->frameBuffers.clear();
+        vulkanFBO->frameBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+
+        vulkanFBO->inUse = false;
     }
 
 
@@ -2239,6 +2315,45 @@ namespace ZXEngine
         {
             return capabilities.currentExtent;
         }
+    }
+
+    void RenderAPIVulkan::RecreateSwapChain()
+    {
+        int width = 0, height = 0;
+        glfwGetFramebufferSize(RenderEngine::GetInstance()->window, &width, &height);
+        // 如果窗口大小为0(被最小化了)，那么程序就在这里等待，直到窗口重新弹出
+        while (width == 0 || height == 0)
+        {
+            glfwGetFramebufferSize(RenderEngine::GetInstance()->window, &width, &height);
+            glfwWaitEvents();
+        }
+
+        // 先等逻辑设备执行完当前的所有指令，不再占用资源
+        vkDeviceWaitIdle(device);
+
+        GlobalData::srcWidth = newWindowWidth;
+        GlobalData::srcHeight = newWindowHeight;
+
+        // 清理所有交换链相关资源，全部重新创建
+        CleanUpSwapChain();
+        CreateSwapChain();
+        CreatePresentFrameBuffer();
+
+        // 重新创建所有大小和窗口保持一致的FBO
+        FBOManager::GetInstance()->RecreateAllFollowWindowFBO();
+
+        windowResized = false;
+    }
+
+    void RenderAPIVulkan::CleanUpSwapChain()
+    {
+        DestroyPresentFrameBuffer();
+
+        for (auto iter : swapChainImageViews)
+            vkDestroyImageView(device, iter, VK_NULL_HANDLE);
+        swapChainImageViews.clear();
+
+        vkDestroySwapchainKHR(device, swapChain, VK_NULL_HANDLE);
     }
 
 

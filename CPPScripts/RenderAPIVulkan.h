@@ -20,6 +20,7 @@ namespace ZXEngine
         virtual void EndFrame();
 
         // 渲染状态设置
+        virtual void OnWindowSizeChange(uint32_t width, uint32_t height);
         virtual void SetRenderState(RenderStateSetting* state);
         virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0);
 
@@ -28,6 +29,7 @@ namespace ZXEngine
         virtual void ClearFrameBuffer();
         virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
         virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, const ClearInfo& clearInfo, unsigned int width = 0, unsigned int height = 0);
+        virtual void DeleteFrameBufferObject(FrameBufferObject* FBO);
 
         // 资源加载相关
         virtual unsigned int LoadTexture(const char* path, int& width, int& height);
@@ -167,6 +169,13 @@ namespace ZXEngine
         // 选择交换链图像分辨率
         VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
+        // 重新创建交换链
+        void RecreateSwapChain();
+        // 清理交换链相关资源
+        void CleanUpSwapChain();
+        // 销毁PresentBuffer
+        void DestroyPresentFrameBuffer();
+
 
     /// <summary>
     /// Vulkan资源创建相关接口(这些接口Create出来的需要手动Destroy)
@@ -187,10 +196,13 @@ namespace ZXEngine
         VulkanVAO* GetVAOByIndex(uint32_t idx);
         uint32_t GetNextFBOIndex();
         VulkanFBO* GetFBOByIndex(uint32_t idx);
+        void DestroyFBOByIndex(uint32_t idx);
         uint32_t GetNextAttachmentBufferIndex();
         VulkanAttachmentBuffer* GetAttachmentBufferByIndex(uint32_t idx);
+        void DestroyAttachmentBufferByIndex(uint32_t idx);
         uint32_t GetNextTextureIndex();
         VulkanTexture* GetTextureByIndex(uint32_t idx);
+        void DestroyTextureByIndex(uint32_t idx);
         uint32_t GetNextPipelineIndex();
         VulkanPipeline* GetPipelineByIndex(uint32_t idx);
         uint32_t GetNextMaterialDataIndex();
@@ -247,10 +259,11 @@ namespace ZXEngine
     /// <summary>
     /// 其它辅助接口
     /// </summary>
-    public:
-        bool windowResized = false;
-
     private:
+        bool windowResized = false;
+        uint32_t newWindowWidth = 0;
+        uint32_t newWindowHeight = 0;
+
         uint32_t curFBOIdx = 0;
         uint32_t curPipeLineIdx = 0;
         uint32_t curMaterialDataIdx = 0;

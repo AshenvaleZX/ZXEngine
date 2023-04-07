@@ -7,12 +7,10 @@
 #include "ZCamera.h"
 #include "RenderPassManager.h"
 #include "RenderPass.h"
-#include "GlobalData.h"
 #include "RenderQueueManager.h"
 #include "FBOManager.h"
 #include "ParticleSystemManager.h"
 #include "ProjectSetting.h"
-#include "RenderAPIVulkan.h"
 #include "RenderEngineProperties.h"
 
 namespace ZXEngine
@@ -43,21 +41,7 @@ namespace ZXEngine
 	// glfw: whenever the window size changed (by OS or user resize) this callback function executes
 	void FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
 	{
-#ifdef ZX_EDITOR
-		unsigned int hWidth = (width - GlobalData::srcWidth) / 3;
-		unsigned int iWidth = width - GlobalData::srcWidth - hWidth;
-		unsigned int pHeight = height - GlobalData::srcHeight - ProjectSetting::mainBarHeight;
-		ProjectSetting::SetWindowSize(hWidth, pHeight, iWidth);
-#else
-		GlobalData::srcWidth = width;
-		GlobalData::srcHeight = height;
-		RenderAPI::GetInstance()->SetViewPort(width, height);
-#endif
-
-#ifdef ZX_API_VULKAN
-		auto api = reinterpret_cast<RenderAPIVulkan*>(glfwGetWindowUserPointer(window));
-		api->windowResized = true;
-#endif
+		RenderAPI::GetInstance()->OnWindowSizeChange(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
 	}
 
 	void RenderEngine::InitWindow()

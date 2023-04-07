@@ -85,8 +85,8 @@ namespace ZXEngine
     struct VulkanFBO
     {
         vector<VkFramebuffer> frameBuffers;
-        uint32_t colorAttachmentIdx = 0;
-        uint32_t depthAttachmentIdx = 0;
+        uint32_t colorAttachmentIdx = UINT32_MAX;
+        uint32_t depthAttachmentIdx = UINT32_MAX;
         FrameBufferType bufferType = FrameBufferType::Normal;
         RenderPassType renderPassType = RenderPassType::Normal;
         ClearInfo clearInfo = {};

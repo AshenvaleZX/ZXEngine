@@ -24,6 +24,7 @@ namespace ZXEngine
 		virtual void EndFrame() = 0;
 
 		// 渲染状态设置
+		virtual void OnWindowSizeChange(uint32_t width, uint32_t height) = 0;
 		virtual void SetRenderState(RenderStateSetting* state) = 0;
 		virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0) = 0;
 
@@ -32,6 +33,7 @@ namespace ZXEngine
 		virtual void ClearFrameBuffer() = 0;
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0) = 0;
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, const ClearInfo& clearInfo, unsigned int width = 0, unsigned int height = 0) = 0;
+		virtual void DeleteFrameBufferObject(FrameBufferObject* FBO) = 0;
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path, int& width, int& height) = 0;

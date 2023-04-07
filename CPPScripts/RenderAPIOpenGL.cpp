@@ -9,6 +9,7 @@
 #include "ZShader.h"
 #include "Material.h"
 #include "MaterialData.h"
+#include "ProjectSetting.h"
 
 namespace ZXEngine
 {
@@ -67,6 +68,19 @@ namespace ZXEngine
 	void RenderAPIOpenGL::EndFrame()
 	{
 		CheckError();
+	}
+
+	void RenderAPIOpenGL::OnWindowSizeChange(uint32_t width, uint32_t height)
+	{
+#ifdef ZX_EDITOR
+		unsigned int hWidth = (width - GlobalData::srcWidth) / 3;
+		unsigned int iWidth = width - GlobalData::srcWidth - hWidth;
+		unsigned int pHeight = height - GlobalData::srcHeight - ProjectSetting::mainBarHeight;
+		ProjectSetting::SetWindowSize(hWidth, pHeight, iWidth);
+#else
+		GlobalData::srcWidth = width;
+		GlobalData::srcHeight = height;
+#endif
 	}
 
 	void RenderAPIOpenGL::SetRenderState(RenderStateSetting* state)
@@ -406,9 +420,13 @@ namespace ZXEngine
 
 	FrameBufferObject* RenderAPIOpenGL::CreateFrameBufferObject(FrameBufferType type, const ClearInfo& clearInfo, unsigned int width, unsigned int height)
 	{
+		FrameBufferObject* FBO = new FrameBufferObject(type);
+		FBO->clearInfo = clearInfo;
+		FBO->isFollowWindow = width == 0 || height == 0;
+
 		width = width == 0 ? GlobalData::srcWidth : width;
 		height = height == 0 ? GlobalData::srcHeight : height;
-		FrameBufferObject* FBO = new FrameBufferObject(type);
+
 		if (type == FrameBufferType::Normal)
 		{
 			unsigned int FBO_ID;
@@ -560,6 +578,11 @@ namespace ZXEngine
 		FBOClearInfoMap[FBO->ID] = clearInfo;
 
 		return FBO;
+	}
+
+	void RenderAPIOpenGL::DeleteFrameBufferObject(FrameBufferObject* FBO)
+	{
+		// OpenGL暂时不用实现这个接口
 	}
 
 	void RenderAPIOpenGL::GenerateParticleMesh(unsigned int& VAO)
