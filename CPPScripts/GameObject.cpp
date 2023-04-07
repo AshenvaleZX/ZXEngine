@@ -119,8 +119,6 @@ namespace ZXEngine
 		camera->Fov = data["FOV"];
 		camera->nearClipDis = data["NearClipDis"];
 		camera->farClipDis = data["FarClipDis"];
-		if (!data["Aspect"].is_null())
-			camera->aspect = data["Aspect"];
 	}
 
 	void GameObject::ParseLight(json data)
