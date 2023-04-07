@@ -10,6 +10,7 @@
 #include "Material.h"
 #include "MaterialData.h"
 #include "ProjectSetting.h"
+#include "FBOManager.h"
 
 namespace ZXEngine
 {
@@ -62,7 +63,7 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::BeginFrame()
 	{
-
+		
 	}
 
 	void RenderAPIOpenGL::EndFrame()
@@ -80,6 +81,7 @@ namespace ZXEngine
 #else
 		GlobalData::srcWidth = width;
 		GlobalData::srcHeight = height;
+		FBOManager::GetInstance()->RecreateAllFollowWindowFBO();
 #endif
 	}
 
@@ -508,7 +510,7 @@ namespace ZXEngine
 			// 对FBO对象赋值
 			FBO->ID = FBO_ID;
 			FBO->ColorBuffer = colorBuffer;
-			FBO->DepthBuffer = NULL;
+			FBO->DepthBuffer = UINT32_MAX;
 		}
 		else if (type == FrameBufferType::ShadowMap)
 		{
@@ -537,7 +539,7 @@ namespace ZXEngine
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			// 对FBO对象赋值
 			FBO->ID = FBO_ID;
-			FBO->ColorBuffer = NULL;
+			FBO->ColorBuffer = UINT32_MAX;
 			FBO->DepthBuffer = depthMap;
 		}
 		else if (type == FrameBufferType::ShadowCubeMap)
@@ -567,7 +569,7 @@ namespace ZXEngine
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			// 对FBO对象赋值
 			FBO->ID = FBO_ID;
-			FBO->ColorBuffer = NULL;
+			FBO->ColorBuffer = UINT32_MAX;
 			FBO->DepthBuffer = depthCubeMap;
 		}
 		else
@@ -582,7 +584,20 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::DeleteFrameBufferObject(FrameBufferObject* FBO)
 	{
-		// OpenGL暂时不用实现这个接口
+		FBOClearInfoMap.erase(FBO->ID);
+
+		if (FBO->ColorBuffer != UINT32_MAX)
+			glDeleteTextures(1, &FBO->ColorBuffer);
+
+		if (FBO->DepthBuffer != UINT32_MAX)
+		{
+			if (FBO->type == FrameBufferType::Normal || FBO->type == FrameBufferType::HigthPrecision)
+				glDeleteRenderbuffers(1, &FBO->DepthBuffer);
+			else
+				glDeleteTextures(1, &FBO->DepthBuffer);
+		}
+
+		glDeleteFramebuffers(1, &FBO->ID);
 	}
 
 	void RenderAPIOpenGL::GenerateParticleMesh(unsigned int& VAO)
