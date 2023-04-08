@@ -1,4 +1,5 @@
 #include "EditorInspectorPanel.h"
+#include "ImGuiTextureManager.h"
 #include "../GameObject.h"
 #include "../Component.h"
 #include "../Transform.h"
@@ -89,11 +90,14 @@ namespace ZXEngine
 			Debug::Log("Click Shader");
 		}
 
+		auto ImTextureMgr = ImGuiTextureManager::GetInstance();
 		for (auto& iter : material->data->textures)
 		{
-			unsigned int id = iter.second->GetID();
+			uint32_t id = iter.second->GetID();
+			if (!ImTextureMgr->CheckExistenceByEngineID(id))
+				ImTextureMgr->CreateFromEngineID(id);
 			ImGui::Text(iter.first.c_str());
-			ImGui::SameLine(120); ImGui::Image((void*)(intptr_t)id, ImVec2(50.0f, 50.0f));
+			ImGui::SameLine(120); ImGui::Image(ImTextureMgr->GetImTextureIDByEngineID(id), ImVec2(50.0f, 50.0f));
 		}
 	}
 
@@ -266,9 +270,12 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("UITextureRenderer"))
 			return;
 
-		unsigned int id = component->texture->GetID();
+		auto ImTextureMgr = ImGuiTextureManager::GetInstance();
+		uint32_t id = component->texture->GetID();
+		if (!ImTextureMgr->CheckExistenceByEngineID(id))
+			ImTextureMgr->CreateFromEngineID(id);
 		ImGui::Text("Image  ");
-		ImGui::SameLine(); ImGui::Image((void*)(intptr_t)id, ImVec2(50.0f, 50.0f));
+		ImGui::SameLine(); ImGui::Image(ImTextureMgr->GetImTextureIDByEngineID(id), ImVec2(50.0f, 50.0f));
 	}
 
 	void EditorInspectorPanel::DrawParticleSystem(ParticleSystem* component)
@@ -281,9 +288,12 @@ namespace ZXEngine
 		ImGui::Text("ParticleNum ");
 		ImGui::SameLine(); ImGui::DragInt("##ParticleNum", &particleNum, 0.1f, 0, INT_MAX);
 
-		unsigned int id = component->textureID;
+		auto ImTextureMgr = ImGuiTextureManager::GetInstance();
+		uint32_t id = component->textureID;
+		if (!ImTextureMgr->CheckExistenceByEngineID(id))
+			ImTextureMgr->CreateFromEngineID(id);
 		ImGui::Text("Texture     ");
-		ImGui::SameLine(); ImGui::Image((void*)(intptr_t)id, ImVec2(50.0f, 50.0f));
+		ImGui::SameLine(); ImGui::Image(ImTextureMgr->GetImTextureIDByEngineID(id), ImVec2(50.0f, 50.0f));
 
 		float lifeTime = component->lifeTime;
 		ImGui::Text("LifeTime    ");
@@ -353,7 +363,11 @@ namespace ZXEngine
 			height = height * maxWidth / width;
 			width = maxWidth;
 		}
-		ImGui::Image((void*)(intptr_t)id, ImVec2((float)width, (float)height));
+
+		auto ImTextureMgr = ImGuiTextureManager::GetInstance();
+		if (!ImTextureMgr->CheckExistenceByEngineID(id))
+			ImTextureMgr->CreateFromEngineID(id);
+		ImGui::Image(ImTextureMgr->GetImTextureIDByEngineID(id), ImVec2((float)width, (float)height));
 	}
 
 	void EditorInspectorPanel::DrawMaterial(AssetMaterialInfo* info)

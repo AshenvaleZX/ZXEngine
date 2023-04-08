@@ -8,6 +8,7 @@
 #include "EditorHierarchyPanel.h"
 #include "EditorAssetPreviewer.h"
 #include "EditorConsolePanel.h"
+#include "ImGuiTextureManager.h"
 
 // Vulkan的ImGui接入比较麻烦，参考教程: https://frguthmann.github.io/posts/vulkan_imgui/
 #ifdef ZX_API_VULKAN
@@ -59,6 +60,8 @@ namespace ZXEngine
 #ifdef ZX_API_VULKAN
 		InitForVulkan();
 #endif
+
+		ImGuiTextureManager::Creat();
 
 		allPanels.push_back(new EditorProjectPanel());
 		allPanels.push_back(new EditorMainBarPanel());

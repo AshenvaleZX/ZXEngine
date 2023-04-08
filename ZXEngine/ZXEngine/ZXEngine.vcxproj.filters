@@ -360,6 +360,15 @@
     <ClCompile Include="..\..\CPPScripts\ImGui\imgui_impl_vulkan.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Editor\ImGuiTextureManagerOpenGL.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Editor\ImGuiTextureManagerVulkan.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Editor\ImGuiTextureManager.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">
@@ -736,6 +745,15 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\ImGui\imgui_impl_vulkan.h">
       <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Editor\ImGuiTextureManager.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Editor\ImGuiTextureManagerOpenGL.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Editor\ImGuiTextureManagerVulkan.h">
+      <Filter>Editor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

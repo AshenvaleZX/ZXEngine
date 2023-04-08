@@ -1,9 +1,9 @@
 #pragma once
 #include "EditorPanel.h"
+#include "ImGuiTextureManager.h"
 
 namespace ZXEngine
 {
-	class Texture;
 	class EditorConsolePanel : public EditorPanel
 	{
 	public:
@@ -13,7 +13,7 @@ namespace ZXEngine
 		virtual void DrawPanel();
 
 	private:
-		Texture* logIcons[3];
+		ImGuiTextureIndex logIcons[3];
 		const ImVec2 iconSize = ImVec2(20, 20);
 		bool showMessage = true;
 		bool showWarning = true;

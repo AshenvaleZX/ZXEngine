@@ -1,4 +1,5 @@
 #include "EditorEnumStruct.h"
+#include "ImGuiTextureManager.h"
 #include "../Texture.h"
 #include "../Material.h"
 #include "../MeshRenderer.h"
@@ -12,6 +13,7 @@ namespace ZXEngine
 
 	AssetTextureInfo::~AssetTextureInfo()
 	{
+		ImGuiTextureManager::GetInstance()->DeleteByEngineID(texture->GetID());
 		delete texture;
 	}
 

@@ -1,6 +1,5 @@
 #include "EditorProjectPanel.h"
 #include "../Resources.h"
-#include "../Texture.h"
 
 namespace ZXEngine
 {
@@ -90,8 +89,7 @@ namespace ZXEngine
 				// 无论是否点击都必须PopStyleColor，所以没有直接写在if中
 				string label = "##File" + to_string(i);
 				auto icon = fileIcons[(int)node->type];
-				auto texID = icon->GetID();
-				bool click = ImGui::ImageButton(label.c_str(), (void*)(intptr_t)texID, iconSize);
+				bool click = ImGui::ImageButton(label.c_str(), icon.ImGuiID, iconSize);
 				ImGui::PopStyleColor(1);
 				if (click)
 				{
@@ -197,14 +195,15 @@ namespace ZXEngine
 
 	void EditorProjectPanel::InitIcons()
 	{
-		fileIcons[(int)AssetType::Other]	   = new Texture(Resources::GetAssetFullPath("Textures/icons/other.png", true).c_str());
-		fileIcons[(int)AssetType::Folder]   = new Texture(Resources::GetAssetFullPath("Textures/icons/folder.png", true).c_str());
-		fileIcons[(int)AssetType::Material] = new Texture(Resources::GetAssetFullPath("Textures/icons/material.png", true).c_str());
-		fileIcons[(int)AssetType::Prefab]   = new Texture(Resources::GetAssetFullPath("Textures/icons/prefab.png", true).c_str());
-		fileIcons[(int)AssetType::Script]   = new Texture(Resources::GetAssetFullPath("Textures/icons/script.png", true).c_str());
-		fileIcons[(int)AssetType::Shader]   = new Texture(Resources::GetAssetFullPath("Textures/icons/shader.png", true).c_str());
-		fileIcons[(int)AssetType::Texture]  = new Texture(Resources::GetAssetFullPath("Textures/icons/texture.png", true).c_str());
-		fileIcons[(int)AssetType::Scene]    = new Texture(Resources::GetAssetFullPath("Textures/icons/scene.png", true).c_str());
-		fileIcons[(int)AssetType::Model]    = new Texture(Resources::GetAssetFullPath("Textures/icons/model.png", true).c_str());
+		auto ImTextureMgr = ImGuiTextureManager::GetInstance();
+		fileIcons[(int)AssetType::Other]    = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/other.png", true));
+		fileIcons[(int)AssetType::Folder]   = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/folder.png", true));
+		fileIcons[(int)AssetType::Material] = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/material.png", true));
+		fileIcons[(int)AssetType::Prefab]   = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/prefab.png", true));
+		fileIcons[(int)AssetType::Script]   = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/script.png", true));
+		fileIcons[(int)AssetType::Shader]   = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/shader.png", true));
+		fileIcons[(int)AssetType::Texture]  = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/texture.png", true));
+		fileIcons[(int)AssetType::Scene]    = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/scene.png", true));
+		fileIcons[(int)AssetType::Model]    = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/model.png", true));
 	}
 }

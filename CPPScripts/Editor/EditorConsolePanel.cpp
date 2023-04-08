@@ -1,15 +1,15 @@
 #include "EditorConsolePanel.h"
 #include "EditorDataManager.h"
-#include "../Texture.h"
 #include "../Resources.h"
 
 namespace ZXEngine
 {
 	EditorConsolePanel::EditorConsolePanel()
 	{
-		logIcons[(int)LogType::Message] = new Texture(Resources::GetAssetFullPath("Textures/icons/message.png", true).c_str());
-		logIcons[(int)LogType::Warning] = new Texture(Resources::GetAssetFullPath("Textures/icons/warning.png", true).c_str());
-		logIcons[(int)LogType::Error] = new Texture(Resources::GetAssetFullPath("Textures/icons/error.png", true).c_str());
+		auto ImTextureMgr = ImGuiTextureManager::GetInstance();
+		logIcons[(int)LogType::Message] = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/message.png", true));
+		logIcons[(int)LogType::Warning] = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/warning.png", true));
+		logIcons[(int)LogType::Error]   = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/error.png", true));
 	}
 
 	void EditorConsolePanel::DrawPanel()
@@ -25,13 +25,13 @@ namespace ZXEngine
 			
 			ImGui::SetCursorPosX((float)(ProjectSetting::consoleWidth - 240));
 			ImGui::Checkbox("##ShowMessage", &showMessage);
-			ImGui::SameLine(); ImGui::Image((void*)(intptr_t)logIcons[0]->GetID(), iconSize);
+			ImGui::SameLine(); ImGui::Image(logIcons[0].ImGuiID, iconSize);
 			ImGui::SameLine(); ImGui::Text(to_string(EditorData->messageSize).c_str());
 			ImGui::SameLine(); ImGui::Checkbox("##ShowWarning", &showWarning);
-			ImGui::SameLine(); ImGui::Image((void*)(intptr_t)logIcons[1]->GetID(), iconSize);
+			ImGui::SameLine(); ImGui::Image(logIcons[1].ImGuiID, iconSize);
 			ImGui::SameLine(); ImGui::Text(to_string(EditorData->warningSize).c_str());
 			ImGui::SameLine(); ImGui::Checkbox("##ShowError", &showError);
-			ImGui::SameLine(); ImGui::Image((void*)(intptr_t)logIcons[2]->GetID(), iconSize);
+			ImGui::SameLine(); ImGui::Image(logIcons[2].ImGuiID, iconSize);
 			ImGui::SameLine(); ImGui::Text(to_string(EditorData->errorSize).c_str());
 
 			const ImGuiID childId = ImGui::GetID((void*)(intptr_t)0);
@@ -48,8 +48,7 @@ namespace ZXEngine
 						firstLine = false;
 					else
 						ImGui::Separator();
-					auto texID = logIcons[(int)log->type]->GetID();
-					ImGui::Image((void*)(intptr_t)texID, iconSize);
+					ImGui::Image(logIcons[(int)log->type].ImGuiID, iconSize);
 					ImGui::SameLine();
 					ImGui::Text(log->data.c_str());
 				}

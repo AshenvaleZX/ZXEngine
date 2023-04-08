@@ -9,6 +9,7 @@ namespace ZXEngine
     class RenderAPIVulkan : public RenderAPI
     {
         friend class EditorGUIManager;
+        friend class ImGuiTextureManagerVulkan;
     /// <summary>
     /// 标准RenderAPI接口
     /// </summary>

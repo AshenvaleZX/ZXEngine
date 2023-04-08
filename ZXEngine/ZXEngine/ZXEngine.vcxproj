@@ -164,6 +164,9 @@
     <ClCompile Include="..\..\CPPScripts\Editor\EditorMainBarPanel.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorAssetPreviewer.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorProjectPanel.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Editor\ImGuiTextureManager.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Editor\ImGuiTextureManagerOpenGL.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Editor\ImGuiTextureManagerVulkan.cpp" />
     <ClCompile Include="..\..\CPPScripts\Entry.cpp" />
     <ClCompile Include="..\..\CPPScripts\EventManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\FBOManager.cpp" />
@@ -270,6 +273,7 @@
     <ClInclude Include="..\..\CPPScripts\Editor\EditorEnumStruct.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorGUIManager.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorHierarchyPanel.h" />
+    <ClInclude Include="..\..\CPPScripts\Editor\ImGuiTextureManager.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorInputManager.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorInspectorPanel.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorConsolePanel.h" />
@@ -277,6 +281,8 @@
     <ClInclude Include="..\..\CPPScripts\Editor\EditorAssetPreviewer.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorPanel.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorProjectPanel.h" />
+    <ClInclude Include="..\..\CPPScripts\Editor\ImGuiTextureManagerOpenGL.h" />
+    <ClInclude Include="..\..\CPPScripts\Editor\ImGuiTextureManagerVulkan.h" />
     <ClInclude Include="..\..\CPPScripts\EventManager.h" />
     <ClInclude Include="..\..\CPPScripts\FBOManager.h" />
     <ClInclude Include="..\..\CPPScripts\FrameBufferObject.h" />

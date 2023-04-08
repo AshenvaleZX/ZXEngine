@@ -65,13 +65,17 @@ namespace ZXEngine
 	bool EditorAssetPreviewer::Check()
 	{
 		bool needPreview = false;
-		auto curAsset = EditorDataManager::GetInstance()->selectedAsset;
-		if (curAsset != nullptr)
+		auto curGO = EditorDataManager::GetInstance()->selectedGO;
+		if (curGO == nullptr)
 		{
-			if (curAsset->type == AssetType::Material)
-				needPreview = true;
-			else if (curAsset->type == AssetType::Model)
-				needPreview = true;
+			auto curAsset = EditorDataManager::GetInstance()->selectedAsset;
+			if (curAsset != nullptr)
+			{
+				if (curAsset->type == AssetType::Material)
+					needPreview = true;
+				else if (curAsset->type == AssetType::Model)
+					needPreview = true;
+			}
 		}
 
 		if (needPreview)
