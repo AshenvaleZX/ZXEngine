@@ -966,8 +966,11 @@ namespace ZXEngine
         submitInfo.signalSemaphoreCount = static_cast<uint32_t>(curDrawCommand.signalSemaphores.size());
 
         VkFence fence = VK_NULL_HANDLE;
+#ifndef ZX_EDITOR
+        // 在编辑器模式下最后一个Command固定是绘制编辑器UI的，在EditorGUIManager里提交Fence
         if (curDrawCommandObj->commandType == CommandType::UIRendering)
             fence = inFlightFences[currentFrame];
+#endif
 
         if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, fence) != VK_SUCCESS)
             throw std::runtime_error("failed to submit draw command buffer!");

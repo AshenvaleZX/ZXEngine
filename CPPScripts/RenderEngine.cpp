@@ -70,10 +70,6 @@ namespace ZXEngine
 		glfwMakeContextCurrent(window);
 #endif
 
-#ifdef ZX_API_VULKAN
-		glfwSetWindowUserPointer(window, RenderAPI::GetInstance());
-#endif
-
 		glfwSetFramebufferSizeCallback(window, FrameBufferSizeCallback);
 
 		EventManager::GetInstance()->AddEventHandler((int)EventType::KEY_ESCAPE_PRESS, std::bind(&RenderEngine::CloseWindow, this, std::placeholders::_1));

@@ -28,9 +28,8 @@ namespace ZXEngine
 		vector<EditorPanel*> allPanels;
 
 #ifdef ZX_API_VULKAN
-		void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int width, int height);
-		void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data);
-		void FramePresent(ImGui_ImplVulkanH_Window* wd);
+		void InitForVulkan();
+		void FrameRender();
 #endif
 	};
 }

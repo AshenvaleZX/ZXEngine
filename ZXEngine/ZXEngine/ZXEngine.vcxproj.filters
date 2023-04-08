@@ -354,11 +354,11 @@
     <ClCompile Include="..\..\CPPScripts\RenderEngineProperties.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\ImGui\imgui_impl_vulkan.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\CPPScripts\MaterialData.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\ImGui\imgui_impl_vulkan.cpp">
+      <Filter>ImGui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -731,11 +731,11 @@
     <ClInclude Include="..\..\CPPScripts\Vulkan\VulkanEnumStruct.h">
       <Filter>Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\ImGui\imgui_impl_vulkan.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\CPPScripts\MaterialData.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\ImGui\imgui_impl_vulkan.h">
+      <Filter>ImGui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
