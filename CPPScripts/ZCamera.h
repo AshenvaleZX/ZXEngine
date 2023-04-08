@@ -18,6 +18,7 @@ namespace ZXEngine
 
 	public:
         float Fov;
+        float aspect = 0.0f;
         float nearClipDis = 0.1f;
         float farClipDis = 200.0f;
         CameraType cameraType;

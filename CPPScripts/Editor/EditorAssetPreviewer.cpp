@@ -17,6 +17,7 @@ namespace ZXEngine
 	{
 		PrefabStruct* prefab = Resources::LoadPrefab("Prefabs/AssetPreviewCamera.zxprefab", true);
 		cameraGO = new GameObject(prefab);
+		cameraGO->GetComponent<Camera>()->aspect = 1.0f;
 		cameraGO->GetComponent<Camera>()->cameraType = CameraType::EditorCamera;
 		delete prefab;
 

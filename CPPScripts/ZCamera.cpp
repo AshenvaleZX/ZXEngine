@@ -46,7 +46,9 @@ namespace ZXEngine
 
 	Matrix4 Camera::GetProjectionMatrix()
 	{
-		float aspect = static_cast<float>(GlobalData::srcWidth) / static_cast<float>(GlobalData::srcHeight);
-		return Math::Perspective(Math::Deg2Rad(Fov), aspect, nearClipDis, farClipDis);
+		if (aspect == 0.0f)
+			return Math::Perspective(Math::Deg2Rad(Fov), static_cast<float>(GlobalData::srcWidth) / static_cast<float>(GlobalData::srcHeight), nearClipDis, farClipDis);
+		else
+			return Math::Perspective(Math::Deg2Rad(Fov), aspect, nearClipDis, farClipDis);
 	}
 }
