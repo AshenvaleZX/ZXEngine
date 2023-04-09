@@ -192,6 +192,7 @@ namespace ZXEngine
         vector<VulkanDrawCommand*> VulkanDrawCommandArray;
 
         vector<VkRenderPass> allVulkanRenderPass;
+        map<uint32_t, uint32_t> meshsToDelete;
         map<uint32_t, uint32_t> materialDatasToDelete;
 
         uint32_t GetNextVAOIndex();
@@ -254,7 +255,9 @@ namespace ZXEngine
         ShaderModuleSet CreateShaderModules(const string& path, const ShaderInfo& info);
         void DestroyShaderModules(ShaderModuleSet shaderModules);
 
-        void CheckDeleteMaterialData();
+        // 检查是否有需要延迟卸载的资源
+        void CheckDeleteData();
+        void RealDeleteMesh(uint32_t id);
         void RealDeleteMaterialData(uint32_t id);
 
 

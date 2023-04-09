@@ -127,7 +127,7 @@ namespace ZXEngine
         else if (result != VK_SUCCESS)
             throw std::runtime_error("failed to present swap chain image!");
 
-        CheckDeleteMaterialData();
+        CheckDeleteData();
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
@@ -637,26 +637,6 @@ namespace ZXEngine
         materialDatasToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT));
     }
 
-    // 检查是否有材质数据可以删除
-    void RenderAPIVulkan::CheckDeleteMaterialData()
-    {
-        vector<uint32_t> deleteList = {};
-        for (auto& iter : materialDatasToDelete)
-        {
-            // 如果这个材质数据的等待帧数大于0，就减1帧
-            if (iter.second > 0)
-                iter.second--;
-            // 否则就删除
-            else
-                deleteList.push_back(iter.first);
-        }
-        for (auto id : deleteList)
-        {
-            RealDeleteMaterialData(id);
-            materialDatasToDelete.erase(id);
-        }
-    }
-
     // 真正删除材质数据
     void RenderAPIVulkan::RealDeleteMaterialData(uint32_t id)
     {
@@ -997,6 +977,11 @@ namespace ZXEngine
     }
 
     void RenderAPIVulkan::DeleteMesh(unsigned int VAO)
+    {
+        meshsToDelete.insert(pair(VAO, MAX_FRAMES_IN_FLIGHT));
+    }
+
+    void RenderAPIVulkan::RealDeleteMesh(unsigned int VAO)
     {
         auto meshBuffer = GetVAOByIndex(VAO);
         meshBuffer->inUse = false;
@@ -3237,6 +3222,42 @@ namespace ZXEngine
     {
         for (auto& shaderModule : shaderModules)
             vkDestroyShaderModule(device, shaderModule.second, nullptr);
+    }
+
+    void RenderAPIVulkan::CheckDeleteData()
+    {
+        vector<uint32_t> deleteList = {};
+
+        // 材质数据
+        for (auto& iter : materialDatasToDelete)
+        {
+            // 如果这个材质数据的等待帧数大于0，就减1帧
+            if (iter.second > 0)
+                iter.second--;
+            // 否则就删除
+            else
+                deleteList.push_back(iter.first);
+        }
+        for (auto id : deleteList)
+        {
+            RealDeleteMaterialData(id);
+            materialDatasToDelete.erase(id);
+        }
+
+        // Mesh
+        deleteList.clear();
+        for (auto& iter : meshsToDelete)
+        {
+            if (iter.second > 0)
+                iter.second--;
+            else
+                deleteList.push_back(iter.first);
+        }
+        for (auto id : deleteList)
+        {
+            RealDeleteMesh(id);
+            meshsToDelete.erase(id);
+        }
     }
 
 
