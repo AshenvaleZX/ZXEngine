@@ -123,5 +123,7 @@ namespace ZXEngine
 
             length++;
         }
+
+        dirty = false;
     }
 }

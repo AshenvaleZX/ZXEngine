@@ -122,6 +122,7 @@ namespace ZXEngine
 			string localPath = Resources::GetAssetLocalPath(asset->path);
 			MaterialStruct* matStruct = Resources::LoadMaterial(localPath);
 			info->material = new Material(matStruct);
+			delete matStruct;
 			curAssetInfo = info;
 			EditorGUIManager::GetInstance()->assetPreviewer->Reset();
 		}
