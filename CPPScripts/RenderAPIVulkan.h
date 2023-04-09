@@ -20,10 +20,11 @@ namespace ZXEngine
         virtual void BeginFrame();
         virtual void EndFrame();
 
-        // 渲染状态设置
+        // 渲染状态相关
         virtual void OnWindowSizeChange(uint32_t width, uint32_t height);
         virtual void SetRenderState(RenderStateSetting* state);
         virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0);
+        virtual void WaitForRenderFinish();
 
         // FrameBuffer相关
         virtual void SwitchFrameBuffer(uint32_t id);

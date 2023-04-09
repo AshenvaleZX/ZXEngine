@@ -91,6 +91,11 @@ namespace ZXEngine
 		stateDirty = true;
 	}
 
+	void RenderAPIOpenGL::WaitForRenderFinish()
+	{
+		// OpenGL的所有行为都是单线程的，同步的，所以不需要实现这个接口
+	}
+
 	void RenderAPIOpenGL::SwitchFrameBuffer(uint32_t id)
 	{
 		if (id == UINT32_MAX)

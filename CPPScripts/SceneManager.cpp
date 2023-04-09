@@ -1,6 +1,7 @@
 #include "SceneManager.h"
 #include "Resources.h"
 #include "ProjectSetting.h"
+#include "RenderAPI.h"
 
 namespace ZXEngine
 {
@@ -75,6 +76,8 @@ namespace ZXEngine
 
 	void SceneManager::ReloadScene()
 	{
+		// 先等待当前所有绘制结束，再卸载场景释放资源
+		RenderAPI::GetInstance()->WaitForRenderFinish();
 		delete curScene->scene;
 		curScene->scene = new Scene(Resources::LoadScene(curScene->path));
 	}

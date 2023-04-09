@@ -144,6 +144,11 @@ namespace ZXEngine
         // Vulkan不需要实现这个接口
     }
 
+    void RenderAPIVulkan::WaitForRenderFinish()
+    {
+        vkDeviceWaitIdle(device);
+    }
+
     void RenderAPIVulkan::SwitchFrameBuffer(uint32_t id)
     {
         if (id == UINT32_MAX)
