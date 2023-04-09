@@ -23,6 +23,7 @@ namespace ZXEngine
 		void EditorRender();
 		void EndEditorRender();
 		void ResetPanels();
+		void OnWindowSizeChange();
 
 	private:
 		vector<EditorPanel*> allPanels;
@@ -30,6 +31,7 @@ namespace ZXEngine
 #ifdef ZX_API_VULKAN
 		void InitForVulkan();
 		void FrameRender();
+		void RecreateFrameBuffers();
 #endif
 	};
 }

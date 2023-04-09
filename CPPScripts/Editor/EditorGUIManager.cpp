@@ -134,6 +134,13 @@ namespace ZXEngine
 			panel->ResetPanel();
 	}
 
+	void EditorGUIManager::OnWindowSizeChange()
+	{
+#ifdef ZX_API_VULKAN
+		RecreateFrameBuffers();
+#endif
+	}
+
 #ifdef ZX_API_VULKAN
 	void EditorGUIManager::InitForVulkan()
 	{
@@ -319,6 +326,33 @@ namespace ZXEngine
 			throw std::runtime_error("failed to submit draw command buffer!");
 
 		renderAPI->curWaitSemaphores.clear();
+	}
+
+	void EditorGUIManager::RecreateFrameBuffers()
+	{
+		auto renderAPI = reinterpret_cast<RenderAPIVulkan*>(RenderAPI::GetInstance());
+
+		for (auto iter : g_FrameBuffers)
+			vkDestroyFramebuffer(renderAPI->device, iter, VK_NULL_HANDLE);
+		g_FrameBuffers.clear();
+
+		ImGui_ImplVulkan_SetMinImageCount(static_cast<uint32_t>(renderAPI->swapChainImageViews.size()));
+
+		g_FrameBuffers.resize(renderAPI->swapChainImageViews.size());
+		for (size_t i = 0; i < renderAPI->swapChainImageViews.size(); i++)
+		{
+			VkFramebufferCreateInfo info = {};
+			info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+			info.renderPass = g_RenderPass;
+			info.pAttachments = &renderAPI->swapChainImageViews[i];
+			info.attachmentCount = 1;
+			info.width = renderAPI->swapChainExtent.width;
+			info.height = renderAPI->swapChainExtent.height;
+			info.layers = 1;
+
+			VkResult err = vkCreateFramebuffer(renderAPI->device, &info, VK_NULL_HANDLE, &g_FrameBuffers[i]);
+			check_vk_result(err);
+		}
 	}
 #endif
 }

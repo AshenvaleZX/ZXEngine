@@ -10,6 +10,10 @@
 #include "MaterialData.h"
 #include "ProjectSetting.h"
 #include "FBOManager.h"
+#ifdef ZX_EDITOR
+#include "Editor/EditorGUIManager.h"
+#endif
+
 
 // VMA的官方文档里说需要在一个CPP文件里定义这个宏定义，否则可能会有异常
 // 见:https://gpuopen-librariesandsdks.github.io/VulkanMemoryAllocator/html/quick_start.html#quick_start_project_setup
@@ -2339,8 +2343,15 @@ namespace ZXEngine
         // 先等逻辑设备执行完当前的所有指令，不再占用资源
         vkDeviceWaitIdle(device);
 
+#ifdef ZX_EDITOR
+        uint32_t hWidth = (newWindowWidth - GlobalData::srcWidth) / 3;
+        uint32_t iWidth = newWindowWidth - GlobalData::srcWidth - hWidth;
+        uint32_t pHeight = newWindowHeight - GlobalData::srcHeight - ProjectSetting::mainBarHeight;
+        ProjectSetting::SetWindowSize(hWidth, pHeight, iWidth);
+#else
         GlobalData::srcWidth = newWindowWidth;
         GlobalData::srcHeight = newWindowHeight;
+#endif
 
         // 清理所有交换链相关资源，全部重新创建
         CleanUpSwapChain();
@@ -2349,6 +2360,10 @@ namespace ZXEngine
 
         // 重新创建所有大小和窗口保持一致的FBO
         FBOManager::GetInstance()->RecreateAllFollowWindowFBO();
+
+#ifdef ZX_EDITOR
+        EditorGUIManager::GetInstance()->OnWindowSizeChange();
+#endif
 
         windowResized = false;
     }
