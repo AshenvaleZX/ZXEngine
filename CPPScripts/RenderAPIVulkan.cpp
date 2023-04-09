@@ -620,13 +620,7 @@ namespace ZXEngine
 
     void RenderAPIVulkan::DeleteShader(uint32_t id)
     {
-        auto pipeline = GetPipelineByIndex(id);
-
-        vkDestroyDescriptorSetLayout(device, pipeline->descriptorSetLayout, VK_NULL_HANDLE);
-        vkDestroyPipeline(device, pipeline->pipeline, VK_NULL_HANDLE);
-        vkDestroyPipelineLayout(device, pipeline->pipelineLayout, VK_NULL_HANDLE);
-
-        pipeline->inUse = false;
+        DestroyPipelineByIndex(id);
     }
 
     // Vulkan里不要立刻删除材质数据，因为Vulkan会同时处理多帧，调用删除的时候可能还有一帧正在并行处理
@@ -635,27 +629,6 @@ namespace ZXEngine
     {
         // 这里第二个参数的意思是这个材质要等这么多帧才能删除
         materialDatasToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT));
-    }
-
-    // 真正删除材质数据
-    void RenderAPIVulkan::RealDeleteMaterialData(uint32_t id)
-    {
-        auto vulkanMaterialData = GetMaterialDataByIndex(id);
-
-        vkDestroyDescriptorPool(device, vulkanMaterialData->descriptorPool, VK_NULL_HANDLE);
-
-        for (auto& uniformBuffer : vulkanMaterialData->vertUniformBuffers)
-            DestroyUniformBuffer(uniformBuffer);
-        for (auto& uniformBuffer : vulkanMaterialData->geomUniformBuffers)
-            DestroyUniformBuffer(uniformBuffer);
-        for (auto& uniformBuffer : vulkanMaterialData->fragUniformBuffers)
-            DestroyUniformBuffer(uniformBuffer);
-        
-        vulkanMaterialData->vertUniformBuffers.clear();
-        vulkanMaterialData->geomUniformBuffers.clear();
-        vulkanMaterialData->fragUniformBuffers.clear();
-
-        vulkanMaterialData->inUse = false;
     }
 
     FrameBufferObject* RenderAPIVulkan::CreateFrameBufferObject(FrameBufferType type, unsigned int width, unsigned int height)
@@ -979,26 +952,6 @@ namespace ZXEngine
     void RenderAPIVulkan::DeleteMesh(unsigned int VAO)
     {
         meshsToDelete.insert(pair(VAO, MAX_FRAMES_IN_FLIGHT));
-    }
-
-    void RenderAPIVulkan::RealDeleteMesh(unsigned int VAO)
-    {
-        auto meshBuffer = GetVAOByIndex(VAO);
-        meshBuffer->inUse = false;
-
-        if (meshBuffer->indexBufferAddress != nullptr)
-        {
-            vmaUnmapMemory(vmaAllocator, meshBuffer->indexBufferAlloc);
-            meshBuffer->indexBufferAddress = nullptr;
-        }
-        vmaDestroyBuffer(vmaAllocator, meshBuffer->indexBuffer, meshBuffer->indexBufferAlloc);
-
-        if (meshBuffer->vertexBufferAddress != nullptr)
-        {
-            vmaUnmapMemory(vmaAllocator, meshBuffer->vertexBufferAlloc);
-            meshBuffer->vertexBufferAddress = nullptr;
-        }
-        vmaDestroyBuffer(vmaAllocator, meshBuffer->vertexBuffer, meshBuffer->vertexBufferAlloc);
     }
 
     void RenderAPIVulkan::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
@@ -1447,6 +1400,27 @@ namespace ZXEngine
         return VulkanVAOArray[idx];
     }
 
+    void RenderAPIVulkan::DestroyVAOByIndex(uint32_t idx)
+    {
+        auto meshBuffer = GetVAOByIndex(idx);
+
+        if (meshBuffer->indexBufferAddress != nullptr)
+        {
+            vmaUnmapMemory(vmaAllocator, meshBuffer->indexBufferAlloc);
+            meshBuffer->indexBufferAddress = nullptr;
+        }
+        vmaDestroyBuffer(vmaAllocator, meshBuffer->indexBuffer, meshBuffer->indexBufferAlloc);
+
+        if (meshBuffer->vertexBufferAddress != nullptr)
+        {
+            vmaUnmapMemory(vmaAllocator, meshBuffer->vertexBufferAlloc);
+            meshBuffer->vertexBufferAddress = nullptr;
+        }
+        vmaDestroyBuffer(vmaAllocator, meshBuffer->vertexBuffer, meshBuffer->vertexBufferAlloc);
+    
+        meshBuffer->inUse = false;
+    }
+
     uint32_t RenderAPIVulkan::GetNextFBOIndex()
     {
         uint32_t length = (uint32_t)VulkanFBOArray.size();
@@ -1609,6 +1583,17 @@ namespace ZXEngine
         return VulkanPipelineArray[idx];
     }
 
+    void RenderAPIVulkan::DestroyPipelineByIndex(uint32_t idx)
+    {
+        auto pipeline = GetPipelineByIndex(idx);
+
+        vkDestroyDescriptorSetLayout(device, pipeline->descriptorSetLayout, VK_NULL_HANDLE);
+        vkDestroyPipeline(device, pipeline->pipeline, VK_NULL_HANDLE);
+        vkDestroyPipelineLayout(device, pipeline->pipelineLayout, VK_NULL_HANDLE);
+
+        pipeline->inUse = false;
+    }
+
     uint32_t RenderAPIVulkan::GetNextMaterialDataIndex()
     {
         uint32_t length = (uint32_t)VulkanMaterialDataArray.size();
@@ -1627,6 +1612,27 @@ namespace ZXEngine
     VulkanMaterialData* RenderAPIVulkan::GetMaterialDataByIndex(uint32_t idx)
     {
         return VulkanMaterialDataArray[idx];
+    }
+
+    void RenderAPIVulkan::DestroyMaterialDataByIndex(uint32_t idx)
+    {
+        auto vulkanMaterialData = GetMaterialDataByIndex(idx);
+
+        vkDestroyDescriptorPool(device, vulkanMaterialData->descriptorPool, VK_NULL_HANDLE);
+        vulkanMaterialData->descriptorSets.clear();
+
+        for (auto& uniformBuffer : vulkanMaterialData->vertUniformBuffers)
+            DestroyUniformBuffer(uniformBuffer);
+        for (auto& uniformBuffer : vulkanMaterialData->geomUniformBuffers)
+            DestroyUniformBuffer(uniformBuffer);
+        for (auto& uniformBuffer : vulkanMaterialData->fragUniformBuffers)
+            DestroyUniformBuffer(uniformBuffer);
+
+        vulkanMaterialData->vertUniformBuffers.clear();
+        vulkanMaterialData->geomUniformBuffers.clear();
+        vulkanMaterialData->fragUniformBuffers.clear();
+
+        vulkanMaterialData->inUse = false;
     }
 
     void* RenderAPIVulkan::GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx)
@@ -3240,7 +3246,7 @@ namespace ZXEngine
         }
         for (auto id : deleteList)
         {
-            RealDeleteMaterialData(id);
+            DestroyMaterialDataByIndex(id);
             materialDatasToDelete.erase(id);
         }
 
@@ -3255,7 +3261,7 @@ namespace ZXEngine
         }
         for (auto id : deleteList)
         {
-            RealDeleteMesh(id);
+            DestroyVAOByIndex(id);
             meshsToDelete.erase(id);
         }
     }

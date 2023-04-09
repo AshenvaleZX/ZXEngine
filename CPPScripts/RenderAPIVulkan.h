@@ -197,6 +197,7 @@ namespace ZXEngine
 
         uint32_t GetNextVAOIndex();
         VulkanVAO* GetVAOByIndex(uint32_t idx);
+        void DestroyVAOByIndex(uint32_t idx);
         uint32_t GetNextFBOIndex();
         VulkanFBO* GetFBOByIndex(uint32_t idx);
         void DestroyFBOByIndex(uint32_t idx);
@@ -208,8 +209,10 @@ namespace ZXEngine
         void DestroyTextureByIndex(uint32_t idx);
         uint32_t GetNextPipelineIndex();
         VulkanPipeline* GetPipelineByIndex(uint32_t idx);
+        void DestroyPipelineByIndex(uint32_t idx);
         uint32_t GetNextMaterialDataIndex();
         VulkanMaterialData* GetMaterialDataByIndex(uint32_t idx);
+        void DestroyMaterialDataByIndex(uint32_t idx);
         uint32_t GetNextDrawCommandIndex();
         VulkanDrawCommand* GetDrawCommandByIndex(uint32_t idx);
 
@@ -257,8 +260,6 @@ namespace ZXEngine
 
         // 检查是否有需要延迟卸载的资源
         void CheckDeleteData();
-        void RealDeleteMesh(uint32_t id);
-        void RealDeleteMaterialData(uint32_t id);
 
 
     /// <summary>
