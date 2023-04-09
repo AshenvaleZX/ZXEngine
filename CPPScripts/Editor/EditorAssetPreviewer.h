@@ -42,7 +42,8 @@ namespace ZXEngine
 		CubeMap* shadowCubeMap;
 		RenderStateSetting* renderState;
 		RenderStateSetting* previewQuadRenderState;
-		uint32_t drawCommandID = 0;
+		uint32_t drawQuadCommandID = 0;
+		uint32_t drawPreviewCommandID = 0;
 
 		void RenderMaterialPreview(AssetMaterialInfo* info);
 		void RenderModelPreview(AssetModelInfo* info);

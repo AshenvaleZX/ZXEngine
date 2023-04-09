@@ -164,7 +164,7 @@ namespace ZXEngine
         viewPortInfo.xOffset = xOffset;
 
         // 传入的参数是按0点在左下角的标准来的，Vulkan的0点在左上角，如果有偏移(编辑器模式)的话，Y轴偏移量要重新计算一下
-        if (yOffset == 0)
+        if (xOffset == 0 && yOffset == 0)
             viewPortInfo.yOffset = yOffset;
         else
             viewPortInfo.yOffset = ProjectSetting::srcHeight - height - yOffset;
@@ -862,7 +862,8 @@ namespace ZXEngine
         drawCmd->commandType = commandType;
 
         if (commandType == CommandType::ShadowGeneration || commandType == CommandType::ForwardRendering ||
-            commandType == CommandType::AfterEffectRendering || commandType == CommandType::UIRendering)
+            commandType == CommandType::AfterEffectRendering || commandType == CommandType::UIRendering || 
+            commandType == CommandType::AssetPreviewer)
         {
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
