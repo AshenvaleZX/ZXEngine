@@ -95,7 +95,7 @@ namespace ZXEngine
 		else if (type == ShaderPropertyType::ENGINE_DEPTH_CUBE_MAP)
 		{
 			// 先设置SetMaterialProperties获得引擎纹理的初始textureIdx，然后++
-			SetCubeMap(name, engineProperties->shadowCubeMap, textureIdx, false, true);
+			SetCubeMap(name, engineProperties->shadowCubeMap, textureIdx, false, engineProperties->isShadowCubeMapBuffer);
 			textureIdx++;
 		}
 	}

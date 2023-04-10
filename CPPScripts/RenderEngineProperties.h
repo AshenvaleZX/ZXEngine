@@ -21,8 +21,8 @@ namespace ZXEngine
 		void SetLightProperties(Light* light);
 		void SetCameraProperties(Camera* camera);
 		void SetRendererProperties(MeshRenderer* renderer);
-		void SetShadowMap(unsigned int id);
-		void SetShadowCubeMap(unsigned int id);
+		void SetShadowMap(uint32_t id, bool isBuffer = true);
+		void SetShadowCubeMap(uint32_t id, bool isBuffer = true);
 
 	private:
 		Matrix4 matM;
@@ -35,7 +35,9 @@ namespace ZXEngine
 		Vector3 lightColor;
 		float lightIntensity = 1.0f;
 
-		unsigned int shadowMap = 0;
-		unsigned int shadowCubeMap = 0;
+		uint32_t shadowMap = 0;
+		bool isShadowMapBuffer = true;
+		uint32_t shadowCubeMap = 0;
+		bool isShadowCubeMapBuffer = true;
 	};
 }

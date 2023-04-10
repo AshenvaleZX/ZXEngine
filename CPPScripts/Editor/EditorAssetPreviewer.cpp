@@ -140,6 +140,7 @@ namespace ZXEngine
 		engineProperties->lightColor = Vector3(1.0f, 1.0f, 1.0f);
 		engineProperties->lightIntensity = 1.0f;
 		engineProperties->shadowCubeMap = shadowCubeMap->GetID();
+		engineProperties->isShadowCubeMapBuffer = false;
 
 		material->SetEngineProperties();
 

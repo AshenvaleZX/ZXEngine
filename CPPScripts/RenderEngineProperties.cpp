@@ -38,13 +38,15 @@ namespace ZXEngine
 		matM = renderer->GetTransform()->GetModelMatrix();
 	}
 
-	void RenderEngineProperties::SetShadowMap(unsigned int id)
+	void RenderEngineProperties::SetShadowMap(uint32_t id, bool isBuffer)
 	{
 		shadowMap = id;
+		isShadowMapBuffer = isBuffer;
 	}
 
-	void RenderEngineProperties::SetShadowCubeMap(unsigned int id)
+	void RenderEngineProperties::SetShadowCubeMap(uint32_t id, bool isBuffer)
 	{
 		shadowCubeMap = id;
+		isShadowCubeMapBuffer = isBuffer;
 	}
 }
