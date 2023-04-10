@@ -68,6 +68,26 @@ namespace ZXEngine
 	void EditorDataManager::SetSelectedGO(GameObject* go)
 	{
 		selectedGO = go;
+
+		if (curAssetInfo != nullptr)
+		{
+			// delete上一个AssetInfo的时候需要先把指针映射成对应类型，才能正确调用析构函数，确保内存正确释放
+			if (selectedAsset->type == AssetType::Script)
+				delete static_cast<AssetScriptInfo*>(curAssetInfo);
+			else if (selectedAsset->type == AssetType::Shader)
+				delete static_cast<AssetShaderInfo*>(curAssetInfo);
+			else if (selectedAsset->type == AssetType::Texture)
+				delete static_cast<AssetTextureInfo*>(curAssetInfo);
+			else if (selectedAsset->type == AssetType::Material)
+				delete static_cast<AssetMaterialInfo*>(curAssetInfo);
+			else if (selectedAsset->type == AssetType::Model)
+				delete static_cast<AssetModelInfo*>(curAssetInfo);
+			else
+				delete curAssetInfo;
+			// delete后立刻重新赋值为nullptr，防止连续delete指针出现无法预期的行为导致直接崩溃
+			curAssetInfo = nullptr;
+		}
+		selectedAsset = nullptr;
 	}
 
 	void EditorDataManager::SetSelectedAsset(EditorAssetNode* asset)

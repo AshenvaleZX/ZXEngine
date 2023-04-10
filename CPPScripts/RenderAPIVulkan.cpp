@@ -446,7 +446,7 @@ namespace ZXEngine
 
     void RenderAPIVulkan::DeleteTexture(unsigned int id)
     {
-        DestroyTextureByIndex(id);
+        texturesToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT));
     }
 
     ShaderReference* RenderAPIVulkan::LoadAndSetUpShader(const char* path, FrameBufferType type)
@@ -628,7 +628,7 @@ namespace ZXEngine
     void RenderAPIVulkan::DeleteMaterialData(uint32_t id)
     {
         // 这里第二个参数的意思是这个材质要等这么多帧才能删除
-        materialDatasToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT));
+        materialDatasToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT ));
     }
 
     FrameBufferObject* RenderAPIVulkan::CreateFrameBufferObject(FrameBufferType type, unsigned int width, unsigned int height)
@@ -3248,6 +3248,21 @@ namespace ZXEngine
         {
             DestroyMaterialDataByIndex(id);
             materialDatasToDelete.erase(id);
+        }
+
+        // Texture
+        deleteList.clear();
+        for (auto& iter : texturesToDelete)
+        {
+            if (iter.second > 0)
+                iter.second--;
+            else
+                deleteList.push_back(iter.first);
+        }
+        for (auto id : deleteList)
+        {
+            DestroyTextureByIndex(id);
+            texturesToDelete.erase(id);
         }
 
         // Mesh

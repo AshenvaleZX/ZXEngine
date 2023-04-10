@@ -193,6 +193,7 @@ namespace ZXEngine
 
         vector<VkRenderPass> allVulkanRenderPass;
         map<uint32_t, uint32_t> meshsToDelete;
+        map<uint32_t, uint32_t> texturesToDelete;
         map<uint32_t, uint32_t> materialDatasToDelete;
 
         uint32_t GetNextVAOIndex();
