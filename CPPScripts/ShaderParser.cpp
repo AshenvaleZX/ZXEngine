@@ -410,6 +410,10 @@ namespace ZXEngine
 		if (begin == string::npos)
 			return "";
 
+		// BlockName必须是一个单独的词，不是其它函数名或者变量的一部分
+		if ((begin > 0 && isalnum(code[begin - 1])) || (begin + blockName.size() < code.size() && isalnum(code[begin + blockName.size()])))
+			return "";
+
 		int level = 0;
 		size_t s = 0, e = 0;
 
