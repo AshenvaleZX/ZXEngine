@@ -96,6 +96,11 @@ namespace ZXEngine
     {
         vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
+        // 检查是否有需要卸载的资源，并进行卸载
+        // 这个函数调用时机比较关键，因为如果有资源被CommandBuffer引用了，那么必须在引用资源的CommandBuffer have completed execution之后才可以卸载
+        // 这里写在刚刚WaitForFence之后，可以保证CommandBuffer此时的状态是满足have completed execution要求的
+        CheckDeleteData();
+
         VkResult result = vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, presentImageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &curPresentImageIdx);
         // 交换链和Surface已经不兼容了，不能继续用了，一般是窗口大小变化导致的
         if (result == VK_ERROR_OUT_OF_DATE_KHR)
@@ -126,8 +131,6 @@ namespace ZXEngine
             RecreateSwapChain();
         else if (result != VK_SUCCESS)
             throw std::runtime_error("failed to present swap chain image!");
-
-        CheckDeleteData();
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
