@@ -95,6 +95,7 @@ namespace ZXEngine
 		OpenGLMaterialData* GetMaterialDataByIndex(uint32_t idx);
 
 		void CheckError();
+		void RealCheckError();
 		void CheckCompileErrors(unsigned int shader, std::string type);
 		void UpdateRenderState();
 		void UpdateMaterialData();

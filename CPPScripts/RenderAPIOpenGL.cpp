@@ -59,6 +59,8 @@ namespace ZXEngine
 		targetState = new RenderStateSetting();
 		curRealState = new RenderStateSetting();
 		FBOClearInfoMap[0] = {};
+
+		CheckError();
 	}
 
 	void RenderAPIOpenGL::BeginFrame()
@@ -68,7 +70,7 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::EndFrame()
 	{
-		CheckError();
+		RealCheckError();
 	}
 
 	void RenderAPIOpenGL::OnWindowSizeChange(uint32_t width, uint32_t height)
@@ -108,11 +110,13 @@ namespace ZXEngine
 			curFBOID = id;
 			glBindFramebuffer(GL_FRAMEBUFFER, id);
 		}
+		CheckError();
 	}
 
 	void RenderAPIOpenGL::SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset, unsigned int yOffset)
 	{
 		glViewport(xOffset, yOffset, width, height);
+		CheckError();
 	}
 
 	void RenderAPIOpenGL::ClearFrameBuffer()
@@ -138,6 +142,7 @@ namespace ZXEngine
 			stateDirty = true;
 		}
 		glClear(GL_COLOR_BUFFER_BIT);
+		CheckError();
 	}
 
 	void RenderAPIOpenGL::ClearDepthBuffer(float depth)
@@ -162,6 +167,7 @@ namespace ZXEngine
 			stateDirty = true;
 		}
 		glClear(GL_DEPTH_BUFFER_BIT);
+		CheckError();
 	}
 
 	void RenderAPIOpenGL::ClearStencilBuffer(int stencil)
@@ -173,9 +179,16 @@ namespace ZXEngine
 			stateDirty = true;
 		}
 		glClear(GL_STENCIL_BUFFER_BIT);
+		CheckError();
 	}
 
 	void RenderAPIOpenGL::CheckError()
+	{
+		if (ProjectSetting::enableValidationLayer)
+			RealCheckError();
+	}
+
+	void RenderAPIOpenGL::RealCheckError()
 	{
 		GLenum error = glGetError();
 		if (error == GL_NO_ERROR)
@@ -232,6 +245,7 @@ namespace ZXEngine
 			Debug::LogError("Texture failed to load at path: " + p);
 			stbi_image_free(data);
 		}
+		CheckError();
 
 		return textureID;
 	}
@@ -239,6 +253,7 @@ namespace ZXEngine
 	void RenderAPIOpenGL::DeleteTexture(unsigned int id)
 	{
 		glDeleteTextures(1, &id);
+		CheckError();
 	}
 
 	unsigned int RenderAPIOpenGL::LoadCubeMap(const vector<string>& faces)
@@ -267,6 +282,8 @@ namespace ZXEngine
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE); // 纹理的第三个轴，类似普通点坐标的z，因为cubemap是3D的纹理
+		
+		CheckError();
 
 		return textureID;
 	}
@@ -291,6 +308,8 @@ namespace ZXEngine
 
 		// 还原默认设置
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
+		CheckError();
 
 		return textureID;
 	}
@@ -347,6 +366,8 @@ namespace ZXEngine
 		reference->ID = ID;
 		reference->shaderInfo = ShaderParser::GetShaderInfo(shaderCode);
 
+		CheckError();
+
 		return reference;
 	}
 
@@ -355,6 +376,7 @@ namespace ZXEngine
 		delete materialDataInShaders[id];
 		materialDataInShaders.erase(id);
 		glDeleteProgram(id);
+		CheckError();
 	}
 
 	uint32_t RenderAPIOpenGL::CreateMaterialData()
@@ -417,6 +439,7 @@ namespace ZXEngine
 				Debug::LogError("ERROR::PROGRAM_LINKING_ERROR of type: " + type + "\n" + infoLog + "\n -- --------------------------------------------------- -- ");
 			}
 		}
+		CheckError();
 	}
 
 	FrameBufferObject* RenderAPIOpenGL::CreateFrameBufferObject(FrameBufferType type, unsigned int width, unsigned int height)
@@ -583,6 +606,7 @@ namespace ZXEngine
 		}
 
 		FBOClearInfoMap[FBO->ID] = clearInfo;
+		CheckError();
 
 		return FBO;
 	}
@@ -603,6 +627,7 @@ namespace ZXEngine
 		}
 
 		glDeleteFramebuffers(1, &FBO->ID);
+		CheckError();
 	}
 
 	void RenderAPIOpenGL::GenerateParticleMesh(unsigned int& VAO)
@@ -636,6 +661,7 @@ namespace ZXEngine
 		glBindVertexArray(0);
 
 		meshBuffer->inUse = true;
+		CheckError();
 	}
 
 	uint32_t RenderAPIOpenGL::AllocateDrawCommand(CommandType commandType)
@@ -661,6 +687,7 @@ namespace ZXEngine
 		// 绘制完重置一下(不重置也行，不过及时重置避免出问题)
 		glBindVertexArray(0);
 
+		CheckError();
 #ifdef ZX_DEBUG
 		Debug::drawCallCount++;
 #endif
@@ -680,6 +707,8 @@ namespace ZXEngine
 		glDeleteVertexArrays(1, &meshBuffer->VAO);
 
 		meshBuffer->inUse = false;
+
+		CheckError();
 	}
 
 	void RenderAPIOpenGL::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
@@ -726,6 +755,8 @@ namespace ZXEngine
 		glBindVertexArray(0);
 
 		meshBuffer->inUse = true;
+
+		CheckError();
 	}
 
 	void RenderAPIOpenGL::SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize)
@@ -761,6 +792,8 @@ namespace ZXEngine
 		glBindVertexArray(0);
 
 		meshBuffer->inUse = true;
+
+		CheckError();
 	}
 
 	void RenderAPIOpenGL::UpdateDynamicMesh(unsigned int VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
@@ -780,12 +813,15 @@ namespace ZXEngine
 
 		// 还原
 		glBindVertexArray(0);
+
+		CheckError();
 	}
 
 	void RenderAPIOpenGL::UseShader(unsigned int ID)
 	{
 		curShaderID = ID;
 		glUseProgram(ID);
+		CheckError();
 	}
 
 	// Boolean
@@ -797,6 +833,7 @@ namespace ZXEngine
 	void RenderAPIOpenGL::RealSetShaderScalar(const string& name, bool value)
 	{
 		glUniform1i(glGetUniformLocation(curShaderID, name.c_str()), (int)value);
+		CheckError();
 	}
 
 	// Integer
@@ -808,6 +845,7 @@ namespace ZXEngine
 	void RenderAPIOpenGL::RealSetShaderScalar(const string& name, int value)
 	{
 		glUniform1i(glGetUniformLocation(curShaderID, name.c_str()), value);
+		CheckError();
 	}
 
 	// Float
@@ -819,6 +857,7 @@ namespace ZXEngine
 	void RenderAPIOpenGL::RealSetShaderScalar(const string& name, float value)
 	{
 		glUniform1f(glGetUniformLocation(curShaderID, name.c_str()), value);
+		CheckError();
 	}
 
 	// Vector2
@@ -838,6 +877,7 @@ namespace ZXEngine
 		value.ToArray(array);
 		glUniform2fv(glGetUniformLocation(curShaderID, name.c_str()), 1, array);
 		delete[] array;
+		CheckError();
 	}
 
 	// Vector3
@@ -857,6 +897,7 @@ namespace ZXEngine
 		value.ToArray(array);
 		glUniform3fv(glGetUniformLocation(curShaderID, name.c_str()), 1, array);
 		delete[] array;
+		CheckError();
 	}
 
 	// Vector4
@@ -876,6 +917,7 @@ namespace ZXEngine
 		value.ToArray(array);
 		glUniform4fv(glGetUniformLocation(curShaderID, name.c_str()), 1, array);
 		delete[] array;
+		CheckError();
 	}
 
 	// Matrix3
@@ -895,6 +937,7 @@ namespace ZXEngine
 		value.ToColumnMajorArray(array);
 		glUniformMatrix3fv(glGetUniformLocation(curShaderID, name.c_str()), 1, GL_FALSE, array);
 		delete[] array;
+		CheckError();
 	}
 
 	// Matrix4
@@ -914,6 +957,7 @@ namespace ZXEngine
 		value.ToColumnMajorArray(array);
 		glUniformMatrix4fv(glGetUniformLocation(curShaderID, name.c_str()), 1, GL_FALSE, array);
 		delete[] array;
+		CheckError();
 	}
 
 	// Texture
@@ -927,6 +971,7 @@ namespace ZXEngine
 		glUniform1i(glGetUniformLocation(curShaderID, name.c_str()), idx);
 		glActiveTexture(GL_TEXTURE0 + idx);
 		glBindTexture(GL_TEXTURE_2D, ID);
+		CheckError();
 	}
 
 	// Cube Map
@@ -940,6 +985,7 @@ namespace ZXEngine
 		glUniform1i(glGetUniformLocation(curShaderID, name.c_str()), idx);
 		glActiveTexture(GL_TEXTURE0 + idx);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
+		CheckError();
 	}
 
 	void RenderAPIOpenGL::UpdateRenderState()
@@ -989,6 +1035,8 @@ namespace ZXEngine
 			glClearStencil(targetState->clearStencil);
 
 		*curRealState = *targetState;
+
+		CheckError();
 	}
 
 	void RenderAPIOpenGL::UpdateMaterialData()
