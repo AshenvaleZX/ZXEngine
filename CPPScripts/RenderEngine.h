@@ -31,7 +31,7 @@ namespace ZXEngine
 		void EndRender();
 		
 	private:
-		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-		void SwapBufferAndPollPollEvents();
+		// 获取输入事件
+		void PollEvents();
 	};
 }

@@ -11,6 +11,7 @@
 #include "MaterialData.h"
 #include "ProjectSetting.h"
 #include "FBOManager.h"
+#include "RenderEngine.h"
 
 namespace ZXEngine
 {
@@ -70,6 +71,7 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::EndFrame()
 	{
+		glfwSwapBuffers(RenderEngine::GetInstance()->window);
 		RealCheckError();
 	}
 

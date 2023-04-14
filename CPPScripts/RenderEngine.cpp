@@ -80,11 +80,8 @@ namespace ZXEngine
 		glfwSetWindowShouldClose(window, true);
 	}
 
-	void RenderEngine::SwapBufferAndPollPollEvents()
+	void RenderEngine::PollEvents()
 	{
-#ifdef ZX_API_OPENGL
-		glfwSwapBuffers(window);
-#endif
 		glfwPollEvents();
 	}
 
@@ -110,7 +107,6 @@ namespace ZXEngine
 	void RenderEngine::EndRender()
 	{
 		RenderAPI::GetInstance()->EndFrame();
-		// 交换前后缓冲区，poll事件
-		SwapBufferAndPollPollEvents();
+		PollEvents();
 	}
 }
