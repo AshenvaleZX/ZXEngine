@@ -12,6 +12,9 @@
 #include "ProjectSetting.h"
 #include "FBOManager.h"
 #include "RenderEngine.h"
+#ifdef ZX_EDITOR
+#include "Editor/ImGuiTextureManager.h"
+#endif
 
 namespace ZXEngine
 {
@@ -255,6 +258,9 @@ namespace ZXEngine
 	void RenderAPIOpenGL::DeleteTexture(unsigned int id)
 	{
 		glDeleteTextures(1, &id);
+#ifdef ZX_EDITOR
+		ImGuiTextureManager::GetInstance()->DeleteByEngineID(id);
+#endif
 		CheckError();
 	}
 
