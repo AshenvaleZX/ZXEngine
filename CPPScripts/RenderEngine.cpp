@@ -80,11 +80,6 @@ namespace ZXEngine
 		glfwSetWindowShouldClose(window, true);
 	}
 
-	void RenderEngine::PollEvents()
-	{
-		glfwPollEvents();
-	}
-
 	int RenderEngine::WindowShouldClose()
 	{
 		return glfwWindowShouldClose(window);
@@ -107,6 +102,5 @@ namespace ZXEngine
 	void RenderEngine::EndRender()
 	{
 		RenderAPI::GetInstance()->EndFrame();
-		PollEvents();
 	}
 }

@@ -29,6 +29,7 @@ namespace ZXEngine
 	private:
 		int buttonState[(int)InputButton::END];
 
+		void PollEvents();
 		void CheckKey(int id, InputButton button, EventType e);
 		void CheckMouse(int id, InputButton button, EventType e);
 		void RegisterMouse();

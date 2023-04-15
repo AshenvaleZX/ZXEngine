@@ -37,6 +37,7 @@ namespace ZXEngine
 
 	void InputManager::Update()
 	{
+		PollEvents();
 #ifdef ZX_EDITOR
 		if (!EditorInputManager::GetInstance()->IsProcessGameInput())
 			return;
@@ -88,6 +89,11 @@ namespace ZXEngine
 		CheckKey(GLFW_KEY_LEFT, InputButton::KEY_LEFT, EventType::KEY_LEFT_PRESS);
 		CheckKey(GLFW_KEY_DOWN, InputButton::KEY_DOWN, EventType::KEY_DOWN_PRESS);
 		CheckKey(GLFW_KEY_UP, InputButton::KEY_UP, EventType::KEY_UP_PRESS);
+	}
+
+	void InputManager::PollEvents()
+	{
+		glfwPollEvents();
 	}
 
 	void InputManager::CheckKey(int id, InputButton button, EventType e)

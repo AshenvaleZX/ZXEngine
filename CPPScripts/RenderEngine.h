@@ -29,9 +29,5 @@ namespace ZXEngine
 		void BeginRender();
 		void Render(Camera* camera);
 		void EndRender();
-		
-	private:
-		// 获取输入事件
-		void PollEvents();
 	};
 }
