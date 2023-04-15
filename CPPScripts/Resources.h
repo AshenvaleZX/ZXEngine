@@ -15,6 +15,8 @@ namespace ZXEngine
 		string path;
 		string shaderPath;
 		vector<TextureStruct*> textures;
+
+		~MaterialStruct() { for (auto iter : textures) delete iter; }
 	};
 
 	struct PrefabStruct
@@ -24,12 +26,16 @@ namespace ZXEngine
 		list<json> components;
 		PrefabStruct* parent;
 		vector<PrefabStruct*> children;
+
+		~PrefabStruct() { for (auto iter : children) delete iter; }
 	};
 
 	struct SceneStruct
 	{
 		vector<string> skyBox;
-		list<PrefabStruct*> prefabs;
+		vector<PrefabStruct*> prefabs;
+
+		~SceneStruct() { for (auto iter : prefabs) delete iter; }
 	};
 
 	class Resources
