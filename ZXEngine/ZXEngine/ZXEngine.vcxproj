@@ -258,6 +258,9 @@
     <ClCompile Include="..\..\CPPScripts\UITextureRenderer.cpp" />
     <ClCompile Include="..\..\CPPScripts\Utils.cpp" />
     <ClCompile Include="..\..\CPPScripts\Vulkan\SPIRVCompiler.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Window\WindowManager.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Window\WindowManagerGLFW.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Window\WindowManagerWindows.cpp" />
     <ClCompile Include="..\..\CPPScripts\ZCamera.cpp" />
     <ClCompile Include="..\..\CPPScripts\StaticMesh.cpp" />
     <ClCompile Include="..\..\CPPScripts\ZMesh.cpp" />
@@ -391,6 +394,9 @@
     <ClInclude Include="..\..\CPPScripts\Utils.h" />
     <ClInclude Include="..\..\CPPScripts\Vulkan\SPIRVCompiler.h" />
     <ClInclude Include="..\..\CPPScripts\Vulkan\VulkanEnumStruct.h" />
+    <ClInclude Include="..\..\CPPScripts\Window\WindowManager.h" />
+    <ClInclude Include="..\..\CPPScripts\Window\WindowManagerGLFW.h" />
+    <ClInclude Include="..\..\CPPScripts\Window\WindowManagerWindows.h" />
     <ClInclude Include="..\..\CPPScripts\ZCamera.h" />
     <ClInclude Include="..\..\CPPScripts\StaticMesh.h" />
     <ClInclude Include="..\..\CPPScripts\ZMesh.h" />

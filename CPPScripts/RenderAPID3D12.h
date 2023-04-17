@@ -21,8 +21,6 @@ namespace ZXEngine
 		/// 仅启动时一次性初始化的核心D3D12组件及相关变量
 		/// </summary>
 	private:
-		HWND mMainWnd = nullptr;
-
 		const UINT mSwapChainBufferCount = 2;
 
 		// 各类型描述符大小
@@ -46,7 +44,6 @@ namespace ZXEngine
 		vector<D3D12Command> mCommands;
 		ComPtr<ID3D12CommandQueue> mCommandQueue;
 
-		void InitWindow();
 		void InitD3D12();
 		void GetDeviceProperties();
 		void CreateCommandResources();

@@ -1,6 +1,5 @@
 #pragma once
 #include "pubh.h"
-#include <GLFW/glfw3.h>
 
 namespace ZXEngine
 {
@@ -18,10 +17,6 @@ namespace ZXEngine
 		RenderEngine();
 		~RenderEngine() {};
 
-		// ´°¿ÚÏà¹Ø
-		GLFWwindow* window;
-
-		void InitWindow();
 		void CloseWindow(string args);
 		int WindowShouldClose();
 

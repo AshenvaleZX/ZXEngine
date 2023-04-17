@@ -31,6 +31,9 @@
     <Filter Include="Vulkan">
       <UniqueIdentifier>{dc46173f-d973-4a85-a567-8de47d9e0a7e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Window">
+      <UniqueIdentifier>{430c993e-1c7c-4098-ab27-d9dae92e96ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Vendor\Src\glad.c">
@@ -371,6 +374,15 @@
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\RenderAPID3D12.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Window\WindowManager.cpp">
+      <Filter>Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Window\WindowManagerGLFW.cpp">
+      <Filter>Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Window\WindowManagerWindows.cpp">
+      <Filter>Window</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -763,6 +775,15 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\D3D12EnumStruct.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Window\WindowManager.h">
+      <Filter>Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Window\WindowManagerGLFW.h">
+      <Filter>Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Window\WindowManagerWindows.h">
+      <Filter>Window</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

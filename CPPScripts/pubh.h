@@ -2,6 +2,7 @@
 #define ZX_EDITOR
 #define ZX_API_OPENGL
 // #define ZX_API_VULKAN
+// #define ZX_API_D3D12
 
 #include <string>
 #include <list>

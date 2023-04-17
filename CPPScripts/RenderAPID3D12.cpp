@@ -1,5 +1,6 @@
 #include "RenderAPID3D12.h"
 #include "ProjectSetting.h"
+#include "Window/WindowManager.h"
 
 class DxException
 {
@@ -39,43 +40,15 @@ inline std::wstring AnsiToWString(const std::string& str)
     if(FAILED(hr__)) { throw DxException(hr__, L#x, wfn, __LINE__); } \
 }
 
-LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
 namespace ZXEngine
 {
 	RenderAPID3D12::RenderAPID3D12()
 	{
-		InitWindow();
 		InitD3D12();
 		GetDeviceProperties();
 		CreateCommandResources();
 
 		ThrowIfFailed(mD3D12Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence)));
-	}
-
-	void RenderAPID3D12::InitWindow()
-	{
-		WNDCLASSEXW wndClass = {};
-		wndClass.cbSize = sizeof(wndClass);
-		wndClass.style = CS_HREDRAW | CS_VREDRAW;
-		wndClass.lpfnWndProc = WndProc;
-		wndClass.cbClsExtra = 0;
-		wndClass.cbWndExtra = 0;
-		wndClass.hInstance = GetModuleHandle(NULL);
-		wndClass.hIcon = LoadIcon(0, IDI_APPLICATION);
-		wndClass.hCursor = LoadCursor(0, IDC_ARROW);
-		wndClass.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
-		wndClass.lpszMenuName = 0;
-		wndClass.lpszClassName = L"MainWnd";
-		wndClass.hIconSm = LoadIcon(0, IDI_APPLICATION);
-
-		RegisterClassExW(&wndClass);
-
-		mMainWnd = CreateWindowW(wndClass.lpszClassName, L"ZXEngine", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
-			ProjectSetting::srcWidth, ProjectSetting::srcHeight, NULL, NULL, wndClass.hInstance, NULL);
-
-		ShowWindow(mMainWnd, SW_SHOW);
-		UpdateWindow(mMainWnd);
 	}
 
 	void RenderAPID3D12::InitD3D12()
@@ -158,7 +131,7 @@ namespace ZXEngine
 		swapChainDesc.SampleDesc.Quality = msaaSamplesCount == 1 ? 0 : (m4xMSAAQuality - 1);
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDesc.BufferCount = mSwapChainBufferCount;
-		swapChainDesc.OutputWindow = mMainWnd;
+		swapChainDesc.OutputWindow = static_cast<HWND>(WindowManager::GetInstance()->GetWindow());
 		swapChainDesc.Windowed = true;
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
@@ -176,9 +149,4 @@ namespace ZXEngine
 	{
 
 	}
-}
-
-LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-	return ::DefWindowProc(hWnd, msg, wParam, lParam);
 }

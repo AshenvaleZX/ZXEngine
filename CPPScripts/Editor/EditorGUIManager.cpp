@@ -1,6 +1,6 @@
-#include "../RenderEngine.h"
 #include "../ProjectSetting.h"
 #include "../GlobalData.h"
+#include "../Window/WindowManager.h"
 #include "EditorGUIManager.h"
 #include "EditorProjectPanel.h"
 #include "EditorMainBarPanel.h"
@@ -54,7 +54,7 @@ namespace ZXEngine
 
 #ifdef ZX_API_OPENGL
 		const char* glsl_version = "#version 460";
-		ImGui_ImplGlfw_InitForOpenGL(RenderEngine::GetInstance()->window, true);
+		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), true);
 		ImGui_ImplOpenGL3_Init(glsl_version);
 #endif
 #ifdef ZX_API_VULKAN
@@ -259,7 +259,7 @@ namespace ZXEngine
 		}
 
 		// 初始化Vulkan版本的ImGUI
-		ImGui_ImplGlfw_InitForVulkan(RenderEngine::GetInstance()->window, true);
+		ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), true);
 		ImGui_ImplVulkan_InitInfo init_info = {};
 		init_info.Instance = renderAPI->vkInstance;
 		init_info.PhysicalDevice = renderAPI->physicalDevice;

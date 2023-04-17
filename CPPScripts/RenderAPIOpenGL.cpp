@@ -11,7 +11,7 @@
 #include "MaterialData.h"
 #include "ProjectSetting.h"
 #include "FBOManager.h"
-#include "RenderEngine.h"
+#include "Window/WindowManager.h"
 #ifdef ZX_EDITOR
 #include "Editor/ImGuiTextureManager.h"
 #endif
@@ -74,7 +74,7 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::EndFrame()
 	{
-		glfwSwapBuffers(RenderEngine::GetInstance()->window);
+		glfwSwapBuffers(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()));
 		RealCheckError();
 	}
 

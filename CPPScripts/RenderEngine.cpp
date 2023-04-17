@@ -12,6 +12,7 @@
 #include "ParticleSystemManager.h"
 #include "ProjectSetting.h"
 #include "RenderEngineProperties.h"
+#include "Window/WindowManager.h"
 
 namespace ZXEngine
 {
@@ -35,54 +36,19 @@ namespace ZXEngine
 
 	RenderEngine::RenderEngine()
 	{
-		InitWindow();
-	}
-
-	// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-	void FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
-	{
-		RenderAPI::GetInstance()->OnWindowSizeChange(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
-	}
-
-	void RenderEngine::InitWindow()
-	{
-		glfwInit();
-
-#ifdef ZX_API_OPENGL
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#endif
-
-#ifdef ZX_API_VULKAN
-		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-#endif
-
-		window = glfwCreateWindow(ProjectSetting::srcWidth, ProjectSetting::srcHeight, "ZXEngine", NULL, NULL);
-		if (window == NULL)
-		{
-			Debug::LogError("Failed to create GLFW window");
-			glfwTerminate();
-			return;
-		}
-
-#ifdef ZX_API_OPENGL
-		glfwMakeContextCurrent(window);
-#endif
-
-		glfwSetFramebufferSizeCallback(window, FrameBufferSizeCallback);
+		WindowManager::Creat();
 
 		EventManager::GetInstance()->AddEventHandler((int)EventType::KEY_ESCAPE_PRESS, std::bind(&RenderEngine::CloseWindow, this, std::placeholders::_1));
 	}
 
 	void RenderEngine::CloseWindow(string args)
 	{
-		glfwSetWindowShouldClose(window, true);
+		WindowManager::GetInstance()->CloseWindow(args);
 	}
 
 	int RenderEngine::WindowShouldClose()
 	{
-		return glfwWindowShouldClose(window);
+		return WindowManager::GetInstance()->WindowShouldClose();
 	}
 
 	void RenderEngine::BeginRender()

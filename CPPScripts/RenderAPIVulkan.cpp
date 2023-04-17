@@ -1,5 +1,4 @@
 #include "RenderAPIVulkan.h"
-#include "RenderEngine.h"
 #include "GlobalData.h"
 #include <stb_image.h>
 #include "ShaderParser.h"
@@ -10,6 +9,7 @@
 #include "MaterialData.h"
 #include "ProjectSetting.h"
 #include "FBOManager.h"
+#include "Window/WindowManager.h"
 #ifdef ZX_EDITOR
 #include "Editor/EditorGUIManager.h"
 #include "Editor/ImGuiTextureManager.h"
@@ -1888,7 +1888,7 @@ namespace ZXEngine
 
     void RenderAPIVulkan::CreateSurface() {
         // surface的具体创建过程是要区分平台的，这里直接用GLFW封装好的接口来创建
-        if (glfwCreateWindowSurface(vkInstance, RenderEngine::GetInstance()->window, nullptr, &surface) != VK_SUCCESS)
+        if (glfwCreateWindowSurface(vkInstance, static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), nullptr, &surface) != VK_SUCCESS)
             throw std::runtime_error("failed to create window surface!");
     }
 
@@ -2313,7 +2313,7 @@ namespace ZXEngine
         if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
         {
             int width, height;
-            glfwGetFramebufferSize(RenderEngine::GetInstance()->window, &width, &height);
+            glfwGetFramebufferSize(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), &width, &height);
 
             VkExtent2D actualExtent =
             {
@@ -2337,11 +2337,11 @@ namespace ZXEngine
     void RenderAPIVulkan::RecreateSwapChain()
     {
         int width = 0, height = 0;
-        glfwGetFramebufferSize(RenderEngine::GetInstance()->window, &width, &height);
+        glfwGetFramebufferSize(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), &width, &height);
         // 如果窗口大小为0(被最小化了)，那么程序就在这里等待，直到窗口重新弹出
         while (width == 0 || height == 0)
         {
-            glfwGetFramebufferSize(RenderEngine::GetInstance()->window, &width, &height);
+            glfwGetFramebufferSize(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), &width, &height);
             glfwWaitEvents();
         }
 
