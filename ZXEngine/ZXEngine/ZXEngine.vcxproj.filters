@@ -369,6 +369,9 @@
     <ClCompile Include="..\..\CPPScripts\Editor\ImGuiTextureManager.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\RenderAPID3D12.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">
@@ -754,6 +757,12 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Editor\ImGuiTextureManagerVulkan.h">
       <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\RenderAPID3D12.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\D3D12EnumStruct.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -234,6 +234,7 @@
     <ClCompile Include="..\..\CPPScripts\ParticleSystemManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\ProjectSetting.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPI.cpp" />
+    <ClCompile Include="..\..\CPPScripts\RenderAPID3D12.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPIOpenGL.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPIVulkan.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderEngine.cpp" />
@@ -267,6 +268,7 @@
     <ClInclude Include="..\..\CPPScripts\Camera.h" />
     <ClInclude Include="..\..\CPPScripts\Component.h" />
     <ClInclude Include="..\..\CPPScripts\CubeMap.h" />
+    <ClInclude Include="..\..\CPPScripts\D3D12EnumStruct.h" />
     <ClInclude Include="..\..\CPPScripts\Debug.h" />
     <ClInclude Include="..\..\CPPScripts\DynamicMesh.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorDataManager.h" />
@@ -361,6 +363,7 @@
     <ClInclude Include="..\..\CPPScripts\PublicEnum.h" />
     <ClInclude Include="..\..\CPPScripts\PublicStruct.h" />
     <ClInclude Include="..\..\CPPScripts\RenderAPI.h" />
+    <ClInclude Include="..\..\CPPScripts\RenderAPID3D12.h" />
     <ClInclude Include="..\..\CPPScripts\RenderAPIOpenGL.h" />
     <ClInclude Include="..\..\CPPScripts\RenderAPIVulkan.h" />
     <ClInclude Include="..\..\CPPScripts\RenderEngine.h" />
