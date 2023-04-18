@@ -1,5 +1,7 @@
 #include "WindowManagerWindows.h"
+#include <WindowsX.h>
 #include "../ProjectSetting.h"
+#include "../Input/InputManager.h"
 
 namespace ZXEngine
 {
@@ -47,6 +49,13 @@ namespace ZXEngine
 
 	LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
-		return ::DefWindowProc(hWnd, msg, wParam, lParam);
+		switch (msg)
+		{
+		case WM_MOUSEMOVE:
+			InputManager::GetInstance()->UpdateMousePos(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+			return 0;
+		}
+
+		return DefWindowProc(hWnd, msg, wParam, lParam);
 	}
 }

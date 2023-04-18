@@ -12,7 +12,6 @@ namespace ZXEngine
 		virtual void Update();
 		virtual void UpdateMousePos(double xpos, double ypos);
 		virtual void UpdateMouseScroll(double xoffset, double yoffset);
-		virtual void UpdateKeyInput();
 		virtual bool IsShowCursor();
 
 		// To lua
@@ -20,5 +19,10 @@ namespace ZXEngine
 
 	private:
 		bool isCursorShow = true;
+		int mButtonState[(int)InputButton::END];
+
+		void UpdateKeyInput();
+		void CheckKey(int id, InputButton button, EventType e);
+		void InitButtonRecord();
 	};
 }

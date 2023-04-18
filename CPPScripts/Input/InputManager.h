@@ -16,7 +16,6 @@ namespace ZXEngine
 		virtual void Update() = 0;
 		virtual void UpdateMousePos(double xpos, double ypos) = 0;
 		virtual void UpdateMouseScroll(double xoffset, double yoffset) = 0;
-		virtual void UpdateKeyInput() = 0;
 		virtual bool IsShowCursor() = 0;
 
 		// To lua

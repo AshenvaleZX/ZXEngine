@@ -68,7 +68,7 @@ namespace ZXEngine
 		// 从0到9
 		for (int i = 0; i < 10; i++)
 		{
-			CheckKey(GLFW_KEY_0 + i, InputButton((int)InputButton::KEY_0 + i), EventType((int)EventType::KEY_0_PRESS + i));
+			CheckKey(GLFW_KEY_0 + i, InputButton((int)InputButton::KEY_0 + i), EventType((int)EventType::KEY_0_PRESS + i * 3));
 		}
 
 		// 从A到Z
