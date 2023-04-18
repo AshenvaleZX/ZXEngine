@@ -7,7 +7,7 @@
 #include "../ImGui/imgui_impl_opengl3.h"
 #include "../ProjectSetting.h"
 #include "../GlobalData.h"
-#include "../InputManager.h"
+#include "../Input/InputManager.h"
 
 namespace ZXEngine
 {
@@ -67,7 +67,7 @@ namespace ZXEngine
 	bool EditorInputManager::IsProcessGameInput()
 	{
 		// 如果当前未处于编辑器拖拽状态，并且鼠标被游戏捕获或者当前位置在游戏画面区域内，则需要处理游戏输入
-		return !isDragging && (!InputManager::GetInstance()->isCursorShow || CheckCurMousePos() == EditorAreaType::Game);
+		return !isDragging && (!InputManager::GetInstance()->IsShowCursor() || CheckCurMousePos() == EditorAreaType::Game);
 	}
 
 	void EditorInputManager::UpdateMouseScroll(float xOffset, float yOffset)

@@ -34,6 +34,9 @@
     <Filter Include="Window">
       <UniqueIdentifier>{430c993e-1c7c-4098-ab27-d9dae92e96ed}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{06b28a0d-fe7e-41c8-b1fe-85a0a20bc54f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Vendor\Src\glad.c">
@@ -94,9 +97,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\Resources.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\InputManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\EventManager.cpp">
@@ -384,6 +384,15 @@
     <ClCompile Include="..\..\CPPScripts\Window\WindowManagerWindows.cpp">
       <Filter>Window</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Input\InputManager.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Input\InputManagerGLFW.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Input\InputManagerWindows.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">
@@ -462,9 +471,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Resources.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\InputManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\EventManager.h">
@@ -784,6 +790,15 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Window\WindowManagerWindows.h">
       <Filter>Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Input\InputManager.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Input\InputManagerGLFW.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Input\InputManagerWindows.h">
+      <Filter>Input</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

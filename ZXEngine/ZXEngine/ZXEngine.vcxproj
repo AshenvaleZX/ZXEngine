@@ -182,7 +182,9 @@
     <ClCompile Include="..\..\CPPScripts\ImGui\imgui_impl_vulkan.cpp" />
     <ClCompile Include="..\..\CPPScripts\ImGui\imgui_tables.cpp" />
     <ClCompile Include="..\..\CPPScripts\ImGui\imgui_widgets.cpp" />
-    <ClCompile Include="..\..\CPPScripts\InputManager.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Input\InputManager.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Input\InputManagerGLFW.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Input\InputManagerWindows.cpp" />
     <ClCompile Include="..\..\CPPScripts\Light.cpp" />
     <ClCompile Include="..\..\CPPScripts\LuaManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\Lua\lapi.c" />
@@ -306,7 +308,9 @@
     <ClInclude Include="..\..\CPPScripts\ImGui\imstb_rectpack.h" />
     <ClInclude Include="..\..\CPPScripts\ImGui\imstb_textedit.h" />
     <ClInclude Include="..\..\CPPScripts\ImGui\imstb_truetype.h" />
-    <ClInclude Include="..\..\CPPScripts\InputManager.h" />
+    <ClInclude Include="..\..\CPPScripts\Input\InputManager.h" />
+    <ClInclude Include="..\..\CPPScripts\Input\InputManagerGLFW.h" />
+    <ClInclude Include="..\..\CPPScripts\Input\InputManagerWindows.h" />
     <ClInclude Include="..\..\CPPScripts\Light.h" />
     <ClInclude Include="..\..\CPPScripts\LuaManager.h" />
     <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_GameObject.h" />

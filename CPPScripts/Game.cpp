@@ -1,7 +1,7 @@
 #include "Game.h"
 #include "EventManager.h"
 #include "RenderEngine.h"
-#include "InputManager.h"
+#include "Input/InputManager.h"
 #include "Time.h"
 #include "SceneManager.h"
 #include "LuaManager.h"
