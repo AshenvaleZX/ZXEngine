@@ -38,4 +38,19 @@ namespace ZXEngine
         ComPtr<ID3D12Resource> texture = nullptr;
         bool inUse = false;
     };
+
+    struct ZXD3D12VAO
+    {
+        UINT size = 0;
+
+        ComPtr<ID3D12Resource> indexBuffer = nullptr;
+        D3D12_INDEX_BUFFER_VIEW indexBufferView = {};
+        void* indexBufferAddress = nullptr; // Only for dynamic mesh
+
+        ComPtr<ID3D12Resource> vertexBuffer = nullptr;
+        D3D12_VERTEX_BUFFER_VIEW vertexBufferView = {};
+        void* vertexBufferAddress = nullptr; // Only for dynamic mesh
+
+        bool inUse = false;
+    };
 }

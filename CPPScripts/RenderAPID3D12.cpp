@@ -244,14 +244,14 @@ namespace ZXEngine
 		cubeMapDesc.SampleDesc.Quality = 0;
 
 		ComPtr<ID3D12Resource> cubeMapResource;
-		mD3D12Device->CreateCommittedResource(
+		ThrowIfFailed(mD3D12Device->CreateCommittedResource(
 			&cubeMapHeapProps,
 			D3D12_HEAP_FLAG_NONE,
 			&cubeMapDesc,
 			D3D12_RESOURCE_STATE_COPY_DEST,
 			nullptr,
 			IID_PPV_ARGS(&cubeMapResource)
-		);
+		));
 
 		// 创建CubeMap上传堆
 		UINT64 uploadHeapSize;
@@ -311,6 +311,98 @@ namespace ZXEngine
 		DestroyTextureByIndex(id);
 	}
 
+	void RenderAPID3D12::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
+	{
+		VAO = GetNextVAOIndex();
+		auto meshBuffer = GetVAOByIndex(VAO);
+		meshBuffer->size = static_cast<UINT>(indices.size());
+
+		// 创建Vertex Buffer
+		UINT vertexBufferSize = static_cast<UINT>(sizeof(Vertex) * vertices.size());
+		meshBuffer->vertexBuffer = CreateDefaultBuffer(vertices.data(), vertexBufferSize);
+		meshBuffer->vertexBufferView.SizeInBytes = vertexBufferSize;
+		meshBuffer->vertexBufferView.StrideInBytes = sizeof(Vertex);
+		meshBuffer->vertexBufferView.BufferLocation = meshBuffer->vertexBuffer->GetGPUVirtualAddress();
+
+		// 创建Index Buffer
+		UINT indexBufferSize = static_cast<UINT>(sizeof(uint32_t) * indices.size());
+		meshBuffer->indexBuffer = CreateDefaultBuffer(indices.data(), indexBufferSize);
+		meshBuffer->indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+		meshBuffer->indexBufferView.SizeInBytes = indexBufferSize;
+		meshBuffer->indexBufferView.BufferLocation = meshBuffer->indexBuffer->GetGPUVirtualAddress();
+
+		meshBuffer->inUse = true;
+	}
+
+	void RenderAPID3D12::SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize)
+	{
+		VAO = GetNextVAOIndex();
+		auto meshBuffer = GetVAOByIndex(VAO);
+		meshBuffer->size = static_cast<UINT>(indexSize);
+
+		// 创建动态Vertex Buffer
+		UINT vertexBufferSize = static_cast<UINT>(sizeof(Vertex) * vertexSize);
+		CD3DX12_HEAP_PROPERTIES vertexBufferProps(D3D12_HEAP_TYPE_UPLOAD);
+		CD3DX12_RESOURCE_DESC vertexBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
+		ThrowIfFailed(mD3D12Device->CreateCommittedResource(
+			&vertexBufferProps,
+			D3D12_HEAP_FLAG_NONE,
+			&vertexBufferDesc,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(meshBuffer->vertexBuffer.GetAddressOf())));
+
+		meshBuffer->vertexBuffer->Map(0, nullptr, &meshBuffer->vertexBufferAddress);
+
+		// 创建动态Index Buffer
+		UINT indexBufferSize = static_cast<UINT>(sizeof(uint32_t) * indexSize);
+		CD3DX12_HEAP_PROPERTIES indexBufferProps(D3D12_HEAP_TYPE_UPLOAD);
+		CD3DX12_RESOURCE_DESC indexBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(indexBufferSize);
+		ThrowIfFailed(mD3D12Device->CreateCommittedResource(
+			&indexBufferProps,
+			D3D12_HEAP_FLAG_NONE,
+			&indexBufferDesc,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(meshBuffer->indexBuffer.GetAddressOf())));
+
+		meshBuffer->indexBuffer->Map(0, nullptr, &meshBuffer->indexBufferAddress);
+
+		meshBuffer->inUse = true;
+	}
+
+	void RenderAPID3D12::UpdateDynamicMesh(unsigned int VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
+	{
+		auto meshBuffer = GetVAOByIndex(VAO);
+
+		memcpy(meshBuffer->vertexBufferAddress, vertices.data(), vertices.size() * sizeof(Vertex));
+		memcpy(meshBuffer->indexBufferAddress, indices.data(), indices.size() * sizeof(uint32_t));
+	}
+
+	void RenderAPID3D12::GenerateParticleMesh(unsigned int& VAO)
+	{
+		vector<Vertex> vertices =
+		{
+			{.Position = {  0.5f,  0.5f, 0.0f }, .TexCoords = { 1.0f, 0.0f } },
+			{.Position = {  0.5f, -0.5f, 0.0f }, .TexCoords = { 1.0f, 1.0f } },
+			{.Position = { -0.5f,  0.5f, 0.0f }, .TexCoords = { 0.0f, 0.0f } },
+			{.Position = { -0.5f, -0.5f, 0.0f }, .TexCoords = { 0.0f, 1.0f } },
+		};
+
+		vector<uint32_t> indices =
+		{
+			2, 1, 3,
+			2, 0, 1,
+		};
+
+		SetUpStaticMesh(VAO, vertices, indices);
+	}
+
+	void RenderAPID3D12::DeleteMesh(unsigned int VAO)
+	{
+		DestroyVAOByIndex(VAO);
+	}
+
 
 	uint32_t RenderAPID3D12::GetNextFenceIndex()
 	{
@@ -344,6 +436,48 @@ namespace ZXEngine
 		fence->inUse = false;
 	}
 
+	uint32_t RenderAPID3D12::GetNextVAOIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mVAOArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mVAOArray[i]->inUse)
+				return i;
+		}
+
+		mVAOArray.push_back(new ZXD3D12VAO());
+
+		return length;
+	}
+
+	ZXD3D12VAO* RenderAPID3D12::GetVAOByIndex(uint32_t idx)
+	{
+		return mVAOArray[idx];
+	}
+
+	void RenderAPID3D12::DestroyVAOByIndex(uint32_t idx)
+	{
+		auto VAO = mVAOArray[idx];
+
+		if (VAO->indexBufferAddress != nullptr)
+		{
+			VAO->indexBuffer->Unmap(0, nullptr);
+			VAO->indexBufferAddress = nullptr;
+		}
+		if (VAO->vertexBufferAddress != nullptr)
+		{
+			VAO->vertexBuffer->Unmap(0, nullptr);
+			VAO->vertexBufferAddress = nullptr;
+		}
+
+		// 可能不需要手动调这个
+		VAO->indexBuffer.Reset();
+		VAO->vertexBuffer.Reset();
+
+		VAO->inUse = false;
+	}
+
 	uint32_t RenderAPID3D12::GetNextTextureIndex()
 	{
 		uint32_t length = static_cast<uint32_t>(mTextureArray.size());
@@ -372,6 +506,51 @@ namespace ZXEngine
 		texture->texture.Reset();
 
 		texture->inUse = false;
+	}
+
+	ComPtr<ID3D12Resource> RenderAPID3D12::CreateDefaultBuffer(const void* data, UINT64 size)
+	{
+		CD3DX12_HEAP_PROPERTIES defaultBufferProps(D3D12_HEAP_TYPE_DEFAULT);
+		CD3DX12_RESOURCE_DESC defaultBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(size);
+		ComPtr<ID3D12Resource> defaultBuffer;
+		ThrowIfFailed(mD3D12Device->CreateCommittedResource(
+			&defaultBufferProps,
+			D3D12_HEAP_FLAG_NONE,
+			&defaultBufferDesc,
+			D3D12_RESOURCE_STATE_COPY_DEST,
+			nullptr,
+			IID_PPV_ARGS(defaultBuffer.GetAddressOf())));
+
+		CD3DX12_HEAP_PROPERTIES uploadBufferProps(D3D12_HEAP_TYPE_UPLOAD);
+		CD3DX12_RESOURCE_DESC uploadBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(size);
+		ComPtr<ID3D12Resource> uploadBuffer;
+		ThrowIfFailed(mD3D12Device->CreateCommittedResource(
+			&uploadBufferProps,
+			D3D12_HEAP_FLAG_NONE,
+			&uploadBufferDesc,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(uploadBuffer.GetAddressOf())));
+
+		D3D12_SUBRESOURCE_DATA subResourceData = {};
+		subResourceData.pData = data;
+		subResourceData.RowPitch = size;
+		subResourceData.SlicePitch = subResourceData.RowPitch;
+
+		ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList> cmdList)
+		{
+			UpdateSubresources<1>(cmdList.Get(), defaultBuffer.Get(), uploadBuffer.Get(), 0, 0, 1, &subResourceData);
+
+			CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+				defaultBuffer.Get(),
+				D3D12_RESOURCE_STATE_COPY_DEST,
+				D3D12_RESOURCE_STATE_GENERIC_READ
+			);
+
+			cmdList->ResourceBarrier(1, &barrier);
+		});
+
+		return defaultBuffer;
 	}
 
 

@@ -21,6 +21,13 @@ namespace ZXEngine
 		virtual void DeleteTexture(unsigned int id);
 		virtual unsigned int LoadCubeMap(const vector<string>& faces);
 
+		// Mesh设置
+		virtual void DeleteMesh(unsigned int VAO);
+		virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
+		virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize);
+		virtual void UpdateDynamicMesh(unsigned int VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
+		virtual void GenerateParticleMesh(unsigned int& VAO);
+
 
 		/// <summary>
 		/// 仅启动时一次性初始化的核心D3D12组件及相关变量
@@ -62,14 +69,20 @@ namespace ZXEngine
 		/// </summary>
 	private:
 		vector<ZXD3D12Fence*> mFenceArray;
+		vector<ZXD3D12VAO*> mVAOArray;
 		vector<ZXD3D12Texture*> mTextureArray;
 
 		uint32_t GetNextFenceIndex();
 		ZXD3D12Fence* GetFenceByIndex(uint32_t idx);
 		void DestroyFenceByIndex(uint32_t idx);
+		uint32_t GetNextVAOIndex();
+		ZXD3D12VAO* GetVAOByIndex(uint32_t idx);
+		void DestroyVAOByIndex(uint32_t idx);
 		uint32_t GetNextTextureIndex();
 		ZXD3D12Texture* GetTextureByIndex(uint32_t idx);
 		void DestroyTextureByIndex(uint32_t idx);
+
+		ComPtr<ID3D12Resource> CreateDefaultBuffer(const void* initData, UINT64 byteSize);
 
 
 		/// <summary>
