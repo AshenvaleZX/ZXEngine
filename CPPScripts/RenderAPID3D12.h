@@ -16,6 +16,11 @@ namespace ZXEngine
 		virtual void BeginFrame();
 		virtual void EndFrame();
 
+		// 资源加载相关
+		virtual unsigned int LoadTexture(const char* path, int& width, int& height);
+		virtual void DeleteTexture(unsigned int id);
+		virtual unsigned int LoadCubeMap(const vector<string>& faces);
+
 
 		/// <summary>
 		/// 仅启动时一次性初始化的核心D3D12组件及相关变量
@@ -30,6 +35,8 @@ namespace ZXEngine
 
 		// 屏幕后台缓冲区图像格式
 		DXGI_FORMAT mPresentBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+		// 默认的纹理和FrameBuffer色彩空间
+		const DXGI_FORMAT mDefaultImageFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 		// 4X MSAA质量等级
 		UINT m4xMSAAQuality = 0;
 		UINT msaaSamplesCount = 4;
@@ -41,7 +48,7 @@ namespace ZXEngine
 		ComPtr<ID3D12Device> mD3D12Device;
 		ComPtr<IDXGISwapChain> mSwapChain;
 
-		vector<D3D12Command> mCommands;
+		vector<ZXD3D12Command> mCommands;
 		ComPtr<ID3D12CommandQueue> mCommandQueue;
 
 		void InitD3D12();
@@ -54,5 +61,27 @@ namespace ZXEngine
 		/// D3D12资源，以及相关创建销毁接口
 		/// </summary>
 	private:
+		vector<ZXD3D12Fence*> mFenceArray;
+		vector<ZXD3D12Texture*> mTextureArray;
+
+		uint32_t GetNextFenceIndex();
+		ZXD3D12Fence* GetFenceByIndex(uint32_t idx);
+		void DestroyFenceByIndex(uint32_t idx);
+		uint32_t GetNextTextureIndex();
+		ZXD3D12Texture* GetTextureByIndex(uint32_t idx);
+		void DestroyTextureByIndex(uint32_t idx);
+
+
+		/// <summary>
+		/// 其它辅助接口
+		/// </summary>
+	private:
+		UINT64 mImmediateExeFenceValue = 0;
+		ComPtr<ID3D12Fence> mImmediateExeFence;
+		ComPtr<ID3D12CommandAllocator> mImmediateExeAllocator;
+		ComPtr<ID3D12GraphicsCommandList> mImmediateExeCommandList;
+
+		void InitImmediateExecution();
+		void ImmediatelyExecute(std::function<void(ComPtr<ID3D12GraphicsCommandList> cmdList)>&& function);
 	};
 }
