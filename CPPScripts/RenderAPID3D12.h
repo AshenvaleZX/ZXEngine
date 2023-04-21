@@ -6,6 +6,7 @@ namespace ZXEngine
 {
 	class RenderAPID3D12 : public RenderAPI
 	{
+		friend class ZXD3D12DescriptorAllocator;
 		/// <summary>
 		/// 标准RenderAPI接口
 		/// </summary>
@@ -15,6 +16,10 @@ namespace ZXEngine
 
 		virtual void BeginFrame();
 		virtual void EndFrame();
+
+		// FrameBuffer相关
+		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
+		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, const ClearInfo& clearInfo, unsigned int width = 0, unsigned int height = 0);
 
 		// 资源加载相关
 		virtual unsigned int LoadTexture(const char* path, int& width, int& height);
@@ -70,6 +75,8 @@ namespace ZXEngine
 	private:
 		vector<ZXD3D12Fence*> mFenceArray;
 		vector<ZXD3D12VAO*> mVAOArray;
+		vector<ZXD3D12FBO*> mFBOArray;
+		vector<ZXD3D12RenderBuffer*> mRenderBufferArray;
 		vector<ZXD3D12Texture*> mTextureArray;
 
 		uint32_t GetNextFenceIndex();
@@ -78,10 +85,19 @@ namespace ZXEngine
 		uint32_t GetNextVAOIndex();
 		ZXD3D12VAO* GetVAOByIndex(uint32_t idx);
 		void DestroyVAOByIndex(uint32_t idx);
+		uint32_t GetNextFBOIndex();
+		ZXD3D12FBO* GetFBOByIndex(uint32_t idx);
+		void DestroyFBOByIndex(uint32_t idx);
+		uint32_t GetNextRenderBufferIndex();
+		ZXD3D12RenderBuffer* GetRenderBufferByIndex(uint32_t idx);
+		void DestroyRenderBufferByIndex(uint32_t idx);
 		uint32_t GetNextTextureIndex();
 		ZXD3D12Texture* GetTextureByIndex(uint32_t idx);
 		void DestroyTextureByIndex(uint32_t idx);
 
+		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc);
+		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_RENDER_TARGET_VIEW_DESC& rtvDesc);
+		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_DEPTH_STENCIL_VIEW_DESC& dsvDesc);
 		ComPtr<ID3D12Resource> CreateDefaultBuffer(const void* initData, UINT64 byteSize);
 
 

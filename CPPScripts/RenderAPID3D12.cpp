@@ -1,7 +1,9 @@
 #include "RenderAPID3D12.h"
 #include <stb_image.h>
+#include "GlobalData.h"
 #include "ProjectSetting.h"
 #include "Window/WindowManager.h"
+#include "DirectX12/ZXD3D12DescriptorManager.h"
 
 class DxException
 {
@@ -48,6 +50,8 @@ namespace ZXEngine
 		InitD3D12();
 		GetDeviceProperties();
 		CreateCommandResources();
+
+		ZXD3D12DescriptorManager::Creat();
 
 		ThrowIfFailed(mD3D12Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence)));
 	}
@@ -149,6 +153,114 @@ namespace ZXEngine
 
 	}
 
+	FrameBufferObject* RenderAPID3D12::CreateFrameBufferObject(FrameBufferType type, unsigned int width, unsigned int height)
+	{
+		ClearInfo clearInfo = {};
+		return CreateFrameBufferObject(type, clearInfo, width, height);
+	}
+
+	FrameBufferObject* RenderAPID3D12::CreateFrameBufferObject(FrameBufferType type, const ClearInfo& clearInfo, unsigned int width, unsigned int height)
+	{
+		FrameBufferObject* FBO = new FrameBufferObject(type);
+		FBO->clearInfo = clearInfo;
+		FBO->isFollowWindow = width == 0 || height == 0;
+
+		width = width == 0 ? GlobalData::srcWidth : width;
+		height = height == 0 ? GlobalData::srcHeight : height;
+
+		if (type == FrameBufferType::Normal)
+		{
+			FBO->ID = GetNextFBOIndex();
+			FBO->ColorBuffer = GetNextRenderBufferIndex();
+			auto colorBuffer = GetRenderBufferByIndex(FBO->ColorBuffer);
+			colorBuffer->inUse = true;
+			FBO->DepthBuffer = GetNextRenderBufferIndex();
+			auto depthBuffer = GetRenderBufferByIndex(FBO->DepthBuffer);
+			depthBuffer->inUse = true;
+
+			auto D3D12FBO = GetFBOByIndex(FBO->ID);
+			D3D12FBO->colorBufferIdx = FBO->ColorBuffer;
+			D3D12FBO->depthBufferIdx = FBO->DepthBuffer;
+			D3D12FBO->bufferType = FrameBufferType::Normal;
+			D3D12FBO->clearInfo = clearInfo;
+
+			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				// 创建Color Buffer
+				CD3DX12_HEAP_PROPERTIES colorBufferProps(D3D12_HEAP_TYPE_DEFAULT);
+				CD3DX12_RESOURCE_DESC colorBufferDesc(CD3DX12_RESOURCE_DESC::Tex2D(mDefaultImageFormat, width, height, 1, 1));
+				ComPtr<ID3D12Resource> colorBufferResource;
+				ThrowIfFailed(mD3D12Device->CreateCommittedResource(
+					&colorBufferProps,
+					D3D12_HEAP_FLAG_NONE,
+					&colorBufferDesc,
+					D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+					nullptr,
+					IID_PPV_ARGS(&colorBufferResource)
+				));
+				
+				D3D12_SHADER_RESOURCE_VIEW_DESC colorSrvDesc = {};
+				colorSrvDesc.Format = mDefaultImageFormat;
+				colorSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+				colorSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+				colorSrvDesc.Texture2D.MipLevels = 1;
+				colorSrvDesc.Texture2D.MostDetailedMip = 0;
+				colorSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+				D3D12_RENDER_TARGET_VIEW_DESC colorRtvDesc = {};
+				colorRtvDesc.Format = mDefaultImageFormat;
+				colorRtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+				colorRtvDesc.Texture2D.MipSlice = 0;
+
+				colorBuffer->renderBuffers[i] = CreateZXD3D12Texture(colorBufferResource, colorSrvDesc, colorRtvDesc);
+
+				// 创建Depth Buffer
+				CD3DX12_HEAP_PROPERTIES depthBufferProps(D3D12_HEAP_TYPE_DEFAULT);
+				CD3DX12_RESOURCE_DESC depthBufferDesc(CD3DX12_RESOURCE_DESC::Tex2D(mDefaultImageFormat, width, height, 1, 1));
+				ComPtr<ID3D12Resource> depthBufferResource;
+				ThrowIfFailed(mD3D12Device->CreateCommittedResource(
+					&depthBufferProps,
+					D3D12_HEAP_FLAG_NONE,
+					&depthBufferDesc,
+					D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+					nullptr,
+					IID_PPV_ARGS(&depthBufferResource)
+				));
+
+				D3D12_SHADER_RESOURCE_VIEW_DESC depthSrvDesc = {};
+				depthSrvDesc.Format = mDefaultImageFormat;
+				depthSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+				depthSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+				depthSrvDesc.Texture2D.MipLevels = 1;
+				depthSrvDesc.Texture2D.MostDetailedMip = 0;
+				depthSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+				D3D12_RENDER_TARGET_VIEW_DESC depthRtvDesc = {};
+				depthRtvDesc.Format = mDefaultImageFormat;
+				depthRtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+				depthRtvDesc.Texture2D.MipSlice = 0;
+
+				depthBuffer->renderBuffers[i] = CreateZXD3D12Texture(colorBufferResource, depthSrvDesc, depthRtvDesc);
+			}
+
+			D3D12FBO->inUse = true;
+		}
+		else if (type == FrameBufferType::Color)
+		{
+
+		}
+		else if (type == FrameBufferType::ShadowCubeMap)
+		{
+
+		}
+		else
+		{
+			Debug::LogError("Invalide frame buffer type.");
+		}
+
+		return FBO;
+	}
+
 	unsigned int RenderAPID3D12::LoadTexture(const char* path, int& width, int& height)
 	{
 		int nrComponents;
@@ -207,12 +319,15 @@ namespace ZXEngine
 
 		stbi_image_free(pixels);
 
-		uint32_t textureID = GetNextTextureIndex();
-		auto texture = GetTextureByIndex(textureID);
-		texture->inUse = true;
-		texture->texture = textureResource;
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Format = mDefaultImageFormat;
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDesc.Texture2D.MipLevels = 1;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
-		return textureID;
+		return CreateZXD3D12Texture(textureResource, srvDesc);
 	}
 
 	unsigned int RenderAPID3D12::LoadCubeMap(const vector<string>& faces)
@@ -298,12 +413,15 @@ namespace ZXEngine
 			if (imageData[i])
 				stbi_image_free(imageData[i]);
 
-		uint32_t textureID = GetNextTextureIndex();
-		auto texture = GetTextureByIndex(textureID);
-		texture->inUse = true;
-		texture->texture = cubeMapResource;
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Format = mDefaultImageFormat;
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDesc.Texture2D.MipLevels = 1;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
-		return textureID;
+		return CreateZXD3D12Texture(cubeMapResource, srvDesc);
 	}
 
 	void RenderAPID3D12::DeleteTexture(unsigned int id)
@@ -478,6 +596,80 @@ namespace ZXEngine
 		VAO->inUse = false;
 	}
 
+	uint32_t RenderAPID3D12::GetNextFBOIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mFBOArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mFBOArray[i]->inUse)
+				return i;
+		}
+
+		mFBOArray.push_back(new ZXD3D12FBO());
+
+		return length;
+	}
+
+	ZXD3D12FBO* RenderAPID3D12::GetFBOByIndex(uint32_t idx)
+	{
+		return mFBOArray[idx];
+	}
+
+	void RenderAPID3D12::DestroyFBOByIndex(uint32_t idx)
+	{
+		auto FBO = mFBOArray[idx];
+
+		if (FBO->colorBufferIdx != UINT32_MAX)
+		{
+			DestroyRenderBufferByIndex(FBO->colorBufferIdx);
+			FBO->colorBufferIdx = UINT32_MAX;
+		}
+		if (FBO->depthBufferIdx != UINT32_MAX)
+		{
+			DestroyRenderBufferByIndex(FBO->depthBufferIdx);
+			FBO->depthBufferIdx = UINT32_MAX;
+		}
+
+		FBO->bufferType = FrameBufferType::Normal;
+		FBO->clearInfo = {};
+
+		FBO->inUse = false;
+	}
+
+	uint32_t RenderAPID3D12::GetNextRenderBufferIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mRenderBufferArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mRenderBufferArray[i]->inUse)
+				return i;
+		}
+
+		mRenderBufferArray.push_back(new ZXD3D12RenderBuffer());
+
+		return length;
+	}
+
+	ZXD3D12RenderBuffer* RenderAPID3D12::GetRenderBufferByIndex(uint32_t idx)
+	{
+		return mRenderBufferArray[idx];
+	}
+
+	void RenderAPID3D12::DestroyRenderBufferByIndex(uint32_t idx)
+	{
+		auto frameBuffer = mRenderBufferArray[idx];
+
+		for (auto iter : frameBuffer->renderBuffers)
+			DestroyTextureByIndex(iter);
+
+		frameBuffer->renderBuffers.clear();
+		frameBuffer->renderBuffers.resize(DX_MAX_FRAMES_IN_FLIGHT);
+
+		frameBuffer->inUse = false;
+	}
+
 	uint32_t RenderAPID3D12::GetNextTextureIndex()
 	{
 		uint32_t length = static_cast<uint32_t>(mTextureArray.size());
@@ -502,10 +694,68 @@ namespace ZXEngine
 	{
 		auto texture = mTextureArray[idx];
 
+		if (texture->usageFlags & ZX_D3D12_TEXTURE_USAGE_SRV_BIT)
+		{
+			ZXD3D12DescriptorManager::GetInstance()->ReleaseDescriptor(texture->handleSRV);
+			texture->handleSRV = {};
+		}
+		if (texture->usageFlags & ZX_D3D12_TEXTURE_USAGE_RTV_BIT)
+		{
+			ZXD3D12DescriptorManager::GetInstance()->ReleaseDescriptor(texture->handleRTV);
+			texture->handleRTV = {};
+		}
+		if (texture->usageFlags & ZX_D3D12_TEXTURE_USAGE_DSV_BIT)
+		{
+			ZXD3D12DescriptorManager::GetInstance()->ReleaseDescriptor(texture->handleDSV);
+			texture->handleDSV = {};
+		}
+		texture->usageFlags = ZX_D3D12_TEXTURE_USAGE_NONE_BIT;
+
 		// 不调这个也行，因为ComPtr<ID3D12Resource>有类似智能指针一样的内存管理，在适当的时候会自动释放
 		texture->texture.Reset();
 
 		texture->inUse = false;
+	}
+
+	uint32_t RenderAPID3D12::CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc)
+	{
+		uint32_t textureID = GetNextTextureIndex();
+		auto texture = GetTextureByIndex(textureID);
+
+		texture->inUse = true;
+		texture->texture = textureResource;
+		texture->usageFlags = ZX_D3D12_TEXTURE_USAGE_SRV_BIT;
+		texture->handleSRV = ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(texture->texture, srvDesc);
+
+		return textureID;
+	}
+
+	uint32_t RenderAPID3D12::CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_RENDER_TARGET_VIEW_DESC& rtvDesc)
+	{
+		uint32_t textureID = GetNextTextureIndex();
+		auto texture = GetTextureByIndex(textureID);
+
+		texture->inUse = true;
+		texture->texture = textureResource;
+		texture->usageFlags = ZX_D3D12_TEXTURE_USAGE_SRV_BIT | ZX_D3D12_TEXTURE_USAGE_RTV_BIT;
+		texture->handleSRV = ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(texture->texture, srvDesc);
+		texture->handleRTV = ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(texture->texture, rtvDesc);
+
+		return textureID;
+	}
+
+	uint32_t RenderAPID3D12::CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_DEPTH_STENCIL_VIEW_DESC& dsvDesc)
+	{
+		uint32_t textureID = GetNextTextureIndex();
+		auto texture = GetTextureByIndex(textureID);
+
+		texture->inUse = true;
+		texture->texture = textureResource;
+		texture->usageFlags = ZX_D3D12_TEXTURE_USAGE_SRV_BIT | ZX_D3D12_TEXTURE_USAGE_DSV_BIT;
+		texture->handleSRV = ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(texture->texture, srvDesc);
+		texture->handleDSV = ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(texture->texture, dsvDesc);
+
+		return textureID;
 	}
 
 	ComPtr<ID3D12Resource> RenderAPID3D12::CreateDefaultBuffer(const void* data, UINT64 size)
@@ -588,11 +838,18 @@ namespace ZXEngine
 		if (mImmediateExeFence->GetCompletedValue() < mImmediateExeFenceValue)
 		{
 			// 创建一个"进度抵达刚刚设置的信号量值"的事件
-			HANDLE eventHandle = CreateEventEx(nullptr, NULL, NULL, EVENT_ALL_ACCESS);
-			ThrowIfFailed(mFence->SetEventOnCompletion(mImmediateExeFenceValue, eventHandle));
-			// 等待事件
-			WaitForSingleObject(eventHandle, INFINITE);
-			CloseHandle(eventHandle);
+			auto event = CreateEventEx(nullptr, NULL, NULL, EVENT_ALL_ACCESS);
+			if (event)
+			{
+				ThrowIfFailed(mFence->SetEventOnCompletion(mImmediateExeFenceValue, event));
+				// 等待事件
+				WaitForSingleObject(event, INFINITE);
+				CloseHandle(event);
+			}
+			else
+			{
+				Debug::LogError("Create event failed !");
+			}
 		}
 	}
 }

@@ -4,6 +4,7 @@
 #include <wrl.h>
 #include <comdef.h>
 #include <dxgi1_4.h>
+#include "PublicStruct.h"
 
 // 链接D3D12的相关库
 #pragma comment(lib, "d3dcompiler.lib")
@@ -16,6 +17,14 @@ using Microsoft::WRL::ComPtr;
 namespace ZXEngine
 {
     const uint32_t DX_MAX_FRAMES_IN_FLIGHT = 2;
+
+    typedef uint32_t ZX_D3D12_TEXTURE_USAGE_FLAGS;
+    typedef enum ZX_D3D12_TEXTURE_USAGE {
+        ZX_D3D12_TEXTURE_USAGE_NONE_BIT = 0x00000000,
+        ZX_D3D12_TEXTURE_USAGE_SRV_BIT = 0x00000001,
+        ZX_D3D12_TEXTURE_USAGE_RTV_BIT = 0x00000002,
+        ZX_D3D12_TEXTURE_USAGE_DSV_BIT = 0x00000004,
+    } ZX_D3D12_TEXTURE_USAGE;
 
     struct ZXD3D12Command
     {
@@ -33,9 +42,20 @@ namespace ZXEngine
         bool inUse = false;
     };
 
+    struct ZXD3D12DescriptorHandle
+    {
+        uint32_t descriptorIdx = UINT32_MAX;
+        uint32_t descriptorHeapIdx = UINT32_MAX;
+        D3D12_DESCRIPTOR_HEAP_TYPE heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+    };
+
     struct ZXD3D12Texture
     {
         ComPtr<ID3D12Resource> texture = nullptr;
+        ZXD3D12DescriptorHandle handleSRV = {};
+        ZXD3D12DescriptorHandle handleRTV = {};
+        ZXD3D12DescriptorHandle handleDSV = {};
+        ZX_D3D12_TEXTURE_USAGE_FLAGS usageFlags = ZX_D3D12_TEXTURE_USAGE_NONE_BIT;
         bool inUse = false;
     };
 
@@ -51,6 +71,21 @@ namespace ZXEngine
         D3D12_VERTEX_BUFFER_VIEW vertexBufferView = {};
         void* vertexBufferAddress = nullptr; // Only for dynamic mesh
 
+        bool inUse = false;
+    };
+
+    struct ZXD3D12RenderBuffer
+    {
+        vector<uint32_t> renderBuffers;
+        bool inUse = false;
+    };
+
+    struct ZXD3D12FBO
+    {
+        uint32_t colorBufferIdx = UINT32_MAX;
+        uint32_t depthBufferIdx = UINT32_MAX;
+        FrameBufferType bufferType = FrameBufferType::Normal;
+        ClearInfo clearInfo = {};
         bool inUse = false;
     };
 }
