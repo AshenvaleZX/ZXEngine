@@ -37,6 +37,9 @@
     <Filter Include="Input">
       <UniqueIdentifier>{06b28a0d-fe7e-41c8-b1fe-85a0a20bc54f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DirectX12">
+      <UniqueIdentifier>{43c3bf07-a10a-46ca-b5e8-165b8d16888c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Vendor\Src\glad.c">
@@ -395,6 +398,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Vendor\Src\d3dx12_property_format_table.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\DirectX12\ZXD3D12DescriptorManager.cpp">
+      <Filter>DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\DirectX12\ZXD3D12DescriptorAllocator.cpp">
+      <Filter>DirectX12</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -802,6 +811,12 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Input\InputManagerWindows.h">
       <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\DirectX12\ZXD3D12DescriptorManager.h">
+      <Filter>DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\DirectX12\ZXD3D12DescriptorAllocator.h">
+      <Filter>DirectX12</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
