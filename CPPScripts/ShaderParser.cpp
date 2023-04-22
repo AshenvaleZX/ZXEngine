@@ -360,6 +360,11 @@ namespace ZXEngine
 		return vkCode;
 	}
 
+	string ShaderParser::TranslateToD3D12(const string& originCode)
+	{
+		return "";
+	}
+
 	ShaderStateSet ShaderParser::GetShaderStateSet(const string& code)
 	{
 		ShaderStateSet stateSet;

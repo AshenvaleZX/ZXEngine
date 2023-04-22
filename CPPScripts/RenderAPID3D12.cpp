@@ -1,6 +1,9 @@
 #include "RenderAPID3D12.h"
 #include <stb_image.h>
+#include <D3Dcompiler.h>
+#include "Resources.h"
 #include "GlobalData.h"
+#include "ShaderParser.h"
 #include "ProjectSetting.h"
 #include "Window/WindowManager.h"
 #include "DirectX12/ZXD3D12DescriptorManager.h"
@@ -582,6 +585,61 @@ namespace ZXEngine
 	void RenderAPID3D12::DeleteTexture(unsigned int id)
 	{
 		DestroyTextureByIndex(id);
+	}
+
+	ShaderReference* RenderAPID3D12::LoadAndSetUpShader(const char* path, FrameBufferType type)
+	{
+		string shaderCode = Resources::LoadTextFile(path);
+		auto shaderInfo = ShaderParser::GetShaderInfo(shaderCode);
+		string hlslCode = ShaderParser::TranslateToD3D12(shaderCode);
+
+		UINT compileFlags = 0;
+		if (ProjectSetting::enableValidationLayer)
+			compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+
+		ComPtr<ID3DBlob> vertCode = nullptr;
+		if (shaderInfo.stages & ZX_SHADER_STAGE_VERTEX_BIT)
+		{
+			ComPtr<ID3DBlob> errors;
+			ThrowIfFailed(D3DCompile(hlslCode.c_str(), hlslCode.length(), NULL, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+				"VS", "vs_5_1", compileFlags, 0, &vertCode, &errors));
+			if (errors != nullptr)
+				Debug::LogError((char*)errors->GetBufferPointer());
+		}
+
+		ComPtr<ID3DBlob> geomCode = nullptr;
+		if (shaderInfo.stages & ZX_SHADER_STAGE_GEOMETRY_BIT)
+		{
+			ComPtr<ID3DBlob> errors;
+			ThrowIfFailed(D3DCompile(hlslCode.c_str(), hlslCode.length(), NULL, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+				"GS", "gs_5_1", compileFlags, 0, &geomCode, &errors));
+			if (errors != nullptr)
+				Debug::LogError((char*)errors->GetBufferPointer());
+		}
+
+		ComPtr<ID3DBlob> fragCode = nullptr;
+		if (shaderInfo.stages & ZX_SHADER_STAGE_FRAGMENT_BIT)
+		{
+			ComPtr<ID3DBlob> errors;
+			ThrowIfFailed(D3DCompile(hlslCode.c_str(), hlslCode.length(), NULL, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+				"PS", "ps_5_1", compileFlags, 0, &fragCode, &errors));
+			if (errors != nullptr)
+				Debug::LogError((char*)errors->GetBufferPointer());
+		}
+
+		D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineStateDesc = {};
+		pipelineStateDesc.pRootSignature = nullptr;
+		if (shaderInfo.stages & ZX_SHADER_STAGE_VERTEX_BIT)
+			pipelineStateDesc.VS = { reinterpret_cast<BYTE*>(vertCode->GetBufferPointer()), vertCode->GetBufferSize() };
+		if (shaderInfo.stages & ZX_SHADER_STAGE_GEOMETRY_BIT)
+			pipelineStateDesc.GS = { reinterpret_cast<BYTE*>(geomCode->GetBufferPointer()), geomCode->GetBufferSize() };
+		if (shaderInfo.stages & ZX_SHADER_STAGE_FRAGMENT_BIT)
+			pipelineStateDesc.PS = { reinterpret_cast<BYTE*>(fragCode->GetBufferPointer()), fragCode->GetBufferSize() };
+
+		ShaderReference* reference = new ShaderReference();
+		reference->ID = 0;
+		reference->shaderInfo = shaderInfo;
+		return reference;
 	}
 
 	void RenderAPID3D12::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)

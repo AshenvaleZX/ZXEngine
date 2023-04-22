@@ -28,6 +28,9 @@ namespace ZXEngine
 		virtual unsigned int GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data);
 		virtual void DeleteTexture(unsigned int id);
 
+		// Shader
+		virtual ShaderReference* LoadAndSetUpShader(const char* path, FrameBufferType type);
+
 		// Mesh
 		virtual void DeleteMesh(unsigned int VAO);
 		virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
