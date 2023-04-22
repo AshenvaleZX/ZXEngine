@@ -20,29 +20,33 @@ namespace ZXEngine
         virtual void BeginFrame();
         virtual void EndFrame();
 
-        // 渲染状态相关
+        // 渲染状态
         virtual void OnWindowSizeChange(uint32_t width, uint32_t height);
         virtual void SetRenderState(RenderStateSetting* state);
         virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0);
         virtual void WaitForRenderFinish();
 
-        // FrameBuffer相关
+        // FrameBuffer
         virtual void SwitchFrameBuffer(uint32_t id);
         virtual void ClearFrameBuffer();
         virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
         virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, const ClearInfo& clearInfo, unsigned int width = 0, unsigned int height = 0);
         virtual void DeleteFrameBufferObject(FrameBufferObject* FBO);
 
-        // 资源加载相关
+        // 纹理
         virtual unsigned int LoadTexture(const char* path, int& width, int& height);
-        virtual void DeleteTexture(unsigned int id);
         virtual unsigned int LoadCubeMap(const vector<string>& faces);
         virtual unsigned int GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data);
+        virtual void DeleteTexture(unsigned int id);
+
+        // Shader
         virtual ShaderReference* LoadAndSetUpShader(const char* path, FrameBufferType type);
-        virtual uint32_t CreateMaterialData();
-        virtual void UseMaterialData(uint32_t ID);
-        virtual void SetUpMaterial(ShaderReference* shaderReference, MaterialData* materialData);
         virtual void DeleteShader(uint32_t id);
+
+        // 材质
+        virtual uint32_t CreateMaterialData();
+        virtual void SetUpMaterial(ShaderReference* shaderReference, MaterialData* materialData);
+        virtual void UseMaterialData(uint32_t ID);
         virtual void DeleteMaterialData(uint32_t id);
 
         // Draw
@@ -50,14 +54,14 @@ namespace ZXEngine
         virtual void Draw(uint32_t VAO);
         virtual void GenerateDrawCommand(uint32_t id);
 
-        // Mesh设置
+        // Mesh
         virtual void DeleteMesh(unsigned int VAO);
         virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
         virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize);
         virtual void UpdateDynamicMesh(unsigned int VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
         virtual void GenerateParticleMesh(unsigned int& VAO);
 
-        // Shader设置
+        // Shader参数
         virtual void UseShader(unsigned int ID);
         virtual void SetShaderScalar(Material* material, const string& name, int value, bool allBuffer = false);
         virtual void SetShaderScalar(Material* material, const string& name, bool value, bool allBuffer = false);

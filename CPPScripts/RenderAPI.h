@@ -23,29 +23,33 @@ namespace ZXEngine
 		virtual void BeginFrame() = 0;
 		virtual void EndFrame() = 0;
 
-		// 渲染状态相关
+		// 渲染状态
 		virtual void OnWindowSizeChange(uint32_t width, uint32_t height) = 0;
 		virtual void SetRenderState(RenderStateSetting* state) = 0;
 		virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0) = 0;
 		virtual void WaitForRenderFinish() = 0;
 
-		// FrameBuffer相关
+		// FrameBuffer
 		virtual void SwitchFrameBuffer(uint32_t id) = 0;
 		virtual void ClearFrameBuffer() = 0;
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0) = 0;
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, const ClearInfo& clearInfo, unsigned int width = 0, unsigned int height = 0) = 0;
 		virtual void DeleteFrameBufferObject(FrameBufferObject* FBO) = 0;
 
-		// 资源加载相关
+		// 纹理
 		virtual unsigned int LoadTexture(const char* path, int& width, int& height) = 0;
-		virtual void DeleteTexture(unsigned int id) = 0;
 		virtual unsigned int LoadCubeMap(const vector<string>& faces) = 0;
 		virtual unsigned int GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data) = 0;
+		virtual void DeleteTexture(unsigned int id) = 0;
+
+		// Shader
 		virtual ShaderReference* LoadAndSetUpShader(const char* path, FrameBufferType type) = 0;
-		virtual uint32_t CreateMaterialData() = 0;
-		virtual void UseMaterialData(uint32_t ID) = 0;
-		virtual void SetUpMaterial(ShaderReference* shaderReference, MaterialData* materialData) = 0;
 		virtual void DeleteShader(uint32_t id) = 0;
+
+		// 材质
+		virtual uint32_t CreateMaterialData() = 0;
+		virtual void SetUpMaterial(ShaderReference* shaderReference, MaterialData* materialData) = 0;
+		virtual void UseMaterialData(uint32_t ID) = 0;
 		virtual void DeleteMaterialData(uint32_t id) = 0;
 
 		// Draw
@@ -53,14 +57,14 @@ namespace ZXEngine
 		virtual void Draw(uint32_t VAO) = 0;
 		virtual void GenerateDrawCommand(uint32_t id) = 0;
 
-		// Mesh设置
+		// Mesh
 		virtual void DeleteMesh(unsigned int VAO) = 0;
 		virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices) = 0;
 		virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize) = 0;
 		virtual void UpdateDynamicMesh(unsigned int VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices) = 0;
 		virtual void GenerateParticleMesh(unsigned int& VAO) = 0;
 
-		// Shader设置
+		// Shader参数
 		virtual void UseShader(unsigned int ID) = 0;
 		virtual void SetShaderScalar(Material* material, const string& name, int value, bool allBuffer = false) = 0;
 		virtual void SetShaderScalar(Material* material, const string& name, bool value, bool allBuffer = false) = 0;

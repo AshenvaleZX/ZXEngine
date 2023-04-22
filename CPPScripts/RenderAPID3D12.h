@@ -17,18 +17,18 @@ namespace ZXEngine
 		virtual void BeginFrame();
 		virtual void EndFrame();
 
-		// FrameBuffer相关
+		// FrameBuffer
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, const ClearInfo& clearInfo, unsigned int width = 0, unsigned int height = 0);
 		virtual void DeleteFrameBufferObject(FrameBufferObject* FBO);
 
-		// 资源加载相关
+		// 纹理
 		virtual unsigned int LoadTexture(const char* path, int& width, int& height);
-		virtual void DeleteTexture(unsigned int id);
 		virtual unsigned int LoadCubeMap(const vector<string>& faces);
 		virtual unsigned int GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data);
+		virtual void DeleteTexture(unsigned int id);
 
-		// Mesh设置
+		// Mesh
 		virtual void DeleteMesh(unsigned int VAO);
 		virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
 		virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize);
