@@ -1,6 +1,6 @@
 #pragma once
 #include "RenderAPI.h"
-#include "D3D12EnumStruct.h"
+#include "DirectX12/D3D12EnumStruct.h"
 
 namespace ZXEngine
 {

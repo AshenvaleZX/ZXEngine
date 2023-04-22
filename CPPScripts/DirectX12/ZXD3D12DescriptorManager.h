@@ -1,6 +1,6 @@
 #pragma once
 #include "../pubh.h"
-#include "../D3D12EnumStruct.h"
+#include "D3D12EnumStruct.h"
 #include "ZXD3D12DescriptorAllocator.h"
 
 namespace ZXEngine

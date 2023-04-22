@@ -1,10 +1,10 @@
 #pragma once
-#include "pubh.h"
+#include "../pubh.h"
 #include <DirectX/d3dx12.h>
 #include <wrl.h>
 #include <comdef.h>
 #include <dxgi1_4.h>
-#include "PublicStruct.h"
+#include "../PublicStruct.h"
 
 // 链接D3D12的相关库
 #pragma comment(lib, "d3dcompiler.lib")

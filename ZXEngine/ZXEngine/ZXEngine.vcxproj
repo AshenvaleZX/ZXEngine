@@ -276,8 +276,8 @@
     <ClInclude Include="..\..\CPPScripts\Camera.h" />
     <ClInclude Include="..\..\CPPScripts\Component.h" />
     <ClInclude Include="..\..\CPPScripts\CubeMap.h" />
-    <ClInclude Include="..\..\CPPScripts\D3D12EnumStruct.h" />
     <ClInclude Include="..\..\CPPScripts\Debug.h" />
+    <ClInclude Include="..\..\CPPScripts\DirectX12\D3D12EnumStruct.h" />
     <ClInclude Include="..\..\CPPScripts\DirectX12\ZXD3D12DescriptorAllocator.h" />
     <ClInclude Include="..\..\CPPScripts\DirectX12\ZXD3D12DescriptorManager.h" />
     <ClInclude Include="..\..\CPPScripts\DynamicMesh.h" />

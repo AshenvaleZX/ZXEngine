@@ -791,9 +791,6 @@
     <ClInclude Include="..\..\CPPScripts\RenderAPID3D12.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\D3D12EnumStruct.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Window\WindowManager.h">
       <Filter>Window</Filter>
     </ClInclude>
@@ -816,6 +813,9 @@
       <Filter>DirectX12</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\DirectX12\ZXD3D12DescriptorAllocator.h">
+      <Filter>DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\DirectX12\D3D12EnumStruct.h">
       <Filter>DirectX12</Filter>
     </ClInclude>
   </ItemGroup>
