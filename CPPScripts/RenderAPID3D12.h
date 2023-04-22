@@ -26,6 +26,7 @@ namespace ZXEngine
 		virtual unsigned int LoadTexture(const char* path, int& width, int& height);
 		virtual void DeleteTexture(unsigned int id);
 		virtual unsigned int LoadCubeMap(const vector<string>& faces);
+		virtual unsigned int GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data);
 
 		// Mesh…Ë÷√
 		virtual void DeleteMesh(unsigned int VAO);

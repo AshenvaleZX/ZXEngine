@@ -515,6 +515,70 @@ namespace ZXEngine
 		return CreateZXD3D12Texture(cubeMapResource, srvDesc);
 	}
 
+	unsigned int RenderAPID3D12::GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data)
+	{
+		// 创建纹理资源
+		CD3DX12_HEAP_PROPERTIES textureProps(D3D12_HEAP_TYPE_DEFAULT);
+		CD3DX12_RESOURCE_DESC textureDesc(CD3DX12_RESOURCE_DESC::Tex2D(mDefaultImageFormat, width, height, 1, 1));
+		ComPtr<ID3D12Resource> textureResource;
+		ThrowIfFailed(mD3D12Device->CreateCommittedResource(
+			&textureProps,
+			D3D12_HEAP_FLAG_NONE,
+			&textureDesc,
+			D3D12_RESOURCE_STATE_COPY_DEST,
+			nullptr,
+			IID_PPV_ARGS(&textureResource)
+		));
+
+		// 创建纹理上传堆
+		UINT64 uploadHeapSize;
+		mD3D12Device->GetCopyableFootprints(&textureDesc, 0, 1, 0, nullptr, nullptr, nullptr, &uploadHeapSize);
+		CD3DX12_HEAP_PROPERTIES uploadHeapProps(D3D12_HEAP_TYPE_UPLOAD);
+		CD3DX12_RESOURCE_DESC uploadHeapDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadHeapSize);
+		ComPtr<ID3D12Resource> uploadHeap;
+		ThrowIfFailed(mD3D12Device->CreateCommittedResource(
+			&uploadHeapProps,
+			D3D12_HEAP_FLAG_NONE,
+			&uploadHeapDesc,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(&uploadHeap)
+		));
+
+		// 上传纹理数据
+		ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList> cmdList)
+		{
+			D3D12_SUBRESOURCE_DATA subresourceData = {};
+			subresourceData.pData = data;
+			subresourceData.RowPitch = static_cast<LONG_PTR>(width * 4);
+			subresourceData.SlicePitch = subresourceData.RowPitch * height;
+
+			UpdateSubresources(cmdList.Get(),
+				textureResource.Get(),
+				uploadHeap.Get(),
+				0, 0, 1, &subresourceData);
+
+			// 转换纹理状态
+			CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+				textureResource.Get(),
+				D3D12_RESOURCE_STATE_COPY_DEST,
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+			);
+
+			cmdList->ResourceBarrier(1, &barrier);
+		});
+
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Format = mDefaultImageFormat;
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDesc.Texture2D.MipLevels = 1;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+		return CreateZXD3D12Texture(textureResource, srvDesc);
+	}
+
 	void RenderAPID3D12::DeleteTexture(unsigned int id)
 	{
 		DestroyTextureByIndex(id);
