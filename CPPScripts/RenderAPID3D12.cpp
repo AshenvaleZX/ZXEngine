@@ -657,8 +657,43 @@ namespace ZXEngine
 				Debug::LogError((char*)errors->GetBufferPointer());
 		}
 
+		// 准备创建D3D12管线数据
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineStateDesc = {};
-		pipelineStateDesc.pRootSignature = nullptr;
+
+		// 创建根签名
+		ComPtr<ID3D12RootSignature> rootSignature;
+		{
+			UINT textureNum = static_cast<UINT>(
+				shaderInfo.vertProperties.textureProperties.size() + 
+				shaderInfo.geomProperties.textureProperties.size() + 
+				shaderInfo.fragProperties.textureProperties.size()
+			);
+
+			CD3DX12_DESCRIPTOR_RANGE descriptorRange = {};
+			descriptorRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, textureNum, 0, 0);
+
+			CD3DX12_ROOT_PARAMETER rootParameters[2] = {};
+			rootParameters[0].InitAsConstantBufferView(0);
+			rootParameters[1].InitAsDescriptorTable(1, &descriptorRange, D3D12_SHADER_VISIBILITY_ALL);
+
+			auto samplers = GetStaticSamplersDesc();
+
+			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(2, rootParameters,
+				(UINT)samplers.size(), samplers.data(),
+				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+			ComPtr<ID3DBlob> error;
+			ComPtr<ID3DBlob> serializedRootSignature;
+			HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &serializedRootSignature, &error);
+			if (error != nullptr)
+				Debug::LogError((char*)error->GetBufferPointer());
+			ThrowIfFailed(hr);
+
+			ThrowIfFailed(mD3D12Device->CreateRootSignature(0, serializedRootSignature->GetBufferPointer(), serializedRootSignature->GetBufferSize(), IID_PPV_ARGS(&rootSignature)));
+			pipelineStateDesc.pRootSignature = rootSignature.Get();
+		}
+
+		// 填充Shader
 		if (shaderInfo.stages & ZX_SHADER_STAGE_VERTEX_BIT)
 			pipelineStateDesc.VS = { reinterpret_cast<BYTE*>(vertCode->GetBufferPointer()), vertCode->GetBufferSize() };
 		if (shaderInfo.stages & ZX_SHADER_STAGE_GEOMETRY_BIT)
@@ -736,13 +771,26 @@ namespace ZXEngine
 		pipelineStateDesc.SampleDesc.Quality = 0;
 		pipelineStateDesc.NodeMask = 0; // 给多GPU用的，暂时不用管
 
+		// 创建D3D12管线
 		ComPtr<ID3D12PipelineState> PSO;
 		ThrowIfFailed(mD3D12Device->CreateGraphicsPipelineState(&pipelineStateDesc, IID_PPV_ARGS(&PSO)));
 
+		uint32_t pipelineID = GetNextPipelineIndex();
+		auto pipeline = GetPipelineByIndex(pipelineID);
+		pipeline->pipelineState = PSO;
+		pipeline->rootSignature = rootSignature;
+		pipeline->inUse = true;
+
 		ShaderReference* reference = new ShaderReference();
-		reference->ID = 0;
+		reference->ID = pipelineID;
 		reference->shaderInfo = shaderInfo;
+
 		return reference;
+	}
+
+	void RenderAPID3D12::DeleteShader(uint32_t id)
+	{
+		DestroyPipelineByIndex(id);
 	}
 
 	void RenderAPID3D12::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
@@ -1033,6 +1081,36 @@ namespace ZXEngine
 		texture->inUse = false;
 	}
 
+	uint32_t RenderAPID3D12::GetNextPipelineIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mPipelineArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mPipelineArray[i]->inUse)
+				return i;
+		}
+
+		mPipelineArray.push_back(new ZXD3D12Pipeline());
+
+		return length;
+	}
+
+	ZXD3D12Pipeline* RenderAPID3D12::GetPipelineByIndex(uint32_t idx)
+	{
+		return mPipelineArray[idx];
+	}
+
+	void RenderAPID3D12::DestroyPipelineByIndex(uint32_t idx)
+	{
+		auto pipeline = mPipelineArray[idx];
+
+		pipeline->pipelineState.Reset();
+		pipeline->rootSignature.Reset();
+
+		pipeline->inUse = false;
+	}
+
 	uint32_t RenderAPID3D12::CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc)
 	{
 		uint32_t textureID = GetNextTextureIndex();
@@ -1119,6 +1197,39 @@ namespace ZXEngine
 		return defaultBuffer;
 	}
 
+
+	array<const CD3DX12_STATIC_SAMPLER_DESC, 4> RenderAPID3D12::GetStaticSamplersDesc()
+	{
+		// 线性插值采样，边缘重复
+		const CD3DX12_STATIC_SAMPLER_DESC linearWrap(0,
+			D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+			D3D12_TEXTURE_ADDRESS_MODE_WRAP,  // U
+			D3D12_TEXTURE_ADDRESS_MODE_WRAP,  // V
+			D3D12_TEXTURE_ADDRESS_MODE_WRAP); // W
+
+		// 线性插值采样，边缘截断
+		const CD3DX12_STATIC_SAMPLER_DESC linearClamp(1,
+			D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+			D3D12_TEXTURE_ADDRESS_MODE_CLAMP,  // U
+			D3D12_TEXTURE_ADDRESS_MODE_CLAMP,  // V
+			D3D12_TEXTURE_ADDRESS_MODE_CLAMP); // W
+
+		// 各向异性采样，边缘重复
+		const CD3DX12_STATIC_SAMPLER_DESC anisotropicWrap(2,
+			D3D12_FILTER_ANISOTROPIC,
+			D3D12_TEXTURE_ADDRESS_MODE_WRAP,  // U
+			D3D12_TEXTURE_ADDRESS_MODE_WRAP,  // V
+			D3D12_TEXTURE_ADDRESS_MODE_WRAP); // W
+
+		// 各向异性采样，边缘截断
+		const CD3DX12_STATIC_SAMPLER_DESC anisotropicClamp(3,
+			D3D12_FILTER_ANISOTROPIC,
+			D3D12_TEXTURE_ADDRESS_MODE_CLAMP,  // U
+			D3D12_TEXTURE_ADDRESS_MODE_CLAMP,  // V
+			D3D12_TEXTURE_ADDRESS_MODE_CLAMP); // W
+
+		return { linearWrap, linearClamp, anisotropicWrap, anisotropicClamp };
+	}
 
 	void RenderAPID3D12::InitImmediateExecution()
 	{

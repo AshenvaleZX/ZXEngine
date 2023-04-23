@@ -30,6 +30,7 @@ namespace ZXEngine
 
 		// Shader
 		virtual ShaderReference* LoadAndSetUpShader(const char* path, FrameBufferType type);
+		virtual void DeleteShader(uint32_t id);
 
 		// Mesh
 		virtual void DeleteMesh(unsigned int VAO);
@@ -83,6 +84,7 @@ namespace ZXEngine
 		vector<ZXD3D12FBO*> mFBOArray;
 		vector<ZXD3D12RenderBuffer*> mRenderBufferArray;
 		vector<ZXD3D12Texture*> mTextureArray;
+		vector<ZXD3D12Pipeline*> mPipelineArray;
 
 		uint32_t GetNextFenceIndex();
 		ZXD3D12Fence* GetFenceByIndex(uint32_t idx);
@@ -99,6 +101,9 @@ namespace ZXEngine
 		uint32_t GetNextTextureIndex();
 		ZXD3D12Texture* GetTextureByIndex(uint32_t idx);
 		void DestroyTextureByIndex(uint32_t idx);
+		uint32_t GetNextPipelineIndex();
+		ZXD3D12Pipeline* GetPipelineByIndex(uint32_t idx);
+		void DestroyPipelineByIndex(uint32_t idx);
 
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc);
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_RENDER_TARGET_VIEW_DESC& rtvDesc);
@@ -115,6 +120,7 @@ namespace ZXEngine
 		ComPtr<ID3D12CommandAllocator> mImmediateExeAllocator;
 		ComPtr<ID3D12GraphicsCommandList> mImmediateExeCommandList;
 
+		array<const CD3DX12_STATIC_SAMPLER_DESC, 4> GetStaticSamplersDesc();
 		void InitImmediateExecution();
 		void ImmediatelyExecute(std::function<void(ComPtr<ID3D12GraphicsCommandList> cmdList)>&& function);
 	};

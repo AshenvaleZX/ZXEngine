@@ -88,4 +88,11 @@ namespace ZXEngine
         ClearInfo clearInfo = {};
         bool inUse = false;
     };
+
+    struct ZXD3D12Pipeline
+    {
+        ComPtr<ID3D12RootSignature> rootSignature = nullptr;
+        ComPtr<ID3D12PipelineState> pipelineState = nullptr;
+        bool inUse = false;
+	};;
 }
