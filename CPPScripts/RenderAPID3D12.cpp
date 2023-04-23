@@ -48,6 +48,35 @@ inline std::wstring AnsiToWString(const std::string& str)
 
 namespace ZXEngine
 {
+	map<BlendFactor, D3D12_BLEND> dxBlendFactorMap =
+	{
+		{ BlendFactor::ZERO,      D3D12_BLEND_ZERO       }, { BlendFactor::ONE,                 D3D12_BLEND_ONE            },
+		{ BlendFactor::SRC_COLOR, D3D12_BLEND_SRC_COLOR  }, { BlendFactor::ONE_MINUS_SRC_COLOR, D3D12_BLEND_INV_SRC_COLOR  },
+		{ BlendFactor::DST_COLOR, D3D12_BLEND_DEST_COLOR }, { BlendFactor::ONE_MINUS_DST_COLOR, D3D12_BLEND_INV_DEST_COLOR },
+		{ BlendFactor::SRC_ALPHA, D3D12_BLEND_SRC_ALPHA  }, { BlendFactor::ONE_MINUS_SRC_ALPHA, D3D12_BLEND_INV_SRC_ALPHA  },
+		{ BlendFactor::DST_ALPHA, D3D12_BLEND_DEST_ALPHA }, { BlendFactor::ONE_MINUS_DST_ALPHA, D3D12_BLEND_INV_DEST_ALPHA },
+	};
+
+	map<BlendOption, D3D12_BLEND_OP> dxBlendOptionMap =
+	{
+		{ BlendOption::ADD, D3D12_BLEND_OP_ADD }, { BlendOption::SUBTRACT, D3D12_BLEND_OP_SUBTRACT }, { BlendOption::REVERSE_SUBTRACT, D3D12_BLEND_OP_REV_SUBTRACT },
+		{ BlendOption::MIN, D3D12_BLEND_OP_MIN }, { BlendOption::MAX,      D3D12_BLEND_OP_MAX      },
+	};
+
+	map<FaceCullOption, D3D12_CULL_MODE> dxFaceCullOptionMap =
+	{
+		{ FaceCullOption::Back, D3D12_CULL_MODE_BACK }, { FaceCullOption::Front, D3D12_CULL_MODE_FRONT },
+		{ FaceCullOption::None, D3D12_CULL_MODE_NONE },
+	};
+
+	map<CompareOption, D3D12_COMPARISON_FUNC> dxCompareOptionMap =
+	{
+		{ CompareOption::NEVER,         D3D12_COMPARISON_FUNC_NEVER      }, { CompareOption::LESS,             D3D12_COMPARISON_FUNC_LESS          },
+		{ CompareOption::ALWAYS,        D3D12_COMPARISON_FUNC_ALWAYS     }, { CompareOption::GREATER,          D3D12_COMPARISON_FUNC_GREATER       },
+		{ CompareOption::EQUAL,         D3D12_COMPARISON_FUNC_EQUAL      }, { CompareOption::NOT_EQUAL,        D3D12_COMPARISON_FUNC_NOT_EQUAL     },
+		{ CompareOption::LESS_OR_EQUAL, D3D12_COMPARISON_FUNC_LESS_EQUAL }, { CompareOption::GREATER_OR_EQUAL, D3D12_COMPARISON_FUNC_GREATER_EQUAL },
+	};
+
 	RenderAPID3D12::RenderAPID3D12()
 	{
 		InitD3D12();
@@ -597,6 +626,7 @@ namespace ZXEngine
 		if (ProjectSetting::enableValidationLayer)
 			compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 
+		// 编译Vertex Shader
 		ComPtr<ID3DBlob> vertCode = nullptr;
 		if (shaderInfo.stages & ZX_SHADER_STAGE_VERTEX_BIT)
 		{
@@ -606,7 +636,7 @@ namespace ZXEngine
 			if (errors != nullptr)
 				Debug::LogError((char*)errors->GetBufferPointer());
 		}
-
+		// 编译Geometry Shader
 		ComPtr<ID3DBlob> geomCode = nullptr;
 		if (shaderInfo.stages & ZX_SHADER_STAGE_GEOMETRY_BIT)
 		{
@@ -616,7 +646,7 @@ namespace ZXEngine
 			if (errors != nullptr)
 				Debug::LogError((char*)errors->GetBufferPointer());
 		}
-
+		// 编译Fragment(Pixel) Shader
 		ComPtr<ID3DBlob> fragCode = nullptr;
 		if (shaderInfo.stages & ZX_SHADER_STAGE_FRAGMENT_BIT)
 		{
@@ -635,6 +665,79 @@ namespace ZXEngine
 			pipelineStateDesc.GS = { reinterpret_cast<BYTE*>(geomCode->GetBufferPointer()), geomCode->GetBufferSize() };
 		if (shaderInfo.stages & ZX_SHADER_STAGE_FRAGMENT_BIT)
 			pipelineStateDesc.PS = { reinterpret_cast<BYTE*>(fragCode->GetBufferPointer()), fragCode->GetBufferSize() };
+
+		// Input Layout
+		D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
+		{
+			{ "POSITION",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD",  0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "NORMAL",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "TANGENT",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		};
+		pipelineStateDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
+
+		// Blend Config
+		D3D12_BLEND_DESC blendDesc = {};
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		blendDesc.IndependentBlendEnable = FALSE; // 多个Render Target要不要分开配置混合方式
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].LogicOpEnable = FALSE;
+		blendDesc.RenderTarget[0].SrcBlend = dxBlendFactorMap[shaderInfo.stateSet.srcFactor];
+		blendDesc.RenderTarget[0].DestBlend = dxBlendFactorMap[shaderInfo.stateSet.dstFactor];
+		blendDesc.RenderTarget[0].BlendOp = dxBlendOptionMap[shaderInfo.stateSet.blendOp];
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		pipelineStateDesc.BlendState = blendDesc;
+
+		// 光栅化阶段
+		D3D12_RASTERIZER_DESC rasterizerDesc = {};
+		rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
+		rasterizerDesc.CullMode = dxFaceCullOptionMap[shaderInfo.stateSet.cull];
+		rasterizerDesc.FrontCounterClockwise = FALSE;
+		rasterizerDesc.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
+		rasterizerDesc.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
+		rasterizerDesc.SlopeScaledDepthBias = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
+		rasterizerDesc.DepthClipEnable = TRUE;
+		rasterizerDesc.MultisampleEnable = FALSE;
+		rasterizerDesc.AntialiasedLineEnable = FALSE;
+		rasterizerDesc.ForcedSampleCount = 0;
+		rasterizerDesc.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+		pipelineStateDesc.RasterizerState = rasterizerDesc;
+
+		// Depth Stencil Config
+		D3D12_DEPTH_STENCIL_DESC depthStencilDesc = {};
+		depthStencilDesc.DepthEnable = shaderInfo.stateSet.depthCompareOp == CompareOption::ALWAYS ? FALSE : TRUE;
+		depthStencilDesc.DepthWriteMask = shaderInfo.stateSet.depthWrite ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO;
+		depthStencilDesc.DepthFunc = dxCompareOptionMap[shaderInfo.stateSet.depthCompareOp];
+		depthStencilDesc.StencilEnable = FALSE;
+		depthStencilDesc.StencilReadMask = D3D12_DEFAULT_STENCIL_READ_MASK;
+		depthStencilDesc.StencilWriteMask = D3D12_DEFAULT_STENCIL_WRITE_MASK;
+		const D3D12_DEPTH_STENCILOP_DESC defaultStencilOp =
+		{
+			D3D12_STENCIL_OP_KEEP,
+			D3D12_STENCIL_OP_KEEP,
+			D3D12_STENCIL_OP_KEEP,
+			D3D12_COMPARISON_FUNC_ALWAYS
+		};
+		depthStencilDesc.FrontFace = defaultStencilOp;
+		depthStencilDesc.BackFace = defaultStencilOp;
+		pipelineStateDesc.DepthStencilState = depthStencilDesc;
+
+		// Others
+		pipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		pipelineStateDesc.SampleMask = UINT_MAX;
+		pipelineStateDesc.NumRenderTargets = 1;
+		pipelineStateDesc.RTVFormats[0] = mDefaultImageFormat;
+		pipelineStateDesc.DSVFormat = DXGI_FORMAT_D16_UNORM;
+		pipelineStateDesc.SampleDesc.Count = 1;
+		pipelineStateDesc.SampleDesc.Quality = 0;
+		pipelineStateDesc.NodeMask = 0; // 给多GPU用的，暂时不用管
+
+		ComPtr<ID3D12PipelineState> PSO;
+		ThrowIfFailed(mD3D12Device->CreateGraphicsPipelineState(&pipelineStateDesc, IID_PPV_ARGS(&PSO)));
 
 		ShaderReference* reference = new ShaderReference();
 		reference->ID = 0;
