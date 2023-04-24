@@ -289,6 +289,9 @@ namespace ZXEngine
 
 		glCode += GetCodeBlock(originCode, "Program");
 
+		Utils::ReplaceAllString(glCode, "ZX_Depth", "gl_FragDepth");
+		Utils::ReplaceAllString(glCode, "ZX_Position", "gl_Position");
+
 		return glCode;
 	}
 
@@ -356,6 +359,9 @@ namespace ZXEngine
 				Utils::ReplaceAllString(programBlock, property.name, "_UBO." + property.name);
 		}
 		vkCode += programBlock;
+
+		Utils::ReplaceAllString(vkCode, "ZX_Depth", "gl_FragDepth");
+		Utils::ReplaceAllString(vkCode, "ZX_Position", "gl_Position");
 
 		return vkCode;
 	}

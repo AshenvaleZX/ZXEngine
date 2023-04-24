@@ -24,7 +24,7 @@ Vertex
         void main()
         {
             TexCoords = aTexCoords;    
-            gl_Position = ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 1.0);
+            ZX_Position = ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 1.0);
         }
     }
 }

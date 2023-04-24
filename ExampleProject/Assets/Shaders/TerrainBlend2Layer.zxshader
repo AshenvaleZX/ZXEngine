@@ -48,7 +48,7 @@ Vertex
             tSpace1 = vec3(wTangent.y, wBitangent.y, wNormal.y);
             tSpace2 = vec3(wTangent.z, wBitangent.z, wNormal.z);
             
-            gl_Position = ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 1.0);
+            ZX_Position = ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 1.0);
         }
     }
 }

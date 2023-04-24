@@ -23,7 +23,7 @@ Vertex
         void main()
         {
             Normal = transpose(inverse(mat3(ENGINE_Model))) * aNormal;
-            gl_Position = ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 1.0);
+            ZX_Position = ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 1.0);
         }
     }
 }

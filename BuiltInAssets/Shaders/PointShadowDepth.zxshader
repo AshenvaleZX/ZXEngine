@@ -14,7 +14,7 @@ Vertex
     {
         void main()
         {
-            gl_Position = ENGINE_Model * vec4(aPos, 1.0);
+            ZX_Position = ENGINE_Model * vec4(aPos, 1.0);
         }
     }
 }
@@ -79,7 +79,7 @@ Fragment
             lightDistance = lightDistance / _FarPlane;
             
             // write this as modified depth
-            gl_FragDepth = lightDistance;
+            ZX_Depth = lightDistance;
         }
     }
 }
