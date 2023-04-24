@@ -256,7 +256,7 @@ namespace ZXEngine
 		for (auto& line : lines)
 		{
 			auto words = Utils::ExtractWords(line);
-			if (words.size() >= 3 && words[0] != "//")
+			if (words.size() >= 5 && words[0] != "//")
 				glCode += "layout (location = " + words[0] + ") in " + words[1] + " " + words[2] + ";\n";
 		}
 		glCode += "\n";
@@ -266,7 +266,7 @@ namespace ZXEngine
 		for (auto& line : lines)
 		{
 			auto words = Utils::ExtractWords(line);
-			if (words.size() >= 3 && words[0] != "//")
+			if (words.size() >= 5 && words[0] != "//")
 				glCode += "layout (location = " + words[0] + ") out " + words[1] + " " + words[2] + ";\n";
 		}
 		glCode += "\n";
@@ -313,7 +313,7 @@ namespace ZXEngine
 		for (auto& line : lines)
 		{
 			auto words = Utils::ExtractWords(line);
-			if (words.size() >= 3 && words[0] != "//")
+			if (words.size() >= 5 && words[0] != "//")
 				vkCode += "layout (location = " + words[0] + ") in " + words[1] + " " + words[2] + ";\n";
 		}
 		vkCode += "\n";
@@ -323,7 +323,7 @@ namespace ZXEngine
 		for (auto& line : lines)
 		{
 			auto words = Utils::ExtractWords(line);
-			if (words.size() >= 3 && words[0] != "//")
+			if (words.size() >= 5 && words[0] != "//")
 				vkCode += "layout (location = " + words[0] + ") out " + words[1] + " " + words[2] + ";\n";
 		}
 		vkCode += "\n";

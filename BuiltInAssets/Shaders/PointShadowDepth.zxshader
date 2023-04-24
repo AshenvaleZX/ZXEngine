@@ -2,7 +2,7 @@ Vertex
 {
     Input
     {
-        0 vec3 aPos
+        0 vec3 aPos : POSITION
     }
 
     Properties
@@ -29,7 +29,7 @@ Geometry
 
     Output
     {
-        0 vec4 FragPos // FragPos from GS (output per emitvertex)
+        0 vec4 FragPos : TEXCOORD0
     }
 
     Properties
@@ -60,7 +60,7 @@ Fragment
 {
     Input
     {
-        0 vec4 FragPos
+        0 vec4 FragPos : TEXCOORD0
     }
 
     Properties

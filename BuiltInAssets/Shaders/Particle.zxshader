@@ -9,14 +9,14 @@ Vertex
 {
     Input
     {
-        0 vec2 aPos
-        1 vec2 aTexCoords
+        0 vec2 aPos       : POSITION
+        1 vec2 aTexCoords : TEXCOORD
     }
 
     Output
     {
-        0 vec2 TexCoords
-        1 vec4 ParticleColor
+        0 vec2 TexCoords     : TEXCOORD0
+        1 vec4 ParticleColor : TEXCOORD1
     }
 
     Properties
@@ -42,13 +42,13 @@ Fragment
 {
     Input
     {
-        0 vec2 TexCoords
-        1 vec4 ParticleColor
+        0 vec2 TexCoords     : TEXCOORD0
+        1 vec4 ParticleColor : TEXCOORD1
     }
 
     Output
     {
-        0 vec4 FragColor
+        0 vec4 FragColor : COLOR0
     }
 
     Properties

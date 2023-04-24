@@ -2,13 +2,13 @@ Vertex
 {
     Input
     {
-        0 vec3 aPos
-        2 vec3 aNormal
+        0 vec3 aPos    : POSITION
+        2 vec3 aNormal : NORMAL
     }
 
     Output
     {
-        0 vec3 Normal
+        0 vec3 Normal : TEXCOORD0
     }
 
     Properties
@@ -32,12 +32,12 @@ Fragment
 {
     Input
     {
-        0 vec3 Normal
+        0 vec3 Normal : TEXCOORD0
     }
 
     Output
     {
-        0 vec4 FragColor
+        0 vec4 FragColor : COLOR0
     }
 
     Properties

@@ -2,16 +2,16 @@ Vertex
 {
     Input
     {
-        0 vec3 aPos
-        1 vec2 aTexCoords
-        2 vec3 aNormal
+        0 vec3 aPos       : POSITION
+        1 vec2 aTexCoords : TEXCOORD
+        2 vec3 aNormal    : NORMAL
     }
 
     Output
     {
-        0 vec3 WorldPos
-        1 vec3 Normal
-        2 vec2 TexCoords
+        0 vec3 WorldPos  : TEXCOORD0
+        1 vec3 Normal    : TEXCOORD1
+        2 vec2 TexCoords : TEXCOORD2
     }
 
     Properties
@@ -37,14 +37,14 @@ Fragment
 {
     Input
     {
-        0 vec3 WorldPos
-        1 vec3 Normal
-        2 vec2 TexCoords
+        0 vec3 WorldPos  : TEXCOORD0
+        1 vec3 Normal    : TEXCOORD1
+        2 vec2 TexCoords : TEXCOORD2
     }
 
     Output
     {
-        0 vec4 FragColor
+        0 vec4 FragColor : COLOR0
     }
 
     Properties

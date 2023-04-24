@@ -2,21 +2,21 @@ Vertex
 {
     Input
     {
-        0 vec3 aPos
-        1 vec2 aTexCoords
-        2 vec3 aNormal
-        3 vec3 aTangent
+        0 vec3 aPos       : POSITION
+        1 vec2 aTexCoords : TEXCOORD
+        2 vec3 aNormal    : NORMAL
+        3 vec3 aTangent   : TANGENT
     }
 
     Output
     {
-        0 vec3 WorldPos
-        1 vec3 Normal
-        2 vec4 uv1
-        3 vec2 uvControl
-        4 vec3 tSpace0
-        5 vec3 tSpace1
-        6 vec3 tSpace2
+        0 vec3 WorldPos  : TEXCOORD0
+        1 vec3 Normal    : TEXCOORD1
+        2 vec4 uv1       : TEXCOORD2
+        3 vec2 uvControl : TEXCOORD3
+        4 vec3 tSpace0   : TEXCOORD4
+        5 vec3 tSpace1   : TEXCOORD5
+        6 vec3 tSpace2   : TEXCOORD6
     }
 
     Properties
@@ -57,18 +57,18 @@ Fragment
 {
     Input
     {
-        0 vec3 WorldPos
-        1 vec3 Normal
-        2 vec4 uv1
-        3 vec2 uvControl
-        4 vec3 tSpace0
-        5 vec3 tSpace1
-        6 vec3 tSpace2
+        0 vec3 WorldPos  : TEXCOORD0
+        1 vec3 Normal    : TEXCOORD1
+        2 vec4 uv1       : TEXCOORD2
+        3 vec2 uvControl : TEXCOORD3
+        4 vec3 tSpace0   : TEXCOORD4
+        5 vec3 tSpace1   : TEXCOORD5
+        6 vec3 tSpace2   : TEXCOORD6
     }
 
     Output
     {
-        0 vec4 FragColor
+        0 vec4 FragColor : COLOR0
     }
 
     Properties
