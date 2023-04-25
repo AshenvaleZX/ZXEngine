@@ -405,7 +405,7 @@ namespace ZXEngine
 				vertInputVariables.push_back(words[2]);
 			}
 		}
-		dxCode += "};\n";
+		dxCode += "};\n\n";
 
 		// 顶点着色器输出结构体
 		dxCode += "struct VertexOutput\n{\n";
@@ -421,7 +421,8 @@ namespace ZXEngine
 				vertOutputVariables.push_back(words[2]);
 			}
 		}
-		dxCode += "};\n";
+		dxCode += "    float4 SVPos : SV_POSITION;\n";
+		dxCode += "};\n\n";
 
 		// 片元(像素)着色器输出结构体
 		dxCode += "struct PixelOutput\n{\n";
@@ -437,7 +438,7 @@ namespace ZXEngine
 				fragOutputVariables.push_back(words[2]);
 			}
 		}
-		dxCode += "};\n";
+		dxCode += "};\n\n";
 
 		// CPU端常量Buffer
 		dxCode += "cbuffer constantBuffer : register(b0)\n{\n";
@@ -462,7 +463,7 @@ namespace ZXEngine
 			else
 				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + "[" + to_string(property.arrayLength) + "];\n";
 		}
-		dxCode += "};\n";
+		dxCode += "};\n\n";
 
 		// 纹理
 		uint32_t textureIdx = 0;
@@ -472,6 +473,7 @@ namespace ZXEngine
 				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + " : register(t" + to_string(textureIdx) + ");\n";
 			else
 				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + "[" + to_string(property.arrayLength) + "] : register(t" + to_string(textureIdx) + ");\n";
+			textureIdx++;
 		}
 		for (auto& property : shaderInfo.geomProperties.textureProperties)
 		{
@@ -479,20 +481,23 @@ namespace ZXEngine
 				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + " : register(t" + to_string(textureIdx) + ");\n";
 			else
 				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + "[" + to_string(property.arrayLength) + "] : register(t" + to_string(textureIdx) + ");\n";
+			textureIdx++;
 		}
 		for (auto& property : shaderInfo.fragProperties.textureProperties)
 		{
 			if (property.arrayLength == 0)
-				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + " : register(t" + to_string(textureIdx) + ");\n";
+				dxCode += propertyTypeToHLSLType[property.type] + " " + property.name + " : register(t" + to_string(textureIdx) + ");\n";
 			else
-				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + "[" + to_string(property.arrayLength) + "] : register(t" + to_string(textureIdx) + ");\n";
+				dxCode += propertyTypeToHLSLType[property.type] + " " + property.name + "[" + to_string(property.arrayLength) + "] : register(t" + to_string(textureIdx) + ");\n";
+			textureIdx++;
 		}
+		dxCode += "\n";
 
 		// 采样器
 		dxCode += "SamplerState sampleLinearWrap       : register(s0);\n";
 		dxCode += "SamplerState sampleLinearClamp      : register(s1);\n";
 		dxCode += "SamplerState sampleAnisotropicWrap  : register(s2);\n";
-		dxCode += "SamplerState sampleAnisotropicClamp : register(s3);\n";
+		dxCode += "SamplerState sampleAnisotropicClamp : register(s3);\n\n";
 
 		// 顶点着色器
 		string vertProgramBlock = GetCodeBlock(vertCode, "Program");
@@ -506,6 +511,7 @@ namespace ZXEngine
 		}
 		// 重新生成VS main函数
 		string vertMainBlock = GetCodeBlock(vertProgramBlock, "main");
+		Utils::ReplaceAllString(vertMainBlock, "ZX_Position", "output.SVPos");
 		for (auto& varName : vertInputVariables)
 			Utils::ReplaceAllString(vertMainBlock, varName, "input." + varName);
 		for (auto& varName : vertOutputVariables)
@@ -515,7 +521,7 @@ namespace ZXEngine
 		dxCode += "    VertexOutput output;\n";
 		dxCode += vertMainBlock;
 		dxCode += "    return output;\n";
-		dxCode += "}\n";
+		dxCode += "}\n\n";
 
 		// 片元(像素)着色器
 		string fragProgramBlock = GetCodeBlock(fragCode, "Program");
@@ -540,7 +546,41 @@ namespace ZXEngine
 		dxCode += "    return output;\n";
 		dxCode += "}\n";
 
-		return "";
+		// 替换纹理采样语法
+		size_t pos = 0;
+		while ((pos = dxCode.find("texture", pos)) != string::npos)
+		{
+			size_t s = 0, e = 0;
+			for (size_t i = pos; i < dxCode.size(); i++)
+			{
+				if (dxCode[i] == '(')
+				{
+					s = i;
+				}
+				else if (dxCode[i] == ')')
+				{
+					e = i;
+					break;
+				}
+			}
+
+			string sampleSentence = dxCode.substr(s + 1, e - s - 1);
+			auto sampleArgs = Utils::StringSplit(sampleSentence, ',');
+			string oldSentence = dxCode.substr(pos, e - pos + 1);
+			string newSentence = sampleArgs[0] + ".Sample(sampleLinearWrap," + sampleArgs[1] + ")";
+			dxCode.replace(pos, oldSentence.length(), newSentence);
+
+			pos += newSentence.length();
+		}
+
+		// 替换变量类型名称
+		Utils::ReplaceAllString(dxCode, "vec2", "float2");
+		Utils::ReplaceAllString(dxCode, "vec3", "float3");
+		Utils::ReplaceAllString(dxCode, "vec4", "float4");
+		Utils::ReplaceAllString(dxCode, "mat3", "float3x3");
+		Utils::ReplaceAllString(dxCode, "mat4", "float4x4");
+
+		return dxCode;
 	}
 
 	ShaderStateSet ShaderParser::GetShaderStateSet(const string& code)

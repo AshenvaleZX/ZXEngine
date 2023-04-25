@@ -7,6 +7,7 @@
 #include "../LuaManager.h"
 #include "../Resources.h"
 #include "../Vulkan/SPIRVCompiler.h"
+#include "../DirectX12/ZXD3D12Util.h"
 
 namespace ZXEngine
 {
@@ -63,6 +64,13 @@ namespace ZXEngine
 						SPIRVCompiler::CompileAllShader(Resources::GetAssetsPath());
 						SPIRVCompiler::CompileAllShader(Resources::GetAssetFullPath("Shaders", true));
 						Debug::Log("The compilation of all shaders is complete.");
+					}
+					
+					if (ImGui::MenuItem("Generate HLSL for DirectX12"))
+					{
+						ZXD3D12Util::TranslateAllShaderToHLSL(Resources::GetAssetsPath());
+						ZXD3D12Util::TranslateAllShaderToHLSL(Resources::GetAssetFullPath("Shaders", true));
+						Debug::Log("The translation of all shaders is complete.");
 					}
 
 					ImGui::EndMenu();

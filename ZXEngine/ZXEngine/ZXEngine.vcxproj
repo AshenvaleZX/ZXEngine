@@ -155,6 +155,7 @@
     <ClCompile Include="..\..\CPPScripts\Debug.cpp" />
     <ClCompile Include="..\..\CPPScripts\DirectX12\ZXD3D12DescriptorAllocator.cpp" />
     <ClCompile Include="..\..\CPPScripts\DirectX12\ZXD3D12DescriptorManager.cpp" />
+    <ClCompile Include="..\..\CPPScripts\DirectX12\ZXD3D12Util.cpp" />
     <ClCompile Include="..\..\CPPScripts\DynamicMesh.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorDataManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorEnumStruct.cpp" />
@@ -280,6 +281,7 @@
     <ClInclude Include="..\..\CPPScripts\DirectX12\D3D12EnumStruct.h" />
     <ClInclude Include="..\..\CPPScripts\DirectX12\ZXD3D12DescriptorAllocator.h" />
     <ClInclude Include="..\..\CPPScripts\DirectX12\ZXD3D12DescriptorManager.h" />
+    <ClInclude Include="..\..\CPPScripts\DirectX12\ZXD3D12Util.h" />
     <ClInclude Include="..\..\CPPScripts\DynamicMesh.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorDataManager.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorEnumStruct.h" />

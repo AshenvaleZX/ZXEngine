@@ -10,6 +10,9 @@ ZXEngine/Build/*.exe
 *.geom
 *.frag
 
+# DirectX12 Shader
+*.hlsl
+
 # ImGui
 ZXEngine/ZXEngine/imgui.ini
 
