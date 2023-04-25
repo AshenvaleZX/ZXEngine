@@ -129,7 +129,11 @@ namespace ZXEngine
 		if (!geomCode.empty())
 			info.geomProperties = GetProperties(geomCode);
 
-		SetUpProperties(info);
+#ifdef ZX_API_D3D12
+		SetUpPropertiesHLSL(info);
+#else
+		SetUpPropertiesStd140(info);
+#endif
 
 		return info;
 	}
@@ -140,13 +144,12 @@ namespace ZXEngine
 			|| type == ShaderPropertyType::ENGINE_DEPTH_MAP || type == ShaderPropertyType::ENGINE_DEPTH_CUBE_MAP);
 	}
 
-	UniformAlignInfo ShaderParser::GetPropertyAlignInfo(ShaderPropertyType type, uint32_t arrayLength)
+	UniformAlignInfo ShaderParser::GetPropertyAlignInfoStd140(ShaderPropertyType type, uint32_t arrayLength)
 	{
 		// 这里要注意Vulkan的内存对齐规范: https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap15.html#interfaces-resources-layout
 		// 这里是按照std140标准实现的内存对齐
 
 		uint32_t std_size = sizeof(float);
-		UniformAlignInfo alignInfo = {};
 		if (type == ShaderPropertyType::BOOL || type == ShaderPropertyType::INT || type == ShaderPropertyType::FLOAT
 			|| type == ShaderPropertyType::ENGINE_LIGHT_INTENSITY || type == ShaderPropertyType::ENGINE_FAR_PLANE)
 			if (arrayLength == 0)
@@ -687,7 +690,7 @@ namespace ZXEngine
 		arrayLength = static_cast<uint32_t>(std::stoi(lengthStr));
 	}
 
-	void ShaderParser::SetUpProperties(ShaderInfo& info)
+	void ShaderParser::SetUpPropertiesStd140(ShaderInfo& info)
 	{
 		// 这里是按照std140标准实现的内存对齐
 		uint32_t binding = 0;
@@ -697,7 +700,7 @@ namespace ZXEngine
 			uint32_t offset = 0;
 			for (auto& property : info.vertProperties.baseProperties)
 			{
-				auto alignInfo = GetPropertyAlignInfo(property.type, property.arrayLength);
+				auto alignInfo = GetPropertyAlignInfoStd140(property.type, property.arrayLength);
 				property.binding = binding;
 				property.size = alignInfo.size;
 				property.align = alignInfo.align;
@@ -723,7 +726,7 @@ namespace ZXEngine
 			uint32_t offset = 0;
 			for (auto& property : info.geomProperties.baseProperties)
 			{
-				auto alignInfo = GetPropertyAlignInfo(property.type, property.arrayLength);
+				auto alignInfo = GetPropertyAlignInfoStd140(property.type, property.arrayLength);
 				property.binding = binding;
 				property.size = alignInfo.size;
 				property.align = alignInfo.align;
@@ -749,7 +752,7 @@ namespace ZXEngine
 			uint32_t offset = 0;
 			for (auto& property : info.fragProperties.baseProperties)
 			{
-				auto alignInfo = GetPropertyAlignInfo(property.type, property.arrayLength);
+				auto alignInfo = GetPropertyAlignInfoStd140(property.type, property.arrayLength);
 				property.binding = binding;
 				property.size = alignInfo.size;
 				property.align = alignInfo.align;
@@ -768,6 +771,128 @@ namespace ZXEngine
 		{
 			property.binding = binding;
 			binding++;
+		}
+	}
+
+	void ShaderParser::SetUpPropertiesHLSL(ShaderInfo& info)
+	{
+		// 这里是按照 HLSL Packing Rule 来实现的
+		// 微软官网文档链接: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-packing-rules
+		// 微软Github文档链接: https://github.com/microsoft/DirectXShaderCompiler/wiki/Buffer-Packing
+		// 知乎文档链接: https://zhuanlan.zhihu.com/p/560076693
+
+		// 目前的ZXEngine里一个HLSL Shader只有一个Constant Buffer，所有变量严格按照VS，GS，PS里的Properties声明顺序排列
+		uint32_t offset = 0;
+		if (!info.vertProperties.baseProperties.empty())
+		{
+			for (auto& property : info.vertProperties.baseProperties)
+			{
+				auto alignInfo = GetPropertyAlignInfoHLSL(property.type, property.arrayLength);
+				property.size = alignInfo.size;
+				property.align = alignInfo.align;
+				property.arrayOffset = alignInfo.arrayOffset;
+				// 当前的16字节寄存器还剩几个字节
+				uint32_t remainder = 16 - (offset % 16);
+				// 判断一下剩的这几个字节够不够装下一个数据，下一个数据如果是矩阵或者数组的话就是看够不够装一个元素，而矩阵或数组的一个元素必定需要16字节对齐
+				if (remainder >= alignInfo.align)
+					// 如果够装的话，就直接放进去，也就是offset直接是当前实际占用的offset
+					property.offset = offset;
+				else
+					// 如果不够装的话，就需要跳过这个16字节寄存器，用下一个16字节寄存器，也就是offset需要加上remainder来补齐到下一个对齐16字节的位置
+					property.offset = offset + remainder;
+
+				// offset根据数据实际占用大小进行偏移
+				offset = property.offset + property.size;
+			}
+		}
+		if (!info.geomProperties.baseProperties.empty())
+		{
+			for (auto& property : info.geomProperties.baseProperties)
+			{
+				auto alignInfo = GetPropertyAlignInfoHLSL(property.type, property.arrayLength);
+				property.size = alignInfo.size;
+				property.align = alignInfo.align;
+				property.arrayOffset = alignInfo.arrayOffset;
+				uint32_t remainder = 16 - (offset % 16);
+				if (remainder >= alignInfo.align)
+					property.offset = offset;
+				else
+					property.offset = offset + remainder;
+
+				offset = property.offset + property.size;
+			}
+		}
+		if (!info.fragProperties.baseProperties.empty())
+		{
+			for (auto& property : info.fragProperties.baseProperties)
+			{
+				auto alignInfo = GetPropertyAlignInfoHLSL(property.type, property.arrayLength);
+				property.size = alignInfo.size;
+				property.align = alignInfo.align;
+				property.arrayOffset = alignInfo.arrayOffset;
+				uint32_t remainder = 16 - (offset % 16);
+				if (remainder >= alignInfo.align)
+					property.offset = offset;
+				else
+					property.offset = offset + remainder;
+
+				offset = property.offset + property.size;
+			}
+		}
+	}
+
+	D3D12ConstAlignInfo ShaderParser::GetPropertyAlignInfoHLSL(ShaderPropertyType type, uint32_t arrayLength)
+	{
+		uint32_t std_size = sizeof(float);
+		if (type == ShaderPropertyType::BOOL || type == ShaderPropertyType::INT || type == ShaderPropertyType::FLOAT
+			|| type == ShaderPropertyType::ENGINE_LIGHT_INTENSITY || type == ShaderPropertyType::ENGINE_FAR_PLANE)
+			if (arrayLength == 0)
+				return { .size = std_size, .align = std_size };
+			else
+				return { .size = (std_size * 4) * (arrayLength - 1) + std_size, .align = std_size * 4, .arrayOffset = std_size * 4 };
+
+		else if (type == ShaderPropertyType::VEC2)
+			if (arrayLength == 0)
+				return { .size = std_size * 2, .align = std_size * 2 };
+			else
+				return { .size = (std_size * 4) * (arrayLength - 1) + std_size * 2, .align = std_size * 4, .arrayOffset = std_size * 4 };
+
+		else if (type == ShaderPropertyType::VEC3 || type == ShaderPropertyType::ENGINE_CAMERA_POS
+			|| type == ShaderPropertyType::ENGINE_LIGHT_POS || type == ShaderPropertyType::ENGINE_LIGHT_DIR
+			|| type == ShaderPropertyType::ENGINE_LIGHT_COLOR)
+			if (arrayLength == 0)
+				return { .size = std_size * 3, .align = std_size * 3 };
+			else
+				return { .size = (std_size * 4) * (arrayLength - 1) + std_size * 3, .align = std_size * 4, .arrayOffset = std_size * 4 };
+
+		else if (type == ShaderPropertyType::VEC4)
+			if (arrayLength == 0)
+				return { .size = std_size * 4, .align = std_size * 4 };
+			else
+				return { .size = (std_size * 4) * arrayLength, .align = std_size * 4, .arrayOffset = std_size * 4 };
+
+		else if (type == ShaderPropertyType::MAT2)
+			if (arrayLength == 0)
+				return { .size = std_size * (4 + 2), .align = std_size * 4 };
+			else
+				return { .size = std_size * ((arrayLength * 2 - 1) * 4 + 2), .align = std_size * 4, .arrayOffset = std_size * 4 * 2 };
+
+		else if (type == ShaderPropertyType::MAT3)
+			if (arrayLength == 0)
+				return { .size = std_size * (4 * 2 + 3), .align = std_size * 4 };
+			else
+				return { .size = std_size * ((arrayLength * 3 - 1) * 4 + 3), .align = std_size * 4, .arrayOffset = std_size * 4 * 3 };
+
+		else if (type == ShaderPropertyType::MAT4 || type == ShaderPropertyType::ENGINE_MODEL
+			|| type == ShaderPropertyType::ENGINE_VIEW || type == ShaderPropertyType::ENGINE_PROJECTION)
+			if (arrayLength == 0)
+				return { .size = std_size * 16, .align = std_size * 4 };
+			else
+				return { .size = std_size * ((arrayLength * 4) * 4), .align = std_size * 4, .arrayOffset = std_size * 4 * 4 };
+		else
+		{
+			Debug::LogError("Invalid shader property type !");
+			return {};
 		}
 	}
 }

@@ -36,13 +36,6 @@ namespace ZXEngine
 		bool depthWrite              = true;
 	};
 
-	struct UniformAlignInfo
-	{
-		uint32_t size = 0;
-		uint32_t align = 0;
-		uint32_t arrayOffset = 0;
-	};
-
 	struct ShaderProperty
 	{
 		string name = "";

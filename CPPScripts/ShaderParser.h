@@ -4,12 +4,25 @@
 
 namespace ZXEngine
 {
+	struct UniformAlignInfo
+	{
+		uint32_t size = 0;
+		uint32_t align = 0;
+		uint32_t arrayOffset = 0;
+	};
+
+	struct D3D12ConstAlignInfo
+	{
+		uint32_t size = 0;
+		uint32_t align = 0;
+		uint32_t arrayOffset = 0;
+	};
+
 	class ShaderParser
 	{
 	public:
 		static ShaderInfo GetShaderInfo(const string& code);
 		static bool IsBasePropertyType(ShaderPropertyType type);
-		static UniformAlignInfo GetPropertyAlignInfo(ShaderPropertyType type, uint32_t arrayLength);
 		static ShaderPropertiesInfo GetProperties(const string& stageCode);
 		static void ParseShaderCode(const string& code, string& vertCode, string& geomCode, string& fragCode);
 		static string TranslateToOpenGL(const string& originCode);
@@ -20,6 +33,9 @@ namespace ZXEngine
 		static ShaderStateSet GetShaderStateSet(const string& code);
 		static string GetCodeBlock(const string& code, const string& blockName);
 		static void GetPropertyNameAndArrayLength(const string& propertyStr, string& name, uint32_t& arrayLength);
-		static void SetUpProperties(ShaderInfo& info);
+		static void SetUpPropertiesStd140(ShaderInfo& info);
+		static UniformAlignInfo GetPropertyAlignInfoStd140(ShaderPropertyType type, uint32_t arrayLength);
+		static void SetUpPropertiesHLSL(ShaderInfo& info);
+		static D3D12ConstAlignInfo GetPropertyAlignInfoHLSL(ShaderPropertyType type, uint32_t arrayLength);
 	};
 }
