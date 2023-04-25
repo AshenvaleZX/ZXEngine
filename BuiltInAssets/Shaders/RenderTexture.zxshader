@@ -30,7 +30,7 @@ Fragment
 
     Output
     {
-        0 vec4 FragColor : COLOR0
+        0 vec4 FragColor : SV_Target
     }
 
     Properties

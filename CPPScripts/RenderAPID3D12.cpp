@@ -620,7 +620,7 @@ namespace ZXEngine
 	{
 		string shaderCode = Resources::LoadTextFile(path);
 		auto shaderInfo = ShaderParser::GetShaderInfo(shaderCode);
-		string hlslCode = ShaderParser::TranslateToD3D12(shaderCode);
+		string hlslCode = ShaderParser::TranslateToD3D12(shaderCode, shaderInfo);
 
 		UINT compileFlags = 0;
 		if (ProjectSetting::enableValidationLayer)

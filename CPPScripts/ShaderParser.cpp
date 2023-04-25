@@ -73,6 +73,22 @@ namespace ZXEngine
 		{ ShaderPropertyType::ENGINE_FAR_PLANE,   "float"     },
 	};
 
+	map<ShaderPropertyType, string> propertyTypeToHLSLType =
+	{
+		{ ShaderPropertyType::BOOL, "bool"     }, { ShaderPropertyType::INT,  "int"      }, { ShaderPropertyType::FLOAT, "float"    },
+		{ ShaderPropertyType::VEC2, "float2"   }, { ShaderPropertyType::VEC3, "float3"   }, { ShaderPropertyType::VEC4,  "float4"   },
+		{ ShaderPropertyType::MAT2, "float2x2" }, { ShaderPropertyType::MAT3, "float3x3" }, { ShaderPropertyType::MAT4,  "float4x4" },
+
+		{ ShaderPropertyType::SAMPLER, "Texture2D" }, { ShaderPropertyType::SAMPLER_2D, "Texture2D" }, { ShaderPropertyType::SAMPLER_CUBE, "TextureCube" },
+
+		{ ShaderPropertyType::ENGINE_MODEL,       "float4x4"  }, { ShaderPropertyType::ENGINE_VIEW,            "float4x4"    },
+		{ ShaderPropertyType::ENGINE_PROJECTION,  "float4x4"  }, { ShaderPropertyType::ENGINE_CAMERA_POS,      "float3"      },
+		{ ShaderPropertyType::ENGINE_LIGHT_POS,   "float3"    }, { ShaderPropertyType::ENGINE_LIGHT_DIR,       "float3"      },
+		{ ShaderPropertyType::ENGINE_LIGHT_COLOR, "float3"    }, { ShaderPropertyType::ENGINE_LIGHT_INTENSITY, "float"       },
+		{ ShaderPropertyType::ENGINE_DEPTH_MAP,   "Texture2D" }, { ShaderPropertyType::ENGINE_DEPTH_CUBE_MAP,  "TextureCube" },
+		{ ShaderPropertyType::ENGINE_FAR_PLANE,   "float"     },
+	};
+
 	ShaderInfo ShaderParser::GetShaderInfo(const string& code)
 	{
 		ShaderInfo info;
@@ -366,8 +382,164 @@ namespace ZXEngine
 		return vkCode;
 	}
 
-	string ShaderParser::TranslateToD3D12(const string& originCode)
+	string ShaderParser::TranslateToD3D12(const string& originCode, const ShaderInfo& shaderInfo)
 	{
+		if (originCode.empty())
+			return "";
+
+		string vertCode = GetCodeBlock(originCode, "Vertex");
+		string geomCode = GetCodeBlock(originCode, "Geometry");
+		string fragCode = GetCodeBlock(originCode, "Fragment");
+
+		// 顶点着色器输入结构体
+		string dxCode = "struct VertexInput\n{\n";
+		string vertInputBlock = GetCodeBlock(vertCode, "Input");
+		vector<string> vertInputVariables;
+		auto lines = Utils::StringSplit(vertInputBlock, '\n');
+		for (auto& line : lines)
+		{
+			auto words = Utils::ExtractWords(line);
+			if (words.size() >= 5 && words[0] != "//")
+			{
+				dxCode += "    " + words[1] + " " + words[2] + " " + words[3] + " " + words[4] + ";\n";
+				vertInputVariables.push_back(words[2]);
+			}
+		}
+		dxCode += "};\n";
+
+		// 顶点着色器输出结构体
+		dxCode += "struct VertexOutput\n{\n";
+		string vertOutputBlock = GetCodeBlock(vertCode, "Output");
+		vector<string> vertOutputVariables;
+		lines = Utils::StringSplit(vertOutputBlock, '\n');
+		for (auto& line : lines)
+		{
+			auto words = Utils::ExtractWords(line);
+			if (words.size() >= 5 && words[0] != "//")
+			{
+				dxCode += "    " + words[1] + " " + words[2] + " " + words[3] + " " + words[4] + ";\n";
+				vertOutputVariables.push_back(words[2]);
+			}
+		}
+		dxCode += "};\n";
+
+		// 片元(像素)着色器输出结构体
+		dxCode += "struct PixelOutput\n{\n";
+		string fragOutputBlock = GetCodeBlock(fragCode, "Output");
+		vector<string> fragOutputVariables;
+		lines = Utils::StringSplit(fragOutputBlock, '\n');
+		for (auto& line : lines)
+		{
+			auto words = Utils::ExtractWords(line);
+			if (words.size() >= 5 && words[0] != "//")
+			{
+				dxCode += "    " + words[1] + " " + words[2] + " " + words[3] + " " + words[4] + ";\n";
+				fragOutputVariables.push_back(words[2]);
+			}
+		}
+		dxCode += "};\n";
+
+		// CPU端常量Buffer
+		dxCode += "cbuffer constantBuffer : register(b0)\n{\n";
+		for (auto& property : shaderInfo.vertProperties.baseProperties)
+		{
+			if (property.arrayLength == 0)
+				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + ";\n";
+			else
+				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + "[" + to_string(property.arrayLength) + "];\n";
+		}
+		for (auto& property : shaderInfo.geomProperties.baseProperties)
+		{
+			if (property.arrayLength == 0)
+				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + ";\n";
+			else
+				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + "[" + to_string(property.arrayLength) + "];\n";
+		}
+		for (auto& property : shaderInfo.fragProperties.baseProperties)
+		{
+			if (property.arrayLength == 0)
+				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + ";\n";
+			else
+				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + "[" + to_string(property.arrayLength) + "];\n";
+		}
+		dxCode += "};\n";
+
+		// 纹理
+		uint32_t textureIdx = 0;
+		for (auto& property : shaderInfo.vertProperties.textureProperties)
+		{
+			if (property.arrayLength == 0)
+				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + " : register(t" + to_string(textureIdx) + ");\n";
+			else
+				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + "[" + to_string(property.arrayLength) + "] : register(t" + to_string(textureIdx) + ");\n";
+		}
+		for (auto& property : shaderInfo.geomProperties.textureProperties)
+		{
+			if (property.arrayLength == 0)
+				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + " : register(t" + to_string(textureIdx) + ");\n";
+			else
+				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + "[" + to_string(property.arrayLength) + "] : register(t" + to_string(textureIdx) + ");\n";
+		}
+		for (auto& property : shaderInfo.fragProperties.textureProperties)
+		{
+			if (property.arrayLength == 0)
+				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + " : register(t" + to_string(textureIdx) + ");\n";
+			else
+				dxCode += "    " + propertyTypeToHLSLType[property.type] + " " + property.name + "[" + to_string(property.arrayLength) + "] : register(t" + to_string(textureIdx) + ");\n";
+		}
+
+		// 采样器
+		dxCode += "SamplerState sampleLinearWrap       : register(s0);\n";
+		dxCode += "SamplerState sampleLinearClamp      : register(s1);\n";
+		dxCode += "SamplerState sampleAnisotropicWrap  : register(s2);\n";
+		dxCode += "SamplerState sampleAnisotropicClamp : register(s3);\n";
+
+		// 顶点着色器
+		string vertProgramBlock = GetCodeBlock(vertCode, "Program");
+		// 去掉main函数
+		lines = Utils::StringSplit(vertProgramBlock, '\n');
+		for (auto& line : lines)
+		{
+			if (line.find("main") != string::npos)
+				break;
+			dxCode += line + "\n";
+		}
+		// 重新生成VS main函数
+		string vertMainBlock = GetCodeBlock(vertProgramBlock, "main");
+		for (auto& varName : vertInputVariables)
+			Utils::ReplaceAllString(vertMainBlock, varName, "input." + varName);
+		for (auto& varName : vertOutputVariables)
+			Utils::ReplaceAllString(vertMainBlock, varName, "output." + varName);
+		dxCode += "VertexOutput VS(VertexInput input)\n";
+		dxCode += "{\n";
+		dxCode += "    VertexOutput output;\n";
+		dxCode += vertMainBlock;
+		dxCode += "    return output;\n";
+		dxCode += "}\n";
+
+		// 片元(像素)着色器
+		string fragProgramBlock = GetCodeBlock(fragCode, "Program");
+		// 去掉main函数
+		lines = Utils::StringSplit(fragProgramBlock, '\n');
+		for (auto& line : lines)
+		{
+			if (line.find("main") != string::npos)
+				break;
+			dxCode += line + "\n";
+		}
+		// 重新生成PS main函数
+		string fragMainBlock = GetCodeBlock(fragProgramBlock, "main");
+		for (auto& varName : vertOutputVariables)
+			Utils::ReplaceAllString(fragMainBlock, varName, "input." + varName);
+		for (auto& varName : fragOutputVariables)
+			Utils::ReplaceAllString(fragMainBlock, varName, "output." + varName);
+		dxCode += "PixelOutput PS(VertexOutput input)\n";
+		dxCode += "{\n";
+		dxCode += "    PixelOutput output;\n";
+		dxCode += fragMainBlock;
+		dxCode += "    return output;\n";
+		dxCode += "}\n";
+
 		return "";
 	}
 

@@ -14,7 +14,7 @@ namespace ZXEngine
 		static void ParseShaderCode(const string& code, string& vertCode, string& geomCode, string& fragCode);
 		static string TranslateToOpenGL(const string& originCode);
 		static string TranslateToVulkan(const string& originCode, const ShaderPropertiesInfo& info);
-		static string TranslateToD3D12(const string& originCode);
+		static string TranslateToD3D12(const string& originCode, const ShaderInfo& shaderInfo);
 
 	private:
 		static ShaderStateSet GetShaderStateSet(const string& code);
