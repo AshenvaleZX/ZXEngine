@@ -32,6 +32,12 @@ namespace ZXEngine
 		virtual ShaderReference* LoadAndSetUpShader(const char* path, FrameBufferType type);
 		virtual void DeleteShader(uint32_t id);
 
+		// ²ÄÖÊ
+		virtual uint32_t CreateMaterialData();
+		virtual void SetUpMaterial(ShaderReference* shaderReference, MaterialData* materialData);
+		virtual void UseMaterialData(uint32_t ID);
+		virtual void DeleteMaterialData(uint32_t id);
+
 		// Mesh
 		virtual void DeleteMesh(unsigned int VAO);
 		virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
@@ -85,6 +91,7 @@ namespace ZXEngine
 		vector<ZXD3D12RenderBuffer*> mRenderBufferArray;
 		vector<ZXD3D12Texture*> mTextureArray;
 		vector<ZXD3D12Pipeline*> mPipelineArray;
+		vector<ZXD3D12MaterialData*> mMaterialDataArray;
 
 		uint32_t GetNextFenceIndex();
 		ZXD3D12Fence* GetFenceByIndex(uint32_t idx);
@@ -104,11 +111,16 @@ namespace ZXEngine
 		uint32_t GetNextPipelineIndex();
 		ZXD3D12Pipeline* GetPipelineByIndex(uint32_t idx);
 		void DestroyPipelineByIndex(uint32_t idx);
+		uint32_t GetNextMaterialDataIndex();
+		ZXD3D12MaterialData* GetMaterialDataByIndex(uint32_t idx);
+		void DestroyMaterialDataByIndex(uint32_t idx);
 
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc);
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_RENDER_TARGET_VIEW_DESC& rtvDesc);
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_DEPTH_STENCIL_VIEW_DESC& dsvDesc);
 		ComPtr<ID3D12Resource> CreateDefaultBuffer(const void* initData, UINT64 byteSize);
+
+		ZXD3D12ConstantBuffer CreateConstantBuffer(UINT64 byteSize);
 
 
 		/// <summary>
@@ -119,6 +131,8 @@ namespace ZXEngine
 		ComPtr<ID3D12Fence> mImmediateExeFence;
 		ComPtr<ID3D12CommandAllocator> mImmediateExeAllocator;
 		ComPtr<ID3D12GraphicsCommandList> mImmediateExeCommandList;
+
+		uint32_t mCurMaterialDataIdx = 0;
 
 		array<const CD3DX12_STATIC_SAMPLER_DESC, 4> GetStaticSamplersDesc();
 		void InitImmediateExecution();

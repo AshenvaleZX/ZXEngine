@@ -94,5 +94,23 @@ namespace ZXEngine
         ComPtr<ID3D12RootSignature> rootSignature = nullptr;
         ComPtr<ID3D12PipelineState> pipelineState = nullptr;
         bool inUse = false;
-	};;
+	};
+
+    struct ZXD3D12ConstantBuffer
+    {
+        ComPtr<ID3D12Resource> constantBuffer = nullptr;
+        void* constantBufferAddress = nullptr;
+    };
+
+    struct ZXD3D12MaterialTextureSet
+    {
+        vector<ZXD3D12DescriptorHandle> textureHandles;
+    };
+
+    struct ZXD3D12MaterialData
+    {
+        vector<ZXD3D12ConstantBuffer> constantBuffers;
+        vector<ZXD3D12MaterialTextureSet> textureSets;
+        bool inUse = false;
+    };
 }

@@ -39,10 +39,10 @@ namespace ZXEngine
 	struct ShaderProperty
 	{
 		string name = "";
-		uint32_t size = 0;        // 整个属性大小(可能是数组)
+		uint32_t size = 0;        // 整个属性大小(如果是数组则代表整个数组的大小)
 		uint32_t align = 0;       // 单个属性的对齐标准
-		uint32_t offset = 0;      // Offset in uniform buffer, Only for Vulkan now
-		uint32_t binding = 0;     // Only for Vulkan now
+		uint32_t offset = 0;      // 属性在Uniform Buffer(Vulkan)或Constant Buffer(D3D12)中的偏移量
+		uint32_t binding = 0;     // 在Vulkan中代表Uniform Buffer和纹理的layout binding，在D3D12中代表纹理的register(t)索引
 		uint32_t arrayLength = 0; // 属性数组长度
 		uint32_t arrayOffset = 0; // 如果是数组的话，一个属性在数组内的偏移量
 		ShaderPropertyType type;

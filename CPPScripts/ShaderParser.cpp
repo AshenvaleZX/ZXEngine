@@ -839,6 +839,24 @@ namespace ZXEngine
 				offset = property.offset + property.size;
 			}
 		}
+
+		// 这里的binding是指纹理在HLSL里的register(t)索引，严格按照VS，GS，PS里的纹理声明顺序排列
+		uint32_t binding = 0;
+		for (auto& property : info.vertProperties.textureProperties)
+		{
+			property.binding = binding;
+			binding++;
+		}
+		for (auto& property : info.geomProperties.textureProperties)
+		{
+			property.binding = binding;
+			binding++;
+		}
+		for (auto& property : info.fragProperties.textureProperties)
+		{
+			property.binding = binding;
+			binding++;
+		}
 	}
 
 	D3D12ConstAlignInfo ShaderParser::GetPropertyAlignInfoHLSL(ShaderPropertyType type, uint32_t arrayLength)

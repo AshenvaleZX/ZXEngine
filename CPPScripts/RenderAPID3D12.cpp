@@ -1,8 +1,10 @@
 #include "RenderAPID3D12.h"
 #include <stb_image.h>
 #include <D3Dcompiler.h>
+#include "Texture.h"
 #include "Resources.h"
 #include "GlobalData.h"
+#include "MaterialData.h"
 #include "ShaderParser.h"
 #include "ProjectSetting.h"
 #include "Window/WindowManager.h"
@@ -793,6 +795,78 @@ namespace ZXEngine
 		DestroyPipelineByIndex(id);
 	}
 
+	uint32_t RenderAPID3D12::CreateMaterialData()
+	{
+		uint32_t materialDataID = GetNextMaterialDataIndex();
+		auto materialData = GetMaterialDataByIndex(materialDataID);
+
+		materialData->inUse = true;
+
+		return materialDataID;
+	}
+
+	void RenderAPID3D12::SetUpMaterial(ShaderReference* shaderReference, MaterialData* materialData)
+	{
+		auto materialDataZXD3D12 = GetMaterialDataByIndex(materialData->GetID());
+
+		// 计算Constant Buffer大小
+		UINT64 bufferSize = static_cast<UINT64>(shaderReference->shaderInfo.fragProperties.baseProperties.back().offset + shaderReference->shaderInfo.fragProperties.baseProperties.back().size);
+		// 向上取256整数倍(不是必要操作)
+		bufferSize = (bufferSize + 255) & ~255;
+		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			// 创建Constant Buffer
+			materialDataZXD3D12->constantBuffers.push_back(CreateConstantBuffer(bufferSize));
+
+			ZXD3D12MaterialTextureSet materialTextureSet;
+			materialTextureSet.textureHandles.resize(
+				shaderReference->shaderInfo.vertProperties.textureProperties.size() +
+				shaderReference->shaderInfo.geomProperties.textureProperties.size() +
+				shaderReference->shaderInfo.fragProperties.textureProperties.size()
+			);
+
+			for (auto& matTexture : materialData->textures)
+			{
+				uint32_t binding = UINT32_MAX;
+				for (auto& textureProperty : shaderReference->shaderInfo.fragProperties.textureProperties)
+					if (matTexture.first == textureProperty.name)
+						binding = textureProperty.binding;
+
+				if (binding == UINT32_MAX)
+					for (auto& textureProperty : shaderReference->shaderInfo.vertProperties.textureProperties)
+						if (matTexture.first == textureProperty.name)
+							binding = textureProperty.binding;
+
+				if (binding == UINT32_MAX)
+					for (auto& textureProperty : shaderReference->shaderInfo.geomProperties.textureProperties)
+						if (matTexture.first == textureProperty.name)
+							binding = textureProperty.binding;
+
+				if (binding == UINT32_MAX)
+				{
+					Debug::LogError("No texture named " + matTexture.first + " matched !");
+					continue;
+				}
+
+				auto texture = GetTextureByIndex(matTexture.second->GetID());
+
+				materialTextureSet.textureHandles[binding] = texture->handleSRV;
+			}
+
+			materialDataZXD3D12->textureSets.push_back(materialTextureSet);
+		}
+	}
+
+	void RenderAPID3D12::UseMaterialData(uint32_t ID)
+	{
+		mCurMaterialDataIdx = ID;
+	}
+
+	void RenderAPID3D12::DeleteMaterialData(uint32_t id)
+	{
+		DestroyMaterialDataByIndex(id);
+	}
+
 	void RenderAPID3D12::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
 	{
 		VAO = GetNextVAOIndex();
@@ -1011,7 +1085,9 @@ namespace ZXEngine
 				return i;
 		}
 
-		mRenderBufferArray.push_back(new ZXD3D12RenderBuffer());
+		auto newRenderBuffer = new ZXD3D12RenderBuffer();
+		newRenderBuffer->renderBuffers.resize(DX_MAX_FRAMES_IN_FLIGHT);
+		mRenderBufferArray.push_back(newRenderBuffer);
 
 		return length;
 	}
@@ -1110,6 +1186,44 @@ namespace ZXEngine
 
 		pipeline->inUse = false;
 	}
+	
+	uint32_t RenderAPID3D12::GetNextMaterialDataIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mMaterialDataArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mMaterialDataArray[i]->inUse)
+				return i;
+		}
+
+		mMaterialDataArray.push_back(new ZXD3D12MaterialData());
+
+		return length;
+	}
+
+	ZXD3D12MaterialData* RenderAPID3D12::GetMaterialDataByIndex(uint32_t idx)
+	{
+		return mMaterialDataArray[idx];
+	}
+
+	void RenderAPID3D12::DestroyMaterialDataByIndex(uint32_t idx)
+	{
+		auto materialData = mMaterialDataArray[idx];
+
+		for (auto& iter : materialData->constantBuffers)
+		{
+			iter.constantBuffer->Unmap(0, nullptr);
+			iter.constantBuffer.Reset();
+		}
+		materialData->constantBuffers.clear();
+
+		for (auto& iter : materialData->textureSets)
+			iter.textureHandles.clear();
+		materialData->textureSets.clear();
+
+		materialData->inUse = false;
+	}
 
 	uint32_t RenderAPID3D12::CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc)
 	{
@@ -1195,6 +1309,26 @@ namespace ZXEngine
 		});
 
 		return defaultBuffer;
+	}
+
+	ZXD3D12ConstantBuffer RenderAPID3D12::CreateConstantBuffer(UINT64 byteSize)
+	{
+		ZXD3D12ConstantBuffer constantBuffer;
+
+		CD3DX12_HEAP_PROPERTIES constantBufferProps(D3D12_HEAP_TYPE_DEFAULT);
+		CD3DX12_RESOURCE_DESC constantBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(byteSize);
+		ThrowIfFailed(mD3D12Device->CreateCommittedResource(
+			&constantBufferProps,
+			D3D12_HEAP_FLAG_NONE,
+			&constantBufferDesc,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(&constantBuffer.constantBuffer))
+		);
+
+		ThrowIfFailed(constantBuffer.constantBuffer->Map(0, nullptr, static_cast<void**>(&constantBuffer.constantBufferAddress)));
+
+		return constantBuffer;
 	}
 
 
