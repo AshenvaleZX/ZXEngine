@@ -45,6 +45,24 @@ namespace ZXEngine
 		virtual void UpdateDynamicMesh(unsigned int VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
 		virtual void GenerateParticleMesh(unsigned int& VAO);
 
+		// Shader参数
+		virtual void UseShader(unsigned int ID);
+		virtual void SetShaderScalar(Material* material, const string& name, int value, bool allBuffer = false);
+		virtual void SetShaderScalar(Material* material, const string& name, bool value, bool allBuffer = false);
+		virtual void SetShaderScalar(Material* material, const string& name, float value, bool allBuffer = false);
+		virtual void SetShaderVector(Material* material, const string& name, const Vector2& value, bool allBuffer = false);
+		virtual void SetShaderVector(Material* material, const string& name, const Vector2& value, uint32_t idx, bool allBuffer = false);
+		virtual void SetShaderVector(Material* material, const string& name, const Vector3& value, bool allBuffer = false);
+		virtual void SetShaderVector(Material* material, const string& name, const Vector3& value, uint32_t idx, bool allBuffer = false);
+		virtual void SetShaderVector(Material* material, const string& name, const Vector4& value, bool allBuffer = false);
+		virtual void SetShaderVector(Material* material, const string& name, const Vector4& value, uint32_t idx, bool allBuffer = false);
+		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix3& value, bool allBuffer = false);
+		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix3& value, uint32_t idx, bool allBuffer = false);
+		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix4& value, bool allBuffer = false);
+		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix4& value, uint32_t idx, bool allBuffer = false);
+		virtual void SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
+		virtual void SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
+
 
 		/// <summary>
 		/// 仅启动时一次性初始化的核心D3D12组件及相关变量
@@ -64,6 +82,9 @@ namespace ZXEngine
 		// 4X MSAA质量等级
 		UINT m4xMSAAQuality = 0;
 		UINT msaaSamplesCount = 4;
+
+		// 当前是DX_MAX_FRAMES_IN_FLIGHT中的第几帧
+		uint32_t mCurrentFrame = 0;
 
 		UINT64 mCurrentFence = 0;
 		ComPtr<ID3D12Fence> mFence;
@@ -132,7 +153,11 @@ namespace ZXEngine
 		ComPtr<ID3D12CommandAllocator> mImmediateExeAllocator;
 		ComPtr<ID3D12GraphicsCommandList> mImmediateExeCommandList;
 
+		uint32_t mCurPipeLineIdx = 0;
 		uint32_t mCurMaterialDataIdx = 0;
+
+		void* GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
+		vector<void*> GetShaderPropertyAddressAllBuffer(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
 
 		array<const CD3DX12_STATIC_SAMPLER_DESC, 4> GetStaticSamplersDesc();
 		void InitImmediateExecution();

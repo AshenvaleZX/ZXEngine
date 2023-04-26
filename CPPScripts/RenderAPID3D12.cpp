@@ -2,6 +2,8 @@
 #include <stb_image.h>
 #include <D3Dcompiler.h>
 #include "Texture.h"
+#include "ZShader.h"
+#include "Material.h"
 #include "Resources.h"
 #include "GlobalData.h"
 #include "MaterialData.h"
@@ -959,6 +961,250 @@ namespace ZXEngine
 		DestroyVAOByIndex(VAO);
 	}
 
+	void RenderAPID3D12::UseShader(unsigned int ID)
+	{
+		mCurPipeLineIdx = ID;
+	}
+
+	// Integer
+	void RenderAPID3D12::SetShaderScalar(Material* material, const string& name, int value, bool allBuffer)
+	{
+		if (allBuffer)
+		{
+			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name);
+			for (auto valueAddress : valueAddresses)
+				memcpy(valueAddress, &value, sizeof(value));
+		}
+		else
+		{
+			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
+			memcpy(valueAddress, &value, sizeof(value));
+		}
+	}
+
+	// Boolean
+	void RenderAPID3D12::SetShaderScalar(Material* material, const string& name, bool value, bool allBuffer)
+	{
+		if (allBuffer)
+		{
+			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name);
+			for (auto valueAddress : valueAddresses)
+				memcpy(valueAddress, &value, sizeof(value));
+		}
+		else
+		{
+			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
+			memcpy(valueAddress, &value, sizeof(value));
+		}
+	}
+
+	// Float
+	void RenderAPID3D12::SetShaderScalar(Material* material, const string& name, float value, bool allBuffer)
+	{
+		if (allBuffer)
+		{
+			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name);
+			for (auto valueAddress : valueAddresses)
+				memcpy(valueAddress, &value, sizeof(value));
+		}
+		else
+		{
+			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
+			memcpy(valueAddress, &value, sizeof(value));
+		}
+	}
+
+	// Vector2
+	void RenderAPID3D12::SetShaderVector(Material* material, const string& name, const Vector2& value, bool allBuffer)
+	{
+		SetShaderVector(material, name, value, 0, allBuffer);
+	}
+	void RenderAPID3D12::SetShaderVector(Material* material, const string& name, const Vector2& value, uint32_t idx, bool allBuffer)
+	{
+		float* array = new float[2];
+		value.ToArray(array);
+		if (allBuffer)
+		{
+			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+			for (auto valueAddress : valueAddresses)
+				memcpy(valueAddress, array, sizeof(float) * 2);
+		}
+		else
+		{
+			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
+			memcpy(valueAddress, array, sizeof(float) * 2);
+		}
+		delete[] array;
+	}
+
+	// Vector3
+	void RenderAPID3D12::SetShaderVector(Material* material, const string& name, const Vector3& value, bool allBuffer)
+	{
+		SetShaderVector(material, name, value, 0, allBuffer);
+	}
+	void RenderAPID3D12::SetShaderVector(Material* material, const string& name, const Vector3& value, uint32_t idx, bool allBuffer)
+	{
+		float* array = new float[3];
+		value.ToArray(array);
+		if (allBuffer)
+		{
+			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+			for (auto valueAddress : valueAddresses)
+				memcpy(valueAddress, array, sizeof(float) * 3);
+		}
+		else
+		{
+			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
+			memcpy(valueAddress, array, sizeof(float) * 3);
+		}
+		delete[] array;
+	}
+
+	// Vector4
+	void RenderAPID3D12::SetShaderVector(Material* material, const string& name, const Vector4& value, bool allBuffer)
+	{
+		SetShaderVector(material, name, value, 0, allBuffer);
+	}
+	void RenderAPID3D12::SetShaderVector(Material* material, const string& name, const Vector4& value, uint32_t idx, bool allBuffer)
+	{
+		float* array = new float[4];
+		value.ToArray(array);
+		if (allBuffer)
+		{
+			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+			for (auto valueAddress : valueAddresses)
+				memcpy(valueAddress, array, sizeof(float) * 4);
+		}
+		else
+		{
+			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
+			memcpy(valueAddress, array, sizeof(float) * 4);
+		}
+		delete[] array;
+	}
+
+	// Matrix3
+	void RenderAPID3D12::SetShaderMatrix(Material* material, const string& name, const Matrix3& value, bool allBuffer)
+	{
+		SetShaderMatrix(material, name, value, 0, allBuffer);
+	}
+	void RenderAPID3D12::SetShaderMatrix(Material* material, const string& name, const Matrix3& value, uint32_t idx, bool allBuffer)
+	{
+		float* array = new float[9];
+		value.ToColumnMajorArray(array);
+		if (allBuffer)
+		{
+			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+			for (auto valueAddress : valueAddresses)
+				memcpy(valueAddress, array, sizeof(float) * 9);
+		}
+		else
+		{
+			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
+			memcpy(valueAddress, array, sizeof(float) * 9);
+		}
+		delete[] array;
+	}
+
+	// Matrix4
+	void RenderAPID3D12::SetShaderMatrix(Material* material, const string& name, const Matrix4& value, bool allBuffer)
+	{
+		SetShaderMatrix(material, name, value, 0, allBuffer);
+	}
+	void RenderAPID3D12::SetShaderMatrix(Material* material, const string& name, const Matrix4& value, uint32_t idx, bool allBuffer)
+	{
+		float* array = new float[16];
+		value.ToColumnMajorArray(array);
+		if (allBuffer)
+		{
+			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+			for (auto valueAddress : valueAddresses)
+				memcpy(valueAddress, array, sizeof(float) * 16);
+		}
+		else
+		{
+			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
+			memcpy(valueAddress, array, sizeof(float) * 16);
+		}
+		delete[] array;
+	}
+
+	void RenderAPID3D12::SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer, bool isBuffer)
+	{
+		auto materialData = GetMaterialDataByIndex(material->data->GetID());
+
+		if (allBuffer)
+		{
+			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				uint32_t textureID = ID;
+				if (isBuffer)
+					textureID = GetRenderBufferByIndex(ID)->renderBuffers[i];
+
+				auto texture = GetTextureByIndex(textureID);
+				uint32_t binding = UINT32_MAX;
+
+				for (auto& textureProperty : material->shader->reference->shaderInfo.fragProperties.textureProperties)
+					if (name == textureProperty.name)
+						binding = textureProperty.binding;
+
+				if (binding == UINT32_MAX)
+					for (auto& textureProperty : material->shader->reference->shaderInfo.vertProperties.textureProperties)
+						if (name == textureProperty.name)
+							binding = textureProperty.binding;
+
+				if (binding == UINT32_MAX)
+					for (auto& textureProperty : material->shader->reference->shaderInfo.geomProperties.textureProperties)
+						if (name == textureProperty.name)
+							binding = textureProperty.binding;
+
+				if (binding == UINT32_MAX)
+				{
+					Debug::LogError("No texture found named: " + name);
+					return;
+				}
+
+				materialData->textureSets[i].textureHandles[binding] = texture->handleSRV;
+			}
+		}
+		else
+		{
+			uint32_t textureID = ID;
+			if (isBuffer)
+				textureID = GetRenderBufferByIndex(ID)->renderBuffers[mCurrentFrame];
+
+			auto texture = GetTextureByIndex(textureID);
+			uint32_t binding = UINT32_MAX;
+
+			for (auto& textureProperty : material->shader->reference->shaderInfo.fragProperties.textureProperties)
+				if (name == textureProperty.name)
+					binding = textureProperty.binding;
+
+			if (binding == UINT32_MAX)
+				for (auto& textureProperty : material->shader->reference->shaderInfo.vertProperties.textureProperties)
+					if (name == textureProperty.name)
+						binding = textureProperty.binding;
+
+			if (binding == UINT32_MAX)
+				for (auto& textureProperty : material->shader->reference->shaderInfo.geomProperties.textureProperties)
+					if (name == textureProperty.name)
+						binding = textureProperty.binding;
+
+			if (binding == UINT32_MAX)
+			{
+				Debug::LogError("No texture found named: " + name);
+				return;
+			}
+
+			materialData->textureSets[mCurrentFrame].textureHandles[binding] = texture->handleSRV;
+		}
+	}
+
+	void RenderAPID3D12::SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer, bool isBuffer)
+	{
+		SetShaderTexture(material, name, ID, idx, allBuffer, isBuffer);
+	}
+
 
 	uint32_t RenderAPID3D12::GetNextFenceIndex()
 	{
@@ -1331,6 +1577,70 @@ namespace ZXEngine
 		return constantBuffer;
 	}
 
+
+	void* RenderAPID3D12::GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx)
+	{
+		auto materialData = GetMaterialDataByIndex(materialDataID);
+
+		for (auto& property : reference->shaderInfo.vertProperties.baseProperties)
+			if (name == property.name)
+				return reinterpret_cast<void*>(reinterpret_cast<char*>(materialData->constantBuffers[mCurrentFrame].constantBufferAddress) + property.offset + property.arrayOffset * idx);
+
+		for (auto& property : reference->shaderInfo.geomProperties.baseProperties)
+			if (name == property.name)
+				return reinterpret_cast<void*>(reinterpret_cast<char*>(materialData->constantBuffers[mCurrentFrame].constantBufferAddress) + property.offset + property.arrayOffset * idx);
+
+		for (auto& property : reference->shaderInfo.fragProperties.baseProperties)
+			if (name == property.name)
+				return reinterpret_cast<void*>(reinterpret_cast<char*>(materialData->constantBuffers[mCurrentFrame].constantBufferAddress) + property.offset + property.arrayOffset * idx);
+
+		Debug::LogError("Could not find shader property named " + name);
+
+		return nullptr;
+	}
+
+	vector<void*> RenderAPID3D12::GetShaderPropertyAddressAllBuffer(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx)
+	{
+		vector<void*> addresses;
+		auto materialData = GetMaterialDataByIndex(materialDataID);
+
+		for (auto& property : reference->shaderInfo.vertProperties.baseProperties)
+		{
+			if (name == property.name)
+			{
+				uint32_t addressOffset = property.offset + property.arrayOffset * idx;
+				for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+					addresses.push_back(reinterpret_cast<void*>(reinterpret_cast<char*>(materialData->constantBuffers[i].constantBufferAddress) + addressOffset));
+				return addresses;
+			}
+		}
+
+		for (auto& property : reference->shaderInfo.geomProperties.baseProperties)
+		{
+			if (name == property.name)
+			{
+				uint32_t addressOffset = property.offset + property.arrayOffset * idx;
+				for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+					addresses.push_back(reinterpret_cast<void*>(reinterpret_cast<char*>(materialData->constantBuffers[i].constantBufferAddress) + addressOffset));
+				return addresses;
+			}
+		}
+
+		for (auto& property : reference->shaderInfo.fragProperties.baseProperties)
+		{
+			if (name == property.name)
+			{
+				uint32_t addressOffset = property.offset + property.arrayOffset * idx;
+				for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+					addresses.push_back(reinterpret_cast<void*>(reinterpret_cast<char*>(materialData->constantBuffers[i].constantBufferAddress) + addressOffset));
+				return addresses;
+			}
+		}
+
+		Debug::LogError("Could not find shader property named " + name);
+
+		return addresses;
+	}
 
 	array<const CD3DX12_STATIC_SAMPLER_DESC, 4> RenderAPID3D12::GetStaticSamplersDesc()
 	{
