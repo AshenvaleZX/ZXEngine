@@ -38,6 +38,11 @@ namespace ZXEngine
 		virtual void UseMaterialData(uint32_t ID);
 		virtual void DeleteMaterialData(uint32_t id);
 
+		// Draw
+		virtual uint32_t AllocateDrawCommand(CommandType commandType);
+		virtual void Draw(uint32_t VAO);
+		virtual void GenerateDrawCommand(uint32_t id);
+
 		// Mesh
 		virtual void DeleteMesh(unsigned int VAO);
 		virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
@@ -93,12 +98,10 @@ namespace ZXEngine
 		ComPtr<ID3D12Device> mD3D12Device;
 		ComPtr<IDXGISwapChain> mSwapChain;
 
-		vector<ZXD3D12Command> mCommands;
 		ComPtr<ID3D12CommandQueue> mCommandQueue;
 
 		void InitD3D12();
 		void GetDeviceProperties();
-		void CreateCommandResources();
 		void CreateSwapChain();
 
 
@@ -113,6 +116,7 @@ namespace ZXEngine
 		vector<ZXD3D12Texture*> mTextureArray;
 		vector<ZXD3D12Pipeline*> mPipelineArray;
 		vector<ZXD3D12MaterialData*> mMaterialDataArray;
+		vector<ZXD3D12DrawCommand*> mDrawCommandArray;
 
 		uint32_t GetNextFenceIndex();
 		ZXD3D12Fence* GetFenceByIndex(uint32_t idx);
@@ -135,6 +139,8 @@ namespace ZXEngine
 		uint32_t GetNextMaterialDataIndex();
 		ZXD3D12MaterialData* GetMaterialDataByIndex(uint32_t idx);
 		void DestroyMaterialDataByIndex(uint32_t idx);
+		uint32_t GetNextDrawCommandIndex();
+		ZXD3D12DrawCommand* GetDrawCommandByIndex(uint32_t idx);
 
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc);
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_RENDER_TARGET_VIEW_DESC& rtvDesc);
@@ -155,6 +161,8 @@ namespace ZXEngine
 
 		uint32_t mCurPipeLineIdx = 0;
 		uint32_t mCurMaterialDataIdx = 0;
+
+		vector<ZXD3D12DrawIndex> mDrawIndexes;
 
 		void* GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
 		vector<void*> GetShaderPropertyAddressAllBuffer(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);

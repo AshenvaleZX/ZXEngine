@@ -26,13 +26,21 @@ namespace ZXEngine
         ZX_D3D12_TEXTURE_USAGE_DSV_BIT = 0x00000004,
     } ZX_D3D12_TEXTURE_USAGE;
 
-    struct ZXD3D12Command
+    struct ZXD3D12DrawIndex
+    {
+        uint32_t VAO = 0;
+        uint32_t pipelineID = 0;
+        uint32_t materialDataID = 0;
+    };
+
+    struct ZXD3D12DrawCommand
     {
         // Allocator和CommandList其实不用1对1的，一个Allocator可以对应多个CommandList
         // 但是在一个Allocator所对应的所有CommandList中，只能有一个CommandList处于Recording状态
         // 这里稍微有点偷懒了，先直接搞成1对1，反正现在数量小
-        ComPtr<ID3D12CommandAllocator> allocator = nullptr;
-        ComPtr<ID3D12GraphicsCommandList> commandList = nullptr;
+        vector<ComPtr<ID3D12CommandAllocator>> allocators;
+        vector<ComPtr<ID3D12GraphicsCommandList>> commandLists;
+        bool inUse = false;
     };
 
     struct ZXD3D12Fence

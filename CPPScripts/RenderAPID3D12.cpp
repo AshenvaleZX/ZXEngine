@@ -85,7 +85,7 @@ namespace ZXEngine
 	{
 		InitD3D12();
 		GetDeviceProperties();
-		CreateCommandResources();
+		CreateSwapChain();
 
 		ZXD3D12DescriptorManager::Creat();
 
@@ -113,6 +113,12 @@ namespace ZXEngine
 			ThrowIfFailed(mDXGIFactory->EnumWarpAdapter(IID_PPV_ARGS(&pWarpAdapter)));
 			ThrowIfFailed(D3D12CreateDevice(pWarpAdapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&mD3D12Device)));
 		}
+
+		// 创建命令队列
+		D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+		queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+		ThrowIfFailed(mD3D12Device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue)));
 	}
 
 	void RenderAPID3D12::GetDeviceProperties()
@@ -130,27 +136,6 @@ namespace ZXEngine
 		ThrowIfFailed(mD3D12Device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &msQualityLevels, sizeof(msQualityLevels)));
 		m4xMSAAQuality = msQualityLevels.NumQualityLevels;
 		assert(m4xMSAAQuality > 0 && "Unexpected MSAA quality level.");
-	}
-
-	void RenderAPID3D12::CreateCommandResources()
-	{
-		D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-		queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-		ThrowIfFailed(mD3D12Device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue)));
-
-		mCommands.resize(DX_MAX_FRAMES_IN_FLIGHT);
-		for (size_t i = 0; i < mCommands.size(); i++)
-		{
-			ThrowIfFailed(mD3D12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, 
-				IID_PPV_ARGS(mCommands[i].allocator.GetAddressOf())));
-
-			ThrowIfFailed(mD3D12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mCommands[i].allocator.Get(), nullptr, 
-				IID_PPV_ARGS(mCommands[i].commandList.GetAddressOf())));
-
-			// 使用CommandList的时候会先Reset，Reset时要求处于Close状态
-			mCommands[i].commandList->Close();
-		}
 	}
 
 	void RenderAPID3D12::CreateSwapChain()
@@ -869,6 +854,40 @@ namespace ZXEngine
 		DestroyMaterialDataByIndex(id);
 	}
 
+	uint32_t RenderAPID3D12::AllocateDrawCommand(CommandType commandType)
+	{
+		uint32_t idx = GetNextDrawCommandIndex();
+		auto drawCmd = GetDrawCommandByIndex(idx);
+
+		drawCmd->allocators.resize(DX_MAX_FRAMES_IN_FLIGHT);
+		drawCmd->commandLists.resize(DX_MAX_FRAMES_IN_FLIGHT);
+		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			ThrowIfFailed(mD3D12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
+				IID_PPV_ARGS(drawCmd->allocators[i].GetAddressOf())));
+
+			ThrowIfFailed(mD3D12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, drawCmd->allocators[i].Get(), nullptr,
+				IID_PPV_ARGS(drawCmd->commandLists[i].GetAddressOf())));
+
+			// 使用CommandList的时候会先Reset，Reset时要求处于Close状态
+			drawCmd->commandLists[i]->Close();
+		}
+
+		drawCmd->inUse = true;
+
+		return idx;
+	}
+
+	void RenderAPID3D12::Draw(uint32_t VAO)
+	{
+		mDrawIndexes.push_back({ .VAO = VAO, .pipelineID = mCurPipeLineIdx, .materialDataID = mCurMaterialDataIdx });
+	}
+
+	void RenderAPID3D12::GenerateDrawCommand(uint32_t id)
+	{
+		
+	}
+
 	void RenderAPID3D12::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
 	{
 		VAO = GetNextVAOIndex();
@@ -1469,6 +1488,26 @@ namespace ZXEngine
 		materialData->textureSets.clear();
 
 		materialData->inUse = false;
+	}
+
+	uint32_t RenderAPID3D12::GetNextDrawCommandIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mDrawCommandArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mDrawCommandArray[i]->inUse)
+				return i;
+		}
+
+		mDrawCommandArray.push_back(new ZXD3D12DrawCommand());
+
+		return length;
+	}
+
+	ZXD3D12DrawCommand* RenderAPID3D12::GetDrawCommandByIndex(uint32_t idx)
+	{
+		return mDrawCommandArray[idx];
 	}
 
 	uint32_t RenderAPID3D12::CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc)
