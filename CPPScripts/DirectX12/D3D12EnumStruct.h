@@ -52,7 +52,9 @@ namespace ZXEngine
 
     struct ZXD3D12DescriptorHandle
     {
+        // 在描述符堆里的索引
         uint32_t descriptorIdx = UINT32_MAX;
+        // 在描述符堆数组里的索引
         uint32_t descriptorHeapIdx = UINT32_MAX;
         D3D12_DESCRIPTOR_HEAP_TYPE heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     };

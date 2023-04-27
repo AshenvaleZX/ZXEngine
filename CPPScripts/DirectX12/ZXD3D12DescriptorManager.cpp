@@ -51,6 +51,11 @@ namespace ZXEngine
 		return mDescriptorAllocators[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->CreateDescriptor(resource, desc);
 	}
 
+	D3D12_CPU_DESCRIPTOR_HANDLE ZXD3D12DescriptorManager::GetCPUDescriptorHandle(ZXD3D12DescriptorHandle handle)
+	{
+		return mDescriptorAllocators[handle.heapType]->GetCPUDescriptorHandle(handle);
+	}
+
 	void ZXD3D12DescriptorManager::ReleaseDescriptor(ZXD3D12DescriptorHandle handle)
 	{
 		mDescriptorAllocators[handle.heapType]->ReleaseDescriptor(handle);

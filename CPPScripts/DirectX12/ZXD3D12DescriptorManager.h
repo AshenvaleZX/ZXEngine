@@ -27,6 +27,8 @@ namespace ZXEngine
 		ZXD3D12DescriptorHandle CreateDescriptor(ComPtr<ID3D12Resource> resource, const D3D12_DEPTH_STENCIL_VIEW_DESC& desc);
 		ZXD3D12DescriptorHandle CreateDescriptor(ComPtr<ID3D12Resource> resource, const D3D12_SHADER_RESOURCE_VIEW_DESC& desc);
 
+		D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ZXD3D12DescriptorHandle handle);
+
 		void ReleaseDescriptor(ZXD3D12DescriptorHandle handle);
 
 	private:
