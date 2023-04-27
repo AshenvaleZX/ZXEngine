@@ -154,7 +154,7 @@ namespace ZXEngine
 		swapChainDesc.SampleDesc.Count = msaaSamplesCount;
 		swapChainDesc.SampleDesc.Quality = msaaSamplesCount == 1 ? 0 : (m4xMSAAQuality - 1);
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		swapChainDesc.BufferCount = mSwapChainBufferCount;
+		swapChainDesc.BufferCount = mPresentBufferCount;
 		swapChainDesc.OutputWindow = static_cast<HWND>(WindowManager::GetInstance()->GetWindow());
 		swapChainDesc.Windowed = true;
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
@@ -162,6 +162,35 @@ namespace ZXEngine
 
 		// Note: Swap chain uses queue to perform flush.
 		ThrowIfFailed(mDXGIFactory->CreateSwapChain(mCommandQueue.Get(), &swapChainDesc, mSwapChain.GetAddressOf()));
+	}
+
+	void RenderAPID3D12::CreateSwapChainBuffers()
+	{
+		mPresentFBOIdx = GetNextFBOIndex();
+		uint32_t colorBufferIdx = GetNextRenderBufferIndex();
+		auto colorBuffer = GetRenderBufferByIndex(colorBufferIdx);
+		colorBuffer->renderBuffers.clear();
+		colorBuffer->renderBuffers.resize(mPresentBufferCount);
+		colorBuffer->inUse = true;
+
+		auto presentFBO = GetFBOByIndex(mPresentFBOIdx);
+		presentFBO->bufferType = FrameBufferType::Present;
+		presentFBO->colorBufferIdx = colorBufferIdx;
+
+		mPresentBuffers.resize(mPresentBufferCount);
+		for (UINT i = 0; i < mPresentBufferCount; i++)
+		{
+			ThrowIfFailed(mSwapChain->GetBuffer(i, IID_PPV_ARGS(&mPresentBuffers[i])));
+
+			D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+			rtvDesc.Format = mPresentBufferFormat;
+			rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+			rtvDesc.Texture2D.MipSlice = 0;
+
+			colorBuffer->renderBuffers[i] = CreateZXD3D12Texture(mPresentBuffers[i], rtvDesc);
+		}
+
+		presentFBO->inUse = true;
 	}
 
 	void RenderAPID3D12::BeginFrame()
@@ -172,6 +201,32 @@ namespace ZXEngine
 	void RenderAPID3D12::EndFrame()
 	{
 
+	}
+
+	void RenderAPID3D12::SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset, unsigned int yOffset)
+	{
+		mViewPortInfo.width = width;
+		mViewPortInfo.height = height;
+		mViewPortInfo.xOffset = xOffset;
+
+		// 传入的参数是按0点在左下角的标准来的，Vulkan的0点在左上角，如果有偏移(编辑器模式)的话，Y轴偏移量要重新计算一下
+		if (xOffset == 0 && yOffset == 0)
+			mViewPortInfo.yOffset = yOffset;
+		else
+			mViewPortInfo.yOffset = ProjectSetting::srcHeight - height - yOffset;
+	}
+
+	void RenderAPID3D12::SwitchFrameBuffer(uint32_t id)
+	{
+		if (id == UINT32_MAX)
+			mCurFBOIdx = mPresentFBOIdx;
+		else
+			mCurFBOIdx = id;
+	}
+
+	void RenderAPID3D12::ClearFrameBuffer()
+	{
+		// D3D12不需要实现这个接口
 	}
 
 	FrameBufferObject* RenderAPID3D12::CreateFrameBufferObject(FrameBufferType type, unsigned int width, unsigned int height)
@@ -885,7 +940,7 @@ namespace ZXEngine
 
 	void RenderAPID3D12::GenerateDrawCommand(uint32_t id)
 	{
-		
+
 	}
 
 	void RenderAPID3D12::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
@@ -1510,6 +1565,19 @@ namespace ZXEngine
 		return mDrawCommandArray[idx];
 	}
 
+	uint32_t RenderAPID3D12::CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_RENDER_TARGET_VIEW_DESC& rtvDesc)
+	{
+		uint32_t textureID = GetNextTextureIndex();
+		auto texture = GetTextureByIndex(textureID);
+
+		texture->inUse = true;
+		texture->texture = textureResource;
+		texture->usageFlags = ZX_D3D12_TEXTURE_USAGE_RTV_BIT;
+		texture->handleRTV = ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(texture->texture, rtvDesc);
+
+		return textureID;
+	}
+
 	uint32_t RenderAPID3D12::CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc)
 	{
 		uint32_t textureID = GetNextTextureIndex();
@@ -1616,6 +1684,14 @@ namespace ZXEngine
 		return constantBuffer;
 	}
 
+
+	uint32_t RenderAPID3D12::GetCurFrameBufferIndex()
+	{
+		if (mCurFBOIdx == mPresentFBOIdx)
+			return mCurPresentIdx;
+		else
+			return mCurrentFrame;
+	}
 
 	void* RenderAPID3D12::GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx)
 	{

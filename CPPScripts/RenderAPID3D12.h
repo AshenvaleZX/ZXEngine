@@ -17,7 +17,12 @@ namespace ZXEngine
 		virtual void BeginFrame();
 		virtual void EndFrame();
 
+		// 渲染状态
+		virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0);
+
 		// FrameBuffer
+		virtual void SwitchFrameBuffer(uint32_t id);
+		virtual void ClearFrameBuffer();
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, const ClearInfo& clearInfo, unsigned int width = 0, unsigned int height = 0);
 		virtual void DeleteFrameBufferObject(FrameBufferObject* FBO);
@@ -73,8 +78,6 @@ namespace ZXEngine
 		/// 仅启动时一次性初始化的核心D3D12组件及相关变量
 		/// </summary>
 	private:
-		const UINT mSwapChainBufferCount = 2;
-
 		// 各类型描述符大小
 		UINT mRtvDescriptorSize = 0;
 		UINT mDsvDescriptorSize = 0;
@@ -90,19 +93,27 @@ namespace ZXEngine
 
 		// 当前是DX_MAX_FRAMES_IN_FLIGHT中的第几帧
 		uint32_t mCurrentFrame = 0;
+		// 当前这一帧要写入的Present Buffer下标
+		uint32_t mCurPresentIdx = 0;
 
 		UINT64 mCurrentFence = 0;
 		ComPtr<ID3D12Fence> mFence;
 
 		ComPtr<IDXGIFactory4> mDXGIFactory;
 		ComPtr<ID3D12Device> mD3D12Device;
+
+		uint32_t mPresentFBOIdx = 0;
+		const UINT mPresentBufferCount = 2;
 		ComPtr<IDXGISwapChain> mSwapChain;
+		vector<ComPtr<ID3D12Resource>> mPresentBuffers;
+		vector<ZXD3D12DescriptorHandle> mPresentBufferRTVHandles;
 
 		ComPtr<ID3D12CommandQueue> mCommandQueue;
 
 		void InitD3D12();
 		void GetDeviceProperties();
 		void CreateSwapChain();
+		void CreateSwapChainBuffers();
 
 
 		/// <summary>
@@ -142,6 +153,7 @@ namespace ZXEngine
 		uint32_t GetNextDrawCommandIndex();
 		ZXD3D12DrawCommand* GetDrawCommandByIndex(uint32_t idx);
 
+		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_RENDER_TARGET_VIEW_DESC& rtvDesc);
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc);
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_RENDER_TARGET_VIEW_DESC& rtvDesc);
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_DEPTH_STENCIL_VIEW_DESC& dsvDesc);
@@ -159,10 +171,14 @@ namespace ZXEngine
 		ComPtr<ID3D12CommandAllocator> mImmediateExeAllocator;
 		ComPtr<ID3D12GraphicsCommandList> mImmediateExeCommandList;
 
+		ViewPortInfo mViewPortInfo;
+
+		uint32_t mCurFBOIdx = 0;
 		uint32_t mCurPipeLineIdx = 0;
 		uint32_t mCurMaterialDataIdx = 0;
-
 		vector<ZXD3D12DrawIndex> mDrawIndexes;
+
+		uint32_t GetCurFrameBufferIndex();
 
 		void* GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
 		vector<void*> GetShaderPropertyAddressAllBuffer(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
