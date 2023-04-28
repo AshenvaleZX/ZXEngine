@@ -119,6 +119,21 @@ namespace ZXEngine
 		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 		queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 		ThrowIfFailed(mD3D12Device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue)));
+		
+		// 创建GPU描述符堆，Shader Visible描述符堆在硬件上有数量限制，见: https://learn.microsoft.com/en-us/windows/win32/direct3d12/shader-visible-descriptor-heaps
+		// 微软文档说一般硬件Shader Visible描述符堆可用内存在96MB左右， A one million member descriptor heap, with 32byte descriptors, would use up 32MB, for example.
+		// 所以一般来说，差不多能支持300万个描述符，不过这里先不用那么多
+		D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+		heapDesc.NumDescriptors = 65536;
+		heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+		mDynamicDescriptorHeaps.resize(DX_MAX_FRAMES_IN_FLIGHT);
+		mDynamicDescriptorOffsets.resize(DX_MAX_FRAMES_IN_FLIGHT);
+		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			mDynamicDescriptorOffsets[i] = 0;
+			mD3D12Device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&mDynamicDescriptorHeaps[i]));
+		}
 	}
 
 	void RenderAPID3D12::GetDeviceProperties()
@@ -195,7 +210,7 @@ namespace ZXEngine
 
 	void RenderAPID3D12::BeginFrame()
 	{
-
+		mDynamicDescriptorOffsets[mCurrentFrame] = 0;
 	}
 
 	void RenderAPID3D12::EndFrame()
@@ -270,7 +285,7 @@ namespace ZXEngine
 					&colorBufferProps,
 					D3D12_HEAP_FLAG_NONE,
 					&colorBufferDesc,
-					D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
 					nullptr,
 					IID_PPV_ARGS(&colorBufferResource)
 				));
@@ -298,7 +313,7 @@ namespace ZXEngine
 					&depthBufferProps,
 					D3D12_HEAP_FLAG_NONE,
 					&depthBufferDesc,
-					D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
 					nullptr,
 					IID_PPV_ARGS(&depthBufferResource)
 				));
@@ -344,7 +359,7 @@ namespace ZXEngine
 					&colorBufferProps,
 					D3D12_HEAP_FLAG_NONE,
 					&colorBufferDesc,
-					D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
 					nullptr,
 					IID_PPV_ARGS(&colorBufferResource)
 				));
@@ -390,7 +405,7 @@ namespace ZXEngine
 					&depthBufferProps,
 					D3D12_HEAP_FLAG_NONE,
 					&depthBufferDesc,
-					D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
 					nullptr,
 					IID_PPV_ARGS(&depthBufferResource)
 				));
@@ -940,7 +955,176 @@ namespace ZXEngine
 
 	void RenderAPID3D12::GenerateDrawCommand(uint32_t id)
 	{
+		auto drawCommand = GetDrawCommandByIndex(id);
+		auto& allocator = drawCommand->allocators[mCurrentFrame];
+		auto& drawCommandList = drawCommand->commandLists[mCurrentFrame];
 
+		// 重置Command List
+		ThrowIfFailed(allocator->Reset());
+		ThrowIfFailed(drawCommandList->Reset(allocator.Get(), nullptr));
+
+		auto curFBO = GetFBOByIndex(mCurFBOIdx);
+		ZXD3D12Texture* colorBuffer = nullptr;
+		ZXD3D12Texture* depthBuffer = nullptr;
+
+		if (curFBO->bufferType == FrameBufferType::Normal)
+		{
+			// 获取渲染目标Buffer
+			colorBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->colorBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+			depthBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->depthBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+			
+			// 切换为写入状态
+			auto colorBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(colorBuffer->texture.Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+			drawCommandList->ResourceBarrier(1, &colorBufferTransition);
+			auto depthBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(depthBuffer->texture.Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+			drawCommandList->ResourceBarrier(1, &depthBufferTransition);
+
+			// 切换目标Buffer
+			auto rtv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(colorBuffer->handleRTV);
+			auto dsv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(depthBuffer->handleDSV);
+			drawCommandList->OMSetRenderTargets(1, &rtv, false, &dsv);
+
+			// 清理缓冲区
+			auto& clearInfo = curFBO->clearInfo;
+			const float clearColor[] = { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a };
+			drawCommandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+			drawCommandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, clearInfo.depth, 0, 0, nullptr);
+		}
+		else if (curFBO->bufferType == FrameBufferType::Color || curFBO->bufferType == FrameBufferType::HigthPrecision)
+		{
+			colorBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->colorBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+
+			auto colorBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(colorBuffer->texture.Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+			drawCommandList->ResourceBarrier(1, &colorBufferTransition);
+
+			auto rtv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(colorBuffer->handleRTV);
+			drawCommandList->OMSetRenderTargets(1, &rtv, false, nullptr);
+
+			auto& clearInfo = curFBO->clearInfo;
+			const float clearColor[] = { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a };
+			drawCommandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+		}
+		else if (curFBO->bufferType == FrameBufferType::ShadowMap || curFBO->bufferType == FrameBufferType::ShadowCubeMap)
+		{
+			depthBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->depthBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+
+			auto depthBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(depthBuffer->texture.Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+			drawCommandList->ResourceBarrier(1, &depthBufferTransition);
+
+			auto dsv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(depthBuffer->handleDSV);
+			drawCommandList->OMSetRenderTargets(0, nullptr, false, &dsv);
+
+			auto& clearInfo = curFBO->clearInfo;
+			drawCommandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, clearInfo.depth, 0, 0, nullptr);
+		}
+
+		// 设置Viewport
+		D3D12_VIEWPORT viewPort = {};
+		viewPort.Width    = static_cast<FLOAT>(mViewPortInfo.width);
+		viewPort.Height   = static_cast<FLOAT>(mViewPortInfo.height);
+		viewPort.TopLeftX = static_cast<FLOAT>(mViewPortInfo.xOffset);
+		viewPort.TopLeftY = static_cast<FLOAT>(mViewPortInfo.yOffset);
+		viewPort.MinDepth = 0.0f;
+		viewPort.MaxDepth = 1.0f;
+		drawCommandList->RSSetViewports(1, &viewPort);
+		// 设置Scissor
+		D3D12_RECT scissor = {};
+		scissor.left   = mViewPortInfo.xOffset;
+		scissor.top    = mViewPortInfo.yOffset;
+		scissor.right  = mViewPortInfo.xOffset + mViewPortInfo.width;
+		scissor.bottom = mViewPortInfo.yOffset + mViewPortInfo.height;
+		drawCommandList->RSSetScissorRects(1, &scissor);
+
+		// 设置图元类型
+		drawCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		// 设置当前帧的动态描述符堆
+		ID3D12DescriptorHeap* curDescriptorHeaps[] = { mDynamicDescriptorHeaps[mCurrentFrame].Get() };
+		drawCommandList->SetDescriptorHeaps(_countof(curDescriptorHeaps), curDescriptorHeaps);
+
+		// 获取当前帧的动态描述符堆Handle
+		CD3DX12_CPU_DESCRIPTOR_HANDLE dynamicDescriptorHandle(mDynamicDescriptorHeaps[mCurrentFrame]->GetCPUDescriptorHandleForHeapStart());
+		// 偏移到当前位置
+		dynamicDescriptorHandle.Offset(mDynamicDescriptorOffsets[mCurrentFrame], mCbvSrvUavDescriptorSize);
+
+		for (auto& iter : mDrawIndexes)
+		{
+			auto VAO = GetVAOByIndex(iter.VAO);
+			auto pipeline = GetPipelineByIndex(iter.pipelineID);
+			auto materialData = GetMaterialDataByIndex(iter.materialDataID);
+
+			drawCommandList->SetGraphicsRootSignature(pipeline->rootSignature.Get());
+			drawCommandList->SetPipelineState(pipeline->pipelineState.Get());
+			drawCommandList->SetGraphicsRootConstantBufferView(0, materialData->constantBuffers[mCurrentFrame].constantBuffer->GetGPUVirtualAddress());
+
+			// 当前绘制对象在动态描述符堆中的偏移起点
+			UINT curDynamicDescriptorOffset = mDynamicDescriptorOffsets[mCurrentFrame];
+			// 遍历纹理并拷贝到动态描述符堆
+			for (auto& iter : materialData->textureSets[mCurrentFrame].textureHandles)
+			{
+				// 获取纹理的CPU Handle
+				auto cpuHandle = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(iter);
+				// 拷贝到动态描述符堆
+				mD3D12Device->CopyDescriptorsSimple(1, dynamicDescriptorHandle, cpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				// 动态描述符堆Handle后移一位
+				dynamicDescriptorHandle.Offset(1, mCbvSrvUavDescriptorSize);
+				mDynamicDescriptorOffsets[mCurrentFrame]++;
+			}
+			// 获取动态描述符堆的GPU Handle
+			CD3DX12_GPU_DESCRIPTOR_HANDLE dynamicGPUHandle(mDynamicDescriptorHeaps[mCurrentFrame]->GetGPUDescriptorHandleForHeapStart());
+			// 偏移到当前绘制对象的起始位置
+			dynamicGPUHandle.Offset(curDynamicDescriptorOffset, mCbvSrvUavDescriptorSize);
+			// 设置当前绘制对象的动态描述符堆
+			drawCommandList->SetGraphicsRootDescriptorTable(1, dynamicGPUHandle);
+
+			drawCommandList->IASetIndexBuffer(&VAO->indexBufferView);
+			drawCommandList->IASetVertexBuffers(0, 1, &VAO->vertexBufferView);
+			drawCommandList->DrawIndexedInstanced(VAO->size, 1, 0, 0, 0);
+		}
+
+		// 把状态切回去
+		if (curFBO->bufferType == FrameBufferType::Normal)
+		{
+			if (colorBuffer != nullptr)
+			{
+				auto colorBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(colorBuffer->texture.Get(),
+					D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+				drawCommandList->ResourceBarrier(1, &colorBufferTransition);
+			}
+			if (depthBuffer != nullptr)
+			{
+				auto depthBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(depthBuffer->texture.Get(),
+					D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
+				drawCommandList->ResourceBarrier(1, &depthBufferTransition);
+			}
+		}
+		else if (curFBO->bufferType == FrameBufferType::Color || curFBO->bufferType == FrameBufferType::HigthPrecision)
+		{
+			if (colorBuffer != nullptr)
+			{
+				auto colorBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(colorBuffer->texture.Get(),
+					D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+				drawCommandList->ResourceBarrier(1, &colorBufferTransition);
+			}
+		}
+		else if (curFBO->bufferType == FrameBufferType::ShadowMap || curFBO->bufferType == FrameBufferType::ShadowCubeMap)
+		{
+			if (depthBuffer != nullptr)
+			{
+				auto depthBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(depthBuffer->texture.Get(),
+					D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
+				drawCommandList->ResourceBarrier(1, &depthBufferTransition);
+			}
+		}
+
+		// 结束并提交Command List
+		ThrowIfFailed(drawCommandList->Close());
+		ID3D12CommandList* cmdsLists[] = { drawCommandList.Get() };
+		mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 	}
 
 	void RenderAPID3D12::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)

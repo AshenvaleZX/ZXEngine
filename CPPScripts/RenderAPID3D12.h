@@ -82,6 +82,9 @@ namespace ZXEngine
 		UINT mRtvDescriptorSize = 0;
 		UINT mDsvDescriptorSize = 0;
 		UINT mCbvSrvUavDescriptorSize = 0;
+		// 渲染时动态分配的描述符堆
+		vector<UINT> mDynamicDescriptorOffsets;
+		vector<ComPtr<ID3D12DescriptorHeap>> mDynamicDescriptorHeaps;
 
 		// 屏幕后台缓冲区图像格式
 		DXGI_FORMAT mPresentBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
