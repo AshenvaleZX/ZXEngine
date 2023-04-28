@@ -213,12 +213,16 @@ namespace ZXEngine
 
 	void RenderAPID3D12::BeginFrame()
 	{
+		WaitForFence(mFrameFences[mCurrentFrame]);
 		mDynamicDescriptorOffsets[mCurrentFrame] = 0;
 	}
 
 	void RenderAPID3D12::EndFrame()
 	{
+		ThrowIfFailed(mSwapChain->Present(0, 0));
 
+		mCurPresentIdx = (mCurPresentIdx + 1) % mPresentBufferCount;
+		mCurrentFrame = (mCurrentFrame + 1) % DX_MAX_FRAMES_IN_FLIGHT;
 	}
 
 	void RenderAPID3D12::SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset, unsigned int yOffset)
@@ -931,6 +935,7 @@ namespace ZXEngine
 	{
 		uint32_t idx = GetNextDrawCommandIndex();
 		auto drawCmd = GetDrawCommandByIndex(idx);
+		drawCmd->commandType = commandType;
 
 		drawCmd->allocators.resize(DX_MAX_FRAMES_IN_FLIGHT);
 		drawCmd->commandLists.resize(DX_MAX_FRAMES_IN_FLIGHT);
@@ -1023,6 +1028,17 @@ namespace ZXEngine
 
 			auto& clearInfo = curFBO->clearInfo;
 			drawCommandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, clearInfo.depth, 0, 0, nullptr);
+		}
+		else if (curFBO->bufferType == FrameBufferType::Present)
+		{
+			colorBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->colorBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+
+			auto colorBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(colorBuffer->texture.Get(),
+				D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+			drawCommandList->ResourceBarrier(1, &colorBufferTransition);
+
+			auto rtv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(colorBuffer->handleRTV);
+			drawCommandList->OMSetRenderTargets(1, &rtv, false, nullptr);
 		}
 
 		// 设置Viewport
@@ -1123,11 +1139,25 @@ namespace ZXEngine
 				drawCommandList->ResourceBarrier(1, &depthBufferTransition);
 			}
 		}
+		else if (curFBO->bufferType == FrameBufferType::Present)
+		{
+			if (colorBuffer != nullptr)
+			{
+				auto colorBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(colorBuffer->texture.Get(),
+					D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+				drawCommandList->ResourceBarrier(1, &colorBufferTransition);
+			}
+		}
 
 		// 结束并提交Command List
 		ThrowIfFailed(drawCommandList->Close());
 		ID3D12CommandList* cmdsLists[] = { drawCommandList.Get() };
 		mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
+#ifndef ZX_EDITOR
+		if (drawCommand->commandType == CommandType::UIRendering)
+			SignalFence(mFrameFences[mCurrentFrame]);
+#endif
 	}
 
 	void RenderAPID3D12::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
@@ -1863,8 +1893,9 @@ namespace ZXEngine
 
 	void RenderAPID3D12::WaitForFence(ZXD3D12Fence* fence)
 	{
-		// 如果Fence的进度还没到上一次设置的进度值
-		if (fence->fence->GetCompletedValue() < fence->currentFence)
+		// 如果Fence的进度还没到上一次设置的进度值就开始等待
+		// 判断大于0是防止等待没有Signal过的Fence
+		if (fence->currentFence > 0 && fence->fence->GetCompletedValue() < fence->currentFence)
 		{
 			// 创建一个"进度抵达刚刚设置的信号量值"的事件
 			auto event = CreateEventEx(nullptr, NULL, NULL, EVENT_ALL_ACCESS);
