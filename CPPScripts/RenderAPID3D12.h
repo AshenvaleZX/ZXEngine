@@ -99,8 +99,7 @@ namespace ZXEngine
 		// 当前这一帧要写入的Present Buffer下标
 		uint32_t mCurPresentIdx = 0;
 
-		UINT64 mCurrentFence = 0;
-		ComPtr<ID3D12Fence> mFence;
+		vector<ZXD3D12Fence*> mFrameFences;
 
 		ComPtr<IDXGIFactory4> mDXGIFactory;
 		ComPtr<ID3D12Device> mD3D12Device;
@@ -123,7 +122,6 @@ namespace ZXEngine
 		/// D3D12资源，以及相关创建销毁接口
 		/// </summary>
 	private:
-		vector<ZXD3D12Fence*> mFenceArray;
 		vector<ZXD3D12VAO*> mVAOArray;
 		vector<ZXD3D12FBO*> mFBOArray;
 		vector<ZXD3D12RenderBuffer*> mRenderBufferArray;
@@ -132,9 +130,6 @@ namespace ZXEngine
 		vector<ZXD3D12MaterialData*> mMaterialDataArray;
 		vector<ZXD3D12DrawCommand*> mDrawCommandArray;
 
-		uint32_t GetNextFenceIndex();
-		ZXD3D12Fence* GetFenceByIndex(uint32_t idx);
-		void DestroyFenceByIndex(uint32_t idx);
 		uint32_t GetNextVAOIndex();
 		ZXD3D12VAO* GetVAOByIndex(uint32_t idx);
 		void DestroyVAOByIndex(uint32_t idx);
@@ -169,8 +164,7 @@ namespace ZXEngine
 		/// 其它辅助接口
 		/// </summary>
 	private:
-		UINT64 mImmediateExeFenceValue = 0;
-		ComPtr<ID3D12Fence> mImmediateExeFence;
+		ZXD3D12Fence* mImmediateExeFence;
 		ComPtr<ID3D12CommandAllocator> mImmediateExeAllocator;
 		ComPtr<ID3D12GraphicsCommandList> mImmediateExeCommandList;
 
@@ -182,6 +176,10 @@ namespace ZXEngine
 		vector<ZXD3D12DrawIndex> mDrawIndexes;
 
 		uint32_t GetCurFrameBufferIndex();
+
+		ZXD3D12Fence* CreateZXD3D12Fence();
+		void SignalFence(ZXD3D12Fence* fence);
+		void WaitForFence(ZXD3D12Fence* fence);
 
 		void* GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
 		vector<void*> GetShaderPropertyAddressAllBuffer(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);

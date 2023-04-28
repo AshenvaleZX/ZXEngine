@@ -87,9 +87,12 @@ namespace ZXEngine
 		GetDeviceProperties();
 		CreateSwapChain();
 
+		InitImmediateExecution();
+
 		ZXD3D12DescriptorManager::Creat();
 
-		ThrowIfFailed(mD3D12Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence)));
+		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+			mFrameFences.push_back(CreateZXD3D12Fence());
 	}
 
 	void RenderAPID3D12::InitD3D12()
@@ -1464,38 +1467,6 @@ namespace ZXEngine
 	}
 
 
-	uint32_t RenderAPID3D12::GetNextFenceIndex()
-	{
-		uint32_t length = static_cast<uint32_t>(mFenceArray.size());
-
-		for (uint32_t i = 0; i < length; i++)
-		{
-			if (!mFenceArray[i]->inUse)
-				return i;
-		}
-
-		auto fence = new ZXD3D12Fence();
-		ThrowIfFailed(mD3D12Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence->fence)));
-		mFenceArray.push_back(fence);
-
-		return length;
-	}
-
-	ZXD3D12Fence* RenderAPID3D12::GetFenceByIndex(uint32_t idx)
-	{
-		return mFenceArray[idx];
-	}
-
-	void RenderAPID3D12::DestroyFenceByIndex(uint32_t idx)
-	{
-		auto fence = mFenceArray[idx];
-
-		fence->currentFence = 0;
-		fence->fence->Release();
-
-		fence->inUse = false;
-	}
-
 	uint32_t RenderAPID3D12::GetNextVAOIndex()
 	{
 		uint32_t length = static_cast<uint32_t>(mVAOArray.size());
@@ -1877,6 +1848,40 @@ namespace ZXEngine
 			return mCurrentFrame;
 	}
 
+	ZXD3D12Fence* RenderAPID3D12::CreateZXD3D12Fence()
+	{
+		auto fence = new ZXD3D12Fence();
+		ThrowIfFailed(mD3D12Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence->fence)));
+		return fence;
+	}
+
+	void RenderAPID3D12::SignalFence(ZXD3D12Fence* fence)
+	{
+		fence->currentFence++;
+		ThrowIfFailed(mCommandQueue->Signal(fence->fence.Get(), fence->currentFence));
+	}
+
+	void RenderAPID3D12::WaitForFence(ZXD3D12Fence* fence)
+	{
+		// 如果Fence的进度还没到上一次设置的进度值
+		if (fence->fence->GetCompletedValue() < fence->currentFence)
+		{
+			// 创建一个"进度抵达刚刚设置的信号量值"的事件
+			auto event = CreateEventEx(nullptr, NULL, NULL, EVENT_ALL_ACCESS);
+			if (event)
+			{
+				ThrowIfFailed(fence->fence->SetEventOnCompletion(fence->currentFence, event));
+				// 等待事件
+				WaitForSingleObject(event, INFINITE);
+				CloseHandle(event);
+			}
+			else
+			{
+				Debug::LogError("Create event failed !");
+			}
+		}
+	}
+
 	void* RenderAPID3D12::GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx)
 	{
 		auto materialData = GetMaterialDataByIndex(materialDataID);
@@ -1976,7 +1981,7 @@ namespace ZXEngine
 
 	void RenderAPID3D12::InitImmediateExecution()
 	{
-		ThrowIfFailed(mD3D12Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mImmediateExeFence)));
+		mImmediateExeFence = CreateZXD3D12Fence();
 
 		ThrowIfFailed(mD3D12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(mImmediateExeAllocator.GetAddressOf())));
 
@@ -2000,26 +2005,10 @@ namespace ZXEngine
 		ID3D12CommandList* cmdsLists[] = { mImmediateExeCommandList.Get() };
 		mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
-		// 设置信号量
-		mImmediateExeFenceValue++;
-		ThrowIfFailed(mCommandQueue->Signal(mImmediateExeFence.Get(), mImmediateExeFenceValue));
+		// 设置Fence
+		SignalFence(mImmediateExeFence);
 
-		// 如果Fence的进度没到刚刚设置的值
-		if (mImmediateExeFence->GetCompletedValue() < mImmediateExeFenceValue)
-		{
-			// 创建一个"进度抵达刚刚设置的信号量值"的事件
-			auto event = CreateEventEx(nullptr, NULL, NULL, EVENT_ALL_ACCESS);
-			if (event)
-			{
-				ThrowIfFailed(mFence->SetEventOnCompletion(mImmediateExeFenceValue, event));
-				// 等待事件
-				WaitForSingleObject(event, INFINITE);
-				CloseHandle(event);
-			}
-			else
-			{
-				Debug::LogError("Create event failed !");
-			}
-		}
+		// 等待Fence
+		WaitForFence(mImmediateExeFence);
 	}
 }

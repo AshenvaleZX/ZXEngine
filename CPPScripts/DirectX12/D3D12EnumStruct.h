@@ -47,7 +47,6 @@ namespace ZXEngine
     {
         UINT64 currentFence = 0;
         ComPtr<ID3D12Fence> fence = nullptr;
-        bool inUse = false;
     };
 
     struct ZXD3D12DescriptorHandle
