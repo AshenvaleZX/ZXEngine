@@ -18,7 +18,10 @@ namespace ZXEngine
 		virtual void EndFrame();
 
 		// 渲染状态
+		virtual void OnWindowSizeChange(uint32_t width, uint32_t height);
+		virtual void SetRenderState(RenderStateSetting* state);
 		virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0);
+		virtual void WaitForRenderFinish();
 
 		// FrameBuffer
 		virtual void SwitchFrameBuffer(uint32_t id);
@@ -98,7 +101,9 @@ namespace ZXEngine
 		uint32_t mCurrentFrame = 0;
 		// 当前这一帧要写入的Present Buffer下标
 		uint32_t mCurPresentIdx = 0;
-
+		// 等待所有渲染操作完成的特殊Fence
+		ZXD3D12Fence* mEndRenderFence;
+		// 帧与帧之间同步用的Fence
 		vector<ZXD3D12Fence*> mFrameFences;
 
 		ComPtr<IDXGIFactory4> mDXGIFactory;

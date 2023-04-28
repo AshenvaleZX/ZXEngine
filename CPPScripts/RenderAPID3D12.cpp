@@ -91,6 +91,7 @@ namespace ZXEngine
 
 		ZXD3D12DescriptorManager::Creat();
 
+		mEndRenderFence = CreateZXD3D12Fence();
 		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 			mFrameFences.push_back(CreateZXD3D12Fence());
 	}
@@ -225,6 +226,16 @@ namespace ZXEngine
 		mCurrentFrame = (mCurrentFrame + 1) % DX_MAX_FRAMES_IN_FLIGHT;
 	}
 
+	void RenderAPID3D12::OnWindowSizeChange(uint32_t width, uint32_t height)
+	{
+		// Todo
+	}
+
+	void RenderAPID3D12::SetRenderState(RenderStateSetting* state)
+	{
+		// D3D12不需要实现这个接口
+	}
+
 	void RenderAPID3D12::SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset, unsigned int yOffset)
 	{
 		mViewPortInfo.width = width;
@@ -236,6 +247,12 @@ namespace ZXEngine
 			mViewPortInfo.yOffset = yOffset;
 		else
 			mViewPortInfo.yOffset = ProjectSetting::srcHeight - height - yOffset;
+	}
+
+	void RenderAPID3D12::WaitForRenderFinish()
+	{
+		SignalFence(mEndRenderFence);
+		WaitForFence(mEndRenderFence);
 	}
 
 	void RenderAPID3D12::SwitchFrameBuffer(uint32_t id)
