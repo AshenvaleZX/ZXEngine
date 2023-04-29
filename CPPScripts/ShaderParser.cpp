@@ -309,6 +309,9 @@ namespace ZXEngine
 
 		glCode += GetCodeBlock(originCode, "Program");
 
+		Utils::ReplaceAllWord(glCode, "to_vec2", "vec2");
+		Utils::ReplaceAllWord(glCode, "to_vec3", "vec3");
+		Utils::ReplaceAllWord(glCode, "to_mat3", "mat3");
 		Utils::ReplaceAllString(glCode, "ZX_Depth", "gl_FragDepth");
 		Utils::ReplaceAllString(glCode, "ZX_Position", "gl_Position");
 
@@ -380,6 +383,9 @@ namespace ZXEngine
 		}
 		vkCode += programBlock;
 
+		Utils::ReplaceAllWord(vkCode, "to_vec2", "vec2");
+		Utils::ReplaceAllWord(vkCode, "to_vec3", "vec3");
+		Utils::ReplaceAllWord(vkCode, "to_mat3", "mat3");
 		Utils::ReplaceAllString(vkCode, "ZX_Depth", "gl_FragDepth");
 		Utils::ReplaceAllString(vkCode, "ZX_Position", "gl_Position");
 
@@ -576,6 +582,11 @@ namespace ZXEngine
 
 			pos += newSentence.length();
 		}
+
+		// 强制类型转换
+		Utils::ReplaceAllWord(dxCode, "to_vec2", "(float2)");
+		Utils::ReplaceAllWord(dxCode, "to_vec3", "(float3)");
+		Utils::ReplaceAllWord(dxCode, "to_mat3", "(float3x3)");
 
 		// 替换变量类型名称
 		Utils::ReplaceAllWord(dxCode, "vec2", "float2");
