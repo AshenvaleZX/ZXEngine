@@ -33,7 +33,7 @@ Vertex
         {
             TexCoords = aTexCoords;
             ParticleColor = _Color;
-            ZX_Position = ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 0.0, 1.0);
+            ZX_Position = mul(ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 0.0, 1.0));
         }
     }
 }

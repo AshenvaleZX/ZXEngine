@@ -27,7 +27,7 @@ Vertex
         void main()
         {
             TexCoords = aPos;
-            ZX_Position = ENGINE_Projection * ENGINE_View * vec4(aPos, 1.0);
+            ZX_Position = mul(ENGINE_Projection * ENGINE_View * vec4(aPos, 1.0));
         }
     }
 }

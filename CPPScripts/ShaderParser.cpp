@@ -307,7 +307,26 @@ namespace ZXEngine
 		}
 		glCode += "\n";
 
-		glCode += GetCodeBlock(originCode, "Program");
+		string programCode = GetCodeBlock(originCode, "Program");
+		lines = Utils::StringSplit(programCode, '\n');
+		for (auto& line : lines)
+		{
+			// 处理矩阵乘法
+			size_t pos = Utils::FindWord(line, "mul", 0);
+			if (pos != string::npos)
+			{
+				size_t sPos = string::npos;
+				size_t ePos = string::npos;
+				Utils::GetNextStringBlockPos(line, pos, '(', ')', sPos, ePos);
+				// 删除 mul 函数和括号
+				line.replace(pos, ePos - pos + 1, line.substr(sPos + 1, ePos - sPos - 1));
+				glCode += line + "\n";
+			}
+			else
+			{
+				glCode += line + "\n";
+			}
+		}
 
 		Utils::ReplaceAllWord(glCode, "to_vec2", "vec2");
 		Utils::ReplaceAllWord(glCode, "to_vec3", "vec3");
@@ -375,13 +394,33 @@ namespace ZXEngine
 		}
 		vkCode += "\n";
 
+		// 处理UBO变量命名
 		string programBlock = GetCodeBlock(originCode, "Program");
 		if (!info.baseProperties.empty())
 		{
 			for (auto& property : info.baseProperties)
 				Utils::ReplaceAllWord(programBlock, property.name, "_UBO." + property.name);
 		}
-		vkCode += programBlock;
+
+		lines = Utils::StringSplit(programBlock, '\n');
+		for (auto& line : lines)
+		{
+			// 处理矩阵乘法
+			size_t pos = Utils::FindWord(line, "mul", 0);
+			if (pos != string::npos)
+			{
+				size_t sPos = string::npos;
+				size_t ePos = string::npos;
+				Utils::GetNextStringBlockPos(line, pos, '(', ')', sPos, ePos);
+				// 删除 mul 函数和括号
+				line.replace(pos, ePos - pos + 1, line.substr(sPos + 1, ePos - sPos - 1));
+				vkCode += line + "\n";
+			}
+			else
+			{
+				vkCode += line + "\n";
+			}
+		}
 
 		Utils::ReplaceAllWord(vkCode, "to_vec2", "vec2");
 		Utils::ReplaceAllWord(vkCode, "to_vec3", "vec3");
@@ -511,8 +550,35 @@ namespace ZXEngine
 
 		// 顶点着色器
 		string vertProgramBlock = GetCodeBlock(vertCode, "Program");
-		// 去掉main函数
 		lines = Utils::StringSplit(vertProgramBlock, '\n');
+		// 逐行检测并处理矩阵乘法
+		for (auto& line : lines)
+		{
+			size_t pos = Utils::FindWord(line, "mul", 0);
+			if (pos != string::npos)
+			{
+				size_t sPos = string::npos;
+				size_t ePos = string::npos;
+				Utils::GetNextStringBlockPos(line, pos, '(', ')', sPos, ePos);
+				string multiplication = line.substr(sPos + 1, ePos - sPos - 1);
+				vector<string> multipliers = Utils::StringSplit(multiplication, '*');
+				string newMultiplication = "";
+				while (multipliers.size() > 1)
+				{
+					string rightMul = multipliers.back();
+					multipliers.pop_back();
+					string leftMul = multipliers.back();
+					multipliers.pop_back();
+
+					multipliers.push_back("mul(" + leftMul + ", " + rightMul + ")");
+				}
+				// 删除 mul 函数和括号
+				line.replace(pos, ePos - pos + 1, multipliers[0]);
+			}
+			line += "\n";
+		}
+		vertProgramBlock = Utils::ConcatenateStrings(lines);
+		// 去掉main函数
 		for (auto& line : lines)
 		{
 			if (line.find("main") != string::npos)
@@ -535,8 +601,35 @@ namespace ZXEngine
 
 		// 片元(像素)着色器
 		string fragProgramBlock = GetCodeBlock(fragCode, "Program");
-		// 去掉main函数
 		lines = Utils::StringSplit(fragProgramBlock, '\n');
+		// 逐行检测并处理矩阵乘法
+		for (auto& line : lines)
+		{
+			size_t pos = Utils::FindWord(line, "mul", 0);
+			if (pos != string::npos)
+			{
+				size_t sPos = string::npos;
+				size_t ePos = string::npos;
+				Utils::GetNextStringBlockPos(line, pos, '(', ')', sPos, ePos);
+				string multiplication = line.substr(sPos + 1, ePos - sPos - 1);
+				vector<string> multipliers = Utils::StringSplit(multiplication, '*');
+				string newMultiplication = "";
+				while (multipliers.size() > 1)
+				{
+					string rightMul = multipliers.back();
+					multipliers.pop_back();
+					string leftMul = multipliers.back();
+					multipliers.pop_back();
+
+					multipliers.push_back("mul(" + leftMul + ", " + rightMul + ")");
+				}
+				// 删除 mul 函数和括号
+				line.replace(pos, ePos - pos + 1, multipliers[0]);
+			}
+			line += "\n";
+		}
+		fragProgramBlock = Utils::ConcatenateStrings(lines);
+		// 去掉main函数
 		for (auto& line : lines)
 		{
 			if (line.find("main") != string::npos)

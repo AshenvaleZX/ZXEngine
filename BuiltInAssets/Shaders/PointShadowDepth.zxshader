@@ -14,7 +14,7 @@ Vertex
     {
         void main()
         {
-            ZX_Position = ENGINE_Model * vec4(aPos, 1.0);
+            ZX_Position = mul(ENGINE_Model * vec4(aPos, 1.0));
         }
     }
 }
@@ -47,7 +47,7 @@ Geometry
                 for(int i = 0; i < 3; ++i) // for each triangle's vertices
                 {
                     FragPos = gl_in[i].gl_Position;
-                    gl_Position = _ShadowMatrices[face] * FragPos;
+                    gl_Position = mul(_ShadowMatrices[face] * FragPos);
                     EmitVertex();
                 }
                 EndPrimitive();

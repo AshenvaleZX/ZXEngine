@@ -23,8 +23,8 @@ Vertex
     {
         void main()
         {
-            Normal = transpose(to_mat3(ENGINE_Model_Inv)) * aNormal;
-            ZX_Position = ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 1.0);
+            Normal = mul(transpose(to_mat3(ENGINE_Model_Inv)) * aNormal);
+            ZX_Position = mul(ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 1.0));
         }
     }
 }

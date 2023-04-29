@@ -104,6 +104,39 @@ namespace ZXEngine
         }
     }
 
+    void Utils::GetNextStringBlockPos(std::string& oriStr, size_t offset, char sChar, char eChar, size_t& sPos, size_t& ePos)
+    {
+        int level = 0;
+        for (size_t i = offset; i < oriStr.size(); i++)
+        {
+            if (oriStr[i] == sChar)
+            {
+                level++;
+                if (level == 1)
+                {
+                    sPos = i;
+                }
+            }
+            else if (oriStr[i] == eChar)
+            {
+                level--;
+                if (level == 0)
+                {
+                    ePos = i;
+                    break;
+                }
+            }
+        }
+    }
+
+    std::string Utils::ConcatenateStrings(const std::vector<std::string>& strings)
+    {
+        std::string res = "";
+        for (auto& str : strings)
+            res += str;
+        return res;
+    }
+
     std::string Utils::ConvertPathToWindowsFormat(std::string path)
     {
         std::replace(path.begin(), path.end(), '/', '\\');

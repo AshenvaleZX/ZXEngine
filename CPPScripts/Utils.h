@@ -17,6 +17,10 @@ namespace ZXEngine
 		static void ReplaceAllWord(std::string& oriStr, const std::string& srcWord, const std::string& dstWord);
 		// 替代字符串中的字符串
 		static void ReplaceAllString(std::string& oriStr, const std::string& srcStr, const std::string& dstStr);
+		// 获取由sChar和eChar括起来的一段字符串起止位置
+		static void GetNextStringBlockPos(std::string& oriStr, size_t offset, char sChar, char eChar, size_t& sPos, size_t& ePos);
+		// 字符串拼接
+		static std::string ConcatenateStrings(const std::vector<std::string>& strings);
 		static std::string ConvertPathToWindowsFormat(std::string path);
 	};
 }

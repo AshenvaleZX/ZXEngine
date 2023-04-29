@@ -31,8 +31,8 @@ Vertex
     {
         void main()
         {
-            WorldPos = to_vec3(ENGINE_Model * vec4(aPos, 1.0));
-            Normal = transpose(to_mat3(ENGINE_Model_Inv)) * aNormal;
+            WorldPos = to_vec3(mul(ENGINE_Model * vec4(aPos, 1.0)));
+            Normal = mul(transpose(to_mat3(ENGINE_Model_Inv)) * aNormal);
 
             // 纹理采样放大缩小倍数
             float tiling = 4;
@@ -41,15 +41,15 @@ Vertex
             uvControl = aTexCoords;
 
             mat3 worldToObject = transpose(to_mat3(ENGINE_Model_Inv));
-            vec3 wNormal = worldToObject * aNormal;
-            vec3 wTangent = worldToObject * aTangent;
+            vec3 wNormal = mul(worldToObject * aNormal);
+            vec3 wTangent = mul(worldToObject * aTangent);
             vec3 wBitangent = cross(wNormal, wTangent);
 
             tSpace0 = vec3(wTangent.x, wBitangent.x, wNormal.x);
             tSpace1 = vec3(wTangent.y, wBitangent.y, wNormal.y);
             tSpace2 = vec3(wTangent.z, wBitangent.z, wNormal.z);
             
-            ZX_Position = ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 1.0);
+            ZX_Position = mul(ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 1.0));
         }
     }
 }
