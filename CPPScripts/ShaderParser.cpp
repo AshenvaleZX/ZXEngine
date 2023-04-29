@@ -376,7 +376,7 @@ namespace ZXEngine
 		if (!info.baseProperties.empty())
 		{
 			for (auto& property : info.baseProperties)
-				Utils::ReplaceAllString(programBlock, property.name, "_UBO." + property.name);
+				Utils::ReplaceAllWord(programBlock, property.name, "_UBO." + property.name);
 		}
 		vkCode += programBlock;
 

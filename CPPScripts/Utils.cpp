@@ -52,6 +52,44 @@ namespace ZXEngine
         return words;
     }
 
+    bool Utils::IsValidWordChar(char c)
+    {
+        return isalnum(c) or c == '_';
+    }
+
+    size_t Utils::FindWord(const std::string& str, const std::string& word, size_t offset)
+    {
+        size_t pos = str.find(word, offset);
+        size_t strSize = str.size();
+        size_t wordSize = word.size();
+        while (pos != std::string::npos)
+        {
+            // 同时满足以下两个条件，说明这个单词是一个独立的单词，而不是另一个单词的一部分:
+            // 1, 单词前一个位置无字符，或者字符不是合法单词字符
+            // 2, 单词后一个位置无字符，或者字符不是合法单词字符
+            if ((pos == 0 || (pos > 0 && !IsValidWordChar(str[pos - 1]))) && ((pos + wordSize == strSize) || !IsValidWordChar(str[pos + wordSize])))
+                return pos;
+
+            offset = pos + wordSize;
+            pos = str.find(word, offset);
+        }
+        return std::string::npos;
+    }
+
+    void Utils::ReplaceAllWord(std::string& oriStr, const std::string& srcWord, const std::string& dstWord)
+    {
+        size_t offset = 0;
+        size_t pos = FindWord(oriStr, srcWord, 0);
+        size_t srcL = srcWord.length();
+        size_t dstL = dstWord.length();
+        while (pos != std::string::npos)
+        {
+            oriStr.replace(pos, srcL, dstWord);
+            offset = pos + dstL;
+            pos = FindWord(oriStr, srcWord, offset);
+        }
+    }
+
     void Utils::ReplaceAllString(std::string& oriStr, const std::string& srcStr, const std::string& dstStr)
     {
         size_t offset = 0;
