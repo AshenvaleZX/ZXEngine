@@ -65,7 +65,14 @@ namespace ZXEngine
 						SPIRVCompiler::CompileAllShader(Resources::GetAssetFullPath("Shaders", true));
 						Debug::Log("The compilation of all shaders is complete.");
 					}
-					
+
+					if (ImGui::MenuItem("Compile All Shader for DirectX12"))
+					{
+						ZXD3D12Util::CompileAllShader(Resources::GetAssetsPath());
+						ZXD3D12Util::CompileAllShader(Resources::GetAssetFullPath("Shaders", true));
+						Debug::Log("The compilation of all shaders is complete.");
+					}
+
 					if (ImGui::MenuItem("Generate HLSL for DirectX12"))
 					{
 						ZXD3D12Util::TranslateAllShaderToHLSL(Resources::GetAssetsPath());
