@@ -515,11 +515,11 @@ namespace ZXEngine
 		}
 		// 重新生成VS main函数
 		string vertMainBlock = GetCodeBlock(vertProgramBlock, "main");
-		Utils::ReplaceAllString(vertMainBlock, "ZX_Position", "output.SVPos");
+		Utils::ReplaceAllWord(vertMainBlock, "ZX_Position", "output.SVPos");
 		for (auto& varName : vertInputVariables)
-			Utils::ReplaceAllString(vertMainBlock, varName, "input." + varName);
+			Utils::ReplaceAllWord(vertMainBlock, varName, "input." + varName);
 		for (auto& varName : vertOutputVariables)
-			Utils::ReplaceAllString(vertMainBlock, varName, "output." + varName);
+			Utils::ReplaceAllWord(vertMainBlock, varName, "output." + varName);
 		dxCode += "VertexOutput VS(VertexInput input)\n";
 		dxCode += "{\n";
 		dxCode += "    VertexOutput output;\n";
@@ -540,9 +540,9 @@ namespace ZXEngine
 		// 重新生成PS main函数
 		string fragMainBlock = GetCodeBlock(fragProgramBlock, "main");
 		for (auto& varName : vertOutputVariables)
-			Utils::ReplaceAllString(fragMainBlock, varName, "input." + varName);
+			Utils::ReplaceAllWord(fragMainBlock, varName, "input." + varName);
 		for (auto& varName : fragOutputVariables)
-			Utils::ReplaceAllString(fragMainBlock, varName, "output." + varName);
+			Utils::ReplaceAllWord(fragMainBlock, varName, "output." + varName);
 		dxCode += "PixelOutput PS(VertexOutput input)\n";
 		dxCode += "{\n";
 		dxCode += "    PixelOutput output;\n";
@@ -578,11 +578,11 @@ namespace ZXEngine
 		}
 
 		// 替换变量类型名称
-		Utils::ReplaceAllString(dxCode, "vec2", "float2");
-		Utils::ReplaceAllString(dxCode, "vec3", "float3");
-		Utils::ReplaceAllString(dxCode, "vec4", "float4");
-		Utils::ReplaceAllString(dxCode, "mat3", "float3x3");
-		Utils::ReplaceAllString(dxCode, "mat4", "float4x4");
+		Utils::ReplaceAllWord(dxCode, "vec2", "float2");
+		Utils::ReplaceAllWord(dxCode, "vec3", "float3");
+		Utils::ReplaceAllWord(dxCode, "vec4", "float4");
+		Utils::ReplaceAllWord(dxCode, "mat3", "float3x3");
+		Utils::ReplaceAllWord(dxCode, "mat4", "float4x4");
 
 		return dxCode;
 	}
