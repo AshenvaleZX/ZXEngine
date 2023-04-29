@@ -12,6 +12,7 @@ ZXEngine/Build/*.exe
 
 # DirectX12 Shader
 *.hlsl
+*.fxc
 
 # ImGui
 ZXEngine/ZXEngine/imgui.ini

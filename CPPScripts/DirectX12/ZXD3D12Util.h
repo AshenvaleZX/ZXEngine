@@ -11,6 +11,7 @@ namespace ZXEngine
 
 	private:
 		static void CompileShader(const filesystem::path& path);
-		static string TranslateShaderToHLSL(const filesystem::path& path);
+		static void TranslateShaderToHLSL(const filesystem::path& path);
+		static string TranslateShaderToHLSL(const filesystem::path& path, ShaderStageFlags& stageFlags);
 	};
 }
