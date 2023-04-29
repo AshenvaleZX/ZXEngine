@@ -28,6 +28,7 @@ Vertex
         using ENGINE_Model
         using ENGINE_View
         using ENGINE_Projection
+        using ENGINE_Model_Inv
     }
 
     Program
@@ -35,7 +36,7 @@ Vertex
         void main()
         {
             WorldPos = vec3(ENGINE_Model * vec4(aPos, 1.0));
-            Normal = transpose(inverse(mat3(ENGINE_Model))) * aNormal;
+            Normal = transpose(mat3(ENGINE_Model_Inv)) * aNormal;
             TexCoords = aTexCoords;
             ZX_Position = ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 1.0);
         }

@@ -24,6 +24,7 @@ Vertex
         using ENGINE_Model
         using ENGINE_View
         using ENGINE_Projection
+        using ENGINE_Model_Inv
     }
 
     Program
@@ -31,7 +32,7 @@ Vertex
         void main()
         {
             WorldPos = vec3(ENGINE_Model * vec4(aPos, 1.0));
-            Normal = transpose(inverse(mat3(ENGINE_Model))) * aNormal;
+            Normal = transpose(mat3(ENGINE_Model_Inv)) * aNormal;
 
             // 纹理采样放大缩小倍数
             float tiling = 4;
@@ -39,7 +40,7 @@ Vertex
             uv1.zw = aTexCoords * tiling;
             uvControl = aTexCoords;
 
-            mat3 worldToObject = transpose(inverse(mat3(ENGINE_Model)));
+            mat3 worldToObject = transpose(mat3(ENGINE_Model_Inv));
             vec3 wNormal = worldToObject * aNormal;
             vec3 wTangent = worldToObject * aTangent;
             vec3 wBitangent = cross(wNormal, wTangent);

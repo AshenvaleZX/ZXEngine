@@ -36,6 +36,7 @@ namespace ZXEngine
 	void RenderEngineProperties::SetRendererProperties(MeshRenderer* renderer)
 	{
 		matM = renderer->GetTransform()->GetModelMatrix();
+		matM_Inv = Math::Inverse(matM);
 	}
 
 	void RenderEngineProperties::SetShadowMap(uint32_t id, bool isBuffer)

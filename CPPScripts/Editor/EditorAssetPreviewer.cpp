@@ -132,6 +132,7 @@ namespace ZXEngine
 		engineProperties->matM = mat_M;
 		engineProperties->matV = mat_V;
 		engineProperties->matP = mat_P;
+		engineProperties->matM_Inv = Math::Inverse(mat_M);
 
 		// 固定参数模拟环境
 		engineProperties->camPos = camera->GetTransform()->GetPosition();
@@ -154,11 +155,13 @@ namespace ZXEngine
 		Matrix4 mat_M = GetModelMatrix();
 		Matrix4 mat_V = camera->GetViewMatrix();
 		Matrix4 mat_P = camera->GetProjectionMatrix();
+		Matrix4 mat_M_Inv = Math::Inverse(mat_M);
 
 		previewModelMaterial->Use();
 		previewModelMaterial->SetMatrix("ENGINE_Model", mat_M);
 		previewModelMaterial->SetMatrix("ENGINE_View", mat_V);
 		previewModelMaterial->SetMatrix("ENGINE_Projection", mat_P);
+		previewModelMaterial->SetMatrix("ENGINE_Model_Inv", mat_M_Inv);
 		previewModelMaterial->SetVector("_Direction", Vector3(1.0f, 1.0f, -1.0f).Normalize());
 
 		info->meshRenderer->Draw();

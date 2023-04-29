@@ -92,6 +92,8 @@ namespace ZXEngine
 			SetScalar(name, engineProperties->lightIntensity);
 		else if (type == ShaderPropertyType::ENGINE_FAR_PLANE)
 			SetScalar(name, GlobalData::shadowCubeMapFarPlane);
+		else if (type == ShaderPropertyType::ENGINE_MODEL_INV)
+			SetMatrix(name, engineProperties->matM_Inv);
 		else if (type == ShaderPropertyType::ENGINE_DEPTH_CUBE_MAP)
 		{
 			// 先设置SetMaterialProperties获得引擎纹理的初始textureIdx，然后++
