@@ -328,6 +328,36 @@ namespace ZXEngine
 			}
 		}
 
+		// 处理数组声明
+		size_t pos = 0;
+		while ((pos = Utils::FindWord(glCode, "array", pos)) != string::npos)
+		{
+			size_t sPos1 = string::npos;
+			size_t ePos1 = string::npos;
+			Utils::GetNextStringBlockPos(glCode, pos, '<', '>', sPos1, ePos1);
+			string arrayDeclare = glCode.substr(sPos1 + 1, ePos1 - sPos1 - 1);
+			vector<string> declareParams = Utils::StringSplit(arrayDeclare, ',');
+
+			size_t sPos2 = string::npos;
+			size_t ePos2 = string::npos;
+			Utils::GetNextStringBlockPos(glCode, pos, '{', '}', sPos2, ePos2);
+			string arrayContent = glCode.substr(sPos2 + 1, ePos2 - sPos2 - 1);
+			vector<string> contentParams = Utils::StringSplit(arrayContent, ',');
+
+			string nameBlock = glCode.substr(ePos1 + 1, sPos2 - ePos1 - 1);
+			nameBlock.erase(nameBlock.find('='));
+
+			string oldSentence = glCode.substr(pos, ePos2 - pos + 1);
+			string newSentence = declareParams[0] + " " + nameBlock + "[" + declareParams[1] + "] = " + declareParams[0] + "[](" + contentParams[0];
+			for (size_t i = 1; i < contentParams.size(); i++)
+				newSentence += "," + contentParams[i];
+			newSentence += ")";
+
+			glCode.replace(pos, oldSentence.length(), newSentence);
+
+			pos += newSentence.length();
+		}
+
 		Utils::ReplaceAllWord(glCode, "to_vec2", "vec2");
 		Utils::ReplaceAllWord(glCode, "to_vec3", "vec3");
 		Utils::ReplaceAllWord(glCode, "to_mat3", "mat3");
@@ -420,6 +450,36 @@ namespace ZXEngine
 			{
 				vkCode += line + "\n";
 			}
+		}
+
+		// 处理数组声明
+		size_t pos = 0;
+		while ((pos = Utils::FindWord(vkCode, "array", pos)) != string::npos)
+		{
+			size_t sPos1 = string::npos;
+			size_t ePos1 = string::npos;
+			Utils::GetNextStringBlockPos(vkCode, pos, '<', '>', sPos1, ePos1);
+			string arrayDeclare = vkCode.substr(sPos1 + 1, ePos1 - sPos1 - 1);
+			vector<string> declareParams = Utils::StringSplit(arrayDeclare, ',');
+
+			size_t sPos2 = string::npos;
+			size_t ePos2 = string::npos;
+			Utils::GetNextStringBlockPos(vkCode, pos, '{', '}', sPos2, ePos2);
+			string arrayContent = vkCode.substr(sPos2 + 1, ePos2 - sPos2 - 1);
+			vector<string> contentParams = Utils::StringSplit(arrayContent, ',');
+
+			string nameBlock = vkCode.substr(ePos1 + 1, sPos2 - ePos1 - 1);
+			nameBlock.erase(nameBlock.find('='));
+
+			string oldSentence = vkCode.substr(pos, ePos2 - pos + 1);
+			string newSentence = declareParams[0] + " " + nameBlock + "[" + declareParams[1] + "] = " + declareParams[0] + "[](" + contentParams[0];
+			for (size_t i = 1; i < contentParams.size(); i++)
+				newSentence += "," + contentParams[i];
+			newSentence += ")";
+
+			vkCode.replace(pos, oldSentence.length(), newSentence);
+
+			pos += newSentence.length();
 		}
 
 		Utils::ReplaceAllWord(vkCode, "to_vec2", "vec2");
@@ -663,6 +723,36 @@ namespace ZXEngine
 			string coordStr = sampleSentence.substr(splitPos + 1, sampleSentence.size() - splitPos - 1);
 			string oldSentence = dxCode.substr(pos, ePos - pos + 1);
 			string newSentence = textureStr + ".Sample(sampleLinearWrap," + coordStr + ")";
+			dxCode.replace(pos, oldSentence.length(), newSentence);
+
+			pos += newSentence.length();
+		}
+
+		// 处理数组声明
+		pos = 0;
+		while ((pos = Utils::FindWord(dxCode, "array", pos)) != string::npos)
+		{
+			size_t sPos1 = string::npos;
+			size_t ePos1 = string::npos;
+			Utils::GetNextStringBlockPos(dxCode, pos, '<', '>', sPos1, ePos1);
+			string arrayDeclare = dxCode.substr(sPos1 + 1, ePos1 - sPos1 - 1);
+			vector<string> declareParams = Utils::StringSplit(arrayDeclare, ',');
+
+			size_t sPos2 = string::npos;
+			size_t ePos2 = string::npos;
+			Utils::GetNextStringBlockPos(dxCode, pos, '{', '}', sPos2, ePos2);
+			string arrayContent = dxCode.substr(sPos2 + 1, ePos2 - sPos2 - 1);
+			vector<string> contentParams = Utils::StringSplit(arrayContent, ',');
+
+			string nameBlock = dxCode.substr(ePos1 + 1, sPos2 - ePos1 - 1);
+			nameBlock.erase(nameBlock.find('='));
+
+			string oldSentence = dxCode.substr(pos, ePos2 - pos + 1);
+			string newSentence = declareParams[0] + " " + nameBlock + "[" + declareParams[1] + "] = {" + contentParams[0];
+			for (size_t i = 1; i < contentParams.size(); i++)
+				newSentence += "," + contentParams[i];
+			newSentence += "}";
+
 			dxCode.replace(pos, oldSentence.length(), newSentence);
 
 			pos += newSentence.length();

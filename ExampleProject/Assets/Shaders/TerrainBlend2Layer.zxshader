@@ -88,14 +88,14 @@ Fragment
     Program
     {
         // 做Soft Shadow的采样偏移
-        vec3 gridSamplingDisk[20] = vec3[]
-        (
+        array<vec3, 20> gridSamplingDisk = 
+        {
             vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
             vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
             vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
             vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
             vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
-        );
+        };
 
         float ShadowCalculation(vec3 fragPos)
         {
