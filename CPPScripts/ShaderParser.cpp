@@ -651,26 +651,18 @@ namespace ZXEngine
 
 		// 替换纹理采样语法
 		size_t pos = 0;
-		while ((pos = dxCode.find("texture", pos)) != string::npos)
+		while ((pos = Utils::FindWord(dxCode, "texture", pos)) != string::npos)
 		{
-			size_t s = 0, e = 0;
-			for (size_t i = pos; i < dxCode.size(); i++)
-			{
-				if (dxCode[i] == '(')
-				{
-					s = i;
-				}
-				else if (dxCode[i] == ')')
-				{
-					e = i;
-					break;
-				}
-			}
+			size_t sPos = string::npos;
+			size_t ePos = string::npos;
+			Utils::GetNextStringBlockPos(dxCode, pos, '(', ')', sPos, ePos);
 
-			string sampleSentence = dxCode.substr(s + 1, e - s - 1);
-			auto sampleArgs = Utils::StringSplit(sampleSentence, ',');
-			string oldSentence = dxCode.substr(pos, e - pos + 1);
-			string newSentence = sampleArgs[0] + ".Sample(sampleLinearWrap," + sampleArgs[1] + ")";
+			string sampleSentence = dxCode.substr(sPos + 1, ePos - sPos - 1);
+			size_t splitPos = sampleSentence.find(',');
+			string textureStr = sampleSentence.substr(0, splitPos);
+			string coordStr = sampleSentence.substr(splitPos + 1, sampleSentence.size() - splitPos - 1);
+			string oldSentence = dxCode.substr(pos, ePos - pos + 1);
+			string newSentence = textureStr + ".Sample(sampleLinearWrap," + coordStr + ")";
 			dxCode.replace(pos, oldSentence.length(), newSentence);
 
 			pos += newSentence.length();
