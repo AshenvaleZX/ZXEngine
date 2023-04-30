@@ -46,8 +46,10 @@ Fragment
     Program
     {
         void main()
-        {             
-            vec2 texOffset = _BlurTimes * _TexOffset / textureSize(_RenderTexture, 0);
+        {
+            vec2 texSize = vec2(1, 1);
+            GetTextureSize(_RenderTexture, texSize);
+            vec2 texOffset = _BlurTimes * _TexOffset / texSize;
             vec3 color = vec3(0, 0, 0);
             color += texture(_RenderTexture, TexCoords + vec2( texOffset.x,  texOffset.y)).rgb * 0.25;
             color += texture(_RenderTexture, TexCoords + vec2( texOffset.x, -texOffset.y)).rgb * 0.25;

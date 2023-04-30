@@ -50,7 +50,9 @@ Fragment
 
         void main()
         {             
-            vec2 texOffset = _TexOffset / textureSize(_RenderTexture, 0);
+            vec2 texSize = vec2(1, 1);
+            GetTextureSize(_RenderTexture, texSize);
+            vec2 texOffset = _TexOffset / texSize;
             vec3 color = texture(_RenderTexture, TexCoords).rgb * weight[0];
             if(_Horizontal)
             {

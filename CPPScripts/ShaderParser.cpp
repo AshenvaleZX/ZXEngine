@@ -312,20 +312,31 @@ namespace ZXEngine
 		for (auto& line : lines)
 		{
 			// 处理矩阵乘法
-			size_t pos = Utils::FindWord(line, "mul", 0);
-			if (pos != string::npos)
+			size_t pos = 0;
+			if ((pos = Utils::FindWord(line, "mul", pos)) != string::npos)
 			{
 				size_t sPos = string::npos;
 				size_t ePos = string::npos;
 				Utils::GetNextStringBlockPos(line, pos, '(', ')', sPos, ePos);
 				// 删除 mul 函数和括号
 				line.replace(pos, ePos - pos + 1, line.substr(sPos + 1, ePos - sPos - 1));
-				glCode += line + "\n";
 			}
-			else
+
+			// 处理GetTextureSize函数
+			pos = 0;
+			if ((pos = Utils::FindWord(line, "GetTextureSize", pos)) != string::npos)
 			{
-				glCode += line + "\n";
+				size_t sPos = string::npos;
+				size_t ePos = string::npos;
+				Utils::GetNextStringBlockPos(line, pos, '(', ')', sPos, ePos);
+
+				string paramsBlock = line.substr(sPos + 1, ePos - sPos - 1);
+				vector<string> params = Utils::StringSplit(paramsBlock, ',');
+				string newStatement = params[1] + " = textureSize(" + params[0] + ", 0)";
+				line.replace(pos, ePos - pos + 1, newStatement);
 			}
+
+			glCode += line + "\n";
 		}
 
 		// 处理数组声明
@@ -436,20 +447,31 @@ namespace ZXEngine
 		for (auto& line : lines)
 		{
 			// 处理矩阵乘法
-			size_t pos = Utils::FindWord(line, "mul", 0);
-			if (pos != string::npos)
+			size_t pos = 0;
+			if ((pos = Utils::FindWord(line, "mul", pos)) != string::npos)
 			{
 				size_t sPos = string::npos;
 				size_t ePos = string::npos;
 				Utils::GetNextStringBlockPos(line, pos, '(', ')', sPos, ePos);
 				// 删除 mul 函数和括号
 				line.replace(pos, ePos - pos + 1, line.substr(sPos + 1, ePos - sPos - 1));
-				vkCode += line + "\n";
 			}
-			else
+
+			// 处理GetTextureSize函数
+			pos = 0;
+			if ((pos = Utils::FindWord(line, "GetTextureSize", pos)) != string::npos)
 			{
-				vkCode += line + "\n";
+				size_t sPos = string::npos;
+				size_t ePos = string::npos;
+				Utils::GetNextStringBlockPos(line, pos, '(', ')', sPos, ePos);
+
+				string paramsBlock = line.substr(sPos + 1, ePos - sPos - 1);
+				vector<string> params = Utils::StringSplit(paramsBlock, ',');
+				string newStatement = params[1] + " = textureSize(" + params[0] + ", 0)";
+				line.replace(pos, ePos - pos + 1, newStatement);
 			}
+
+			vkCode += line + "\n";
 		}
 
 		// 处理数组声明
@@ -611,9 +633,10 @@ namespace ZXEngine
 		// 顶点着色器
 		string vertProgramBlock = GetCodeBlock(vertCode, "Program");
 		lines = Utils::StringSplit(vertProgramBlock, '\n');
-		// 逐行检测并处理矩阵乘法
+		// 逐行检测需要处理的语法
 		for (auto& line : lines)
 		{
+			// 处理矩阵乘法
 			size_t pos = Utils::FindWord(line, "mul", 0);
 			if (pos != string::npos)
 			{
@@ -635,6 +658,21 @@ namespace ZXEngine
 				// 删除 mul 函数和括号
 				line.replace(pos, ePos - pos + 1, multipliers[0]);
 			}
+
+			// 处理GetTextureSize函数
+			pos = 0;
+			if ((pos = Utils::FindWord(line, "GetTextureSize", pos)) != string::npos)
+			{
+				size_t sPos = string::npos;
+				size_t ePos = string::npos;
+				Utils::GetNextStringBlockPos(line, pos, '(', ')', sPos, ePos);
+
+				string paramsBlock = line.substr(sPos + 1, ePos - sPos - 1);
+				vector<string> params = Utils::StringSplit(paramsBlock, ',');
+				string newStatement = params[0] + ".GetDimensions(" + params[1] + ".x, " + params[1] + ".y)";
+				line.replace(pos, ePos - pos + 1, newStatement);
+			}
+
 			line += "\n";
 		}
 		vertProgramBlock = Utils::ConcatenateStrings(lines);
@@ -662,9 +700,10 @@ namespace ZXEngine
 		// 片元(像素)着色器
 		string fragProgramBlock = GetCodeBlock(fragCode, "Program");
 		lines = Utils::StringSplit(fragProgramBlock, '\n');
-		// 逐行检测并处理矩阵乘法
+		// 逐行检测需要处理的语法
 		for (auto& line : lines)
 		{
+			// 处理矩阵乘法
 			size_t pos = Utils::FindWord(line, "mul", 0);
 			if (pos != string::npos)
 			{
@@ -686,6 +725,21 @@ namespace ZXEngine
 				// 删除 mul 函数和括号
 				line.replace(pos, ePos - pos + 1, multipliers[0]);
 			}
+
+			// 处理GetTextureSize函数
+			pos = 0;
+			if ((pos = Utils::FindWord(line, "GetTextureSize", pos)) != string::npos)
+			{
+				size_t sPos = string::npos;
+				size_t ePos = string::npos;
+				Utils::GetNextStringBlockPos(line, pos, '(', ')', sPos, ePos);
+
+				string paramsBlock = line.substr(sPos + 1, ePos - sPos - 1);
+				vector<string> params = Utils::StringSplit(paramsBlock, ',');
+				string newStatement = params[0] + ".GetDimensions(" + params[1] + ".x, " + params[1] + ".y)";
+				line.replace(pos, ePos - pos + 1, newStatement);
+			}
+
 			line += "\n";
 		}
 		fragProgramBlock = Utils::ConcatenateStrings(lines);
