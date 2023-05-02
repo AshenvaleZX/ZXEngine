@@ -265,10 +265,17 @@ namespace ZXEngine
 		string gsInOutBlock = GetCodeBlock(originCode, "GSInOut");
 		if (!gsInOutBlock.empty())
 		{
-			auto lines = Utils::StringSplit(gsInOutBlock, '\n');
-			for (auto& line : lines)
-				glCode += line + ";\n";
-			glCode += "\n";
+			glCode += "layout (triangles) in;\n";
+			size_t pos = 0;
+			if ((pos = Utils::FindWord(gsInOutBlock, "out", pos)) != string::npos)
+			{
+				size_t sPos = string::npos;
+				size_t ePos = string::npos;
+				Utils::GetNextStringBlockPos(gsInOutBlock, pos, '(', ')', sPos, ePos);
+				string outputNum = gsInOutBlock.substr(sPos + 1, ePos - sPos - 1);
+
+				glCode += "layout (triangle_strip, max_vertices=" + outputNum + ") out;\n";
+			}
 		}
 
 		string inputBlock = GetCodeBlock(originCode, "Input");
@@ -374,6 +381,9 @@ namespace ZXEngine
 		Utils::ReplaceAllWord(glCode, "to_mat3", "mat3");
 		Utils::ReplaceAllString(glCode, "ZX_Depth", "gl_FragDepth");
 		Utils::ReplaceAllString(glCode, "ZX_Position", "gl_Position");
+		Utils::ReplaceAllString(glCode, "GS_IN_Position", "gl_Position");
+		Utils::ReplaceAllString(glCode, "ZX_TargetIndex", "gl_Layer");
+		Utils::ReplaceAllString(glCode, "ZX_GS_IN", "gl_in");
 
 		return glCode;
 	}
@@ -388,10 +398,17 @@ namespace ZXEngine
 		string gsInOutBlock = GetCodeBlock(originCode, "GSInOut");
 		if (!gsInOutBlock.empty())
 		{
-			auto lines = Utils::StringSplit(gsInOutBlock, '\n');
-			for (auto& line : lines)
-				vkCode += line + ";\n";
-			vkCode += "\n";
+			vkCode += "layout (triangles) in;\n";
+			size_t pos = 0;
+			if ((pos = Utils::FindWord(gsInOutBlock, "out", pos)) != string::npos)
+			{
+				size_t sPos = string::npos;
+				size_t ePos = string::npos;
+				Utils::GetNextStringBlockPos(gsInOutBlock, pos, '(', ')', sPos, ePos);
+				string outputNum = gsInOutBlock.substr(sPos + 1, ePos - sPos - 1);
+
+				vkCode += "layout (triangle_strip, max_vertices=" + outputNum + ") out;\n";
+			}
 		}
 
 		string inputBlock = GetCodeBlock(originCode, "Input");
@@ -509,6 +526,9 @@ namespace ZXEngine
 		Utils::ReplaceAllWord(vkCode, "to_mat3", "mat3");
 		Utils::ReplaceAllString(vkCode, "ZX_Depth", "gl_FragDepth");
 		Utils::ReplaceAllString(vkCode, "ZX_Position", "gl_Position");
+		Utils::ReplaceAllString(vkCode, "GS_IN_Position", "gl_Position");
+		Utils::ReplaceAllString(vkCode, "ZX_TargetIndex", "gl_Layer");
+		Utils::ReplaceAllString(vkCode, "ZX_GS_IN", "gl_in");
 
 		return vkCode;
 	}
@@ -552,10 +572,42 @@ namespace ZXEngine
 				vertOutputVariables.push_back(words[2]);
 			}
 		}
-		dxCode += "    float4 SVPos : SV_POSITION;\n";
+		dxCode += "    float4 ZX_Pos : SV_POSITION;\n";
 		dxCode += "};\n\n";
 
+		string outputNum = "";
+		vector<string> geomOutputVariables;
+		if (shaderInfo.stages & ZX_SHADER_STAGE_GEOMETRY_BIT)
+		{
+			string gsInOutBlock = GetCodeBlock(originCode, "GSInOut");
+			size_t pos = 0;
+			if ((pos = Utils::FindWord(gsInOutBlock, "out", pos)) != string::npos)
+			{
+				size_t sPos = string::npos;
+				size_t ePos = string::npos;
+				Utils::GetNextStringBlockPos(gsInOutBlock, pos, '(', ')', sPos, ePos);
+				outputNum = gsInOutBlock.substr(sPos + 1, ePos - sPos - 1);
+			}
+
+			dxCode += "struct GeometryOutput\n{\n";
+			string geomOutputBlock = GetCodeBlock(geomCode, "Output");
+			lines = Utils::StringSplit(geomOutputBlock, '\n');
+			for (auto& line : lines)
+			{
+				auto words = Utils::ExtractWords(line);
+				if (words.size() >= 5 && words[0] != "//")
+				{
+					dxCode += "    " + words[1] + " " + words[2] + " " + words[3] + " " + words[4] + ";\n";
+					geomOutputVariables.push_back(words[2]);
+				}
+			}
+			dxCode += "    float4 ZX_Pos : SV_POSITION;\n";
+			dxCode += "    uint ZX_TargetIndex : SV_RenderTargetArrayIndex;\n";
+			dxCode += "};\n\n";
+		}
+
 		// 片元(像素)着色器输出结构体
+		bool writeToDepth = fragCode.find("ZX_Depth") != string::npos;
 		dxCode += "struct PixelOutput\n{\n";
 		string fragOutputBlock = GetCodeBlock(fragCode, "Output");
 		vector<string> fragOutputVariables;
@@ -569,6 +621,8 @@ namespace ZXEngine
 				fragOutputVariables.push_back(words[2]);
 			}
 		}
+		if (writeToDepth)
+			dxCode += "    float ZX_Depth : SV_Depth;\n";
 		dxCode += "};\n\n";
 
 		// CPU端常量Buffer
@@ -685,7 +739,7 @@ namespace ZXEngine
 		}
 		// 重新生成VS main函数
 		string vertMainBlock = GetCodeBlock(vertProgramBlock, "main");
-		Utils::ReplaceAllWord(vertMainBlock, "ZX_Position", "output.SVPos");
+		Utils::ReplaceAllWord(vertMainBlock, "ZX_Position", "output.ZX_Pos");
 		for (auto& varName : vertInputVariables)
 			Utils::ReplaceAllWord(vertMainBlock, varName, "input." + varName);
 		for (auto& varName : vertOutputVariables)
@@ -696,6 +750,79 @@ namespace ZXEngine
 		dxCode += vertMainBlock;
 		dxCode += "    return output;\n";
 		dxCode += "}\n\n";
+
+		// 几何着色器
+		if (shaderInfo.stages & ZX_SHADER_STAGE_GEOMETRY_BIT)
+		{
+			string geomProgramBlock = GetCodeBlock(geomCode, "Program");
+			lines = Utils::StringSplit(geomProgramBlock, '\n');
+			// 逐行检测需要处理的语法
+			for (auto& line : lines)
+			{
+				// 处理矩阵乘法
+				size_t pos = Utils::FindWord(line, "mul", 0);
+				if (pos != string::npos)
+				{
+					size_t sPos = string::npos;
+					size_t ePos = string::npos;
+					Utils::GetNextStringBlockPos(line, pos, '(', ')', sPos, ePos);
+					string multiplication = line.substr(sPos + 1, ePos - sPos - 1);
+					vector<string> multipliers = Utils::StringSplit(multiplication, '*');
+					string newMultiplication = "";
+					while (multipliers.size() > 1)
+					{
+						string rightMul = multipliers.back();
+						multipliers.pop_back();
+						string leftMul = multipliers.back();
+						multipliers.pop_back();
+
+						multipliers.push_back("mul(" + leftMul + ", " + rightMul + ")");
+					}
+					// 删除 mul 函数和括号
+					line.replace(pos, ePos - pos + 1, multipliers[0]);
+				}
+
+				// 处理GetTextureSize函数
+				pos = 0;
+				if ((pos = Utils::FindWord(line, "GetTextureSize", pos)) != string::npos)
+				{
+					size_t sPos = string::npos;
+					size_t ePos = string::npos;
+					Utils::GetNextStringBlockPos(line, pos, '(', ')', sPos, ePos);
+
+					string paramsBlock = line.substr(sPos + 1, ePos - sPos - 1);
+					vector<string> params = Utils::StringSplit(paramsBlock, ',');
+					string newStatement = params[0] + ".GetDimensions(" + params[1] + ".x, " + params[1] + ".y)";
+					line.replace(pos, ePos - pos + 1, newStatement);
+				}
+
+				line += "\n";
+			}
+			geomProgramBlock = Utils::ConcatenateStrings(lines);
+			// 去掉main函数
+			for (auto& line : lines)
+			{
+				if (line.find("main") != string::npos)
+					break;
+				dxCode += line + "\n";
+			}
+			// 重新生成GS main函数
+			string geomMainBlock = GetCodeBlock(geomProgramBlock, "main");
+			Utils::ReplaceAllWord(geomMainBlock, "ZX_Position", "output.ZX_Pos");
+			Utils::ReplaceAllWord(geomMainBlock, "GS_IN_Position", "ZX_Pos");
+			Utils::ReplaceAllWord(geomMainBlock, "ZX_GS_IN", "inputVertices");
+			Utils::ReplaceAllWord(geomMainBlock, "ZX_TargetIndex", "output.ZX_TargetIndex");
+			Utils::ReplaceAllWord(geomMainBlock, "EmitVertex()", "triStream.Append(output)");
+			Utils::ReplaceAllWord(geomMainBlock, "EndPrimitive()", "triStream.RestartStrip()");
+			for (auto& varName : geomOutputVariables)
+				Utils::ReplaceAllWord(geomMainBlock, varName, "output." + varName);
+			dxCode += "[maxvertexcount(" + outputNum + ")]\n";
+			dxCode += "void GS(triangle VertexOutput inputVertices[3], inout TriangleStream<GeometryOutput> triStream)\n";
+			dxCode += "{\n";
+			dxCode += "    GeometryOutput output;\n";
+			dxCode += geomMainBlock;
+			dxCode += "}\n\n";
+		}
 
 		// 片元(像素)着色器
 		string fragProgramBlock = GetCodeBlock(fragCode, "Program");
@@ -752,11 +879,22 @@ namespace ZXEngine
 		}
 		// 重新生成PS main函数
 		string fragMainBlock = GetCodeBlock(fragProgramBlock, "main");
-		for (auto& varName : vertOutputVariables)
-			Utils::ReplaceAllWord(fragMainBlock, varName, "input." + varName);
 		for (auto& varName : fragOutputVariables)
 			Utils::ReplaceAllWord(fragMainBlock, varName, "output." + varName);
-		dxCode += "PixelOutput PS(VertexOutput input)\n";
+		if (shaderInfo.stages & ZX_SHADER_STAGE_GEOMETRY_BIT)
+		{
+			for (auto& varName : geomOutputVariables)
+				Utils::ReplaceAllWord(fragMainBlock, varName, "input." + varName);
+			dxCode += "PixelOutput PS(GeometryOutput input)\n";
+		}
+		else
+		{
+			for (auto& varName : vertOutputVariables)
+				Utils::ReplaceAllWord(fragMainBlock, varName, "input." + varName);
+			dxCode += "PixelOutput PS(VertexOutput input)\n";
+		}
+		if (writeToDepth)
+			Utils::ReplaceAllWord(fragMainBlock, "ZX_Depth", "output.ZX_Depth");
 		dxCode += "{\n";
 		dxCode += "    PixelOutput output;\n";
 		dxCode += fragMainBlock;
