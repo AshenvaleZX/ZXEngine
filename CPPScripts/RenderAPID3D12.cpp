@@ -118,6 +118,49 @@ namespace ZXEngine
 			ThrowIfFailed(D3D12CreateDevice(pWarpAdapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&mD3D12Device)));
 		}
 
+		// 设置Debug输出筛选
+		if (ProjectSetting::enableValidationLayer)
+		{
+			// 获取设备的信息队列
+			ComPtr<ID3D12InfoQueue> pInfoQueue;
+			if (SUCCEEDED(mD3D12Device.As(&pInfoQueue)))
+			{
+				// 设置要允许的消息类别
+				D3D12_MESSAGE_CATEGORY categories[] = 
+				{ 
+					D3D12_MESSAGE_CATEGORY_APPLICATION_DEFINED,
+					D3D12_MESSAGE_CATEGORY_MISCELLANEOUS,
+					D3D12_MESSAGE_CATEGORY_INITIALIZATION,
+					D3D12_MESSAGE_CATEGORY_CLEANUP,
+					D3D12_MESSAGE_CATEGORY_COMPILATION,
+					D3D12_MESSAGE_CATEGORY_STATE_CREATION, 
+					D3D12_MESSAGE_CATEGORY_STATE_SETTING, 
+					D3D12_MESSAGE_CATEGORY_STATE_GETTING, 
+					D3D12_MESSAGE_CATEGORY_RESOURCE_MANIPULATION, 
+					D3D12_MESSAGE_CATEGORY_EXECUTION, 
+					D3D12_MESSAGE_CATEGORY_SHADER
+				};
+
+				// 设置要允许的消息严重性
+				D3D12_MESSAGE_SEVERITY severities[] = 
+				{ 
+					D3D12_MESSAGE_SEVERITY_CORRUPTION,
+					D3D12_MESSAGE_SEVERITY_ERROR,
+					D3D12_MESSAGE_SEVERITY_WARNING,
+					D3D12_MESSAGE_SEVERITY_INFO, 
+					D3D12_MESSAGE_SEVERITY_MESSAGE
+				};
+
+				D3D12_INFO_QUEUE_FILTER filter = {};
+				filter.AllowList.NumCategories = _countof(categories);
+				filter.AllowList.pCategoryList = categories;
+				filter.AllowList.NumSeverities = _countof(severities);
+				filter.AllowList.pSeverityList = severities;
+
+				pInfoQueue->PushStorageFilter(&filter);
+			}
+		}
+
 		// 创建命令队列
 		D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
