@@ -14,6 +14,7 @@ namespace ZXEngine
 		virtual bool WindowShouldClose();
 
 	public:
+		void Show();
 		LRESULT WindowProcedure(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 	private:

@@ -17,6 +17,7 @@ namespace ZXEngine
 #endif
 #ifdef ZX_API_D3D12
 		mInstance = new WindowManagerWindows();
+		static_cast<WindowManagerWindows*>(mInstance)->Show();
 #endif
 	}
 

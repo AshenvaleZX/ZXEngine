@@ -33,9 +33,6 @@ namespace ZXEngine
 		mWindowHeight = ProjectSetting::srcHeight;
 		mWindow = CreateWindowW(wndClass.lpszClassName, L"ZXEngine", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
 			ProjectSetting::srcWidth, ProjectSetting::srcHeight, NULL, NULL, wndClass.hInstance, NULL);
-
-		ShowWindow(mWindow, SW_SHOW);
-		UpdateWindow(mWindow);
 	}
 
 	void* WindowManagerWindows::GetWindow()
@@ -130,8 +127,16 @@ namespace ZXEngine
 		return DefWindowProc(hWnd, msg, wParam, lParam);
 	}
 
+	void WindowManagerWindows::Show()
+	{
+		ShowWindow(mWindow, SW_SHOW);
+		UpdateWindow(mWindow);
+	}
+
 	void WindowManagerWindows::OnResize()
 	{
-		RenderAPI::GetInstance()->OnWindowSizeChange(mWindowWidth, mWindowHeight);
+		auto renderAPI = RenderAPI::GetInstance();
+		if (renderAPI)
+			renderAPI->OnWindowSizeChange(mWindowWidth, mWindowHeight);
 	}
 }
