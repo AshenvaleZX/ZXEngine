@@ -101,6 +101,7 @@ namespace ZXEngine
 
     struct ZXD3D12Pipeline
     {
+        uint32_t textureNum = 0;
         ComPtr<ID3D12RootSignature> rootSignature = nullptr;
         ComPtr<ID3D12PipelineState> pipelineState = nullptr;
         bool inUse = false;

@@ -107,8 +107,7 @@ namespace ZXEngine
 #ifdef ZX_API_OPENGL
 			2, 3, 1,
 			2, 1, 0,
-#endif
-#ifdef ZX_API_VULKAN
+#else
 			3, 2, 0,
 			3, 0, 1,
 #endif

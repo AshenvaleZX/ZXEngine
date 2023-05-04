@@ -89,8 +89,6 @@ namespace ZXEngine
 
 		InitImmediateExecution();
 
-		ZXD3D12DescriptorManager::Creat();
-
 		mEndRenderFence = CreateZXD3D12Fence();
 		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 			mFrameFences.push_back(CreateZXD3D12Fence());
@@ -158,6 +156,11 @@ namespace ZXEngine
 			filter.AllowList.pSeverityList = severities;
 
 			pInfoQueue->PushStorageFilter(&filter);
+
+			// 有错误时直接Break
+			pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
+			pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
+			pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE);
 		}
 
 		// 创建命令队列
@@ -346,14 +349,34 @@ namespace ZXEngine
 			{
 				// 创建Color Buffer
 				CD3DX12_HEAP_PROPERTIES colorBufferProps(D3D12_HEAP_TYPE_DEFAULT);
-				CD3DX12_RESOURCE_DESC colorBufferDesc(CD3DX12_RESOURCE_DESC::Tex2D(mDefaultImageFormat, width, height, 1, 1));
+
+				D3D12_RESOURCE_DESC colorBufferDesc = {};
+				colorBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+				colorBufferDesc.Alignment = 0;
+				colorBufferDesc.Width = width;
+				colorBufferDesc.Height = height;
+				colorBufferDesc.DepthOrArraySize = 1;
+				colorBufferDesc.MipLevels = 1;
+				colorBufferDesc.Format = mDefaultImageFormat;
+				colorBufferDesc.SampleDesc.Count = 1;
+				colorBufferDesc.SampleDesc.Quality = 0;
+				colorBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+				colorBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+				D3D12_CLEAR_VALUE optColorClear = {};
+				optColorClear.Format = mDefaultImageFormat;
+				optColorClear.Color[0] = clearInfo.color.r;
+				optColorClear.Color[1] = clearInfo.color.g;
+				optColorClear.Color[2] = clearInfo.color.b;
+				optColorClear.Color[3] = clearInfo.color.a;
+
 				ComPtr<ID3D12Resource> colorBufferResource;
 				ThrowIfFailed(mD3D12Device->CreateCommittedResource(
 					&colorBufferProps,
 					D3D12_HEAP_FLAG_NONE,
 					&colorBufferDesc,
 					D3D12_RESOURCE_STATE_GENERIC_READ,
-					nullptr,
+					&optColorClear,
 					IID_PPV_ARGS(&colorBufferResource)
 				));
 				
@@ -374,31 +397,49 @@ namespace ZXEngine
 
 				// 创建Depth Buffer
 				CD3DX12_HEAP_PROPERTIES depthBufferProps(D3D12_HEAP_TYPE_DEFAULT);
-				CD3DX12_RESOURCE_DESC depthBufferDesc(CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D16_UNORM, width, height, 1, 1));
+
+				D3D12_RESOURCE_DESC depthBufferDesc = {};
+				depthBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+				depthBufferDesc.Alignment = 0;
+				depthBufferDesc.Width = width;
+				depthBufferDesc.Height = height;
+				depthBufferDesc.DepthOrArraySize = 1;
+				depthBufferDesc.MipLevels = 1;
+				depthBufferDesc.Format = DXGI_FORMAT_D16_UNORM;
+				depthBufferDesc.SampleDesc.Count = 1;
+				depthBufferDesc.SampleDesc.Quality = 0;
+				depthBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+				depthBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+				D3D12_CLEAR_VALUE optDepthClear = {};
+				optDepthClear.Format = DXGI_FORMAT_D16_UNORM;
+				optDepthClear.DepthStencil.Depth = clearInfo.depth;
+				optDepthClear.DepthStencil.Stencil = clearInfo.stencil;
+
 				ComPtr<ID3D12Resource> depthBufferResource;
 				ThrowIfFailed(mD3D12Device->CreateCommittedResource(
 					&depthBufferProps,
 					D3D12_HEAP_FLAG_NONE,
 					&depthBufferDesc,
 					D3D12_RESOURCE_STATE_GENERIC_READ,
-					nullptr,
+					&optDepthClear,
 					IID_PPV_ARGS(&depthBufferResource)
 				));
 
 				D3D12_SHADER_RESOURCE_VIEW_DESC depthSrvDesc = {};
-				depthSrvDesc.Format = DXGI_FORMAT_D16_UNORM;
+				depthSrvDesc.Format = DXGI_FORMAT_R16_UNORM;
 				depthSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 				depthSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 				depthSrvDesc.Texture2D.MipLevels = 1;
 				depthSrvDesc.Texture2D.MostDetailedMip = 0;
 				depthSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
-				D3D12_RENDER_TARGET_VIEW_DESC depthRtvDesc = {};
-				depthRtvDesc.Format = DXGI_FORMAT_D16_UNORM;
-				depthRtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
-				depthRtvDesc.Texture2D.MipSlice = 0;
+				D3D12_DEPTH_STENCIL_VIEW_DESC depthDsvDesc = {};
+				depthDsvDesc.Format = DXGI_FORMAT_D16_UNORM;
+				depthDsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+				depthDsvDesc.Texture2D.MipSlice = 0;
 
-				depthBuffer->renderBuffers[i] = CreateZXD3D12Texture(depthBufferResource, depthSrvDesc, depthRtvDesc);
+				depthBuffer->renderBuffers[i] = CreateZXD3D12Texture(depthBufferResource, depthSrvDesc, depthDsvDesc);
 			}
 
 			D3D12FBO->inUse = true;
@@ -413,21 +454,41 @@ namespace ZXEngine
 
 			auto D3D12FBO = GetFBOByIndex(FBO->ID);
 			D3D12FBO->colorBufferIdx = FBO->ColorBuffer;
-			D3D12FBO->bufferType = FrameBufferType::Normal;
+			D3D12FBO->bufferType = FrameBufferType::Color;
 			D3D12FBO->clearInfo = clearInfo;
 
 			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 			{
 				// 创建Color Buffer
 				CD3DX12_HEAP_PROPERTIES colorBufferProps(D3D12_HEAP_TYPE_DEFAULT);
-				CD3DX12_RESOURCE_DESC colorBufferDesc(CD3DX12_RESOURCE_DESC::Tex2D(mDefaultImageFormat, width, height, 1, 1));
+
+				D3D12_RESOURCE_DESC colorBufferDesc = {};
+				colorBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+				colorBufferDesc.Alignment = 0;
+				colorBufferDesc.Width = width;
+				colorBufferDesc.Height = height;
+				colorBufferDesc.DepthOrArraySize = 1;
+				colorBufferDesc.MipLevels = 1;
+				colorBufferDesc.Format = mDefaultImageFormat;
+				colorBufferDesc.SampleDesc.Count = 1;
+				colorBufferDesc.SampleDesc.Quality = 0;
+				colorBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+				colorBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+				D3D12_CLEAR_VALUE optColorClear = {};
+				optColorClear.Format = mDefaultImageFormat;
+				optColorClear.Color[0] = clearInfo.color.r;
+				optColorClear.Color[1] = clearInfo.color.g;
+				optColorClear.Color[2] = clearInfo.color.b;
+				optColorClear.Color[3] = clearInfo.color.a;
+
 				ComPtr<ID3D12Resource> colorBufferResource;
 				ThrowIfFailed(mD3D12Device->CreateCommittedResource(
 					&colorBufferProps,
 					D3D12_HEAP_FLAG_NONE,
 					&colorBufferDesc,
 					D3D12_RESOURCE_STATE_GENERIC_READ,
-					nullptr,
+					&optColorClear,
 					IID_PPV_ARGS(&colorBufferResource)
 				));
 
@@ -459,40 +520,58 @@ namespace ZXEngine
 
 			auto D3D12FBO = GetFBOByIndex(FBO->ID);
 			D3D12FBO->depthBufferIdx = FBO->DepthBuffer;
-			D3D12FBO->bufferType = FrameBufferType::Normal;
+			D3D12FBO->bufferType = FrameBufferType::ShadowCubeMap;
 			D3D12FBO->clearInfo = clearInfo;
 
 			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 			{
 				// 创建Depth Buffer
 				CD3DX12_HEAP_PROPERTIES depthBufferProps(D3D12_HEAP_TYPE_DEFAULT);
-				CD3DX12_RESOURCE_DESC depthBufferDesc(CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D16_UNORM, width, height, 1, 6));
+
+				D3D12_RESOURCE_DESC depthBufferDesc = {};
+				depthBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+				depthBufferDesc.Alignment = 0;
+				depthBufferDesc.Width = width;
+				depthBufferDesc.Height = height;
+				depthBufferDesc.DepthOrArraySize = 6;
+				depthBufferDesc.MipLevels = 1;
+				depthBufferDesc.Format = DXGI_FORMAT_D16_UNORM;
+				depthBufferDesc.SampleDesc.Count = 1;
+				depthBufferDesc.SampleDesc.Quality = 0;
+				depthBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+				depthBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+				D3D12_CLEAR_VALUE optDepthClear = {};
+				optDepthClear.Format = DXGI_FORMAT_D16_UNORM;
+				optDepthClear.DepthStencil.Depth = clearInfo.depth;
+				optDepthClear.DepthStencil.Stencil = clearInfo.stencil;
+
 				ComPtr<ID3D12Resource> depthBufferResource;
 				ThrowIfFailed(mD3D12Device->CreateCommittedResource(
 					&depthBufferProps,
 					D3D12_HEAP_FLAG_NONE,
 					&depthBufferDesc,
 					D3D12_RESOURCE_STATE_GENERIC_READ,
-					nullptr,
+					&optDepthClear,
 					IID_PPV_ARGS(&depthBufferResource)
 				));
 
 				D3D12_SHADER_RESOURCE_VIEW_DESC depthSrvDesc = {};
-				depthSrvDesc.Format = DXGI_FORMAT_D16_UNORM;
+				depthSrvDesc.Format = DXGI_FORMAT_R16_UNORM;
 				depthSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
 				depthSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 				depthSrvDesc.Texture2D.MipLevels = 1;
 				depthSrvDesc.Texture2D.MostDetailedMip = 0;
 				depthSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
-				D3D12_RENDER_TARGET_VIEW_DESC depthRtvDesc = {};
-				depthRtvDesc.Format = DXGI_FORMAT_D16_UNORM;
-				depthRtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DARRAY;
-				depthRtvDesc.Texture2DArray.MipSlice = 0;
-				depthRtvDesc.Texture2DArray.ArraySize = 6;
-				depthRtvDesc.Texture2DArray.FirstArraySlice = 0;
+				D3D12_DEPTH_STENCIL_VIEW_DESC depthDsvDesc = {};
+				depthDsvDesc.Format = DXGI_FORMAT_D16_UNORM;
+				depthDsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DARRAY;
+				depthDsvDesc.Texture2DArray.MipSlice = 0;
+				depthDsvDesc.Texture2DArray.ArraySize = 6;
+				depthDsvDesc.Texture2DArray.FirstArraySlice = 0;
 
-				depthBuffer->renderBuffers[i] = CreateZXD3D12Texture(depthBufferResource, depthSrvDesc, depthRtvDesc);
+				depthBuffer->renderBuffers[i] = CreateZXD3D12Texture(depthBufferResource, depthSrvDesc, depthDsvDesc);
 			}
 
 			D3D12FBO->inUse = true;
@@ -786,27 +865,35 @@ namespace ZXEngine
 		// 准备创建D3D12管线数据
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineStateDesc = {};
 
+		// 统计纹理数量
+		UINT textureNum = static_cast<UINT>(
+			shaderInfo.vertProperties.textureProperties.size() +
+			shaderInfo.geomProperties.textureProperties.size() +
+			shaderInfo.fragProperties.textureProperties.size() );
+
 		// 创建根签名
 		ComPtr<ID3D12RootSignature> rootSignature;
 		{
-			UINT textureNum = static_cast<UINT>(
-				shaderInfo.vertProperties.textureProperties.size() + 
-				shaderInfo.geomProperties.textureProperties.size() + 
-				shaderInfo.fragProperties.textureProperties.size()
-			);
-
-			CD3DX12_DESCRIPTOR_RANGE descriptorRange = {};
-			descriptorRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, textureNum, 0, 0);
-
-			CD3DX12_ROOT_PARAMETER rootParameters[2] = {};
-			rootParameters[0].InitAsConstantBufferView(0);
-			rootParameters[1].InitAsDescriptorTable(1, &descriptorRange, D3D12_SHADER_VISIBILITY_ALL);
+			vector<CD3DX12_ROOT_PARAMETER> rootParameters = {};
+			if (textureNum > 0)
+			{
+				rootParameters.resize(2);
+				rootParameters[0].InitAsConstantBufferView(0);
+				
+				CD3DX12_DESCRIPTOR_RANGE descriptorRange = {};
+				descriptorRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, textureNum, 0, 0);
+				rootParameters[1].InitAsDescriptorTable(1, &descriptorRange, D3D12_SHADER_VISIBILITY_ALL);
+			}
+			else
+			{
+				rootParameters.resize(1);
+				rootParameters[0].InitAsConstantBufferView(0);
+			}
 
 			auto samplers = GetStaticSamplersDesc();
 
-			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(2, rootParameters,
-				(UINT)samplers.size(), samplers.data(),
-				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(static_cast<UINT>(rootParameters.size()), rootParameters.data(),
+				static_cast<UINT>(samplers.size()), samplers.data(), D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 			ComPtr<ID3DBlob> error;
 			ComPtr<ID3DBlob> serializedRootSignature;
@@ -870,7 +957,10 @@ namespace ZXEngine
 
 		// Depth Stencil Config
 		D3D12_DEPTH_STENCIL_DESC depthStencilDesc = {};
-		depthStencilDesc.DepthEnable = shaderInfo.stateSet.depthCompareOp == CompareOption::ALWAYS ? FALSE : TRUE;
+		if (shaderInfo.stateSet.depthCompareOp == CompareOption::ALWAYS || type == FrameBufferType::Present || type == FrameBufferType::Color)
+			depthStencilDesc.DepthEnable = FALSE;
+		else
+			depthStencilDesc.DepthEnable = TRUE;
 		depthStencilDesc.DepthWriteMask = shaderInfo.stateSet.depthWrite ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO;
 		depthStencilDesc.DepthFunc = dxCompareOptionMap[shaderInfo.stateSet.depthCompareOp];
 		depthStencilDesc.StencilEnable = FALSE;
@@ -892,10 +982,15 @@ namespace ZXEngine
 		pipelineStateDesc.SampleMask = UINT_MAX;
 		pipelineStateDesc.NumRenderTargets = 1;
 		pipelineStateDesc.RTVFormats[0] = mDefaultImageFormat;
-		pipelineStateDesc.DSVFormat = DXGI_FORMAT_D16_UNORM;
 		pipelineStateDesc.SampleDesc.Count = 1;
 		pipelineStateDesc.SampleDesc.Quality = 0;
 		pipelineStateDesc.NodeMask = 0; // 给多GPU用的，暂时不用管
+
+		// 如果不用DSV，格式需要设置为UNKNOWN
+		if (type == FrameBufferType::Present || type == FrameBufferType::Color)
+			pipelineStateDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
+		else
+			pipelineStateDesc.DSVFormat = DXGI_FORMAT_D16_UNORM;
 
 		// 创建D3D12管线
 		ComPtr<ID3D12PipelineState> PSO;
@@ -903,6 +998,7 @@ namespace ZXEngine
 
 		uint32_t pipelineID = GetNextPipelineIndex();
 		auto pipeline = GetPipelineByIndex(pipelineID);
+		pipeline->textureNum = textureNum;
 		pipeline->pipelineState = PSO;
 		pipeline->rootSignature = rootSignature;
 		pipeline->inUse = true;
@@ -934,13 +1030,21 @@ namespace ZXEngine
 		auto materialDataZXD3D12 = GetMaterialDataByIndex(materialData->GetID());
 
 		// 计算Constant Buffer大小
-		UINT64 bufferSize = static_cast<UINT64>(shaderReference->shaderInfo.fragProperties.baseProperties.back().offset + shaderReference->shaderInfo.fragProperties.baseProperties.back().size);
+		UINT64 bufferSize = 0;
+		if (shaderReference->shaderInfo.fragProperties.baseProperties.size() > 0)
+			bufferSize = static_cast<UINT64>(shaderReference->shaderInfo.fragProperties.baseProperties.back().offset + shaderReference->shaderInfo.fragProperties.baseProperties.back().size);
+		else if (shaderReference->shaderInfo.geomProperties.baseProperties.size() > 0)
+			bufferSize = static_cast<UINT64>(shaderReference->shaderInfo.geomProperties.baseProperties.back().offset + shaderReference->shaderInfo.geomProperties.baseProperties.back().size);
+		else if (shaderReference->shaderInfo.vertProperties.baseProperties.size() > 0)
+			bufferSize = static_cast<UINT64>(shaderReference->shaderInfo.vertProperties.baseProperties.back().offset + shaderReference->shaderInfo.vertProperties.baseProperties.back().size);
+
 		// 向上取256整数倍(不是必要操作)
 		bufferSize = (bufferSize + 255) & ~255;
 		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 		{
 			// 创建Constant Buffer
-			materialDataZXD3D12->constantBuffers.push_back(CreateConstantBuffer(bufferSize));
+			if (bufferSize > 0)
+				materialDataZXD3D12->constantBuffers.push_back(CreateConstantBuffer(bufferSize));
 
 			ZXD3D12MaterialTextureSet materialTextureSet;
 			materialTextureSet.textureHandles.resize(
@@ -1138,27 +1242,33 @@ namespace ZXEngine
 
 			drawCommandList->SetGraphicsRootSignature(pipeline->rootSignature.Get());
 			drawCommandList->SetPipelineState(pipeline->pipelineState.Get());
-			drawCommandList->SetGraphicsRootConstantBufferView(0, materialData->constantBuffers[mCurrentFrame].constantBuffer->GetGPUVirtualAddress());
 
-			// 当前绘制对象在动态描述符堆中的偏移起点
-			UINT curDynamicDescriptorOffset = mDynamicDescriptorOffsets[mCurrentFrame];
-			// 遍历纹理并拷贝到动态描述符堆
-			for (auto& iter : materialData->textureSets[mCurrentFrame].textureHandles)
+			if (!materialData->constantBuffers.empty())
+				drawCommandList->SetGraphicsRootConstantBufferView(0, materialData->constantBuffers[mCurrentFrame].constantBuffer->GetGPUVirtualAddress());
+
+			// 如果Shader有纹理，绑定纹理资源
+			if (pipeline->textureNum > 0)
 			{
-				// 获取纹理的CPU Handle
-				auto cpuHandle = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(iter);
-				// 拷贝到动态描述符堆
-				mD3D12Device->CopyDescriptorsSimple(1, dynamicDescriptorHandle, cpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-				// 动态描述符堆Handle后移一位
-				dynamicDescriptorHandle.Offset(1, mCbvSrvUavDescriptorSize);
-				mDynamicDescriptorOffsets[mCurrentFrame]++;
+				// 当前绘制对象在动态描述符堆中的偏移起点
+				UINT curDynamicDescriptorOffset = mDynamicDescriptorOffsets[mCurrentFrame];
+				// 遍历纹理并拷贝到动态描述符堆
+				for (auto& iter : materialData->textureSets[mCurrentFrame].textureHandles)
+				{
+					// 获取纹理的CPU Handle
+					auto cpuHandle = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(iter);
+					// 拷贝到动态描述符堆
+					mD3D12Device->CopyDescriptorsSimple(1, dynamicDescriptorHandle, cpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					// 动态描述符堆Handle后移一位
+					dynamicDescriptorHandle.Offset(1, mCbvSrvUavDescriptorSize);
+					mDynamicDescriptorOffsets[mCurrentFrame]++;
+				}
+				// 获取动态描述符堆的GPU Handle
+				CD3DX12_GPU_DESCRIPTOR_HANDLE dynamicGPUHandle(mDynamicDescriptorHeaps[mCurrentFrame]->GetGPUDescriptorHandleForHeapStart());
+				// 偏移到当前绘制对象的起始位置
+				dynamicGPUHandle.Offset(curDynamicDescriptorOffset, mCbvSrvUavDescriptorSize);
+				// 设置当前绘制对象的动态描述符堆
+				drawCommandList->SetGraphicsRootDescriptorTable(1, dynamicGPUHandle);
 			}
-			// 获取动态描述符堆的GPU Handle
-			CD3DX12_GPU_DESCRIPTOR_HANDLE dynamicGPUHandle(mDynamicDescriptorHeaps[mCurrentFrame]->GetGPUDescriptorHandleForHeapStart());
-			// 偏移到当前绘制对象的起始位置
-			dynamicGPUHandle.Offset(curDynamicDescriptorOffset, mCbvSrvUavDescriptorSize);
-			// 设置当前绘制对象的动态描述符堆
-			drawCommandList->SetGraphicsRootDescriptorTable(1, dynamicGPUHandle);
 
 			drawCommandList->IASetIndexBuffer(&VAO->indexBufferView);
 			drawCommandList->IASetVertexBuffers(0, 1, &VAO->vertexBufferView);
@@ -1213,6 +1323,8 @@ namespace ZXEngine
 		ThrowIfFailed(drawCommandList->Close());
 		ID3D12CommandList* cmdsLists[] = { drawCommandList.Get() };
 		mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
+		mDrawIndexes.clear();
 
 #ifndef ZX_EDITOR
 		if (drawCommand->commandType == CommandType::UIRendering)
@@ -1746,6 +1858,7 @@ namespace ZXEngine
 	{
 		auto pipeline = mPipelineArray[idx];
 
+		pipeline->textureNum = 0;
 		pipeline->pipelineState.Reset();
 		pipeline->rootSignature.Reset();
 
@@ -1913,7 +2026,7 @@ namespace ZXEngine
 	{
 		ZXD3D12ConstantBuffer constantBuffer;
 
-		CD3DX12_HEAP_PROPERTIES constantBufferProps(D3D12_HEAP_TYPE_DEFAULT);
+		CD3DX12_HEAP_PROPERTIES constantBufferProps(D3D12_HEAP_TYPE_UPLOAD);
 		CD3DX12_RESOURCE_DESC constantBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(byteSize);
 		ThrowIfFailed(mD3D12Device->CreateCommittedResource(
 			&constantBufferProps,
