@@ -123,42 +123,41 @@ namespace ZXEngine
 		{
 			// 获取设备的信息队列
 			ComPtr<ID3D12InfoQueue> pInfoQueue;
-			if (SUCCEEDED(mD3D12Device.As(&pInfoQueue)))
-			{
-				// 设置要允许的消息类别
-				D3D12_MESSAGE_CATEGORY categories[] = 
-				{ 
-					D3D12_MESSAGE_CATEGORY_APPLICATION_DEFINED,
-					D3D12_MESSAGE_CATEGORY_MISCELLANEOUS,
-					D3D12_MESSAGE_CATEGORY_INITIALIZATION,
-					D3D12_MESSAGE_CATEGORY_CLEANUP,
-					D3D12_MESSAGE_CATEGORY_COMPILATION,
-					D3D12_MESSAGE_CATEGORY_STATE_CREATION, 
-					D3D12_MESSAGE_CATEGORY_STATE_SETTING, 
-					D3D12_MESSAGE_CATEGORY_STATE_GETTING, 
-					D3D12_MESSAGE_CATEGORY_RESOURCE_MANIPULATION, 
-					D3D12_MESSAGE_CATEGORY_EXECUTION, 
-					D3D12_MESSAGE_CATEGORY_SHADER
-				};
+			mD3D12Device->QueryInterface(IID_PPV_ARGS(&pInfoQueue));
+			
+			// 设置要允许的消息类别
+			D3D12_MESSAGE_CATEGORY categories[] = 
+			{ 
+				D3D12_MESSAGE_CATEGORY_APPLICATION_DEFINED,
+				D3D12_MESSAGE_CATEGORY_MISCELLANEOUS,
+				D3D12_MESSAGE_CATEGORY_INITIALIZATION,
+				D3D12_MESSAGE_CATEGORY_CLEANUP,
+				D3D12_MESSAGE_CATEGORY_COMPILATION,
+				D3D12_MESSAGE_CATEGORY_STATE_CREATION, 
+				D3D12_MESSAGE_CATEGORY_STATE_SETTING, 
+				D3D12_MESSAGE_CATEGORY_STATE_GETTING, 
+				D3D12_MESSAGE_CATEGORY_RESOURCE_MANIPULATION, 
+				D3D12_MESSAGE_CATEGORY_EXECUTION, 
+				D3D12_MESSAGE_CATEGORY_SHADER
+			};
 
-				// 设置要允许的消息严重性
-				D3D12_MESSAGE_SEVERITY severities[] = 
-				{ 
-					D3D12_MESSAGE_SEVERITY_CORRUPTION,
-					D3D12_MESSAGE_SEVERITY_ERROR,
-					D3D12_MESSAGE_SEVERITY_WARNING,
-					D3D12_MESSAGE_SEVERITY_INFO, 
-					D3D12_MESSAGE_SEVERITY_MESSAGE
-				};
+			// 设置要允许的消息严重性
+			D3D12_MESSAGE_SEVERITY severities[] = 
+			{ 
+				D3D12_MESSAGE_SEVERITY_CORRUPTION,
+				D3D12_MESSAGE_SEVERITY_ERROR,
+				D3D12_MESSAGE_SEVERITY_WARNING,
+				D3D12_MESSAGE_SEVERITY_INFO, 
+				D3D12_MESSAGE_SEVERITY_MESSAGE
+			};
 
-				D3D12_INFO_QUEUE_FILTER filter = {};
-				filter.AllowList.NumCategories = _countof(categories);
-				filter.AllowList.pCategoryList = categories;
-				filter.AllowList.NumSeverities = _countof(severities);
-				filter.AllowList.pSeverityList = severities;
+			D3D12_INFO_QUEUE_FILTER filter = {};
+			filter.AllowList.NumCategories = _countof(categories);
+			filter.AllowList.pCategoryList = categories;
+			filter.AllowList.NumSeverities = _countof(severities);
+			filter.AllowList.pSeverityList = severities;
 
-				pInfoQueue->PushStorageFilter(&filter);
-			}
+			pInfoQueue->PushStorageFilter(&filter);
 		}
 
 		// 创建命令队列
@@ -205,25 +204,26 @@ namespace ZXEngine
 		// 重新创建交换链也会调这个函数，所以先Reset
 		mSwapChain.Reset();
 
-		DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
-		swapChainDesc.BufferDesc.Width = ProjectSetting::srcWidth;
-		swapChainDesc.BufferDesc.Height = ProjectSetting::srcHeight;
-		swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
-		swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
-		swapChainDesc.BufferDesc.Format = mPresentBufferFormat;
-		swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-		swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-		swapChainDesc.SampleDesc.Count = msaaSamplesCount;
-		swapChainDesc.SampleDesc.Quality = msaaSamplesCount == 1 ? 0 : (m4xMSAAQuality - 1);
+		// 这里的创建方式参考了Dear ImGui DX12的Demo和 https://www.3dgep.com/ 的教程
+		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
+		swapChainDesc.Width = ProjectSetting::srcWidth;
+		swapChainDesc.Height = ProjectSetting::srcHeight;
+		swapChainDesc.Format = mPresentBufferFormat;
+		swapChainDesc.Stereo = FALSE;
+		swapChainDesc.SampleDesc.Count = 1;
+		swapChainDesc.SampleDesc.Quality = 0;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDesc.BufferCount = mPresentBufferCount;
-		swapChainDesc.OutputWindow = static_cast<HWND>(WindowManager::GetInstance()->GetWindow());
-		swapChainDesc.Windowed = true;
+		swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+		swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
 		swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-		// Note: Swap chain uses queue to perform flush.
-		ThrowIfFailed(mDXGIFactory->CreateSwapChain(mCommandQueue.Get(), &swapChainDesc, mSwapChain.GetAddressOf()));
+		ComPtr<IDXGISwapChain1> dxgiSwapChain1;
+		ThrowIfFailed(mDXGIFactory->CreateSwapChainForHwnd(mCommandQueue.Get(), static_cast<HWND>(WindowManager::GetInstance()->GetWindow()), 
+			&swapChainDesc, nullptr, nullptr, dxgiSwapChain1.GetAddressOf()));
+		// Cast to SwapChain4
+		ThrowIfFailed(dxgiSwapChain1.As(&mSwapChain));
 	}
 
 	void RenderAPID3D12::CreateSwapChainBuffers()

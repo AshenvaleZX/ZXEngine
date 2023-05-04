@@ -3,7 +3,7 @@
 #include <DirectX/d3dx12.h>
 #include <wrl.h>
 #include <comdef.h>
-#include <dxgi1_4.h>
+#include <dxgi1_5.h>
 #include "../PublicStruct.h"
 
 // 链接D3D12的相关库

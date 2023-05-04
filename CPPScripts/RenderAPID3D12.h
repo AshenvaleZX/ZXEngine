@@ -111,7 +111,7 @@ namespace ZXEngine
 
 		uint32_t mPresentFBOIdx = 0;
 		const UINT mPresentBufferCount = 2;
-		ComPtr<IDXGISwapChain> mSwapChain;
+		ComPtr<IDXGISwapChain4> mSwapChain;
 		vector<ComPtr<ID3D12Resource>> mPresentBuffers;
 		vector<ZXD3D12DescriptorHandle> mPresentBufferRTVHandles;
 
