@@ -87,18 +87,18 @@ Fragment
 
     Program
     {
-        // 做Soft Shadow的采样偏移
-        array<vec3, 20> gridSamplingDisk = 
-        {
-            vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
-            vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
-            vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
-            vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
-            vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
-        };
-
         float ShadowCalculation(vec3 fragPos)
         {
+            // 做Soft Shadow的采样偏移
+            array<vec3, 20> gridSamplingDisk = 
+            {
+                vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+                vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+                vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+                vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+                vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+            };
+
             // 光源到当前片元的方向(即采样ShadowCubeMap的方向)
             vec3 fragToLight = fragPos - ENGINE_Light_Pos;
             // 当前片元到光源的距离
