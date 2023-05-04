@@ -1374,6 +1374,9 @@ namespace ZXEngine
 			IID_PPV_ARGS(meshBuffer->vertexBuffer.GetAddressOf())));
 
 		meshBuffer->vertexBuffer->Map(0, nullptr, &meshBuffer->vertexBufferAddress);
+		meshBuffer->vertexBufferView.SizeInBytes = vertexBufferSize;
+		meshBuffer->vertexBufferView.StrideInBytes = sizeof(Vertex);
+		meshBuffer->vertexBufferView.BufferLocation = meshBuffer->vertexBuffer->GetGPUVirtualAddress();
 
 		// 创建动态Index Buffer
 		UINT indexBufferSize = static_cast<UINT>(sizeof(uint32_t) * indexSize);
@@ -1388,6 +1391,9 @@ namespace ZXEngine
 			IID_PPV_ARGS(meshBuffer->indexBuffer.GetAddressOf())));
 
 		meshBuffer->indexBuffer->Map(0, nullptr, &meshBuffer->indexBufferAddress);
+		meshBuffer->indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+		meshBuffer->indexBufferView.SizeInBytes = indexBufferSize;
+		meshBuffer->indexBufferView.BufferLocation = meshBuffer->indexBuffer->GetGPUVirtualAddress();
 
 		meshBuffer->inUse = true;
 	}
@@ -1986,7 +1992,7 @@ namespace ZXEngine
 			&defaultBufferProps,
 			D3D12_HEAP_FLAG_NONE,
 			&defaultBufferDesc,
-			D3D12_RESOURCE_STATE_COPY_DEST,
+			D3D12_RESOURCE_STATE_COMMON,
 			nullptr,
 			IID_PPV_ARGS(defaultBuffer.GetAddressOf())));
 
@@ -2008,15 +2014,22 @@ namespace ZXEngine
 
 		ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList> cmdList)
 		{
+			// 其实可以直接在创建defaultBuffer的时候就把初始状态设置为D3D12_RESOURCE_STATE_COPY_DEST
+			// 没必要多一步这个转换，但是创建的时候如果不是以 D3D12_RESOURCE_STATE_COMMON 初始化，Debug Layer居然会给个Warning
+			// 所以为了没有Warning干扰排除问题，这里就这样写了
+			CD3DX12_RESOURCE_BARRIER barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(
+				defaultBuffer.Get(),
+				D3D12_RESOURCE_STATE_COMMON,
+				D3D12_RESOURCE_STATE_COPY_DEST);
+			cmdList->ResourceBarrier(1, &barrier1);
+
 			UpdateSubresources<1>(cmdList.Get(), defaultBuffer.Get(), uploadBuffer.Get(), 0, 0, 1, &subResourceData);
 
-			CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+			CD3DX12_RESOURCE_BARRIER barrier2 = CD3DX12_RESOURCE_BARRIER::Transition(
 				defaultBuffer.Get(),
 				D3D12_RESOURCE_STATE_COPY_DEST,
-				D3D12_RESOURCE_STATE_GENERIC_READ
-			);
-
-			cmdList->ResourceBarrier(1, &barrier);
+				D3D12_RESOURCE_STATE_GENERIC_READ);
+			cmdList->ResourceBarrier(1, &barrier2);
 		});
 
 		return defaultBuffer;
