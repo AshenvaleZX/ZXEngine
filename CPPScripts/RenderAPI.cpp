@@ -7,7 +7,6 @@
 #endif
 #ifdef ZX_API_D3D12
 #include "RenderAPID3D12.h"
-#include "DirectX12/ZXD3D12DescriptorManager.h"
 #endif
 
 namespace ZXEngine
@@ -24,7 +23,7 @@ namespace ZXEngine
 #endif
 #ifdef ZX_API_D3D12
 		mInstance = new RenderAPID3D12();
-		ZXD3D12DescriptorManager::Creat();
+		static_cast<RenderAPID3D12*>(mInstance)->InitAfterConstructor();
 #endif
 	}
 

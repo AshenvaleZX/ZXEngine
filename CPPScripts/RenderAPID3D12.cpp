@@ -258,6 +258,12 @@ namespace ZXEngine
 		presentFBO->inUse = true;
 	}
 
+	void RenderAPID3D12::InitAfterConstructor()
+	{
+		ZXD3D12DescriptorManager::Creat();
+		CreateSwapChainBuffers();
+	}
+
 	void RenderAPID3D12::BeginFrame()
 	{
 		WaitForFence(mFrameFences[mCurrentFrame]);

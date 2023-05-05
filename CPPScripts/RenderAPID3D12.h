@@ -121,6 +121,8 @@ namespace ZXEngine
 		void GetDeviceProperties();
 		void CreateSwapChain();
 		void CreateSwapChainBuffers();
+	public:
+		void InitAfterConstructor();
 
 
 		/// <summary>
