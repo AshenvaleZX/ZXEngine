@@ -23,6 +23,7 @@ namespace ZXEngine
 
 		void UpdateKeyInput();
 		void CheckKey(int id, InputButton button, EventType e);
+		void CheckMouse();
 		void InitButtonRecord();
 	};
 }

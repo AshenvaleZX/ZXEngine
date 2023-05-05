@@ -15,6 +15,7 @@ namespace ZXEngine
 		if (!EditorInputManager::GetInstance()->IsProcessGameInput())
 			return;
 #endif
+		CheckMouse();
 		UpdateKeyInput();
 	}
 
@@ -64,6 +65,13 @@ namespace ZXEngine
 		else if (!(state & 0x8000) && mButtonState[(int)button] == 1)
 			EventManager::GetInstance()->FireEvent((int)e + 2, ""); // Up
 		mButtonState[(int)button] = (state & 0x8000) ? 1 : 0;
+	}
+
+	void InputManagerWindows::CheckMouse()
+	{
+		POINT point;
+		GetCursorPos(&point);
+		UpdateMousePos(static_cast<double>(point.x), static_cast<double>(point.y));
 	}
 
 	bool InputManagerWindows::IsShowCursor()

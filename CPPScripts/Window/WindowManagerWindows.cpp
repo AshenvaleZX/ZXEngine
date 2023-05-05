@@ -2,7 +2,6 @@
 #include <WindowsX.h>
 #include "../RenderAPI.h"
 #include "../ProjectSetting.h"
-#include "../Input/InputManager.h"
 
 namespace ZXEngine
 {
@@ -116,11 +115,6 @@ namespace ZXEngine
 			mAppPaused = false;
 			mResizing = false;
 			OnResize();
-			return 0;
-
-		// Êó±êÒÆ¶¯
-		case WM_MOUSEMOVE:
-			InputManager::GetInstance()->UpdateMousePos(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 			return 0;
 		}
 
