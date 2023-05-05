@@ -674,7 +674,7 @@ namespace ZXEngine
 
 		for (int i = 0; i < 6; ++i) 
 		{
-			imageData[i] = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+			imageData[i] = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
 			if (!imageData[i])
 				Debug::LogError("Failed to load texture file: " + faces[i]);
 		}
@@ -707,7 +707,7 @@ namespace ZXEngine
 
 		// 创建CubeMap上传堆
 		UINT64 uploadHeapSize;
-		mD3D12Device->GetCopyableFootprints(&cubeMapDesc, 0, 1, 0, nullptr, nullptr, nullptr, &uploadHeapSize);
+		mD3D12Device->GetCopyableFootprints(&cubeMapDesc, 0, 6, 0, nullptr, nullptr, nullptr, &uploadHeapSize);
 		CD3DX12_HEAP_PROPERTIES uploadHeapProps(D3D12_HEAP_TYPE_UPLOAD);
 		CD3DX12_RESOURCE_DESC uploadHeapDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadHeapSize);
 		ComPtr<ID3D12Resource> uploadHeap;
@@ -727,8 +727,8 @@ namespace ZXEngine
 			for (int i = 0; i < 6; ++i)
 			{
 				cubeMapData[i].pData = imageData[i];
-				cubeMapData[i].RowPitch = static_cast<LONG_PTR>(width * nrChannels);
-				cubeMapData[i].SlicePitch = cubeMapData[i].RowPitch * height;
+				cubeMapData[i].RowPitch = static_cast<LONG_PTR>(width * 4);
+				cubeMapData[i].SlicePitch = cubeMapData[i].RowPitch * static_cast<LONG_PTR>(height);
 			}
 
 			UpdateSubresources(cmdList.Get(),
@@ -754,9 +754,9 @@ namespace ZXEngine
 		srvDesc.Format = mDefaultImageFormat;
 		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
 		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		srvDesc.Texture2D.MipLevels = 1;
-		srvDesc.Texture2D.MostDetailedMip = 0;
-		srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+		srvDesc.TextureCube.MipLevels = 1;
+		srvDesc.TextureCube.MostDetailedMip = 0;
+		srvDesc.TextureCube.ResourceMinLODClamp = 0.0f;
 
 		return CreateZXD3D12Texture(cubeMapResource, srvDesc);
 	}
@@ -926,11 +926,11 @@ namespace ZXEngine
 		// Input Layout
 		D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
 		{
-			{ "POSITION",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-			{ "TEXCOORD",  0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-			{ "NORMAL",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-			{ "TANGENT",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-			{ "BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "POSITION",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offsetof(Vertex, Position),  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD",  0, DXGI_FORMAT_R32G32_FLOAT,    0, offsetof(Vertex, TexCoords), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "NORMAL",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offsetof(Vertex, Normal),    D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "TANGENT",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offsetof(Vertex, Tangent),   D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offsetof(Vertex, Bitangent), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		};
 		pipelineStateDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
 
