@@ -765,7 +765,7 @@ namespace ZXEngine
 	{
 		// 创建纹理资源
 		CD3DX12_HEAP_PROPERTIES textureProps(D3D12_HEAP_TYPE_DEFAULT);
-		CD3DX12_RESOURCE_DESC textureDesc(CD3DX12_RESOURCE_DESC::Tex2D(mDefaultImageFormat, width, height, 1, 1));
+		CD3DX12_RESOURCE_DESC textureDesc(CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_R8_UNORM, width, height, 1, 1));
 		ComPtr<ID3D12Resource> textureResource;
 		ThrowIfFailed(mD3D12Device->CreateCommittedResource(
 			&textureProps,
@@ -796,8 +796,8 @@ namespace ZXEngine
 		{
 			D3D12_SUBRESOURCE_DATA subresourceData = {};
 			subresourceData.pData = data;
-			subresourceData.RowPitch = static_cast<LONG_PTR>(width * 4);
-			subresourceData.SlicePitch = subresourceData.RowPitch * height;
+			subresourceData.RowPitch = static_cast<LONG_PTR>(width);
+			subresourceData.SlicePitch = subresourceData.RowPitch * static_cast<LONG_PTR>(height);
 
 			UpdateSubresources(cmdList.Get(),
 				textureResource.Get(),
@@ -815,7 +815,7 @@ namespace ZXEngine
 		});
 
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Format = mDefaultImageFormat;
+		srvDesc.Format = DXGI_FORMAT_R8_UNORM;
 		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 		srvDesc.Texture2D.MipLevels = 1;
