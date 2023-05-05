@@ -135,6 +135,10 @@ namespace ZXEngine
 		vector<ZXD3D12MaterialData*> mMaterialDataArray;
 		vector<ZXD3D12DrawCommand*> mDrawCommandArray;
 
+		map<uint32_t, uint32_t> mMeshsToDelete;
+		map<uint32_t, uint32_t> mTexturesToDelete;
+		map<uint32_t, uint32_t> mMaterialDatasToDelete;
+
 		uint32_t GetNextVAOIndex();
 		ZXD3D12VAO* GetVAOByIndex(uint32_t idx);
 		void DestroyVAOByIndex(uint32_t idx);
@@ -155,6 +159,8 @@ namespace ZXEngine
 		void DestroyMaterialDataByIndex(uint32_t idx);
 		uint32_t GetNextDrawCommandIndex();
 		ZXD3D12DrawCommand* GetDrawCommandByIndex(uint32_t idx);
+
+		void CheckDeleteData();
 
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_RENDER_TARGET_VIEW_DESC& rtvDesc);
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc);

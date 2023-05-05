@@ -261,6 +261,9 @@ namespace ZXEngine
 	void RenderAPID3D12::BeginFrame()
 	{
 		WaitForFence(mFrameFences[mCurrentFrame]);
+
+		CheckDeleteData();
+
 		mDynamicDescriptorOffsets[mCurrentFrame] = 0;
 	}
 
@@ -818,7 +821,7 @@ namespace ZXEngine
 
 	void RenderAPID3D12::DeleteTexture(unsigned int id)
 	{
-		DestroyTextureByIndex(id);
+		mTexturesToDelete.insert(pair(id, DX_MAX_FRAMES_IN_FLIGHT));
 	}
 
 	ShaderReference* RenderAPID3D12::LoadAndSetUpShader(const char* path, FrameBufferType type)
@@ -1092,7 +1095,7 @@ namespace ZXEngine
 
 	void RenderAPID3D12::DeleteMaterialData(uint32_t id)
 	{
-		DestroyMaterialDataByIndex(id);
+		mMaterialDatasToDelete.insert(pair(id, DX_MAX_FRAMES_IN_FLIGHT));
 	}
 
 	uint32_t RenderAPID3D12::AllocateDrawCommand(CommandType commandType)
@@ -1427,7 +1430,7 @@ namespace ZXEngine
 
 	void RenderAPID3D12::DeleteMesh(unsigned int VAO)
 	{
-		DestroyVAOByIndex(VAO);
+		mMeshsToDelete.insert(pair(VAO, DX_MAX_FRAMES_IN_FLIGHT));
 	}
 
 	void RenderAPID3D12::UseShader(unsigned int ID)
@@ -1927,6 +1930,55 @@ namespace ZXEngine
 	ZXD3D12DrawCommand* RenderAPID3D12::GetDrawCommandByIndex(uint32_t idx)
 	{
 		return mDrawCommandArray[idx];
+	}
+
+	void RenderAPID3D12::CheckDeleteData()
+	{
+		vector<uint32_t> deleteList = {};
+
+		// Material
+		for (auto& iter : mMaterialDatasToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroyMaterialDataByIndex(id);
+			mMaterialDatasToDelete.erase(id);
+		}
+
+		// Texture
+		deleteList.clear();
+		for (auto& iter : mTexturesToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroyTextureByIndex(id);
+			mTexturesToDelete.erase(id);
+		}
+
+		// Mesh
+		deleteList.clear();
+		for (auto& iter : mMeshsToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroyVAOByIndex(id);
+			mMeshsToDelete.erase(id);
+		}
 	}
 
 	uint32_t RenderAPID3D12::CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_RENDER_TARGET_VIEW_DESC& rtvDesc)
