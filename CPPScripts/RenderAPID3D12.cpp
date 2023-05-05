@@ -953,7 +953,7 @@ namespace ZXEngine
 		D3D12_RASTERIZER_DESC rasterizerDesc = {};
 		rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 		rasterizerDesc.CullMode = dxFaceCullOptionMap[shaderInfo.stateSet.cull];
-		rasterizerDesc.FrontCounterClockwise = FALSE;
+		rasterizerDesc.FrontCounterClockwise = TRUE;
 		rasterizerDesc.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
 		rasterizerDesc.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
 		rasterizerDesc.SlopeScaledDepthBias = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;

@@ -94,17 +94,25 @@ namespace ZXEngine
 		};
 		Vector2 coords[4] =
 		{
+#if defined(ZX_API_OPENGL) || defined(ZX_API_VULKAN)
 			Vector2(1, 1),
 			Vector2(1, 0),
 			Vector2(0, 1),
 			Vector2(0, 0),
+#else
+			Vector2(1, 0),
+			Vector2(1, 1),
+			Vector2(0, 0),
+			Vector2(0, 1),
+#endif
 		};
 		vector<Vertex> vertices;
-		// 这里是直接手写的NDC坐标，所以需要考虑不同API的NDC坐标系差异，目前工程里OpenGL和Vulkan都以逆时针为图元正面
-		// 但是OpenGL的(-1,-1)在左下角，Y轴向上为正，Vulkan的(-1,-1)在左上角，Y轴向下为正，所以这里的顶点顺序要区分一下
+		// 这里是直接手写的NDC坐标，所以需要考虑不同API的NDC坐标系差异，目前工程里都是以逆时针为图元正面
+		// OpenGL的(-1,-1,-1)在左下近点，Vulkan的(-1,-1,-1)在左上近点，DirectX12的(-1,-1,-1)在左上远点
+		// 因为OpenGL和DirectX12在Y轴和Z轴都是反的，所以负负得正，用同一个顶点索引顺序
 		vector<unsigned int> indices =
 		{
-#ifdef ZX_API_OPENGL
+#if defined(ZX_API_OPENGL) || defined(ZX_API_D3D12)
 			2, 3, 1,
 			2, 1, 0,
 #else
