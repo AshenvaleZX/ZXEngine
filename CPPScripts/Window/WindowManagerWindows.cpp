@@ -46,6 +46,14 @@ namespace ZXEngine
 
 	bool WindowManagerWindows::WindowShouldClose()
 	{
+		MSG msg;
+		while (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+			if (msg.message == WM_QUIT)
+				return true;
+		}
 		return false;
 	}
 
@@ -115,6 +123,11 @@ namespace ZXEngine
 			mAppPaused = false;
 			mResizing = false;
 			OnResize();
+			return 0;
+
+		// ´°¿Ú¹Ø±Õ
+		case WM_DESTROY:
+			PostQuitMessage(0);
 			return 0;
 		}
 
