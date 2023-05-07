@@ -112,10 +112,10 @@ namespace ZXEngine
             // ×Ö·û²ÄÖÊ
             auto charMaterial = new Material(characterMgr->textShader);
             charMaterial->Use();
-            charMaterial->SetVector("_TextColor", color);
+            charMaterial->SetVector("_TextColor", color, true);
             charMaterial->SetTexture("_Text", ch.TextureID, 0, true);
-            charMaterial->SetMatrix("ENGINE_Model", mat_M);
-            charMaterial->SetMatrix("ENGINE_Projection", mat_P);
+            charMaterial->SetMatrix("ENGINE_Model", mat_M, true);
+            charMaterial->SetMatrix("ENGINE_Projection", mat_P, true);
             textMaterials.push_back(charMaterial);
 
             // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
