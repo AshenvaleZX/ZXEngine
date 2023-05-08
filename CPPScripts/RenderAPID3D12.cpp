@@ -6,6 +6,7 @@
 #include "Material.h"
 #include "Resources.h"
 #include "GlobalData.h"
+#include "FBOManager.h"
 #include "MaterialData.h"
 #include "ShaderParser.h"
 #include "ProjectSetting.h"
@@ -231,6 +232,8 @@ namespace ZXEngine
 
 	void RenderAPID3D12::CreateSwapChainBuffers()
 	{
+		// 新创建时重新归零，要从第一个Present Buffer开始使用
+		mCurPresentIdx = 0;
 		mPresentFBOIdx = GetNextFBOIndex();
 		uint32_t colorBufferIdx = GetNextRenderBufferIndex();
 		auto colorBuffer = GetRenderBufferByIndex(colorBufferIdx);
@@ -270,6 +273,9 @@ namespace ZXEngine
 
 		CheckDeleteData();
 
+		if (mWindowResized)
+			DoWindowSizeChange();
+
 		mDynamicDescriptorOffsets[mCurrentFrame] = 0;
 	}
 
@@ -283,7 +289,9 @@ namespace ZXEngine
 
 	void RenderAPID3D12::OnWindowSizeChange(uint32_t width, uint32_t height)
 	{
-		// Todo
+		mNewWindowWidth = width;
+		mNewWindowHeight = height;
+		mWindowResized = true;
 	}
 
 	void RenderAPID3D12::SetRenderState(RenderStateSetting* state)
@@ -1843,7 +1851,6 @@ namespace ZXEngine
 		}
 		texture->usageFlags = ZX_D3D12_TEXTURE_USAGE_NONE_BIT;
 
-		// 不调这个也行，因为ComPtr<ID3D12Resource>有类似智能指针一样的内存管理，在适当的时候会自动释放
 		texture->texture.Reset();
 
 		texture->inUse = false;
@@ -2120,6 +2127,44 @@ namespace ZXEngine
 			return mCurPresentIdx;
 		else
 			return mCurrentFrame;
+	}
+
+	void RenderAPID3D12::DoWindowSizeChange()
+	{
+		WaitForRenderFinish();
+
+#ifdef ZX_EDITOR
+		uint32_t hWidth = (mNewWindowWidth - GlobalData::srcWidth) / 3;
+		uint32_t iWidth = mNewWindowWidth - GlobalData::srcWidth - hWidth;
+		uint32_t pHeight = mNewWindowHeight - GlobalData::srcHeight - ProjectSetting::mainBarHeight;
+		ProjectSetting::SetWindowSize(hWidth, pHeight, iWidth);
+#else
+		GlobalData::srcWidth = mNewWindowWidth;
+		GlobalData::srcHeight = mNewWindowHeight;
+#endif
+		
+		// 释放原Present Buffer
+		DestroyFBOByIndex(mPresentFBOIdx);
+		// 这里还有个引用，要再释放一下，确保所有引用都释放了
+		for (UINT i = 0; i < mPresentBufferCount; i++)
+			mPresentBuffers[i].Reset();
+
+		// 重新设置Present Buffer大小
+		ThrowIfFailed(mSwapChain->ResizeBuffers(
+			mPresentBufferCount, GlobalData::srcWidth, GlobalData::srcHeight,
+			mPresentBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
+
+		// 重新创建Present Buffer
+		CreateSwapChainBuffers();
+
+		// 重新创建所有大小和窗口保持一致的FBO
+		FBOManager::GetInstance()->RecreateAllFollowWindowFBO();
+
+#ifdef ZX_EDITOR
+		EditorGUIManager::GetInstance()->OnWindowSizeChange();
+#endif
+
+		mWindowResized = false;
 	}
 
 	ZXD3D12Fence* RenderAPID3D12::CreateZXD3D12Fence()

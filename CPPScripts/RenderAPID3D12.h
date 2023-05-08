@@ -177,6 +177,10 @@ namespace ZXEngine
 		/// 其它辅助接口
 		/// </summary>
 	private:
+		bool mWindowResized = false;
+		uint32_t mNewWindowWidth = 0;
+		uint32_t mNewWindowHeight = 0;
+
 		ZXD3D12Fence* mImmediateExeFence;
 		ComPtr<ID3D12CommandAllocator> mImmediateExeAllocator;
 		ComPtr<ID3D12GraphicsCommandList> mImmediateExeCommandList;
@@ -189,6 +193,8 @@ namespace ZXEngine
 		vector<ZXD3D12DrawIndex> mDrawIndexes;
 
 		uint32_t GetCurFrameBufferIndex();
+
+		void DoWindowSizeChange();
 
 		ZXD3D12Fence* CreateZXD3D12Fence();
 		void SignalFence(ZXD3D12Fence* fence);
