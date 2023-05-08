@@ -9,6 +9,7 @@ namespace ZXEngine
 		EditorGUIManagerVulkan();
 		~EditorGUIManagerVulkan();
 
+		virtual void Init();
 		virtual void BeginEditorRender();
 		virtual void EditorRender();
 		virtual void EndEditorRender();

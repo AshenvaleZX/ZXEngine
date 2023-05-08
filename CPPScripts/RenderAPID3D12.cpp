@@ -12,6 +12,9 @@
 #include "ProjectSetting.h"
 #include "Window/WindowManager.h"
 #include "DirectX12/ZXD3D12DescriptorManager.h"
+#ifdef ZX_EDITOR
+#include "Editor/EditorGUIManager.h"
+#endif
 
 class DxException
 {

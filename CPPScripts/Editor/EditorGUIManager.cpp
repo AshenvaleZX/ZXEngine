@@ -1,9 +1,13 @@
 #include "EditorGUIManager.h"
+#include "ImGuiTextureManager.h"
 #ifdef ZX_API_OPENGL
 #include "EditorGUIManagerOpenGL.h"
 #endif
 #ifdef ZX_API_VULKAN
 #include "EditorGUIManagerVulkan.h"
+#endif
+#ifdef ZX_API_D3D12
+#include "EditorGUIManagerDirectX12.h"
 #endif
 
 namespace ZXEngine
@@ -18,6 +22,11 @@ namespace ZXEngine
 #ifdef ZX_API_VULKAN
 		mInstance = new EditorGUIManagerVulkan();
 #endif
+#ifdef ZX_API_D3D12
+		mInstance = new EditorGUIManagerDirectX12();
+#endif
+		ImGuiTextureManager::Creat();
+		mInstance->Init();
 	}
 
 	EditorGUIManager* EditorGUIManager::GetInstance()

@@ -21,16 +21,6 @@ namespace ZXEngine
 		const char* glsl_version = "#version 460";
 		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), true);
 		ImGui_ImplOpenGL3_Init(glsl_version);
-
-		ImGuiTextureManager::Creat();
-
-		// Inspector的绘制要放在Hierarchy和Project后面，因为这两个面板会决定Inspector的内容
-		allPanels.push_back(new EditorProjectPanel());
-		allPanels.push_back(new EditorMainBarPanel());
-		allPanels.push_back(new EditorHierarchyPanel());
-		allPanels.push_back(new EditorInspectorPanel());
-		allPanels.push_back(new EditorConsolePanel());
-		assetPreviewer = new EditorAssetPreviewer();
 	}
 
 	EditorGUIManagerOpenGL::~EditorGUIManagerOpenGL()
@@ -38,6 +28,17 @@ namespace ZXEngine
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
+	}
+
+	void EditorGUIManagerOpenGL::Init()
+	{
+		// Inspector的绘制要放在Hierarchy和Project后面，因为这两个面板会决定Inspector的内容
+		allPanels.push_back(new EditorProjectPanel());
+		allPanels.push_back(new EditorMainBarPanel());
+		allPanels.push_back(new EditorHierarchyPanel());
+		allPanels.push_back(new EditorInspectorPanel());
+		allPanels.push_back(new EditorConsolePanel());
+		assetPreviewer = new EditorAssetPreviewer();
 	}
 
 	void EditorGUIManagerOpenGL::BeginEditorRender()

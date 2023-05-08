@@ -16,6 +16,7 @@ namespace ZXEngine
 	public:
 		EditorAssetPreviewer* assetPreviewer;
 
+		virtual void Init()               = 0;
 		virtual void BeginEditorRender()  = 0;
 		virtual void EditorRender()       = 0;
 		virtual void EndEditorRender()    = 0;

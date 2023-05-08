@@ -414,6 +414,18 @@
     <ClCompile Include="..\..\CPPScripts\Editor\EditorGUIManagerVulkan.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorGUIManagerDirectX12.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\ImGui\imgui_impl_dx12.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\ImGui\imgui_impl_win32.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Editor\ImGuiTextureManagerD3D12.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">
@@ -834,6 +846,18 @@
       <Filter>Editor</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Editor\EditorGUIManagerVulkan.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorGUIManagerDirectX12.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\ImGui\imgui_impl_dx12.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\ImGui\imgui_impl_win32.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Editor\ImGuiTextureManagerD3D12.h">
       <Filter>Editor</Filter>
     </ClInclude>
   </ItemGroup>

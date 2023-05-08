@@ -6,6 +6,8 @@ namespace ZXEngine
 {
 	class RenderAPID3D12 : public RenderAPI
 	{
+		friend class ImGuiTextureManagerD3D12;
+		friend class EditorGUIManagerDirectX12;
 		friend class ZXD3D12DescriptorAllocator;
 		/// <summary>
 		/// 标准RenderAPI接口
