@@ -8,7 +8,7 @@ namespace ZXEngine
     class MaterialData;
     class RenderAPIVulkan : public RenderAPI
     {
-        friend class EditorGUIManager;
+        friend class EditorGUIManagerVulkan;
         friend class ImGuiTextureManagerVulkan;
     /// <summary>
     /// 标准RenderAPI接口

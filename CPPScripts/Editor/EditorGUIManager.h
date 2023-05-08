@@ -16,22 +16,10 @@ namespace ZXEngine
 	public:
 		EditorAssetPreviewer* assetPreviewer;
 
-		EditorGUIManager();
-		~EditorGUIManager();
-
-		void BeginEditorRender();
-		void EditorRender();
-		void EndEditorRender();
-		void ResetPanels();
-		void OnWindowSizeChange();
-
-	private:
-		vector<EditorPanel*> allPanels;
-
-#ifdef ZX_API_VULKAN
-		void InitForVulkan();
-		void FrameRender();
-		void RecreateFrameBuffers();
-#endif
+		virtual void BeginEditorRender()  = 0;
+		virtual void EditorRender()       = 0;
+		virtual void EndEditorRender()    = 0;
+		virtual void ResetPanels()        = 0;
+		virtual void OnWindowSizeChange() = 0;
 	};
 }

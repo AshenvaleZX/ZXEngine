@@ -408,6 +408,12 @@
     <ClCompile Include="..\..\CPPScripts\DirectX12\ZXD3D12Util.cpp">
       <Filter>DirectX12</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorGUIManagerOpenGL.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorGUIManagerVulkan.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">
@@ -823,6 +829,12 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\DirectX12\ZXD3D12Util.h">
       <Filter>DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorGUIManagerOpenGL.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorGUIManagerVulkan.h">
+      <Filter>Editor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
