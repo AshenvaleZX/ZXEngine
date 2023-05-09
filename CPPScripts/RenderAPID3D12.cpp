@@ -2154,7 +2154,7 @@ namespace ZXEngine
 
 		// 重新设置Present Buffer大小
 		ThrowIfFailed(mSwapChain->ResizeBuffers(
-			mPresentBufferCount, GlobalData::srcWidth, GlobalData::srcHeight,
+			mPresentBufferCount, ProjectSetting::srcWidth, ProjectSetting::srcHeight,
 			mPresentBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
 
 		// 重新创建Present Buffer

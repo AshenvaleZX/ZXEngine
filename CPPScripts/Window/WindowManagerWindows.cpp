@@ -46,6 +46,9 @@ namespace ZXEngine
 
 	bool WindowManagerWindows::WindowShouldClose()
 	{
+		if (mResized)
+			OnResize();
+
 		MSG msg;
 		while (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
 		{
@@ -54,6 +57,7 @@ namespace ZXEngine
 			if (msg.message == WM_QUIT)
 				return true;
 		}
+
 		return false;
 	}
 
@@ -65,6 +69,7 @@ namespace ZXEngine
 		case WM_SIZE:
 			mWindowWidth = static_cast<uint32_t>(LOWORD(lParam));
 			mWindowHeight = static_cast<uint32_t>(HIWORD(lParam));
+			mResized = true;
 
 			// 窗口最小化
 			if (wParam == SIZE_MINIMIZED)
@@ -144,6 +149,9 @@ namespace ZXEngine
 	{
 		auto renderAPI = RenderAPI::GetInstance();
 		if (renderAPI)
+		{
 			renderAPI->OnWindowSizeChange(mWindowWidth, mWindowHeight);
+			mResized = false;
+		}
 	}
 }

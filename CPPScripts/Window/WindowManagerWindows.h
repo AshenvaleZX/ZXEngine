@@ -23,6 +23,7 @@ namespace ZXEngine
 		uint32_t mWindowWidth;
 		uint32_t mWindowHeight;
 
+		bool mResized = false;
 		bool mResizing = false;
 		bool mMinimized = false;
 		bool mMaximized = false;
