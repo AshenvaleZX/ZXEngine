@@ -85,6 +85,9 @@ namespace ZXEngine
 
 	void ImGuiTextureManagerD3D12::DeleteByEngineID(uint32_t id)
 	{
+		if (!CheckExistenceByEngineID(id))
+			return;
+
 		auto editorGUIMgr = reinterpret_cast<EditorGUIManagerDirectX12*>(EditorGUIManager::GetInstance());
 
 		editorGUIMgr->descriptorUseState[allTextures[id].idx] = false;

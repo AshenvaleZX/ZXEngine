@@ -14,6 +14,7 @@
 #include "DirectX12/ZXD3D12DescriptorManager.h"
 #ifdef ZX_EDITOR
 #include "Editor/EditorGUIManager.h"
+#include "Editor/ImGuiTextureManager.h"
 #endif
 
 class DxException
@@ -1857,6 +1858,10 @@ namespace ZXEngine
 		texture->texture.Reset();
 
 		texture->inUse = false;
+
+#ifdef ZX_EDITOR
+		ImGuiTextureManager::GetInstance()->DeleteByEngineID(idx);
+#endif
 	}
 
 	uint32_t RenderAPID3D12::GetNextPipelineIndex()
