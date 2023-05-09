@@ -1,46 +1,68 @@
 # ZXEngine
 
-------
+这个项目是我个人为了学习游戏引擎技术创建的，目前同时支持DirectX 12，Vulkan和OpenGL。
 
-这个项目是我个人为了学习游戏引擎技术创建的。目前同时支持Vulkan和OpenGL，并且正在开发对DirectX 12的支持。
+I created this project to learn and practice game engine technology, It now supports DirectX 12, Vulkan and OpenGL.
 
 引擎本身用C++开发，GamePlay层使用Lua开发，引擎层封装部分C++接口给GamePlay层的Lua调用。使用方式类似Unity的XLua，不过目前已封装的接口还比较少。可以通过一个GameLogic组件把Lua代码绑定到GameObject上，接收所挂载对象上来自引擎的Start和Update调用，并通过self访问GameObject对象(具体示例看后面)。
 
-本引擎使用自创的zxshader格式来编写shader代码。因为是跨API引擎，而各API之间的shader语法有差异，所以为了不用给每个图形API都写一次shader，不得不自己定义一个格式来写shader。
+The engine is developed with C++, the GamePlay layer is developed with Lua, and the engine encapsulates part of the C++ interface to the Lua call of the GamePlay layer. The usage is similar to Unity's XLua, but there are still relatively few encapsulated interfaces. You can bind the Lua code to the GameObject through a GameLogic component, receive Start and Update calls from the engine on the mounted object, and access the GameObject object through self (see later for specific examples).
+
+本引擎使用自创的zxshader格式来编写shader代码。因为是跨API引擎，而各API之间的shader语法有差异，所以为了不用给每个图形API都写一次shader，不得不自己定义一个格式来写shader。编写好zxshader后，在DirectX 12和OpenGL下直接运行即可。在Vulkan下需要先点击引擎菜单栏里的“Assets/Compile All Shader for Vulkan”按钮，将zxshader预编译后才可以运行。
+
+This engine uses the self-created zxshader format to write shader code. Because it is a cross-API engine, and the shader syntax between APIs is different, so in order not to write a shader for each graphics API, I have to define a format to write the shader. After writing zxshader, it can be run directly under DirectX 12 and OpenGL. Under Vulkan, you need to click the "Assets/Compile All Shader for Vulkan" button in the engine menu bar to precompile zxshader before it can run.
 
 项目目前还比较简单，不过完成了引擎所需的基本的场景，预制体，材质，shader文件系统。有一个类Unity的引擎编辑器页面。
 
+The project is still relatively simple, but the basic scenes, prefabs, materials, and shader file systems have been completed. There is a Unity-like engine editor.
+
 下面是一些图片展示，引擎页面如图，和Unity编辑器类似。上面是主菜单栏，中间是游戏画面窗口，左边是展示场景中GameObject的Hierarchy面板，下面左边是展示当前打开项目的Assets文件目录的Project面板，中间是展示日志的Console面板，右边是展示当前选中对象详细信息的Inspector面板。
+
+The following are some picture displays, the engine is shown in the figure, which is similar to the Unity editor. The top is the main menu bar, the middle is the game screen window, the left is the Hierarchy panel showing the GameObject in the scene, the lower left is the Project panel showing the Assets file directory of the currently opened project, the middle is the Console panel showing the log, and the right is showing the currently selected Inspector panel for object details.
 
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%201.png)
 
 当前选中了场景中的Sun对象，Inspector面板就展示这个GameObject所挂载的Component信息。
 
+The Sun object in the scene is currently selected, and the Inspector panel displays the Component information on the GameObject.
+
 点击主菜单栏的开始按钮，游戏开始运行，此时能看到场景中物体动了起来，粒子系统也开始工作。此时选中一个材质，Inspectors面板就开始展示材质信息和材质球。
+
+Click the start button on the main menu bar, and the game starts to run. At this time, you can see the objects in the scene move, and the particle system starts to work. At this point, a material is selected, and the Inspectors panel starts to display material information and material balls.
 
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%202.png)
 
 再选中一个模型，Inspector面板就展示模型信息和模型预览。
 
+Then select a model, and the Inspector panel will display model information and model preview.
+
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%203.png)
 
 下面是点击图像展示图像信息。
+
+Click on the image to display the image information.
 
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%204.png)
 
 下面是分别点击zxshader和Lua后Inspector上的代码预览。
 
+The following is the code preview on the Inspector after clicking zxshader and Lua respectively.
+
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%205.png)
 
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%206.png)
 
-###        GamePlay层的Lua代码示例
+###        GamePlay层的Lua代码示例(Lua code example for GamePlay layer)
 
 以控制GameObject旋转移动举例，创建一个Lua代码，用GameLogic组件挂在到一个GameObject对象上：
+
+Take controlling the rotation and movement of GameObject as an example, create a Lua code, and use GameLogic component on a GameObject object:
 
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/GameLogic.png)
 
 然后Lua代码大致如下：
+
+Then the Lua code is roughly as follows:
 
 ```lua
 local ObjectMove = NewGameLogic()
