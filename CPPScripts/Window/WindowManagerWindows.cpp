@@ -34,7 +34,7 @@ namespace ZXEngine
 
 		mWindowWidth = ProjectSetting::srcWidth;
 		mWindowHeight = ProjectSetting::srcHeight;
-		mWindow = CreateWindowW(wndClass.lpszClassName, L"ZXEngine", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
+		mWindow = CreateWindowW(wndClass.lpszClassName, L"ZXEngine <Direct3D 12>", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
 			ProjectSetting::srcWidth, ProjectSetting::srcHeight, NULL, NULL, wndClass.hInstance, NULL);
 	}
 
