@@ -3,5 +3,6 @@
     "DefaultScene": "Scenes/MyWorld.zxscene",
     "DynamicBatch": false,
     "PreserveIntermediateShader": true,
-    "EnableValidationLayer": false
+    "EnableGraphicsDebug": false,
+    "LogToFile": false
 }

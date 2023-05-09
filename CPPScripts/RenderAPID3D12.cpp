@@ -101,7 +101,7 @@ namespace ZXEngine
 	void RenderAPID3D12::InitD3D12()
 	{
 		// Debug
-		if (ProjectSetting::enableValidationLayer)
+		if (ProjectSetting::enableGraphicsDebug)
 		{
 			ComPtr<ID3D12Debug> debugController;
 			ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
@@ -121,7 +121,7 @@ namespace ZXEngine
 		}
 
 		// 设置Debug输出筛选
-		if (ProjectSetting::enableValidationLayer)
+		if (ProjectSetting::enableGraphicsDebug)
 		{
 			// 获取设备的信息队列
 			ComPtr<ID3D12InfoQueue> pInfoQueue;
@@ -848,7 +848,7 @@ namespace ZXEngine
 		string hlslCode = ShaderParser::TranslateToD3D12(shaderCode, shaderInfo);
 
 		UINT compileFlags = 0;
-		if (ProjectSetting::enableValidationLayer)
+		if (ProjectSetting::enableGraphicsDebug)
 			compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 
 		// 编译Vertex Shader

@@ -12,7 +12,8 @@ namespace ZXEngine
 		static string projectPath;
 		static bool enableDynamicBatch;
 		static bool preserveIntermediateShader;
-		static bool enableValidationLayer;
+		static bool enableGraphicsDebug;
+		static bool logToFile;
 
 		// Editor
 		static unsigned int hierarchyWidth;

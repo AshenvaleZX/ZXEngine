@@ -1713,7 +1713,7 @@ namespace ZXEngine
 
     void RenderAPIVulkan::CreateVkInstance()
     {
-        if (ProjectSetting::enableValidationLayer)
+        if (ProjectSetting::enableGraphicsDebug)
             validationLayersEnabled = CheckValidationLayerSupport();
 
         // 这个数据可以不填，好像这个数据可以让开发驱动的硬件厂商，比如Nvidia什么的识别一下，给一些引擎或者游戏走后门做特殊处理什么的

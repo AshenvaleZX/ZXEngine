@@ -10,7 +10,8 @@ namespace ZXEngine
 	string ProjectSetting::projectPath;
 	bool ProjectSetting::enableDynamicBatch;
 	bool ProjectSetting::preserveIntermediateShader;
-	bool ProjectSetting::enableValidationLayer;
+	bool ProjectSetting::enableGraphicsDebug;
+	bool ProjectSetting::logToFile;
 
 	// Editor
 	unsigned int ProjectSetting::hierarchyWidth;
@@ -36,7 +37,8 @@ namespace ZXEngine
 		defaultScene = Resources::JsonStrToString(data["DefaultScene"]);
 		enableDynamicBatch = data["DynamicBatch"];
 		preserveIntermediateShader = data["PreserveIntermediateShader"];
-		enableValidationLayer = data["EnableValidationLayer"];
+		enableGraphicsDebug = data["EnableGraphicsDebug"];
+		logToFile = data["LogToFile"];
 
 #ifdef ZX_EDITOR
 		SetWindowSize(200, 200, 200);

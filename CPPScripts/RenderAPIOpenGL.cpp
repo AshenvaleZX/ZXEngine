@@ -189,7 +189,7 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::CheckError()
 	{
-		if (ProjectSetting::enableValidationLayer)
+		if (ProjectSetting::enableGraphicsDebug)
 			RealCheckError();
 	}
 
