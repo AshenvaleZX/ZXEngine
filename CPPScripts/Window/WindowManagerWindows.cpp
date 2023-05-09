@@ -2,6 +2,10 @@
 #include <WindowsX.h>
 #include "../RenderAPI.h"
 #include "../ProjectSetting.h"
+#include "../ImGui/imgui_impl_win32.h"
+
+// Forward declare message handler from imgui_impl_win32.cpp
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 namespace ZXEngine
 {
@@ -63,6 +67,10 @@ namespace ZXEngine
 
 	LRESULT WindowManagerWindows::WindowProcedure(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
+		// 给ImGui传递Win32窗口消息
+		if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+			return true;
+
 		switch (msg)
 		{
 		// 窗口大小变化
