@@ -14,6 +14,19 @@
 
 using Microsoft::WRL::ComPtr;
 
+inline void ThrowIfFailed(HRESULT hr)
+{
+    if (FAILED(hr))
+    {
+        _com_error err(hr);
+        OutputDebugString(err.ErrorMessage());
+        // 其实这里throw的时候，最好是把ErrorMessage返回的错误信息当作参数
+        // 但是ErrorMessage的返回值是const TCHAR*，而throw的时候，只能传入const char*
+        // 这个TCHAR到char的转换，在Unicode字符集下很麻烦，所以这里只抛出一个固定的错误信息
+        throw std::exception("D3D12 interface call failed !");
+    }
+}
+
 namespace ZXEngine
 {
     const uint32_t DX_MAX_FRAMES_IN_FLIGHT = 2;
