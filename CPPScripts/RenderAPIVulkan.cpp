@@ -64,6 +64,11 @@ namespace ZXEngine
     static VKAPI_ATTR VkBool32 VKAPI_CALL VkDebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
     {
         std::cerr << "My debug call back: " << pCallbackData->pMessage << std::endl;
+
+        // 如果是Error，立刻中断
+        if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) 
+            std::abort();
+
         // 返回一个布尔值，表明触发validation layer消息的Vulkan调用是否应被中止
         // 如果返回true，则调用将以VK_ERROR_VALIDATION_FAILED_EXT错误中止
         // 这通常用于测试validation layers本身，所以我们总是返回VK_FALSE
