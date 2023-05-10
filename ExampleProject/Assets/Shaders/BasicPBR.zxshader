@@ -1,0 +1,197 @@
+Vertex
+{
+    Input
+    {
+        0 vec3 aPos       : POSITION
+        1 vec2 aTexCoords : TEXCOORD
+        2 vec3 aNormal    : NORMAL
+    }
+
+    Output
+    {
+        0 vec3 WorldPos  : TEXCOORD0
+        1 vec3 Normal    : TEXCOORD1
+        2 vec2 TexCoords : TEXCOORD2
+    }
+
+    Properties
+    {
+        using ENGINE_Model
+        using ENGINE_View
+        using ENGINE_Projection
+        using ENGINE_Model_Inv
+    }
+
+    Program
+    {
+        void main()
+        {
+            WorldPos = to_vec3(mul(ENGINE_Model * vec4(aPos, 1.0)));
+            Normal = mul(transpose(to_mat3(ENGINE_Model_Inv)) * aNormal);
+            TexCoords = aTexCoords;
+            ZX_Position = mul(ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 1.0));
+        }
+    }
+}
+
+Fragment
+{
+    Input
+    {
+        0 vec3 WorldPos  : TEXCOORD0
+        1 vec3 Normal    : TEXCOORD1
+        2 vec2 TexCoords : TEXCOORD2
+    }
+
+    Output
+    {
+        0 vec4 FragColor : SV_Target
+    }
+
+    Properties
+    {
+        using ENGINE_Light_Pos
+        using ENGINE_Light_Color
+        using ENGINE_Camera_Pos
+        sampler2D _AlbedoMap
+        sampler2D _NormalMap
+        sampler2D _MetallicMap
+        sampler2D _RoughnessMap
+    }
+
+    Program
+    {
+        vec3 GetNormalFromMap(vec3 pos, vec2 tCoords, vec3 normal)
+        {
+            vec3 tangentNormal = texture(_NormalMap, tCoords).xyz * 2.0 - 1.0;
+
+            vec3 Q1  = ddx(pos);
+            vec3 Q2  = ddy(pos);
+            vec2 st1 = ddx(tCoords);
+            vec2 st2 = ddy(tCoords);
+
+            vec3 N = normalize(normal);
+            vec3 T = normalize(Q1 * st2.y - Q2 * st1.y);
+            vec3 B = -normalize(cross(N, T));
+            mat3 TBN = mat3(T, B, N);
+
+            return normalize(mul(TBN * tangentNormal));
+        }
+        // ----------------------------------------------------------------------------
+        float DistributionGGX(vec3 N, vec3 H, float roughness)
+        {
+            float a = roughness * roughness;
+            float a2 = a*a;
+            float NdotH = max(dot(N, H), 0.0);
+            float NdotH2 = NdotH*NdotH;
+
+            float nom   = a2;
+            float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+            denom = 3.14159265359 * denom * denom;
+
+            return nom / denom;
+        }
+        // ----------------------------------------------------------------------------
+        float GeometrySchlickGGX(float NdotV, float roughness)
+        {
+            float r = (roughness + 1.0);
+            float k = (r * r) / 8.0;
+
+            float nom   = NdotV;
+            float denom = NdotV * (1.0 - k) + k;
+
+            return nom / denom;
+        }
+        // ----------------------------------------------------------------------------
+        float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
+        {
+            float NdotV = max(dot(N, V), 0.0);
+            float NdotL = max(dot(N, L), 0.0);
+            float ggx2 = GeometrySchlickGGX(NdotV, roughness);
+            float ggx1 = GeometrySchlickGGX(NdotL, roughness);
+
+            return ggx1 * ggx2;
+        }
+        // ----------------------------------------------------------------------------
+        vec3 FresnelSchlick(float cosTheta, vec3 F0)
+        {
+            return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+        }
+        // ----------------------------------------------------------------------------
+        void main()
+        {		
+            vec3 albedo     = pow(texture(_AlbedoMap, TexCoords).rgb, vec3(2.2, 2.2, 2.2));
+            float metallic  = texture(_MetallicMap, TexCoords).r;
+            float roughness = texture(_RoughnessMap, TexCoords).r;
+            // AO贴图，暂时不用
+            //float ao        = texture(aoMap, TexCoords).r;
+
+            // 法线
+            vec3 N = GetNormalFromMap(WorldPos, TexCoords, Normal);
+            // 视线
+            vec3 V = normalize(ENGINE_Camera_Pos - WorldPos);
+
+            // F0表示平面的基础反射率，菲涅尔方程里的一个参数，这个数字取决于材质的物理属性
+            // 在现实生活中，非金属材质(电介质材质)的F0值通常不会高于0.17，金属材质(导体材质)的F0值通常在0.5到1.0之间
+            vec3 F0 = vec3(0.04, 0.04, 0.04);
+            // 对于非金属材质，直接定义一个近似的基础反射率0.04
+            // 对于金属材质，因为金属表面会吸收所有折射光线而没有漫反射，可以直接使用表面颜色纹理来作为它们的基础反射率
+            // 所以这里用金属度插值来决定F0
+            F0 = lerp(F0, albedo, metallic);
+
+            // ------------------------------------------- Begin Reflectance Equation -------------------------------------------
+            // 光源方向
+            vec3 L = normalize(ENGINE_Light_Pos - WorldPos);
+            // Half向量
+            vec3 H = normalize(V + L);
+            // 光照衰减
+            // float dis = length(ENGINE_Light_Pos - WorldPos);
+            // float attenuation = 1.0 / (dis * dis);
+            float attenuation = 1.0;
+            // 辐射率，这里搞得比较简单，就用衰减后的光照颜色来表示
+            vec3 radiance = ENGINE_Light_Color * attenuation;
+
+            // Normal Distribution Function，估算在受到表面粗糙度的影响下，朝向方向与半程向量一致的微平面的数量
+            float NDF = DistributionGGX(N, H, roughness);
+            // Geometry Function，描述了微平面自成阴影的属性，当一个平面相对比较粗糙的时候，平面表面上的微平面有可能挡住其他的微平面从而减少表面所反射的光线
+            float G = GeometrySmith(N, V, L, roughness);
+            // Fresnel Rquation，描述的是在不同的表面角下表面所反射的光线所占的比率
+            vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
+            
+            // Cook-Torrance BRDF
+            vec3 nominator = NDF * G * F;
+            float denominator = max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001; // 0.001 to prevent divide by zero.
+            vec3 specular = nominator / denominator;
+            
+            // kS可以看作表示光能中被反射的能量的比例，所以这里直接等于菲尼尔方程的结果
+            vec3 kS = F;
+            // 而剩下的光能会被折射(进行次表面散射，简化后即为漫反射)，比值为kD
+            // 因为需要满足能量守恒，所以kS + kD不能超过1，除非这个物体是自发光的
+            vec3 kD = vec3(1.0, 1.0, 1.0) - kS;
+            // 只有非金属材质才有漫反射，所以这里需要乘以非金属度，如果是纯金属，那么kD就是0，无漫反射
+            kD *= 1.0 - metallic;	  
+
+            // scale light by NdotL
+            float NdotL = max(dot(N, L), 0.0);        
+
+            // 最终结果Lo，代表出射光线的辐射率
+            // 这里没有把kS乘到反射率方程中，因为已经在specualr BRDF中乘了菲涅尔系数F了，因为kS等于F，因此不需要再乘一次
+            vec3 Lo = (kD * albedo / 3.14159265359 + specular) * radiance * NdotL;
+            // 严格来说，这里的Lo，也就是出射光线的辐射率，应该是在半球领域Ω的积分的结果，但是这里为了简单，只算了一个方向的光照
+            // 如果要做得更好一点，可以把这段Reflectance Equation代码循环执行几次，多算几个方向的光照，再取平均值
+            // ------------------------------------------- End Reflectance Equation -------------------------------------------
+            
+            // 写一个假环境光，如果有AO贴图，可以在这里乘一下AO系数
+            vec3 ambient = vec3(0.3, 0.3, 0.3) * albedo;// * ao;
+            
+            vec3 color = ambient + Lo;
+
+            // HDR tonemapping
+            color = color / (color + vec3(1.0, 1.0, 1.0));
+            // gamma correct
+            color = pow(color, vec3(1.0/2.2, 1.0/2.2, 1.0/2.2)); 
+
+            FragColor = vec4(color, 1.0);
+        }
+    }
+}
