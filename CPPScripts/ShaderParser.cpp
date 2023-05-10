@@ -376,6 +376,9 @@ namespace ZXEngine
 			pos += newSentence.length();
 		}
 
+		Utils::ReplaceAllWord(glCode, "ddx", "dFdx");
+		Utils::ReplaceAllWord(glCode, "ddy", "dFdy");
+		Utils::ReplaceAllWord(glCode, "lerp", "mix");
 		Utils::ReplaceAllWord(glCode, "to_vec2", "vec2");
 		Utils::ReplaceAllWord(glCode, "to_vec3", "vec3");
 		Utils::ReplaceAllWord(glCode, "to_mat3", "mat3");
@@ -521,6 +524,9 @@ namespace ZXEngine
 			pos += newSentence.length();
 		}
 
+		Utils::ReplaceAllWord(vkCode, "ddx", "dFdx");
+		Utils::ReplaceAllWord(vkCode, "ddy", "dFdy");
+		Utils::ReplaceAllWord(vkCode, "lerp", "mix");
 		Utils::ReplaceAllWord(vkCode, "to_vec2", "vec2");
 		Utils::ReplaceAllWord(vkCode, "to_vec3", "vec3");
 		Utils::ReplaceAllWord(vkCode, "to_mat3", "mat3");
