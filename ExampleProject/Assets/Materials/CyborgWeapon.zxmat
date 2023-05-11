@@ -1,0 +1,23 @@
+{
+    "Type": "Material",
+    "Shader": "Shaders/BasicPBR.zxshader",
+    "Textures":
+    [
+        {
+            "UniformName": "_AlbedoMap",
+            "Path": "Textures/CyborgWeapon/BaseColor.png"
+        },
+        {
+            "UniformName": "_NormalMap",
+            "Path": "Textures/CyborgWeapon/Normal.png"
+        },
+        {
+            "UniformName": "_MetallicMap",
+            "Path": "Textures/CyborgWeapon/Metallic.png"
+        },
+        {
+            "UniformName": "_RoughnessMap",
+            "Path": "Textures/CyborgWeapon/Roughness.png"
+        }
+    ]
+}

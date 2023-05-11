@@ -1,0 +1,29 @@
+{
+    "Name": "PointLight",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [-10, 10, 10],
+            "Rotation": [-45, -45, 0],
+            "Scale": [1, 1, 1]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Mesh": "Models/sphere.obj",
+            "Material": "Materials/NoLight.zxmat",
+            "CastShadow": false,
+            "ReceiveShadow": false
+        },
+        {
+            "Type": "Light",
+            "Color": [1, 1, 1],
+            "Intensity": 1,
+            "LightType": 2
+        },
+        {
+            "Type": "GameLogic",
+            "Lua": "Scripts/ObjectMove2.lua"
+        }
+    ]
+}

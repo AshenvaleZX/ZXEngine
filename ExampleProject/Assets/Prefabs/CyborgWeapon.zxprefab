@@ -1,0 +1,19 @@
+{
+    "Name": "Gun",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 0, 0],
+            "Rotation": [0, 90, 0],
+            "Scale": [25, 25, 25]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Mesh": "Models/Cyborg_Weapon.obj",
+            "Material": "Materials/CyborgWeapon.zxmat",
+            "CastShadow": true,
+            "ReceiveShadow": false
+        }
+    ]
+}
