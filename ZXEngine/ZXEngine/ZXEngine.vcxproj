@@ -184,6 +184,8 @@
     <ClCompile Include="..\..\CPPScripts\GameLogic.cpp" />
     <ClCompile Include="..\..\CPPScripts\GameLogicManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\GameObject.cpp" />
+    <ClCompile Include="..\..\CPPScripts\GeometryGenerator.cpp" />
+    <ClCompile Include="..\..\CPPScripts\GeometryGenerator.h" />
     <ClCompile Include="..\..\CPPScripts\GlobalData.cpp" />
     <ClCompile Include="..\..\CPPScripts\ImGui\imgui.cpp" />
     <ClCompile Include="..\..\CPPScripts\ImGui\imgui_draw.cpp" />

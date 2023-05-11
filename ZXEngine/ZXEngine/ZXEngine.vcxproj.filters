@@ -426,6 +426,12 @@
     <ClCompile Include="..\..\CPPScripts\Editor\ImGuiTextureManagerD3D12.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\GeometryGenerator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\GeometryGenerator.h">
+      <Filter>头文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">
