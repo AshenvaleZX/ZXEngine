@@ -99,16 +99,21 @@ namespace ZXEngine
 		}
 
 		// Mesh
-		if (data["Mesh"].is_null())
+		if (!data["Geometry"].is_null())
 		{
-			Debug::LogWarning("No meshs !");
+			meshRenderer->modelName = "Sphere";
+			meshRenderer->GenerateGeometry(data["Geometry"]);
 		}
-		else
+		else if (!data["Mesh"].is_null())
 		{
 			p = Resources::JsonStrToString(data["Mesh"]);
 			meshRenderer->modelName = Resources::GetAssetName(p);
 			p = Resources::GetAssetFullPath(p);
 			meshRenderer->LoadModel(p);
+		}
+		else
+		{
+			Debug::LogWarning("No meshs !");
 		}
 	}
 

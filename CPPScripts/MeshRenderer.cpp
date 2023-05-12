@@ -1,4 +1,5 @@
 #include "MeshRenderer.h"
+#include "GeometryGenerator.h"
 
 namespace ZXEngine
 {
@@ -33,6 +34,34 @@ namespace ZXEngine
         for (auto mesh : meshes)
         {
             RenderAPI::GetInstance()->Draw(mesh->VAO);
+        }
+    }
+
+    void MeshRenderer::GenerateGeometry(GeometryType type)
+    {
+        if (type == GeometryType::Box)
+        {
+            auto box = GeometryGenerator::CreateBox(1.0f, 1.0f, 1.0f);
+            verticesNum = box->vertices.size();
+            trianglesNum = box->indices.size() / 3;
+            boundsSizeX = 1.0f;
+            boundsSizeY = 1.0f;
+            boundsSizeZ = 1.0f;
+            meshes.push_back(box);
+        }
+        else if (type == GeometryType::Sphere)
+        {
+            auto sphere = GeometryGenerator::CreateSphere(0.5f, 20, 20);
+            verticesNum = sphere->vertices.size();
+            trianglesNum = sphere->indices.size() / 3;
+            boundsSizeX = 1.0f;
+            boundsSizeY = 1.0f;
+            boundsSizeZ = 1.0f;
+            meshes.push_back(sphere);
+        }
+        else
+        {
+            Debug::LogError("Try to generate invalid geometry type!");
         }
     }
 

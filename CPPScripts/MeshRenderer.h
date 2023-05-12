@@ -39,6 +39,8 @@ namespace ZXEngine
 		void Draw();
 		// 使用ASSIMP加载模型文件
 		void LoadModel(string const& path);
+		// 算法生成几何体模型
+		void GenerateGeometry(GeometryType type);
 
 	private:
 		// Processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).

@@ -37,6 +37,16 @@ namespace ZXEngine
 		Point,
 	};
 
+	enum class GeometryType
+	{
+		Box,
+		Sphere,
+		TessellationSphere,
+		Cylinder,
+		Plane,
+		Quad,
+	};
+
 	enum class ShadowType
 	{
 		None,
