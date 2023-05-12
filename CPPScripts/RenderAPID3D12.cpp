@@ -995,7 +995,7 @@ namespace ZXEngine
 
 	void RenderAPID3D12::DeleteShader(uint32_t id)
 	{
-		DestroyPipelineByIndex(id);
+		mShadersToDelete.insert(pair(id, DX_MAX_FRAMES_IN_FLIGHT));
 	}
 
 	uint32_t RenderAPID3D12::CreateMaterialData()
@@ -1961,6 +1961,21 @@ namespace ZXEngine
 		{
 			DestroyVAOByIndex(id);
 			mMeshsToDelete.erase(id);
+		}
+
+		// Shader
+		deleteList.clear();
+		for (auto& iter : mShadersToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroyPipelineByIndex(id);
+			mShadersToDelete.erase(id);
 		}
 	}
 

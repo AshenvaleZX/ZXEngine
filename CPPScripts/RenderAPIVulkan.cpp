@@ -629,7 +629,7 @@ namespace ZXEngine
 
     void RenderAPIVulkan::DeleteShader(uint32_t id)
     {
-        DestroyPipelineByIndex(id);
+        pipelinesToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT));
     }
 
     // Vulkan里不要立刻删除材质数据，因为Vulkan会同时处理多帧，调用删除的时候可能还有一帧正在并行处理
@@ -3291,6 +3291,21 @@ namespace ZXEngine
         {
             DestroyVAOByIndex(id);
             meshsToDelete.erase(id);
+        }
+
+        // Shader
+        deleteList.clear();
+        for (auto& iter : pipelinesToDelete)
+        {
+            if (iter.second > 0)
+                iter.second--;
+            else
+                deleteList.push_back(iter.first);
+        }
+        for (auto id : deleteList)
+        {
+            DestroyPipelineByIndex(id);
+            pipelinesToDelete.erase(id);
         }
     }
 

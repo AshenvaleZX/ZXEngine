@@ -142,6 +142,7 @@ namespace ZXEngine
 		map<uint32_t, uint32_t> mMeshsToDelete;
 		map<uint32_t, uint32_t> mTexturesToDelete;
 		map<uint32_t, uint32_t> mMaterialDatasToDelete;
+		map<uint32_t, uint32_t> mShadersToDelete;
 
 		uint32_t GetNextVAOIndex();
 		ZXD3D12VAO* GetVAOByIndex(uint32_t idx);

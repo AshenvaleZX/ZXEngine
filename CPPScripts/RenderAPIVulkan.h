@@ -199,6 +199,7 @@ namespace ZXEngine
         map<uint32_t, uint32_t> meshsToDelete;
         map<uint32_t, uint32_t> texturesToDelete;
         map<uint32_t, uint32_t> materialDatasToDelete;
+        map<uint32_t, uint32_t> pipelinesToDelete;
 
         uint32_t GetNextVAOIndex();
         VulkanVAO* GetVAOByIndex(uint32_t idx);
