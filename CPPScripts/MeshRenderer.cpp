@@ -51,7 +51,7 @@ namespace ZXEngine
         }
         else if (type == GeometryType::Sphere)
         {
-            auto sphere = GeometryGenerator::CreateSphere(0.5f, 20, 20);
+            auto sphere = GeometryGenerator::CreateSphere(0.5f, 40, 20);
             verticesNum = sphere->vertices.size();
             trianglesNum = sphere->indices.size() / 3;
             boundsSizeX = 1.0f;

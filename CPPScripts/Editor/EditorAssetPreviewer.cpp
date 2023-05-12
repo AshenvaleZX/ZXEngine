@@ -22,7 +22,7 @@ namespace ZXEngine
 		delete prefab;
 
 		materialSphere = new MeshRenderer();
-		materialSphere->LoadModel(Resources::GetAssetFullPath("Models/sphere.obj", true));
+		materialSphere->GenerateGeometry(GeometryType::Sphere);
 
 		vector<string> cubeMapPath;
 		cubeMapPath.push_back(Resources::GetAssetFullPath("Textures/white.png", true));

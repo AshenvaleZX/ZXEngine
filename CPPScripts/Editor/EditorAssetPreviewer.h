@@ -19,7 +19,7 @@ namespace ZXEngine
 
 		bool Check();
 		void Draw();
-		void Reset(float size = 2.0f);
+		void Reset(float size = 1.0f);
 		void UpdateModelScale(float delta);
 		void UpdateModelRotation(float xOffset, float yOffset);
 

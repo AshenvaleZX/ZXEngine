@@ -19,11 +19,11 @@
                     "Type": "Transform",
                     "Position": [0, 0, 0],
                     "Rotation": [0, 0, 0],
-                    "Scale": [1, 1, 1]
+                    "Scale": [2, 2, 2]
                 },
                 {
                     "Type": "MeshRenderer",
-                    "Mesh": "Models/sphere.obj",
+                    "Geometry": 1,
                     "Material": "Materials/BlinnPhong.zxmat",
                     "CastShadow": true,
                     "ReceiveShadow": false
@@ -38,11 +38,11 @@
                     "Type": "Transform",
                     "Position": [5, 0, 0],
                     "Rotation": [0, 0, 0],
-                    "Scale": [1, 1, 1]
+                    "Scale": [2, 2, 2]
                 },
                 {
                     "Type": "MeshRenderer",
-                    "Mesh": "Models/sphere.obj",
+                    "Geometry": 1,
                     "Material": "Materials/BlinnPhong.zxmat",
                     "CastShadow": true,
                     "ReceiveShadow": false
@@ -57,11 +57,11 @@
                     "Type": "Transform",
                     "Position": [0, 5, 0],
                     "Rotation": [0, 0, 0],
-                    "Scale": [1, 1, 1]
+                    "Scale": [2, 2, 2]
                 },
                 {
                     "Type": "MeshRenderer",
-                    "Mesh": "Models/sphere.obj",
+                    "Geometry": 1,
                     "Material": "Materials/BlinnPhong.zxmat",
                     "CastShadow": true,
                     "ReceiveShadow": false
@@ -76,11 +76,11 @@
                     "Type": "Transform",
                     "Position": [0, 0, 5],
                     "Rotation": [0, 0, 0],
-                    "Scale": [1, 1, 1]
+                    "Scale": [2, 2, 2]
                 },
                 {
                     "Type": "MeshRenderer",
-                    "Mesh": "Models/sphere.obj",
+                    "Geometry": 1,
                     "Material": "Materials/BlinnPhong.zxmat",
                     "CastShadow": true,
                     "ReceiveShadow": false
