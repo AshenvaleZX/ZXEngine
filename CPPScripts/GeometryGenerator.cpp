@@ -63,8 +63,8 @@ namespace ZXEngine
 		vertices[22] = { .Position = {  hx,  hy,  hz }, .TexCoords = { 1.0f, 0.0f }, .Normal = { 0.0f,  1.0f, 0.0f }, .Tangent = {  1.0f, 0.0f, 0.0f } };
 		vertices[23] = { .Position = {  hx,  hy, -hz }, .TexCoords = { 1.0f, 1.0f }, .Normal = { 0.0f,  1.0f, 0.0f }, .Tangent = {  1.0f, 0.0f, 0.0f } };
 
-		indices[24] = 20; indices[25] = 22; indices[26] = 21;
-		indices[27] = 20; indices[28] = 23; indices[29] = 22;
+		indices[30] = 20; indices[31] = 22; indices[32] = 21;
+		indices[33] = 20; indices[34] = 23; indices[35] = 22;
 
 		return new StaticMesh(vertices, indices);
 	}
@@ -85,12 +85,12 @@ namespace ZXEngine
 		vertices.push_back(topVertex);
 
 		// 遍历球的每一层
-		for (uint32_t i = 1; i <= stackCount - 1; ++i)
+		for (uint32_t i = 1; i < stackCount; i++)
 		{
 			float phi = i * phiStep;
 
 			// 计算当前这一层圆圈的顶点
-			for (uint32_t j = 0; j <= sliceCount; ++j)
+			for (uint32_t j = 0; j <= sliceCount; j++)
 			{
 				float theta = j * thetaStep;
 
@@ -104,7 +104,7 @@ namespace ZXEngine
 				// 因为是球，球心又在坐标系原点，所以坐标直接Normalize就是法线
 				v.Normal = v.Position.Normalize();
 
-				// Partial derivative of P with respect to theta
+				// 重新推导切线
 				v.Tangent.x = -radius * sinf(phi) * sinf(theta);
 				v.Tangent.y = 0.0f;
 				v.Tangent.z = +radius * sinf(phi) * cosf(theta);
@@ -120,7 +120,7 @@ namespace ZXEngine
 		vertices.push_back(bottomVertex);
 
 		// 计算第一圈顶点，第一圈是固定和顶部顶点相连的
-		for (uint32_t i = 1; i <= sliceCount; ++i)
+		for (uint32_t i = 1; i <= sliceCount; i++)
 		{
 			indices.push_back(0);
 			indices.push_back(i);
@@ -130,9 +130,9 @@ namespace ZXEngine
 		// 计算在中间的各圈顶点
 		uint32_t baseIndex = 1; // 跳过第一个顶点(顶部顶点)
 		uint32_t ringVertexCount = sliceCount + 1; // 每一圈的顶点数
-		for (uint32_t i = 0; i < stackCount - 2; ++i)
+		for (uint32_t i = 0; i < stackCount - 2; i++)
 		{
-			for (uint32_t j = 0; j < sliceCount; ++j)
+			for (uint32_t j = 0; j < sliceCount; j++)
 			{
 				indices.push_back(baseIndex + i * ringVertexCount + j);
 				indices.push_back(baseIndex + (i + 1) * ringVertexCount + j);
@@ -149,7 +149,7 @@ namespace ZXEngine
 		// 计算最后一圈顶点的起点索引
 		baseIndex = bottomIndex - ringVertexCount;
 		// 最后一圈顶点和底部顶点相连
-		for (uint32_t i = 0; i < sliceCount; ++i)
+		for (uint32_t i = 0; i < sliceCount; i++)
 		{
 			indices.push_back(bottomIndex);
 			indices.push_back(baseIndex + i + 1);
@@ -157,5 +157,157 @@ namespace ZXEngine
 		}
 
 		return new StaticMesh(vertices, indices);
+	}
+
+	StaticMesh* GeometryGenerator::CreateSphereTessellation(float radius, uint32_t subdivisionNum)
+	{
+		// 先手写一个正20面体
+		const float X = 0.525731f;
+		const float Z = 0.850651f;
+
+		vector<Vertex> vertices = 
+		{
+			{ .Position = { -X, 0.0f,  Z } },
+			{ .Position = {  X, 0.0f,  Z } },
+			{ .Position = { -X, 0.0f, -Z } },
+			{ .Position = {  X, 0.0f, -Z } },
+
+			{ .Position = { 0.0f,  Z,  X } },
+			{ .Position = { 0.0f,  Z, -X } },
+			{ .Position = { 0.0f, -Z,  X } },
+			{ .Position = { 0.0f, -Z, -X } },
+
+			{ .Position = {  Z,  X, 0.0f } },
+			{ .Position = { -Z,  X, 0.0f } },
+			{ .Position = {  Z, -X, 0.0f } },
+			{ .Position = { -Z, -X, 0.0f } },
+		};
+
+		vector<uint32_t> indices = 
+		{
+			1,0,4,   4,0,9,   4,9,5,   8,4,5,   1,4,8,
+			1,8,10,  10,8,3,  8,5,3,   3,5,2,   3,2,7,
+			3,7,10,  10,7,6,  6,7,11,  6,11,0,  6,0,1,
+			10,6,1,  11,9,0,  2,9,11,  5,9,2,   11,7,2
+		};
+
+		// 细分N次
+		for (uint32_t i = 0; i < subdivisionNum; i++)
+			Subdivide(vertices, indices);
+
+		// 计算重新细分后的顶点属性
+		for (size_t i = 0; i < vertices.size(); ++i)
+		{
+			// 调整法线
+			Vector3 n = vertices[i].Position.Normalize();
+			// 根据法线和半径重新计算位置
+			Vector3 p = radius * n;
+
+			vertices[i].Normal = n;
+			vertices[i].Position = p;
+
+			// 把位置转换回角度
+			float theta = atan2f(vertices[i].Position.z, vertices[i].Position.x);
+			// 限制到0到2 PI之间
+			if (theta < 0.0f)
+				theta += Math::PIx2;
+			float phi = acosf(vertices[i].Position.y / radius);
+
+			// 根据角度计算UV
+			vertices[i].TexCoords.x = theta / Math::PIx2;
+			vertices[i].TexCoords.y = phi / Math::PI;
+
+			// 重新推导切线
+			vertices[i].Tangent.x = -radius * sinf(phi) * sinf(theta);
+			vertices[i].Tangent.y = 0.0f;
+			vertices[i].Tangent.z = +radius * sinf(phi) * cosf(theta);
+			vertices[i].Tangent = vertices[i].Tangent.Normalize();
+		}
+
+		return new StaticMesh(vertices, indices);
+	}
+
+	Vertex GeometryGenerator::MidPoint(const Vertex& v0, const Vertex& v1)
+	{
+		auto& p0 = v0.Position;
+		auto& p1 = v1.Position;
+
+		auto& c0 = v0.TexCoords;
+		auto& c1 = v1.TexCoords;
+
+		auto& n0 = v0.Normal;
+		auto& n1 = v1.Normal;
+
+		auto& t0 = v0.Tangent;
+		auto& t1 = v1.Tangent;
+
+		auto& b0 = v0.Bitangent;
+		auto& b1 = v1.Bitangent;
+
+		Vertex v = {};
+		v.Position  =  0.5f * (p0 + p1);
+		v.TexCoords =  0.5f * (c0 + c1);
+		v.Normal    = (0.5f * (n0 + n1)).Normalize();
+		v.Tangent   = (0.5f * (t0 + t1)).Normalize();
+		v.Bitangent = (0.5f * (b0 + b1)).Normalize();
+
+		return v;
+	}
+
+	void GeometryGenerator::Subdivide(vector<Vertex>& vertices, vector<uint32_t>& indices)
+	{
+		//       v1
+		//       *
+		//      / \
+		//     /   \
+		//  m0*-----*m1
+		//   / \   / \
+		//  /   \ /   \
+		// *-----*-----*
+		// v0    m2     v2
+		// 
+		// 这个函数只会按这种方式把三角形细分，但是细分完还是在原来的面上
+		// 如果需要将平面变形，需要按不同几何模型结构，在调用这个函数后自行计算
+
+		vector<Vertex> verticesCopy = vertices;
+		vector<uint32_t> indicesCopy = indices;
+
+		vertices.clear();
+		indices.clear();
+
+		uint32_t triangleNum = static_cast<uint32_t>(indicesCopy.size()) / 3;
+		for (uint32_t i = 0; i < triangleNum; i++)
+		{
+			Vertex v0 = verticesCopy[indicesCopy[i * 3 + 0]];
+			Vertex v1 = verticesCopy[indicesCopy[i * 3 + 1]];
+			Vertex v2 = verticesCopy[indicesCopy[i * 3 + 2]];
+
+			Vertex m0 = MidPoint(v0, v1);
+			Vertex m1 = MidPoint(v1, v2);
+			Vertex m2 = MidPoint(v0, v2);
+
+			vertices.push_back(v0);
+			vertices.push_back(v1);
+			vertices.push_back(v2);
+			vertices.push_back(m0);
+			vertices.push_back(m1);
+			vertices.push_back(m2);
+
+			indices.push_back(i * 6 + 0);
+			indices.push_back(i * 6 + 3);
+			indices.push_back(i * 6 + 5);
+
+			indices.push_back(i * 6 + 3);
+			indices.push_back(i * 6 + 4);
+			indices.push_back(i * 6 + 5);
+
+			indices.push_back(i * 6 + 5);
+			indices.push_back(i * 6 + 4);
+			indices.push_back(i * 6 + 2);
+
+			indices.push_back(i * 6 + 3);
+			indices.push_back(i * 6 + 1);
+			indices.push_back(i * 6 + 4);
+		}
 	}
 }

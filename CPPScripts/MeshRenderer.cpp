@@ -59,6 +59,16 @@ namespace ZXEngine
             boundsSizeZ = 1.0f;
             meshes.push_back(sphere);
         }
+        else if (type == GeometryType::TessellationSphere)
+        {
+            auto sphere = GeometryGenerator::CreateSphereTessellation(0.5f, 4);
+            verticesNum = sphere->vertices.size();
+            trianglesNum = sphere->indices.size() / 3;
+            boundsSizeX = 1.0f;
+            boundsSizeY = 1.0f;
+            boundsSizeZ = 1.0f;
+            meshes.push_back(sphere);
+        }
         else
         {
             Debug::LogError("Try to generate invalid geometry type!");

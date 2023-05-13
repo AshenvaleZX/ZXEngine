@@ -14,6 +14,7 @@ namespace ZXEngine
 	{
 	public:
 		static float PI;
+		static float PIx2;
 		// ½Ç¶È»¡¶È×ª»»
 		static float Deg2Rad(float degree);
 		static float Rad2Deg(float radian);
