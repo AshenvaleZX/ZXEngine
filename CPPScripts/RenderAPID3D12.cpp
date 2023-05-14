@@ -819,30 +819,33 @@ namespace ZXEngine
 		if (shaderInfo.stages & ZX_SHADER_STAGE_VERTEX_BIT)
 		{
 			ComPtr<ID3DBlob> errors;
-			ThrowIfFailed(D3DCompile(hlslCode.c_str(), hlslCode.length(), NULL, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
-				"VS", "vs_5_1", compileFlags, 0, &vertCode, &errors));
+			HRESULT res = D3DCompile(hlslCode.c_str(), hlslCode.length(), NULL, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+				"VS", "vs_5_1", compileFlags, 0, &vertCode, &errors);
 			if (errors != nullptr)
 				Debug::LogError((char*)errors->GetBufferPointer());
+			ThrowIfFailed(res);
 		}
 		// 编译Geometry Shader
 		ComPtr<ID3DBlob> geomCode = nullptr;
 		if (shaderInfo.stages & ZX_SHADER_STAGE_GEOMETRY_BIT)
 		{
 			ComPtr<ID3DBlob> errors;
-			ThrowIfFailed(D3DCompile(hlslCode.c_str(), hlslCode.length(), NULL, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
-				"GS", "gs_5_1", compileFlags, 0, &geomCode, &errors));
+			HRESULT res = D3DCompile(hlslCode.c_str(), hlslCode.length(), NULL, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+				"GS", "gs_5_1", compileFlags, 0, &geomCode, &errors);
 			if (errors != nullptr)
 				Debug::LogError((char*)errors->GetBufferPointer());
+			ThrowIfFailed(res);
 		}
 		// 编译Fragment(Pixel) Shader
 		ComPtr<ID3DBlob> fragCode = nullptr;
 		if (shaderInfo.stages & ZX_SHADER_STAGE_FRAGMENT_BIT)
 		{
 			ComPtr<ID3DBlob> errors;
-			ThrowIfFailed(D3DCompile(hlslCode.c_str(), hlslCode.length(), NULL, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
-				"PS", "ps_5_1", compileFlags, 0, &fragCode, &errors));
+			HRESULT res = D3DCompile(hlslCode.c_str(), hlslCode.length(), NULL, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+				"PS", "ps_5_1", compileFlags, 0, &fragCode, &errors);
 			if (errors != nullptr)
 				Debug::LogError((char*)errors->GetBufferPointer());
+			ThrowIfFailed(res);
 		}
 
 		// 准备创建D3D12管线数据
