@@ -93,11 +93,14 @@ namespace ZXEngine
 		auto ImTextureMgr = ImGuiTextureManager::GetInstance();
 		for (auto& iter : material->data->textures)
 		{
-			uint32_t id = iter.second->GetID();
-			if (!ImTextureMgr->CheckExistenceByEngineID(id))
-				ImTextureMgr->CreateFromEngineID(id);
-			ImGui::Text(iter.first.c_str());
-			ImGui::SameLine(120); ImGui::Image(ImTextureMgr->GetImTextureIDByEngineID(id), ImVec2(50.0f, 50.0f));
+			if (iter.second->type == TextureType::ZX_2D)
+			{
+				uint32_t id = iter.second->GetID();
+				if (!ImTextureMgr->CheckExistenceByEngineID(id))
+					ImTextureMgr->CreateFromEngineID(id);
+				ImGui::Text(iter.first.c_str());
+				ImGui::SameLine(120); ImGui::Image(ImTextureMgr->GetImTextureIDByEngineID(id), ImVec2(50.0f, 50.0f));
+			}
 		}
 	}
 

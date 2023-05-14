@@ -181,11 +181,23 @@ namespace ZXEngine
 		for (unsigned int i = 0; i < data["Textures"].size(); i++)
 		{
 			json texture = data["Textures"][i];
+
 			TextureStruct* textureStruct = new TextureStruct();
 			textureStruct->path = Resources::GetAssetFullPath(Resources::JsonStrToString(texture["Path"]), isBuiltIn);
 			textureStruct->uniformName = Resources::JsonStrToString(texture["UniformName"]);
 
 			matStruct->textures.push_back(textureStruct);
+		}
+
+		for (unsigned int i = 0; i < data["CubeMaps"].size(); i++)
+		{
+			json cubeMap = data["CubeMaps"][i];
+
+			CubeMapStruct* cubeMapStruct = new CubeMapStruct();
+			cubeMapStruct->paths = Resources::LoadCubeMap(cubeMap, isBuiltIn);
+			cubeMapStruct->uniformName = Resources::JsonStrToString(cubeMap["UniformName"]);
+
+			matStruct->cubeMaps.push_back(cubeMapStruct);
 		}
 
 		return matStruct;

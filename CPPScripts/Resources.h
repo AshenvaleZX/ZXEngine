@@ -9,12 +9,19 @@ namespace ZXEngine
 		string path;
 	};
 
+	struct CubeMapStruct
+	{
+		string uniformName;
+		vector<string> paths;
+	};
+
 	struct MaterialStruct
 	{
 		string name;
 		string path;
 		string shaderPath;
 		vector<TextureStruct*> textures;
+		vector<CubeMapStruct*> cubeMaps;
 
 		~MaterialStruct() { for (auto iter : textures) delete iter; }
 	};

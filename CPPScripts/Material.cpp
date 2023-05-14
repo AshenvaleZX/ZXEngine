@@ -22,6 +22,12 @@ namespace ZXEngine
 			data->textures.push_back(make_pair(textureStruct->uniformName, texture));
 		}
 
+		for (auto cubeMapStruct : matStruct->cubeMaps)
+		{
+			Texture* texture = new Texture(cubeMapStruct->paths);
+			data->textures.push_back(make_pair(cubeMapStruct->uniformName, texture));
+		}
+
 		RenderAPI::GetInstance()->SetUpMaterial(shader->reference, data);
 	}
 
@@ -104,9 +110,15 @@ namespace ZXEngine
 
 	void Material::SetMaterialProperties()
 	{
-		uint32_t textureNum = (uint32_t)data->textures.size();
+		uint32_t textureNum = static_cast<uint32_t>(data->textures.size());
+
 		for (uint32_t i = 0; i < textureNum; i++)
-			SetTexture(data->textures[i].first, data->textures[i].second->GetID(), i);
+		{
+			if (data->textures[i].second->type == TextureType::ZX_2D)
+				SetTexture(data->textures[i].first, data->textures[i].second->GetID(), i);
+			else if (data->textures[i].second->type == TextureType::ZX_Cube)
+				SetCubeMap(data->textures[i].first, data->textures[i].second->GetID(), i);
+		}
 
 		textureIdx = textureNum;
 	}
