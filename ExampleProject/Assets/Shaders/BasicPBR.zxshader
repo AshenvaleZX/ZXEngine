@@ -57,6 +57,8 @@ Fragment
         sampler2D _NormalMap
         sampler2D _MetallicMap
         sampler2D _RoughnessMap
+        sampler2D _BRDF_LUT
+        samplerCube _PrefilterMap
     }
 
     Program
@@ -115,7 +117,13 @@ Fragment
         // ----------------------------------------------------------------------------
         vec3 FresnelSchlick(float cosTheta, vec3 F0)
         {
-            return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+            return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+        }
+        // ----------------------------------------------------------------------------
+        vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
+        {
+            float smoothness = 1.0 - roughness;
+            return F0 + (max(vec3(smoothness, smoothness, smoothness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
         }
         // ----------------------------------------------------------------------------
         void main()
@@ -123,13 +131,15 @@ Fragment
             vec3 albedo     = pow(texture(_AlbedoMap, TexCoords).rgb, vec3(2.2, 2.2, 2.2));
             float metallic  = texture(_MetallicMap, TexCoords).r;
             float roughness = texture(_RoughnessMap, TexCoords).r;
-            // AO贴图，暂时不用
-            //float ao        = texture(aoMap, TexCoords).r;
+            // AO贴图，暂时没用
+            // float ao     = texture(aoMap, TexCoords).r;
 
             // 法线
             vec3 N = GetNormalFromMap(WorldPos, TexCoords, Normal);
             // 视线
             vec3 V = normalize(ENGINE_Camera_Pos - WorldPos);
+            // 视线的反射向量，也就是镜面反射的主入射方向
+            vec3 R = reflect(-V, N);
 
             // F0表示平面的基础反射率，菲涅尔方程里的一个参数，这个数字取决于材质的物理属性
             // 在现实生活中，非金属材质(电介质材质)的F0值通常不会高于0.17，金属材质(导体材质)的F0值通常在0.5到1.0之间
@@ -181,15 +191,40 @@ Fragment
             // 如果要做得更好一点，可以把这段Reflectance Equation代码循环执行几次，多算几个方向的光照，再取平均值
             // ------------------------------------------- End Reflectance Equation -------------------------------------------
             
-            // 写一个假环境光，如果有AO贴图，可以在这里乘一下AO系数
-            vec3 ambient = vec3(0.3, 0.3, 0.3) * albedo;// * ao;
+            // 计算IBL环境光。环境光也可以直接用albedo乘一个系数来做假环境光，不过效果会比IBL环境光差很多
+            // ------------------------------------------------ Begin Ambient -------------------------------------------------
+            // 重新算一套基于粗糙度的参数
+            vec3 F_R = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+            vec3 kS_R = F_R;
+            vec3 kD_R = 1.0 - kS_R;
+            kD_R *= 1.0 - metallic;
             
+            // 采样预计算好的漫反射环境光贴图
+            // vec3 irradiance = texture(irradianceMap, N).rgb;
+            // 先简化一下，写个假的
+            vec3 irradiance = vec3(0.1, 0.1, 0.1);
+            vec3 diffuse_ab = irradiance * albedo;
+    
+            // 对预滤波图(预计算的镜面反射)进行采样
+            // 这里还可以进一步精确，为不同程度的粗糙度反射，做几个不同等级的预滤波图
+            // 然后根据粗糙度做mip-map采样，越粗糙的表面对应越模糊的预滤波图
+            vec3 prefilteredColor = texture(_PrefilterMap, R).rgb;
+            // 获取预计算的BRDF结果
+            // Epic Games将预计算好的BRDF对每个粗糙度和入射角的组合的响应结果存储在一张2D查找纹理(Look Up Texture, LUT)上，称为BRDF积分贴图
+            vec2 brdf = texture(_BRDF_LUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
+            // 根据分割和近似(Split-Sum approximation)将它们组合在一起，以获得IBL镜面部分
+            vec3 specular_ab = prefilteredColor * (F_R * brdf.x + brdf.y);
+
+            // 如果有AO贴图可以在这里乘个ao系数
+            vec3 ambient = (kD_R * diffuse_ab + specular_ab); // * ao;
+            // ------------------------------------------------- End Ambient -------------------------------------------------
+    
             vec3 color = ambient + Lo;
 
-            // HDR tonemapping
-            color = color / (color + vec3(1.0, 1.0, 1.0));
-            // gamma correct
-            color = pow(color, vec3(1.0/2.2, 1.0/2.2, 1.0/2.2)); 
+            // HDR色调映射(暂时没用HDR纹理)
+            // color = color / (color + vec3(1.0, 1.0, 1.0));
+            // 伽马校正
+            color = pow(color, vec3(1.0/2.2, 1.0/2.2, 1.0/2.2));
 
             FragColor = vec4(color, 1.0);
         }
