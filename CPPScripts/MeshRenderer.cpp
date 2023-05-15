@@ -79,6 +79,26 @@ namespace ZXEngine
             boundsSizeZ = 1.0f;
             meshes.push_back(cylinder);
         }
+        else if (type == GeometryType::Plane)
+        {
+            auto plane = GeometryGenerator::CreatePlane(10.0f, 10.0f, 11, 11);
+            verticesNum = plane->vertices.size();
+            trianglesNum = plane->indices.size() / 3;
+            boundsSizeX = 10.0f;
+            boundsSizeY = 0.0f;
+            boundsSizeZ = 10.0f;
+            meshes.push_back(plane);
+        }
+        else if (type == GeometryType::Quad)
+        {
+            auto quad = GeometryGenerator::CreateQuad(1.0f, 1.0f);
+            verticesNum = quad->vertices.size();
+            trianglesNum = quad->indices.size() / 3;
+            boundsSizeX = 1.0f;
+            boundsSizeY = 1.0f;
+            boundsSizeZ = 0.0f;
+            meshes.push_back(quad);
+        }
         else
         {
             Debug::LogError("Try to generate invalid geometry type!");

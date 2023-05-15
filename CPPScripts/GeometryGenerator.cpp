@@ -374,6 +374,85 @@ namespace ZXEngine
 		return new StaticMesh(vertices, indices);
 	}
 
+	StaticMesh* GeometryGenerator::CreatePlane(float xLength, float zLength, uint32_t xSplit, uint32_t zSplit)
+	{
+		vector<Vertex> vertices;
+		vector<uint32_t> indices;
+
+		uint32_t vertexCount = xSplit * zSplit;
+		uint32_t faceCount = (xSplit - 1) * (zSplit - 1) * 2;
+
+		float halfWidth = 0.5f * xLength;
+		float halfDepth = 0.5f * zLength;
+
+		float dx = xLength / (xSplit - 1);
+		float dz = zLength / (zSplit - 1);
+
+		float du = 1.0f / (xSplit - 1);
+		float dv = 1.0f / (zSplit - 1);
+
+		vertices.resize(vertexCount);
+		for (size_t i = 0; i < zSplit; i++)
+		{
+			float z = halfDepth - i * dz;
+			for (size_t j = 0; j < xSplit; j++)
+			{
+				float x = -halfWidth + j * dx;
+
+				vertices[i * xSplit + j].Position = { x, 0.0f, z };
+				vertices[i * xSplit + j].Normal = { 0.0f, 1.0f, 0.0f };
+				vertices[i * xSplit + j].Tangent = { 1.0f, 0.0f, 0.0f };
+
+				vertices[i * xSplit + j].TexCoords.x = j * du;
+				vertices[i * xSplit + j].TexCoords.y = i * dv;
+			}
+		}
+
+		indices.resize(static_cast<size_t>(faceCount) * 3);
+
+		size_t k = 0;
+		for (uint32_t i = 0; i < zSplit - 1; i++)
+		{
+			for (uint32_t j = 0; j < xSplit - 1; j++)
+			{
+				indices[k] = i * xSplit + j;
+				indices[k + 1] = (i + 1) * xSplit + j;
+				indices[k + 2] = i * xSplit + j + 1;
+
+				indices[k + 3] = (i + 1) * xSplit + j;
+				indices[k + 4] = (i + 1) * xSplit + j + 1;
+				indices[k + 5] = i * xSplit + j + 1;
+
+				// 移到下个四边形
+				k += 6;
+			}
+		}
+
+		return new StaticMesh(vertices, indices);
+	}
+
+	StaticMesh* GeometryGenerator::CreateQuad(float xLength, float yLength)
+	{
+		float halfX = 0.5f * xLength;
+		float halfY = 0.5f * yLength;
+
+		vector<Vertex> vertices =
+		{
+			{ .Position = {  halfX,  halfY, 0.0f }, .TexCoords = { 1.0f, 1.0f }, .Normal = { 0.0f, 0.0f, -1.0f }, .Tangent = { 1.0f, 0.0f, 0.0f } },
+			{ .Position = {  halfX, -halfY, 0.0f }, .TexCoords = { 1.0f, 0.0f }, .Normal = { 0.0f, 0.0f, -1.0f }, .Tangent = { 1.0f, 0.0f, 0.0f } },
+			{ .Position = { -halfX,  halfY, 0.0f }, .TexCoords = { 0.0f, 1.0f }, .Normal = { 0.0f, 0.0f, -1.0f }, .Tangent = { 1.0f, 0.0f, 0.0f } },
+			{ .Position = { -halfX, -halfY, 0.0f }, .TexCoords = { 0.0f, 0.0f }, .Normal = { 0.0f, 0.0f, -1.0f }, .Tangent = { 1.0f, 0.0f, 0.0f } },
+		};
+
+		vector<uint32_t> indices = 
+		{
+			1, 0, 2,
+			1, 2, 3
+		};
+
+		return new StaticMesh(vertices, indices);
+	}
+
 	Vertex GeometryGenerator::MidPoint(const Vertex& v0, const Vertex& v1)
 	{
 		auto& p0 = v0.Position;
