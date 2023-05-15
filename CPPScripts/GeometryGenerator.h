@@ -11,6 +11,7 @@ namespace ZXEngine
 		static StaticMesh* CreateBox(float xLength, float yLength, float zLength);
 		static StaticMesh* CreateSphere(float radius, uint32_t sliceCount, uint32_t stackCount);
 		static StaticMesh* CreateSphereTessellation(float radius, uint32_t subdivisionNum);
+		static StaticMesh* CreateCylinder(float topRadius, float bottomRadius, float height, uint32_t sliceCount, uint32_t stackCount);
 
 	private:
 		static Vertex MidPoint(const Vertex& v0, const Vertex& v1);

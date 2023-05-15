@@ -69,6 +69,16 @@ namespace ZXEngine
             boundsSizeZ = 1.0f;
             meshes.push_back(sphere);
         }
+        else if (type == GeometryType::Cylinder)
+        {
+            auto cylinder = GeometryGenerator::CreateCylinder(0.5f, 0.5f, 2.0f, 40, 20);
+            verticesNum = cylinder->vertices.size();
+            trianglesNum = cylinder->indices.size() / 3;
+            boundsSizeX = 1.0f;
+            boundsSizeY = 2.0f;
+            boundsSizeZ = 1.0f;
+            meshes.push_back(cylinder);
+        }
         else
         {
             Debug::LogError("Try to generate invalid geometry type!");

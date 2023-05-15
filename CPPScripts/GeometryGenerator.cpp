@@ -227,6 +227,153 @@ namespace ZXEngine
 		return new StaticMesh(vertices, indices);
 	}
 
+	StaticMesh* GeometryGenerator::CreateCylinder(float topRadius, float bottomRadius, float height, uint32_t sliceCount, uint32_t stackCount)
+	{
+		vector<Vertex> vertices;
+		vector<uint32_t> indices;
+
+		// 圆柱上的顶点圈数
+		uint32_t ringCount = stackCount + 1;
+		// 圆柱上每一层的高度
+		float stackHeight = height / stackCount;
+		// 每一层的半径增量
+		float radiusStep = (topRadius - bottomRadius) / stackCount;
+		// XZ平面上每一圈的弧度增量
+		float dTheta = Math::PIx2 / sliceCount;
+
+		// 从下到上计算每一圈的顶点
+		for (uint32_t i = 0; i < ringCount; i++)
+		{
+			float y = -0.5f * height + i * stackHeight;
+			float r = bottomRadius + i * radiusStep;
+
+			// 计算当前这一圈的顶点
+			for (uint32_t j = 0; j <= sliceCount; j++)
+			{
+				Vertex vertex;
+
+				// 根据三角函数计算各种顶点信息，文字不太好描述就不解释了
+				float c = cosf(j * dTheta);
+				float s = sinf(j * dTheta);
+
+				vertex.Position = { r * c, y, r * s };
+
+				vertex.TexCoords.x = (float)j / sliceCount;
+				vertex.TexCoords.y = 1.0f - (float)i / stackCount;
+
+				vertex.Tangent = { -s, 0.0f, c };
+
+				float dr = bottomRadius - topRadius;
+				vertex.Bitangent = { dr * c, -height, dr * s };
+
+				vertex.Normal = Math::Cross(vertex.Tangent, vertex.Bitangent);
+
+				vertices.push_back(vertex);
+			}
+		}
+
+		// 每一圈的顶点数量(起点和中点在同一个位置，但是UV不同，所以是2个点，这里要+1)
+		uint32_t ringVertexCount = sliceCount + 1;
+
+		// 为刚刚那些顶点计算索引，构成三角形
+		for (uint32_t i = 0; i < stackCount; i++)
+		{
+			for (uint32_t j = 0; j < sliceCount; j++)
+			{
+				indices.push_back(i * ringVertexCount + j);
+				indices.push_back((i + 1) * ringVertexCount + j + 1);
+				indices.push_back((i + 1) * ringVertexCount + j);
+
+				indices.push_back(i * ringVertexCount + j);
+				indices.push_back(i * ringVertexCount + j + 1);
+				indices.push_back((i + 1) * ringVertexCount + j + 1);
+			}
+		}
+
+		// 开始生成圆柱顶部的圆
+		// 记录当前索引，作为顶部圆的起始索引
+		uint32_t baseIndex = static_cast<uint32_t>(vertices.size());
+		// 虽然最顶部一圈顶点刚刚已经算过了，但是为了顶部圆圈的UV正确，这里需要重复生成一圈UV不同的顶点
+		float topY = 0.5f * height;
+		for (uint32_t i = 0; i <= sliceCount; i++)
+		{
+			float c = cosf(i * dTheta);
+			float s = sinf(i * dTheta);
+
+			float x = topRadius * c;
+			float z = topRadius * s;
+
+			float u = 0.5f + c * 0.5f;
+			float v = 0.5f + s * 0.5f;
+
+			vertices.push_back({
+				.Position = { x, topY, z },
+				.TexCoords = { u, v },
+				.Normal = { 0.0f, 1.0f, 0.0f },
+				.Tangent = { 1.0f, 0.0f, 0.0f }
+			});
+		}
+
+		// 顶部中心顶点
+		vertices.push_back({
+			.Position = { 0.0f, topY, 0.0f },
+			.TexCoords = { 0.5f, 0.5f },
+			.Normal = { 0.0f, 1.0f, 0.0f },
+			.Tangent = { 1.0f, 0.0f, 0.0f }
+		});
+
+		// 顶部中心顶点索引
+		uint32_t topCenterIndex = static_cast<uint32_t>(vertices.size()) - 1;
+
+		for (uint32_t i = 0; i < sliceCount; i++)
+		{
+			indices.push_back(topCenterIndex);
+			indices.push_back(baseIndex + i);
+			indices.push_back(baseIndex + i + 1);
+		}
+
+		// 开始生成圆柱底部的圆，步骤和生成顶部圆一致
+		baseIndex = static_cast<uint32_t>(vertices.size());
+
+		float bottomY = -0.5f * height;
+		for (uint32_t i = 0; i <= sliceCount; i++)
+		{
+			float c = cosf(i * dTheta);
+			float s = sinf(i * dTheta);
+
+			float x = bottomRadius * c;
+			float z = bottomRadius * s;
+
+			float u = 0.5f + c * 0.5f;
+			float v = 0.5f + s * 0.5f;
+
+			vertices.push_back({
+				.Position = { x, bottomY, z },
+				.TexCoords = { u, v },
+				.Normal = { 0.0f, -1.0f, 0.0f },
+				.Tangent = { 1.0f, 0.0f, 0.0f }
+			});
+		}
+
+		vertices.push_back({
+			.Position = { 0.0f, bottomY, 0.0f },
+			.TexCoords = { 0.5f, 0.5f },
+			.Normal = { 0.0f, -1.0f, 0.0f },
+			.Tangent = { 1.0f, 0.0f, 0.0f }
+		});
+
+		uint32_t bottomCenterIndex = static_cast<uint32_t>(vertices.size()) - 1;
+
+		for (uint32_t i = 0; i < sliceCount; i++)
+		{
+			indices.push_back(bottomCenterIndex);
+			indices.push_back(baseIndex + i + 1);
+			indices.push_back(baseIndex + i);
+		}
+
+		return new StaticMesh(vertices, indices);
+	}
+
 	Vertex GeometryGenerator::MidPoint(const Vertex& v0, const Vertex& v1)
 	{
 		auto& p0 = v0.Position;
