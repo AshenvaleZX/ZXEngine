@@ -28,6 +28,7 @@ namespace ZXEngine
 		void LoadScene(string path, bool switchNow = true);
 		void SwitchScene(string name);
 		void DeleteScene(string name);
+		void DeleteAllScene();
 		void ReloadScene();
 		Scene* GetCurScene();
 

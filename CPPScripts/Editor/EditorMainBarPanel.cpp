@@ -4,7 +4,6 @@
 #include "../GameLogicManager.h"
 #include "../Time.h"
 #include "../SceneManager.h"
-#include "../LuaManager.h"
 #include "../Resources.h"
 #include "../Vulkan/SPIRVCompiler.h"
 #include "../DirectX12/ZXD3D12Util.h"
@@ -110,7 +109,6 @@ namespace ZXEngine
 					EditorDataManager::GetInstance()->selectedGO = nullptr;
 					EditorGUIManager::GetInstance()->ResetPanels();
 					SceneManager::GetInstance()->ReloadScene();
-					LuaManager::GetInstance()->RestartLuaState();
 				}
 				EditorDataManager::isGameStart = !EditorDataManager::isGameStart;
 			}

@@ -2,6 +2,7 @@
 #include "Resources.h"
 #include "ProjectSetting.h"
 #include "RenderAPI.h"
+#include "LuaManager.h"
 
 namespace ZXEngine
 {
@@ -33,31 +34,33 @@ namespace ZXEngine
 
 	void SceneManager::LoadScene(string path, bool switchNow)
 	{
+		// 目前多场景同时管理还有问题，主要体现在GameLogic和Light等组件上，会记录到一个全局列表里
+		// 然后在遍历这种组件的时候，会遍历到不属于当前场景的对象，比如调用到不属于当前场景的Lua脚本
+		// 所以暂时只支持单场景，切场景的时候先卸载原场景
+		DeleteAllScene();
 		string name = Resources::GetAssetName(path);
 
-		if (GetScene(name) == nullptr)
-		{
-			SceneInfo* info = new SceneInfo();
-			info->path = path;
-			info->scene = new Scene(Resources::LoadScene(path));
-			scenes.insert(pair<string, SceneInfo*>(name, info));
+		SceneInfo* info = new SceneInfo();
+		info->path = path;
+		info->scene = new Scene(Resources::LoadScene(path));
+		scenes.insert(pair<string, SceneInfo*>(name, info));
 
-			if (switchNow)
-				curScene = info;
-		}
-		else
-		{
-			Debug::LogWarning("Attempt to load an existing scene: " + path);
-		}
+		if (switchNow)
+			SwitchScene(name);
 	}
 
 	void SceneManager::SwitchScene(string name)
 	{
 		auto scene = GetSceneInfo(name);
 		if (scene == nullptr)
+		{
 			Debug::LogError("Switch to invalid scene: " + name);
+		}
 		else
+		{
 			curScene = scene;
+			LuaManager::GetInstance()->RestartLuaState();
+		}
 	}
 
 	void SceneManager::DeleteScene(string name)
@@ -74,12 +77,22 @@ namespace ZXEngine
 		}
 	}
 
+	void SceneManager::DeleteAllScene()
+	{
+		for (auto& iter : scenes)
+		{
+			delete iter.second;
+		}
+		scenes.clear();
+	}
+
 	void SceneManager::ReloadScene()
 	{
 		// 先等待当前所有绘制结束，再卸载场景释放资源
 		RenderAPI::GetInstance()->WaitForRenderFinish();
 		delete curScene->scene;
 		curScene->scene = new Scene(Resources::LoadScene(curScene->path));
+		LuaManager::GetInstance()->RestartLuaState();
 	}
 
 	Scene* SceneManager::GetCurScene()
