@@ -1,9 +1,11 @@
 #include "EditorDataManager.h"
 #include "EditorGUIManager.h"
 #include "EditorAssetPreviewer.h"
+#include "../Time.h"
 #include "../Texture.h"
 #include "../Material.h"
 #include "../MeshRenderer.h"
+#include "../SceneManager.h"
 
 namespace ZXEngine
 {
@@ -92,6 +94,26 @@ namespace ZXEngine
 
 	void EditorDataManager::SetSelectedAsset(EditorAssetNode* asset)
 	{
+		long long curTime = Time::curSysTime_micro;
+		long long dt = curTime - lastClickTime;
+		lastClickTime = curTime;
+
+		// 点击同一个Asset
+		if (selectedAsset == asset)
+		{
+			// 如果间隔时间小于300ms，则认为是双击
+			if (dt < 300000)
+			{
+				if (asset->type == AssetType::Scene)
+				{
+					SceneManager::GetInstance()->LoadScene(Resources::GetAssetLocalPath(asset->path));
+				}
+			}
+
+			// 无论是否双击，都不需要继续执行后续代码(更新当前选中资源)
+			return;
+		}
+
 		selectedGO = nullptr;
 		if (curAssetInfo != nullptr)
 		{
