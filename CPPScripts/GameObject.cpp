@@ -101,7 +101,6 @@ namespace ZXEngine
 		// Mesh
 		if (!data["Geometry"].is_null())
 		{
-			meshRenderer->modelName = "Sphere";
 			meshRenderer->GenerateGeometry(data["Geometry"]);
 		}
 		else if (!data["Mesh"].is_null())

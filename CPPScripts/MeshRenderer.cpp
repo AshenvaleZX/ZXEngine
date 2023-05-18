@@ -41,6 +41,7 @@ namespace ZXEngine
     {
         if (type == GeometryType::Box)
         {
+            modelName = "Box";
             auto box = GeometryGenerator::CreateBox(1.0f, 1.0f, 1.0f);
             verticesNum = box->vertices.size();
             trianglesNum = box->indices.size() / 3;
@@ -51,6 +52,7 @@ namespace ZXEngine
         }
         else if (type == GeometryType::Sphere)
         {
+            modelName = "Sphere";
             auto sphere = GeometryGenerator::CreateSphere(0.5f, 40, 20);
             verticesNum = sphere->vertices.size();
             trianglesNum = sphere->indices.size() / 3;
@@ -61,6 +63,7 @@ namespace ZXEngine
         }
         else if (type == GeometryType::TessellationSphere)
         {
+            modelName = "TessellationSphere";
             auto sphere = GeometryGenerator::CreateSphereTessellation(0.5f, 4);
             verticesNum = sphere->vertices.size();
             trianglesNum = sphere->indices.size() / 3;
@@ -71,6 +74,7 @@ namespace ZXEngine
         }
         else if (type == GeometryType::Cylinder)
         {
+            modelName = "Cylinder";
             auto cylinder = GeometryGenerator::CreateCylinder(0.5f, 0.5f, 2.0f, 40, 20);
             verticesNum = cylinder->vertices.size();
             trianglesNum = cylinder->indices.size() / 3;
@@ -81,6 +85,7 @@ namespace ZXEngine
         }
         else if (type == GeometryType::Plane)
         {
+            modelName = "Plane";
             auto plane = GeometryGenerator::CreatePlane(10.0f, 10.0f, 11, 11);
             verticesNum = plane->vertices.size();
             trianglesNum = plane->indices.size() / 3;
@@ -91,6 +96,7 @@ namespace ZXEngine
         }
         else if (type == GeometryType::Quad)
         {
+            modelName = "Quad";
             auto quad = GeometryGenerator::CreateQuad(1.0f, 1.0f);
             verticesNum = quad->vertices.size();
             trianglesNum = quad->indices.size() / 3;
