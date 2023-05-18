@@ -435,6 +435,9 @@
     <ClCompile Include="..\..\CPPScripts\GeometryGenerator.h">
       <Filter>头文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Vendor\Src\volk.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h">

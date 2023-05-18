@@ -284,6 +284,7 @@
     <ClCompile Include="..\..\CPPScripts\ZShader.cpp" />
     <ClCompile Include="..\..\Vendor\Src\d3dx12_property_format_table.cpp" />
     <ClCompile Include="..\..\Vendor\Src\glad.c" />
+    <ClCompile Include="..\..\Vendor\Src\volk.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Camera.h" />

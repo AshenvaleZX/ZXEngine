@@ -1,9 +1,16 @@
 #pragma once
 #include "../pubh.h"
+// 添加volk库，这个库类似OpenGL的GLAD库，是用来加载Vulkan函数的
+// 但是这个和OpenGL不一样，这个不是必须的，如果只是做光栅化管线的渲染，就不需要启用Vulkan的扩展，就可以不做这个加载
+// 但是Vulkan的光线追踪渲染模块在Vulkan扩展里，而Vulkan扩展里的函数全部需要我们手动加载，所以需要用这个库来加载所有Vulkan函数
+#define VK_NO_PROTOTYPES
+#include <volk.h>
 // 用GLFW的话这里就不要自己去include Vulkan的头文件，用这个宏定义，让GLFW自己去处理，不然有些接口有问题
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+// AMD写的Vulkan内存分配器
 #include "vk_mem_alloc.h"
+#include "../PublicStruct.h"
 
 #define ShaderModuleSet map<VkShaderStageFlagBits, VkShaderModule>
 
@@ -23,7 +30,11 @@ namespace ZXEngine
     const vector<const char*> deviceExtensions =
     {
         // 交换链扩展名，这个的支持也就代表了是否支持将图像绘制到显示器上(不是所有GPU都可以拿来绘图)
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+        // 光追扩展
+        VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME,
+        VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
+        VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME
     };
 
     enum class RenderPassType

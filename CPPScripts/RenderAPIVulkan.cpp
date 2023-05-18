@@ -1718,6 +1718,11 @@ namespace ZXEngine
 
     void RenderAPIVulkan::CreateVkInstance()
     {
+        // 初始化volk，用来加载Vulkan Extension函数指针的，类似OpenGL的GLAD，没有这个用不了光追管线的那些Vulkan扩展函数
+        VkResult res = volkInitialize();
+        if (res != VK_SUCCESS)
+			Debug::LogError("Could not initialize volk!");
+
         if (ProjectSetting::enableGraphicsDebug)
             validationLayersEnabled = CheckValidationLayerSupport();
 
@@ -1752,6 +1757,9 @@ namespace ZXEngine
 
         if (vkCreateInstance(&createInfo, nullptr, &vkInstance) != VK_SUCCESS)
             throw std::runtime_error("failed to create instance!");
+
+        // 用volk加载Vulkan Instance级别的函数指针
+        volkLoadInstanceOnly(vkInstance);
 
         // 如果开了验证层，创建一下接收Debug信息的回调
         if (validationLayersEnabled)
@@ -1823,11 +1831,21 @@ namespace ZXEngine
         }
 
         // 明确设备要使用的功能特性
-        VkPhysicalDeviceFeatures deviceFeatures = {};
+        VkPhysicalDeviceFeatures2 deviceFeatures = {};
+        deviceFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
         // 启用对各向异性采样的支持
-        deviceFeatures.samplerAnisotropy = VK_TRUE;
-        deviceFeatures.geometryShader = VK_TRUE;
-        deviceFeatures.sampleRateShading = VK_TRUE;
+        deviceFeatures.features.samplerAnisotropy = VK_TRUE;
+        deviceFeatures.features.geometryShader = VK_TRUE;
+        deviceFeatures.features.sampleRateShading = VK_TRUE;
+
+        // 添加光追管线需要的扩展和特性
+        // 对应扩展: VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME
+        VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationFeature{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR };
+        deviceFeatures.pNext = &accelerationFeature;
+        // 对应扩展: VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME
+        VkPhysicalDeviceRayTracingPipelineFeaturesKHR rtPipelineFeature{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR };
+        accelerationFeature.pNext = &rtPipelineFeature;
+        rtPipelineFeature.pNext = nullptr;
 
         // 创建逻辑设备的信息
         VkDeviceCreateInfo createInfo = {};
@@ -1835,12 +1853,15 @@ namespace ZXEngine
         // 使用前面的两个结构体填充
         createInfo.pQueueCreateInfos = queueCreateInfos.data();
         createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
-        createInfo.pEnabledFeatures = &deviceFeatures;
 
-        // 和VkInstance一样，VkDevice可以开启扩展和验证层
-        // 添加扩展信息
+        // 添加VkDevice级别的扩展和特性
         createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
         createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+        // Vulkan 1.1之后，用这种pNext方式添加特性，而不是pEnabledFeatures
+        createInfo.pNext = &deviceFeatures;
+        createInfo.pEnabledFeatures = VK_NULL_HANDLE;
+
+        // 添加VkDevice级别验证层
         // 如果启用了验证层，把验证层信息添加进去
         if (validationLayersEnabled)
         {
@@ -1854,9 +1875,11 @@ namespace ZXEngine
 
         // 调用vkCreateDevice函数来创建实例化逻辑设备
         // 逻辑设备不与VkInstance直接交互，所以参数里只有物理设备
-        if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS) {
+        if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS)
             throw std::runtime_error("failed to create logical device!");
-        }
+        
+        // 用volk加载Vulkan Device级别的函数指针
+        volkLoadDevice(device);
 
         // 逻辑设备创建的时候，队列也一起创建了，获取队列并保存下来方便之后调用
         // 参数是逻辑设备，队列簇，队列索引和存储获取队列变量句柄的指针
@@ -1867,11 +1890,19 @@ namespace ZXEngine
 
     void RenderAPIVulkan::CreateMemoryAllocator()
     {
+        // 因为用volk库手动加载所有Vulkan函数了，所以这里要给VMA传递获取函数地址的方法，让VMA可以正确获取Vulkan函数
+        VmaVulkanFunctions vmaVkFunctions = {};
+        vmaVkFunctions.vkGetInstanceProcAddr = vkGetInstanceProcAddr;
+        vmaVkFunctions.vkGetDeviceProcAddr = vkGetDeviceProcAddr;
+
         VmaAllocatorCreateInfo vmaInfo = {};
         vmaInfo.vulkanApiVersion = VK_HEADER_VERSION_COMPLETE;
         vmaInfo.instance = vkInstance;
         vmaInfo.physicalDevice = physicalDevice;
         vmaInfo.device = device;
+        // 如果不手动加载Vulkan函数，这里可以填NULL
+        vmaInfo.pVulkanFunctions = &vmaVkFunctions;
+
         vmaCreateAllocator(&vmaInfo, &vmaAllocator);
     }
 
