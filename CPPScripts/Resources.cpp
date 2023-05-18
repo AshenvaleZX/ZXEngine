@@ -122,6 +122,9 @@ namespace ZXEngine
 
 		scene->skyBox = Resources::LoadCubeMap(data["SkyBox"]);
 
+		if (!data["RenderPipelineType"].is_null())
+			scene->renderPipelineType = data["RenderPipelineType"];
+
 		for (unsigned int i = 0; i < data["GameObjects"].size(); i++)
 		{
 			string p = Resources::JsonStrToString(data["GameObjects"][i]);

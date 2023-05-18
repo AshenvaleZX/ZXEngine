@@ -12,6 +12,7 @@ namespace ZXEngine
 	public:
 		CubeMap* skyBox = nullptr;
 		vector<GameObject*> gameObjects;
+		RenderPipelineType renderPipelineType = RenderPipelineType::Rasterization;
 
 		Scene(SceneStruct* sceneStruct);
 		~Scene();

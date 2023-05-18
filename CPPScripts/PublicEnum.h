@@ -17,6 +17,12 @@ namespace ZXEngine
 		ZX_SHADER_STAGE_FRAGMENT_BIT = 0x00000004,
 	} ShaderStageFlagBit;
 
+	enum class RenderPipelineType
+	{
+		Rasterization,
+		RayTracing,
+	};
+
 	enum class TextureType
 	{
 		ZX_2D,

@@ -8,6 +8,7 @@ namespace ZXEngine
 	unsigned int ProjectSetting::srcHeight;
 	string ProjectSetting::defaultScene;
 	string ProjectSetting::projectPath;
+	RenderPipelineType ProjectSetting::renderPipelineType;
 	bool ProjectSetting::enableDynamicBatch;
 	bool ProjectSetting::preserveIntermediateShader;
 	bool ProjectSetting::enableGraphicsDebug;

@@ -59,6 +59,7 @@ namespace ZXEngine
 		else
 		{
 			curScene = scene;
+			ProjectSetting::renderPipelineType = curScene->scene->renderPipelineType;
 			LuaManager::GetInstance()->RestartLuaState();
 		}
 	}

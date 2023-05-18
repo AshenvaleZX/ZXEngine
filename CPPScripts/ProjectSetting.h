@@ -10,6 +10,7 @@ namespace ZXEngine
 		static unsigned int srcHeight;
 		static string defaultScene;
 		static string projectPath;
+		static RenderPipelineType renderPipelineType;
 		static bool enableDynamicBatch;
 		static bool preserveIntermediateShader;
 		static bool enableGraphicsDebug;

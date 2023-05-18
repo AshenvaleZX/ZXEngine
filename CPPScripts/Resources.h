@@ -41,6 +41,7 @@ namespace ZXEngine
 	{
 		vector<string> skyBox;
 		vector<PrefabStruct*> prefabs;
+		RenderPipelineType renderPipelineType = RenderPipelineType::Rasterization;
 
 		~SceneStruct() { for (auto iter : prefabs) delete iter; }
 	};
