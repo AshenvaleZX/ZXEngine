@@ -132,13 +132,18 @@ namespace ZXEngine
 
     struct VulkanVAO
     {
+        uint32_t size = 0; // 顶点数量(按索引算)
         VkBuffer indexBuffer = VK_NULL_HANDLE;
         VmaAllocation indexBufferAlloc = VK_NULL_HANDLE;
         void* indexBufferAddress = nullptr; // Only for dynamic mesh
         VkBuffer vertexBuffer = VK_NULL_HANDLE;
         VmaAllocation vertexBufferAlloc = VK_NULL_HANDLE;
         void* vertexBufferAddress = nullptr; // Only for dynamic mesh
-        uint32_t size = 0;
+
+        // BLAS for ray tracing
+        VulkanBuffer blasBuffer;
+        VkAccelerationStructureKHR blas;
+
         bool inUse = false;
     };
 
