@@ -1151,7 +1151,7 @@ namespace ZXEngine
             VkDeviceAddress scratchAddress = vkGetBufferDeviceAddress(device, &bufferInfo);
 
             // 创建一个存放BLAS数据的VkBuffer，Size为前面查询到的，所需的大小
-            meshBuffer->blasBuffer = CreateBuffer(sizeInfo.accelerationStructureSize,
+            meshBuffer->blas.buffer = CreateBuffer(sizeInfo.accelerationStructureSize,
                 VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
                 VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
@@ -1160,14 +1160,14 @@ namespace ZXEngine
             blasInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
             blasInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
             blasInfo.size = sizeInfo.accelerationStructureSize;
-            blasInfo.buffer = meshBuffer->blasBuffer.buffer;
+            blasInfo.buffer = meshBuffer->blas.buffer.buffer;
 
             // 创建BLAS，注意这里创建好后只是初始化状态，真正的数据还要后续填充
-            vkCreateAccelerationStructureKHR(device, &blasInfo, nullptr, &meshBuffer->blas);
+            vkCreateAccelerationStructureKHR(device, &blasInfo, nullptr, &meshBuffer->blas.as);
 
             // 继续填充构建BLAS所需的信息
             // 把刚刚创建的，处于初始状态的BLAS传给dstAccelerationStructure，表示这是我们所要构建的BLAS
-            buildInfo.dstAccelerationStructure = meshBuffer->blas;
+            buildInfo.dstAccelerationStructure = meshBuffer->blas.as;
             // 如果我们不是创建一个全新的BLAS，而是通过一个现有的BLAS来更新当前的这个BLAS，就需要设置这个参数
             buildInfo.srcAccelerationStructure = VK_NULL_HANDLE;
             // 把前面创建的Scratch Buffer提供给Vulkan
@@ -1252,13 +1252,19 @@ namespace ZXEngine
                 });
 
                 // 销毁之前的BLAS
-                DestroyBuffer(meshBuffer->blasBuffer);
-                vkDestroyAccelerationStructureKHR(device, meshBuffer->blas, nullptr);
+                DestroyBuffer(meshBuffer->blas.buffer);
+                vkDestroyAccelerationStructureKHR(device, meshBuffer->blas.as, nullptr);
 
                 // 把新创建的BLAS赋值过来
-                meshBuffer->blas = newAS;
-                meshBuffer->blasBuffer = newBLASBuffer;
+                meshBuffer->blas.as = newAS;
+                meshBuffer->blas.buffer = newBLASBuffer;
             }
+
+            // 获取BLAS的Device Address
+            VkAccelerationStructureDeviceAddressInfoKHR addressInfo = {};
+            addressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
+            addressInfo.accelerationStructure = meshBuffer->blas.as;
+            meshBuffer->blas.deviceAddress = vkGetAccelerationStructureDeviceAddressKHR(device, &addressInfo);
 
             // BLAS创建完成后立刻销毁Scratch Buffer
             DestroyBuffer(scratchBuffer);
@@ -1329,6 +1335,143 @@ namespace ZXEngine
         };
 
         SetUpStaticMesh(VAO, vertices, indices);
+    }
+
+    void RenderAPIVulkan::PushAccelerationStructure(uint32_t VAO, const Matrix4& transform)
+    {
+        asInstanceData.emplace_back();
+        asInstanceData.back().VAO = VAO;
+        asInstanceData.back().transform = transform;
+    }
+
+    void RenderAPIVulkan::BuildTopLevelAccelerationStructure()
+    {
+        // 场景中要渲染的对象实例数据
+        vector<VkAccelerationStructureInstanceKHR> instances;
+
+        for (auto& data : asInstanceData)
+        {
+            auto meshData = GetVAOByIndex(data.VAO);
+
+            VkAccelerationStructureInstanceKHR asIns = {};
+            asIns.transform = GetVkTransformMatrix(data.transform);
+            asIns.instanceCustomIndex = data.VAO;
+            asIns.mask = 0xFF;
+            asIns.instanceShaderBindingTableRecordOffset = 0;
+            asIns.flags = VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR;
+            asIns.accelerationStructureReference = meshData->blas.deviceAddress;
+
+            instances.push_back(asIns);
+        }
+
+        uint32_t insNum = static_cast<uint32_t>(instances.size());
+        VkDeviceSize insBufferSize = sizeof(VkAccelerationStructureInstanceKHR) * insNum;
+
+        // 建立StagingBuffer
+        VulkanBuffer stagingBuffer = CreateBuffer(insBufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
+
+        // 拷贝场景实例数据到StagingBuffer
+        memcpy(stagingBuffer.mappedAddress, instances.data(), insBufferSize);
+
+        // 存放场景实例数据的Buffer
+        VulkanBuffer instancesBuffer = CreateBuffer(insBufferSize, 
+            VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR,
+            VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+
+        // 把数据从stagingBuffer拷贝到instancesBuffer
+        ImmediatelyExecute([=](VkCommandBuffer cmd)
+        {
+            VkBufferCopy copy = {};
+            copy.dstOffset = 0;
+            copy.srcOffset = 0;
+            copy.size = insBufferSize;
+            vkCmdCopyBuffer(cmd, stagingBuffer.buffer, instancesBuffer.buffer, 1, &copy);
+
+            // 确保构建TLAS之前，数据拷贝已完成
+            VkMemoryBarrier barrier = {};
+            barrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
+            barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            barrier.dstAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR;
+            vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+                0, 1, &barrier, 0, nullptr, 0, nullptr);
+        });
+
+        // 获取instancesBuffer的DeviceAddress
+        VkBufferDeviceAddressInfo bufferInfo = {};
+        bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+        bufferInfo.buffer = instancesBuffer.buffer;
+        VkDeviceAddress instancesBufferAddr = vkGetBufferDeviceAddress(device, &bufferInfo);
+
+        // 添加一些描述，包装一下上面的Instances Buffer数据，用于构建TLAS
+        VkAccelerationStructureGeometryInstancesDataKHR instancesData = {};
+        instancesData.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR;
+        instancesData.data.deviceAddress = instancesBufferAddr;
+        VkAccelerationStructureGeometryKHR tlasGeometry = {};
+        tlasGeometry.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
+        tlasGeometry.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
+        tlasGeometry.geometry.instances = instancesData;
+
+        // 构建TLAS的信息
+        VkAccelerationStructureBuildGeometryInfoKHR buildInfo = {};
+        buildInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
+        buildInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
+        buildInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
+        buildInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
+        buildInfo.geometryCount = 1;
+        buildInfo.pGeometries = &tlasGeometry;
+
+        // 获取TLAS的构建所需的Buffer大小
+        VkAccelerationStructureBuildSizesInfoKHR sizeInfo = {};
+        sizeInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR;
+        vkGetAccelerationStructureBuildSizesKHR(device, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR, &buildInfo, &insNum, &sizeInfo);
+
+        // 创建TLAS Buffer
+        tlas.buffer = CreateBuffer(sizeInfo.accelerationStructureSize,
+            VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
+            VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+
+        // 创建TLAS的信息(仅创建，不填充数据，所以只需要Buffer和Size)
+        VkAccelerationStructureCreateInfoKHR createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
+        createInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
+        createInfo.size = sizeInfo.accelerationStructureSize;
+        createInfo.buffer = tlas.buffer.buffer;
+
+        // 创建TLAS
+        vkCreateAccelerationStructureKHR(device, &createInfo, nullptr, &tlas.as);
+
+        // 创建Scratch Buffer，Vulkan构建TLAS需要一个Buffer来放中间数据
+        VulkanBuffer scratchBuffer = CreateBuffer(sizeInfo.accelerationStructureSize,
+            VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+            VMA_MEMORY_USAGE_AUTO);
+        VkBufferDeviceAddressInfo scratchBufferInfo = {};
+        scratchBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+        scratchBufferInfo.buffer = scratchBuffer.buffer;
+        VkDeviceAddress scratchAddress = vkGetBufferDeviceAddress(device, &scratchBufferInfo);
+
+        // 继续填充构建TLAS需要的信息
+        buildInfo.srcAccelerationStructure = VK_NULL_HANDLE;
+        buildInfo.dstAccelerationStructure = tlas.as;
+        buildInfo.scratchData.deviceAddress = scratchAddress;
+
+        // 本次构建TLAS的所需的数据范围
+        VkAccelerationStructureBuildRangeInfoKHR buildRangeInfo = {};
+        buildRangeInfo.firstVertex = 0;
+        buildRangeInfo.primitiveCount = insNum;
+        buildRangeInfo.primitiveOffset = 0;
+        buildRangeInfo.transformOffset = 0;
+        const VkAccelerationStructureBuildRangeInfoKHR* pBuildRangeInfo = &buildRangeInfo;
+
+        // 构建TLAS
+        ImmediatelyExecute([=](VkCommandBuffer cmd)
+        {
+            vkCmdBuildAccelerationStructuresKHR(cmd, 1, &buildInfo, &pBuildRangeInfo);
+        });
+
+        // 销毁中间Buffer
+        DestroyBuffer(stagingBuffer);
+        DestroyBuffer(instancesBuffer);
+        DestroyBuffer(scratchBuffer);
     }
 
     void RenderAPIVulkan::UseShader(unsigned int ID)
@@ -1623,6 +1766,14 @@ namespace ZXEngine
             meshBuffer->vertexBufferAddress = nullptr;
         }
         vmaDestroyBuffer(vmaAllocator, meshBuffer->vertexBuffer, meshBuffer->vertexBufferAlloc);
+
+        if (meshBuffer->blas.as != VK_NULL_HANDLE)
+        {
+            meshBuffer->blas.deviceAddress = 0;
+            DestroyBuffer(meshBuffer->blas.buffer);
+            vkDestroyAccelerationStructureKHR(device, meshBuffer->blas.as, nullptr);
+            meshBuffer->blas.as = VK_NULL_HANDLE;
+        }
     
         meshBuffer->inUse = false;
     }
@@ -2632,11 +2783,20 @@ namespace ZXEngine
 
         VulkanBuffer newBuffer;
         vmaCreateBuffer(vmaAllocator, &bufferInfo, &allocationInfo, &newBuffer.buffer, &newBuffer.allocation, nullptr);
+
+        if (map)
+			vmaMapMemory(vmaAllocator, newBuffer.allocation, &newBuffer.mappedAddress);
+
         return newBuffer;
     }
 
     void RenderAPIVulkan::DestroyBuffer(VulkanBuffer buffer)
     {
+        if (buffer.mappedAddress != nullptr)
+        {
+            vmaUnmapMemory(vmaAllocator, buffer.allocation);
+            buffer.mappedAddress = nullptr;
+        }
         vmaDestroyBuffer(vmaAllocator, buffer.buffer, buffer.allocation);
     }
 
@@ -3553,6 +3713,28 @@ namespace ZXEngine
         // 先max找出高宽像素里比较大的，然后用log2计算可以被2除几次，再向下取整就是这张图可以缩小多少次了
         // 最后加1是因为原图也要一个等级
         return static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
+    }
+
+    VkTransformMatrixKHR RenderAPIVulkan::GetVkTransformMatrix(const Matrix4& mat)
+    {
+        float* elements = new float[16];
+        mat.ToRowMajorArray(elements);
+
+        VkTransformMatrixKHR transform = {};
+        transform.matrix[0][0] = elements[0];
+        transform.matrix[0][1] = elements[1];
+        transform.matrix[0][2] = elements[2];
+        transform.matrix[0][3] = elements[3];
+        transform.matrix[1][0] = elements[4];
+        transform.matrix[1][1] = elements[5];
+        transform.matrix[1][2] = elements[6];
+        transform.matrix[1][3] = elements[7];
+        transform.matrix[2][0] = elements[8];
+        transform.matrix[2][1] = elements[9];
+        transform.matrix[2][2] = elements[10];
+        transform.matrix[2][3] = elements[11];
+
+        return transform;
     }
 
     void RenderAPIVulkan::InitImmediateCommand()

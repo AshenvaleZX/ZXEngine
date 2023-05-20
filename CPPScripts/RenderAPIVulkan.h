@@ -79,6 +79,10 @@ namespace ZXEngine
         virtual void SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
         virtual void SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
 
+        // Ray Tracing
+        virtual void PushAccelerationStructure(uint32_t VAO, const Matrix4& transform);
+        virtual void BuildTopLevelAccelerationStructure();
+
 
     /// <summary>
     /// 仅启动时一次性初始化的核心Vulkan组件及相关变量
@@ -187,6 +191,8 @@ namespace ZXEngine
     /// Vulkan资源创建相关接口(这些接口Create出来的需要手动Destroy)
     /// </summary>
     private:
+        VulkanAccelerationStructure tlas;
+
         vector<VulkanVAO*> VulkanVAOArray;
         vector<VulkanFBO*> VulkanFBOArray;
         vector<VulkanAttachmentBuffer*> VulkanAttachmentBufferArray;
@@ -286,9 +292,11 @@ namespace ZXEngine
 
         vector<VulkanDrawIndex> drawIndexes;
         vector<VkSemaphore> curWaitSemaphores;
+        vector<VulkanASInstanceData> asInstanceData;
 
         uint32_t GetCurFrameBufferIndex();
         uint32_t GetMipMapLevels(int width, int height);
+        VkTransformMatrixKHR GetVkTransformMatrix(const Matrix4& mat);
         void InitImmediateCommand();
         void ImmediatelyExecute(std::function<void(VkCommandBuffer cmd)>&& function);
         void TransitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlags aspectMask, VkPipelineStageFlags srcStage, VkAccessFlags srcAccessMask, VkPipelineStageFlags dstStage, VkAccessFlags dstAccessMask);

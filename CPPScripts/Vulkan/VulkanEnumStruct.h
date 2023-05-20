@@ -69,6 +69,7 @@ namespace ZXEngine
     {
         VkBuffer buffer = VK_NULL_HANDLE;
         VmaAllocation allocation = VK_NULL_HANDLE;
+        void* mappedAddress = nullptr;
     };
 
     struct UniformBuffer
@@ -117,6 +118,13 @@ namespace ZXEngine
         uint32_t materialDataID = 0;
     };
 
+    // For build Vulkan Acceleration Structure Instance
+    struct VulkanASInstanceData
+    {
+        uint32_t VAO = 0;
+        Matrix4 transform;
+    };
+
     struct VulkanCommand
     {
         VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
@@ -130,6 +138,13 @@ namespace ZXEngine
         bool inUse = false;
     };
 
+    struct VulkanAccelerationStructure
+    {
+        VulkanBuffer buffer;
+        VkDeviceAddress deviceAddress = 0;
+        VkAccelerationStructureKHR as = VK_NULL_HANDLE;
+    };
+
     struct VulkanVAO
     {
         uint32_t size = 0; // 顶点数量(按索引算)
@@ -139,11 +154,7 @@ namespace ZXEngine
         VkBuffer vertexBuffer = VK_NULL_HANDLE;
         VmaAllocation vertexBufferAlloc = VK_NULL_HANDLE;
         void* vertexBufferAddress = nullptr; // Only for dynamic mesh
-
-        // BLAS for ray tracing
-        VulkanBuffer blasBuffer;
-        VkAccelerationStructureKHR blas;
-
+        VulkanAccelerationStructure blas; // Bottom Level Acceleration Structure
         bool inUse = false;
     };
 
