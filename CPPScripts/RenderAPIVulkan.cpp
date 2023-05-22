@@ -2768,11 +2768,17 @@ namespace ZXEngine
 
     void RenderAPIVulkan::GetPhysicalDeviceProperties()
     {
-        VkPhysicalDeviceProperties physicalDeviceProperties;
-        vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
+        // 物理设备的光线追踪属性
+        rtPhysicalProperties = {};
+        rtPhysicalProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR;
+
+        VkPhysicalDeviceProperties2 physicalDeviceProperties = {};
+        physicalDeviceProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+        physicalDeviceProperties.pNext = &rtPhysicalProperties;
+        vkGetPhysicalDeviceProperties2(physicalDevice, &physicalDeviceProperties);
 
         // 取同时支持Color和Depth的最大数量
-        VkSampleCountFlags counts = physicalDeviceProperties.limits.framebufferColorSampleCounts & physicalDeviceProperties.limits.framebufferDepthSampleCounts;
+        VkSampleCountFlags counts = physicalDeviceProperties.properties.limits.framebufferColorSampleCounts & physicalDeviceProperties.properties.limits.framebufferDepthSampleCounts;
         if (counts & VK_SAMPLE_COUNT_64_BIT) { msaaSamplesCount = VK_SAMPLE_COUNT_64_BIT; }
         else if (counts & VK_SAMPLE_COUNT_32_BIT) { msaaSamplesCount = VK_SAMPLE_COUNT_32_BIT; }
         else if (counts & VK_SAMPLE_COUNT_16_BIT) { msaaSamplesCount = VK_SAMPLE_COUNT_16_BIT; }
@@ -2781,8 +2787,8 @@ namespace ZXEngine
         else if (counts & VK_SAMPLE_COUNT_2_BIT) { msaaSamplesCount = VK_SAMPLE_COUNT_2_BIT; }
         else { msaaSamplesCount = VK_SAMPLE_COUNT_1_BIT; }
 
-        maxSamplerAnisotropy = physicalDeviceProperties.limits.maxSamplerAnisotropy;
-        minUniformBufferOffsetAlignment = physicalDeviceProperties.limits.minUniformBufferOffsetAlignment;
+        maxSamplerAnisotropy = physicalDeviceProperties.properties.limits.maxSamplerAnisotropy;
+        minUniformBufferOffsetAlignment = physicalDeviceProperties.properties.limits.minUniformBufferOffsetAlignment;
     }
 
     VkSurfaceFormatKHR RenderAPIVulkan::ChooseSwapSurfaceFormat(const vector<VkSurfaceFormatKHR>& availableFormats)

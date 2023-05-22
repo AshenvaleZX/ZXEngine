@@ -147,6 +147,8 @@ namespace ZXEngine
         VulkanPipeline rtPipeline;
         // 光线追踪管线数据
         VulkanRTPipelineData rtPipelineData;
+        // GPU硬件光追属性
+        VkPhysicalDeviceRayTracingPipelinePropertiesKHR rtPhysicalProperties;
 
         // ------------------------------------------建立各种Vulkan对象--------------------------------------------
 
