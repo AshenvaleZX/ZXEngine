@@ -177,4 +177,10 @@ namespace ZXEngine
         vector<UniformBuffer> fragUniformBuffers;
         bool inUse = false;
     };
+
+    struct VulkanRTPipelineData
+    {
+        VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
+        vector<VkDescriptorSet> descriptorSets;
+    };
 }

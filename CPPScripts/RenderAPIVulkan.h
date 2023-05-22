@@ -80,6 +80,7 @@ namespace ZXEngine
         virtual void SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
 
         // Ray Tracing
+        virtual void CreateRayTracingPipeline();
         virtual void PushAccelerationStructure(uint32_t VAO, const Matrix4& transform);
         virtual void BuildTopLevelAccelerationStructure();
 
@@ -141,6 +142,11 @@ namespace ZXEngine
 
         // 命令池
         VkCommandPool commandPool = VK_NULL_HANDLE;
+
+        // 光线追踪管线
+        VulkanPipeline rtPipeline;
+        // 光线追踪管线数据
+        VulkanRTPipelineData rtPipelineData;
 
         // ------------------------------------------建立各种Vulkan对象--------------------------------------------
 

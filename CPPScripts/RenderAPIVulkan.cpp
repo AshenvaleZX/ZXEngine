@@ -1338,6 +1338,131 @@ namespace ZXEngine
         SetUpStaticMesh(VAO, vertices, indices);
     }
 
+    void RenderAPIVulkan::CreateRayTracingPipeline()
+    {
+        rtPipeline.name = "RayTracingPipeline";
+
+        // 创建DescriptorSetLayout
+        vector<VkDescriptorSetLayoutBinding> bindings = {};
+
+        VkDescriptorSetLayoutBinding asBinding = {};
+        asBinding.binding = 0;
+        asBinding.descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
+        asBinding.descriptorCount = 1;
+        asBinding.stageFlags = VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
+        bindings.push_back(asBinding);
+
+        VkDescriptorSetLayoutBinding imageBinding = {};
+        imageBinding.binding = 1;
+        imageBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+        imageBinding.descriptorCount = 1;
+        imageBinding.stageFlags = VK_SHADER_STAGE_RAYGEN_BIT_KHR;
+        bindings.push_back(imageBinding);
+
+        VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        layoutInfo.pBindings = bindings.data();
+        layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+        if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &rtPipeline.descriptorSetLayout) != VK_SUCCESS)
+            throw std::runtime_error("failed to create descriptor set layout!");
+
+        // 创建PipelineLayout
+        rtPipeline.pipelineLayout = CreatePipelineLayout(rtPipeline.descriptorSetLayout);
+
+        // 创建DescriptorPool
+        vector<VkDescriptorPoolSize> poolSizes = {};
+
+        VkDescriptorPoolSize asPoolSize = {};
+        asPoolSize.type = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
+        asPoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
+        poolSizes.push_back(asPoolSize);
+
+        VkDescriptorPoolSize imagePoolSize = {};
+        imagePoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+        imagePoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
+        poolSizes.push_back(imagePoolSize);
+
+        VkDescriptorPoolCreateInfo poolInfo = {};
+        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        poolInfo.pPoolSizes = poolSizes.data();
+        poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+        poolInfo.maxSets = MAX_FRAMES_IN_FLIGHT;
+        poolInfo.flags = 0;
+        if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &rtPipelineData.descriptorPool) != VK_SUCCESS)
+			throw std::runtime_error("Failed to create descriptor pool for ray tracing!");
+
+        // 创建DescriptorSet
+        vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, rtPipeline.descriptorSetLayout);
+        rtPipelineData.descriptorSets = CreateDescriptorSets(rtPipelineData.descriptorPool, layouts);
+
+        enum RayTracingShaderGroupType
+        {
+            ZX_RAY_GEN,
+            ZX_RAY_MISS,
+            ZX_RAY_MISS2,
+            ZX_RAY_CLOSEST_HIT,
+            ZX_RAY_GROUP_COUNT
+        };
+
+        // 创建Shader Module
+        array<VkPipelineShaderStageCreateInfo, ZX_RAY_GROUP_COUNT> stages = {};
+        VkPipelineShaderStageCreateInfo stageInfo = {};
+        stageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        stageInfo.pName = "main";
+
+        stageInfo.stage = VK_SHADER_STAGE_RAYGEN_BIT_KHR;
+        stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile("raytrace.rgen.spv"));
+        stages[ZX_RAY_GEN] = stageInfo;
+        stageInfo.stage = VK_SHADER_STAGE_MISS_BIT_KHR;
+        stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile("raytrace.rmiss.spv"));
+        stages[ZX_RAY_MISS] = stageInfo;
+        stageInfo.stage = VK_SHADER_STAGE_MISS_BIT_KHR;
+        stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile("raytraceShadow.rmiss.spv"));
+        stages[ZX_RAY_MISS2] = stageInfo;
+        stageInfo.stage = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
+        stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile("raytrace.rchit.spv"));
+        stages[ZX_RAY_CLOSEST_HIT] = stageInfo;
+
+        // 创建Shader Groups
+        vector<VkRayTracingShaderGroupCreateInfoKHR> shaderGroups = {};
+        VkRayTracingShaderGroupCreateInfoKHR rgenGroup = {};
+        rgenGroup.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
+        rgenGroup.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
+        rgenGroup.generalShader = ZX_RAY_GEN;
+        shaderGroups.push_back(rgenGroup);
+        VkRayTracingShaderGroupCreateInfoKHR rmissGroup = {};
+        rmissGroup.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
+        rmissGroup.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
+        rmissGroup.generalShader = ZX_RAY_MISS;
+        shaderGroups.push_back(rmissGroup);
+        VkRayTracingShaderGroupCreateInfoKHR rmiss2Group = {};
+        rmiss2Group.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
+        rmiss2Group.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
+        rmiss2Group.generalShader = ZX_RAY_MISS2;
+        shaderGroups.push_back(rmiss2Group);
+        VkRayTracingShaderGroupCreateInfoKHR closestHitGroup = {};
+        closestHitGroup.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
+        closestHitGroup.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
+        closestHitGroup.generalShader = ZX_RAY_CLOSEST_HIT;
+        shaderGroups.push_back(closestHitGroup);
+
+        // 创建Pipeline
+        VkRayTracingPipelineCreateInfoKHR rayPipelineInfo{};
+        rayPipelineInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR;
+        rayPipelineInfo.stageCount = static_cast<uint32_t>(stages.size());
+        rayPipelineInfo.pStages = stages.data();
+        rayPipelineInfo.groupCount = static_cast<uint32_t>(shaderGroups.size());
+        rayPipelineInfo.pGroups = shaderGroups.data();
+        rayPipelineInfo.maxPipelineRayRecursionDepth = 2;
+        rayPipelineInfo.layout = rtPipeline.pipelineLayout;
+        if (vkCreateRayTracingPipelinesKHR(device, VK_NULL_HANDLE, VK_NULL_HANDLE, 1, &rayPipelineInfo, nullptr, &rtPipeline.pipeline) != VK_SUCCESS)
+			throw std::runtime_error("Failed to create ray tracing pipeline!");
+
+        // 创建完成后，立刻清理Shader Module
+        for (auto& stage : stages)
+			vkDestroyShaderModule(device, stage.module, nullptr);
+    }
+
     void RenderAPIVulkan::PushAccelerationStructure(uint32_t VAO, const Matrix4& transform)
     {
         asInstanceData.emplace_back();
