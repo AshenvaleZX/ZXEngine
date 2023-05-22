@@ -140,6 +140,7 @@ namespace ZXEngine
 
     struct VulkanAccelerationStructure
     {
+        bool isBuilt = false;
         VulkanBuffer buffer;
         VkDeviceAddress deviceAddress = 0;
         VkAccelerationStructureKHR as = VK_NULL_HANDLE;

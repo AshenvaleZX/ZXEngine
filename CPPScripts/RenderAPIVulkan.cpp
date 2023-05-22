@@ -1265,6 +1265,7 @@ namespace ZXEngine
             addressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
             addressInfo.accelerationStructure = meshBuffer->blas.as;
             meshBuffer->blas.deviceAddress = vkGetAccelerationStructureDeviceAddressKHR(device, &addressInfo);
+            meshBuffer->blas.isBuilt = true;
 
             // BLAS创建完成后立刻销毁Scratch Buffer
             DestroyBuffer(scratchBuffer);
@@ -1346,6 +1347,8 @@ namespace ZXEngine
 
     void RenderAPIVulkan::BuildTopLevelAccelerationStructure()
     {
+        const bool isUpdate = !tlas.isBuilt;
+
         // 场景中要渲染的对象实例数据
         vector<VkAccelerationStructureInstanceKHR> instances;
 
@@ -1416,7 +1419,7 @@ namespace ZXEngine
         buildInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
         buildInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
         buildInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
-        buildInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
+        buildInfo.mode = isUpdate ? VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR : VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
         buildInfo.geometryCount = 1;
         buildInfo.pGeometries = &tlasGeometry;
 
@@ -1425,20 +1428,24 @@ namespace ZXEngine
         sizeInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR;
         vkGetAccelerationStructureBuildSizesKHR(device, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR, &buildInfo, &insNum, &sizeInfo);
 
-        // 创建TLAS Buffer
-        tlas.buffer = CreateBuffer(sizeInfo.accelerationStructureSize,
-            VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
-            VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+        // 新建TLAS
+        if (!isUpdate)
+        {
+            // 创建TLAS Buffer
+            tlas.buffer = CreateBuffer(sizeInfo.accelerationStructureSize,
+                VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
+                VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
-        // 创建TLAS的信息(仅创建，不填充数据，所以只需要Buffer和Size)
-        VkAccelerationStructureCreateInfoKHR createInfo = {};
-        createInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
-        createInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
-        createInfo.size = sizeInfo.accelerationStructureSize;
-        createInfo.buffer = tlas.buffer.buffer;
+            // 创建TLAS的信息(仅创建，不填充数据，所以只需要Buffer和Size)
+            VkAccelerationStructureCreateInfoKHR createInfo = {};
+            createInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
+            createInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
+            createInfo.size = sizeInfo.accelerationStructureSize;
+            createInfo.buffer = tlas.buffer.buffer;
 
-        // 创建TLAS
-        vkCreateAccelerationStructureKHR(device, &createInfo, nullptr, &tlas.as);
+            // 创建TLAS
+            vkCreateAccelerationStructureKHR(device, &createInfo, nullptr, &tlas.as);
+        }
 
         // 创建Scratch Buffer，Vulkan构建TLAS需要一个Buffer来放中间数据
         VulkanBuffer scratchBuffer = CreateBuffer(sizeInfo.accelerationStructureSize,
@@ -1450,7 +1457,7 @@ namespace ZXEngine
         VkDeviceAddress scratchAddress = vkGetBufferDeviceAddress(device, &scratchBufferInfo);
 
         // 继续填充构建TLAS需要的信息
-        buildInfo.srcAccelerationStructure = VK_NULL_HANDLE;
+        buildInfo.srcAccelerationStructure = isUpdate ? tlas.as : VK_NULL_HANDLE;
         buildInfo.dstAccelerationStructure = tlas.as;
         buildInfo.scratchData.deviceAddress = scratchAddress;
 
@@ -1467,6 +1474,7 @@ namespace ZXEngine
         {
             vkCmdBuildAccelerationStructuresKHR(cmd, 1, &buildInfo, &pBuildRangeInfo);
         });
+        tlas.isBuilt = true;
 
         // 销毁中间Buffer
         DestroyBuffer(stagingBuffer);
@@ -1767,12 +1775,13 @@ namespace ZXEngine
         }
         vmaDestroyBuffer(vmaAllocator, meshBuffer->vertexBuffer, meshBuffer->vertexBufferAlloc);
 
-        if (meshBuffer->blas.as != VK_NULL_HANDLE)
+        if (meshBuffer->blas.isBuilt)
         {
             meshBuffer->blas.deviceAddress = 0;
             DestroyBuffer(meshBuffer->blas.buffer);
             vkDestroyAccelerationStructureKHR(device, meshBuffer->blas.as, nullptr);
             meshBuffer->blas.as = VK_NULL_HANDLE;
+            meshBuffer->blas.isBuilt = false;
         }
     
         meshBuffer->inUse = false;
