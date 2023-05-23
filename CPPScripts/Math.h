@@ -57,51 +57,59 @@ namespace ZXEngine
 		static float Distance(const Vector3& a, const Vector3& b);
 
 		template<class T>
-		static T Min(T num1, T num2);
+		static constexpr T Min(T num1, T num2);
 		template<class T>
-		static T Max(T num1, T num2);
+		static constexpr T Max(T num1, T num2);
 		template<class T>
-		static T Clamp(T num, T min, T max);
+		static constexpr T Clamp(T num, T min, T max);
 		template<class T>
-		static T AlignUp(T num, T alignment);
+		static constexpr T AlignUp(T num, T alignment);
 		template<class T>
-		static T AlignDown(T num, T alignment);
+		static constexpr T AlignDown(T num, T alignment);
+		template<class T>
+		static constexpr T AlignUpPOT(T num, T alignment);
+		template<class T>
+		static constexpr T AlignDownPOT(T num, T alignment);
 	};
 
 	template<class T>
-	T Math::Min(T num1, T num2)
+	constexpr T Math::Min(T num1, T num2)
 	{
 		return num1 < num2 ? num1 : num2;
 	}
 
 	template<class T>
-	T Math::Max(T num1, T num2)
+	constexpr T Math::Max(T num1, T num2)
 	{
 		return num1 > num2 ? num1 : num2;
 	}
 
 	template<class T>
-	T Math::Clamp(T num, T min, T max)
+	constexpr T Math::Clamp(T num, T min, T max)
 	{
-		if (min > max)
-			return num;
-
-		if (num > max)
-			num = max;
-		if (num < min)
-			num = min;
-
-		return num;
+		return Math::Min(Math::Max(num, min), max);
 	}
 
 	template<class T>
-	T Math::AlignUp(T num, T alignment)
+	constexpr T Math::AlignUp(T num, T alignment)
+	{
+		return (num + alignment - 1) / alignment * alignment;
+	}
+
+	template<class T>
+	constexpr T Math::AlignDown(T num, T alignment)
+	{
+		return num / alignment * alignment;
+	}
+
+	template<class T>
+	constexpr T Math::AlignUpPOT(T num, T alignment)
 	{
 		return (num + alignment - 1) & ~(alignment - 1);
 	}
 
 	template<class T>
-	T Math::AlignDown(T num, T alignment)
+	constexpr T Math::AlignDownPOT(T num, T alignment)
 	{
 		return num & ~(alignment - 1);
 	}
