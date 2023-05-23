@@ -62,6 +62,10 @@ namespace ZXEngine
 		static T Max(T num1, T num2);
 		template<class T>
 		static T Clamp(T num, T min, T max);
+		template<class T>
+		static T AlignUp(T num, T alignment);
+		template<class T>
+		static T AlignDown(T num, T alignment);
 	};
 
 	template<class T>
@@ -88,5 +92,17 @@ namespace ZXEngine
 			num = min;
 
 		return num;
+	}
+
+	template<class T>
+	T Math::AlignUp(T num, T alignment)
+	{
+		return (num + alignment - 1) & ~(alignment - 1);
+	}
+
+	template<class T>
+	T Math::AlignDown(T num, T alignment)
+	{
+		return num & ~(alignment - 1);
 	}
 }
