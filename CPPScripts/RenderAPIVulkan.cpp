@@ -1463,6 +1463,90 @@ namespace ZXEngine
 			vkDestroyShaderModule(device, stage.module, nullptr);
     }
 
+    void RenderAPIVulkan::CreateShaderBindingTable()
+    {
+        uint32_t rgenCount = 1;
+        uint32_t missCount = 2;
+        uint32_t hitCount = 1;
+        uint32_t shaderHandleCount = rgenCount + missCount + hitCount;
+
+        // 一个SBT可以看作是4个数组，分别是Ray Gen, Miss, Hit, Callable这4种类型的Shader Group数组
+        
+        // 这是一个Shader引用在SBT上的大小
+        uint32_t shaderHandleSize = rtPhysicalProperties.shaderGroupHandleSize;
+        // 这是Shader引用在SBT上的对齐大小，注意这个对齐的大小和实际大小可能不一样，所以这里要把查询到的实际大小去对齐查询到的对齐大小
+        // 有可能最后Shader引用实际大小比对齐大小更小，这会导致SBT Buffer上有内存碎片，可以把这些碎片空间利用起来存放shaderRecordEXT数据
+        // 除了Shader Group内的Shader引用要按这个对齐，不同的Shader Group之间也要按这个对齐
+        uint32_t shaderHandleAlignment = Math::AlignUp(shaderHandleSize, rtPhysicalProperties.shaderGroupHandleAlignment);
+        // Shader Group之间要按这个大小对齐
+        uint32_t shaderGroupAlignment = rtPhysicalProperties.shaderGroupBaseAlignment;
+
+        // Ray Gen比较特殊，size和stride要一致
+        rtSBT.raygenRegion.size = static_cast<VkDeviceSize>(Math::AlignUp(shaderHandleAlignment, shaderGroupAlignment));
+        rtSBT.raygenRegion.stride = rtSBT.raygenRegion.size;
+        // 整个Shader Group要对齐VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupBaseAlignment
+        rtSBT.missRegion.size = static_cast<VkDeviceSize>(Math::AlignUp(shaderHandleAlignment * missCount, shaderGroupAlignment));
+        rtSBT.missRegion.stride = shaderHandleAlignment;
+        rtSBT.hitRegion.size = static_cast<VkDeviceSize>(Math::AlignUp(shaderHandleAlignment * hitCount, shaderGroupAlignment));
+        rtSBT.hitRegion.stride = shaderHandleAlignment;
+
+        // 获取绑定到光线追踪VkPipeline上的Shader Handles
+        uint32_t dataSize = shaderHandleCount * shaderHandleSize;
+        vector<uint8_t> handles(dataSize);
+        if (vkGetRayTracingShaderGroupHandlesKHR(device, rtPipeline.pipeline, 0, shaderHandleCount, dataSize, handles.data()) != VK_SUCCESS)
+            throw std::runtime_error("Failed to get shader group handles!");
+
+        // 创建SBT Buffer
+        VkDeviceSize sbtBufferSize = rtSBT.raygenRegion.size + rtSBT.missRegion.size + rtSBT.hitRegion.size;
+        rtSBT.buffer = CreateBuffer(sbtBufferSize, 
+            VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
+
+        // 获取每个Shader Group的起始地址
+        VkBufferDeviceAddressInfo sbtBufferInfo = {};
+        sbtBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+        sbtBufferInfo.buffer = rtSBT.buffer.buffer;
+        VkDeviceAddress sbtBufferAddress = vkGetBufferDeviceAddress(device, &sbtBufferInfo);
+        rtSBT.raygenRegion.deviceAddress = sbtBufferAddress;
+        rtSBT.missRegion.deviceAddress = sbtBufferAddress + rtSBT.raygenRegion.size;
+        rtSBT.hitRegion.deviceAddress = sbtBufferAddress + rtSBT.raygenRegion.size + rtSBT.missRegion.size;
+
+        // 获取管线中的Shader地址
+        uint8_t* shaderHandlePtr = handles.data();
+        // 获取SBT Buffer的映射地址
+        uint8_t* sbtBufferPtr = static_cast<uint8_t*>(rtSBT.buffer.mappedAddress);
+        // SBT Buffer的临时指针
+        uint8_t* tmpPtr = sbtBufferPtr;
+        // 把Ray Gen Shader拷贝到SBT Buffer上
+        memcpy(tmpPtr, shaderHandlePtr, shaderHandleSize);
+        // 移到下一个Shader地址
+        shaderHandlePtr += shaderHandleSize;
+
+        // 移到下一个Shader Group地址(Miss)
+        tmpPtr = sbtBufferPtr + rtSBT.raygenRegion.size;
+        // 遍历拷贝Miss Shader到SBT Buffer上
+        for (uint32_t i = 0; i < missCount; ++i)
+		{
+			memcpy(tmpPtr, shaderHandlePtr, shaderHandleSize);
+			// 移到下一个Shader地址
+			shaderHandlePtr += shaderHandleSize;
+			// 移到当前Shader Group中的下一个地址
+            tmpPtr += rtSBT.missRegion.stride;
+		}
+
+        // 移到下一个Shader Group地址(Hit)
+		tmpPtr = sbtBufferPtr + rtSBT.raygenRegion.size + rtSBT.missRegion.size;
+		// 遍历拷贝Hit Shader到SBT Buffer上
+		for (uint32_t i = 0; i < hitCount; ++i)
+        {
+            memcpy(tmpPtr, shaderHandlePtr, shaderHandleSize);
+		    // 移到下一个Shader地址
+			shaderHandlePtr += shaderHandleSize;
+			// 移到当前Shader Group中的下一个地址
+			tmpPtr += rtSBT.hitRegion.stride;
+        }
+    }
+
     void RenderAPIVulkan::PushAccelerationStructure(uint32_t VAO, const Matrix4& transform)
     {
         asInstanceData.emplace_back();

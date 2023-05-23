@@ -183,4 +183,13 @@ namespace ZXEngine
         VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
         vector<VkDescriptorSet> descriptorSets;
     };
+
+    struct VulkanShaderBindingTable
+    {
+        VulkanBuffer buffer;
+        VkStridedDeviceAddressRegionKHR raygenRegion = {};
+        VkStridedDeviceAddressRegionKHR missRegion = {};
+        VkStridedDeviceAddressRegionKHR hitRegion = {};
+        VkStridedDeviceAddressRegionKHR callableRegion = {};
+    };
 }

@@ -81,6 +81,7 @@ namespace ZXEngine
 
         // Ray Tracing
         virtual void CreateRayTracingPipeline();
+        virtual void CreateShaderBindingTable();
         virtual void PushAccelerationStructure(uint32_t VAO, const Matrix4& transform);
         virtual void BuildTopLevelAccelerationStructure();
 
@@ -149,6 +150,8 @@ namespace ZXEngine
         VulkanRTPipelineData rtPipelineData;
         // GPU硬件光追属性
         VkPhysicalDeviceRayTracingPipelinePropertiesKHR rtPhysicalProperties;
+        // Shader Binding Table
+        VulkanShaderBindingTable rtSBT;
 
         // ------------------------------------------建立各种Vulkan对象--------------------------------------------
 
