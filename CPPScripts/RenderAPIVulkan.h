@@ -83,7 +83,7 @@ namespace ZXEngine
         virtual void CreateRayTracingPipeline();
         virtual void CreateShaderBindingTable();
         virtual void PushAccelerationStructure(uint32_t VAO, const Matrix4& transform);
-        virtual void BuildTopLevelAccelerationStructure();
+        virtual void BuildTopLevelAccelerationStructure(uint32_t commandID);
         virtual void BuildBottomLevelAccelerationStructure(uint32_t VAO, bool isCompact);
 
 

@@ -1358,8 +1358,24 @@ namespace ZXEngine
         asInstanceData.back().transform = transform;
     }
 
-    void RenderAPIVulkan::BuildTopLevelAccelerationStructure()
+    void RenderAPIVulkan::BuildTopLevelAccelerationStructure(uint32_t commandID)
     {
+        // 获取当前帧的Command Buffer
+        auto curDrawCommandObj = GetDrawCommandByIndex(commandID);
+        auto& curDrawCommand = curDrawCommandObj->drawCommands[currentFrame];
+        auto commandBuffer = curDrawCommand.commandBuffer;
+
+        // 重置Command Buffer
+        vkResetCommandBuffer(commandBuffer, 0);
+
+        // 开始记录Command Buffer
+        VkCommandBufferBeginInfo beginInfo = {};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = 0;
+        beginInfo.pInheritanceInfo = VK_NULL_HANDLE;
+        if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
+            throw std::runtime_error("Failed to begin recording command buffer!");
+
         const bool isUpdate = !tlas.isBuilt;
 
         // 场景中要渲染的对象实例数据
@@ -1395,22 +1411,19 @@ namespace ZXEngine
             VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
         // 把数据从stagingBuffer拷贝到instancesBuffer
-        ImmediatelyExecute([=](VkCommandBuffer cmd)
-        {
-            VkBufferCopy copy = {};
-            copy.dstOffset = 0;
-            copy.srcOffset = 0;
-            copy.size = insBufferSize;
-            vkCmdCopyBuffer(cmd, stagingBuffer.buffer, instancesBuffer.buffer, 1, &copy);
+        VkBufferCopy copy = {};
+        copy.dstOffset = 0;
+        copy.srcOffset = 0;
+        copy.size = insBufferSize;
+        vkCmdCopyBuffer(commandBuffer, stagingBuffer.buffer, instancesBuffer.buffer, 1, &copy);
 
-            // 确保构建TLAS之前，数据拷贝已完成
-            VkMemoryBarrier barrier = {};
-            barrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
-            barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-            barrier.dstAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR;
-            vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
-                0, 1, &barrier, 0, nullptr, 0, nullptr);
-        });
+        // 确保构建TLAS之前，数据拷贝已完成
+        VkMemoryBarrier barrier = {};
+        barrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
+        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        barrier.dstAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR;
+        vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+            0, 1, &barrier, 0, nullptr, 0, nullptr);
 
         // 获取instancesBuffer的DeviceAddress
         VkBufferDeviceAddressInfo bufferInfo = {};
@@ -1483,16 +1496,34 @@ namespace ZXEngine
         const VkAccelerationStructureBuildRangeInfoKHR* pBuildRangeInfo = &buildRangeInfo;
 
         // 构建TLAS
-        ImmediatelyExecute([=](VkCommandBuffer cmd)
-        {
-            vkCmdBuildAccelerationStructuresKHR(cmd, 1, &buildInfo, &pBuildRangeInfo);
-        });
+        vkCmdBuildAccelerationStructuresKHR(commandBuffer, 1, &buildInfo, &pBuildRangeInfo);
         tlas.isBuilt = true;
 
         // 销毁中间Buffer
         DestroyBuffer(stagingBuffer);
         DestroyBuffer(instancesBuffer);
         DestroyBuffer(scratchBuffer);
+
+        // 结束Command Buffer的记录
+        if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
+            throw std::runtime_error("failed to record command buffer!");
+
+        // 提交Command Buffer
+        vector<VkPipelineStageFlags> waitStages = {};
+        waitStages.resize(curWaitSemaphores.size(), VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR);
+        VkSubmitInfo submitInfo = {};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.pCommandBuffers = &commandBuffer;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pWaitSemaphores = curWaitSemaphores.data();
+        submitInfo.pWaitDstStageMask = waitStages.data();
+        submitInfo.waitSemaphoreCount = static_cast<uint32_t>(curWaitSemaphores.size());
+        submitInfo.pSignalSemaphores = curDrawCommand.signalSemaphores.data();
+        submitInfo.signalSemaphoreCount = static_cast<uint32_t>(curDrawCommand.signalSemaphores.size());
+        if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
+            throw std::runtime_error("Failed to submit draw command buffer!");
+
+        curWaitSemaphores = curDrawCommand.signalSemaphores;
     }
 
     void RenderAPIVulkan::BuildBottomLevelAccelerationStructure(uint32_t VAO, bool isCompact)
