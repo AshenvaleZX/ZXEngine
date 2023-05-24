@@ -922,7 +922,7 @@ namespace ZXEngine
 
             vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout, 0, 1, &materialData->descriptorSets[currentFrame], 0, VK_NULL_HANDLE);
 
-            vkCmdDrawIndexed(commandBuffer, vulkanVAO->size, 1, 0, 0, 0);
+            vkCmdDrawIndexed(commandBuffer, vulkanVAO->indexCount, 1, 0, 0, 0);
         }
 
         vkCmdEndRenderPass(commandBuffer);
@@ -967,7 +967,8 @@ namespace ZXEngine
     {
         VAO = GetNextVAOIndex();
         auto meshBuffer = GetVAOByIndex(VAO);
-        meshBuffer->size = static_cast<uint32_t>(indices.size());
+        meshBuffer->indexCount = static_cast<uint32_t>(indices.size());
+        meshBuffer->vertexCount = static_cast<uint32_t>(vertices.size());
 
         // ----------------------------------------------- Vertex Buffer -----------------------------------------------
         VkDeviceSize vertexBufferSize = sizeof(Vertex) * vertices.size();
@@ -1070,205 +1071,7 @@ namespace ZXEngine
         // 如果是光追管线，还要创建一个BLAS( Bottom Level Acceleration Structure )
         if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
         {
-            // 三角形信息里填的vertexFormat固定为VK_FORMAT_R32G32B32_SFLOAT，如果某些特殊设备float不是4字节这里直接抛出异常
-            // 没做适配处理，因为绝大部分的环境下的float都是4字节
-            if (sizeof(float) != 4)
-				throw std::runtime_error("float size is not 4");
-
-            // 这里是静态Mesh，一律做压缩处理
-            const bool isCompact = true;
-
-            // GPU上的顶点数据地址
-            VkBufferDeviceAddressInfo vertexBufferInfo = {};
-            vertexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
-            vertexBufferInfo.buffer = meshBuffer->vertexBuffer;
-            VkDeviceAddress vertexBufferDeviceAddress = vkGetBufferDeviceAddress(device, &vertexBufferInfo);
-            
-            // GPU上的索引数据地址
-            VkBufferDeviceAddressInfo indexBufferInfo = {};
-            indexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
-            indexBufferInfo.buffer = meshBuffer->indexBuffer;
-            VkDeviceAddress indexBufferDeviceAddress = vkGetBufferDeviceAddress(device, &indexBufferInfo);
-            
-            // 三角形Mesh数据，主要包含了顶点和索引Buffer地址
-            VkAccelerationStructureGeometryTrianglesDataKHR triangles = {};
-            triangles.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR;
-            triangles.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
-            triangles.vertexData.deviceAddress = vertexBufferDeviceAddress;
-            triangles.vertexStride = sizeof(Vertex);
-            triangles.maxVertex = static_cast<uint32_t>(vertices.size());
-            triangles.indexType = VK_INDEX_TYPE_UINT32;
-            triangles.indexData.deviceAddress = indexBufferDeviceAddress;
-
-            // 模型的几何体信息，主要是引用上面那个三角形Mesh数据
-            VkAccelerationStructureGeometryKHR geometry = {};
-            geometry.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
-            geometry.geometryType = VK_GEOMETRY_TYPE_TRIANGLES_KHR;
-            geometry.flags = VK_GEOMETRY_OPAQUE_BIT_KHR;
-            geometry.geometry.triangles = triangles;
-
-            // 这个RangeInfo在描述我们要构建的BLAS，是用的前面引用的顶点数据Buffer里的哪一段
-            VkAccelerationStructureBuildRangeInfoKHR rangeInfo = {};
-            rangeInfo.firstVertex = 0;
-            rangeInfo.primitiveCount = static_cast<uint32_t>(indices.size()) / 3;
-            rangeInfo.primitiveOffset = 0;
-            rangeInfo.transformOffset = 0;
-
-            // 这是要构建一个BLAS所需要的信息
-            VkAccelerationStructureBuildGeometryInfoKHR buildInfo = {};
-            buildInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
-            // 指定创建的是BLAS还是TLAS，这里创建BLAS
-            buildInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
-            // 创建全新的BLAS，还是更新现有的BLAS
-            buildInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
-            buildInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
-            // 这里传一个几何体数组，允许把多个几何体放到一个BLAS里，但是一般来说模型和BLAS是一对一的
-            buildInfo.pGeometries = &geometry;
-            buildInfo.geometryCount = 1;
-
-            // 调用Vulkan的接口来查询当前要创建的BLAS大小
-            // 调用一次这个接口只能查询一个BLAS的大小，所以参数只传递一个VkAccelerationStructureBuildGeometryInfoKHR
-            // 第4个参数pMaxPrimitiveCounts传递的是一个uint32_t数组，这个数组是对应我们传入的VkAccelerationStructureBuildGeometryInfoKHR
-            // 里面的pGeometries，明确每个几何体的图元数量
-            // 最后一个参数是用来返回查询数据的
-            vector<uint32_t> maxPrimCount = { rangeInfo.primitiveCount };
-            VkAccelerationStructureBuildSizesInfoKHR sizeInfo = {};
-            vkGetAccelerationStructureBuildSizesKHR(device, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR, &buildInfo, maxPrimCount.data(), &sizeInfo);
-
-            // 创建一个Scratch Buffer，这个是给Vulkan创建BLAS用的临时Buffer，因为Vulkan在创建BLAS的过程中会产生一些中间数据
-            // 其实Vulkan完全可以自己创建这个Buffer用完了再自己销毁，但是出于性能考虑Vulkan选择让用户把Scratch Buffer创建好再提供给它
-            // 因为假设要创建100个BLAS，而Vulkan在接口内部自己创建和销毁临时Buffer，就要做100次Buffer创建和销毁
-            // 但是如果丢给用户创建，用户可以创建一个Scratch Buffer，然后用这一个Buffer调用100次创建BLAS的接口，这样只需要一次创建和销毁
-            // 所以这里Vulkan其实更推荐集中多个模型一起创建BLAS，因为这样可以共用一个Scratch Buffer，而不是创建一个模型就马上创建一个BLAS
-            // 如果要集中创建BLAS复用Scratch Buffer，那这个Scratch Buffer的大小按最大的模型Size来创建
-            VulkanBuffer scratchBuffer = CreateBuffer(sizeInfo.accelerationStructureSize,
-                VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-                VMA_MEMORY_USAGE_AUTO);
-            VkBufferDeviceAddressInfo bufferInfo = {};
-            bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
-            bufferInfo.buffer = scratchBuffer.buffer;
-            bufferInfo.pNext = nullptr;
-            VkDeviceAddress scratchAddress = vkGetBufferDeviceAddress(device, &bufferInfo);
-
-            // 创建一个存放BLAS数据的VkBuffer，Size为前面查询到的，所需的大小
-            meshBuffer->blas.buffer = CreateBuffer(sizeInfo.accelerationStructureSize,
-                VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
-                VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
-
-            // 创建一个BLAS要用到的信息，主要参数是存放BLAS的Buffer和Size
-            VkAccelerationStructureCreateInfoKHR blasInfo = {};
-            blasInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
-            blasInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
-            blasInfo.size = sizeInfo.accelerationStructureSize;
-            blasInfo.buffer = meshBuffer->blas.buffer.buffer;
-
-            // 创建BLAS，注意这里创建好后只是初始化状态，真正的数据还要后续填充
-            vkCreateAccelerationStructureKHR(device, &blasInfo, nullptr, &meshBuffer->blas.as);
-
-            // 继续填充构建BLAS所需的信息
-            // 把刚刚创建的，处于初始状态的BLAS传给dstAccelerationStructure，表示这是我们所要构建的BLAS
-            buildInfo.dstAccelerationStructure = meshBuffer->blas.as;
-            // 如果我们不是创建一个全新的BLAS，而是通过一个现有的BLAS来更新当前的这个BLAS，就需要设置这个参数
-            buildInfo.srcAccelerationStructure = VK_NULL_HANDLE;
-            // 把前面创建的Scratch Buffer提供给Vulkan
-            buildInfo.scratchData.deviceAddress = scratchAddress;
-
-            // 等后面正真构建完BLAS后，实际占用的内存大小可能会比之前计算的要小，所以这里可以选择压缩一下BLAS
-            // 就是按实际占用大小再重新创建一个BLAS，节省内存空间，然后销毁之前创建的BLAS
-            // 查询构建完成后的BLAS真实大小，需要用到VkQueryPool
-            VkQueryPool queryPool = VK_NULL_HANDLE;
-            if (isCompact)
-            {
-                VkQueryPoolCreateInfo queryInfo = {};
-                queryInfo.sType = VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
-                queryInfo.queryCount = 1;
-                queryInfo.queryType = VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR;
-                vkCreateQueryPool(device, &queryInfo, nullptr, &queryPool);
-            }
-
-            ImmediatelyExecute([=](VkCommandBuffer cmd)
-            {
-                // 用前面准备的 VkAccelerationStructureBuildGeometryInfoKHR 正真构建BLAS
-                // 参数2,3是传递一个 VkAccelerationStructureBuildGeometryInfoKHR 数组
-                // 和其它Vulkan接口一样，这里可以一次调用创建多个，这里暂时只传一个
-                // 这里的最后一个参数，是一个 VkAccelerationStructureBuildRangeInfoKHR 的二维数组
-                // 数组的第一层对应参数2,3的 VkAccelerationStructureBuildGeometryInfoKHR 数组
-                // 数组的第二层对应每个 VkAccelerationStructureBuildGeometryInfoKHR 里的 pGeometries 数组
-                // 所以二维数组里的每一个RangeInfo都最终对应了一个 VkAccelerationStructureGeometryKHR
-                vector<VkAccelerationStructureBuildRangeInfoKHR> ranges = { rangeInfo };
-                const VkAccelerationStructureBuildRangeInfoKHR* ptr = ranges.data();
-                vkCmdBuildAccelerationStructuresKHR(cmd, 1, &buildInfo, &ptr);
-
-                // 如果一次性创建多个BLAS，然后共用Scratch Buffer，可能会有读写冲突问题，加个Barrier
-                // 不过这里暂时一次只创建一个，其实没必要
-                VkMemoryBarrier barrier = {};
-                barrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
-                barrier.srcAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR;
-                barrier.dstAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR;
-                vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
-                    VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR, 0, 1, &barrier, 0, nullptr, 0, nullptr);
-
-                if (isCompact)
-                {
-                    // 查一下我们刚刚构建好的BLAS实际占用大小，把结果放到queryPool里(这个接口也可以传数组一次性查多个数据)
-                    vkCmdWriteAccelerationStructuresPropertiesKHR(cmd, 1, &buildInfo.dstAccelerationStructure,
-                        VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR, queryPool, 0);
-                }
-            });
-
-            if (isCompact)
-            {
-                // 从queryPool里获取我们刚刚查的BLAS实际大小数据
-                vector<VkDeviceSize> compactSizes(1);
-                vkGetQueryPoolResults(device, queryPool, 0, static_cast<uint32_t>(compactSizes.size()),
-                    compactSizes.size() * sizeof(VkDeviceSize), compactSizes.data(), sizeof(VkDeviceSize), VK_QUERY_RESULT_WAIT_BIT);
-                sizeInfo.accelerationStructureSize = compactSizes[0];
-
-                // 用实际占用大小重新创建一个BLAS Buffer
-                VulkanBuffer newBLASBuffer = CreateBuffer(sizeInfo.accelerationStructureSize,
-                    VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
-                    VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
-
-                // 新的压缩过的Buffer和Size信息
-                VkAccelerationStructureCreateInfoKHR newBLASInfo = {};
-                newBLASInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
-                newBLASInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
-                newBLASInfo.size = sizeInfo.accelerationStructureSize;
-                newBLASInfo.buffer = newBLASBuffer.buffer;
-
-                // 创建新的压缩过的BLAS
-                VkAccelerationStructureKHR newAS = {};
-                vkCreateAccelerationStructureKHR(device, &newBLASInfo, nullptr, &newAS);
-
-                ImmediatelyExecute([=](VkCommandBuffer cmd)
-                {
-                    // 把之前构建好的BLAS数据，复制到新的，大小精确不浪费的BLAS上
-                    VkCopyAccelerationStructureInfoKHR copyInfo = {};
-                    copyInfo.sType = VK_STRUCTURE_TYPE_COPY_ACCELERATION_STRUCTURE_INFO_KHR;
-                    copyInfo.src = buildInfo.dstAccelerationStructure;
-                    copyInfo.dst = newAS;
-                    copyInfo.mode = VK_COPY_ACCELERATION_STRUCTURE_MODE_COMPACT_KHR;
-                    vkCmdCopyAccelerationStructureKHR(cmd, &copyInfo);
-                });
-
-                // 销毁之前的BLAS
-                DestroyBuffer(meshBuffer->blas.buffer);
-                vkDestroyAccelerationStructureKHR(device, meshBuffer->blas.as, nullptr);
-
-                // 把新创建的BLAS赋值过来
-                meshBuffer->blas.as = newAS;
-                meshBuffer->blas.buffer = newBLASBuffer;
-            }
-
-            // 获取BLAS的Device Address
-            VkAccelerationStructureDeviceAddressInfoKHR addressInfo = {};
-            addressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
-            addressInfo.accelerationStructure = meshBuffer->blas.as;
-            meshBuffer->blas.deviceAddress = vkGetAccelerationStructureDeviceAddressKHR(device, &addressInfo);
-            meshBuffer->blas.isBuilt = true;
-
-            // BLAS创建完成后立刻销毁Scratch Buffer
-            DestroyBuffer(scratchBuffer);
+            BuildBottomLevelAccelerationStructure(VAO, true);
         }
 
         meshBuffer->inUse = true;
@@ -1278,7 +1081,8 @@ namespace ZXEngine
     {
         VAO = GetNextVAOIndex();
         auto meshBuffer = GetVAOByIndex(VAO);
-        meshBuffer->size = indexSize;
+        meshBuffer->indexCount = indexSize;
+        meshBuffer->vertexCount = vertexSize;
 
         VmaAllocationCreateInfo vmaAllocInfo = {};
         vmaAllocInfo.usage = VMA_MEMORY_USAGE_AUTO;
@@ -1688,6 +1492,208 @@ namespace ZXEngine
         // 销毁中间Buffer
         DestroyBuffer(stagingBuffer);
         DestroyBuffer(instancesBuffer);
+        DestroyBuffer(scratchBuffer);
+    }
+
+    void RenderAPIVulkan::BuildBottomLevelAccelerationStructure(uint32_t VAO, bool isCompact)
+    {
+        auto meshBuffer = GetVAOByIndex(VAO);
+
+        // 三角形信息里填的vertexFormat固定为VK_FORMAT_R32G32B32_SFLOAT，如果某些特殊设备float不是4字节这里直接抛出异常
+        // 没做适配处理，因为绝大部分的环境下的float都是4字节
+        if (sizeof(float) != 4)
+            throw std::runtime_error("float size is not 4");
+
+        // GPU上的顶点数据地址
+        VkBufferDeviceAddressInfo vertexBufferInfo = {};
+        vertexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+        vertexBufferInfo.buffer = meshBuffer->vertexBuffer;
+        VkDeviceAddress vertexBufferDeviceAddress = vkGetBufferDeviceAddress(device, &vertexBufferInfo);
+
+        // GPU上的索引数据地址
+        VkBufferDeviceAddressInfo indexBufferInfo = {};
+        indexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+        indexBufferInfo.buffer = meshBuffer->indexBuffer;
+        VkDeviceAddress indexBufferDeviceAddress = vkGetBufferDeviceAddress(device, &indexBufferInfo);
+
+        // 三角形Mesh数据，主要包含了顶点和索引Buffer地址
+        VkAccelerationStructureGeometryTrianglesDataKHR triangles = {};
+        triangles.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR;
+        triangles.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
+        triangles.vertexData.deviceAddress = vertexBufferDeviceAddress;
+        triangles.vertexStride = sizeof(Vertex);
+        triangles.maxVertex = meshBuffer->vertexCount;
+        triangles.indexType = VK_INDEX_TYPE_UINT32;
+        triangles.indexData.deviceAddress = indexBufferDeviceAddress;
+
+        // 模型的几何体信息，主要是引用上面那个三角形Mesh数据
+        VkAccelerationStructureGeometryKHR geometry = {};
+        geometry.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
+        geometry.geometryType = VK_GEOMETRY_TYPE_TRIANGLES_KHR;
+        geometry.flags = VK_GEOMETRY_OPAQUE_BIT_KHR;
+        geometry.geometry.triangles = triangles;
+
+        // 这个RangeInfo在描述我们要构建的BLAS，是用的前面引用的顶点数据Buffer里的哪一段
+        VkAccelerationStructureBuildRangeInfoKHR rangeInfo = {};
+        rangeInfo.firstVertex = 0;
+        rangeInfo.primitiveCount = meshBuffer->indexCount / 3;
+        rangeInfo.primitiveOffset = 0;
+        rangeInfo.transformOffset = 0;
+
+        // 这是要构建一个BLAS所需要的信息
+        VkAccelerationStructureBuildGeometryInfoKHR buildInfo = {};
+        buildInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
+        // 指定创建的是BLAS还是TLAS，这里创建BLAS
+        buildInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
+        // 创建全新的BLAS，还是更新现有的BLAS
+        buildInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
+        buildInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
+        // 这里传一个几何体数组，允许把多个几何体放到一个BLAS里，但是一般来说模型和BLAS是一对一的
+        buildInfo.pGeometries = &geometry;
+        buildInfo.geometryCount = 1;
+
+        // 调用Vulkan的接口来查询当前要创建的BLAS大小
+        // 调用一次这个接口只能查询一个BLAS的大小，所以参数只传递一个VkAccelerationStructureBuildGeometryInfoKHR
+        // 第4个参数pMaxPrimitiveCounts传递的是一个uint32_t数组，这个数组是对应我们传入的VkAccelerationStructureBuildGeometryInfoKHR
+        // 里面的pGeometries，明确每个几何体的图元数量
+        // 最后一个参数是用来返回查询数据的
+        vector<uint32_t> maxPrimCount = { rangeInfo.primitiveCount };
+        VkAccelerationStructureBuildSizesInfoKHR sizeInfo = {};
+        vkGetAccelerationStructureBuildSizesKHR(device, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR, &buildInfo, maxPrimCount.data(), &sizeInfo);
+
+        // 创建一个Scratch Buffer，这个是给Vulkan创建BLAS用的临时Buffer，因为Vulkan在创建BLAS的过程中会产生一些中间数据
+        // 其实Vulkan完全可以自己创建这个Buffer用完了再自己销毁，但是出于性能考虑Vulkan选择让用户把Scratch Buffer创建好再提供给它
+        // 因为假设要创建100个BLAS，而Vulkan在接口内部自己创建和销毁临时Buffer，就要做100次Buffer创建和销毁
+        // 但是如果丢给用户创建，用户可以创建一个Scratch Buffer，然后用这一个Buffer调用100次创建BLAS的接口，这样只需要一次创建和销毁
+        // 所以这里Vulkan其实更推荐集中多个模型一起创建BLAS，因为这样可以共用一个Scratch Buffer，而不是创建一个模型就马上创建一个BLAS
+        // 如果要集中创建BLAS复用Scratch Buffer，那这个Scratch Buffer的大小按最大的模型Size来创建
+        VulkanBuffer scratchBuffer = CreateBuffer(sizeInfo.accelerationStructureSize,
+            VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+            VMA_MEMORY_USAGE_AUTO);
+        VkBufferDeviceAddressInfo bufferInfo = {};
+        bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+        bufferInfo.buffer = scratchBuffer.buffer;
+        bufferInfo.pNext = nullptr;
+        VkDeviceAddress scratchAddress = vkGetBufferDeviceAddress(device, &bufferInfo);
+
+        // 创建一个存放BLAS数据的VkBuffer，Size为前面查询到的，所需的大小
+        meshBuffer->blas.buffer = CreateBuffer(sizeInfo.accelerationStructureSize,
+            VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
+            VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+
+        // 创建一个BLAS要用到的信息，主要参数是存放BLAS的Buffer和Size
+        VkAccelerationStructureCreateInfoKHR blasInfo = {};
+        blasInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
+        blasInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
+        blasInfo.size = sizeInfo.accelerationStructureSize;
+        blasInfo.buffer = meshBuffer->blas.buffer.buffer;
+
+        // 创建BLAS，注意这里创建好后只是初始化状态，真正的数据还要后续填充
+        vkCreateAccelerationStructureKHR(device, &blasInfo, nullptr, &meshBuffer->blas.as);
+
+        // 继续填充构建BLAS所需的信息
+        // 把刚刚创建的，处于初始状态的BLAS传给dstAccelerationStructure，表示这是我们所要构建的BLAS
+        buildInfo.dstAccelerationStructure = meshBuffer->blas.as;
+        // 如果我们不是创建一个全新的BLAS，而是通过一个现有的BLAS来更新当前的这个BLAS，就需要设置这个参数
+        buildInfo.srcAccelerationStructure = VK_NULL_HANDLE;
+        // 把前面创建的Scratch Buffer提供给Vulkan
+        buildInfo.scratchData.deviceAddress = scratchAddress;
+
+        // 等后面正真构建完BLAS后，实际占用的内存大小可能会比之前计算的要小，所以这里可以选择压缩一下BLAS
+        // 就是按实际占用大小再重新创建一个BLAS，节省内存空间，然后销毁之前创建的BLAS
+        // 查询构建完成后的BLAS真实大小，需要用到VkQueryPool
+        VkQueryPool queryPool = VK_NULL_HANDLE;
+        if (isCompact)
+        {
+            VkQueryPoolCreateInfo queryInfo = {};
+            queryInfo.sType = VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
+            queryInfo.queryCount = 1;
+            queryInfo.queryType = VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR;
+            vkCreateQueryPool(device, &queryInfo, nullptr, &queryPool);
+        }
+
+        ImmediatelyExecute([=](VkCommandBuffer cmd)
+            {
+                // 用前面准备的 VkAccelerationStructureBuildGeometryInfoKHR 正真构建BLAS
+                // 参数2,3是传递一个 VkAccelerationStructureBuildGeometryInfoKHR 数组
+                // 和其它Vulkan接口一样，这里可以一次调用创建多个，这里暂时只传一个
+                // 这里的最后一个参数，是一个 VkAccelerationStructureBuildRangeInfoKHR 的二维数组
+                // 数组的第一层对应参数2,3的 VkAccelerationStructureBuildGeometryInfoKHR 数组
+                // 数组的第二层对应每个 VkAccelerationStructureBuildGeometryInfoKHR 里的 pGeometries 数组
+                // 所以二维数组里的每一个RangeInfo都最终对应了一个 VkAccelerationStructureGeometryKHR
+                vector<VkAccelerationStructureBuildRangeInfoKHR> ranges = { rangeInfo };
+                const VkAccelerationStructureBuildRangeInfoKHR* ptr = ranges.data();
+                vkCmdBuildAccelerationStructuresKHR(cmd, 1, &buildInfo, &ptr);
+
+                // 如果一次性创建多个BLAS，然后共用Scratch Buffer，可能会有读写冲突问题，加个Barrier
+                // 不过这里暂时一次只创建一个，其实没必要
+                VkMemoryBarrier barrier = {};
+                barrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
+                barrier.srcAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR;
+                barrier.dstAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR;
+                vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+                    VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR, 0, 1, &barrier, 0, nullptr, 0, nullptr);
+
+                if (isCompact)
+                {
+                    // 查一下我们刚刚构建好的BLAS实际占用大小，把结果放到queryPool里(这个接口也可以传数组一次性查多个数据)
+                    vkCmdWriteAccelerationStructuresPropertiesKHR(cmd, 1, &buildInfo.dstAccelerationStructure,
+                        VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR, queryPool, 0);
+                }
+            });
+
+        if (isCompact)
+        {
+            // 从queryPool里获取我们刚刚查的BLAS实际大小数据
+            vector<VkDeviceSize> compactSizes(1);
+            vkGetQueryPoolResults(device, queryPool, 0, static_cast<uint32_t>(compactSizes.size()),
+                compactSizes.size() * sizeof(VkDeviceSize), compactSizes.data(), sizeof(VkDeviceSize), VK_QUERY_RESULT_WAIT_BIT);
+            sizeInfo.accelerationStructureSize = compactSizes[0];
+
+            // 用实际占用大小重新创建一个BLAS Buffer
+            VulkanBuffer newBLASBuffer = CreateBuffer(sizeInfo.accelerationStructureSize,
+                VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
+                VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+
+            // 新的压缩过的Buffer和Size信息
+            VkAccelerationStructureCreateInfoKHR newBLASInfo = {};
+            newBLASInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
+            newBLASInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
+            newBLASInfo.size = sizeInfo.accelerationStructureSize;
+            newBLASInfo.buffer = newBLASBuffer.buffer;
+
+            // 创建新的压缩过的BLAS
+            VkAccelerationStructureKHR newAS = {};
+            vkCreateAccelerationStructureKHR(device, &newBLASInfo, nullptr, &newAS);
+
+            ImmediatelyExecute([=](VkCommandBuffer cmd)
+                {
+                    // 把之前构建好的BLAS数据，复制到新的，大小精确不浪费的BLAS上
+                    VkCopyAccelerationStructureInfoKHR copyInfo = {};
+                    copyInfo.sType = VK_STRUCTURE_TYPE_COPY_ACCELERATION_STRUCTURE_INFO_KHR;
+                    copyInfo.src = buildInfo.dstAccelerationStructure;
+                    copyInfo.dst = newAS;
+                    copyInfo.mode = VK_COPY_ACCELERATION_STRUCTURE_MODE_COMPACT_KHR;
+                    vkCmdCopyAccelerationStructureKHR(cmd, &copyInfo);
+                });
+
+            // 销毁之前的BLAS
+            DestroyBuffer(meshBuffer->blas.buffer);
+            vkDestroyAccelerationStructureKHR(device, meshBuffer->blas.as, nullptr);
+
+            // 把新创建的BLAS赋值过来
+            meshBuffer->blas.as = newAS;
+            meshBuffer->blas.buffer = newBLASBuffer;
+        }
+
+        // 获取BLAS的Device Address
+        VkAccelerationStructureDeviceAddressInfoKHR addressInfo = {};
+        addressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
+        addressInfo.accelerationStructure = meshBuffer->blas.as;
+        meshBuffer->blas.deviceAddress = vkGetAccelerationStructureDeviceAddressKHR(device, &addressInfo);
+        meshBuffer->blas.isBuilt = true;
+
+        // BLAS创建完成后立刻销毁Scratch Buffer
         DestroyBuffer(scratchBuffer);
     }
 

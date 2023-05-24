@@ -84,6 +84,7 @@ namespace ZXEngine
         virtual void CreateShaderBindingTable();
         virtual void PushAccelerationStructure(uint32_t VAO, const Matrix4& transform);
         virtual void BuildTopLevelAccelerationStructure();
+        virtual void BuildBottomLevelAccelerationStructure(uint32_t VAO, bool isCompact);
 
 
     /// <summary>
