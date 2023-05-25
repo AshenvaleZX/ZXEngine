@@ -110,6 +110,8 @@ namespace ZXEngine
         VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
         // 物理设备
         VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+        // GPU硬件光追属性
+        VkPhysicalDeviceRayTracingPipelinePropertiesKHR rtPhysicalProperties;
         // 逻辑设备
         VkDevice device = VK_NULL_HANDLE;
         // Vulkan Memory Allocator(来自AMD的GPUOpen团队:https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator)
@@ -144,15 +146,6 @@ namespace ZXEngine
 
         // 命令池
         VkCommandPool commandPool = VK_NULL_HANDLE;
-
-        // 光线追踪管线
-        VulkanPipeline rtPipeline;
-        // 光线追踪管线数据
-        VulkanRTPipelineData rtPipelineData;
-        // GPU硬件光追属性
-        VkPhysicalDeviceRayTracingPipelinePropertiesKHR rtPhysicalProperties;
-        // Shader Binding Table
-        VulkanShaderBindingTable rtSBT;
 
         // ------------------------------------------建立各种Vulkan对象--------------------------------------------
 
@@ -203,8 +196,6 @@ namespace ZXEngine
     /// Vulkan资源创建相关接口(这些接口Create出来的需要手动Destroy)
     /// </summary>
     private:
-        VulkanAccelerationStructure tlas;
-
         vector<VulkanVAO*> VulkanVAOArray;
         vector<VulkanFBO*> VulkanFBOArray;
         vector<VulkanAttachmentBuffer*> VulkanAttachmentBufferArray;
@@ -284,6 +275,22 @@ namespace ZXEngine
 
         // 检查是否有需要延迟卸载的资源
         void CheckDeleteData();
+
+
+/// <summary>
+/// Vulkan光线追踪相关资源和接口
+/// </summary>
+        // 光线追踪管线
+        VulkanPipeline rtPipeline;
+        // 光线追踪管线数据
+        VulkanRTPipelineData rtPipelineData;
+        // Shader Binding Table
+        VulkanShaderBindingTable rtSBT;
+        // Top Level Acceleration Structure
+        VulkanAccelerationStructure tlas;
+
+        void CreateRTPipelineData();
+        void UpdateRTPipelineData();
 
 
     /// <summary>

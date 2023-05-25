@@ -1173,32 +1173,6 @@ namespace ZXEngine
         // 创建PipelineLayout
         rtPipeline.pipelineLayout = CreatePipelineLayout(rtPipeline.descriptorSetLayout);
 
-        // 创建DescriptorPool
-        vector<VkDescriptorPoolSize> poolSizes = {};
-
-        VkDescriptorPoolSize asPoolSize = {};
-        asPoolSize.type = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
-        asPoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
-        poolSizes.push_back(asPoolSize);
-
-        VkDescriptorPoolSize imagePoolSize = {};
-        imagePoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-        imagePoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
-        poolSizes.push_back(imagePoolSize);
-
-        VkDescriptorPoolCreateInfo poolInfo = {};
-        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-        poolInfo.pPoolSizes = poolSizes.data();
-        poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-        poolInfo.maxSets = MAX_FRAMES_IN_FLIGHT;
-        poolInfo.flags = 0;
-        if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &rtPipelineData.descriptorPool) != VK_SUCCESS)
-			throw std::runtime_error("Failed to create descriptor pool for ray tracing!");
-
-        // 创建DescriptorSet
-        vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, rtPipeline.descriptorSetLayout);
-        rtPipelineData.descriptorSets = CreateDescriptorSets(rtPipelineData.descriptorPool, layouts);
-
         enum RayTracingShaderGroupType
         {
             ZX_RAY_GEN,
@@ -1265,6 +1239,9 @@ namespace ZXEngine
         // 创建完成后，立刻清理Shader Module
         for (auto& stage : stages)
 			vkDestroyShaderModule(device, stage.module, nullptr);
+
+        // 创建管线要使用的固定DescriptorSet
+        CreateRTPipelineData();
     }
 
     void RenderAPIVulkan::CreateShaderBindingTable()
@@ -3956,6 +3933,76 @@ namespace ZXEngine
             DestroyPipelineByIndex(id);
             pipelinesToDelete.erase(id);
         }
+    }
+
+
+    void RenderAPIVulkan::CreateRTPipelineData()
+    {
+        // 创建DescriptorPool
+        vector<VkDescriptorPoolSize> poolSizes = {};
+
+        // Top Level Acceleration Structure
+        VkDescriptorPoolSize asPoolSize = {};
+        asPoolSize.type = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
+        asPoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
+        poolSizes.push_back(asPoolSize);
+
+        // 输出渲染结果的Storage Image
+        VkDescriptorPoolSize imagePoolSize = {};
+        imagePoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+        imagePoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
+        poolSizes.push_back(imagePoolSize);
+
+        VkDescriptorPoolCreateInfo poolInfo = {};
+        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        poolInfo.pPoolSizes = poolSizes.data();
+        poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+        poolInfo.maxSets = MAX_FRAMES_IN_FLIGHT;
+        poolInfo.flags = 0;
+        if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &rtPipelineData.descriptorPool) != VK_SUCCESS)
+            throw std::runtime_error("Failed to create descriptor pool for ray tracing!");
+
+        // 创建DescriptorSet
+        vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, rtPipeline.descriptorSetLayout);
+        rtPipelineData.descriptorSets = CreateDescriptorSets(rtPipelineData.descriptorPool, layouts);
+    }
+
+    void RenderAPIVulkan::UpdateRTPipelineData()
+    {
+        // 更新TLAS
+        VkWriteDescriptorSetAccelerationStructureKHR writeASInfo = {};
+        writeASInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR;
+        writeASInfo.accelerationStructureCount = 1;
+        writeASInfo.pAccelerationStructures = &tlas.as;
+
+        VkWriteDescriptorSet writeAS = {};
+        writeAS.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        writeAS.descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
+        writeAS.dstSet = rtPipelineData.descriptorSets[currentFrame];
+        writeAS.dstBinding = 0;
+        writeAS.descriptorCount = 1;
+        writeAS.pNext = &writeASInfo;
+
+        // 获取光追管线输出的目标图像
+        auto mainFBO = FBOManager::GetInstance()->GetFBO("Main");
+        uint32_t textureID = GetAttachmentBufferByIndex(mainFBO->ColorBuffer)->attachmentBuffers[currentFrame];
+        auto texture = GetTextureByIndex(textureID);
+
+        // 更新输出目标图像
+        VkDescriptorImageInfo imageInfo = {};
+        imageInfo.imageView = texture->imageView;
+        imageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+
+        VkWriteDescriptorSet writeImage = {};
+        writeImage.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        writeImage.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+        writeImage.dstSet = rtPipelineData.descriptorSets[currentFrame];
+        writeImage.dstBinding = 1;
+        writeImage.descriptorCount = 1;
+        writeImage.pImageInfo = &imageInfo;
+
+        vector<VkWriteDescriptorSet> writeSets = { writeAS, writeImage };
+        vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeSets.size()), writeSets.data(), 0, nullptr);
     }
 
 
