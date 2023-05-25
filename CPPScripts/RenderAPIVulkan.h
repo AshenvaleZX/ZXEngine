@@ -82,7 +82,14 @@ namespace ZXEngine
         // Ray Tracing
         virtual void CreateRayTracingPipeline();
         virtual void CreateShaderBindingTable();
+
+        virtual uint32_t CreateRayTracingMaterialData();
+        virtual void SetUpRayTracingMaterialData(MaterialData* materialData);
+        virtual void DeleteRayTracingMaterialData(uint32_t id);
+
+        virtual void PushRayTracingMaterialData(MaterialData* materialData);
         virtual void PushAccelerationStructure(uint32_t VAO, const Matrix4& transform);
+
         virtual void BuildTopLevelAccelerationStructure(uint32_t commandID);
         virtual void BuildBottomLevelAccelerationStructure(uint32_t VAO, bool isCompact);
 
@@ -288,6 +295,24 @@ namespace ZXEngine
         VulkanShaderBindingTable rtSBT;
         // Top Level Acceleration Structure
         VulkanAccelerationStructure tlas;
+
+        // 当前场景中所有纹理索引数组
+        vector<uint32_t> curRTSceneTextureIndexes;
+        // 当前场景中所有纹理的索引与纹理数组下标的映射表
+        unordered_map<uint32_t, uint32_t> curRTSceneTextureIndexMap;
+        // 当前场景中所有光追材质索引数组
+        vector<uint32_t> curRTSceneRTMaterialDatas;
+        // 当前场景中所有光追材质的索引与光追材质数组下标的映射表
+        unordered_map<uint32_t, uint32_t> curRTSceneRTMaterialDataMap;
+
+        // 所有的光追材质数组，其中可能包括已销毁的，未在场景中的
+        vector<VulkanRTMaterialData*> VulkanRTMaterialDataArray;
+        // 准备消耗的光追材质
+        map<uint32_t, uint32_t> rtMaterialDatasToDelete;
+
+        uint32_t GetNextRTMaterialDataIndex();
+        VulkanRTMaterialData* GetRTMaterialDataByIndex(uint32_t idx);
+        void DestroyRTMaterialDataByIndex(uint32_t idx);
 
         void CreateRTPipelineData();
         void UpdateRTPipelineData();

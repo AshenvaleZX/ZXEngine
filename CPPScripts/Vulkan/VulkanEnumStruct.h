@@ -187,6 +187,12 @@ namespace ZXEngine
         vector<VkDescriptorSet> descriptorSets;
     };
 
+    struct VulkanRTMaterialData
+    {
+        vector<VulkanBuffer> buffers;
+        bool inUse = false;
+    };
+
     struct VulkanShaderBindingTable
     {
         VulkanBuffer buffer;

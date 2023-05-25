@@ -1328,6 +1328,76 @@ namespace ZXEngine
         }
     }
 
+    uint32_t RenderAPIVulkan::CreateRayTracingMaterialData()
+    {
+        uint32_t rtMaterialDataID = GetNextRTMaterialDataIndex();
+        auto rtMaterialData = GetRTMaterialDataByIndex(rtMaterialDataID);
+
+        rtMaterialData->inUse = true;
+
+        return rtMaterialDataID;
+    }
+
+    void RenderAPIVulkan::SetUpRayTracingMaterialData(MaterialData* materialData)
+    {
+        auto vulkanRTMaterialData = GetRTMaterialDataByIndex(materialData->GetRTID());
+
+        vulkanRTMaterialData->buffers.resize(MAX_FRAMES_IN_FLIGHT);
+
+        // 目前Buffer里只有纹理引用索引
+        VkDeviceSize bufferSize = 4 * materialData->textures.size();
+        if (bufferSize > 0)
+        {
+            for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+            {
+                // 这个Buffer可能是一次性创建不再修改的，可以考虑优化成GPU Only的
+                vulkanRTMaterialData->buffers[i] = CreateBuffer(bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
+            }
+        }
+    }
+
+    void RenderAPIVulkan::DeleteRayTracingMaterialData(uint32_t id)
+    {
+        rtMaterialDatasToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT));
+    }
+
+    void RenderAPIVulkan::PushRayTracingMaterialData(MaterialData* materialData)
+    {
+        // 把这个材质使用的纹理添加到当前光追场景中的总纹理列表中
+        for (auto& iter : materialData->textures)
+        {
+            auto textureID = iter.second->GetID();
+            if (curRTSceneTextureIndexMap.find(textureID) == curRTSceneTextureIndexMap.end())
+            {
+				curRTSceneTextureIndexMap[textureID] = static_cast<uint32_t>(curRTSceneTextureIndexes.size());
+                curRTSceneTextureIndexes.emplace_back(textureID);
+			}
+        }
+
+        // 把这个光追材质添加到当前光追场景中的总光追材质列表中
+        auto rtMaterialDataID = materialData->GetRTID();
+        if (curRTSceneRTMaterialDataMap.find(rtMaterialDataID) == curRTSceneRTMaterialDataMap.end())
+        {
+            curRTSceneRTMaterialDataMap[rtMaterialDataID] = static_cast<uint32_t>(curRTSceneRTMaterialDatas.size());
+            curRTSceneRTMaterialDatas.emplace_back(rtMaterialDataID);
+		}
+
+        // 更新当前帧的光追材质Buffer数据
+        auto vulkanRTMaterialData = GetRTMaterialDataByIndex(rtMaterialDataID);
+        auto& buffer = vulkanRTMaterialData->buffers[currentFrame];
+        uint8_t* tmpPtr = static_cast<uint8_t*>(buffer.mappedAddress);
+
+        // 遍历纹理，并把引用索引写入Buffer
+        for (auto& iter : materialData->textures)
+        {
+            auto textureID = iter.second->GetID();
+            auto textureIdx = curRTSceneTextureIndexMap[textureID];
+
+            memcpy(tmpPtr, &textureIdx, 4);
+            tmpPtr += 4;
+        }
+    }
+
     void RenderAPIVulkan::PushAccelerationStructure(uint32_t VAO, const Matrix4& transform)
     {
         asInstanceData.emplace_back();
@@ -3889,6 +3959,21 @@ namespace ZXEngine
             materialDatasToDelete.erase(id);
         }
 
+        // 光追材质数据
+        deleteList.clear();
+        for (auto& iter : rtMaterialDatasToDelete)
+        {
+            if (iter.second > 0)
+                iter.second--;
+            else
+                deleteList.push_back(iter.first);
+        }
+        for (auto id : deleteList)
+        {
+            DestroyRTMaterialDataByIndex(id);
+            rtMaterialDatasToDelete.erase(id);
+        }
+
         // Texture
         deleteList.clear();
         for (auto& iter : texturesToDelete)
@@ -3935,6 +4020,38 @@ namespace ZXEngine
         }
     }
 
+
+    uint32_t RenderAPIVulkan::GetNextRTMaterialDataIndex()
+    {
+        uint32_t length = static_cast<uint32_t>(VulkanRTMaterialDataArray.size());
+
+        for (uint32_t i = 0; i < length; i++)
+        {
+            if (!VulkanRTMaterialDataArray[i]->inUse)
+                return i;
+        }
+
+        VulkanRTMaterialDataArray.push_back(new VulkanRTMaterialData());
+
+        return length;
+    }
+
+    VulkanRTMaterialData* RenderAPIVulkan::GetRTMaterialDataByIndex(uint32_t idx)
+    {
+        return VulkanRTMaterialDataArray[idx];
+    }
+
+    void RenderAPIVulkan::DestroyRTMaterialDataByIndex(uint32_t idx)
+    {
+        auto vulkanRTMaterialData = GetRTMaterialDataByIndex(idx);
+
+        for (auto& buffer : vulkanRTMaterialData->buffers)
+            DestroyBuffer(buffer);
+
+        vulkanRTMaterialData->buffers.clear();
+
+        vulkanRTMaterialData->inUse = false;
+    }
 
     void RenderAPIVulkan::CreateRTPipelineData()
     {
