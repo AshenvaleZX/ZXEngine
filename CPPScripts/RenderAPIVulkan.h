@@ -88,7 +88,7 @@ namespace ZXEngine
         virtual void DeleteRayTracingMaterialData(uint32_t id);
 
         virtual void PushRayTracingMaterialData(MaterialData* materialData);
-        virtual void PushAccelerationStructure(uint32_t VAO, const Matrix4& transform);
+        virtual void PushAccelerationStructure(uint32_t VAO, uint32_t rtMaterialDataID, const Matrix4& transform);
 
         virtual void BuildTopLevelAccelerationStructure(uint32_t commandID);
         virtual void BuildBottomLevelAccelerationStructure(uint32_t VAO, bool isCompact);
@@ -241,7 +241,7 @@ namespace ZXEngine
         void* GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
         vector<void*> GetShaderPropertyAddressAllBuffer(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
 
-        VulkanBuffer CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool map = false);
+        VulkanBuffer CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool cpuAddress = false, bool gpuAddress = false);
         void DestroyBuffer(VulkanBuffer buffer);
 
         UniformBuffer CreateUniformBuffer(const vector<ShaderProperty>& properties);
@@ -291,11 +291,15 @@ namespace ZXEngine
         VulkanPipeline rtPipeline;
         // 光线追踪管线数据
         VulkanRTPipelineData rtPipelineData;
+        // 光线追踪场景数据
+        VulkanRTSceneData rtSceneData;
         // Shader Binding Table
         VulkanShaderBindingTable rtSBT;
         // Top Level Acceleration Structure
         VulkanAccelerationStructure tlas;
 
+        // 当前这一帧要绘制的对象信息数组
+        vector<VulkanASInstanceData> asInstanceData;
         // 当前场景中所有纹理索引数组
         vector<uint32_t> curRTSceneTextureIndexes;
         // 当前场景中所有纹理的索引与纹理数组下标的映射表
@@ -317,6 +321,9 @@ namespace ZXEngine
         void CreateRTPipelineData();
         void UpdateRTPipelineData();
 
+        void CreateRTSceneData();
+        void UpdateRTSceneData();
+
 
     /// <summary>
     /// 其它辅助接口
@@ -336,7 +343,6 @@ namespace ZXEngine
 
         vector<VulkanDrawIndex> drawIndexes;
         vector<VkSemaphore> curWaitSemaphores;
-        vector<VulkanASInstanceData> asInstanceData;
 
         uint32_t GetCurFrameBufferIndex();
         uint32_t GetMipMapLevels(int width, int height);

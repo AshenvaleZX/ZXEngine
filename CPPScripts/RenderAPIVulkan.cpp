@@ -995,16 +995,29 @@ namespace ZXEngine
         vmaUnmapMemory(vmaAllocator, vertexStagingBufferAlloc);
 
         // 建立VertexBuffer
+        VkBufferUsageFlags vertexBufferUsage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+        if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
+            vertexBufferUsage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+        
         VkBufferCreateInfo vertexBufferInfo = {};
         vertexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
         vertexBufferInfo.size = vertexBufferSize;
-        vertexBufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+        vertexBufferInfo.usage = vertexBufferUsage;
         vertexBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE; // 只有一个队列簇使用
 
         VmaAllocationCreateInfo vertexBufferAllocInfo = {};
         vertexBufferAllocInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 
         vmaCreateBuffer(vmaAllocator, &vertexBufferInfo, &vertexBufferAllocInfo, &meshBuffer->vertexBuffer, &meshBuffer->vertexBufferAlloc, nullptr);
+
+        // 如果是光追渲染管线，需要获取VertexBuffer的GPU地址
+        if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
+        {
+            VkBufferDeviceAddressInfo addressInfo = {};
+            addressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+            addressInfo.buffer = meshBuffer->vertexBuffer;
+            meshBuffer->indexBufferDeviceAddress = vkGetBufferDeviceAddress(device, &addressInfo);
+        }
 
         // 从StagingBuffer拷贝到VertexBuffer
         ImmediatelyExecute([=](VkCommandBuffer cmd)
@@ -1044,16 +1057,29 @@ namespace ZXEngine
         vmaUnmapMemory(vmaAllocator, indexStagingBufferAlloc);
 
         // 建立IndexBuffer
+        VkBufferUsageFlags indexBufferUsage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+        if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
+            indexBufferUsage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+
         VkBufferCreateInfo indexBufferInfo = {};
         indexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
         indexBufferInfo.size = indexBufferSize;
-        indexBufferInfo.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+        indexBufferInfo.usage = indexBufferUsage;
         indexBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE; // 只有一个队列簇使用
 
         VmaAllocationCreateInfo indexBufferAllocInfo = {};
         indexBufferAllocInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 
         vmaCreateBuffer(vmaAllocator, &indexBufferInfo, &indexBufferAllocInfo, &meshBuffer->indexBuffer, &meshBuffer->indexBufferAlloc, nullptr);
+
+        // 如果是光追渲染管线，需要获取IndexBuffer的GPU地址
+        if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
+        {
+            VkBufferDeviceAddressInfo addressInfo = {};
+            addressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+            addressInfo.buffer = meshBuffer->indexBuffer;
+            meshBuffer->indexBufferDeviceAddress = vkGetBufferDeviceAddress(device, &addressInfo);
+        }
 
         // 从StagingBuffer拷贝到IndexBuffer
         ImmediatelyExecute([=](VkCommandBuffer cmd)
@@ -1351,7 +1377,7 @@ namespace ZXEngine
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
                 // 这个Buffer可能是一次性创建不再修改的，可以考虑优化成GPU Only的
-                vulkanRTMaterialData->buffers[i] = CreateBuffer(bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
+                vulkanRTMaterialData->buffers[i] = CreateBuffer(bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VMA_MEMORY_USAGE_AUTO, true, true);
             }
         }
     }
@@ -1398,10 +1424,11 @@ namespace ZXEngine
         }
     }
 
-    void RenderAPIVulkan::PushAccelerationStructure(uint32_t VAO, const Matrix4& transform)
+    void RenderAPIVulkan::PushAccelerationStructure(uint32_t VAO, uint32_t rtMaterialDataID, const Matrix4& transform)
     {
         asInstanceData.emplace_back();
         asInstanceData.back().VAO = VAO;
+        asInstanceData.back().rtMaterialDataID = rtMaterialDataID;
         asInstanceData.back().transform = transform;
     }
 
@@ -2550,6 +2577,7 @@ namespace ZXEngine
         vmaInfo.instance = vkInstance;
         vmaInfo.physicalDevice = physicalDevice;
         vmaInfo.device = device;
+        vmaInfo.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
         // 如果不手动加载Vulkan函数，这里可以填NULL
         vmaInfo.pVulkanFunctions = &vmaVkFunctions;
 
@@ -3077,8 +3105,11 @@ namespace ZXEngine
     }
 
 
-    VulkanBuffer RenderAPIVulkan::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool map)
+    VulkanBuffer RenderAPIVulkan::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool cpuAddress, bool gpuAddress)
     {
+        if (gpuAddress)
+            usage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+
         VkBufferCreateInfo bufferInfo = {};
         bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
         bufferInfo.size = size;
@@ -3086,14 +3117,22 @@ namespace ZXEngine
 
         VmaAllocationCreateInfo allocationInfo = {};
         allocationInfo.usage = memoryUsage;
-        if (map)
+        if (cpuAddress)
             allocationInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
 
         VulkanBuffer newBuffer;
         vmaCreateBuffer(vmaAllocator, &bufferInfo, &allocationInfo, &newBuffer.buffer, &newBuffer.allocation, nullptr);
 
-        if (map)
+        if (cpuAddress)
 			vmaMapMemory(vmaAllocator, newBuffer.allocation, &newBuffer.mappedAddress);
+
+        if (gpuAddress)
+        {
+			VkBufferDeviceAddressInfoKHR deviceAddressInfo = {};
+            deviceAddressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+            deviceAddressInfo.buffer = newBuffer.buffer;
+			newBuffer.deviceAddress = vkGetBufferDeviceAddress(device, &deviceAddressInfo);
+		}
 
         return newBuffer;
     }
@@ -4120,6 +4159,111 @@ namespace ZXEngine
 
         vector<VkWriteDescriptorSet> writeSets = { writeAS, writeImage };
         vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeSets.size()), writeSets.data(), 0, nullptr);
+    }
+
+    void RenderAPIVulkan::CreateRTSceneData()
+    {
+        // 创建DescriptorPool
+        vector<VkDescriptorPoolSize> poolSizes = {};
+
+        // 场景中所有的纹理
+        VkDescriptorPoolSize imagePoolSize = {};
+        imagePoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        imagePoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT * 100; // Todo: 100是随便写的，需要根据场景中的纹理数量来确定
+        poolSizes.push_back(imagePoolSize);
+
+        // 场景中各对象的材质信息
+        VkDescriptorPoolSize asPoolSize = {};
+        asPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        asPoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
+        poolSizes.push_back(asPoolSize);
+
+        VkDescriptorPoolCreateInfo poolInfo = {};
+        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        poolInfo.pPoolSizes = poolSizes.data();
+        poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+        poolInfo.maxSets = MAX_FRAMES_IN_FLIGHT;
+        poolInfo.flags = 0;
+        if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &rtSceneData.descriptorPool) != VK_SUCCESS)
+            throw std::runtime_error("Failed to create descriptor pool for ray tracing!");
+
+        // 创建DescriptorSet
+        vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, rtPipeline.descriptorSetLayout);
+        rtSceneData.descriptorSets = CreateDescriptorSets(rtSceneData.descriptorPool, layouts);
+
+        // 创建渲染对象数据索引Buffer
+        vector<VkWriteDescriptorSet> writeDescriptorSets;
+        rtSceneData.dataReferenceBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+        VkDeviceSize bufferSize = sizeof(VulkanRTRendererDataReference) * 100; // Todo: 这里假设场景中对象不超过100个
+        for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+        {
+            rtSceneData.dataReferenceBuffers[i] = CreateBuffer(bufferSize,
+                VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
+
+            VkDescriptorBufferInfo bufferInfo = {};
+            bufferInfo.buffer = rtSceneData.dataReferenceBuffers[i].buffer;
+            bufferInfo.offset = 0;
+            bufferInfo.range = bufferSize;
+            VkWriteDescriptorSet writeDescriptorSet = {};
+            writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+            writeDescriptorSet.dstSet = rtSceneData.descriptorSets[i];
+            writeDescriptorSet.dstBinding = 1;
+            writeDescriptorSet.dstArrayElement = 0;
+            writeDescriptorSet.descriptorCount = 1;
+            writeDescriptorSet.pBufferInfo = &bufferInfo;
+            writeDescriptorSets.push_back(writeDescriptorSet);
+        }
+        // 把刚刚创建的渲染对象数据索引Buffer绑定到描述符集上
+        vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
+    }
+
+    void RenderAPIVulkan::UpdateRTSceneData()
+    {
+        // 遍历场景中的所有纹理，生成对应的VkDescriptorImageInfo
+        vector<VkDescriptorImageInfo> imageInfos = {};
+
+        for (auto textureID : curRTSceneTextureIndexes)
+        {
+            auto texture = GetTextureByIndex(textureID);
+
+            VkDescriptorImageInfo imageInfo = {};
+            imageInfo.sampler = texture->sampler;
+            imageInfo.imageView = texture->imageView;
+            imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+            imageInfos.push_back(imageInfo);
+        }
+
+        // 更新所有纹理绑定的写入信息
+        VkWriteDescriptorSet writeImages = {};
+        writeImages.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        writeImages.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        writeImages.dstSet = rtSceneData.descriptorSets[currentFrame];
+        writeImages.dstBinding = 0;
+        writeImages.descriptorCount = static_cast<uint32_t>(imageInfos.size());
+        writeImages.pImageInfo = imageInfos.data();
+        // 重新绑定纹理
+        vkUpdateDescriptorSets(device, 1, &writeImages, 0, nullptr);
+
+        // 更新渲染对象的数据引用Buffer
+        vector<VulkanRTRendererDataReference> dataReferences = {};
+        for (auto& iter : asInstanceData)
+        {
+            auto meshBuffer = GetVAOByIndex(iter.VAO);
+            auto rtMaterial = GetRTMaterialDataByIndex(iter.rtMaterialDataID);
+
+            VulkanRTRendererDataReference dataReference = {};
+            dataReference.indexAddress = meshBuffer->indexBufferDeviceAddress;
+            dataReference.vertexAddress = meshBuffer->vertexBufferDeviceAddress;
+            dataReference.materialAddress = rtMaterial->buffers[currentFrame].deviceAddress;
+
+            dataReferences.push_back(dataReference);
+        }
+
+        // 更新当前帧的渲染对象数据引用Buffer
+        auto dataReferencePtr = rtSceneData.dataReferenceBuffers[currentFrame].mappedAddress;
+        memcpy(dataReferencePtr, dataReferences.data(), sizeof(VulkanRTRendererDataReference) * dataReferences.size());
     }
 
 

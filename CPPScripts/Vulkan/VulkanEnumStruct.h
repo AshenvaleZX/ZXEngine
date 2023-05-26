@@ -70,6 +70,7 @@ namespace ZXEngine
         VkBuffer buffer = VK_NULL_HANDLE;
         VmaAllocation allocation = VK_NULL_HANDLE;
         void* mappedAddress = nullptr;
+        VkDeviceAddress deviceAddress = 0;
     };
 
     struct UniformBuffer
@@ -122,6 +123,7 @@ namespace ZXEngine
     struct VulkanASInstanceData
     {
         uint32_t VAO = 0;
+        uint32_t rtMaterialDataID = 0;
         Matrix4 transform;
     };
 
@@ -152,11 +154,13 @@ namespace ZXEngine
         VkBuffer indexBuffer = VK_NULL_HANDLE;
         VmaAllocation indexBufferAlloc = VK_NULL_HANDLE;
         void* indexBufferAddress = nullptr; // Only for dynamic mesh
+        VkDeviceAddress indexBufferDeviceAddress = 0; // Only for ray tracing
 
         uint32_t vertexCount = 0; // ¶¥µãÊýÁ¿
         VkBuffer vertexBuffer = VK_NULL_HANDLE;
         VmaAllocation vertexBufferAlloc = VK_NULL_HANDLE;
         void* vertexBufferAddress = nullptr; // Only for dynamic mesh
+        VkDeviceAddress vertexBufferDeviceAddress = 0; // Only for ray tracing
 
         VulkanAccelerationStructure blas; // Bottom Level Acceleration Structure
         bool inUse = false;
@@ -187,10 +191,24 @@ namespace ZXEngine
         vector<VkDescriptorSet> descriptorSets;
     };
 
+    struct VulkanRTSceneData
+    {
+        VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
+        vector<VkDescriptorSet> descriptorSets;
+        vector<VulkanBuffer> dataReferenceBuffers;
+    };
+
     struct VulkanRTMaterialData
     {
         vector<VulkanBuffer> buffers;
         bool inUse = false;
+    };
+
+    struct VulkanRTRendererDataReference
+    {
+        VkDeviceAddress indexAddress;
+        VkDeviceAddress vertexAddress;
+        VkDeviceAddress materialAddress;
     };
 
     struct VulkanShaderBindingTable
