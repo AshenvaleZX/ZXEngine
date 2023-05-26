@@ -296,7 +296,7 @@ namespace ZXEngine
         // Shader Binding Table
         VulkanShaderBindingTable rtSBT;
         // Top Level Acceleration Structure
-        VulkanAccelerationStructure tlas;
+        vector<VulkanAccelerationStructure> allTLAS;
 
         // 当前这一帧要绘制的对象信息数组
         vector<VulkanASInstanceData> asInstanceData;

@@ -1268,6 +1268,8 @@ namespace ZXEngine
 
         // 创建管线要使用的固定DescriptorSet
         CreateRTPipelineData();
+        // 初始化TLAS数组
+        allTLAS.resize(MAX_FRAMES_IN_FLIGHT);
     }
 
     void RenderAPIVulkan::CreateShaderBindingTable()
@@ -1450,18 +1452,19 @@ namespace ZXEngine
         if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
             throw std::runtime_error("Failed to begin recording command buffer!");
 
-        const bool isUpdate = !tlas.isBuilt;
+        const bool isUpdate = !allTLAS[currentFrame].isBuilt;
 
         // 场景中要渲染的对象实例数据
         vector<VkAccelerationStructureInstanceKHR> instances;
 
-        for (auto& data : asInstanceData)
+        for (size_t i = 0; i < asInstanceData.size(); i++)
         {
+            auto& data = asInstanceData[i];
             auto meshData = GetVAOByIndex(data.VAO);
 
             VkAccelerationStructureInstanceKHR asIns = {};
             asIns.transform = GetVkTransformMatrix(data.transform);
-            asIns.instanceCustomIndex = data.VAO;
+            asIns.instanceCustomIndex = i;
             asIns.mask = 0xFF;
             asIns.instanceShaderBindingTableRecordOffset = 0;
             asIns.flags = VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR;
@@ -1532,7 +1535,7 @@ namespace ZXEngine
         if (!isUpdate)
         {
             // 创建TLAS Buffer
-            tlas.buffer = CreateBuffer(sizeInfo.accelerationStructureSize,
+            allTLAS[currentFrame].buffer = CreateBuffer(sizeInfo.accelerationStructureSize,
                 VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
                 VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
@@ -1541,10 +1544,10 @@ namespace ZXEngine
             createInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
             createInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
             createInfo.size = sizeInfo.accelerationStructureSize;
-            createInfo.buffer = tlas.buffer.buffer;
+            createInfo.buffer = allTLAS[currentFrame].buffer.buffer;
 
             // 创建TLAS
-            vkCreateAccelerationStructureKHR(device, &createInfo, nullptr, &tlas.as);
+            vkCreateAccelerationStructureKHR(device, &createInfo, nullptr, &allTLAS[currentFrame].as);
         }
 
         // 创建Scratch Buffer，Vulkan构建TLAS需要一个Buffer来放中间数据
@@ -1557,8 +1560,8 @@ namespace ZXEngine
         VkDeviceAddress scratchAddress = vkGetBufferDeviceAddress(device, &scratchBufferInfo);
 
         // 继续填充构建TLAS需要的信息
-        buildInfo.srcAccelerationStructure = isUpdate ? tlas.as : VK_NULL_HANDLE;
-        buildInfo.dstAccelerationStructure = tlas.as;
+        buildInfo.srcAccelerationStructure = isUpdate ? allTLAS[currentFrame].as : VK_NULL_HANDLE;
+        buildInfo.dstAccelerationStructure = allTLAS[currentFrame].as;
         buildInfo.scratchData.deviceAddress = scratchAddress;
 
         // 本次构建TLAS的所需的数据范围
@@ -1571,7 +1574,7 @@ namespace ZXEngine
 
         // 构建TLAS
         vkCmdBuildAccelerationStructuresKHR(commandBuffer, 1, &buildInfo, &pBuildRangeInfo);
-        tlas.isBuilt = true;
+        allTLAS[currentFrame].isBuilt = true;
 
         // 销毁中间Buffer
         DestroyBuffer(stagingBuffer);
@@ -4129,7 +4132,7 @@ namespace ZXEngine
         VkWriteDescriptorSetAccelerationStructureKHR writeASInfo = {};
         writeASInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR;
         writeASInfo.accelerationStructureCount = 1;
-        writeASInfo.pAccelerationStructures = &tlas.as;
+        writeASInfo.pAccelerationStructures = &allTLAS[currentFrame].as;
 
         VkWriteDescriptorSet writeAS = {};
         writeAS.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
