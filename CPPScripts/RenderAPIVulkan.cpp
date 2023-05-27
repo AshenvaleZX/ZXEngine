@@ -1434,6 +1434,65 @@ namespace ZXEngine
         asInstanceData.back().transform = transform;
     }
 
+    void RenderAPIVulkan::RayTrace(uint32_t commandID, const RayTracingPipelineConstants& rtConstants)
+    {
+        // 先更新当前帧和光追管线绑定的场景数据
+        UpdateRTSceneData();
+
+        // 获取当前帧的Command Buffer
+		auto curDrawCommandObj = GetDrawCommandByIndex(commandID);
+		auto& curDrawCommand = curDrawCommandObj->drawCommands[currentFrame];
+		auto commandBuffer = curDrawCommand.commandBuffer;
+
+		// 重置Command Buffer
+		vkResetCommandBuffer(commandBuffer, 0);
+
+		// 开始记录Command Buffer
+		VkCommandBufferBeginInfo beginInfo = {};
+		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		beginInfo.flags = 0;
+		beginInfo.pInheritanceInfo = VK_NULL_HANDLE;
+		if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
+			throw std::runtime_error("Failed to begin recording command buffer!");
+
+		// 绑定光追管线
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, rtPipeline.pipeline);
+		// 绑定光追管线描述符集
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, rtPipeline.pipelineLayout, 
+            0, 1, &rtPipelineData.descriptorSets[currentFrame], 0, nullptr);
+
+        // 绑定光追管线常量
+        vkCmdPushConstants(commandBuffer, rtPipeline.pipelineLayout, 
+            VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR,
+            0, sizeof(RayTracingPipelineConstants), &rtConstants);
+
+		// Ray Trace
+		vkCmdTraceRaysKHR(commandBuffer, 
+            &rtSBT.raygenRegion, &rtSBT.missRegion, &rtSBT.hitRegion, &rtSBT.callableRegion, 
+            GlobalData::srcWidth, GlobalData::srcHeight, 1);
+
+		// 结束记录Command Buffer
+		if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
+			throw std::runtime_error("Failed to record command buffer!");
+
+        // 提交Command Buffer
+        vector<VkPipelineStageFlags> waitStages = {};
+        waitStages.resize(curWaitSemaphores.size(), VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR);
+        VkSubmitInfo submitInfo = {};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.pCommandBuffers = &commandBuffer;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pWaitSemaphores = curWaitSemaphores.data();
+        submitInfo.pWaitDstStageMask = waitStages.data();
+        submitInfo.waitSemaphoreCount = static_cast<uint32_t>(curWaitSemaphores.size());
+        submitInfo.pSignalSemaphores = curDrawCommand.signalSemaphores.data();
+        submitInfo.signalSemaphoreCount = static_cast<uint32_t>(curDrawCommand.signalSemaphores.size());
+        if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
+            throw std::runtime_error("Failed to submit draw command buffer!");
+
+        curWaitSemaphores = curDrawCommand.signalSemaphores;
+    }
+
     void RenderAPIVulkan::BuildTopLevelAccelerationStructure(uint32_t commandID)
     {
         // 获取当前帧的Command Buffer

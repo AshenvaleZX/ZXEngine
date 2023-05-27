@@ -81,4 +81,12 @@ namespace ZXEngine
 		int32_t xOffset = 0;
 		int32_t yOffset = 0;
 	};
+
+	struct RayTracingPipelineConstants
+	{
+		Matrix4 VP;
+		Matrix4 V_Inv;
+		Matrix4 P_Inv;
+		Vector3 lightPos;
+	};
 }
