@@ -29,6 +29,9 @@ namespace ZXEngine
         virtual ComponentType GetInsType();
 
         Matrix4 GetViewMatrix();
+        Matrix4 GetViewMatrixInverse();
+
         Matrix4 GetProjectionMatrix();
+        Matrix4 GetProjectionMatrixInverse();
 	};
 }

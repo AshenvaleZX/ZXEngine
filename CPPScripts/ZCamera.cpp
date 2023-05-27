@@ -44,11 +44,22 @@ namespace ZXEngine
 		return Math::Inverse(model);
 	}
 
+	Matrix4 Camera::GetViewMatrixInverse()
+	{
+		return GetTransform()->GetModelMatrix();
+	}
+
 	Matrix4 Camera::GetProjectionMatrix()
 	{
 		if (aspect == 0.0f)
 			return Math::Perspective(Math::Deg2Rad(Fov), static_cast<float>(GlobalData::srcWidth) / static_cast<float>(GlobalData::srcHeight), nearClipDis, farClipDis);
 		else
 			return Math::Perspective(Math::Deg2Rad(Fov), aspect, nearClipDis, farClipDis);
+	}
+
+	Matrix4 Camera::GetProjectionMatrixInverse()
+	{
+		Matrix4 projection = GetProjectionMatrix();
+		return Math::Inverse(projection);
 	}
 }
