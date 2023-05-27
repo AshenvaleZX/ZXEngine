@@ -16,6 +16,9 @@ namespace ZXEngine
 	private:
 		static RenderAPI* mInstance;
 
+		/// <summary>
+		/// 标准RenderAPI接口
+		/// </summary>
 	public:
 		RenderAPI() {};
 		~RenderAPI() {};
@@ -81,5 +84,30 @@ namespace ZXEngine
 		virtual void SetShaderMatrix(Material* material, const string& name, const Matrix4& value, uint32_t idx, bool allBuffer = false) = 0;
 		virtual void SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false) = 0;
 		virtual void SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false) = 0;
+
+
+		/// <summary>
+		/// 标准RayTracing接口
+		/// </summary>
+	public:
+		// 管线创建
+		virtual void CreateRayTracingPipeline() = 0;
+		virtual void CreateShaderBindingTable() = 0;
+
+		// Material
+		virtual uint32_t CreateRayTracingMaterialData() = 0;
+		virtual void SetUpRayTracingMaterialData(MaterialData* materialData) = 0;
+		virtual void DeleteRayTracingMaterialData(uint32_t id) = 0;
+
+		// 数据更新
+		virtual void PushRayTracingMaterialData(MaterialData* materialData) = 0;
+		virtual void PushAccelerationStructure(uint32_t VAO, uint32_t rtMaterialDataID, const Matrix4& transform) = 0;
+
+		// Ray Trace
+		virtual void RayTrace(uint32_t commandID, const RayTracingPipelineConstants& rtConstants) = 0;
+
+		// Acceleration Structure
+		virtual void BuildTopLevelAccelerationStructure(uint32_t commandID) = 0;
+		virtual void BuildBottomLevelAccelerationStructure(uint32_t VAO, bool isCompact) = 0;
 	};
 }

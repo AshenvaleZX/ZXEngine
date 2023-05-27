@@ -80,6 +80,31 @@ namespace ZXEngine
 
 
 		/// <summary>
+		/// 标准RayTracing接口(暂未实现基于DXR的光线追踪)
+		/// </summary>
+	public:
+		// 管线创建
+		virtual void CreateRayTracingPipeline() {};
+		virtual void CreateShaderBindingTable() {};
+
+		// Material
+		virtual uint32_t CreateRayTracingMaterialData() { return 0; };
+		virtual void SetUpRayTracingMaterialData(MaterialData* materialData) {};
+		virtual void DeleteRayTracingMaterialData(uint32_t id) {};
+
+		// 数据更新
+		virtual void PushRayTracingMaterialData(MaterialData* materialData) {};
+		virtual void PushAccelerationStructure(uint32_t VAO, uint32_t rtMaterialDataID, const Matrix4& transform) {};
+
+		// Ray Trace
+		virtual void RayTrace(uint32_t commandID, const RayTracingPipelineConstants& rtConstants) {};
+
+		// Acceleration Structure
+		virtual void BuildTopLevelAccelerationStructure(uint32_t commandID) {};
+		virtual void BuildBottomLevelAccelerationStructure(uint32_t VAO, bool isCompact) {};
+
+
+		/// <summary>
 		/// 仅启动时一次性初始化的核心D3D12组件及相关变量
 		/// </summary>
 	private:

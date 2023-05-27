@@ -8,9 +8,9 @@ namespace ZXEngine
 	class MaterialData;
 	class RenderAPIOpenGL : public RenderAPI
 	{
-	/// <summary>
-	/// 标准RenderAPI接口
-	/// </summary>
+		/// <summary>
+		/// 标准RenderAPI接口
+		/// </summary>
 	public:
 		RenderAPIOpenGL();
 		~RenderAPIOpenGL() {};
@@ -77,9 +77,35 @@ namespace ZXEngine
 		virtual void SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
 		virtual void SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
 
-	/// <summary>
-	/// 实现标准RenderAPI接口的内部接口与变量
-	/// </summary>
+		
+		/// <summary>
+		/// 标准RayTracing接口(OpenGL不支持光线追踪)
+		/// </summary>
+	public:
+		// 管线创建
+		virtual void CreateRayTracingPipeline() {};
+		virtual void CreateShaderBindingTable() {};
+
+		// Material
+		virtual uint32_t CreateRayTracingMaterialData() { return 0; };
+		virtual void SetUpRayTracingMaterialData(MaterialData* materialData) {};
+		virtual void DeleteRayTracingMaterialData(uint32_t id) {};
+
+		// 数据更新
+		virtual void PushRayTracingMaterialData(MaterialData* materialData) {};
+		virtual void PushAccelerationStructure(uint32_t VAO, uint32_t rtMaterialDataID, const Matrix4& transform) {};
+
+		// Ray Trace
+		virtual void RayTrace(uint32_t commandID, const RayTracingPipelineConstants& rtConstants) {};
+
+		// Acceleration Structure
+		virtual void BuildTopLevelAccelerationStructure(uint32_t commandID) {};
+		virtual void BuildBottomLevelAccelerationStructure(uint32_t VAO, bool isCompact) {};
+
+
+		/// <summary>
+		/// 实现标准RenderAPI接口的内部接口与变量
+		/// </summary>
 	private:
 		bool stateDirty = false;
 		uint32_t curFBOID = 0;
