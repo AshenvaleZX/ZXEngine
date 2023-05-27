@@ -1458,8 +1458,9 @@ namespace ZXEngine
 		// 绑定光追管线
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, rtPipeline.pipeline);
 		// 绑定光追管线描述符集
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, rtPipeline.pipelineLayout, 
-            0, 1, &rtPipelineData.descriptorSets[currentFrame], 0, nullptr);
+        vector<VkDescriptorSet> rtSets{ rtPipelineData.descriptorSets[currentFrame], rtSceneData.descriptorSets[currentFrame] };
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, rtPipeline.pipelineLayout,
+            0, static_cast<uint32_t>(rtSets.size()), rtSets.data(), 0, nullptr);
 
         // 绑定光追管线常量
         vkCmdPushConstants(commandBuffer, rtPipeline.pipelineLayout, 
