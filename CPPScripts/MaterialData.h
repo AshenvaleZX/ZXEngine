@@ -15,8 +15,10 @@ namespace ZXEngine
 
 		void Use();
 		uint32_t GetID();
+		uint32_t GetRTID();
 
 	private:
 		uint32_t ID = 0;
+		uint32_t rtID = 0;
 	};
 }

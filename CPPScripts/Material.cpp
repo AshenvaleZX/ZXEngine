@@ -29,6 +29,8 @@ namespace ZXEngine
 		}
 
 		RenderAPI::GetInstance()->SetUpMaterial(shader->reference, data);
+		// Todo: 这里可能要判断一下调用条件
+		RenderAPI::GetInstance()->SetUpRayTracingMaterialData(data);
 	}
 
 	Material::Material(Shader* shader)
@@ -41,6 +43,8 @@ namespace ZXEngine
 		this->shader = shader;
 		data = new MaterialData();
 		RenderAPI::GetInstance()->SetUpMaterial(this->shader->reference, data);
+		// Todo: 这里可能要判断一下调用条件
+		RenderAPI::GetInstance()->SetUpRayTracingMaterialData(data);
 	}
 
 	Material::~Material()
