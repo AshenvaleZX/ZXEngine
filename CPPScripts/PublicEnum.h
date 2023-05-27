@@ -90,6 +90,7 @@ namespace ZXEngine
 		AfterEffectRendering,
 		UIRendering,
 		AssetPreviewer,
+		RayTracing,
 	};
 
 	enum class GameObjectLayer
