@@ -12,6 +12,16 @@ namespace ZXEngine
 			string extension = entry.path().filename().extension().string();
 			if (extension == ".zxshader")
 				CompileShader(entry.path().string());
+			else if (extension == ".rgen")
+				GenerateSPIRVFile(entry.path(), ZX_SHADER_STAGE_RAYGEN_BIT);
+			else if (extension == ".rchit")
+				GenerateSPIRVFile(entry.path(), ZX_SHADER_STAGE_CLOSEST_HIT_BIT);
+			else if (extension == ".rmiss")
+				GenerateSPIRVFile(entry.path(), ZX_SHADER_STAGE_MISS_BIT);
+			else if (extension == ".rahit")
+				GenerateSPIRVFile(entry.path(), ZX_SHADER_STAGE_ANY_HIT_BIT);
+			else if (extension == ".rint")
+				GenerateSPIRVFile(entry.path(), ZX_SHADER_STAGE_INTERSECTION_BIT);
 			else if (extension == "")
 				CompileAllShader(entry.path().string());
 		}
@@ -42,17 +52,39 @@ namespace ZXEngine
 			GenerateSPIRVFile(path, geomCode, ZX_SHADER_STAGE_GEOMETRY_BIT);
 	}
 
+	void SPIRVCompiler::GenerateSPIRVFile(const filesystem::path& path, ShaderStageFlagBit stage)
+	{
+		string filePath = path.string();
+		string outputFinalPath = filePath + ".spv";
+
+		string command = "..\\..\\Tools\\glslangValidator.exe -V " + Utils::ConvertPathToWindowsFormat(filePath) + 
+			" --target-env spirv1.6 -o " + Utils::ConvertPathToWindowsFormat(outputFinalPath);
+		std::system(command.c_str());
+	}
+
 	void SPIRVCompiler::GenerateSPIRVFile(const filesystem::path& path, const string& code, ShaderStageFlagBit stage)
 	{
 		string fileName = path.stem().string();
 		string folderPath = path.parent_path().string();
 		string extension = "";
-		if (stage == ZX_SHADER_STAGE_VERTEX_BIT)
+		if (stage & ZX_SHADER_STAGE_VERTEX_BIT)
 			extension = "vert";
-		else if (stage == ZX_SHADER_STAGE_GEOMETRY_BIT)
+		else if (stage & ZX_SHADER_STAGE_GEOMETRY_BIT)
 			extension = "geom";
-		else if (stage == ZX_SHADER_STAGE_FRAGMENT_BIT)
+		else if (stage & ZX_SHADER_STAGE_FRAGMENT_BIT)
 			extension = "frag";
+		else if (stage & ZX_SHADER_STAGE_RAYGEN_BIT)
+			extension = "rgen";
+		else if (stage & ZX_SHADER_STAGE_ANY_HIT_BIT)
+			extension = "rahit";
+		else if (stage & ZX_SHADER_STAGE_CLOSEST_HIT_BIT)
+			extension = "rchit";
+		else if (stage & ZX_SHADER_STAGE_MISS_BIT)
+			extension = "rmiss";
+		else if (stage & ZX_SHADER_STAGE_INTERSECTION_BIT)
+			extension = "rint";
+		else
+			Debug::LogError("Unknown shader stage: " + path.string());
 
 		string writeTempPath = folderPath + "/" + fileName + "." + extension;
 		string outputFinalPath = writeTempPath + ".spv";
