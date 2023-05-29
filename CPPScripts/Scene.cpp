@@ -11,6 +11,7 @@ namespace ZXEngine
 	Scene::Scene(SceneStruct* sceneStruct)
 	{
 		skyBox = new CubeMap(sceneStruct->skyBox);
+		renderPipelineType = sceneStruct->renderPipelineType;
 
 		for (auto prefab : sceneStruct->prefabs)
 		{

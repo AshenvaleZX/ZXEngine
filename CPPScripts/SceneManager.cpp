@@ -3,6 +3,7 @@
 #include "ProjectSetting.h"
 #include "RenderAPI.h"
 #include "LuaManager.h"
+#include "RenderPassManager.h"
 
 namespace ZXEngine
 {
@@ -61,6 +62,7 @@ namespace ZXEngine
 			curScene = scene;
 			ProjectSetting::renderPipelineType = curScene->scene->renderPipelineType;
 			LuaManager::GetInstance()->RestartLuaState();
+			RenderPassManager::GetInstance()->SetUpRenderPasses();
 		}
 	}
 

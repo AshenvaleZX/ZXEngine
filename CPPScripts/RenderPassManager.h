@@ -3,6 +3,16 @@
 
 namespace ZXEngine
 {
+	enum RenderPassType
+	{
+		ZX_RENDER_PASS_SHADOW_GENERATION,
+		ZX_RENDER_PASS_FORWARD_RENDERING,
+		ZX_RENDER_PASS_RAY_TRACING,
+		ZX_RENDER_PASS_AFTER_EFFECT_RENDERING,
+		ZX_RENDER_PASS_UI_RENDERING,
+		ZX_RENDER_PASS_COUNT
+	};
+
 	class RenderPass;
 	class RenderPassManager
 	{
@@ -14,12 +24,12 @@ namespace ZXEngine
 		static RenderPassManager* mInstance;
 
 	public:
+		vector<RenderPass*> curPasses;
+		vector<RenderPass*> allPasses;
+
 		RenderPassManager();
 		~RenderPassManager() {};
 
-		vector<RenderPass*> passes;
-
-	private:
 		void SetUpRenderPasses();
 	};
 }

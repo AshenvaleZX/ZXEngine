@@ -59,9 +59,9 @@ namespace ZXEngine
 	void RenderEngine::Render(Camera* camera)
 	{
 		auto renderPassMgr = RenderPassManager::GetInstance();
-		for (unsigned int i = 0; i < renderPassMgr->passes.size(); i++)
+		for (auto pass : renderPassMgr->curPasses)
 		{
-			renderPassMgr->passes[i]->Render(camera);
+			pass->Render(camera);
 		}
 	}
 

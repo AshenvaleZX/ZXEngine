@@ -10,6 +10,14 @@ namespace ZXEngine
 {
 	RenderPassManager::RenderPassManager()
 	{
+		allPasses.resize(ZX_RENDER_PASS_COUNT);
+
+		allPasses[ZX_RENDER_PASS_SHADOW_GENERATION]      = new RenderPassShadowGeneration();
+		allPasses[ZX_RENDER_PASS_FORWARD_RENDERING]      = new RenderPassForwardRendering();
+		allPasses[ZX_RENDER_PASS_RAY_TRACING]            = new RenderPassRayTracing();
+		allPasses[ZX_RENDER_PASS_AFTER_EFFECT_RENDERING] = new RenderPassAfterEffectRendering();
+		allPasses[ZX_RENDER_PASS_UI_RENDERING]           = new RenderPassUIRendering();
+
 		SetUpRenderPasses();
 	}
 
@@ -27,18 +35,20 @@ namespace ZXEngine
 
 	void RenderPassManager::SetUpRenderPasses()
 	{
+		curPasses.clear();
+
 		if (ProjectSetting::renderPipelineType == RenderPipelineType::Rasterization)
 		{
-			passes.push_back(new RenderPassShadowGeneration());
-			passes.push_back(new RenderPassForwardRendering());
-			passes.push_back(new RenderPassAfterEffectRendering());
-			passes.push_back(new RenderPassUIRendering());
+			curPasses.push_back(allPasses[ZX_RENDER_PASS_SHADOW_GENERATION]);
+			curPasses.push_back(allPasses[ZX_RENDER_PASS_FORWARD_RENDERING]);
+			curPasses.push_back(allPasses[ZX_RENDER_PASS_AFTER_EFFECT_RENDERING]);
+			curPasses.push_back(allPasses[ZX_RENDER_PASS_UI_RENDERING]);
 		}
 		else if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
 		{
-			passes.push_back(new RenderPassRayTracing());
-			passes.push_back(new RenderPassAfterEffectRendering());
-			passes.push_back(new RenderPassUIRendering());
+			curPasses.push_back(allPasses[ZX_RENDER_PASS_RAY_TRACING]);
+			curPasses.push_back(allPasses[ZX_RENDER_PASS_AFTER_EFFECT_RENDERING]);
+			curPasses.push_back(allPasses[ZX_RENDER_PASS_UI_RENDERING]);
 		}
 		else
 		{
