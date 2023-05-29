@@ -1196,8 +1196,16 @@ namespace ZXEngine
         if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &rtPipeline.descriptorSetLayout) != VK_SUCCESS)
             throw std::runtime_error("failed to create descriptor set layout!");
 
+        // 设置PushConstant
+        vector<VkPushConstantRange> pushConstantRanges = {};
+        VkPushConstantRange pushConstantRange = {};
+        pushConstantRange.stageFlags = VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR;
+        pushConstantRange.offset = 0;
+        pushConstantRange.size = sizeof(RayTracingPipelineConstants);
+        pushConstantRanges.push_back(pushConstantRange);
+
         // 创建PipelineLayout
-        rtPipeline.pipelineLayout = CreatePipelineLayout(rtPipeline.descriptorSetLayout);
+        rtPipeline.pipelineLayout = CreatePipelineLayout(rtPipeline.descriptorSetLayout, pushConstantRanges);
 
         enum RayTracingShaderGroupType
         {
@@ -1215,16 +1223,16 @@ namespace ZXEngine
         stageInfo.pName = "main";
 
         stageInfo.stage = VK_SHADER_STAGE_RAYGEN_BIT_KHR;
-        stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile("raytrace.rgen.spv"));
+        stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath("RTShaders/raytrace.rgen.spv")));
         stages[ZX_RAY_GEN] = stageInfo;
         stageInfo.stage = VK_SHADER_STAGE_MISS_BIT_KHR;
-        stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile("raytrace.rmiss.spv"));
+        stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath("RTShaders/raytrace.rmiss.spv")));
         stages[ZX_RAY_MISS] = stageInfo;
         stageInfo.stage = VK_SHADER_STAGE_MISS_BIT_KHR;
-        stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile("raytraceShadow.rmiss.spv"));
+        stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath("RTShaders/raytraceShadow.rmiss.spv")));
         stages[ZX_RAY_MISS2] = stageInfo;
         stageInfo.stage = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
-        stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile("raytrace.rchit.spv"));
+        stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath("RTShaders/raytrace.rchit.spv")));
         stages[ZX_RAY_CLOSEST_HIT] = stageInfo;
 
         // 创建Shader Groups
@@ -1607,7 +1615,8 @@ namespace ZXEngine
             createInfo.buffer = allTLAS[currentFrame].buffer.buffer;
 
             // 创建TLAS
-            vkCreateAccelerationStructureKHR(device, &createInfo, nullptr, &allTLAS[currentFrame].as);
+            if (vkCreateAccelerationStructureKHR(device, &createInfo, nullptr, &allTLAS[currentFrame].as) != VK_SUCCESS)
+                throw std::runtime_error("Create acceleration structure failed!");
         }
 
         // 创建Scratch Buffer，Vulkan构建TLAS需要一个Buffer来放中间数据
@@ -1757,7 +1766,8 @@ namespace ZXEngine
         blasInfo.buffer = meshBuffer->blas.buffer.buffer;
 
         // 创建BLAS，注意这里创建好后只是初始化状态，真正的数据还要后续填充
-        vkCreateAccelerationStructureKHR(device, &blasInfo, nullptr, &meshBuffer->blas.as);
+        if (vkCreateAccelerationStructureKHR(device, &blasInfo, nullptr, &meshBuffer->blas.as) != VK_SUCCESS)
+            throw std::runtime_error("Create acceleration structure failed!");
 
         // 继续填充构建BLAS所需的信息
         // 把刚刚创建的，处于初始状态的BLAS传给dstAccelerationStructure，表示这是我们所要构建的BLAS
@@ -1832,7 +1842,8 @@ namespace ZXEngine
 
             // 创建新的压缩过的BLAS
             VkAccelerationStructureKHR newAS = {};
-            vkCreateAccelerationStructureKHR(device, &newBLASInfo, nullptr, &newAS);
+            if (vkCreateAccelerationStructureKHR(device, &newBLASInfo, nullptr, &newAS) != VK_SUCCESS)
+                throw std::runtime_error("Create acceleration structure failed!");
 
             ImmediatelyExecute([=](VkCommandBuffer cmd)
                 {
@@ -2580,12 +2591,23 @@ namespace ZXEngine
 
         // 添加光追管线需要的扩展和特性
         // 对应扩展: VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME
-        VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationFeature{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR };
+        VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationFeature = {};
+        accelerationFeature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
+        accelerationFeature.accelerationStructure = VK_TRUE;
         deviceFeatures.pNext = &accelerationFeature;
         // 对应扩展: VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME
-        VkPhysicalDeviceRayTracingPipelineFeaturesKHR rtPipelineFeature{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR };
+        VkPhysicalDeviceRayTracingPipelineFeaturesKHR rtPipelineFeature = {};
+        rtPipelineFeature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
+        rtPipelineFeature.rayTracingPipeline = VK_TRUE;
         accelerationFeature.pNext = &rtPipelineFeature;
-        rtPipelineFeature.pNext = nullptr;
+
+        // 添加Vulkan 1.2的特性
+        VkPhysicalDeviceVulkan12Features deviceVulkan12Features = {};
+        deviceVulkan12Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+        // 启用对Device Address的支持
+        deviceVulkan12Features.bufferDeviceAddress = VK_TRUE;
+        rtPipelineFeature.pNext = &deviceVulkan12Features;
+        deviceVulkan12Features.pNext = nullptr;
 
         // 创建逻辑设备的信息
         VkDeviceCreateInfo createInfo = {};
@@ -3889,7 +3911,7 @@ namespace ZXEngine
         depthStencilInfo.back = {};
 
         descriptorSetLayout = CreateDescriptorSetLayout(shaderInfo);
-        pipelineLayout = CreatePipelineLayout(descriptorSetLayout);
+        pipelineLayout = CreatePipelineLayout(descriptorSetLayout, {});
 
         VkGraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -4566,15 +4588,15 @@ namespace ZXEngine
         return descriptorSetLayout;
     }
 
-    VkPipelineLayout RenderAPIVulkan::CreatePipelineLayout(const VkDescriptorSetLayout& descriptorSetLayout)
+    VkPipelineLayout RenderAPIVulkan::CreatePipelineLayout(const VkDescriptorSetLayout& descriptorSetLayout, const vector<VkPushConstantRange>& pushConstantRanges)
     {
         VkPipelineLayout pipelineLayout = {};
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
         pipelineLayoutInfo.setLayoutCount = 1;
-        pipelineLayoutInfo.pPushConstantRanges = nullptr;
-        pipelineLayoutInfo.pushConstantRangeCount = 0;
+        pipelineLayoutInfo.pPushConstantRanges = pushConstantRanges.data();
+        pipelineLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(pushConstantRanges.size());
         if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
             throw std::runtime_error("failed to create pipeline layout!");
 

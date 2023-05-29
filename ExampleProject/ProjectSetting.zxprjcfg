@@ -1,6 +1,6 @@
 {
     "WindowSize": [1280, 720],
-    "DefaultScene": "Scenes/MyWorld.zxscene",
+    "DefaultScene": "Scenes/RayTracing.zxscene",
     "DynamicBatch": false,
     "PreserveIntermediateShader": true,
     "EnableGraphicsDebug": false,

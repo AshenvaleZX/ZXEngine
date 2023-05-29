@@ -283,7 +283,7 @@ namespace ZXEngine
         VkPipeline CreatePipeline(const string& path, const ShaderInfo& shaderInfo, VkDescriptorSetLayout& descriptorSetLayout, VkPipelineLayout& pipelineLayout, RenderPassType renderPassType);
         
         VkDescriptorSetLayout CreateDescriptorSetLayout(const ShaderInfo& info);
-        VkPipelineLayout CreatePipelineLayout(const VkDescriptorSetLayout& descriptorSetLayout);
+        VkPipelineLayout CreatePipelineLayout(const VkDescriptorSetLayout& descriptorSetLayout, const vector<VkPushConstantRange>& pushConstantRanges);
         VkDescriptorPool CreateDescriptorPool(const ShaderInfo& info);
         vector<VkDescriptorSet> CreateDescriptorSets(VkDescriptorPool descriptorPool, const vector<VkDescriptorSetLayout>& descriptorSetLayouts);
 
