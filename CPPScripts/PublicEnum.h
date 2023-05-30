@@ -85,6 +85,7 @@ namespace ZXEngine
 		Color,
 		ShadowMap,
 		ShadowCubeMap,
+		RayTracing,
 	};
 
 	enum class CommandType

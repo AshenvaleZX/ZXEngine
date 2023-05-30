@@ -20,6 +20,10 @@ namespace ZXEngine
 
 		asCommandID = renderAPI->AllocateDrawCommand(CommandType::RayTracing);
 		rtCommandID = renderAPI->AllocateDrawCommand(CommandType::RayTracing);
+
+		ClearInfo clearInfo = {};
+		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT;
+		FBOManager::GetInstance()->CreateFBO("RayTracing", FrameBufferType::RayTracing, clearInfo);
 	}
 
 	void RenderPassRayTracing::Render(Camera* camera)
@@ -28,7 +32,7 @@ namespace ZXEngine
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Qpaque);
 
 		// 切换到主FBO
-		FBOManager::GetInstance()->SwitchFBO("Main");
+		FBOManager::GetInstance()->SwitchFBO("RayTracing");
 		// ViewPort设置为窗口大小
 		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight);
 

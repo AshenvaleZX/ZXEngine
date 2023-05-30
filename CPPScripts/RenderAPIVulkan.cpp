@@ -804,6 +804,50 @@ namespace ZXEngine
 
             vulkanFBO->inUse = true;
         }
+        else if (type == FrameBufferType::RayTracing)
+        {
+            FBO->ID = GetNextFBOIndex();
+            FBO->ColorBuffer = GetNextAttachmentBufferIndex();
+            auto colorAttachmentBuffer = GetAttachmentBufferByIndex(FBO->ColorBuffer);
+            colorAttachmentBuffer->inUse = true;
+            FBO->DepthBuffer = NULL;
+
+            auto vulkanFBO = GetFBOByIndex(FBO->ID);
+            vulkanFBO->colorAttachmentIdx = FBO->ColorBuffer;
+            vulkanFBO->bufferType = FrameBufferType::Color;
+            vulkanFBO->renderPassType = RenderPassType::Color;
+            vulkanFBO->clearInfo = clearInfo;
+
+            for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+            {
+                VulkanImage colorImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
+                    VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+                TransitionImageLayout(colorImage.image,
+                    VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                    VK_IMAGE_ASPECT_COLOR_BIT,
+                    VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
+                    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
+                VkImageView colorImageView = CreateImageView(colorImage.image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkSampler colorSampler = CreateSampler(1);
+                colorAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(colorImage, colorImageView, colorSampler);
+
+                array<VkImageView, 1> attachments = { colorImageView };
+
+                VkFramebufferCreateInfo framebufferInfo{};
+                framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+                framebufferInfo.renderPass = GetRenderPass(RenderPassType::Color);
+                framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+                framebufferInfo.pAttachments = attachments.data();
+                framebufferInfo.width = width;
+                framebufferInfo.height = height;
+                framebufferInfo.layers = 1;
+
+                if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &vulkanFBO->frameBuffers[i]) != VK_SUCCESS)
+                    throw std::runtime_error("failed to create framebuffer!");
+            }
+
+            vulkanFBO->inUse = true;
+        }
         else
         {
             Debug::LogError("Invalide frame buffer type.");

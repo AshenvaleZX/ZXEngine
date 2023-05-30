@@ -6,6 +6,7 @@
 #include "Resources.h"
 #include "FBOManager.h"
 #include "RenderStateSetting.h"
+#include "ProjectSetting.h"
 
 namespace ZXEngine
 {
@@ -28,8 +29,10 @@ namespace ZXEngine
 		RenderAPI::GetInstance()->SetRenderState(renderState);
 		// 整个后处理都在这个覆盖屏幕的四边形上渲染
 
+		string finalFBO = ProjectSetting::renderPipelineType == RenderPipelineType::Rasterization ? "Main" : "RayTracing";
+
 		// 提取画面高亮部分
-		string res1 = BlitExtractBrightArea("Main");
+		string res1 = BlitExtractBrightArea(finalFBO);
 		
 		// 高斯模糊高亮区域
 		//string res2 = BlitGaussianBlur(res1, 1, 3.0f);
@@ -38,7 +41,7 @@ namespace ZXEngine
 		string res2 = BlitKawaseBlur(res1, 2, 2.0f);
 
 		// 混合原图和高亮模糊
-		string res3 = BlitBloomBlend("Main", res2, true);
+		string res3 = BlitBloomBlend(finalFBO, res2, true);
 	}
 
 	void RenderPassAfterEffectRendering::CreateCommand(string name)
