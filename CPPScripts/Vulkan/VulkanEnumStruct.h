@@ -172,6 +172,7 @@ namespace ZXEngine
         VkPipeline pipeline = VK_NULL_HANDLE;
         VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
         VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
+        VkDescriptorSetLayout sceneDescriptorSetLayout = VK_NULL_HANDLE; // For ray tracing
         bool inUse = false;
     };
 

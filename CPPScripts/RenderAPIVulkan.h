@@ -283,7 +283,8 @@ namespace ZXEngine
         VkPipeline CreatePipeline(const string& path, const ShaderInfo& shaderInfo, VkDescriptorSetLayout& descriptorSetLayout, VkPipelineLayout& pipelineLayout, RenderPassType renderPassType);
         
         VkDescriptorSetLayout CreateDescriptorSetLayout(const ShaderInfo& info);
-        VkPipelineLayout CreatePipelineLayout(const VkDescriptorSetLayout& descriptorSetLayout, const vector<VkPushConstantRange>& pushConstantRanges);
+        VkDescriptorSetLayout CreateDescriptorSetLayout(const vector<VkDescriptorSetLayoutBinding>& bindings);
+        VkPipelineLayout CreatePipelineLayout(const vector<VkDescriptorSetLayout>& descriptorSetLayouts, const vector<VkPushConstantRange>& pushConstantRanges);
         VkDescriptorPool CreateDescriptorPool(const ShaderInfo& info);
         vector<VkDescriptorSet> CreateDescriptorSets(VkDescriptorPool descriptorPool, const vector<VkDescriptorSetLayout>& descriptorSetLayouts);
 
@@ -308,6 +309,11 @@ namespace ZXEngine
         VulkanShaderBindingTable rtSBT;
         // Top Level Acceleration Structure
         vector<VulkanAccelerationStructure> allTLAS;
+
+        // 场景中的纹理数量
+        uint32_t rtSceneTextureNum = 100;
+        // 场景中的渲染对象数量
+        uint32_t rtSceneRenderObjectNum = 100;
 
         // 当前这一帧要绘制的对象信息数组
         vector<VulkanASInstanceData> asInstanceData;

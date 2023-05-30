@@ -1172,7 +1172,7 @@ namespace ZXEngine
     {
         rtPipeline.name = "RayTracingPipeline";
 
-        // 创建DescriptorSetLayout
+        // 创建光追管线的DescriptorSetLayout
         vector<VkDescriptorSetLayoutBinding> bindings = {};
 
         VkDescriptorSetLayoutBinding asBinding = {};
@@ -1189,12 +1189,26 @@ namespace ZXEngine
         imageBinding.stageFlags = VK_SHADER_STAGE_RAYGEN_BIT_KHR;
         bindings.push_back(imageBinding);
 
-        VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        layoutInfo.pBindings = bindings.data();
-        layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-        if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &rtPipeline.descriptorSetLayout) != VK_SUCCESS)
-            throw std::runtime_error("failed to create descriptor set layout!");
+        rtPipeline.descriptorSetLayout = CreateDescriptorSetLayout(bindings);
+
+        // 创建场景资源的DescriptorSetLayout
+        bindings.clear();
+
+        VkDescriptorSetLayoutBinding texturesBinding = {};
+        texturesBinding.binding = 0;
+        texturesBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        texturesBinding.descriptorCount = rtSceneTextureNum; // Todo: 这个数量应该是需要动态扩展的
+        texturesBinding.stageFlags = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
+        bindings.push_back(texturesBinding);
+
+        VkDescriptorSetLayoutBinding dataReferencesBinding = {};
+        dataReferencesBinding.binding = 1;
+        dataReferencesBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        dataReferencesBinding.descriptorCount = 1;
+        dataReferencesBinding.stageFlags = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
+        bindings.push_back(dataReferencesBinding);
+
+        rtPipeline.sceneDescriptorSetLayout = CreateDescriptorSetLayout(bindings);
 
         // 设置PushConstant
         vector<VkPushConstantRange> pushConstantRanges = {};
@@ -1205,7 +1219,8 @@ namespace ZXEngine
         pushConstantRanges.push_back(pushConstantRange);
 
         // 创建PipelineLayout
-        rtPipeline.pipelineLayout = CreatePipelineLayout(rtPipeline.descriptorSetLayout, pushConstantRanges);
+        vector<VkDescriptorSetLayout> descriptorSetLayouts = { rtPipeline.descriptorSetLayout, rtPipeline.sceneDescriptorSetLayout };
+        rtPipeline.pipelineLayout = CreatePipelineLayout(descriptorSetLayouts, pushConstantRanges);
 
         enum RayTracingShaderGroupType
         {
@@ -2355,6 +2370,12 @@ namespace ZXEngine
         vkDestroyPipeline(device, pipeline->pipeline, VK_NULL_HANDLE);
         vkDestroyPipelineLayout(device, pipeline->pipelineLayout, VK_NULL_HANDLE);
 
+        if (pipeline->sceneDescriptorSetLayout != VK_NULL_HANDLE)
+        {
+            vkDestroyDescriptorSetLayout(device, pipeline->sceneDescriptorSetLayout, VK_NULL_HANDLE);
+            pipeline->sceneDescriptorSetLayout = VK_NULL_HANDLE;
+        }
+
         pipeline->inUse = false;
     }
 
@@ -2588,6 +2609,7 @@ namespace ZXEngine
         deviceFeatures.features.samplerAnisotropy = VK_TRUE;
         deviceFeatures.features.geometryShader = VK_TRUE;
         deviceFeatures.features.sampleRateShading = VK_TRUE;
+        deviceFeatures.features.shaderInt64 = VK_TRUE;
 
         // 添加光追管线需要的扩展和特性
         // 对应扩展: VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME
@@ -2606,6 +2628,8 @@ namespace ZXEngine
         deviceVulkan12Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
         // 启用对Device Address的支持
         deviceVulkan12Features.bufferDeviceAddress = VK_TRUE;
+        deviceVulkan12Features.runtimeDescriptorArray = VK_TRUE;
+        deviceVulkan12Features.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
         rtPipelineFeature.pNext = &deviceVulkan12Features;
         deviceVulkan12Features.pNext = nullptr;
 
@@ -3911,7 +3935,7 @@ namespace ZXEngine
         depthStencilInfo.back = {};
 
         descriptorSetLayout = CreateDescriptorSetLayout(shaderInfo);
-        pipelineLayout = CreatePipelineLayout(descriptorSetLayout, {});
+        pipelineLayout = CreatePipelineLayout({ descriptorSetLayout }, {});
 
         VkGraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -4254,7 +4278,7 @@ namespace ZXEngine
         // 场景中所有的纹理
         VkDescriptorPoolSize imagePoolSize = {};
         imagePoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        imagePoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT * 100; // Todo: 100是随便写的，需要根据场景中的纹理数量来确定
+        imagePoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT * rtSceneTextureNum; // Todo: 这个数量可能需要动态扩展
         poolSizes.push_back(imagePoolSize);
 
         // 场景中各对象的材质信息
@@ -4273,13 +4297,13 @@ namespace ZXEngine
             throw std::runtime_error("Failed to create descriptor pool for ray tracing!");
 
         // 创建DescriptorSet
-        vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, rtPipeline.descriptorSetLayout);
+        vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, rtPipeline.sceneDescriptorSetLayout);
         rtSceneData.descriptorSets = CreateDescriptorSets(rtSceneData.descriptorPool, layouts);
 
         // 创建渲染对象数据索引Buffer
         vector<VkWriteDescriptorSet> writeDescriptorSets;
         rtSceneData.dataReferenceBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-        VkDeviceSize bufferSize = sizeof(VulkanRTRendererDataReference) * 100; // Todo: 这里假设场景中对象不超过100个
+        VkDeviceSize bufferSize = sizeof(VulkanRTRendererDataReference) * rtSceneRenderObjectNum; // Todo: 这个数量可能需要动态扩展
         for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
             rtSceneData.dataReferenceBuffers[i] = CreateBuffer(bufferSize,
@@ -4577,6 +4601,11 @@ namespace ZXEngine
             bindings.push_back(samplerBinding);
         }
 
+        return CreateDescriptorSetLayout(bindings);
+    }
+
+    VkDescriptorSetLayout RenderAPIVulkan::CreateDescriptorSetLayout(const vector<VkDescriptorSetLayoutBinding>& bindings)
+    {
         VkDescriptorSetLayout descriptorSetLayout = {};
         VkDescriptorSetLayoutCreateInfo layoutInfo = {};
         layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -4588,13 +4617,13 @@ namespace ZXEngine
         return descriptorSetLayout;
     }
 
-    VkPipelineLayout RenderAPIVulkan::CreatePipelineLayout(const VkDescriptorSetLayout& descriptorSetLayout, const vector<VkPushConstantRange>& pushConstantRanges)
+    VkPipelineLayout RenderAPIVulkan::CreatePipelineLayout(const vector<VkDescriptorSetLayout>& descriptorSetLayouts, const vector<VkPushConstantRange>& pushConstantRanges)
     {
         VkPipelineLayout pipelineLayout = {};
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
-        pipelineLayoutInfo.setLayoutCount = 1;
+        pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
+        pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
         pipelineLayoutInfo.pPushConstantRanges = pushConstantRanges.data();
         pipelineLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(pushConstantRanges.size());
         if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
