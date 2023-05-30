@@ -29,13 +29,17 @@ namespace ZXEngine
 		opaqueRenderState = new RenderStateSetting();
 
 		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ForwardRendering);
+
+		ClearInfo clearInfo = {};
+		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT;
+		FBOManager::GetInstance()->CreateFBO("Forward", FrameBufferType::Normal, clearInfo);
 	}
 
 	void RenderPassForwardRendering::Render(Camera* camera)
 	{
 		auto renderAPI = RenderAPI::GetInstance();
 		// 切换到主FBO
-		FBOManager::GetInstance()->SwitchFBO("Main");
+		FBOManager::GetInstance()->SwitchFBO("Forward");
 		// ViewPort设置为窗口大小
 		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight);
 		// 清理上一帧数据

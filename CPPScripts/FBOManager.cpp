@@ -11,10 +11,6 @@ namespace ZXEngine
 	void FBOManager::Create()
 	{
 		mInstance = new FBOManager();
-
-		ClearInfo clearInfo = {};
-		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT;
-		mInstance->CreateFBO("Main", FrameBufferType::Normal, clearInfo);
 	}
 
 	FBOManager* FBOManager::GetInstance()
