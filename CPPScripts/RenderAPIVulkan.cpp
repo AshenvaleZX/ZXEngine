@@ -997,7 +997,7 @@ namespace ZXEngine
         // 建立VertexBuffer
         VkBufferUsageFlags vertexBufferUsage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
         if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
-            vertexBufferUsage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+            vertexBufferUsage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR;
         
         VkBufferCreateInfo vertexBufferInfo = {};
         vertexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -1059,7 +1059,7 @@ namespace ZXEngine
         // 建立IndexBuffer
         VkBufferUsageFlags indexBufferUsage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
         if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
-            indexBufferUsage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+            indexBufferUsage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR;
 
         VkBufferCreateInfo indexBufferInfo = {};
         indexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -1255,22 +1255,34 @@ namespace ZXEngine
         VkRayTracingShaderGroupCreateInfoKHR rgenGroup = {};
         rgenGroup.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
         rgenGroup.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
-        rgenGroup.generalShader = ZX_RAY_GEN;
+        rgenGroup.generalShader      = ZX_RAY_GEN;
+        rgenGroup.closestHitShader   = VK_SHADER_UNUSED_KHR;
+        rgenGroup.anyHitShader       = VK_SHADER_UNUSED_KHR;
+        rgenGroup.intersectionShader = VK_SHADER_UNUSED_KHR;
         shaderGroups.push_back(rgenGroup);
         VkRayTracingShaderGroupCreateInfoKHR rmissGroup = {};
         rmissGroup.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
         rmissGroup.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
-        rmissGroup.generalShader = ZX_RAY_MISS;
+        rmissGroup.generalShader      = ZX_RAY_MISS;
+        rmissGroup.closestHitShader   = VK_SHADER_UNUSED_KHR;
+        rmissGroup.anyHitShader       = VK_SHADER_UNUSED_KHR;
+        rmissGroup.intersectionShader = VK_SHADER_UNUSED_KHR;
         shaderGroups.push_back(rmissGroup);
         VkRayTracingShaderGroupCreateInfoKHR rmiss2Group = {};
         rmiss2Group.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
         rmiss2Group.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
-        rmiss2Group.generalShader = ZX_RAY_MISS2;
+        rmiss2Group.generalShader      = ZX_RAY_MISS2;
+        rmiss2Group.closestHitShader   = VK_SHADER_UNUSED_KHR;
+        rmiss2Group.anyHitShader       = VK_SHADER_UNUSED_KHR;
+        rmiss2Group.intersectionShader = VK_SHADER_UNUSED_KHR;
         shaderGroups.push_back(rmiss2Group);
         VkRayTracingShaderGroupCreateInfoKHR closestHitGroup = {};
         closestHitGroup.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
         closestHitGroup.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
-        closestHitGroup.generalShader = ZX_RAY_CLOSEST_HIT;
+        closestHitGroup.generalShader      = VK_SHADER_UNUSED_KHR;
+        closestHitGroup.closestHitShader   = ZX_RAY_CLOSEST_HIT;
+        closestHitGroup.anyHitShader       = VK_SHADER_UNUSED_KHR;
+        closestHitGroup.intersectionShader = VK_SHADER_UNUSED_KHR;
         shaderGroups.push_back(closestHitGroup);
 
         // 创建Pipeline
@@ -1291,8 +1303,14 @@ namespace ZXEngine
 
         // 创建管线要使用的固定DescriptorSet
         CreateRTPipelineData();
+        // 初始化光追场景资源
+        CreateRTSceneData();
         // 初始化TLAS数组
         allTLAS.resize(MAX_FRAMES_IN_FLIGHT);
+        // 初始化构建TLAS的中间Buffer
+        rtTLASStagingBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+        rtTLASScratchBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+        rtTLASInstanceBuffers.resize(MAX_FRAMES_IN_FLIGHT);
     }
 
     void RenderAPIVulkan::CreateShaderBindingTable()
@@ -1461,6 +1479,8 @@ namespace ZXEngine
     {
         // 先更新当前帧和光追管线绑定的场景数据
         UpdateRTSceneData();
+        // 更新当前帧和光追管线绑定的管线数据
+        UpdateRTPipelineData();
 
         // 获取当前帧的Command Buffer
 		auto curDrawCommandObj = GetDrawCommandByIndex(commandID);
@@ -1478,6 +1498,17 @@ namespace ZXEngine
 		if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
 			throw std::runtime_error("Failed to begin recording command buffer!");
 
+        // 获取光追管线输出的目标图像
+        auto curFBO = GetFBOByIndex(curFBOIdx);
+        uint32_t textureID = GetAttachmentBufferByIndex(curFBO->colorAttachmentIdx)->attachmentBuffers[currentFrame];
+        auto texture = GetTextureByIndex(textureID);
+
+        // 转为光追输出格式
+        TransitionImageLayout(commandBuffer, texture->image.image, 
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_ASPECT_COLOR_BIT, 
+            VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_SHADER_READ_BIT,
+            VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR, VK_ACCESS_SHADER_WRITE_BIT);
+
 		// 绑定光追管线
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, rtPipeline.pipeline);
 		// 绑定光追管线描述符集
@@ -1494,6 +1525,12 @@ namespace ZXEngine
 		vkCmdTraceRaysKHR(commandBuffer, 
             &rtSBT.raygenRegion, &rtSBT.missRegion, &rtSBT.hitRegion, &rtSBT.callableRegion, 
             GlobalData::srcWidth, GlobalData::srcHeight, 1);
+
+        // 转为Shader读取格式
+        TransitionImageLayout(commandBuffer, texture->image.image, 
+            VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT, 
+            VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR, VK_ACCESS_SHADER_WRITE_BIT,
+            VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_SHADER_READ_BIT);
 
 		// 结束记录Command Buffer
 		if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
@@ -1515,6 +1552,13 @@ namespace ZXEngine
             throw std::runtime_error("Failed to submit draw command buffer!");
 
         curWaitSemaphores = curDrawCommand.signalSemaphores;
+
+        // 清空当前帧的场景数据
+        asInstanceData.clear();
+        curRTSceneTextureIndexes.clear();
+        curRTSceneTextureIndexMap.clear();
+        curRTSceneRTMaterialDatas.clear();
+        curRTSceneRTMaterialDataMap.clear();
     }
 
     void RenderAPIVulkan::BuildTopLevelAccelerationStructure(uint32_t commandID)
@@ -1535,7 +1579,7 @@ namespace ZXEngine
         if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
             throw std::runtime_error("Failed to begin recording command buffer!");
 
-        const bool isUpdate = !allTLAS[currentFrame].isBuilt;
+        const bool isUpdate = allTLAS[currentFrame].isBuilt;
 
         // 场景中要渲染的对象实例数据
         vector<VkAccelerationStructureInstanceKHR> instances;
@@ -1560,22 +1604,24 @@ namespace ZXEngine
         VkDeviceSize insBufferSize = sizeof(VkAccelerationStructureInstanceKHR) * insNum;
 
         // 建立StagingBuffer
-        VulkanBuffer stagingBuffer = CreateBuffer(insBufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
+        if (!isUpdate)
+            rtTLASStagingBuffers[currentFrame] = CreateBuffer(insBufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
 
         // 拷贝场景实例数据到StagingBuffer
-        memcpy(stagingBuffer.mappedAddress, instances.data(), insBufferSize);
+        memcpy(rtTLASStagingBuffers[currentFrame].mappedAddress, instances.data(), insBufferSize);
 
         // 存放场景实例数据的Buffer
-        VulkanBuffer instancesBuffer = CreateBuffer(insBufferSize, 
-            VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR,
-            VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+        if (!isUpdate)
+            rtTLASInstanceBuffers[currentFrame] = CreateBuffer(insBufferSize, 
+                VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+            	VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
         // 把数据从stagingBuffer拷贝到instancesBuffer
         VkBufferCopy copy = {};
         copy.dstOffset = 0;
         copy.srcOffset = 0;
         copy.size = insBufferSize;
-        vkCmdCopyBuffer(commandBuffer, stagingBuffer.buffer, instancesBuffer.buffer, 1, &copy);
+        vkCmdCopyBuffer(commandBuffer, rtTLASStagingBuffers[currentFrame].buffer, rtTLASInstanceBuffers[currentFrame].buffer, 1, &copy);
 
         // 确保构建TLAS之前，数据拷贝已完成
         VkMemoryBarrier barrier = {};
@@ -1588,7 +1634,7 @@ namespace ZXEngine
         // 获取instancesBuffer的DeviceAddress
         VkBufferDeviceAddressInfo bufferInfo = {};
         bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
-        bufferInfo.buffer = instancesBuffer.buffer;
+        bufferInfo.buffer = rtTLASInstanceBuffers[currentFrame].buffer;
         VkDeviceAddress instancesBufferAddr = vkGetBufferDeviceAddress(device, &bufferInfo);
 
         // 添加一些描述，包装一下上面的Instances Buffer数据，用于构建TLAS
@@ -1604,7 +1650,7 @@ namespace ZXEngine
         VkAccelerationStructureBuildGeometryInfoKHR buildInfo = {};
         buildInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
         buildInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
-        buildInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
+        buildInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR | VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR;
         buildInfo.mode = isUpdate ? VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR : VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
         buildInfo.geometryCount = 1;
         buildInfo.pGeometries = &tlasGeometry;
@@ -1635,12 +1681,13 @@ namespace ZXEngine
         }
 
         // 创建Scratch Buffer，Vulkan构建TLAS需要一个Buffer来放中间数据
-        VulkanBuffer scratchBuffer = CreateBuffer(sizeInfo.accelerationStructureSize,
-            VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-            VMA_MEMORY_USAGE_AUTO);
+        if (!isUpdate)
+            rtTLASScratchBuffers[currentFrame] = CreateBuffer(sizeInfo.buildScratchSize,
+                VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+                VMA_MEMORY_USAGE_AUTO);
         VkBufferDeviceAddressInfo scratchBufferInfo = {};
         scratchBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
-        scratchBufferInfo.buffer = scratchBuffer.buffer;
+        scratchBufferInfo.buffer = rtTLASScratchBuffers[currentFrame].buffer;
         VkDeviceAddress scratchAddress = vkGetBufferDeviceAddress(device, &scratchBufferInfo);
 
         // 继续填充构建TLAS需要的信息
@@ -1659,11 +1706,6 @@ namespace ZXEngine
         // 构建TLAS
         vkCmdBuildAccelerationStructuresKHR(commandBuffer, 1, &buildInfo, &pBuildRangeInfo);
         allTLAS[currentFrame].isBuilt = true;
-
-        // 销毁中间Buffer
-        DestroyBuffer(stagingBuffer);
-        DestroyBuffer(instancesBuffer);
-        DestroyBuffer(scratchBuffer);
 
         // 结束Command Buffer的记录
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
@@ -1740,6 +1782,8 @@ namespace ZXEngine
         // 创建全新的BLAS，还是更新现有的BLAS
         buildInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
         buildInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
+        if (isCompact)
+            buildInfo.flags |= VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR;
         // 这里传一个几何体数组，允许把多个几何体放到一个BLAS里，但是一般来说模型和BLAS是一对一的
         buildInfo.pGeometries = &geometry;
         buildInfo.geometryCount = 1;
@@ -1751,6 +1795,7 @@ namespace ZXEngine
         // 最后一个参数是用来返回查询数据的
         vector<uint32_t> maxPrimCount = { rangeInfo.primitiveCount };
         VkAccelerationStructureBuildSizesInfoKHR sizeInfo = {};
+        sizeInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR;
         vkGetAccelerationStructureBuildSizesKHR(device, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR, &buildInfo, maxPrimCount.data(), &sizeInfo);
 
         // 创建一个Scratch Buffer，这个是给Vulkan创建BLAS用的临时Buffer，因为Vulkan在创建BLAS的过程中会产生一些中间数据
@@ -1806,34 +1851,35 @@ namespace ZXEngine
         }
 
         ImmediatelyExecute([=](VkCommandBuffer cmd)
+        {
+            // 用前面准备的 VkAccelerationStructureBuildGeometryInfoKHR 正真构建BLAS
+            // 参数2,3是传递一个 VkAccelerationStructureBuildGeometryInfoKHR 数组
+            // 和其它Vulkan接口一样，这里可以一次调用创建多个，这里暂时只传一个
+            // 这里的最后一个参数，是一个 VkAccelerationStructureBuildRangeInfoKHR 的二维数组
+            // 数组的第一层对应参数2,3的 VkAccelerationStructureBuildGeometryInfoKHR 数组
+            // 数组的第二层对应每个 VkAccelerationStructureBuildGeometryInfoKHR 里的 pGeometries 数组
+            // 所以二维数组里的每一个RangeInfo都最终对应了一个 VkAccelerationStructureGeometryKHR
+            vector<VkAccelerationStructureBuildRangeInfoKHR> ranges = { rangeInfo };
+            const VkAccelerationStructureBuildRangeInfoKHR* ptr = ranges.data();
+            vkCmdBuildAccelerationStructuresKHR(cmd, 1, &buildInfo, &ptr);
+
+            // 如果一次性创建多个BLAS，然后共用Scratch Buffer，可能会有读写冲突问题，加个Barrier
+            // 不过这里暂时一次只创建一个，其实没必要
+            VkMemoryBarrier barrier = {};
+            barrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
+            barrier.srcAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR;
+            barrier.dstAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR;
+            vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+                VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR, 0, 1, &barrier, 0, nullptr, 0, nullptr);
+
+            if (isCompact)
             {
-                // 用前面准备的 VkAccelerationStructureBuildGeometryInfoKHR 正真构建BLAS
-                // 参数2,3是传递一个 VkAccelerationStructureBuildGeometryInfoKHR 数组
-                // 和其它Vulkan接口一样，这里可以一次调用创建多个，这里暂时只传一个
-                // 这里的最后一个参数，是一个 VkAccelerationStructureBuildRangeInfoKHR 的二维数组
-                // 数组的第一层对应参数2,3的 VkAccelerationStructureBuildGeometryInfoKHR 数组
-                // 数组的第二层对应每个 VkAccelerationStructureBuildGeometryInfoKHR 里的 pGeometries 数组
-                // 所以二维数组里的每一个RangeInfo都最终对应了一个 VkAccelerationStructureGeometryKHR
-                vector<VkAccelerationStructureBuildRangeInfoKHR> ranges = { rangeInfo };
-                const VkAccelerationStructureBuildRangeInfoKHR* ptr = ranges.data();
-                vkCmdBuildAccelerationStructuresKHR(cmd, 1, &buildInfo, &ptr);
-
-                // 如果一次性创建多个BLAS，然后共用Scratch Buffer，可能会有读写冲突问题，加个Barrier
-                // 不过这里暂时一次只创建一个，其实没必要
-                VkMemoryBarrier barrier = {};
-                barrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
-                barrier.srcAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR;
-                barrier.dstAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR;
-                vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
-                    VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR, 0, 1, &barrier, 0, nullptr, 0, nullptr);
-
-                if (isCompact)
-                {
-                    // 查一下我们刚刚构建好的BLAS实际占用大小，把结果放到queryPool里(这个接口也可以传数组一次性查多个数据)
-                    vkCmdWriteAccelerationStructuresPropertiesKHR(cmd, 1, &buildInfo.dstAccelerationStructure,
-                        VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR, queryPool, 0);
-                }
-            });
+                vkResetQueryPool(device, queryPool, 0, 1);
+                // 查一下我们刚刚构建好的BLAS实际占用大小，把结果放到queryPool里(这个接口也可以传数组一次性查多个数据)
+                vkCmdWriteAccelerationStructuresPropertiesKHR(cmd, 1, &buildInfo.dstAccelerationStructure,
+                    VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR, queryPool, 0);
+            }
+        });
 
         if (isCompact)
         {
@@ -1861,15 +1907,15 @@ namespace ZXEngine
                 throw std::runtime_error("Create acceleration structure failed!");
 
             ImmediatelyExecute([=](VkCommandBuffer cmd)
-                {
-                    // 把之前构建好的BLAS数据，复制到新的，大小精确不浪费的BLAS上
-                    VkCopyAccelerationStructureInfoKHR copyInfo = {};
-                    copyInfo.sType = VK_STRUCTURE_TYPE_COPY_ACCELERATION_STRUCTURE_INFO_KHR;
-                    copyInfo.src = buildInfo.dstAccelerationStructure;
-                    copyInfo.dst = newAS;
-                    copyInfo.mode = VK_COPY_ACCELERATION_STRUCTURE_MODE_COMPACT_KHR;
-                    vkCmdCopyAccelerationStructureKHR(cmd, &copyInfo);
-                });
+            {
+                // 把之前构建好的BLAS数据，复制到新的，大小精确不浪费的BLAS上
+                VkCopyAccelerationStructureInfoKHR copyInfo = {};
+                copyInfo.sType = VK_STRUCTURE_TYPE_COPY_ACCELERATION_STRUCTURE_INFO_KHR;
+                copyInfo.src = buildInfo.dstAccelerationStructure;
+                copyInfo.dst = newAS;
+                copyInfo.mode = VK_COPY_ACCELERATION_STRUCTURE_MODE_COMPACT_KHR;
+                vkCmdCopyAccelerationStructureKHR(cmd, &copyInfo);
+            });
 
             // 销毁之前的BLAS
             DestroyBuffer(meshBuffer->blas.buffer);
@@ -2630,6 +2676,7 @@ namespace ZXEngine
         deviceVulkan12Features.bufferDeviceAddress = VK_TRUE;
         deviceVulkan12Features.runtimeDescriptorArray = VK_TRUE;
         deviceVulkan12Features.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+        deviceVulkan12Features.hostQueryReset = VK_TRUE;
         rtPipelineFeature.pNext = &deviceVulkan12Features;
         deviceVulkan12Features.pNext = nullptr;
 
@@ -4249,8 +4296,8 @@ namespace ZXEngine
         writeAS.pNext = &writeASInfo;
 
         // 获取光追管线输出的目标图像
-        auto mainFBO = FBOManager::GetInstance()->GetFBO("Main");
-        uint32_t textureID = GetAttachmentBufferByIndex(mainFBO->ColorBuffer)->attachmentBuffers[currentFrame];
+        auto curFBO = GetFBOByIndex(curFBOIdx);
+        uint32_t textureID = GetAttachmentBufferByIndex(curFBO->colorAttachmentIdx)->attachmentBuffers[currentFrame];
         auto texture = GetTextureByIndex(textureID);
 
         // 更新输出目标图像
@@ -4332,9 +4379,26 @@ namespace ZXEngine
         // 遍历场景中的所有纹理，生成对应的VkDescriptorImageInfo
         vector<VkDescriptorImageInfo> imageInfos = {};
 
+        // 填入场景中的纹理
         for (auto textureID : curRTSceneTextureIndexes)
         {
             auto texture = GetTextureByIndex(textureID);
+
+            VkDescriptorImageInfo imageInfo = {};
+            imageInfo.sampler = texture->sampler;
+            imageInfo.imageView = texture->imageView;
+            imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+            imageInfos.push_back(imageInfo);
+        }
+
+        // 随便用一个纹理补齐创建VkPipelineLayout时，sceneDescriptorSetLayout中指定的rtSceneTextureNum个纹理数组
+        // Todo: 其实最理想的情况是管线设置的纹理数组数量，和实际场景中的数量是一致的，就不用这样搞了
+        // 但是场景中的纹理数量是动态的，而管线设置的纹理数组数量是静态的，如果要保持一致，感觉就得重建管线
+        // 所以这里先用一个纹理补齐，感觉这样比重建管线好点，但是我也不太清楚最好的方案是什么
+        for (size_t i = curRTSceneTextureIndexes.size(); i < rtSceneTextureNum; i++)
+        {
+            auto texture = GetTextureByIndex(curRTSceneTextureIndexes[0]);
 
             VkDescriptorImageInfo imageInfo = {};
             imageInfo.sampler = texture->sampler;
@@ -4487,6 +4551,39 @@ namespace ZXEngine
                 1, &barrier
             );
         });
+    }
+
+    void RenderAPIVulkan::TransitionImageLayout(VkCommandBuffer cmd, VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlags aspectMask, VkPipelineStageFlags srcStage, VkAccessFlags srcAccessMask, VkPipelineStageFlags dstStage, VkAccessFlags dstAccessMask)
+    {
+        VkImageMemoryBarrier barrier = {};
+        barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+        barrier.oldLayout = oldLayout;
+        barrier.newLayout = newLayout;
+        // 这两个参数是用于转换队列簇所有权的，如果我们不做这个转换，一定要明确填入VK_QUEUE_FAMILY_IGNORED
+        barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.image = image;
+        // 默认处理所有mipmap
+        barrier.subresourceRange.baseMipLevel = 0;
+        barrier.subresourceRange.levelCount = VK_REMAINING_MIP_LEVELS;
+        // 默认处理所有Layer
+        barrier.subresourceRange.baseArrayLayer = 0;
+        barrier.subresourceRange.layerCount = VK_REMAINING_ARRAY_LAYERS;
+        // Image用途(Color, Depth, Stencil)
+        barrier.subresourceRange.aspectMask = aspectMask;
+        barrier.srcAccessMask = srcAccessMask;
+        barrier.dstAccessMask = dstAccessMask;
+
+        vkCmdPipelineBarrier(cmd, srcStage, dstStage,
+            // 这个参数填0或者VK_DEPENDENCY_BY_REGION_BIT，后者意味着允许读取到目前为止已写入的资源部分
+            0,
+            // VkMemoryBarrier数组
+            0, nullptr,
+            // VkBufferMemoryBarrier数组
+            0, nullptr,
+            // VkImageMemoryBarrier数组
+            1, &barrier
+        );
     }
 
     VkPipelineInputAssemblyStateCreateInfo RenderAPIVulkan::GetAssemblyInfo(VkPrimitiveTopology topology)

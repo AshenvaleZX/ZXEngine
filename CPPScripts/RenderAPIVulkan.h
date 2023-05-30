@@ -309,6 +309,10 @@ namespace ZXEngine
         VulkanShaderBindingTable rtSBT;
         // Top Level Acceleration Structure
         vector<VulkanAccelerationStructure> allTLAS;
+        // 构建TLAS的中间Buffer
+        vector<VulkanBuffer> rtTLASStagingBuffers;
+        vector<VulkanBuffer> rtTLASScratchBuffers;
+        vector<VulkanBuffer> rtTLASInstanceBuffers;
 
         // 场景中的纹理数量
         uint32_t rtSceneTextureNum = 100;
@@ -367,6 +371,7 @@ namespace ZXEngine
         void InitImmediateCommand();
         void ImmediatelyExecute(std::function<void(VkCommandBuffer cmd)>&& function);
         void TransitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlags aspectMask, VkPipelineStageFlags srcStage, VkAccessFlags srcAccessMask, VkPipelineStageFlags dstStage, VkAccessFlags dstAccessMask);
+        void TransitionImageLayout(VkCommandBuffer cmd, VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlags aspectMask, VkPipelineStageFlags srcStage, VkAccessFlags srcAccessMask, VkPipelineStageFlags dstStage, VkAccessFlags dstAccessMask);
 
         VkPipelineInputAssemblyStateCreateInfo GetAssemblyInfo(VkPrimitiveTopology topology);
         VkPipelineRasterizationStateCreateInfo GetRasterizationInfo(VkCullModeFlagBits cullMode);
