@@ -1042,7 +1042,7 @@ namespace ZXEngine
         // 建立VertexBuffer
         VkBufferUsageFlags vertexBufferUsage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
         if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
-            vertexBufferUsage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR;
+            vertexBufferUsage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
         
         VkBufferCreateInfo vertexBufferInfo = {};
         vertexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -1061,7 +1061,7 @@ namespace ZXEngine
             VkBufferDeviceAddressInfo addressInfo = {};
             addressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
             addressInfo.buffer = meshBuffer->vertexBuffer;
-            meshBuffer->indexBufferDeviceAddress = vkGetBufferDeviceAddress(device, &addressInfo);
+            meshBuffer->vertexBufferDeviceAddress = vkGetBufferDeviceAddress(device, &addressInfo);
         }
 
         // 从StagingBuffer拷贝到VertexBuffer
@@ -1104,7 +1104,7 @@ namespace ZXEngine
         // 建立IndexBuffer
         VkBufferUsageFlags indexBufferUsage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
         if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
-            indexBufferUsage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR;
+            indexBufferUsage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 
         VkBufferCreateInfo indexBufferInfo = {};
         indexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -1774,27 +1774,15 @@ namespace ZXEngine
         if (sizeof(float) != 4)
             throw std::runtime_error("float size is not 4");
 
-        // GPU上的顶点数据地址
-        VkBufferDeviceAddressInfo vertexBufferInfo = {};
-        vertexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
-        vertexBufferInfo.buffer = meshBuffer->vertexBuffer;
-        VkDeviceAddress vertexBufferDeviceAddress = vkGetBufferDeviceAddress(device, &vertexBufferInfo);
-
-        // GPU上的索引数据地址
-        VkBufferDeviceAddressInfo indexBufferInfo = {};
-        indexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
-        indexBufferInfo.buffer = meshBuffer->indexBuffer;
-        VkDeviceAddress indexBufferDeviceAddress = vkGetBufferDeviceAddress(device, &indexBufferInfo);
-
         // 三角形Mesh数据，主要包含了顶点和索引Buffer地址
         VkAccelerationStructureGeometryTrianglesDataKHR triangles = {};
         triangles.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR;
         triangles.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
-        triangles.vertexData.deviceAddress = vertexBufferDeviceAddress;
+        triangles.vertexData.deviceAddress = meshBuffer->vertexBufferDeviceAddress;
         triangles.vertexStride = sizeof(Vertex);
         triangles.maxVertex = meshBuffer->vertexCount;
         triangles.indexType = VK_INDEX_TYPE_UINT32;
-        triangles.indexData.deviceAddress = indexBufferDeviceAddress;
+        triangles.indexData.deviceAddress = meshBuffer->indexBufferDeviceAddress;
 
         // 模型的几何体信息，主要是引用上面那个三角形Mesh数据
         VkAccelerationStructureGeometryKHR geometry = {};
