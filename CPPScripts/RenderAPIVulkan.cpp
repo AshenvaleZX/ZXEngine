@@ -100,7 +100,8 @@ namespace ZXEngine
 
     void RenderAPIVulkan::BeginFrame()
     {
-        vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+        if (vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX) != VK_SUCCESS)
+			throw std::runtime_error("Failed to wait for fence!");
 
         // 检查是否有需要卸载的资源，并进行卸载
         // 这个函数调用时机比较关键，因为如果有资源被CommandBuffer引用了，那么必须在引用资源的CommandBuffer have completed execution之后才可以卸载
@@ -869,7 +870,7 @@ namespace ZXEngine
 
         if (commandType == CommandType::ShadowGeneration || commandType == CommandType::ForwardRendering ||
             commandType == CommandType::AfterEffectRendering || commandType == CommandType::UIRendering || 
-            commandType == CommandType::AssetPreviewer)
+            commandType == CommandType::AssetPreviewer || commandType == CommandType::RayTracing)
         {
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
@@ -992,7 +993,7 @@ namespace ZXEngine
         if (curDrawCommandObj->commandType == CommandType::UIRendering)
             fence = inFlightFences[currentFrame];
 #endif
-
+    
         if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, fence) != VK_SUCCESS)
             throw std::runtime_error("failed to submit draw command buffer!");
 
@@ -1568,7 +1569,7 @@ namespace ZXEngine
 		// Ray Trace
 		vkCmdTraceRaysKHR(commandBuffer, 
             &rtSBT.raygenRegion, &rtSBT.missRegion, &rtSBT.hitRegion, &rtSBT.callableRegion, 
-            GlobalData::srcWidth, GlobalData::srcHeight, 1);
+            viewPortInfo.width, viewPortInfo.height, 1);
 
         // 转为Shader读取格式
         TransitionImageLayout(commandBuffer, texture->image.image, 
@@ -1613,7 +1614,8 @@ namespace ZXEngine
         auto commandBuffer = curDrawCommand.commandBuffer;
 
         // 重置Command Buffer
-        vkResetCommandBuffer(commandBuffer, 0);
+        if (vkResetCommandBuffer(commandBuffer, 0) != VK_SUCCESS)
+            throw std::runtime_error("Failed to reset command buffer!");
 
         // 开始记录Command Buffer
         VkCommandBufferBeginInfo beginInfo = {};
@@ -1657,8 +1659,8 @@ namespace ZXEngine
         // 存放场景实例数据的Buffer
         if (!isUpdate)
             rtTLASInstanceBuffers[currentFrame] = CreateBuffer(insBufferSize, 
-                VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-            	VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+                VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+            	VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE, false, true);
 
         // 把数据从stagingBuffer拷贝到instancesBuffer
         VkBufferCopy copy = {};
@@ -1675,16 +1677,10 @@ namespace ZXEngine
         vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
             0, 1, &barrier, 0, nullptr, 0, nullptr);
 
-        // 获取instancesBuffer的DeviceAddress
-        VkBufferDeviceAddressInfo bufferInfo = {};
-        bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
-        bufferInfo.buffer = rtTLASInstanceBuffers[currentFrame].buffer;
-        VkDeviceAddress instancesBufferAddr = vkGetBufferDeviceAddress(device, &bufferInfo);
-
         // 添加一些描述，包装一下上面的Instances Buffer数据，用于构建TLAS
         VkAccelerationStructureGeometryInstancesDataKHR instancesData = {};
         instancesData.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR;
-        instancesData.data.deviceAddress = instancesBufferAddr;
+        instancesData.data.deviceAddress = rtTLASInstanceBuffers[currentFrame].deviceAddress;
         VkAccelerationStructureGeometryKHR tlasGeometry = {};
         tlasGeometry.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
         tlasGeometry.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
@@ -1709,8 +1705,8 @@ namespace ZXEngine
         {
             // 创建TLAS Buffer
             allTLAS[currentFrame].buffer = CreateBuffer(sizeInfo.accelerationStructureSize,
-                VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
-                VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+                VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE, false, true);
 
             // 创建TLAS的信息(仅创建，不填充数据，所以只需要Buffer和Size)
             VkAccelerationStructureCreateInfoKHR createInfo = {};
@@ -1728,16 +1724,12 @@ namespace ZXEngine
         if (!isUpdate)
             rtTLASScratchBuffers[currentFrame] = CreateBuffer(sizeInfo.buildScratchSize,
                 VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-                VMA_MEMORY_USAGE_AUTO);
-        VkBufferDeviceAddressInfo scratchBufferInfo = {};
-        scratchBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
-        scratchBufferInfo.buffer = rtTLASScratchBuffers[currentFrame].buffer;
-        VkDeviceAddress scratchAddress = vkGetBufferDeviceAddress(device, &scratchBufferInfo);
+                VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE, false, true);
 
         // 继续填充构建TLAS需要的信息
         buildInfo.srcAccelerationStructure = isUpdate ? allTLAS[currentFrame].as : VK_NULL_HANDLE;
         buildInfo.dstAccelerationStructure = allTLAS[currentFrame].as;
-        buildInfo.scratchData.deviceAddress = scratchAddress;
+        buildInfo.scratchData.deviceAddress = rtTLASScratchBuffers[currentFrame].deviceAddress;
 
         // 本次构建TLAS的所需的数据范围
         VkAccelerationStructureBuildRangeInfoKHR buildRangeInfo = {};
@@ -1848,9 +1840,9 @@ namespace ZXEngine
         // 但是如果丢给用户创建，用户可以创建一个Scratch Buffer，然后用这一个Buffer调用100次创建BLAS的接口，这样只需要一次创建和销毁
         // 所以这里Vulkan其实更推荐集中多个模型一起创建BLAS，因为这样可以共用一个Scratch Buffer，而不是创建一个模型就马上创建一个BLAS
         // 如果要集中创建BLAS复用Scratch Buffer，那这个Scratch Buffer的大小按最大的模型Size来创建
-        VulkanBuffer scratchBuffer = CreateBuffer(sizeInfo.accelerationStructureSize,
-            VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-            VMA_MEMORY_USAGE_AUTO);
+        VulkanBuffer scratchBuffer = CreateBuffer(sizeInfo.buildScratchSize,
+            VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+            VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
         VkBufferDeviceAddressInfo bufferInfo = {};
         bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
         bufferInfo.buffer = scratchBuffer.buffer;
@@ -1859,7 +1851,7 @@ namespace ZXEngine
 
         // 创建一个存放BLAS数据的VkBuffer，Size为前面查询到的，所需的大小
         meshBuffer->blas.buffer = CreateBuffer(sizeInfo.accelerationStructureSize,
-            VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
+            VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
             VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
         // 创建一个BLAS要用到的信息，主要参数是存放BLAS的Buffer和Size
