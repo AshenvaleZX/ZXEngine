@@ -1,0 +1,19 @@
+{
+    "Name": "Plane",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, -10, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [5, 5, 5]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Geometry": 4,
+            "Material": "Materials/NoLight.zxmat",
+            "CastShadow": false,
+            "ReceiveShadow": true
+        }
+    ]
+}
