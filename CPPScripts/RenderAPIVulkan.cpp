@@ -1561,10 +1561,33 @@ namespace ZXEngine
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, rtPipeline.pipelineLayout,
             0, static_cast<uint32_t>(rtSets.size()), rtSets.data(), 0, nullptr);
 
+        // 转一下Push Constants数据格式，按std140内存布局规则存放
+        // 这里因为是固定数据，就简单手动处理了，没像Uniform Buffer那样写一个通用的函数
+        float pushConstants[52]{}; // 16 * 3 + 4
+        // View Projection Matrix
+        float matVP[16];
+        rtConstants.VP.ToColumnMajorArray(matVP);
+        for (int i = 0; i < 16; i++)
+            pushConstants[i] = matVP[i];
+        // Inverse View Matrix
+        float matIV[16];
+        rtConstants.V_Inv.ToColumnMajorArray(matIV);
+        for (int i = 0; i < 16; i++)
+            pushConstants[i + 16] = matIV[i];
+        // Inverse Projection Matrix
+        float matIP[16];
+        rtConstants.P_Inv.ToColumnMajorArray(matIP);
+        for (int i = 0; i < 16; i++)
+            pushConstants[i + 32] = matIP[i];
+        // Light Position
+        pushConstants[48] = rtConstants.lightPos.x;
+        pushConstants[49] = rtConstants.lightPos.y;
+        pushConstants[50] = rtConstants.lightPos.z;
+
         // 绑定光追管线常量
         vkCmdPushConstants(commandBuffer, rtPipeline.pipelineLayout, 
             VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR,
-            0, sizeof(RayTracingPipelineConstants), &rtConstants);
+            0, sizeof(float) * 52, pushConstants);
 
 		// Ray Trace
 		vkCmdTraceRaysKHR(commandBuffer, 
