@@ -1563,7 +1563,7 @@ namespace ZXEngine
 
         // 转一下Push Constants数据格式，按std140内存布局规则存放
         // 这里因为是固定数据，就简单手动处理了，没像Uniform Buffer那样写一个通用的函数
-        float pushConstants[52]{}; // 16 * 3 + 4
+        float pushConstants[51]{}; // 16 * 3 + 3
         // View Projection Matrix
         float matVP[16];
         rtConstants.VP.ToColumnMajorArray(matVP);
@@ -1587,7 +1587,7 @@ namespace ZXEngine
         // 绑定光追管线常量
         vkCmdPushConstants(commandBuffer, rtPipeline.pipelineLayout, 
             VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR,
-            0, sizeof(float) * 52, pushConstants);
+            0, sizeof(float) * 51, pushConstants);
 
 		// Ray Trace
 		vkCmdTraceRaysKHR(commandBuffer, 

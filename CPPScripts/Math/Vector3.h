@@ -9,12 +9,9 @@ namespace ZXEngine
 	class Vector3
 	{
 	public:
-		float x;
-		float y;
-		float z;
-		float& r = x;
-		float& g = y;
-		float& b = z;
+		union { float x, r; };
+		union { float y, g; };
+		union { float z, b; };
 
 		Vector3();
 		Vector3(float n);

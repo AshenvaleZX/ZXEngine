@@ -9,14 +9,10 @@ namespace ZXEngine
 	class Vector4
 	{
 	public:
-		float x;
-		float y;
-		float z;
-		float w;
-		float& r = x;
-		float& g = y;
-		float& b = z;
-		float& a = w;
+		union { float x, r; };
+		union { float y, g; };
+		union { float z, b; };
+		union { float w, a; };
 
 		Vector4();
 		Vector4(float n);

@@ -8,10 +8,8 @@ namespace ZXEngine
 	class Vector2
 	{
 	public:
-		float x;
-		float y;
-		float& r = x;
-		float& g = y;
+		union { float x, r; };
+		union { float y, g; };
 
 		Vector2();
 		Vector2(float n);
