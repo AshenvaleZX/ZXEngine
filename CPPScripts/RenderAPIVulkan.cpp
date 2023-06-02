@@ -1871,13 +1871,18 @@ namespace ZXEngine
         sizeInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR;
         vkGetAccelerationStructureBuildSizesKHR(device, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR, &buildInfo, maxPrimCount.data(), &sizeInfo);
 
+        // 重新计算Scratch Buffer大小，先向上对齐查询到的硬件最小对齐量，再加一个这个大小
+        // 这个计算是为了配合后面取Scratch Buffer地址时，需要处理的一个奇怪的问题，后面取地址时详细解释
+        VkDeviceSize realScratchSize = Math::AlignUpPOT(sizeInfo.buildScratchSize, static_cast<VkDeviceSize>(physicalAccelerationStructureProperties.minAccelerationStructureScratchOffsetAlignment));
+        realScratchSize += physicalAccelerationStructureProperties.minAccelerationStructureScratchOffsetAlignment;
+
         // 创建一个Scratch Buffer，这个是给Vulkan创建BLAS用的临时Buffer，因为Vulkan在创建BLAS的过程中会产生一些中间数据
         // 其实Vulkan完全可以自己创建这个Buffer用完了再自己销毁，但是出于性能考虑Vulkan选择让用户把Scratch Buffer创建好再提供给它
         // 因为假设要创建100个BLAS，而Vulkan在接口内部自己创建和销毁临时Buffer，就要做100次Buffer创建和销毁
         // 但是如果丢给用户创建，用户可以创建一个Scratch Buffer，然后用这一个Buffer调用100次创建BLAS的接口，这样只需要一次创建和销毁
         // 所以这里Vulkan其实更推荐集中多个模型一起创建BLAS，因为这样可以共用一个Scratch Buffer，而不是创建一个模型就马上创建一个BLAS
         // 如果要集中创建BLAS复用Scratch Buffer，那这个Scratch Buffer的大小按最大的模型Size来创建
-        VulkanBuffer scratchBuffer = CreateBuffer(sizeInfo.buildScratchSize,
+        VulkanBuffer scratchBuffer = CreateBuffer(realScratchSize,
             VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
             VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
         VkBufferDeviceAddressInfo bufferInfo = {};
@@ -1885,6 +1890,18 @@ namespace ZXEngine
         bufferInfo.buffer = scratchBuffer.buffer;
         bufferInfo.pNext = nullptr;
         VkDeviceAddress scratchAddress = vkGetBufferDeviceAddress(device, &bufferInfo);
+
+        // 这里取到地址后，向上对齐VkPhysicalDeviceAccelerationStructurePropertiesKHR::minAccelerationStructureScratchOffsetAlignment
+        // vkCmdBuildAccelerationStructuresKHR 要求传入的 Scratch Buffer 地址要对齐这个查询到的最小对齐量
+        // 但是vkGetBufferDeviceAddress接口拿到的地址并不能保证这个对齐，如果地址没满足要求，就会报错直接Crash
+        // 我遇到的情况是，如果启动引擎，加载的第一个场景就是光追场景，是不会有问题的，但是如果从其它场景切换到一个光追场景，就容易遇到这个问题
+        // 网上没怎么搜到这个问题的处理方案，我自己想了一个处理方式，就是创建 Scratch Buffer 的时候建大一点
+        // 要至少大一个最小对齐量，然后这里计算传给 vkCmdBuildAccelerationStructuresKHR 的地址，向上对齐这个最小对齐量
+        // 这样如果拿到的地址没对齐，相当于手动向后偏移一点去对齐了
+        // 但是这样的话Buffer前面一小段空间就无法使用了，如果直接按查询到的 buildScratchSize 来构建Buffer，然后又向后偏移了一点
+        // 就有可能导致实际可用的Buffer空间不够，所以前面重新计算了实际构建 Scratch Buffer 的大小，至少大一个对齐量
+        // 这样就能保证即使向后偏移了一小段地址，总的Buffer空间也一定是够用的
+        scratchAddress = Math::AlignUpPOT(scratchAddress, static_cast<VkDeviceAddress>(physicalAccelerationStructureProperties.minAccelerationStructureScratchOffsetAlignment));
 
         // 创建一个存放BLAS数据的VkBuffer，Size为前面查询到的，所需的大小
         meshBuffer->blas.buffer = CreateBuffer(sizeInfo.accelerationStructureSize,
@@ -3196,6 +3213,10 @@ namespace ZXEngine
         // 物理设备的光线追踪属性
         rtPhysicalProperties = {};
         rtPhysicalProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR;
+
+        physicalAccelerationStructureProperties = {};
+        physicalAccelerationStructureProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_PROPERTIES_KHR;
+        rtPhysicalProperties.pNext = &physicalAccelerationStructureProperties;
 
         VkPhysicalDeviceProperties2 physicalDeviceProperties = {};
         physicalDeviceProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;

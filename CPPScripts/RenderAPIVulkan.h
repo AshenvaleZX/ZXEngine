@@ -128,8 +128,6 @@ namespace ZXEngine
         VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
         // 物理设备
         VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-        // GPU硬件光追属性
-        VkPhysicalDeviceRayTracingPipelinePropertiesKHR rtPhysicalProperties;
         // 逻辑设备
         VkDevice device = VK_NULL_HANDLE;
         // Vulkan Memory Allocator(来自AMD的GPUOpen团队:https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator)
@@ -300,6 +298,11 @@ namespace ZXEngine
         /// Vulkan光线追踪相关资源和接口
         /// </summary>
     private:
+        // GPU硬件光追属性
+        VkPhysicalDeviceRayTracingPipelinePropertiesKHR rtPhysicalProperties;
+        // GPU硬件Acceleration Structure信息
+        VkPhysicalDeviceAccelerationStructurePropertiesKHR physicalAccelerationStructureProperties;
+
         // 当前的光线追踪管线ID
         uint32_t curRTPipelineID = 0;
         // 光线追踪管线
