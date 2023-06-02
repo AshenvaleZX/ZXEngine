@@ -1213,9 +1213,10 @@ namespace ZXEngine
         SetUpStaticMesh(VAO, vertices, indices);
     }
 
-    void RenderAPIVulkan::CreateRayTracingPipeline()
+    uint32_t RenderAPIVulkan::CreateRayTracingPipeline(const RayTracingShaderPathGroup& rtShaderPathGroup)
     {
-        rtPipeline.name = "RayTracingPipeline";
+        VulkanRTPipeline* rtPipeline = new VulkanRTPipeline();
+        rtPipeline->pipeline.name = "RayTracingPipeline";
 
         // 创建光追管线的DescriptorSetLayout
         vector<VkDescriptorSetLayoutBinding> bindings = {};
@@ -1234,7 +1235,7 @@ namespace ZXEngine
         imageBinding.stageFlags = VK_SHADER_STAGE_RAYGEN_BIT_KHR;
         bindings.push_back(imageBinding);
 
-        rtPipeline.descriptorSetLayout = CreateDescriptorSetLayout(bindings);
+        rtPipeline->pipeline.descriptorSetLayout = CreateDescriptorSetLayout(bindings);
 
         // 创建场景资源的DescriptorSetLayout
         bindings.clear();
@@ -1253,7 +1254,7 @@ namespace ZXEngine
         dataReferencesBinding.stageFlags = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
         bindings.push_back(dataReferencesBinding);
 
-        rtPipeline.sceneDescriptorSetLayout = CreateDescriptorSetLayout(bindings);
+        rtPipeline->pipeline.sceneDescriptorSetLayout = CreateDescriptorSetLayout(bindings);
 
         // 设置PushConstant
         vector<VkPushConstantRange> pushConstantRanges = {};
@@ -1264,71 +1265,86 @@ namespace ZXEngine
         pushConstantRanges.push_back(pushConstantRange);
 
         // 创建PipelineLayout
-        vector<VkDescriptorSetLayout> descriptorSetLayouts = { rtPipeline.descriptorSetLayout, rtPipeline.sceneDescriptorSetLayout };
-        rtPipeline.pipelineLayout = CreatePipelineLayout(descriptorSetLayouts, pushConstantRanges);
+        vector<VkDescriptorSetLayout> descriptorSetLayouts = { rtPipeline->pipeline.descriptorSetLayout, rtPipeline->pipeline.sceneDescriptorSetLayout };
+        rtPipeline->pipeline.pipelineLayout = CreatePipelineLayout(descriptorSetLayouts, pushConstantRanges);
 
-        enum RayTracingShaderGroupType
-        {
-            ZX_RAY_GEN,
-            ZX_RAY_MISS,
-            ZX_RAY_MISS2,
-            ZX_RAY_CLOSEST_HIT,
-            ZX_RAY_GROUP_COUNT
-        };
+        // 创建Shader Module和Shader Groups
+        vector<VkPipelineShaderStageCreateInfo> stages = {};
+        vector<VkRayTracingShaderGroupCreateInfoKHR> shaderGroups = {};
 
-        // 创建Shader Module
-        array<VkPipelineShaderStageCreateInfo, ZX_RAY_GROUP_COUNT> stages = {};
         VkPipelineShaderStageCreateInfo stageInfo = {};
         stageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         stageInfo.pName = "main";
 
-        stageInfo.stage = VK_SHADER_STAGE_RAYGEN_BIT_KHR;
-        stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath("RTShaders/raytrace.rgen.spv")));
-        stages[ZX_RAY_GEN] = stageInfo;
-        stageInfo.stage = VK_SHADER_STAGE_MISS_BIT_KHR;
-        stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath("RTShaders/raytrace.rmiss.spv")));
-        stages[ZX_RAY_MISS] = stageInfo;
-        stageInfo.stage = VK_SHADER_STAGE_MISS_BIT_KHR;
-        stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath("RTShaders/raytraceShadow.rmiss.spv")));
-        stages[ZX_RAY_MISS2] = stageInfo;
-        stageInfo.stage = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
-        stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath("RTShaders/raytrace.rchit.spv")));
-        stages[ZX_RAY_CLOSEST_HIT] = stageInfo;
+        VkRayTracingShaderGroupCreateInfoKHR shaderGroupInfo = {};
+        shaderGroupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
 
-        // 创建Shader Groups
-        vector<VkRayTracingShaderGroupCreateInfoKHR> shaderGroups = {};
-        VkRayTracingShaderGroupCreateInfoKHR rgenGroup = {};
-        rgenGroup.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
-        rgenGroup.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
-        rgenGroup.generalShader      = ZX_RAY_GEN;
-        rgenGroup.closestHitShader   = VK_SHADER_UNUSED_KHR;
-        rgenGroup.anyHitShader       = VK_SHADER_UNUSED_KHR;
-        rgenGroup.intersectionShader = VK_SHADER_UNUSED_KHR;
-        shaderGroups.push_back(rgenGroup);
-        VkRayTracingShaderGroupCreateInfoKHR rmissGroup = {};
-        rmissGroup.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
-        rmissGroup.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
-        rmissGroup.generalShader      = ZX_RAY_MISS;
-        rmissGroup.closestHitShader   = VK_SHADER_UNUSED_KHR;
-        rmissGroup.anyHitShader       = VK_SHADER_UNUSED_KHR;
-        rmissGroup.intersectionShader = VK_SHADER_UNUSED_KHR;
-        shaderGroups.push_back(rmissGroup);
-        VkRayTracingShaderGroupCreateInfoKHR rmiss2Group = {};
-        rmiss2Group.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
-        rmiss2Group.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
-        rmiss2Group.generalShader      = ZX_RAY_MISS2;
-        rmiss2Group.closestHitShader   = VK_SHADER_UNUSED_KHR;
-        rmiss2Group.anyHitShader       = VK_SHADER_UNUSED_KHR;
-        rmiss2Group.intersectionShader = VK_SHADER_UNUSED_KHR;
-        shaderGroups.push_back(rmiss2Group);
-        VkRayTracingShaderGroupCreateInfoKHR closestHitGroup = {};
-        closestHitGroup.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
-        closestHitGroup.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
-        closestHitGroup.generalShader      = VK_SHADER_UNUSED_KHR;
-        closestHitGroup.closestHitShader   = ZX_RAY_CLOSEST_HIT;
-        closestHitGroup.anyHitShader       = VK_SHADER_UNUSED_KHR;
-        closestHitGroup.intersectionShader = VK_SHADER_UNUSED_KHR;
-        shaderGroups.push_back(closestHitGroup);
+        uint32_t shaderIndex = 0;
+        for (auto& path : rtShaderPathGroup.rGenPaths)
+        {
+			stageInfo.stage = VK_SHADER_STAGE_RAYGEN_BIT_KHR;
+			stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath(path + ".spv")));
+			stages.push_back(stageInfo);
+
+            shaderGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
+            shaderGroupInfo.generalShader      = shaderIndex++;
+            shaderGroupInfo.closestHitShader   = VK_SHADER_UNUSED_KHR;
+            shaderGroupInfo.anyHitShader       = VK_SHADER_UNUSED_KHR;
+            shaderGroupInfo.intersectionShader = VK_SHADER_UNUSED_KHR;
+            shaderGroups.push_back(shaderGroupInfo);
+		}
+        for (auto& path : rtShaderPathGroup.rMissPaths)
+        {
+            stageInfo.stage = VK_SHADER_STAGE_MISS_BIT_KHR;
+            stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath(path + ".spv")));
+            stages.push_back(stageInfo);
+
+            shaderGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
+            shaderGroupInfo.generalShader      = shaderIndex++;
+            shaderGroupInfo.closestHitShader   = VK_SHADER_UNUSED_KHR;
+            shaderGroupInfo.anyHitShader       = VK_SHADER_UNUSED_KHR;
+            shaderGroupInfo.intersectionShader = VK_SHADER_UNUSED_KHR;
+            shaderGroups.push_back(shaderGroupInfo);
+        }
+        for (auto& path : rtShaderPathGroup.rClosestHitPaths)
+        {
+			stageInfo.stage = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
+			stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath(path + ".spv")));
+			stages.push_back(stageInfo);
+
+			shaderGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
+			shaderGroupInfo.generalShader      = VK_SHADER_UNUSED_KHR;
+			shaderGroupInfo.closestHitShader   = shaderIndex++;
+			shaderGroupInfo.anyHitShader       = VK_SHADER_UNUSED_KHR;
+			shaderGroupInfo.intersectionShader = VK_SHADER_UNUSED_KHR;
+			shaderGroups.push_back(shaderGroupInfo);
+        }
+        for (auto& path : rtShaderPathGroup.rAnyHitPaths)
+        {
+            stageInfo.stage = VK_SHADER_STAGE_ANY_HIT_BIT_KHR;
+            stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath(path + ".spv")));
+            stages.push_back(stageInfo);
+
+            shaderGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
+            shaderGroupInfo.generalShader      = VK_SHADER_UNUSED_KHR;
+            shaderGroupInfo.closestHitShader   = VK_SHADER_UNUSED_KHR;
+            shaderGroupInfo.anyHitShader       = shaderIndex++;
+            shaderGroupInfo.intersectionShader = VK_SHADER_UNUSED_KHR;
+            shaderGroups.push_back(shaderGroupInfo);
+        }
+        for (auto& path : rtShaderPathGroup.rIntersectionPaths)
+        {
+			stageInfo.stage = VK_SHADER_STAGE_INTERSECTION_BIT_KHR;
+			stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath(path + ".spv")));
+			stages.push_back(stageInfo);
+
+            shaderGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR;
+            shaderGroupInfo.generalShader      = VK_SHADER_UNUSED_KHR;
+            shaderGroupInfo.closestHitShader   = VK_SHADER_UNUSED_KHR;
+            shaderGroupInfo.anyHitShader       = VK_SHADER_UNUSED_KHR;
+            shaderGroupInfo.intersectionShader = shaderIndex++;
+            shaderGroups.push_back(shaderGroupInfo);
+		}
 
         // 创建Pipeline
         VkRayTracingPipelineCreateInfoKHR rayPipelineInfo{};
@@ -1338,35 +1354,22 @@ namespace ZXEngine
         rayPipelineInfo.groupCount = static_cast<uint32_t>(shaderGroups.size());
         rayPipelineInfo.pGroups = shaderGroups.data();
         rayPipelineInfo.maxPipelineRayRecursionDepth = 2;
-        rayPipelineInfo.layout = rtPipeline.pipelineLayout;
-        if (vkCreateRayTracingPipelinesKHR(device, VK_NULL_HANDLE, VK_NULL_HANDLE, 1, &rayPipelineInfo, nullptr, &rtPipeline.pipeline) != VK_SUCCESS)
+        rayPipelineInfo.layout = rtPipeline->pipeline.pipelineLayout;
+        if (vkCreateRayTracingPipelinesKHR(device, VK_NULL_HANDLE, VK_NULL_HANDLE, 1, &rayPipelineInfo, nullptr, &rtPipeline->pipeline.pipeline) != VK_SUCCESS)
 			throw std::runtime_error("Failed to create ray tracing pipeline!");
 
         // 创建完成后，立刻清理Shader Module
         for (auto& stage : stages)
 			vkDestroyShaderModule(device, stage.module, nullptr);
 
-        // 创建管线要使用的固定DescriptorSet
-        CreateRTPipelineData();
-        // 初始化光追场景资源
-        CreateRTSceneData();
-        // 初始化TLAS数组
-        allTLAS.resize(MAX_FRAMES_IN_FLIGHT);
-        // 初始化构建TLAS的中间Buffer
-        rtTLASStagingBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-        rtTLASScratchBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-        rtTLASInstanceBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-    }
-
-    void RenderAPIVulkan::CreateShaderBindingTable()
-    {
-        uint32_t rgenCount = 1;
-        uint32_t missCount = 2;
-        uint32_t hitCount = 1;
-        uint32_t shaderHandleCount = rgenCount + missCount + hitCount;
-
+        // 开始创建Shader Binding Table
         // 一个SBT可以看作是4个数组，分别是Ray Gen, Miss, Hit, Callable这4种类型的Shader Group数组
-        
+
+        uint32_t rGenCount  = static_cast<uint32_t>(rtShaderPathGroup.rGenPaths.size());
+        uint32_t rMissCount = static_cast<uint32_t>(rtShaderPathGroup.rMissPaths.size());
+        uint32_t rHitCount  = static_cast<uint32_t>(rtShaderPathGroup.rClosestHitPaths.size() + rtShaderPathGroup.rAnyHitPaths.size());
+        uint32_t shaderHandleCount = rGenCount + rMissCount + rHitCount;
+
         // 这是一个Shader引用在SBT上的大小
         uint32_t shaderHandleSize = rtPhysicalProperties.shaderGroupHandleSize;
         // 这是Shader引用在SBT上的对齐大小，注意这个对齐的大小和实际大小可能不一样，所以这里要把查询到的实际大小去对齐查询到的对齐大小
@@ -1377,39 +1380,39 @@ namespace ZXEngine
         uint32_t shaderGroupAlignment = rtPhysicalProperties.shaderGroupBaseAlignment;
 
         // Ray Gen比较特殊，size和stride要一致
-        rtSBT.raygenRegion.size = static_cast<VkDeviceSize>(Math::AlignUp(shaderHandleAlignment, shaderGroupAlignment));
-        rtSBT.raygenRegion.stride = rtSBT.raygenRegion.size;
+        rtPipeline->SBT.raygenRegion.size = static_cast<VkDeviceSize>(Math::AlignUp(shaderHandleAlignment, shaderGroupAlignment));
+        rtPipeline->SBT.raygenRegion.stride = rtPipeline->SBT.raygenRegion.size;
         // 整个Shader Group要对齐VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupBaseAlignment
-        rtSBT.missRegion.size = static_cast<VkDeviceSize>(Math::AlignUp(shaderHandleAlignment * missCount, shaderGroupAlignment));
-        rtSBT.missRegion.stride = shaderHandleAlignment;
-        rtSBT.hitRegion.size = static_cast<VkDeviceSize>(Math::AlignUp(shaderHandleAlignment * hitCount, shaderGroupAlignment));
-        rtSBT.hitRegion.stride = shaderHandleAlignment;
+        rtPipeline->SBT.missRegion.size = static_cast<VkDeviceSize>(Math::AlignUp(shaderHandleAlignment * rMissCount, shaderGroupAlignment));
+        rtPipeline->SBT.missRegion.stride = shaderHandleAlignment;
+        rtPipeline->SBT.hitRegion.size = static_cast<VkDeviceSize>(Math::AlignUp(shaderHandleAlignment * rHitCount, shaderGroupAlignment));
+        rtPipeline->SBT.hitRegion.stride = shaderHandleAlignment;
 
         // 获取绑定到光线追踪VkPipeline上的Shader Handles
         uint32_t dataSize = shaderHandleCount * shaderHandleSize;
         vector<uint8_t> handles(dataSize);
-        if (vkGetRayTracingShaderGroupHandlesKHR(device, rtPipeline.pipeline, 0, shaderHandleCount, dataSize, handles.data()) != VK_SUCCESS)
+        if (vkGetRayTracingShaderGroupHandlesKHR(device, rtPipeline->pipeline.pipeline, 0, shaderHandleCount, dataSize, handles.data()) != VK_SUCCESS)
             throw std::runtime_error("Failed to get shader group handles!");
 
         // 创建SBT Buffer
-        VkDeviceSize sbtBufferSize = rtSBT.raygenRegion.size + rtSBT.missRegion.size + rtSBT.hitRegion.size;
-        rtSBT.buffer = CreateBuffer(sbtBufferSize, 
+        VkDeviceSize sbtBufferSize = rtPipeline->SBT.raygenRegion.size + rtPipeline->SBT.missRegion.size + rtPipeline->SBT.hitRegion.size;
+        rtPipeline->SBT.buffer = CreateBuffer(sbtBufferSize,
             VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
             VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
 
         // 获取每个Shader Group的起始地址
         VkBufferDeviceAddressInfo sbtBufferInfo = {};
         sbtBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
-        sbtBufferInfo.buffer = rtSBT.buffer.buffer;
+        sbtBufferInfo.buffer = rtPipeline->SBT.buffer.buffer;
         VkDeviceAddress sbtBufferAddress = vkGetBufferDeviceAddress(device, &sbtBufferInfo);
-        rtSBT.raygenRegion.deviceAddress = sbtBufferAddress;
-        rtSBT.missRegion.deviceAddress = sbtBufferAddress + rtSBT.raygenRegion.size;
-        rtSBT.hitRegion.deviceAddress = sbtBufferAddress + rtSBT.raygenRegion.size + rtSBT.missRegion.size;
+        rtPipeline->SBT.raygenRegion.deviceAddress = sbtBufferAddress;
+        rtPipeline->SBT.missRegion.deviceAddress = sbtBufferAddress + rtPipeline->SBT.raygenRegion.size;
+        rtPipeline->SBT.hitRegion.deviceAddress = sbtBufferAddress + rtPipeline->SBT.raygenRegion.size + rtPipeline->SBT.missRegion.size;
 
         // 获取管线中的Shader地址
         uint8_t* shaderHandlePtr = handles.data();
         // 获取SBT Buffer的映射地址
-        uint8_t* sbtBufferPtr = static_cast<uint8_t*>(rtSBT.buffer.mappedAddress);
+        uint8_t* sbtBufferPtr = static_cast<uint8_t*>(rtPipeline->SBT.buffer.mappedAddress);
         // SBT Buffer的临时指针
         uint8_t* tmpPtr = sbtBufferPtr;
         // 把Ray Gen Shader拷贝到SBT Buffer上
@@ -1418,28 +1421,49 @@ namespace ZXEngine
         shaderHandlePtr += shaderHandleSize;
 
         // 移到下一个Shader Group地址(Miss)
-        tmpPtr = sbtBufferPtr + rtSBT.raygenRegion.size;
+        tmpPtr = sbtBufferPtr + rtPipeline->SBT.raygenRegion.size;
         // 遍历拷贝Miss Shader到SBT Buffer上
-        for (uint32_t i = 0; i < missCount; ++i)
-		{
-			memcpy(tmpPtr, shaderHandlePtr, shaderHandleSize);
-			// 移到下一个Shader地址
-			shaderHandlePtr += shaderHandleSize;
-			// 移到当前Shader Group中的下一个地址
-            tmpPtr += rtSBT.missRegion.stride;
-		}
-
-        // 移到下一个Shader Group地址(Hit)
-		tmpPtr = sbtBufferPtr + rtSBT.raygenRegion.size + rtSBT.missRegion.size;
-		// 遍历拷贝Hit Shader到SBT Buffer上
-		for (uint32_t i = 0; i < hitCount; ++i)
+        for (uint32_t i = 0; i < rMissCount; ++i)
         {
             memcpy(tmpPtr, shaderHandlePtr, shaderHandleSize);
-		    // 移到下一个Shader地址
-			shaderHandlePtr += shaderHandleSize;
-			// 移到当前Shader Group中的下一个地址
-			tmpPtr += rtSBT.hitRegion.stride;
+            // 移到下一个Shader地址
+            shaderHandlePtr += shaderHandleSize;
+            // 移到当前Shader Group中的下一个地址
+            tmpPtr += rtPipeline->SBT.missRegion.stride;
         }
+
+        // 移到下一个Shader Group地址(Hit)
+        tmpPtr = sbtBufferPtr + rtPipeline->SBT.raygenRegion.size + rtPipeline->SBT.missRegion.size;
+        // 遍历拷贝Hit Shader到SBT Buffer上
+        for (uint32_t i = 0; i < rHitCount; ++i)
+        {
+            memcpy(tmpPtr, shaderHandlePtr, shaderHandleSize);
+            // 移到下一个Shader地址
+            shaderHandlePtr += shaderHandleSize;
+            // 移到当前Shader Group中的下一个地址
+            tmpPtr += rtPipeline->SBT.hitRegion.stride;
+        }
+
+        rtPipelines.push_back(rtPipeline);
+        uint32_t rtPipelineID = static_cast<uint32_t>(rtPipelines.size() - 1);
+
+        // 创建管线要使用的固定DescriptorSet
+        CreateRTPipelineData(rtPipelineID);
+        // 初始化光追场景资源
+        CreateRTSceneData(rtPipelineID);
+        // 初始化TLAS数组
+        allTLAS.resize(MAX_FRAMES_IN_FLIGHT);
+        // 初始化构建TLAS的中间Buffer
+        rtTLASStagingBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+        rtTLASScratchBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+        rtTLASInstanceBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+
+        return rtPipelineID;
+    }
+
+    void RenderAPIVulkan::SwitchRayTracingPipeline(uint32_t rtPipelineID)
+    {
+        curRTPipelineID = rtPipelineID;
     }
 
     uint32_t RenderAPIVulkan::CreateRayTracingMaterialData()
@@ -1522,10 +1546,12 @@ namespace ZXEngine
 
     void RenderAPIVulkan::RayTrace(uint32_t commandID, const RayTracingPipelineConstants& rtConstants)
     {
+        auto rtPipeline = rtPipelines[curRTPipelineID];
+
         // 先更新当前帧和光追管线绑定的场景数据
-        UpdateRTSceneData();
+        UpdateRTSceneData(curRTPipelineID);
         // 更新当前帧和光追管线绑定的管线数据
-        UpdateRTPipelineData();
+        UpdateRTPipelineData(curRTPipelineID);
 
         // 获取当前帧的Command Buffer
 		auto curDrawCommandObj = GetDrawCommandByIndex(commandID);
@@ -1555,10 +1581,10 @@ namespace ZXEngine
             VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR, VK_ACCESS_SHADER_WRITE_BIT);
 
 		// 绑定光追管线
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, rtPipeline.pipeline);
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, rtPipeline->pipeline.pipeline);
 		// 绑定光追管线描述符集
-        vector<VkDescriptorSet> rtSets{ rtPipelineData.descriptorSets[currentFrame], rtSceneData.descriptorSets[currentFrame] };
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, rtPipeline.pipelineLayout,
+        vector<VkDescriptorSet> rtSets{ rtPipeline->pipelineData.descriptorSets[currentFrame], rtPipeline->sceneData.descriptorSets[currentFrame] };
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, rtPipeline->pipeline.pipelineLayout,
             0, static_cast<uint32_t>(rtSets.size()), rtSets.data(), 0, nullptr);
 
         // 转一下Push Constants数据格式，按std140内存布局规则存放
@@ -1585,13 +1611,13 @@ namespace ZXEngine
         pushConstants[50] = rtConstants.lightPos.z;
 
         // 绑定光追管线常量
-        vkCmdPushConstants(commandBuffer, rtPipeline.pipelineLayout, 
+        vkCmdPushConstants(commandBuffer, rtPipeline->pipeline.pipelineLayout, 
             VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR,
             0, sizeof(float) * 51, pushConstants);
 
 		// Ray Trace
 		vkCmdTraceRaysKHR(commandBuffer, 
-            &rtSBT.raygenRegion, &rtSBT.missRegion, &rtSBT.hitRegion, &rtSBT.callableRegion, 
+            &rtPipeline->SBT.raygenRegion, &rtPipeline->SBT.missRegion, &rtPipeline->SBT.hitRegion, &rtPipeline->SBT.callableRegion,
             viewPortInfo.width, viewPortInfo.height, 1);
 
         // 转为Shader读取格式
@@ -4295,8 +4321,10 @@ namespace ZXEngine
         vulkanRTMaterialData->inUse = false;
     }
 
-    void RenderAPIVulkan::CreateRTPipelineData()
+    void RenderAPIVulkan::CreateRTPipelineData(uint32_t id)
     {
+        auto rtPipeline = rtPipelines[id];
+
         // 创建DescriptorPool
         vector<VkDescriptorPoolSize> poolSizes = {};
 
@@ -4318,16 +4346,18 @@ namespace ZXEngine
         poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
         poolInfo.maxSets = MAX_FRAMES_IN_FLIGHT;
         poolInfo.flags = 0;
-        if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &rtPipelineData.descriptorPool) != VK_SUCCESS)
+        if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &rtPipeline->pipelineData.descriptorPool) != VK_SUCCESS)
             throw std::runtime_error("Failed to create descriptor pool for ray tracing!");
 
         // 创建DescriptorSet
-        vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, rtPipeline.descriptorSetLayout);
-        rtPipelineData.descriptorSets = CreateDescriptorSets(rtPipelineData.descriptorPool, layouts);
+        vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, rtPipeline->pipeline.descriptorSetLayout);
+        rtPipeline->pipelineData.descriptorSets = CreateDescriptorSets(rtPipeline->pipelineData.descriptorPool, layouts);
     }
 
-    void RenderAPIVulkan::UpdateRTPipelineData()
+    void RenderAPIVulkan::UpdateRTPipelineData(uint32_t id)
     {
+        auto rtPipeline = rtPipelines[id];
+
         // 更新TLAS
         VkWriteDescriptorSetAccelerationStructureKHR writeASInfo = {};
         writeASInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR;
@@ -4337,7 +4367,7 @@ namespace ZXEngine
         VkWriteDescriptorSet writeAS = {};
         writeAS.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         writeAS.descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
-        writeAS.dstSet = rtPipelineData.descriptorSets[currentFrame];
+        writeAS.dstSet = rtPipeline->pipelineData.descriptorSets[currentFrame];
         writeAS.dstBinding = 0;
         writeAS.descriptorCount = 1;
         writeAS.pNext = &writeASInfo;
@@ -4355,7 +4385,7 @@ namespace ZXEngine
         VkWriteDescriptorSet writeImage = {};
         writeImage.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         writeImage.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-        writeImage.dstSet = rtPipelineData.descriptorSets[currentFrame];
+        writeImage.dstSet = rtPipeline->pipelineData.descriptorSets[currentFrame];
         writeImage.dstBinding = 1;
         writeImage.descriptorCount = 1;
         writeImage.pImageInfo = &imageInfo;
@@ -4364,8 +4394,10 @@ namespace ZXEngine
         vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeSets.size()), writeSets.data(), 0, nullptr);
     }
 
-    void RenderAPIVulkan::CreateRTSceneData()
+    void RenderAPIVulkan::CreateRTSceneData(uint32_t id)
     {
+        auto rtPipeline = rtPipelines[id];
+
         // 创建DescriptorPool
         vector<VkDescriptorPoolSize> poolSizes = {};
 
@@ -4387,30 +4419,30 @@ namespace ZXEngine
         poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
         poolInfo.maxSets = MAX_FRAMES_IN_FLIGHT;
         poolInfo.flags = 0;
-        if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &rtSceneData.descriptorPool) != VK_SUCCESS)
+        if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &rtPipeline->sceneData.descriptorPool) != VK_SUCCESS)
             throw std::runtime_error("Failed to create descriptor pool for ray tracing!");
 
         // 创建DescriptorSet
-        vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, rtPipeline.sceneDescriptorSetLayout);
-        rtSceneData.descriptorSets = CreateDescriptorSets(rtSceneData.descriptorPool, layouts);
+        vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, rtPipeline->pipeline.sceneDescriptorSetLayout);
+        rtPipeline->sceneData.descriptorSets = CreateDescriptorSets(rtPipeline->sceneData.descriptorPool, layouts);
 
         // 创建渲染对象数据索引Buffer
         vector<VkWriteDescriptorSet> writeDescriptorSets;
-        rtSceneData.dataReferenceBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+        rtPipeline->sceneData.dataReferenceBuffers.resize(MAX_FRAMES_IN_FLIGHT);
         VkDeviceSize bufferSize = sizeof(VulkanRTRendererDataReference) * rtSceneRenderObjectNum; // Todo: 这个数量可能需要动态扩展
         for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
-            rtSceneData.dataReferenceBuffers[i] = CreateBuffer(bufferSize,
+            rtPipeline->sceneData.dataReferenceBuffers[i] = CreateBuffer(bufferSize,
                 VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
 
             VkDescriptorBufferInfo bufferInfo = {};
-            bufferInfo.buffer = rtSceneData.dataReferenceBuffers[i].buffer;
+            bufferInfo.buffer = rtPipeline->sceneData.dataReferenceBuffers[i].buffer;
             bufferInfo.offset = 0;
             bufferInfo.range = bufferSize;
             VkWriteDescriptorSet writeDescriptorSet = {};
             writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
             writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-            writeDescriptorSet.dstSet = rtSceneData.descriptorSets[i];
+            writeDescriptorSet.dstSet = rtPipeline->sceneData.descriptorSets[i];
             writeDescriptorSet.dstBinding = 1;
             writeDescriptorSet.dstArrayElement = 0;
             writeDescriptorSet.descriptorCount = 1;
@@ -4421,8 +4453,10 @@ namespace ZXEngine
         vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
     }
 
-    void RenderAPIVulkan::UpdateRTSceneData()
+    void RenderAPIVulkan::UpdateRTSceneData(uint32_t id)
     {
+        auto rtPipeline = rtPipelines[id];
+
         // 遍历场景中的所有纹理，生成对应的VkDescriptorImageInfo
         vector<VkDescriptorImageInfo> imageInfos = {};
 
@@ -4459,7 +4493,7 @@ namespace ZXEngine
         VkWriteDescriptorSet writeImages = {};
         writeImages.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         writeImages.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        writeImages.dstSet = rtSceneData.descriptorSets[currentFrame];
+        writeImages.dstSet = rtPipeline->sceneData.descriptorSets[currentFrame];
         writeImages.dstBinding = 0;
         writeImages.descriptorCount = static_cast<uint32_t>(imageInfos.size());
         writeImages.pImageInfo = imageInfos.data();
@@ -4482,7 +4516,7 @@ namespace ZXEngine
         }
 
         // 更新当前帧的渲染对象数据引用Buffer
-        auto dataReferencePtr = rtSceneData.dataReferenceBuffers[currentFrame].mappedAddress;
+        auto dataReferencePtr = rtPipeline->sceneData.dataReferenceBuffers[currentFrame].mappedAddress;
         memcpy(dataReferencePtr, dataReferences.data(), sizeof(VulkanRTRendererDataReference) * dataReferences.size());
     }
 

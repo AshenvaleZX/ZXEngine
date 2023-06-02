@@ -90,9 +90,9 @@ namespace ZXEngine
 		/// 标准RayTracing接口
 		/// </summary>
 	public:
-		// 管线创建
-		virtual void CreateRayTracingPipeline() = 0;
-		virtual void CreateShaderBindingTable() = 0;
+		// Pipeline
+		virtual uint32_t CreateRayTracingPipeline(const RayTracingShaderPathGroup& rtShaderPathGroup) = 0;
+		virtual void SwitchRayTracingPipeline(uint32_t rtPipelineID) = 0;
 
 		// Material
 		virtual uint32_t CreateRayTracingMaterialData() = 0;

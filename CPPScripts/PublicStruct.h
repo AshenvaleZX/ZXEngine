@@ -89,4 +89,13 @@ namespace ZXEngine
 		Matrix4 P_Inv;
 		Vector3 lightPos;
 	};
+
+	struct RayTracingShaderPathGroup
+	{
+		vector<string> rGenPaths;
+		vector<string> rMissPaths;
+		vector<string> rClosestHitPaths;
+		vector<string> rAnyHitPaths;
+		vector<string> rIntersectionPaths;
+	};
 }

@@ -125,11 +125,34 @@ namespace ZXEngine
 		if (!data["RenderPipelineType"].is_null())
 			scene->renderPipelineType = data["RenderPipelineType"];
 
-		for (unsigned int i = 0; i < data["GameObjects"].size(); i++)
+		for (size_t i = 0; i < data["GameObjects"].size(); i++)
 		{
 			string p = Resources::JsonStrToString(data["GameObjects"][i]);
 			PrefabStruct* prefab = Resources::LoadPrefab(p);
 			scene->prefabs.push_back(prefab);
+		}
+
+		if (scene->renderPipelineType == RenderPipelineType::RayTracing && !data["RayTracingShaderGroups"].is_null())
+		{
+			if (!data["RayTracingShaderGroups"]["RayGen"].is_null())
+				for (size_t i = 0; i < data["RayTracingShaderGroups"]["RayGen"].size(); i++)
+					scene->rtShaderPathGroup.rGenPaths.push_back(Resources::JsonStrToString(data["RayTracingShaderGroups"]["RayGen"][i]));
+
+			if (!data["RayTracingShaderGroups"]["Miss"].is_null())
+				for (size_t i = 0; i < data["RayTracingShaderGroups"]["Miss"].size(); i++)
+					scene->rtShaderPathGroup.rMissPaths.push_back(Resources::JsonStrToString(data["RayTracingShaderGroups"]["Miss"][i]));
+
+			if (!data["RayTracingShaderGroups"]["ClosestHit"].is_null())
+				for (size_t i = 0; i < data["RayTracingShaderGroups"]["ClosestHit"].size(); i++)
+					scene->rtShaderPathGroup.rClosestHitPaths.push_back(Resources::JsonStrToString(data["RayTracingShaderGroups"]["ClosestHit"][i]));
+
+			if (!data["RayTracingShaderGroups"]["AnyHit"].is_null())
+				for (size_t i = 0; i < data["RayTracingShaderGroups"]["AnyHit"].size(); i++)
+					scene->rtShaderPathGroup.rAnyHitPaths.push_back(Resources::JsonStrToString(data["RayTracingShaderGroups"]["AnyHit"][i]));
+
+			if (!data["RayTracingShaderGroups"]["Intersection"].is_null())
+				for (size_t i = 0; i < data["RayTracingShaderGroups"]["Intersection"].size(); i++)
+					scene->rtShaderPathGroup.rIntersectionPaths.push_back(Resources::JsonStrToString(data["RayTracingShaderGroups"]["Intersection"][i]));
 		}
 
 		return scene;

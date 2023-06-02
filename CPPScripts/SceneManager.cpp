@@ -63,6 +63,8 @@ namespace ZXEngine
 			ProjectSetting::renderPipelineType = curScene->scene->renderPipelineType;
 			LuaManager::GetInstance()->RestartLuaState();
 			RenderPassManager::GetInstance()->SetUpRenderPasses();
+			if (curScene->scene->renderPipelineType == RenderPipelineType::RayTracing)
+				RenderAPI::GetInstance()->SwitchRayTracingPipeline(curScene->scene->rtPipelineID);
 		}
 	}
 

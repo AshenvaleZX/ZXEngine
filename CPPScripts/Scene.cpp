@@ -6,6 +6,7 @@
 #include "ZCamera.h"
 #include "Resources.h"
 #include "ProjectSetting.h"
+#include "RenderAPI.h"
 
 namespace ZXEngine
 {
@@ -13,6 +14,9 @@ namespace ZXEngine
 	{
 		skyBox = new CubeMap(sceneStruct->skyBox);
 		renderPipelineType = sceneStruct->renderPipelineType;
+
+		if (renderPipelineType == RenderPipelineType::RayTracing)
+			rtPipelineID = RenderAPI::GetInstance()->CreateRayTracingPipeline(sceneStruct->rtShaderPathGroup);
 
 		// 临时切换渲染管线类型，因为用于光追场景的模型需要生成BLAS，但是目前会先加载场景再切换场景
 		// 所以这里先切换到当前加载的场景对应的管线，加载完场景再切换回去

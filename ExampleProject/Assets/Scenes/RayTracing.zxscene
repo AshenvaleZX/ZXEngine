@@ -18,5 +18,21 @@
         "Prefabs/MainCamera.zxprefab",
         "Prefabs/PointLight.zxprefab",
         "Prefabs/UI/FPSText.zxprefab"
-    ]
+    ],
+    "RayTracingShaderGroups":
+    {
+        "RayGen":
+        [
+            "RTShaders/raytrace.rgen"
+        ],
+        "Miss":
+        [
+            "RTShaders/raytrace.rmiss",
+            "RTShaders/raytraceShadow.rmiss"
+        ],
+        "ClosestHit":
+        [
+            "RTShaders/raytrace.rchit"
+        ]
+    }
 }

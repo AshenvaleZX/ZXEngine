@@ -82,9 +82,9 @@ namespace ZXEngine
 		/// 标准RayTracing接口(OpenGL不支持光线追踪)
 		/// </summary>
 	public:
-		// 管线创建
-		virtual void CreateRayTracingPipeline() {};
-		virtual void CreateShaderBindingTable() {};
+		// Pipeline
+		virtual uint32_t CreateRayTracingPipeline(const RayTracingShaderPathGroup& rtShaderPathGroup) { return 0; };
+		virtual void SwitchRayTracingPipeline(uint32_t rtPipelineID) {};
 
 		// Material
 		virtual uint32_t CreateRayTracingMaterialData() { return 0; };

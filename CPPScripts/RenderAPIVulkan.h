@@ -84,9 +84,9 @@ namespace ZXEngine
         /// 标准RayTracing接口
         /// </summary>
     public:
-        // 管线创建
-        virtual void CreateRayTracingPipeline();
-        virtual void CreateShaderBindingTable();
+        // Pipeline
+        virtual uint32_t CreateRayTracingPipeline(const RayTracingShaderPathGroup& rtShaderPathGroup);
+        virtual void SwitchRayTracingPipeline(uint32_t rtPipelineID);
 
         // Material
         virtual uint32_t CreateRayTracingMaterialData();
@@ -210,9 +210,9 @@ namespace ZXEngine
         void DestroyPresentFrameBuffer();
 
 
-    /// <summary>
-    /// Vulkan资源创建相关接口(这些接口Create出来的需要手动Destroy)
-    /// </summary>
+        /// <summary>
+        /// Vulkan资源创建相关接口(这些接口Create出来的需要手动Destroy)
+        /// </summary>
     private:
         vector<VulkanVAO*> VulkanVAOArray;
         vector<VulkanFBO*> VulkanFBOArray;
@@ -296,17 +296,14 @@ namespace ZXEngine
         void CheckDeleteData();
 
 
-/// <summary>
-/// Vulkan光线追踪相关资源和接口
-/// </summary>
+        /// <summary>
+        /// Vulkan光线追踪相关资源和接口
+        /// </summary>
+    private:
+        // 当前的光线追踪管线ID
+        uint32_t curRTPipelineID = 0;
         // 光线追踪管线
-        VulkanPipeline rtPipeline;
-        // 光线追踪管线数据
-        VulkanRTPipelineData rtPipelineData;
-        // 光线追踪场景数据
-        VulkanRTSceneData rtSceneData;
-        // Shader Binding Table
-        VulkanShaderBindingTable rtSBT;
+        vector<VulkanRTPipeline*> rtPipelines;
         // Top Level Acceleration Structure
         vector<VulkanAccelerationStructure> allTLAS;
         // 构建TLAS的中间Buffer
@@ -339,16 +336,16 @@ namespace ZXEngine
         VulkanRTMaterialData* GetRTMaterialDataByIndex(uint32_t idx);
         void DestroyRTMaterialDataByIndex(uint32_t idx);
 
-        void CreateRTPipelineData();
-        void UpdateRTPipelineData();
+        void CreateRTPipelineData(uint32_t id);
+        void UpdateRTPipelineData(uint32_t id);
 
-        void CreateRTSceneData();
-        void UpdateRTSceneData();
+        void CreateRTSceneData(uint32_t id);
+        void UpdateRTSceneData(uint32_t id);
 
 
-    /// <summary>
-    /// 其它辅助接口
-    /// </summary>
+        /// <summary>
+        /// 其它辅助接口
+        /// </summary>
     private:
         bool windowResized = false;
         uint32_t newWindowWidth = 0;

@@ -15,9 +15,6 @@ namespace ZXEngine
 	{
 		auto renderAPI = RenderAPI::GetInstance();
 
-		renderAPI->CreateRayTracingPipeline();
-		renderAPI->CreateShaderBindingTable();
-
 		asCommandID = renderAPI->AllocateDrawCommand(CommandType::RayTracing);
 		rtCommandID = renderAPI->AllocateDrawCommand(CommandType::RayTracing);
 

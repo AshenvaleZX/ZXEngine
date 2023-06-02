@@ -192,6 +192,15 @@ namespace ZXEngine
         vector<VkDescriptorSet> descriptorSets;
     };
 
+    struct VulkanShaderBindingTable
+    {
+        VulkanBuffer buffer;
+        VkStridedDeviceAddressRegionKHR raygenRegion   = {};
+        VkStridedDeviceAddressRegionKHR missRegion     = {};
+        VkStridedDeviceAddressRegionKHR hitRegion      = {};
+        VkStridedDeviceAddressRegionKHR callableRegion = {};
+    };
+
     struct VulkanRTSceneData
     {
         VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
@@ -199,6 +208,14 @@ namespace ZXEngine
         vector<VulkanBuffer> dataReferenceBuffers;
     };
 
+    struct VulkanRTPipeline
+    {
+        VulkanPipeline pipeline;
+        VulkanRTPipelineData pipelineData;
+        VulkanShaderBindingTable SBT;
+        VulkanRTSceneData sceneData;
+    };
+    
     struct VulkanRTMaterialData
     {
         vector<VulkanBuffer> buffers;
@@ -210,14 +227,5 @@ namespace ZXEngine
         VkDeviceAddress indexAddress;
         VkDeviceAddress vertexAddress;
         VkDeviceAddress materialAddress;
-    };
-
-    struct VulkanShaderBindingTable
-    {
-        VulkanBuffer buffer;
-        VkStridedDeviceAddressRegionKHR raygenRegion = {};
-        VkStridedDeviceAddressRegionKHR missRegion = {};
-        VkStridedDeviceAddressRegionKHR hitRegion = {};
-        VkStridedDeviceAddressRegionKHR callableRegion = {};
     };
 }

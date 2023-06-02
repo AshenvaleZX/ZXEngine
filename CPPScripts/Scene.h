@@ -10,6 +10,7 @@ namespace ZXEngine
 	class Scene
 	{
 	public:
+		uint32_t rtPipelineID = UINT32_MAX;
 		CubeMap* skyBox = nullptr;
 		vector<GameObject*> gameObjects;
 		RenderPipelineType renderPipelineType = RenderPipelineType::Rasterization;

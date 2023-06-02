@@ -1,5 +1,6 @@
 #pragma once
 #include "pubh.h"
+#include "PublicStruct.h"
 
 namespace ZXEngine
 {
@@ -42,6 +43,7 @@ namespace ZXEngine
 		vector<string> skyBox;
 		vector<PrefabStruct*> prefabs;
 		RenderPipelineType renderPipelineType = RenderPipelineType::Rasterization;
+		RayTracingShaderPathGroup rtShaderPathGroup;
 
 		~SceneStruct() { for (auto iter : prefabs) delete iter; }
 	};
