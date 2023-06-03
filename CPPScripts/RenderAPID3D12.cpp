@@ -559,6 +559,72 @@ namespace ZXEngine
 
 			D3D12FBO->inUse = true;
 		}
+		else if (type == FrameBufferType::RayTracing)
+		{
+			FBO->ID = GetNextFBOIndex();
+			FBO->ColorBuffer = GetNextRenderBufferIndex();
+			auto colorBuffer = GetRenderBufferByIndex(FBO->ColorBuffer);
+			colorBuffer->inUse = true;
+			FBO->DepthBuffer = NULL;
+
+			auto D3D12FBO = GetFBOByIndex(FBO->ID);
+			D3D12FBO->colorBufferIdx = FBO->ColorBuffer;
+			D3D12FBO->bufferType = FrameBufferType::RayTracing;
+			D3D12FBO->clearInfo = clearInfo;
+
+			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				// ´´½¨Color Buffer
+				CD3DX12_HEAP_PROPERTIES colorBufferProps(D3D12_HEAP_TYPE_DEFAULT);
+
+				D3D12_RESOURCE_DESC colorBufferDesc = {};
+				colorBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+				colorBufferDesc.Alignment = 0;
+				colorBufferDesc.Width = width;
+				colorBufferDesc.Height = height;
+				colorBufferDesc.DepthOrArraySize = 1;
+				colorBufferDesc.MipLevels = 1;
+				colorBufferDesc.Format = mDefaultImageFormat;
+				colorBufferDesc.SampleDesc.Count = 1;
+				colorBufferDesc.SampleDesc.Quality = 0;
+				colorBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+				colorBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+				D3D12_CLEAR_VALUE optColorClear = {};
+				optColorClear.Format = mDefaultImageFormat;
+				optColorClear.Color[0] = clearInfo.color.r;
+				optColorClear.Color[1] = clearInfo.color.g;
+				optColorClear.Color[2] = clearInfo.color.b;
+				optColorClear.Color[3] = clearInfo.color.a;
+
+				ComPtr<ID3D12Resource> colorBufferResource;
+				ThrowIfFailed(mD3D12Device->CreateCommittedResource(
+					&colorBufferProps,
+					D3D12_HEAP_FLAG_NONE,
+					&colorBufferDesc,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					&optColorClear,
+					IID_PPV_ARGS(&colorBufferResource)
+				));
+
+				D3D12_SHADER_RESOURCE_VIEW_DESC colorSrvDesc = {};
+				colorSrvDesc.Format = mDefaultImageFormat;
+				colorSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+				colorSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+				colorSrvDesc.Texture2D.MipLevels = 1;
+				colorSrvDesc.Texture2D.MostDetailedMip = 0;
+				colorSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+				D3D12_RENDER_TARGET_VIEW_DESC colorRtvDesc = {};
+				colorRtvDesc.Format = mDefaultImageFormat;
+				colorRtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+				colorRtvDesc.Texture2D.MipSlice = 0;
+
+				colorBuffer->renderBuffers[i] = CreateZXD3D12Texture(colorBufferResource, colorSrvDesc, colorRtvDesc);
+			}
+
+			D3D12FBO->inUse = true;
+		}
 		else
 		{
 			Debug::LogError("Invalide frame buffer type.");
