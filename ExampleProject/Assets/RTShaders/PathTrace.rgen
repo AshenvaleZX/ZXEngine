@@ -1,0 +1,107 @@
+#version 460
+#extension GL_EXT_ray_tracing : require
+#extension GL_EXT_shader_explicit_arithmetic_types_int64 : require
+#extension GL_ARB_shader_clock : enable
+
+struct HitPayload
+{
+    vec3 hitValue;
+    uint seed;
+    uint depth;
+    vec3 rayOrigin;
+    vec3 rayDirection;
+    vec3 weight;
+};
+
+struct RayTracingPipelineConstants
+{
+    mat4 VP;
+    mat4 V_Inv;
+    mat4 P_Inv;
+    vec3 lightPos;
+    uint frame;
+};
+
+layout(location = 0) rayPayloadEXT HitPayload _RayPayload;
+
+layout(set = 0, binding = 0) uniform accelerationStructureEXT _TLAS;
+layout(set = 0, binding = 1, rgba32f) uniform image2D _Image;
+layout(push_constant) uniform _PushConstant { RayTracingPipelineConstants _PC; };
+
+// 此算法来自Zafar, Olano, and Curtis的论文"GPU Random Numbers via the Tiny Encryption Algorithm"
+uint TinyEncryptionAlgorithm(uint val0, uint val1)
+{
+    uint v0 = val0;
+    uint v1 = val1;
+    uint s0 = 0;
+
+    for(uint n = 0; n < 16; n++)
+    {
+        s0 += 0x9e3779b9;
+        v0 += ((v1 << 4) + 0xa341316c) ^ (v1 + s0) ^ ((v1 >> 5) + 0xc8013ea4);
+        v1 += ((v0 << 4) + 0xad90777d) ^ (v0 + s0) ^ ((v0 >> 5) + 0x7e95761e);
+    }
+
+    return v0;
+}
+
+void main()
+{
+    // 随机数种子
+    uint seed = TinyEncryptionAlgorithm(gl_LaunchIDEXT.y * gl_LaunchSizeEXT.x + gl_LaunchIDEXT.x, int(clockARB()));
+
+    const vec2 pixelCenter = vec2(gl_LaunchIDEXT.xy) + vec2(0.5);
+    const vec2 inUV = pixelCenter / vec2(gl_LaunchSizeEXT.xy);
+    vec2 d = inUV * 2.0 - 1.0;
+
+    vec4 origin = _PC.V_Inv * vec4(0, 0, 0, 1);
+    vec4 target = _PC.P_Inv * vec4(d.x, d.y, 1, 1);
+    target = target / target.w;
+    vec4 direction = _PC.V_Inv * vec4(normalize(target.xyz), 0);
+
+    uint  rayFlags = gl_RayFlagsOpaqueEXT;
+    float tMin     = 0.001;
+    float tMax     = 10000.0;
+
+    _RayPayload.hitValue     = vec3(0);
+    _RayPayload.seed         = seed;
+    _RayPayload.depth        = 0;
+    _RayPayload.rayOrigin    = origin.xyz;
+    _RayPayload.rayDirection = direction.xyz;
+    _RayPayload.weight       = vec3(0);
+
+    vec3 curWeight = vec3(1);
+    vec3 hitValue  = vec3(0);
+
+    for(; _RayPayload.depth < 10; _RayPayload.depth++)
+    {
+        traceRayEXT(_TLAS,                    // acceleration structure
+                    rayFlags,                 // rayFlags
+                    0xFF,                     // cullMask
+                    0,                        // sbtRecordOffset
+                    0,                        // sbtRecordStride
+                    0,                        // missIndex
+                    _RayPayload.rayOrigin,    // ray origin
+                    tMin,                     // ray min range
+                    _RayPayload.rayDirection, // ray direction
+                    tMax,                     // ray max range
+                    0                         // payload (location = 0)
+        );
+
+        hitValue += _RayPayload.hitValue * curWeight;
+        curWeight *= _RayPayload.weight;
+    }
+
+    // 与之前的结果累加
+    if(_PC.frame > 0)
+    {
+        float a = 1.0f / float(_PC.frame + 1);
+        vec3 old_color = imageLoad(_Image, ivec2(gl_LaunchIDEXT.xy)).xyz;
+        imageStore(_Image, ivec2(gl_LaunchIDEXT.xy), vec4(mix(old_color, hitValue, a), 1.f));
+    }
+    else
+    {
+        // 如果是第一帧就直接写入结果
+        imageStore(_Image, ivec2(gl_LaunchIDEXT.xy), vec4(hitValue, 1.f));
+    }
+}
