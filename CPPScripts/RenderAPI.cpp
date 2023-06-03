@@ -9,6 +9,9 @@
 #include "RenderAPID3D12.h"
 #endif
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 namespace ZXEngine
 {
 	RenderAPI* RenderAPI::mInstance = nullptr;

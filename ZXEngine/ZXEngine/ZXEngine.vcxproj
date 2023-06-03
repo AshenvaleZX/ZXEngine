@@ -235,7 +235,6 @@
     <ClCompile Include="..\..\CPPScripts\Lua\lutf8lib.c" />
     <ClCompile Include="..\..\CPPScripts\Lua\lvm.c" />
     <ClCompile Include="..\..\CPPScripts\Lua\lzio.c" />
-    <ClCompile Include="..\..\CPPScripts\Main.cpp" />
     <ClCompile Include="..\..\CPPScripts\Material.cpp" />
     <ClCompile Include="..\..\CPPScripts\MaterialData.cpp" />
     <ClCompile Include="..\..\CPPScripts\Math.cpp" />
@@ -287,7 +286,6 @@
     <ClCompile Include="..\..\Vendor\Src\volk.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\CPPScripts\Camera.h" />
     <ClInclude Include="..\..\CPPScripts\Component.h" />
     <ClInclude Include="..\..\CPPScripts\CubeMap.h" />
     <ClInclude Include="..\..\CPPScripts\Debug.h" />
@@ -384,11 +382,8 @@
     <ClInclude Include="..\..\CPPScripts\Math\Vector2.h" />
     <ClInclude Include="..\..\CPPScripts\Math\Vector3.h" />
     <ClInclude Include="..\..\CPPScripts\Math\Vector4.h" />
-    <ClInclude Include="..\..\CPPScripts\Mesh.h" />
     <ClInclude Include="..\..\CPPScripts\MeshRenderer.h" />
-    <ClInclude Include="..\..\CPPScripts\Model.h" />
     <ClInclude Include="..\..\CPPScripts\OpenGLEnumStruct.h" />
-    <ClInclude Include="..\..\CPPScripts\ParticleGenerator.h" />
     <ClInclude Include="..\..\CPPScripts\ParticleSystem.h" />
     <ClInclude Include="..\..\CPPScripts\ParticleSystemManager.h" />
     <ClInclude Include="..\..\CPPScripts\ProjectSetting.h" />
@@ -414,7 +409,6 @@
     <ClInclude Include="..\..\CPPScripts\Resources.h" />
     <ClInclude Include="..\..\CPPScripts\Scene.h" />
     <ClInclude Include="..\..\CPPScripts\SceneManager.h" />
-    <ClInclude Include="..\..\CPPScripts\Shader.h" />
     <ClInclude Include="..\..\CPPScripts\ShaderParser.h" />
     <ClInclude Include="..\..\CPPScripts\TextCharactersManager.h" />
     <ClInclude Include="..\..\CPPScripts\UITextRenderer.h" />

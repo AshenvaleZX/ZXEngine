@@ -45,9 +45,6 @@
     <ClCompile Include="..\..\Vendor\Src\glad.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\CPPScripts\GameObject.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -440,21 +437,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\CPPScripts\Camera.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Mesh.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Model.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\ParticleGenerator.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Shader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\CPPScripts\GameObject.h">
       <Filter>头文件</Filter>
     </ClInclude>
