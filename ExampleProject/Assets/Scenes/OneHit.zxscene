@@ -23,16 +23,16 @@
     {
         "RayGen":
         [
-            "RTShaders/raytrace.rgen"
+            "RTShaders/OneHit.rgen"
         ],
         "Miss":
         [
-            "RTShaders/raytrace.rmiss",
-            "RTShaders/raytraceShadow.rmiss"
+            "RTShaders/OneHit.rmiss",
+            "RTShaders/OneHitShadow.rmiss"
         ],
         "ClosestHit":
         [
-            "RTShaders/raytrace.rchit"
+            "RTShaders/OneHit.rchit"
         ]
     }
 }

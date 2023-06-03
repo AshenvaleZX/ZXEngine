@@ -27,9 +27,13 @@ void main()
     const vec2 inUV = pixelCenter / vec2(gl_LaunchSizeEXT.xy);
     vec2 d = inUV * 2.0 - 1.0;
 
+    // 倒推出相机的 World Space 坐标
     vec4 origin    = _PC.V_Inv * vec4(0, 0, 0, 1);
+    // 从NDC倒推出当前光线在 View Space 的坐标
     vec4 target    = _PC.P_Inv * vec4(d.x, d.y, 1, 1);
+    // 手动透视除法
     target = target / target.w;
+    // 再把光线方向从 View Space 转到 World Space
     vec4 direction = _PC.V_Inv * vec4(normalize(target.xyz), 0);
 
     uint  rayFlags = gl_RayFlagsOpaqueEXT;

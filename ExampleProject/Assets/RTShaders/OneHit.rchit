@@ -29,9 +29,9 @@ struct SimpleMaterial
 
 struct RendererDataReference
 {
-    uint64_t indexAddress;          // Address of the index buffer
-    uint64_t vertexAddress;         // Address of the Vertex buffer
-    uint64_t materialAddress;       // Address of the material buffer
+    uint64_t indexAddress;    // Address of the index buffer
+    uint64_t vertexAddress;   // Address of the Vertex buffer
+    uint64_t materialAddress; // Address of the material buffer
 };
 
 struct RayTracingPipelineConstants
@@ -45,9 +45,9 @@ struct RayTracingPipelineConstants
 layout(location = 0) rayPayloadInEXT HitPayload _RayPayload;
 layout(location = 1) rayPayloadEXT bool isShadowed;
 
-layout(buffer_reference, scalar) buffer IndicesBuffer { ivec3 index[]; }; // Triangle indices
+layout(buffer_reference, scalar) buffer IndicesBuffer { ivec3 index[]; };
 layout(buffer_reference, scalar) buffer VerticesBuffer { Vertex vertex[]; };
-layout(buffer_reference, scalar) buffer MaterialBuffer { SimpleMaterial material; }; // Array of all materials on an object
+layout(buffer_reference, scalar) buffer MaterialBuffer { SimpleMaterial material; };
 
 layout(set = 0, binding = 0) uniform accelerationStructureEXT _TLAS;
 layout(set = 1, binding = 0) uniform sampler2D textureSamplers[];
@@ -57,56 +57,67 @@ layout(push_constant) uniform _PushConstant { RayTracingPipelineConstants _PC; }
 
 void main()
 {
-    // Object data
+    // 取出当前渲染对象的Buffer引用地址，获取到对应的Buffer数据
     RendererDataReference reference = _ReferenceBuffer.dataReference[gl_InstanceCustomIndexEXT];
     IndicesBuffer indices = IndicesBuffer(reference.indexAddress);
     VerticesBuffer vertices = VerticesBuffer(reference.vertexAddress);
     MaterialBuffer materials = MaterialBuffer(reference.materialAddress);
 
-    // IndicesBuffer of the triangle
+    // 获取当前三角形的顶点索引
     ivec3 ind = indices.index[gl_PrimitiveID];
 
-    // Vertex of the triangle
+    // 获取当前三角形的顶点
     Vertex v0 = vertices.vertex[ind.x];
     Vertex v1 = vertices.vertex[ind.y];
     Vertex v2 = vertices.vertex[ind.z];
 
+    // 获取当前交点在三角形上的偏移信息
     const vec3 barycentrics = vec3(1.0 - attribs.x - attribs.y, attribs.x, attribs.y);
 
-    // Computing the coordinates of the hit position
-    const vec3 pos      = v0.Position * barycentrics.x + v1.Position * barycentrics.y + v2.Position * barycentrics.z;
-    const vec3 worldPos = vec3(gl_ObjectToWorldEXT * vec4(pos, 1.0));  // Transforming the position to world space
+    // 计算当前交点的坐标
+    const vec3 pos = v0.Position * barycentrics.x + v1.Position * barycentrics.y + v2.Position * barycentrics.z;
+    // 变换到世界空间
+    const vec3 worldPos = vec3(gl_ObjectToWorldEXT * vec4(pos, 1.0));
 
-    // Computing the normal at hit position
+    // 计算当前交点的法线
     const vec3 normal      = v0.Normal * barycentrics.x + v1.Normal * barycentrics.y + v2.Normal * barycentrics.z;
-    const vec3 wNormal = normalize(vec3(normal * gl_WorldToObjectEXT));  // Transforming the normal to world space
+    // 变换到世界空间
+    const vec3 wNormal = normalize(vec3(normal * gl_WorldToObjectEXT));
 
-    // Point light
+    // 点光源信息
     vec3 lDir = _PC.lightPos - worldPos;
     float lightDistance = length(lDir);
     vec3 L = normalize(lDir);
 
-    // MaterialBuffer of the object
+    // 获取材质数据
     SimpleMaterial mat = materials.material;
 
-    // Diffuse
-    float dotNL = max(dot(wNormal, L), 0.0);
+    // 计算当前交点的采样坐标，并采样纹理
     vec2 texCoord = v0.TexCoords * barycentrics.x + v1.TexCoords * barycentrics.y + v2.TexCoords * barycentrics.z;
     vec3 texColor = texture(textureSamplers[nonuniformEXT(mat.textureID)], texCoord).xyz;
+    
+    // Diffuse
+    float dotNL = max(dot(wNormal, L), 0.0);
     vec3 diffuse = texColor * dotNL;
 
     vec3  specular = vec3(0);
     float attenuation = 1;
 
-    // Tracing shadow ray only if the light is visible from the surface
+    // 判断一下是否在光源正面，在正面才计算Specular和阴影
     if(dot(wNormal, L) > 0)
     {
         float tMin   = 0.001;
         float tMax   = lightDistance;
+        // 计算当前交点在世界空间下的位置
+        // gl_WorldRayOriginEXT 表示光线最初的起点位置，即使光线多次反射，这个值不会变
+        // gl_WorldRayDirectionEXT 表示光线最初的发射方向，同样不会变
+        // gl_HitTEXT 可以理解为射线起点到相交点的比例系数，有点距离的意思，用下面这个公式可以推算出当前交点位置
+        // 由于我们只Hit了一次，所以可以这样算，如果光线不停反射，这样算是不行的，应该得手动记录每次相交的位置和方向数据
         vec3  origin = gl_WorldRayOriginEXT + gl_WorldRayDirectionEXT * gl_HitTEXT;
         vec3  rayDir = L;
         uint  flags  = gl_RayFlagsTerminateOnFirstHitEXT | gl_RayFlagsOpaqueEXT | gl_RayFlagsSkipClosestHitShaderEXT;
         isShadowed   = true;
+        // 发射一条光线检测是否在阴影中
         traceRayEXT(_TLAS,  // acceleration structure
                     flags,  // rayFlags
                     0xFF,   // cullMask
