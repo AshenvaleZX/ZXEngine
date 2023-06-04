@@ -21,8 +21,17 @@ namespace ZXEngine
 		string name;
 		string path;
 		string shaderPath;
+
+		map<string, float> floatDatas;
+		map<string, uint32_t> uintDatas;
+		map<string, Vector2> vec2Datas;
+		map<string, Vector3> vec3Datas;
+		map<string, Vector4> vec4Datas;
+
 		vector<TextureStruct*> textures;
 		vector<CubeMapStruct*> cubeMaps;
+
+		MaterialType type = MaterialType::Rasterization;
 
 		~MaterialStruct() { for (auto iter : textures) delete iter; }
 	};
@@ -54,23 +63,24 @@ namespace ZXEngine
 		Resources() {};
 		~Resources() {};
 
-		static void SetAssetsPath(string path);
+		static void SetAssetsPath(const string& path);
 		// 获取当前工程Assets文件夹路径
 		static string GetAssetsPath();
 		// 把Assets下的路径转为硬盘上的路径
-		static string GetAssetFullPath(string path, bool isBuiltIn = false);
+		static string GetAssetFullPath(const string& path, bool isBuiltIn = false);
 		// 把硬盘上的路径转为Assets下的路径
-		static string GetAssetLocalPath(string path);
-		static string GetAssetName(string path);
+		static string GetAssetLocalPath(const string& path);
+		static string GetAssetName(const string& path);
+		static string GetAssetExtension(const string& path);
 
-		static json LoadJson(string path);
+		static json LoadJson(const string& path);
 		static string JsonStrToString(json data);
-		static string LoadTextFile(string path);
-		static vector<char> LoadBinaryFile(string path);
+		static string LoadTextFile(const string& path);
+		static vector<char> LoadBinaryFile(const string& path);
 
-		static SceneStruct* LoadScene(string path);
-		static PrefabStruct* LoadPrefab(string path, bool isBuiltIn = false);
-		static MaterialStruct* LoadMaterial(string path, bool isBuiltIn = false);
+		static SceneStruct* LoadScene(const string& path);
+		static PrefabStruct* LoadPrefab(const string& path, bool isBuiltIn = false);
+		static MaterialStruct* LoadMaterial(const string& path, bool isBuiltIn = false);
 		static vector<string> LoadCubeMap(json data, bool isBuiltIn = false);
 
 
@@ -78,7 +88,7 @@ namespace ZXEngine
 		static string assetsPath;
 		static const string builtInAssetsPath;
 
-		static json GetAssetData(string path, bool isBuiltIn = false);
+		static json GetAssetData(const string& path, bool isBuiltIn = false);
 		static PrefabStruct* ParsePrefab(json data);
 	};
 }

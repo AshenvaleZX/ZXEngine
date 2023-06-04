@@ -28,6 +28,12 @@ namespace ZXEngine
 		RayTracing,
 	};
 
+	enum class MaterialType
+	{
+		Rasterization,
+		RayTracing,
+	};
+
 	enum class TextureType
 	{
 		ZX_2D,

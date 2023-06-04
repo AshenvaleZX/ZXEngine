@@ -13,8 +13,10 @@ namespace ZXEngine
 		string path = "";
 		Shader* shader = nullptr;
 		MaterialData* data = nullptr;
+		MaterialType type = MaterialType::Rasterization;
 
 		Material(MaterialStruct* matStruct);
+		// 注意: 此构造函数仅用于光栅化渲染管线材质
 		Material(Shader* shader);
 		~Material();
 
@@ -43,8 +45,10 @@ namespace ZXEngine
 		// 这个材质引用的Shader是还有其他地方引用，会影响材质销毁流程
 		bool isShareShader;
 		uint32_t textureIdx = 0;
+		int renderQueue = 0;
 
 		void SetEngineProperty(const string& name, ShaderPropertyType type);
 		void SetMaterialProperty(const string& name, ShaderPropertyType type);
+		void CopyMaterialStructToMaterialData(MaterialStruct* matStruct, MaterialData* data);
 	};
 }

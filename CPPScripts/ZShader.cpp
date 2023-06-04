@@ -11,7 +11,6 @@ namespace ZXEngine
 	Shader::Shader(const string& path, FrameBufferType type)
 	{
 		name = Resources::GetAssetName(path);
-		renderQueue = (int)RenderQueueType::Qpaque;
 
 		for (auto shaderReference : loadedShaders)
 		{
@@ -75,11 +74,6 @@ namespace ZXEngine
 	ShadowType Shader::GetShadowType()
 	{
 		return reference->shaderInfo.shadowType;
-	}
-
-	int Shader::GetRenderQueue()
-	{
-		return renderQueue;
 	}
 
 	void Shader::Use()

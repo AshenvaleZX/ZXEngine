@@ -13,24 +13,21 @@ namespace ZXEngine
 		name = matStruct->name;
 		path = matStruct->path;
 		isShareShader = false;
-		shader = new Shader(matStruct->shaderPath, FrameBufferType::Normal);
-		data = new MaterialData();
+		type = matStruct->type;
+		data = new MaterialData(type);
+		renderQueue = (int)RenderQueueType::Qpaque;
 
-		for (auto textureStruct : matStruct->textures)
+		CopyMaterialStructToMaterialData(matStruct, data);
+
+		if (type == MaterialType::Rasterization)
 		{
-			Texture* texture = new Texture(textureStruct->path.c_str());
-			data->textures.push_back(make_pair(textureStruct->uniformName, texture));
+			shader = new Shader(matStruct->shaderPath, FrameBufferType::Normal);
+			RenderAPI::GetInstance()->SetUpMaterial(shader->reference, data);
 		}
-
-		for (auto cubeMapStruct : matStruct->cubeMaps)
+		else if (type == MaterialType::RayTracing)
 		{
-			Texture* texture = new Texture(cubeMapStruct->paths);
-			data->textures.push_back(make_pair(cubeMapStruct->uniformName, texture));
+			RenderAPI::GetInstance()->SetUpRayTracingMaterialData(data);
 		}
-
-		RenderAPI::GetInstance()->SetUpMaterial(shader->reference, data);
-		// Todo: 这里可能要判断一下调用条件
-		RenderAPI::GetInstance()->SetUpRayTracingMaterialData(data);
 	}
 
 	Material::Material(Shader* shader)
@@ -41,10 +38,11 @@ namespace ZXEngine
 		isShareShader = true;
 		shader->reference->referenceCount++;
 		this->shader = shader;
-		data = new MaterialData();
+		renderQueue = (int)RenderQueueType::Qpaque;
+		// 通过这个构造函数初始化的材质，默认为光栅化渲染管线的材质
+		type = MaterialType::Rasterization;
+		data = new MaterialData(type);
 		RenderAPI::GetInstance()->SetUpMaterial(this->shader->reference, data);
-		// Todo: 这里可能要判断一下调用条件
-		RenderAPI::GetInstance()->SetUpRayTracingMaterialData(data);
 	}
 
 	Material::~Material()
@@ -65,7 +63,7 @@ namespace ZXEngine
 
 	int Material::GetRenderQueue()
 	{
-		return shader->GetRenderQueue();
+		return renderQueue;
 	}
 
 	void Material::SetEngineProperties()
@@ -191,5 +189,26 @@ namespace ZXEngine
 	void Material::SetCubeMap(string name, uint32_t ID, uint32_t idx, bool allBuffer, bool isBuffer)
 	{
 		RenderAPI::GetInstance()->SetShaderCubeMap(this, name, ID, idx, allBuffer, isBuffer);
+	}
+
+	void Material::CopyMaterialStructToMaterialData(MaterialStruct* matStruct, MaterialData* data)
+	{
+		data->floatDatas = matStruct->floatDatas;
+		data->uintDatas = matStruct->uintDatas;
+		data->vec2Datas = matStruct->vec2Datas;
+		data->vec3Datas = matStruct->vec3Datas;
+		data->vec4Datas = matStruct->vec4Datas;
+
+		for (auto textureStruct : matStruct->textures)
+		{
+			Texture* texture = new Texture(textureStruct->path.c_str());
+			data->textures.push_back(make_pair(textureStruct->uniformName, texture));
+		}
+
+		for (auto cubeMapStruct : matStruct->cubeMaps)
+		{
+			Texture* texture = new Texture(cubeMapStruct->paths);
+			data->textures.push_back(make_pair(cubeMapStruct->uniformName, texture));
+		}
 	}
 }
