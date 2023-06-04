@@ -1,0 +1,23 @@
+{
+    "Name": "Heart",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [-8, 0, 5],
+            "Rotation": [-90, 0, 0],
+            "Scale": [0.5, 0.5, 0.5]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Mesh": "Models/12190_Heart_v1_L3.obj",
+            "Material": "RTMaterials/Red.zxrtmat",
+            "CastShadow": true,
+            "ReceiveShadow": false
+        },
+        {
+            "Type": "GameLogic",
+            "Lua": "Scripts/ObjectMove.lua"
+        }
+    ]
+}

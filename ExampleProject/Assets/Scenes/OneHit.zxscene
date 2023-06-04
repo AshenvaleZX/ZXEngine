@@ -12,11 +12,11 @@
     },
     "GameObjects": 
     [
-        "Prefabs/Plane.zxprefab",
-        "Prefabs/Heart.zxprefab",
-        "Prefabs/Spheres.zxprefab",
+        "Prefabs/PlaneRT.zxprefab",
+        "Prefabs/HeartRT.zxprefab",
+        "Prefabs/SpheresRT.zxprefab",
         "Prefabs/MainCamera.zxprefab",
-        "Prefabs/PointLight.zxprefab",
+        "Prefabs/PLightNoShape.zxprefab",
         "Prefabs/UI/FPSText.zxprefab"
     ],
     "RayTracingShaderGroups":

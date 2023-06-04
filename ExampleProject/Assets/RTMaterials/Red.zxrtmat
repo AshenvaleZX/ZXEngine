@@ -1,0 +1,10 @@
+{
+    "Type": "RTMaterial",
+    "Textures":
+    [
+        {
+            "UniformName": "_Texture1",
+            "Path": "Textures/red.png"
+        }
+    ]
+}
