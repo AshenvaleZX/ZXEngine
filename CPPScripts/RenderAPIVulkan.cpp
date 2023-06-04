@@ -1480,10 +1480,11 @@ namespace ZXEngine
     {
         auto vulkanRTMaterialData = GetRTMaterialDataByIndex(materialData->GetRTID());
 
+        ShaderParser::SetUpRTMaterialData(materialData, GraphicsAPI::Vulkan);
+
         vulkanRTMaterialData->buffers.resize(MAX_FRAMES_IN_FLIGHT);
 
-        // 目前Buffer里只有纹理引用索引
-        VkDeviceSize bufferSize = 4 * materialData->textures.size();
+        VkDeviceSize bufferSize = static_cast<VkDeviceSize>(materialData->rtMaterialDataSize);
         if (bufferSize > 0)
         {
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)

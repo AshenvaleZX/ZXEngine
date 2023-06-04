@@ -22,6 +22,13 @@ namespace ZXEngine
 		ZX_SHADER_STAGE_INTERSECTION_BIT = 0x00000080,
 	} ShaderStageFlagBit;
 
+	enum class GraphicsAPI
+	{
+		OpenGL,
+		Vulkan,
+		D3D12
+	};
+
 	enum class RenderPipelineType
 	{
 		Rasterization,
@@ -175,6 +182,7 @@ namespace ZXEngine
 	{
 		BOOL,
 		INT,
+		UINT,
 		FLOAT,
 		VEC2,
 		VEC3,
@@ -186,6 +194,8 @@ namespace ZXEngine
 		SAMPLER,
 		SAMPLER_2D,
 		SAMPLER_CUBE,
+
+		TEXTURE_INDEX,
 
 		ENGINE_MODEL,
 		ENGINE_VIEW,

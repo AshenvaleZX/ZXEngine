@@ -1,5 +1,6 @@
 #pragma once
 #include "pubh.h"
+#include "PublicStruct.h"
 
 namespace ZXEngine
 {
@@ -15,6 +16,10 @@ namespace ZXEngine
 		map<string, Vector3> vec3Datas;
 		map<string, Vector4> vec4Datas;
 		vector<pair<string, Texture*>> textures;
+
+		// 光追材质的数据信息
+		uint32_t rtMaterialDataSize;
+		vector<ShaderProperty> rtMaterialProperties;
 
 		MaterialData(MaterialType type);
 		~MaterialData();

@@ -1,5 +1,6 @@
 #include "ShaderParser.h"
 #include "Resources.h"
+#include "MaterialData.h"
 
 namespace ZXEngine
 {
@@ -150,8 +151,9 @@ namespace ZXEngine
 		// 这里是按照std140标准实现的内存对齐
 
 		uint32_t std_size = sizeof(float);
-		if (type == ShaderPropertyType::BOOL || type == ShaderPropertyType::INT || type == ShaderPropertyType::FLOAT
-			|| type == ShaderPropertyType::ENGINE_LIGHT_INTENSITY || type == ShaderPropertyType::ENGINE_FAR_PLANE)
+		if (type == ShaderPropertyType::BOOL || type == ShaderPropertyType::INT || type == ShaderPropertyType::UINT
+			|| type == ShaderPropertyType::FLOAT || type == ShaderPropertyType::ENGINE_LIGHT_INTENSITY 
+			|| type == ShaderPropertyType::ENGINE_FAR_PLANE || type == ShaderPropertyType::TEXTURE_INDEX)
 			if (arrayLength == 0)
 				return { .size = std_size, .align = std_size };
 			else
@@ -1247,8 +1249,9 @@ namespace ZXEngine
 	D3D12ConstAlignInfo ShaderParser::GetPropertyAlignInfoHLSL(ShaderPropertyType type, uint32_t arrayLength)
 	{
 		uint32_t std_size = sizeof(float);
-		if (type == ShaderPropertyType::BOOL || type == ShaderPropertyType::INT || type == ShaderPropertyType::FLOAT
-			|| type == ShaderPropertyType::ENGINE_LIGHT_INTENSITY || type == ShaderPropertyType::ENGINE_FAR_PLANE)
+		if (type == ShaderPropertyType::BOOL || type == ShaderPropertyType::INT || type == ShaderPropertyType::UINT
+			|| type == ShaderPropertyType::FLOAT || type == ShaderPropertyType::ENGINE_LIGHT_INTENSITY 
+			|| type == ShaderPropertyType::ENGINE_FAR_PLANE || type == ShaderPropertyType::TEXTURE_INDEX)
 			if (arrayLength == 0)
 				return { .size = std_size, .align = std_size };
 			else
@@ -1298,5 +1301,95 @@ namespace ZXEngine
 			Debug::LogError("Invalid shader property type !");
 			return {};
 		}
+	}
+
+	void ShaderParser::SetUpRTMaterialData(MaterialData* materialData, GraphicsAPI api)
+	{
+		if (api == GraphicsAPI::Vulkan)
+			SetUpRTMaterialDataStd140(materialData);
+	}
+
+	void ShaderParser::SetUpRTMaterialDataStd140(MaterialData* materialData)
+	{
+		uint32_t offset = 0;
+
+		for (auto& vec2Data : materialData->vec2Datas)
+		{
+			auto& property = materialData->rtMaterialProperties.emplace_back();
+			property.type = ShaderPropertyType::VEC2;
+			property.arrayLength = 0;
+			property.name = vec2Data.first;
+
+			SetAlignInfoStd140(property, offset);
+		}
+
+		for (auto& vec3Data : materialData->vec3Datas)
+		{
+			auto& property = materialData->rtMaterialProperties.emplace_back();
+			property.type = ShaderPropertyType::VEC3;
+			property.arrayLength = 0;
+			property.name = vec3Data.first;
+
+			SetAlignInfoStd140(property, offset);
+		}
+
+		for (auto& vec4Data : materialData->vec4Datas)
+		{
+			auto& property = materialData->rtMaterialProperties.emplace_back();
+			property.type = ShaderPropertyType::VEC4;
+			property.arrayLength = 0;
+			property.name = vec4Data.first;
+
+			SetAlignInfoStd140(property, offset);
+		}
+
+		for (auto& floatData : materialData->floatDatas)
+		{
+			auto& property = materialData->rtMaterialProperties.emplace_back();
+			property.type = ShaderPropertyType::FLOAT;
+			property.arrayLength = 0;
+			property.name = floatData.first;
+
+			SetAlignInfoStd140(property, offset);
+		}
+
+		for (auto& uintData : materialData->uintDatas)
+		{
+			auto& property = materialData->rtMaterialProperties.emplace_back();
+			property.type = ShaderPropertyType::UINT;
+			property.arrayLength = 0;
+			property.name = uintData.first;
+
+			SetAlignInfoStd140(property, offset);
+		}
+
+		for (auto& texture : materialData->textures)
+		{
+			auto& property = materialData->rtMaterialProperties.emplace_back();
+			property.type = ShaderPropertyType::TEXTURE_INDEX;
+			property.arrayLength = 0;
+			property.name = texture.first;
+
+			SetAlignInfoStd140(property, offset);
+		}
+
+		auto& lastProperty = materialData->rtMaterialProperties.back();
+		materialData->rtMaterialDataSize = static_cast<uint32_t>(lastProperty.offset + lastProperty.size);
+	}
+
+	void ShaderParser::SetAlignInfoStd140(ShaderProperty& property, uint32_t& offset)
+	{
+		auto alignInfo = GetPropertyAlignInfoStd140(property.type, property.arrayLength);
+
+		property.size = alignInfo.size;
+		property.align = alignInfo.align;
+		property.arrayOffset = alignInfo.arrayOffset;
+		uint32_t remainder = offset % alignInfo.align;
+		if (remainder == 0)
+			property.offset = offset;
+		else
+			property.offset = offset - remainder + alignInfo.align;
+
+		offset = property.offset + property.size;
 	}
 }
