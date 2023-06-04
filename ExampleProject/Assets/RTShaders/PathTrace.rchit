@@ -27,10 +27,10 @@ struct Vertex
     vec3 Bitangent;
 };
 
-struct SimpleMaterial
+struct Material
 {
-    uint textureID;
-    vec3 emittance;
+    uint _TextureID;
+    vec3 _Emittance;
 };
 
 struct RendererDataReference
@@ -46,6 +46,7 @@ struct RayTracingPipelineConstants
     mat4 V_Inv;
     mat4 P_Inv;
     vec3 lightPos;
+    uint frame;
 };
 
 layout(location = 0) rayPayloadInEXT HitPayload _RayPayload;
@@ -53,7 +54,7 @@ layout(location = 1) rayPayloadEXT bool isShadowed;
 
 layout(buffer_reference, scalar) buffer IndicesBuffer { ivec3 index[]; };
 layout(buffer_reference, scalar) buffer VerticesBuffer { Vertex vertex[]; };
-layout(buffer_reference, scalar) buffer MaterialBuffer { SimpleMaterial material; };
+layout(buffer_reference, scalar) buffer MaterialBuffer { Material material; };
 
 layout(set = 0, binding = 0) uniform accelerationStructureEXT _TLAS;
 layout(set = 1, binding = 0) uniform sampler2D textureSamplers[];
@@ -132,12 +133,12 @@ void main()
     const vec3 wNormal = normalize(vec3(normal * gl_WorldToObjectEXT));
 
     // 获取材质数据
-    SimpleMaterial mat = materials.material;
-    vec3 emittance = mat.emittance;
+    Material mat = materials.material;
+    vec3 emittance = mat._Emittance;
 
     // 计算当前交点的采样坐标，并采样纹理
     vec2 texCoord = v0.TexCoords * barycentrics.x + v1.TexCoords * barycentrics.y + v2.TexCoords * barycentrics.z;
-    vec3 texColor = texture(textureSamplers[nonuniformEXT(mat.textureID)], texCoord).xyz;
+    vec3 texColor = texture(textureSamplers[nonuniformEXT(mat._TextureID)], texCoord).xyz;
 
     // 从当前交点的法线半球内随机一个方向，作为下一条光线的方向
     vec3 tangent, bitangent;

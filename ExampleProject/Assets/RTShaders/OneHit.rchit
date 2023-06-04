@@ -22,9 +22,9 @@ struct Vertex
     vec3 Bitangent;
 };
 
-struct SimpleMaterial
+struct Material
 {
-    uint textureID;
+    uint _TextureID;
 };
 
 struct RendererDataReference
@@ -47,7 +47,7 @@ layout(location = 1) rayPayloadEXT bool isShadowed;
 
 layout(buffer_reference, scalar) buffer IndicesBuffer { ivec3 index[]; };
 layout(buffer_reference, scalar) buffer VerticesBuffer { Vertex vertex[]; };
-layout(buffer_reference, scalar) buffer MaterialBuffer { SimpleMaterial material; };
+layout(buffer_reference, scalar) buffer MaterialBuffer { Material material; };
 
 layout(set = 0, binding = 0) uniform accelerationStructureEXT _TLAS;
 layout(set = 1, binding = 0) uniform sampler2D textureSamplers[];
@@ -90,11 +90,11 @@ void main()
     vec3 L = normalize(lDir);
 
     // 获取材质数据
-    SimpleMaterial mat = materials.material;
+    Material mat = materials.material;
 
     // 计算当前交点的采样坐标，并采样纹理
     vec2 texCoord = v0.TexCoords * barycentrics.x + v1.TexCoords * barycentrics.y + v2.TexCoords * barycentrics.z;
-    vec3 texColor = texture(textureSamplers[nonuniformEXT(mat.textureID)], texCoord).xyz;
+    vec3 texColor = texture(textureSamplers[nonuniformEXT(mat._TextureID)], texCoord).xyz;
     
     // Diffuse
     float dotNL = max(dot(wNormal, L), 0.0);
