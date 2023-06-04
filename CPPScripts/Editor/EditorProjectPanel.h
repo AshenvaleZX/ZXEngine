@@ -29,7 +29,7 @@ namespace ZXEngine
 		const ImVec2 nameSize = ImVec2(72.0f, 20.0f);
 		// 文件icon大小
 		const ImVec2 iconSize = ImVec2(64.0f, 64.0f);
-		ImGuiTextureIndex fileIcons[9];
+		ImGuiTextureIndex fileIcons[static_cast<size_t>(AssetType::Count)];
 		void InitIcons();
 	};
 }

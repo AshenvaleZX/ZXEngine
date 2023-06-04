@@ -67,7 +67,8 @@ namespace ZXEngine
 					DrawShader(static_cast<AssetShaderInfo*>(curAssetInfo));
 				else if (curAsset->type == AssetType::Texture)
 					DrawTexture(static_cast<AssetTextureInfo*>(curAssetInfo));
-				else if (curAsset->type == AssetType::Material)
+				else if (curAsset->type == AssetType::Material || 
+					curAsset->type == AssetType::RayTracingMaterial)
 					DrawMaterial(static_cast<AssetMaterialInfo*>(curAssetInfo));
 				else if (curAsset->type == AssetType::Model)
 					DrawModel(static_cast<AssetModelInfo*>(curAssetInfo));
@@ -78,16 +79,20 @@ namespace ZXEngine
 
 	void EditorInspectorPanel::DrawMaterial(Material* material)
 	{
-		string title = material->name + " (Material)";
+		string suffix = material->type == MaterialType::Rasterization ? " (Material)" : " (Ray Tracing Material)";
+		string title = material->name + suffix;
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 		if (!ImGui::CollapsingHeader(title.c_str()))
 			return;
 
-		ImGui::Text("Shader");
-		ImGui::SameLine(120);
-		if (ImGui::Button(material->shader->name.c_str()))
+		if (material->type == MaterialType::Rasterization)
 		{
-			Debug::Log("Click Shader");
+			ImGui::Text("Shader");
+			ImGui::SameLine(120);
+			if (ImGui::Button(material->shader->name.c_str()))
+			{
+				Debug::Log("Click Shader");
+			}
 		}
 
 		auto ImTextureMgr = ImGuiTextureManager::GetInstance();

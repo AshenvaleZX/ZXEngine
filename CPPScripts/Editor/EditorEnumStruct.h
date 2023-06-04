@@ -8,12 +8,14 @@ namespace ZXEngine
 		Other,
 		Folder,
 		Material,
+		RayTracingMaterial,
 		Prefab,
 		Script,
 		Shader,
 		Texture,
 		Scene,
 		Model,
+		Count,
 	};
 
 	enum class EditorAreaType

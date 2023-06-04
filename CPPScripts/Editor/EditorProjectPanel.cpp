@@ -169,19 +169,20 @@ namespace ZXEngine
 
 	void EditorProjectPanel::InitAssetType()
 	{
-		extTypeMap.insert(make_pair<string, AssetType>("", AssetType::Folder));
-		extTypeMap.insert(make_pair<string, AssetType>(".zxmat", AssetType::Material));
-		extTypeMap.insert(make_pair<string, AssetType>(".zxprefab", AssetType::Prefab));
-		extTypeMap.insert(make_pair<string, AssetType>(".lua", AssetType::Script));
-		extTypeMap.insert(make_pair<string, AssetType>(".zxshader", AssetType::Shader));
+		extTypeMap.insert(make_pair<string, AssetType>("",          AssetType::Folder            ));
+		extTypeMap.insert(make_pair<string, AssetType>(".zxmat",    AssetType::Material          ));
+		extTypeMap.insert(make_pair<string, AssetType>(".zxrtmat",  AssetType::RayTracingMaterial));
+		extTypeMap.insert(make_pair<string, AssetType>(".zxprefab", AssetType::Prefab            ));
+		extTypeMap.insert(make_pair<string, AssetType>(".lua",      AssetType::Script            ));
+		extTypeMap.insert(make_pair<string, AssetType>(".zxshader", AssetType::Shader            ));
 
-		extTypeMap.insert(make_pair<string, AssetType>(".png", AssetType::Texture));
-		extTypeMap.insert(make_pair<string, AssetType>(".tga", AssetType::Texture));
+		extTypeMap.insert(make_pair<string, AssetType>(".png",      AssetType::Texture           ));
+		extTypeMap.insert(make_pair<string, AssetType>(".tga",      AssetType::Texture           ));
 
-		extTypeMap.insert(make_pair<string, AssetType>(".zxscene", AssetType::Scene));
+		extTypeMap.insert(make_pair<string, AssetType>(".zxscene",  AssetType::Scene             ));
 
-		extTypeMap.insert(make_pair<string, AssetType>(".obj", AssetType::Model));
-		extTypeMap.insert(make_pair<string, AssetType>(".FBX", AssetType::Model));
+		extTypeMap.insert(make_pair<string, AssetType>(".obj",      AssetType::Model             ));
+		extTypeMap.insert(make_pair<string, AssetType>(".FBX",      AssetType::Model             ));
 	}
 
 	AssetType EditorProjectPanel::GetAssetType(string extension)
@@ -196,14 +197,15 @@ namespace ZXEngine
 	void EditorProjectPanel::InitIcons()
 	{
 		auto ImTextureMgr = ImGuiTextureManager::GetInstance();
-		fileIcons[(int)AssetType::Other]    = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/other.png", true));
-		fileIcons[(int)AssetType::Folder]   = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/folder.png", true));
-		fileIcons[(int)AssetType::Material] = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/material.png", true));
-		fileIcons[(int)AssetType::Prefab]   = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/prefab.png", true));
-		fileIcons[(int)AssetType::Script]   = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/script.png", true));
-		fileIcons[(int)AssetType::Shader]   = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/shader.png", true));
-		fileIcons[(int)AssetType::Texture]  = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/texture.png", true));
-		fileIcons[(int)AssetType::Scene]    = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/scene.png", true));
-		fileIcons[(int)AssetType::Model]    = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/model.png", true));
+		fileIcons[(int)AssetType::Other]              = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/other.png",    true));
+		fileIcons[(int)AssetType::Folder]             = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/folder.png",   true));
+		fileIcons[(int)AssetType::Material]           = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/material.png", true));
+		fileIcons[(int)AssetType::RayTracingMaterial] = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/material.png", true));
+		fileIcons[(int)AssetType::Prefab]             = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/prefab.png",   true));
+		fileIcons[(int)AssetType::Script]             = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/script.png",   true));
+		fileIcons[(int)AssetType::Shader]             = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/shader.png",   true));
+		fileIcons[(int)AssetType::Texture]            = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/texture.png",  true));
+		fileIcons[(int)AssetType::Scene]              = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/scene.png",    true));
+		fileIcons[(int)AssetType::Model]              = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/model.png",    true));
 	}
 }

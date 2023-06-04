@@ -80,7 +80,8 @@ namespace ZXEngine
 				delete static_cast<AssetShaderInfo*>(curAssetInfo);
 			else if (selectedAsset->type == AssetType::Texture)
 				delete static_cast<AssetTextureInfo*>(curAssetInfo);
-			else if (selectedAsset->type == AssetType::Material)
+			else if (selectedAsset->type == AssetType::Material || 
+				selectedAsset->type == AssetType::RayTracingMaterial)
 				delete static_cast<AssetMaterialInfo*>(curAssetInfo);
 			else if (selectedAsset->type == AssetType::Model)
 				delete static_cast<AssetModelInfo*>(curAssetInfo);
@@ -124,7 +125,8 @@ namespace ZXEngine
 				delete static_cast<AssetShaderInfo*>(curAssetInfo);
 			else if (selectedAsset->type == AssetType::Texture)
 				delete static_cast<AssetTextureInfo*>(curAssetInfo);
-			else if (selectedAsset->type == AssetType::Material)
+			else if (selectedAsset->type == AssetType::Material || 
+				selectedAsset->type == AssetType::RayTracingMaterial)
 				delete static_cast<AssetMaterialInfo*>(curAssetInfo);
 			else if (selectedAsset->type == AssetType::Model)
 				delete static_cast<AssetModelInfo*>(curAssetInfo);
@@ -157,7 +159,7 @@ namespace ZXEngine
 			info->texture = new Texture(asset->path.c_str());
 			curAssetInfo = info;
 		}
-		else if (asset->type == AssetType::Material)
+		else if (asset->type == AssetType::Material || asset->type == AssetType::RayTracingMaterial)
 		{
 			auto info = new AssetMaterialInfo();
 			info->name = asset->name;
