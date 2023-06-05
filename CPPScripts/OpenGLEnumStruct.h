@@ -22,6 +22,7 @@ namespace ZXEngine
 		map<string, int> intList;
 		map<string, bool> boolList;
 		map<string, float> floatList;
+		map<string, uint32_t> uintList;
 		map<string, Vector2> vec2List;
 		map<string, Vector3> vec3List;
 		map<string, Vector4> vec4List;

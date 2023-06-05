@@ -65,6 +65,7 @@ namespace ZXEngine
 		virtual void SetShaderScalar(Material* material, const string& name, int value, bool allBuffer = false);
 		virtual void SetShaderScalar(Material* material, const string& name, bool value, bool allBuffer = false);
 		virtual void SetShaderScalar(Material* material, const string& name, float value, bool allBuffer = false);
+		virtual void SetShaderScalar(Material* material, const string& name, uint32_t value, bool allBuffer = false);
 		virtual void SetShaderVector(Material* material, const string& name, const Vector2& value, bool allBuffer = false);
 		virtual void SetShaderVector(Material* material, const string& name, const Vector2& value, uint32_t idx, bool allBuffer = false);
 		virtual void SetShaderVector(Material* material, const string& name, const Vector3& value, bool allBuffer = false);
@@ -89,11 +90,11 @@ namespace ZXEngine
 
 		// Material
 		virtual uint32_t CreateRayTracingMaterialData() { return 0; };
-		virtual void SetUpRayTracingMaterialData(MaterialData* materialData) {};
+		virtual void SetUpRayTracingMaterialData(Material* material) {};
 		virtual void DeleteRayTracingMaterialData(uint32_t id) {};
 
 		// 数据更新
-		virtual void PushRayTracingMaterialData(MaterialData* materialData) {};
+		virtual void PushRayTracingMaterialData(Material* material) {};
 		virtual void PushAccelerationStructure(uint32_t VAO, uint32_t rtMaterialDataID, const Matrix4& transform) {};
 
 		// Ray Trace

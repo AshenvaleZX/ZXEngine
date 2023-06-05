@@ -1535,6 +1535,22 @@ namespace ZXEngine
 		}
 	}
 
+	// Unsigned Integer
+	void RenderAPID3D12::SetShaderScalar(Material* material, const string& name, uint32_t value, bool allBuffer)
+	{
+		if (allBuffer)
+		{
+			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name);
+			for (auto valueAddress : valueAddresses)
+				memcpy(valueAddress, &value, sizeof(value));
+		}
+		else
+		{
+			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
+			memcpy(valueAddress, &value, sizeof(value));
+		}
+	}
+
 	// Vector2
 	void RenderAPID3D12::SetShaderVector(Material* material, const string& name, const Vector2& value, bool allBuffer)
 	{

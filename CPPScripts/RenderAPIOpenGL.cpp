@@ -868,6 +868,18 @@ namespace ZXEngine
 		CheckError();
 	}
 
+	// Unsigned Integer
+	void RenderAPIOpenGL::SetShaderScalar(Material* material, const string& name, uint32_t value, bool allBuffer)
+	{
+		auto materialData = GetMaterialDataByIndex(material->data->GetID());
+		materialData->uintList[name] = value;
+	}
+	void RenderAPIOpenGL::RealSetShaderScalar(const string& name, uint32_t value)
+	{
+		glUniform1ui(glGetUniformLocation(curShaderID, name.c_str()), value);
+		CheckError();
+	}
+
 	// Vector2
 	void RenderAPIOpenGL::SetShaderVector(Material* material, const string& name, const Vector2& value, bool allBuffer)
 	{
