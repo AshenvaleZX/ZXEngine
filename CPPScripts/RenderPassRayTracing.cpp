@@ -23,6 +23,8 @@ namespace ZXEngine
 		FBOManager::GetInstance()->CreateFBO("RayTracing", FrameBufferType::RayTracing, clearInfo);
 	}
 
+	Matrix4 lastVP;
+	uint32_t frameCount = 0;
 	void RenderPassRayTracing::Render(Camera* camera)
 	{
 		auto renderAPI = RenderAPI::GetInstance();
@@ -36,7 +38,7 @@ namespace ZXEngine
 		// 遍历渲染队列，将所有mesh的VAO和材质数据推入光追管线
 		for (auto renderer : renderQueue->GetRenderers())
 		{
-			renderAPI->PushRayTracingMaterialData(renderer->matetrial->data);
+			renderAPI->PushRayTracingMaterialData(renderer->matetrial);
 			for (auto mesh : renderer->meshes)
 			{
 				renderAPI->PushAccelerationStructure(mesh->VAO, renderer->matetrial->data->GetRTID(), renderer->GetTransform()->GetModelMatrix());
@@ -50,7 +52,20 @@ namespace ZXEngine
 		rtConstants.VP = camera->GetProjectionMatrix() * camera->GetViewMatrix();
 		rtConstants.V_Inv = camera->GetViewMatrixInverse();
 		rtConstants.P_Inv = camera->GetProjectionMatrixInverse();
-		rtConstants.lightPos = Light::GetAllLights()[0]->GetTransform()->GetPosition();
+
+		// 光源位置
+		auto allLights = Light::GetAllLights();
+		if (allLights.size() > 0)
+			rtConstants.lightPos = Light::GetAllLights()[0]->GetTransform()->GetPosition();
+
+		if (lastVP != rtConstants.VP)
+		{
+			frameCount = 0;
+			lastVP = rtConstants.VP;
+		}
+
+		// 帧计数
+		rtConstants.frameCount = frameCount++;
 
 		// 光追渲染
 		renderAPI->RayTrace(rtCommandID, rtConstants);
