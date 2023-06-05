@@ -1,0 +1,19 @@
+{
+    "Name": "Dragon",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [3, -6, 4],
+            "Rotation": [-90, 0, 0],
+            "Scale": [0.05, 0.05, 0.05]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Mesh": "Models/Dragon.FBX",
+            "Material": "RTMaterials/GIDemo/White.zxrtmat",
+            "CastShadow": false,
+            "ReceiveShadow": true
+        }
+    ]
+}

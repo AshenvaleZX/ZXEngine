@@ -1,0 +1,110 @@
+{
+    "Name": "Room",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 0, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [1, 1, 1]
+        }
+    ],
+    "GameObjects":
+    [
+        {
+            "Name": "Plane",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 10, 0],
+                    "Rotation": [0, 0, 180],
+                    "Scale": [20, 0.2, 20]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "RTMaterials/GIDemo/White.zxrtmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "Plane1",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, -10, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [20, 0.2, 20]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "RTMaterials/GIDemo/White.zxrtmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "Plane2",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [10, 0, 0],
+                    "Rotation": [0, 0, 90],
+                    "Scale": [20, 0.2, 20]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "RTMaterials/GIDemo/Blue.zxrtmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "Plane3",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [-10, 0, 0],
+                    "Rotation": [0, 0, -90],
+                    "Scale": [20, 0.2, 20]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "RTMaterials/GIDemo/Green.zxrtmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "Plane4",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 0, 10],
+                    "Rotation": [-90, 0, 0],
+                    "Scale": [20, 0.2, 20]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "RTMaterials/GIDemo/White.zxrtmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                }
+            ]
+        }
+    ]
+}

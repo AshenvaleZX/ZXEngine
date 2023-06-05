@@ -1,0 +1,19 @@
+{
+    "Name": "Box",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [-5, -3, 4],
+            "Rotation": [0, 40, 0],
+            "Scale": [4, 8, 4]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Geometry": 0,
+            "Material": "RTMaterials/GIDemo/White.zxrtmat",
+            "CastShadow": false,
+            "ReceiveShadow": true
+        }
+    ]
+}

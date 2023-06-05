@@ -1,0 +1,19 @@
+{
+    "Name": "LightSphere2",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [-2, -7, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [1, 1, 1]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Geometry": 1,
+            "Material": "RTMaterials/GIDemo/RedLight.zxrtmat",
+            "CastShadow": false,
+            "ReceiveShadow": true
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "Name": "LightBox",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 9.5, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [5, 1, 5]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Geometry": 0,
+            "Material": "RTMaterials/GIDemo/Light.zxrtmat",
+            "CastShadow": false,
+            "ReceiveShadow": true
+        }
+    ]
+}

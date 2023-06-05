@@ -19,7 +19,7 @@ struct RayTracingPipelineConstants
     mat4 V_Inv;
     mat4 P_Inv;
     vec3 lightPos;
-    uint frame;
+    uint frameCount;
 };
 
 layout(location = 0) rayPayloadEXT HitPayload _RayPayload;
@@ -93,9 +93,9 @@ void main()
     }
 
     // 与之前的结果累加
-    if(_PC.frame > 0)
+    if(_PC.frameCount > 0)
     {
-        float a = 1.0f / float(_PC.frame + 1);
+        float a = 1.0f / float(_PC.frameCount + 1);
         vec3 old_color = imageLoad(_Image, ivec2(gl_LaunchIDEXT.xy)).xyz;
         imageStore(_Image, ivec2(gl_LaunchIDEXT.xy), vec4(mix(old_color, hitValue, a), 1.f));
     }

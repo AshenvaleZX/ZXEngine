@@ -1,0 +1,19 @@
+{
+    "Name": "LightSphere1",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [-9, -8.5, -9],
+            "Rotation": [0, 0, 0],
+            "Scale": [1, 1, 1]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Geometry": 1,
+            "Material": "RTMaterials/GIDemo/LightWeak.zxrtmat",
+            "CastShadow": false,
+            "ReceiveShadow": true
+        }
+    ]
+}

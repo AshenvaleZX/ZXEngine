@@ -1,0 +1,42 @@
+{
+    "RenderPipelineType": 1,
+    "SkyBox": 
+    {
+        "Path": "Textures/stars/",
+        "Right": "right.png",
+        "Left": "left.png",
+        "Up": "up.png",
+        "Down": "down.png",
+        "Front": "front.png",
+        "Back": "back.png"
+    },
+    "GameObjects": 
+    [
+        "Prefabs/GIDemo/RoomRT.zxprefab",
+        "Prefabs/GIDemo/LightBoxRT.zxprefab",
+        "Prefabs/GIDemo/LightSphereRT1.zxprefab",
+        "Prefabs/GIDemo/LightSphereRT2.zxprefab",
+        "Prefabs/GIDemo/LightSphereRT3.zxprefab",
+        "Prefabs/GIDemo/Dragon.zxprefab",
+        "Prefabs/GIDemo/Box.zxprefab",
+        "Prefabs/GIDemo/Sphere.zxprefab",
+        "Prefabs/MainCamera2.zxprefab",
+        "Prefabs/UI/FPSText.zxprefab"
+    ],
+    "RayTracingShaderGroups":
+    {
+        "RayGen":
+        [
+            "RTShaders/PathTrace.rgen"
+        ],
+        "Miss":
+        [
+            "RTShaders/PathTrace.rmiss",
+            "RTShaders/PathTraceShadow.rmiss"
+        ],
+        "ClosestHit":
+        [
+            "RTShaders/PathTrace.rchit"
+        ]
+    }
+}

@@ -29,8 +29,8 @@ struct Vertex
 
 struct Material
 {
-    uint _TextureID;
     vec3 _Emittance;
+    uint _TextureID;
 };
 
 struct RendererDataReference
@@ -46,7 +46,7 @@ struct RayTracingPipelineConstants
     mat4 V_Inv;
     mat4 P_Inv;
     vec3 lightPos;
-    uint frame;
+    uint frameCount;
 };
 
 layout(location = 0) rayPayloadInEXT HitPayload _RayPayload;
@@ -150,7 +150,7 @@ void main()
     float M_PI = 3.14159265;
     const float cos_theta = dot(rayDirection, wNormal);
     // 采样半球选择这个射线方向的概率密度
-    const float p = cos_theta / M_PI;
+    const float p = 1 / M_PI;
 
     // 计算这条光线的BRDF，这里只用了最简单的Lambertian模型
     vec3 albedo = texColor;

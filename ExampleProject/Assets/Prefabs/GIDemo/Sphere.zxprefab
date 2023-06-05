@@ -1,0 +1,19 @@
+{
+    "Name": "Sphere",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [-5, 3, 4],
+            "Rotation": [0, 0, 0],
+            "Scale": [4, 4, 4]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Geometry": 1,
+            "Material": "RTMaterials/GIDemo/White.zxrtmat",
+            "CastShadow": false,
+            "ReceiveShadow": true
+        }
+    ]
+}

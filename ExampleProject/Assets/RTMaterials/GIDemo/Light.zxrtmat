@@ -1,0 +1,17 @@
+{
+    "Type": "RTMaterial",
+    "Vector3": 
+    [
+        {
+            "UniformName": "_Emittance",
+            "Value": [5, 5, 5]
+        }
+    ],
+    "Textures":
+    [
+        {
+            "UniformName": "_Texture1",
+            "Path": "Textures/white.png"
+        }
+    ]
+}
