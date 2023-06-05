@@ -88,6 +88,7 @@ namespace ZXEngine
 		Matrix4 V_Inv;
 		Matrix4 P_Inv;
 		Vector3 lightPos;
+		uint32_t frameCount;
 	};
 
 	struct RayTracingShaderPathGroup

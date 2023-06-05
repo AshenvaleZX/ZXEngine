@@ -26,7 +26,7 @@ namespace ZXEngine
 		}
 		else if (type == MaterialType::RayTracing)
 		{
-			RenderAPI::GetInstance()->SetUpRayTracingMaterialData(data);
+			RenderAPI::GetInstance()->SetUpRayTracingMaterialData(this);
 		}
 	}
 
