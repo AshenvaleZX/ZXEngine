@@ -32,7 +32,7 @@ namespace ZXEngine
 		string shaderCode = Resources::LoadTextFile(path.string());
 		string vertCode, geomCode, fragCode;
 		ShaderParser::ParseShaderCode(shaderCode, vertCode, geomCode, fragCode);
-		ShaderInfo info = ShaderParser::GetShaderInfo(shaderCode);
+		ShaderInfo info = ShaderParser::GetShaderInfo(shaderCode, GraphicsAPI::Vulkan);
 
 		vertCode = ShaderParser::TranslateToVulkan(vertCode, info.vertProperties);
 		geomCode = ShaderParser::TranslateToVulkan(geomCode, info.geomProperties);

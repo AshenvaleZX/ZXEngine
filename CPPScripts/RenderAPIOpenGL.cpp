@@ -372,7 +372,7 @@ namespace ZXEngine
 
 		ShaderReference* reference = new ShaderReference();
 		reference->ID = ID;
-		reference->shaderInfo = ShaderParser::GetShaderInfo(shaderCode);
+		reference->shaderInfo = ShaderParser::GetShaderInfo(shaderCode, GraphicsAPI::OpenGL);
 
 		CheckError();
 

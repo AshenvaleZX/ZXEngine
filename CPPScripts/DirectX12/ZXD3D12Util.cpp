@@ -58,7 +58,7 @@ namespace ZXEngine
 	void ZXD3D12Util::TranslateShaderToHLSL(const filesystem::path& path)
 	{
 		string shaderCode = Resources::LoadTextFile(path.string());
-		auto shaderInfo = ShaderParser::GetShaderInfo(shaderCode);
+		auto shaderInfo = ShaderParser::GetShaderInfo(shaderCode, GraphicsAPI::D3D12);
 		string hlslCode = ShaderParser::TranslateToD3D12(shaderCode, shaderInfo);
 
 		string fileName = path.stem().string();
@@ -81,7 +81,7 @@ namespace ZXEngine
 	string ZXD3D12Util::TranslateShaderToHLSL(const filesystem::path& path, ShaderStageFlags& stageFlags)
 	{
 		string shaderCode = Resources::LoadTextFile(path.string());
-		auto shaderInfo = ShaderParser::GetShaderInfo(shaderCode);
+		auto shaderInfo = ShaderParser::GetShaderInfo(shaderCode, GraphicsAPI::D3D12);
 		string hlslCode = ShaderParser::TranslateToD3D12(shaderCode, shaderInfo);
 
 		string fileName = path.stem().string();

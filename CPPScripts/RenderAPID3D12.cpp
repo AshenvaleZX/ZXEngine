@@ -873,7 +873,7 @@ namespace ZXEngine
 	ShaderReference* RenderAPID3D12::LoadAndSetUpShader(const char* path, FrameBufferType type)
 	{
 		string shaderCode = Resources::LoadTextFile(path);
-		auto shaderInfo = ShaderParser::GetShaderInfo(shaderCode);
+		auto shaderInfo = ShaderParser::GetShaderInfo(shaderCode, GraphicsAPI::D3D12);
 		string hlslCode = ShaderParser::TranslateToD3D12(shaderCode, shaderInfo);
 
 		UINT compileFlags = 0;

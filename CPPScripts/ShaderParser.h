@@ -22,7 +22,7 @@ namespace ZXEngine
 	class ShaderParser
 	{
 	public:
-		static ShaderInfo GetShaderInfo(const string& code);
+		static ShaderInfo GetShaderInfo(const string& code, GraphicsAPI api);
 		static bool IsBasePropertyType(ShaderPropertyType type);
 		static ShaderPropertiesInfo GetProperties(const string& stageCode);
 		static void ParseShaderCode(const string& code, string& vertCode, string& geomCode, string& fragCode);

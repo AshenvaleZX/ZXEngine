@@ -90,7 +90,7 @@ namespace ZXEngine
 		{ ShaderPropertyType::ENGINE_FAR_PLANE,   "float"     }, { ShaderPropertyType::ENGINE_MODEL_INV,       "float4x4"    },
 	};
 
-	ShaderInfo ShaderParser::GetShaderInfo(const string& code)
+	ShaderInfo ShaderParser::GetShaderInfo(const string& code, GraphicsAPI api)
 	{
 		ShaderInfo info;
 		info.stateSet = GetShaderStateSet(code);
@@ -130,11 +130,10 @@ namespace ZXEngine
 		if (!geomCode.empty())
 			info.geomProperties = GetProperties(geomCode);
 
-#ifdef ZX_API_D3D12
-		SetUpPropertiesHLSL(info);
-#else
-		SetUpPropertiesStd140(info);
-#endif
+		if (api == GraphicsAPI::D3D12)
+			SetUpPropertiesHLSL(info);
+		else
+			SetUpPropertiesStd140(info);
 
 		return info;
 	}
