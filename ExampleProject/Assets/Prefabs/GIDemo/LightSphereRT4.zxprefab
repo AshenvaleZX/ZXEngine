@@ -1,17 +1,17 @@
 {
-    "Name": "LightSphere1",
+    "Name": "LightSphere4",
     "Components":
     [
         {
             "Type": "Transform",
-            "Position": [-9, -8.5, -4],
+            "Position": [1, -1, 3],
             "Rotation": [0, 0, 0],
             "Scale": [1, 1, 1]
         },
         {
             "Type": "MeshRenderer",
             "Geometry": 1,
-            "Material": "RTMaterials/GIDemo/LightWeak.zxrtmat",
+            "Material": "RTMaterials/GIDemo/YellowLight.zxrtmat",
             "CastShadow": false,
             "ReceiveShadow": true
         }

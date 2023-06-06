@@ -1,0 +1,19 @@
+{
+    "Name": "Rabbit",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [-6, -9, -2],
+            "Rotation": [0, 90, 0],
+            "Scale": [5, 5, 5]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Mesh": "Models/Rabbit.obj",
+            "Material": "RTMaterials/GIDemo/White.zxrtmat",
+            "CastShadow": false,
+            "ReceiveShadow": true
+        }
+    ]
+}
