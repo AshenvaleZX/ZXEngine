@@ -178,7 +178,8 @@ namespace ZXEngine
 			info->meshRenderer = new MeshRenderer();
 			info->meshRenderer->LoadModel(asset->path);
 			curAssetInfo = info;
-			EditorGUIManager::GetInstance()->assetPreviewer->Reset(info->meshRenderer->boundsSizeX);
+			float size = std::max({ info->meshRenderer->boundsSizeX, info->meshRenderer->boundsSizeY, info->meshRenderer->boundsSizeZ });
+			EditorGUIManager::GetInstance()->assetPreviewer->Reset(size);
 		}
 	}
 
