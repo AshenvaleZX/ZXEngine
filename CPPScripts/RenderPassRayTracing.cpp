@@ -23,8 +23,6 @@ namespace ZXEngine
 		FBOManager::GetInstance()->CreateFBO("RayTracing", FrameBufferType::RayTracing, clearInfo);
 	}
 
-	Matrix4 lastVP;
-	uint32_t frameCount = 0;
 	void RenderPassRayTracing::Render(Camera* camera)
 	{
 		auto renderAPI = RenderAPI::GetInstance();
@@ -57,15 +55,6 @@ namespace ZXEngine
 		auto allLights = Light::GetAllLights();
 		if (allLights.size() > 0)
 			rtConstants.lightPos = Light::GetAllLights()[0]->GetTransform()->GetPosition();
-
-		if (lastVP != rtConstants.VP)
-		{
-			frameCount = 0;
-			lastVP = rtConstants.VP;
-		}
-
-		// Ö¡¼ÆÊý
-		rtConstants.frameCount = frameCount++;
 
 		// ¹â×·äÖÈ¾
 		renderAPI->RayTrace(rtCommandID, rtConstants);

@@ -315,6 +315,10 @@ namespace ZXEngine
         vector<VulkanBuffer> rtTLASScratchBuffers;
         vector<VulkanBuffer> rtTLASInstanceBuffers;
 
+        // 在累积式光追场景中，用来判断画面刷新的数据
+        vector<Matrix4> rtVPMatrix;
+        vector<uint32_t> rtFrameCount;
+
         // 场景中的纹理数量
         uint32_t rtSceneTextureNum = 100;
         // 场景中的渲染对象数量

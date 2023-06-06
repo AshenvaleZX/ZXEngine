@@ -1467,6 +1467,11 @@ namespace ZXEngine
     void RenderAPIVulkan::SwitchRayTracingPipeline(uint32_t rtPipelineID)
     {
         curRTPipelineID = rtPipelineID;
+
+        rtVPMatrix.clear();
+        rtVPMatrix.resize(MAX_FRAMES_IN_FLIGHT);
+        rtFrameCount.clear();
+        rtFrameCount.resize(MAX_FRAMES_IN_FLIGHT, 0);
     }
 
     uint32_t RenderAPIVulkan::CreateRayTracingMaterialData()
@@ -1562,6 +1567,14 @@ namespace ZXEngine
     {
         auto rtPipeline = rtPipelines[curRTPipelineID];
 
+        // 计算画面静止的帧数，累积式光追渲染需要这个数据
+        if (rtConstants.VP != rtVPMatrix[currentFrame])
+        {
+            rtFrameCount[currentFrame] = 0;
+            rtVPMatrix[currentFrame] = rtConstants.VP;
+        }
+        uint32_t frameCount = rtFrameCount[currentFrame]++;
+
         // 先更新当前帧和光追管线绑定的场景数据
         UpdateRTSceneData(curRTPipelineID);
         // 更新当前帧和光追管线绑定的管线数据
@@ -1625,7 +1638,7 @@ namespace ZXEngine
             memcpy(ptr, &rtConstants.lightPos, 3 * sizeof(float));
             ptr += 3 * sizeof(float);
 
-            memcpy(ptr, &rtConstants.frameCount, sizeof(uint32_t));
+            memcpy(ptr, &frameCount, sizeof(uint32_t));
         }
 
         // 绑定光追管线常量
