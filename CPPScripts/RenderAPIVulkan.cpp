@@ -1452,7 +1452,10 @@ namespace ZXEngine
         // 初始化光追场景资源
         CreateRTSceneData(rtPipelineID);
         // 初始化TLAS数组
-        allTLAS.resize(MAX_FRAMES_IN_FLIGHT);
+        rtPipeline->tlasIdx = GetNextTLASGroupIndex();
+        auto tlasGroup = GetTLASGroupByIndex(rtPipeline->tlasIdx);
+        tlasGroup->asGroup.resize(MAX_FRAMES_IN_FLIGHT);
+        tlasGroup->inUse = true;
         // 初始化构建TLAS的中间Buffer
         rtTLASStagingBuffers.resize(MAX_FRAMES_IN_FLIGHT);
         rtTLASScratchBuffers.resize(MAX_FRAMES_IN_FLIGHT);
@@ -1691,7 +1694,8 @@ namespace ZXEngine
         if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
             throw std::runtime_error("Failed to begin recording command buffer!");
 
-        const bool isUpdate = allTLAS[currentFrame].isBuilt;
+        auto& curTLAS = GetTLASGroupByIndex(rtPipelines[curRTPipelineID]->tlasIdx)->asGroup[currentFrame];
+        const bool isUpdate = curTLAS.isBuilt;
 
         // 场景中要渲染的对象实例数据
         vector<VkAccelerationStructureInstanceKHR> instances;
@@ -1770,7 +1774,7 @@ namespace ZXEngine
         if (!isUpdate)
         {
             // 创建TLAS Buffer
-            allTLAS[currentFrame].buffer = CreateBuffer(sizeInfo.accelerationStructureSize,
+            curTLAS.buffer = CreateBuffer(sizeInfo.accelerationStructureSize,
                 VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
                 VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE, false, true);
 
@@ -1779,10 +1783,10 @@ namespace ZXEngine
             createInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
             createInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
             createInfo.size = sizeInfo.accelerationStructureSize;
-            createInfo.buffer = allTLAS[currentFrame].buffer.buffer;
+            createInfo.buffer = curTLAS.buffer.buffer;
 
             // 创建TLAS
-            if (vkCreateAccelerationStructureKHR(device, &createInfo, nullptr, &allTLAS[currentFrame].as) != VK_SUCCESS)
+            if (vkCreateAccelerationStructureKHR(device, &createInfo, nullptr, &curTLAS.as) != VK_SUCCESS)
                 throw std::runtime_error("Create acceleration structure failed!");
         }
 
@@ -1793,8 +1797,8 @@ namespace ZXEngine
                 VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE, false, true);
 
         // 继续填充构建TLAS需要的信息
-        buildInfo.srcAccelerationStructure = isUpdate ? allTLAS[currentFrame].as : VK_NULL_HANDLE;
-        buildInfo.dstAccelerationStructure = allTLAS[currentFrame].as;
+        buildInfo.srcAccelerationStructure = isUpdate ? curTLAS.as : VK_NULL_HANDLE;
+        buildInfo.dstAccelerationStructure = curTLAS.as;
         buildInfo.scratchData.deviceAddress = rtTLASScratchBuffers[currentFrame].deviceAddress;
 
         // 本次构建TLAS的所需的数据范围
@@ -1807,7 +1811,7 @@ namespace ZXEngine
 
         // 构建TLAS
         vkCmdBuildAccelerationStructuresKHR(commandBuffer, 1, &buildInfo, &pBuildRangeInfo);
-        allTLAS[currentFrame].isBuilt = true;
+        curTLAS.isBuilt = true;
 
         // 结束Command Buffer的记录
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
@@ -2488,11 +2492,7 @@ namespace ZXEngine
 
         if (meshBuffer->blas.isBuilt)
         {
-            meshBuffer->blas.deviceAddress = 0;
-            DestroyBuffer(meshBuffer->blas.buffer);
-            vkDestroyAccelerationStructureKHR(device, meshBuffer->blas.as, nullptr);
-            meshBuffer->blas.as = VK_NULL_HANDLE;
-            meshBuffer->blas.isBuilt = false;
+            DestroyAccelerationStructure(meshBuffer->blas);
         }
     
         meshBuffer->inUse = false;
@@ -4518,6 +4518,36 @@ namespace ZXEngine
     }
 
 
+    uint32_t RenderAPIVulkan::GetNextTLASGroupIndex()
+    {
+        uint32_t length = static_cast<uint32_t>(VulkanTLASGroupArray.size());
+
+        for (uint32_t i = 0; i < length; i++)
+        {
+            if (!VulkanTLASGroupArray[i]->inUse)
+                return i;
+        }
+
+        VulkanTLASGroupArray.push_back(new VulkanASGroup());
+
+        return length;
+    }
+
+    VulkanASGroup* RenderAPIVulkan::GetTLASGroupByIndex(uint32_t idx)
+    {
+        return VulkanTLASGroupArray[idx];
+    }
+
+    void RenderAPIVulkan::DestroyTLASGroupByIndex(uint32_t idx)
+    {
+        auto vulkanASGroup = GetTLASGroupByIndex(idx);
+
+        for (auto& tlas : vulkanASGroup->asGroup)
+            DestroyAccelerationStructure(tlas);
+
+        vulkanASGroup->inUse = false;
+    }
+
     uint32_t RenderAPIVulkan::GetNextRTMaterialDataIndex()
     {
         uint32_t length = static_cast<uint32_t>(VulkanRTMaterialDataArray.size());
@@ -4548,6 +4578,15 @@ namespace ZXEngine
         vulkanRTMaterialData->buffers.clear();
 
         vulkanRTMaterialData->inUse = false;
+    }
+
+    void RenderAPIVulkan::DestroyAccelerationStructure(VulkanAccelerationStructure& accelerationStructure)
+    {
+        accelerationStructure.deviceAddress = 0;
+        DestroyBuffer(accelerationStructure.buffer);
+        vkDestroyAccelerationStructureKHR(device, accelerationStructure.as, nullptr);
+        accelerationStructure.as = VK_NULL_HANDLE;
+        accelerationStructure.isBuilt = false;
     }
 
     void RenderAPIVulkan::CreateRTPipelineData(uint32_t id)
@@ -4586,12 +4625,13 @@ namespace ZXEngine
     void RenderAPIVulkan::UpdateRTPipelineData(uint32_t id)
     {
         auto rtPipeline = rtPipelines[id];
+        auto& curTLAS = GetTLASGroupByIndex(rtPipeline->tlasIdx)->asGroup[currentFrame];
 
         // 更新TLAS
         VkWriteDescriptorSetAccelerationStructureKHR writeASInfo = {};
         writeASInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR;
         writeASInfo.accelerationStructureCount = 1;
-        writeASInfo.pAccelerationStructures = &allTLAS[currentFrame].as;
+        writeASInfo.pAccelerationStructures = &curTLAS.as;
 
         VkWriteDescriptorSet writeAS = {};
         writeAS.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

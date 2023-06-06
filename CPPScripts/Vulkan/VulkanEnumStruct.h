@@ -150,6 +150,12 @@ namespace ZXEngine
         VkAccelerationStructureKHR as = VK_NULL_HANDLE;
     };
 
+    struct VulkanASGroup
+    {
+        vector<VulkanAccelerationStructure> asGroup;
+        bool inUse = false;
+    };
+
     struct VulkanVAO
     {
         uint32_t indexCount = 0; // Ë÷ÒýÊýÁ¿
@@ -212,6 +218,7 @@ namespace ZXEngine
 
     struct VulkanRTPipeline
     {
+        uint32_t tlasIdx = 0;
         VulkanPipeline pipeline;
         VulkanRTPipelineData pipelineData;
         VulkanShaderBindingTable SBT;

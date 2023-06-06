@@ -304,12 +304,12 @@ namespace ZXEngine
         // GPU硬件Acceleration Structure信息
         VkPhysicalDeviceAccelerationStructurePropertiesKHR physicalAccelerationStructureProperties;
 
+        // 当前使用的TLASGroup索引
+        uint32_t curTLASGroupIdx = 0;
         // 当前的光线追踪管线ID
         uint32_t curRTPipelineID = 0;
         // 光线追踪管线
         vector<VulkanRTPipeline*> rtPipelines;
-        // Top Level Acceleration Structure
-        vector<VulkanAccelerationStructure> allTLAS;
         // 构建TLAS的中间Buffer
         vector<VulkanBuffer> rtTLASStagingBuffers;
         vector<VulkanBuffer> rtTLASScratchBuffers;
@@ -331,14 +331,21 @@ namespace ZXEngine
         // 当前场景中所有光追材质的索引与光追材质数组下标的映射表
         unordered_map<uint32_t, uint32_t> curRTSceneRTMaterialDataMap;
 
+        // TLAS Group，一个场景有一个TLAS Group
+        vector<VulkanASGroup*> VulkanTLASGroupArray;
         // 所有的光追材质数组，其中可能包括已销毁的，未在场景中的
         vector<VulkanRTMaterialData*> VulkanRTMaterialDataArray;
         // 准备消耗的光追材质
         map<uint32_t, uint32_t> rtMaterialDatasToDelete;
 
+        uint32_t GetNextTLASGroupIndex();
+        VulkanASGroup* GetTLASGroupByIndex(uint32_t idx);
+        void DestroyTLASGroupByIndex(uint32_t idx);
         uint32_t GetNextRTMaterialDataIndex();
         VulkanRTMaterialData* GetRTMaterialDataByIndex(uint32_t idx);
         void DestroyRTMaterialDataByIndex(uint32_t idx);
+
+        void DestroyAccelerationStructure(VulkanAccelerationStructure& accelerationStructure);
 
         void CreateRTPipelineData(uint32_t id);
         void UpdateRTPipelineData(uint32_t id);
