@@ -8,7 +8,7 @@ I created this project to learn and practice game engine technology, It now supp
 
 Screenshot display (more display later in the introduction):
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%200.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%200.png)
 
 ------
 
@@ -32,7 +32,7 @@ The project is still relatively simple, but the basic scenes, prefabs, materials
 
 The following are some picture displays, the engine is shown in the figure, which is similar to the Unity editor. The top is the main menu bar, the middle is the game screen window, the left is the Hierarchy panel showing the GameObject in the scene, the lower left is the Project panel showing the Assets file directory of the currently opened project, the middle is the Console panel showing the log, and the right is showing the currently selected Inspector panel for object details.
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%201.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%201.png)
 
 当前选中了场景中的Sun对象，Inspector面板就展示这个GameObject所挂载的Component信息。
 
@@ -46,27 +46,27 @@ Click the start button on the main menu bar, and the game starts to run. At this
 
 Next picture is a scene rendering based on PBR+IBL, and also shows the material information and material preview displayed on the Inspector panel after clicking the material file.
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%202.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%202.png)
 
 然后通过双击场景文件，切换到一个使用光线追踪渲染管线渲染的场景。同时展示了点击模型文件后Inspector面板展示的模型信息和模型预览。
 
 Then switch to a scene rendered with the ray tracing pipeline by double-clicking on the scene file. At the same time, it shows the model information and model preview displayed on the Inspector panel after clicking the model file.
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%203.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%203.png)
 
 下面是点击图像展示图像信息。
 
 Click on the image to display the image information.
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%204.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%204.png)
 
 下面是分别点击zxshader和Lua后Inspector上的代码预览。
 
 The following is the code preview on the Inspector after clicking zxshader and Lua respectively.
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%205.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%205.png)
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/Engine%20Show%206.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%206.png)
 
 ###        GamePlay层的Lua代码示例(Lua code example for GamePlay layer)
 
@@ -74,7 +74,7 @@ The following is the code preview on the Inspector after clicking zxshader and L
 
 Take controlling the rotation and movement of GameObject as an example, create a Lua code, and use GameLogic component on a GameObject object:
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/fd5c2450224b8981463fd16798026d5679b49c59/Documents/Images/GameLogic.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/GameLogic.png)
 
 然后Lua代码大致如下：
 
