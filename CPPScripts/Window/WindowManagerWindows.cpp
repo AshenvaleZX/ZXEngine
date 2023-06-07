@@ -2,6 +2,8 @@
 #include <WindowsX.h>
 #include "../RenderAPI.h"
 #include "../ProjectSetting.h"
+#include "../Input/InputManager.h"
+#include "../Editor/EditorInputManager.h"
 #include "../ImGui/imgui_impl_win32.h"
 
 // Forward declare message handler from imgui_impl_win32.cpp
@@ -138,6 +140,11 @@ namespace ZXEngine
 			OnResize();
 			return 0;
 
+		// 鼠标滚轮事件
+		case WM_MOUSEWHEEL:
+			OnMouseScroll(GET_WHEEL_DELTA_WPARAM(wParam));
+			return 0;
+
 		// 窗口关闭
 		case WM_DESTROY:
 			PostQuitMessage(0);
@@ -161,5 +168,14 @@ namespace ZXEngine
 			renderAPI->OnWindowSizeChange(mWindowWidth, mWindowHeight);
 			mResized = false;
 		}
+	}
+
+	void WindowManagerWindows::OnMouseScroll(short delta)
+	{
+		double deltaValue = static_cast<double>(delta) / 120.0;
+		InputManager::GetInstance()->UpdateMouseScroll(0, deltaValue);
+#ifdef ZX_EDITOR
+		EditorInputManager::GetInstance()->UpdateMouseScroll(0, static_cast<float>(deltaValue));
+#endif
 	}
 }

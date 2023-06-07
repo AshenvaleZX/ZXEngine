@@ -30,5 +30,6 @@ namespace ZXEngine
 		bool mAppPaused = false;
 
 		void OnResize();
+		void OnMouseScroll(short delta);
 	};
 }
