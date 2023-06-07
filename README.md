@@ -68,49 +68,49 @@ The following is the code preview on the Inspector after clicking zxshader and L
 
 ## 引擎文件格式介绍 (Engine File format introduction)
 
-#### *.zxscene
+### *.zxscene
 
 场景文件，包含GameObjects，天空盒等。如果是光线追踪场景，还包含了光追管线的Shader。
 
 Scene files, containing GameObjects, skyboxes, etc. If it is a ray tracing scene, it also includes the Shader of the light tracing pipeline.
 
-#### *.zxshader
+### *.zxshader
 
 这是本引擎自己的shader语言文件，不过目前zxshader仅支持DirectX 12，Vulkan和OpenGL的光栅化渲染管线。示例代码可以在ExampleProject\Assets\Shaders中找到。
 
 This is ZXEngine's own shader language file, but currently zxshader only supports the rasterization rendering pipeline of DirectX 12, Vulkan and OpenGL. Example code can be found in ExampleProject\Assets\Shaders.
 
-#### *.zxmat  *.zxrtmat
+### *.zxmat  *.zxrtmat
 
 分别是光栅化渲染管线和光线追踪渲染管线的材质文件。
 
 They are the material files of the rasterization rendering pipeline and the ray tracing rendering pipeline respectively.
 
-#### *.zxprefab
+### *.zxprefab
 
 预制体文件，和Unity的prefab差不多。
 
 The prefab file is similar to Unity's prefab.
 
-#### *.zxprjcfg
+### *.zxprjcfg
 
 由ZXEngine创建的游戏项目工程的配置文件，可以在ExampleProject中找到参考示例。
 
 This is the configuration file for the game project created by ZXEngine, you can find the example in ExampleProject.
 
-#### *.rgen  *.rmiss  *.rchit  *.rahit  *.rint
+### *.rgen  *.rmiss  *.rchit  *.rahit  *.rint
 
 光线追踪管线的各阶段Shader代码文件。目前暂未向光栅化管线那样，搞一个引擎专有的通用语言格式。
 
 Shader code files for each stage of the ray tracing pipeline. At present, there is no engine-specific universal language format like zxshader in the rasterization pipeline.
 
-#### Others
+### Others
 
 模型，纹理贴图，字体等就是常见的通用文件格式。
 
 Models, textures, fonts, etc. are common file formats.
 
-###        GamePlay层的Lua代码示例(Lua code example for GamePlay layer)
+##        GamePlay层的Lua代码示例(Lua code example for GamePlay layer)
 
 以控制GameObject旋转移动举例，创建一个Lua代码，用GameLogic组件挂在到一个GameObject对象上：
 
@@ -149,7 +149,7 @@ end
 return ObjectMove
 ```
 
-### 注意事项 (Precautions)
+## 注意事项 (Precautions)
 
 目前zxshader编写好后，在DirectX 12和OpenGL下直接运行即可。但是在Vulkan下需要先点击引擎菜单栏里的“Assets/Compile All Shader for Vulkan”按钮，将zxshader预编译后才可以运行。
 
