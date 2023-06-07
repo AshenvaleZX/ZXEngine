@@ -1,8 +1,8 @@
 # ZXEngine
 
-这个项目是我个人为了学习游戏引擎技术创建的，目前同时支持DirectX 12，Vulkan和OpenGL。并且支持光线追踪渲染管线(基于Vulkan，暂未实现基于DirectX12的光线追踪)。
+这个项目是我个人为了学习游戏引擎技术创建的，目前同时支持Vulkan，DirectX 12和OpenGL。并且支持光线追踪渲染管线(基于Vulkan，暂未实现基于DirectX12的光线追踪)。
 
-I created this project to learn and practice game engine technology, It now supports DirectX 12, Vulkan and OpenGL.And it supports ray tracing rendering (only based on Vulkan for now, not support DXR).
+I created this project to learn and practice game engine technology, It now supports Vulkan, DirectX 12 and OpenGL.And it supports ray tracing rendering (only based on Vulkan for now, not support DXR).
 
 截图展示(介绍后面有更多展示):
 
@@ -10,21 +10,19 @@ Screenshot display (more display later in the introduction):
 
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%200.png)
 
-------
-
 ## 引擎简介 (Engine Introduction)
 
-本引擎使用自创的zxshader语言来编写shader，同时支持DirectX 12，Vulkan和OpenGL。
+本引擎使用自创的zxshader语言来编写shader，同时支持Vulkan，DirectX 12和OpenGL。
 
-This engine uses the self-created zxshader language to write shaders, and supports DirectX 12, Vulkan and OpenGL at the same time.
+This engine uses the self-created zxshader language to write shaders, and supports Vulkan, DirectX 12 and OpenGL at the same time.
 
 引擎本身用C++开发，GamePlay层使用Lua开发，引擎层封装部分C++接口给GamePlay层的Lua调用。使用方式类似Unity的XLua，通过一个GameLogic组件把Lua代码绑定到GameObject上，接收所挂载对象上来自引擎的Start和Update调用，并通过self访问GameObject对象(具体示例看后面)。
 
 The engine is developed with C++, the GamePlay layer is developed with Lua, and the engine encapsulates part of the C++ interface to the Lua call of the GamePlay layer. The usage is similar to Unity's XLua, you can bind the Lua code to the GameObject through a GameLogic component, receive Start and Update calls from the engine on the mounted object, and access the GameObject object through self (see later for specific examples).
 
-项目目前还比较简单，不过完成了引擎所需的基本的场景，预制体，材质，shader文件系统。有一个类Unity的引擎编辑器页面。
+项目目前还比较简单，不过完成了引擎所需的基本的场景，预制体，材质，shader文件系统。有一个类Unity的引擎编辑器页面。场景中的对象都是Unity式的 GameObject - Component 结构。
 
-The project is still relatively simple, but the basic scenes, prefabs, materials, and shader file systems have been completed. There is a Unity-like engine editor.
+The project is still relatively simple, but the basic scenes, prefabs, materials, and shader file systems have been completed. There is a Unity-like engine editor. Objects in the scene are Unity-style GameObject - Component structures.
 
 ## 细节图片展示 (Detailed picture display)
 
@@ -38,9 +36,9 @@ The following are some picture displays, the engine is shown in the figure, whic
 
 The Sun object in the scene is currently selected, and the Inspector panel displays the Component information on the GameObject.
 
-点击主菜单栏的开始按钮，游戏开始运行，此时能看到场景中物体动了起来，粒子系统也开始工作。此时选中一个材质，Inspectors面板就开始展示材质信息和材质球。
+点击主菜单栏的开始按钮，游戏开始运行，此时能看到场景中物体动了起来，粒子系统也开始工作。
 
-Click the start button on the main menu bar, and the game starts to run. At this time, you can see the objects in the scene move, and the particle system starts to work. At this point, a material is selected, and the Inspectors panel starts to display material information and material balls.
+Click the start button on the main menu bar, and the game starts to run. At this time, you can see the objects in the scene move, and the particle system starts to work. 
 
 接下来展示的是一个基于PBR+IBL场景渲染，同时展示了点击材质文件后Inspector面板展示的材质信息和材质预览。
 
@@ -67,6 +65,50 @@ The following is the code preview on the Inspector after clicking zxshader and L
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%205.png)
 
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%206.png)
+
+## 引擎文件格式介绍 (Engine File format introduction)
+
+***.zxscene**
+
+场景文件，包含GameObjects，天空盒等。如果是光线追踪场景，还包含了光追管线的Shader。
+
+Scene files, containing GameObjects, skyboxes, etc. If it is a ray tracing scene, it also includes the Shader of the light tracing pipeline.
+
+***.zxshader**
+
+这是本引擎自己的shader语言文件，不过目前zxshader仅支持DirectX 12，Vulkan和OpenGL的光栅化渲染管线。示例代码可以在ExampleProject\Assets\Shaders中找到。
+
+This is ZXEngine's own shader language file, but currently zxshader only supports the rasterization rendering pipeline of DirectX 12, Vulkan and OpenGL. Example code can be found in ExampleProject\Assets\Shaders.
+
+***.zxmat  *.zxrtmat**
+
+分别是光栅化渲染管线和光线追踪渲染管线的材质文件。
+
+They are the material files of the rasterization rendering pipeline and the ray tracing rendering pipeline respectively.
+
+***.zxprefab**
+
+预制体文件，和Unity的prefab差不多。
+
+The prefab file is similar to Unity's prefab.
+
+***.zxprjcfg**
+
+由ZXEngine创建的游戏项目工程的配置文件，可以在ExampleProject中找到参考示例。
+
+This is the configuration file for the game project created by ZXEngine, you can find the example in ExampleProject.
+
+***.rgen  *.rmiss  *.rchit  *.rahit  *.rint**
+
+光线追踪管线的各阶段Shader代码文件。目前暂未向光栅化管线那样，搞一个引擎专有的通用语言格式。
+
+Shader code files for each stage of the ray tracing pipeline. At present, there is no engine-specific universal language format like zxshader in the rasterization pipeline.
+
+**Others**
+
+模型，纹理贴图，字体等就是常见的通用文件格式。
+
+Models, textures, fonts, etc. are common file formats.
 
 ###        GamePlay层的Lua代码示例(Lua code example for GamePlay layer)
 
