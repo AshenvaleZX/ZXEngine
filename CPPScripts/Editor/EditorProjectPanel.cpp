@@ -162,6 +162,21 @@ namespace ZXEngine
 			// 把文件扩展(后缀名)截取掉
 			child->name = child->name.substr(0, child->name.length() - child->extension.length());
 			node->children.push_back(child);
+
+			// 排序
+			std::sort(node->children.begin(), node->children.end(), 
+				[](EditorAssetNode* a, EditorAssetNode* b) 
+				{ 
+					// 文件夹排在前面
+					if (a->extension == "" && b->extension != "")
+						return true;
+					if (a->extension != "" && b->extension == "")
+						return false;
+					// 按名字排序
+					return a->name < b->name;
+				}
+			);
+
 			if (child->extension == "")
 				GetChildren(child);
 		}
