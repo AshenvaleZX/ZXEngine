@@ -3,6 +3,19 @@
 
 namespace ZXEngine
 {
+	// 在Project面板中屏蔽的文件类型
+	unordered_set<string> ignoreExtensions = 
+	{ 
+		// 生成的HLSL代码
+		".hlsl",
+		// 预编译的D3D12 Shader
+		".fxc",
+		// 生成的GLSL代码
+		".vert", ".frag", ".geom",
+		// 预编译的Vulkan Shader
+		".spv",
+	};
+
 	EditorProjectPanel::EditorProjectPanel()
 	{
 		InitIcons();
@@ -153,11 +166,16 @@ namespace ZXEngine
 	{
 		for (const auto& entry : filesystem::directory_iterator(node->path))
 		{
+			string extension = entry.path().filename().extension().string();
+			// 如果是忽略的文件类型，就跳过
+			if (ignoreExtensions.find(extension) != ignoreExtensions.end())
+				continue;
+
 			EditorAssetNode* child = new EditorAssetNode();
 			child->parent = node;
 			child->path = entry.path().string();
 			child->name = entry.path().filename().string();
-			child->extension = entry.path().filename().extension().string();
+			child->extension = extension;
 			child->type = GetAssetType(child->extension);
 			// 把文件扩展(后缀名)截取掉
 			child->name = child->name.substr(0, child->name.length() - child->extension.length());
