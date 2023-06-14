@@ -28,6 +28,9 @@ namespace ZXEngine
 
 		opaqueRenderState = new RenderStateSetting();
 
+		transparentRenderState = new RenderStateSetting();
+		transparentRenderState->depthWrite = false;
+
 		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ForwardRendering);
 
 		ClearInfo clearInfo = {};
@@ -49,17 +52,38 @@ namespace ZXEngine
 		renderAPI->SetRenderState(skyBoxRenderState);
 		RenderSkyBox(camera);
 
-		// 渲染不透明队列
-		renderAPI->SetRenderState(opaqueRenderState);
-		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Qpaque);
-		renderQueue->Sort(camera);
-		renderQueue->Batch();
-
+		// 设置引擎参数
 		RenderEngineProperties::GetInstance()->SetCameraProperties(camera);
 		RenderEngineProperties::GetInstance()->SetLightProperties(Light::GetAllLights()[0]);
 		RenderEngineProperties::GetInstance()->SetShadowCubeMap(FBOManager::GetInstance()->GetFBO("ShadowCubeMap")->DepthBuffer);
 
-		for (auto& batch : renderQueue->GetBatches())
+		// 渲染不透明队列
+		renderAPI->SetRenderState(opaqueRenderState);
+		auto opaqueQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Opaque);
+		opaqueQueue->Sort(camera);
+		opaqueQueue->Batch();
+		RenderBatches(opaqueQueue->GetBatches());
+
+		// 渲染半透明队列
+		renderAPI->SetRenderState(transparentRenderState);
+		auto transparentQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Transparent);
+		transparentQueue->Sort(camera);
+		transparentQueue->Batch();
+		RenderBatches(transparentQueue->GetBatches());
+
+		// 渲染粒子系统
+		ParticleSystemManager::GetInstance()->Update();
+		ParticleSystemManager::GetInstance()->Render(camera);
+
+		renderAPI->GenerateDrawCommand(drawCommandID);
+
+		// 每次渲染完要清空，下次要渲染的时候再重新添加
+		RenderQueueManager::GetInstance()->ClearAllRenderQueue();
+	}
+
+	void RenderPassForwardRendering::RenderBatches(const map<uint32_t, vector<MeshRenderer*>>& batchs)
+	{
+		for (auto& batch : batchs)
 		{
 			auto shader = batch.second[0]->matetrial->shader;
 			shader->Use();
@@ -76,14 +100,6 @@ namespace ZXEngine
 				renderer->Draw();
 			}
 		}
-
-		ParticleSystemManager::GetInstance()->Update();
-		ParticleSystemManager::GetInstance()->Render(camera);
-
-		renderAPI->GenerateDrawCommand(drawCommandID);
-
-		// 每次渲染完要清空，下次要渲染的时候再重新添加
-		RenderQueueManager::GetInstance()->ClearAllRenderQueue();
 	}
 
 	void RenderPassForwardRendering::InitSkyBox()

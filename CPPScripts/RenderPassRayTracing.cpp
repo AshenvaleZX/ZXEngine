@@ -26,7 +26,7 @@ namespace ZXEngine
 	void RenderPassRayTracing::Render(Camera* camera)
 	{
 		auto renderAPI = RenderAPI::GetInstance();
-		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Qpaque);
+		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Opaque);
 
 		// ÇÐ»»µ½Ö÷FBO
 		FBOManager::GetInstance()->SwitchFBO("RayTracing");

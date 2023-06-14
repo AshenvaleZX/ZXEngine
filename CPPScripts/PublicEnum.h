@@ -56,7 +56,7 @@ namespace ZXEngine
 
 	enum class RenderQueueType
 	{ 
-		Qpaque = 1000, 
+		Opaque = 1000, 
 		Transparent = 2000 
 	};
 

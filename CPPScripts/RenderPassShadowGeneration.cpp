@@ -80,7 +80,7 @@ namespace ZXEngine
 #endif
 
 		// 渲染投射阴影的物体
-		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Qpaque);
+		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Opaque);
 		for (auto renderer : renderQueue->GetRenderers())
 		{
 			// 跳过不投射阴影的物体

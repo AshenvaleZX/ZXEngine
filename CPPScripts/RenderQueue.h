@@ -2,7 +2,7 @@
 #include "pubh.h"
 
 #define RendererList vector<MeshRenderer*>
-#define BatchMap map<unsigned int, RendererList>
+#define BatchMap map<uint32_t, RendererList>
 
 namespace ZXEngine
 {

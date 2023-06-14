@@ -15,13 +15,13 @@ namespace ZXEngine
 		isShareShader = false;
 		type = matStruct->type;
 		data = new MaterialData(type);
-		renderQueue = (int)RenderQueueType::Qpaque;
 
 		CopyMaterialStructToMaterialData(matStruct, data);
 
 		if (type == MaterialType::Rasterization)
 		{
 			shader = new Shader(matStruct->shaderPath, FrameBufferType::Normal);
+			renderQueue = (int)shader->reference->shaderInfo.stateSet.renderQueue;
 			RenderAPI::GetInstance()->SetUpMaterial(shader->reference, data);
 		}
 		else if (type == MaterialType::RayTracing)
@@ -38,7 +38,7 @@ namespace ZXEngine
 		isShareShader = true;
 		shader->reference->referenceCount++;
 		this->shader = shader;
-		renderQueue = (int)RenderQueueType::Qpaque;
+		renderQueue = (int)shader->reference->shaderInfo.stateSet.renderQueue;
 		// 通过这个构造函数初始化的材质，默认为光栅化渲染管线的材质
 		type = MaterialType::Rasterization;
 		data = new MaterialData(type);

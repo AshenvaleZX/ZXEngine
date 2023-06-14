@@ -33,6 +33,7 @@ namespace ZXEngine
 		BlendFactor dstFactor        = BlendFactor::ONE_MINUS_SRC_ALPHA;
 		FaceCullOption cull          = FaceCullOption::Back;
 		CompareOption depthCompareOp = CompareOption::LESS;
+		RenderQueueType renderQueue  = RenderQueueType::Opaque;
 		bool depthWrite              = true;
 	};
 

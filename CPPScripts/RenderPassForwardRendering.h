@@ -7,6 +7,7 @@ namespace ZXEngine
 	class Material;
 	class Camera;
 	class StaticMesh;
+	class MeshRenderer;
 	class RenderStateSetting;
 	class RenderPassForwardRendering : public RenderPass
 	{
@@ -22,8 +23,10 @@ namespace ZXEngine
 		Material* skyBoxMaterial;
 		RenderStateSetting* skyBoxRenderState;
 		RenderStateSetting* opaqueRenderState;
+		RenderStateSetting* transparentRenderState;
 
 		void InitSkyBox();
 		void RenderSkyBox(Camera* camera);
+		void RenderBatches(const map<uint32_t, vector<MeshRenderer*>>& batchs);
 	};
 }

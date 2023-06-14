@@ -4,7 +4,7 @@
 
 namespace ZXEngine
 {
-	map<string, BlendFactor> blendFactorMap =
+	unordered_map<string, BlendFactor> blendFactorMap =
 	{
 		{ "Zero",			BlendFactor::ZERO			}, { "One",					  BlendFactor::ONE						},
 		{ "SrcColor",		BlendFactor::SRC_COLOR		}, { "OneMinusSrcColor",	  BlendFactor::ONE_MINUS_SRC_COLOR		},
@@ -15,26 +15,26 @@ namespace ZXEngine
 		{ "ConstantAlpha",	BlendFactor::CONSTANT_ALPHA }, { "OneMinusConstantAlpha", BlendFactor::ONE_MINUS_CONSTANT_ALPHA },
 	};
 
-	map<string, BlendOption> blendOptionMap =
+	unordered_map<string, BlendOption> blendOptionMap =
 	{
 		{ "Add", BlendOption::ADD }, { "Sub", BlendOption::SUBTRACT }, { "RevSub", BlendOption::REVERSE_SUBTRACT },
 		{ "Min", BlendOption::MIN }, { "Max", BlendOption::MAX		},
 	};
 
-	map<string, FaceCullOption> faceCullOptionMap =
+	unordered_map<string, FaceCullOption> faceCullOptionMap =
 	{
 		{ "Back", FaceCullOption::Back }, { "Front", FaceCullOption::Front		  },
 		{ "Off",  FaceCullOption::None }, { "All",   FaceCullOption::FrontAndBack },
 	};
 
-	map<string, CompareOption> depthTestOptionMap =
+	unordered_map<string, CompareOption> depthTestOptionMap =
 	{
 		{ "Never",  CompareOption::NEVER  }, { "Less",	   CompareOption::LESS		}, { "LessOrEqual",	   CompareOption::LESS_OR_EQUAL	   },
 		{ "Always", CompareOption::ALWAYS }, { "Greater",  CompareOption::GREATER	}, { "GreaterOrEqual", CompareOption::GREATER_OR_EQUAL },
 		{ "Equal",	CompareOption::EQUAL  }, { "NotEqual", CompareOption::NOT_EQUAL },
 	};
 
-	map<string, ShaderPropertyType> shaderPropertyMap =
+	unordered_map<string, ShaderPropertyType> shaderPropertyMap =
 	{
 		{ "vec2", ShaderPropertyType::VEC2 }, { "vec3",  ShaderPropertyType::VEC3  }, { "vec4", ShaderPropertyType::VEC4 }, 
 		{ "mat2", ShaderPropertyType::MAT2 }, { "mat3",  ShaderPropertyType::MAT3  }, { "mat4", ShaderPropertyType::MAT4 },
@@ -50,7 +50,7 @@ namespace ZXEngine
 		{ "ENGINE_Far_Plane",   ShaderPropertyType::ENGINE_FAR_PLANE   }, { "ENGINE_Model_Inv",       ShaderPropertyType::ENGINE_MODEL_INV       },
 	};
 
-	map<string, string> enginePropertiesTypeMap =
+	unordered_map<string, string> enginePropertiesTypeMap =
 	{
 		{ "ENGINE_Model",          "mat4"        }, { "ENGINE_View",            "mat4"  }, { "ENGINE_Projection", "mat4"      }, 
 		{ "ENGINE_Camera_Pos",     "vec3"        }, { "ENGINE_Light_Pos",       "vec3"  }, { "ENGINE_Light_Dir",  "vec3"      }, 
@@ -58,7 +58,7 @@ namespace ZXEngine
 		{ "ENGINE_Depth_Cube_Map", "samplerCube" }, { "ENGINE_Far_Plane",       "float" }, { "ENGINE_Model_Inv",  "mat4"      },
 	};
 
-	map<ShaderPropertyType, string> propertyTypeToGLSLType =
+	unordered_map<ShaderPropertyType, string> propertyTypeToGLSLType =
 	{
 		{ ShaderPropertyType::BOOL, "bool" }, { ShaderPropertyType::INT,  "int"  }, { ShaderPropertyType::FLOAT, "float" },
 		{ ShaderPropertyType::VEC2, "vec2" }, { ShaderPropertyType::VEC3, "vec3" }, { ShaderPropertyType::VEC4,  "vec4"  },
@@ -74,7 +74,7 @@ namespace ZXEngine
 		{ ShaderPropertyType::ENGINE_FAR_PLANE,   "float"     }, { ShaderPropertyType::ENGINE_MODEL_INV,       "mat4"        },
 	};
 
-	map<ShaderPropertyType, string> propertyTypeToHLSLType =
+	unordered_map<ShaderPropertyType, string> propertyTypeToHLSLType =
 	{
 		{ ShaderPropertyType::BOOL, "bool"     }, { ShaderPropertyType::INT,  "int"      }, { ShaderPropertyType::FLOAT, "float"    },
 		{ ShaderPropertyType::VEC2, "float2"   }, { ShaderPropertyType::VEC3, "float3"   }, { ShaderPropertyType::VEC4,  "float4"   },
@@ -88,6 +88,11 @@ namespace ZXEngine
 		{ ShaderPropertyType::ENGINE_LIGHT_COLOR, "float3"    }, { ShaderPropertyType::ENGINE_LIGHT_INTENSITY, "float"       },
 		{ ShaderPropertyType::ENGINE_DEPTH_MAP,   "Texture2D" }, { ShaderPropertyType::ENGINE_DEPTH_CUBE_MAP,  "TextureCube" },
 		{ ShaderPropertyType::ENGINE_FAR_PLANE,   "float"     }, { ShaderPropertyType::ENGINE_MODEL_INV,       "float4x4"    },
+	};
+
+	unordered_map<string, RenderQueueType> renderQueueMap =
+	{
+		{ "Opaque", RenderQueueType::Opaque }, { "Transparent", RenderQueueType::Transparent },
 	};
 
 	ShaderInfo ShaderParser::GetShaderInfo(const string& code, GraphicsAPI api)
@@ -1010,6 +1015,10 @@ namespace ZXEngine
 			else if (words[0] == "ZWrite")
 			{
 				stateSet.depthWrite = words[1] == "On";
+			}
+			else if (words[0] == "RenderQueue")
+			{
+				stateSet.renderQueue = renderQueueMap[words[1]];
 			}
 		}
 
