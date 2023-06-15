@@ -21,6 +21,7 @@ namespace ZXEngine
         float aspect = 0.0f;
         float nearClipDis = 0.1f;
         float farClipDis = 200.0f;
+        bool enableAfterEffects = false;
         CameraType cameraType;
 
         Camera();

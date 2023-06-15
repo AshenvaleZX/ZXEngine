@@ -5,6 +5,7 @@
 #define ExtractBrightArea "ExtractBrightArea"
 #define GaussianBlur "GaussianBlur"
 #define BloomBlend "BloomBlend"
+#define CopyTexture "CopyTexture"
 
 namespace ZXEngine
 {
@@ -28,7 +29,7 @@ namespace ZXEngine
 
 		void CreateCommand(string name);
 		uint32_t GetCommand(const string& name);
-		void CreateMaterial(string name, string path, FrameBufferType type);
+		void CreateMaterial(string name, string path, FrameBufferType type, bool isBuiltIn = false);
 		Material* GetMaterial(string name);
 		void InitScreenQuad();
 
@@ -44,5 +45,8 @@ namespace ZXEngine
 		// Bloom
 		void InitBloomBlend(bool isFinal = false);
 		string BlitBloomBlend(string originFBO, string blurFBO, bool isFinal = false);
+		// ¼òµ¥µÄÍ¼Ïñ¸´ÖÆ
+		void InitCopy(bool isFinal = false);
+		string BlitCopy(string targetFBO, string sourceFBO, bool isFinal = false);
 	};
 }

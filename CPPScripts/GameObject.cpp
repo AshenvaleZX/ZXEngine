@@ -123,6 +123,7 @@ namespace ZXEngine
 		camera->Fov = data["FOV"];
 		camera->nearClipDis = data["NearClipDis"];
 		camera->farClipDis = data["FarClipDis"];
+		camera->enableAfterEffects = data["EnableAfterEffects"];
 	}
 
 	void GameObject::ParseLight(json data)

@@ -42,7 +42,7 @@ Fragment
     {
         void main()
         {
-            FragColor = texture(_RenderTexture, TexCoords);
+            FragColor = vec4(texture(_RenderTexture, TexCoords).rgb, 1.0);
         }
     }
 }

@@ -7,6 +7,7 @@
 #include "FBOManager.h"
 #include "RenderStateSetting.h"
 #include "ProjectSetting.h"
+#include "ZCamera.h"
 
 namespace ZXEngine
 {
@@ -17,6 +18,7 @@ namespace ZXEngine
 		InitKawaseBlur();
 		InitExtractBrightArea();
 		InitBloomBlend(true);
+		InitCopy(true);
 
 		renderState = new RenderStateSetting();
 		renderState->depthTest = false;
@@ -31,17 +33,25 @@ namespace ZXEngine
 
 		string finalFBO = ProjectSetting::renderPipelineType == RenderPipelineType::Rasterization ? "Forward" : "RayTracing";
 
-		// 提取画面高亮部分
-		string res1 = BlitExtractBrightArea(finalFBO);
-		
-		// 高斯模糊高亮区域
-		//string res2 = BlitGaussianBlur(res1, 1, 3.0f);
-		
-		// Kawase模糊高亮区域
-		string res2 = BlitKawaseBlur(res1, 2, 2.0f);
+		if (camera->enableAfterEffects)
+		{
+			// 提取画面高亮部分
+			string res1 = BlitExtractBrightArea(finalFBO);
 
-		// 混合原图和高亮模糊
-		string res3 = BlitBloomBlend(finalFBO, res2, true);
+			// 高斯模糊高亮区域
+			//string res2 = BlitGaussianBlur(res1, 1, 3.0f);
+
+			// Kawase模糊高亮区域
+			string res2 = BlitKawaseBlur(res1, 2, 2.0f);
+
+			// 混合原图和高亮模糊
+			string res3 = BlitBloomBlend(finalFBO, res2, true);
+		}
+		else
+		{
+			// 直接输出原Buffer图像
+			string res = BlitCopy(ScreenBuffer, finalFBO, true);
+		}
 	}
 
 	void RenderPassAfterEffectRendering::CreateCommand(string name)
@@ -66,14 +76,14 @@ namespace ZXEngine
 		}
 	}
 
-	void RenderPassAfterEffectRendering::CreateMaterial(string name, string path, FrameBufferType type)
+	void RenderPassAfterEffectRendering::CreateMaterial(string name, string path, FrameBufferType type, bool isBuiltIn)
 	{
 		if (aeMaterials.count(name) > 0)
 		{
 			Debug::LogError("Try to add an existing shader");
 			return;
 		}
-		aeMaterials.insert(pair<string, Material*>(name, new Material(new Shader(Resources::GetAssetFullPath(path), type))));
+		aeMaterials.insert(pair<string, Material*>(name, new Material(new Shader(Resources::GetAssetFullPath(path, isBuiltIn), type))));
 	}
 
 	Material* RenderPassAfterEffectRendering::GetMaterial(string name)
@@ -239,5 +249,22 @@ namespace ZXEngine
 		RenderAPI::GetInstance()->Draw(screenQuad->VAO);
 		RenderAPI::GetInstance()->GenerateDrawCommand(GetCommand(BloomBlend));
 		return BloomBlend;
+	}
+
+	void RenderPassAfterEffectRendering::InitCopy(bool isFinal)
+	{
+		CreateCommand(CopyTexture);
+		CreateMaterial(CopyTexture, "Shaders/RenderTexture.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color, true);
+	}
+
+	string RenderPassAfterEffectRendering::BlitCopy(string targetFBO, string sourceFBO, bool isFinal)
+	{
+		FBOManager::GetInstance()->SwitchFBO(targetFBO);
+		auto material = GetMaterial(CopyTexture);
+		material->Use();
+		material->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(sourceFBO)->ColorBuffer, 0, false, true);
+		RenderAPI::GetInstance()->Draw(screenQuad->VAO);
+		RenderAPI::GetInstance()->GenerateDrawCommand(GetCommand(CopyTexture));
+		return targetFBO;
 	}
 }

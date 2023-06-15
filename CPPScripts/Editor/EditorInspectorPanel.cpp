@@ -198,6 +198,9 @@ namespace ZXEngine
 		float farClipDis = component->farClipDis;
 		ImGui::Text("Far Clip      ");
 		ImGui::SameLine(); ImGui::DragFloat("##farClipDis", &farClipDis, 0.1f, 0.0f, FLT_MAX);
+		bool enableAfterEffects = component->enableAfterEffects;
+		ImGui::Text("After Effects ");
+		ImGui::SameLine(); ImGui::Checkbox("##enableAfterEffects", &enableAfterEffects);
 	}
 
 	void EditorInspectorPanel::DrawLight(Light* component)

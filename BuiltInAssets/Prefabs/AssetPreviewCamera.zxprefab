@@ -12,7 +12,8 @@
             "Type": "Camera",
             "FOV": 45,
             "NearClipDis": 0.1,
-            "FarClipDis": 1000
+            "FarClipDis": 1000,
+            "EnableAfterEffects": false
         }
     ]
 }
