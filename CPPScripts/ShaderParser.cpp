@@ -36,9 +36,12 @@ namespace ZXEngine
 
 	unordered_map<string, ShaderPropertyType> shaderPropertyMap =
 	{
-		{ "vec2", ShaderPropertyType::VEC2 }, { "vec3",  ShaderPropertyType::VEC3  }, { "vec4", ShaderPropertyType::VEC4 }, 
-		{ "mat2", ShaderPropertyType::MAT2 }, { "mat3",  ShaderPropertyType::MAT3  }, { "mat4", ShaderPropertyType::MAT4 },
-		{ "int",  ShaderPropertyType::INT  }, { "float", ShaderPropertyType::FLOAT }, { "bool", ShaderPropertyType::BOOL },
+		{ "vec2",  ShaderPropertyType::VEC2  }, { "vec3",  ShaderPropertyType::VEC3  }, { "vec4",  ShaderPropertyType::VEC4  },
+		{ "ivec2", ShaderPropertyType::IVEC2 }, { "ivec3", ShaderPropertyType::IVEC3 }, { "ivec4", ShaderPropertyType::IVEC4 },
+		{ "uvec2", ShaderPropertyType::UVEC2 }, { "uvec3", ShaderPropertyType::UVEC3 }, { "uvec4", ShaderPropertyType::UVEC4 },
+		{ "mat2",  ShaderPropertyType::MAT2  }, { "mat3",  ShaderPropertyType::MAT3  }, { "mat4",  ShaderPropertyType::MAT4  },
+		{ "int",   ShaderPropertyType::INT   }, { "uint",  ShaderPropertyType::UINT  }, { "float", ShaderPropertyType::FLOAT },
+		{ "bool",  ShaderPropertyType::BOOL  },
 
 		{ "sampler", ShaderPropertyType::SAMPLER }, { "sampler2D", ShaderPropertyType::SAMPLER_2D }, { "samplerCube", ShaderPropertyType::SAMPLER_CUBE },
 
@@ -60,9 +63,12 @@ namespace ZXEngine
 
 	unordered_map<ShaderPropertyType, string> propertyTypeToGLSLType =
 	{
-		{ ShaderPropertyType::BOOL, "bool" }, { ShaderPropertyType::INT,  "int"  }, { ShaderPropertyType::FLOAT, "float" },
-		{ ShaderPropertyType::VEC2, "vec2" }, { ShaderPropertyType::VEC3, "vec3" }, { ShaderPropertyType::VEC4,  "vec4"  },
-		{ ShaderPropertyType::MAT2, "mat2" }, { ShaderPropertyType::MAT3, "mat3" }, { ShaderPropertyType::MAT4,  "mat4"  },
+		{ ShaderPropertyType::VEC2,  "vec2"  }, { ShaderPropertyType::VEC3,  "vec3"  }, { ShaderPropertyType::VEC4,  "vec4"  },
+		{ ShaderPropertyType::IVEC2, "ivec2" }, { ShaderPropertyType::IVEC3, "ivec3" }, { ShaderPropertyType::IVEC4, "ivec4" },
+		{ ShaderPropertyType::UVEC2, "uvec2" }, { ShaderPropertyType::UVEC3, "uvec3" }, { ShaderPropertyType::UVEC4, "uvec4" },
+		{ ShaderPropertyType::MAT2,  "mat2"  }, { ShaderPropertyType::MAT3,  "mat3"  }, { ShaderPropertyType::MAT4,  "mat4"  },
+		{ ShaderPropertyType::INT,   "int"   }, { ShaderPropertyType::UINT,  "uint"  }, { ShaderPropertyType::FLOAT, "float" },
+		{ ShaderPropertyType::BOOL,  "bool"  },
 
 		{ ShaderPropertyType::SAMPLER, "sampler" }, { ShaderPropertyType::SAMPLER_2D, "sampler2D" }, { ShaderPropertyType::SAMPLER_CUBE, "samplerCube" },
 
@@ -76,9 +82,12 @@ namespace ZXEngine
 
 	unordered_map<ShaderPropertyType, string> propertyTypeToHLSLType =
 	{
-		{ ShaderPropertyType::BOOL, "bool"     }, { ShaderPropertyType::INT,  "int"      }, { ShaderPropertyType::FLOAT, "float"    },
-		{ ShaderPropertyType::VEC2, "float2"   }, { ShaderPropertyType::VEC3, "float3"   }, { ShaderPropertyType::VEC4,  "float4"   },
-		{ ShaderPropertyType::MAT2, "float2x2" }, { ShaderPropertyType::MAT3, "float3x3" }, { ShaderPropertyType::MAT4,  "float4x4" },
+		{ ShaderPropertyType::VEC2,  "float2"   }, { ShaderPropertyType::VEC3,  "float3"   }, { ShaderPropertyType::VEC4,  "float4"   },
+		{ ShaderPropertyType::IVEC2, "int2"     }, { ShaderPropertyType::IVEC3, "int3"     }, { ShaderPropertyType::IVEC4, "int4"     },
+		{ ShaderPropertyType::UVEC2, "uint2"    }, { ShaderPropertyType::UVEC3, "uint3"    }, { ShaderPropertyType::UVEC4, "uint4"    },
+		{ ShaderPropertyType::MAT2,  "float2x2" }, { ShaderPropertyType::MAT3,  "float3x3" }, { ShaderPropertyType::MAT4,  "float4x4" },
+		{ ShaderPropertyType::INT,   "int"      }, { ShaderPropertyType::UINT,  "uint"     }, { ShaderPropertyType::FLOAT, "float"    },
+		{ ShaderPropertyType::BOOL,  "bool"     },
 
 		{ ShaderPropertyType::SAMPLER, "Texture2D" }, { ShaderPropertyType::SAMPLER_2D, "Texture2D" }, { ShaderPropertyType::SAMPLER_CUBE, "TextureCube" },
 
@@ -971,8 +980,18 @@ namespace ZXEngine
 		Utils::ReplaceAllWord(dxCode, "vec2", "float2");
 		Utils::ReplaceAllWord(dxCode, "vec3", "float3");
 		Utils::ReplaceAllWord(dxCode, "vec4", "float4");
+		Utils::ReplaceAllWord(dxCode, "ivec2", "int2");
+		Utils::ReplaceAllWord(dxCode, "ivec3", "int3");
+		Utils::ReplaceAllWord(dxCode, "ivec4", "int4");
+		Utils::ReplaceAllWord(dxCode, "uvec2", "uint2");
+		Utils::ReplaceAllWord(dxCode, "uvec3", "uint3");
+		Utils::ReplaceAllWord(dxCode, "uvec4", "uint4");
 		Utils::ReplaceAllWord(dxCode, "mat3", "float3x3");
 		Utils::ReplaceAllWord(dxCode, "mat4", "float4x4");
+
+		// Ìæ»»ÄÚÖÃº¯ÊýÃû³Æ
+		Utils::ReplaceAllWord(dxCode, "fract", "frac");
+		Utils::ReplaceAllWord(dxCode, "mod", "fmod");
 
 		return dxCode;
 	}
