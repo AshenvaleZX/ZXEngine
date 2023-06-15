@@ -18,7 +18,7 @@ namespace ZXEngine
 		static RenderEngineProperties* mInstance;
 
 	public:
-		void SetLightProperties(Light* light);
+		void SetLightProperties(const vector<Light*>& lights);
 		void SetCameraProperties(Camera* camera);
 		void SetRendererProperties(MeshRenderer* renderer);
 		void SetShadowMap(uint32_t id, bool isBuffer = true);

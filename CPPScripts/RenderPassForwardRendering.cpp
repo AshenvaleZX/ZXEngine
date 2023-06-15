@@ -54,7 +54,7 @@ namespace ZXEngine
 
 		// 设置引擎参数
 		RenderEngineProperties::GetInstance()->SetCameraProperties(camera);
-		RenderEngineProperties::GetInstance()->SetLightProperties(Light::GetAllLights()[0]);
+		RenderEngineProperties::GetInstance()->SetLightProperties(Light::GetAllLights());
 		RenderEngineProperties::GetInstance()->SetShadowCubeMap(FBOManager::GetInstance()->GetFBO("ShadowCubeMap")->DepthBuffer);
 
 		// 渲染不透明队列

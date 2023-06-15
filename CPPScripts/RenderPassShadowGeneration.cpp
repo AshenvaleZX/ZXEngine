@@ -31,6 +31,9 @@ namespace ZXEngine
 	
 	void RenderPassShadowGeneration::Render(Camera* camera)
 	{
+		if (Light::GetAllLights().empty())
+			return;
+
 		// 渲染阴影的光源
 		Light* light = Light::GetAllLights()[0];
 

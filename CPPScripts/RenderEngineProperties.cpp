@@ -18,12 +18,15 @@ namespace ZXEngine
 		return mInstance;
 	}
 
-	void RenderEngineProperties::SetLightProperties(Light* light)
+	void RenderEngineProperties::SetLightProperties(const vector<Light*>& lights)
 	{
-		lightPos = light->GetTransform()->GetPosition();
-		lightDir = light->GetTransform()->GetForward();
-		lightColor = light->color;
-		lightIntensity = light->intensity;
+		if (lights.empty())
+			return;
+
+		lightPos = lights[0]->GetTransform()->GetPosition();
+		lightDir = lights[0]->GetTransform()->GetForward();
+		lightColor = lights[0]->color;
+		lightIntensity = lights[0]->intensity;
 	}
 
 	void RenderEngineProperties::SetCameraProperties(Camera* camera)
