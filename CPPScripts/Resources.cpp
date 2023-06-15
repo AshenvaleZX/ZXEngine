@@ -217,12 +217,12 @@ namespace ZXEngine
 
 		for (size_t i = 0; i < data["Float"].size(); i++)
 		{
-			matStruct->floatDatas[data["Float"][i]["UniformName"]] = data["Float"][i]["UniformName"]["Value"];
+			matStruct->floatDatas[data["Float"][i]["UniformName"]] = data["Float"][i]["Value"];
 		}
 
 		for (size_t i = 0; i < data["UInt"].size(); i++)
 		{
-			matStruct->uintDatas[data["UInt"][i]["UniformName"]] = data["UInt"][i]["UniformName"]["Value"];
+			matStruct->uintDatas[data["UInt"][i]["UniformName"]] = data["UInt"][i]["Value"];
 		}
 
 		for (size_t i = 0; i < data["Vector2"].size(); i++)

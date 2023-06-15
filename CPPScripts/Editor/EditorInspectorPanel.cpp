@@ -95,6 +95,50 @@ namespace ZXEngine
 			}
 		}
 
+		uint32_t idx = 0;
+		ImGui::PushItemWidth(60);
+		for (auto& iter : material->data->floatDatas)
+		{
+			float value = iter.second;
+			ImGui::Text(iter.first.c_str());
+			ImGui::SameLine(120); ImGui::DragFloat(("##float" + to_string(idx)).c_str(), &value, 0.1f, -FLT_MAX, FLT_MAX);
+			idx++;
+		}
+		for (auto& iter : material->data->uintDatas)
+		{
+			int value = static_cast<int>(iter.second);
+			ImGui::Text(iter.first.c_str());
+			ImGui::SameLine(120); ImGui::DragInt(("##uint32_t" + to_string(idx)).c_str(), &value, 1.0f, 0, UINT32_MAX);
+			idx++;
+		}
+		for (auto& iter : material->data->vec2Datas)
+		{
+			Vector2 value = iter.second;
+			ImGui::Text(iter.first.c_str());
+			ImGui::SameLine(120); ImGui::DragFloat(("##Vec2X" + to_string(idx)).c_str(), &value.x, 0.25f, -FLT_MAX, FLT_MAX);
+			ImGui::SameLine(); ImGui::DragFloat(("##Vec2Y" + to_string(idx)).c_str(), &value.y, 0.25f, -FLT_MAX, FLT_MAX);
+		}
+		for (auto& iter : material->data->vec3Datas)
+		{
+			Vector3 value = iter.second;
+			ImGui::Text(iter.first.c_str());
+			ImGui::SameLine(120); ImGui::DragFloat(("##Vec3X" + to_string(idx)).c_str(), &value.x, 0.25f, -FLT_MAX, FLT_MAX);
+			ImGui::SameLine(); ImGui::DragFloat(("##Vec3Y" + to_string(idx)).c_str(), &value.y, 0.25f, -FLT_MAX, FLT_MAX);
+			ImGui::SameLine(); ImGui::DragFloat(("##Vec3Z" + to_string(idx)).c_str(), &value.z, 0.25f, -FLT_MAX, FLT_MAX);
+			idx++;
+		}
+		for (auto& iter : material->data->vec4Datas)
+		{
+			Vector4 value = iter.second;
+			ImGui::Text(iter.first.c_str());
+			ImGui::SameLine(120); ImGui::DragFloat(("##Vec4X" + to_string(idx)).c_str(), &value.x, 0.25f, -FLT_MAX, FLT_MAX);
+			ImGui::SameLine(); ImGui::DragFloat(("##Vec4Y" + to_string(idx)).c_str(), &value.y, 0.25f, -FLT_MAX, FLT_MAX);
+			ImGui::SameLine(); ImGui::DragFloat(("##Vec4Z" + to_string(idx)).c_str(), &value.z, 0.25f, -FLT_MAX, FLT_MAX);
+			ImGui::SameLine(); ImGui::DragFloat(("##Vec4W" + to_string(idx)).c_str(), &value.w, 0.25f, -FLT_MAX, FLT_MAX);
+			idx++;
+		}
+		ImGui::PopItemWidth();
+
 		auto ImTextureMgr = ImGuiTextureManager::GetInstance();
 		for (auto& iter : material->data->textures)
 		{

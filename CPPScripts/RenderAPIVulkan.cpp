@@ -495,11 +495,12 @@ namespace ZXEngine
     }
 
     // 这个函数完成的任务是通过shaderReference里的信息来配置MaterialData，也就是用vkUpdateDescriptorSets把Image与VkPipeline绑定起来
-    void RenderAPIVulkan::SetUpMaterial(ShaderReference* shaderReference, MaterialData* materialData)
+    void RenderAPIVulkan::SetUpMaterial(Material* material)
     {
+        auto shaderReference = material->shader->reference;
         auto pipeline = GetPipelineByIndex(shaderReference->ID);
 
-        auto vulkanMaterialData = GetMaterialDataByIndex(materialData->GetID());
+        auto vulkanMaterialData = GetMaterialDataByIndex(material->data->GetID());
         vulkanMaterialData->descriptorPool = CreateDescriptorPool(shaderReference->shaderInfo);
 
         // 创建Uniform Buffer
@@ -586,7 +587,7 @@ namespace ZXEngine
         {
             vector<VkWriteDescriptorSet> writeDescriptorSets;
 
-            for (auto& matTexture : materialData->textures)
+            for (auto& matTexture : material->data->textures)
             {
                 uint32_t binding = UINT32_MAX;
                 for (auto& textureProperty : shaderReference->shaderInfo.fragProperties.textureProperties)
@@ -625,7 +626,19 @@ namespace ZXEngine
             vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
         }
 
-        materialData->initialized = true;
+        // 设置材质数据
+        for (auto& property : material->data->vec2Datas)
+            SetShaderVector(material, property.first, property.second, true);
+        for (auto& property : material->data->vec3Datas)
+            SetShaderVector(material, property.first, property.second, true);
+        for (auto& property : material->data->vec4Datas)
+            SetShaderVector(material, property.first, property.second, true);
+        for (auto& property : material->data->floatDatas)
+            SetShaderScalar(material, property.first, property.second, true);
+        for (auto& property : material->data->uintDatas)
+            SetShaderScalar(material, property.first, property.second, true);
+
+        material->data->initialized = true;
     }
 
     void RenderAPIVulkan::DeleteShader(uint32_t id)

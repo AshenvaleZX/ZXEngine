@@ -402,9 +402,21 @@ namespace ZXEngine
 		curMaterialDataID = ID;
 	}
 
-	void RenderAPIOpenGL::SetUpMaterial(ShaderReference* shaderReference, MaterialData* materialData)
+	void RenderAPIOpenGL::SetUpMaterial(Material* material)
 	{
-		// OpenGL不需要实现这个接口
+		// 设置材质数据
+		for (auto& property : material->data->vec2Datas)
+			SetShaderVector(material, property.first, property.second, true);
+		for (auto& property : material->data->vec3Datas)
+			SetShaderVector(material, property.first, property.second, true);
+		for (auto& property : material->data->vec4Datas)
+			SetShaderVector(material, property.first, property.second, true);
+		for (auto& property : material->data->floatDatas)
+			SetShaderScalar(material, property.first, property.second, true);
+		for (auto& property : material->data->uintDatas)
+			SetShaderScalar(material, property.first, property.second, true);
+
+		material->data->initialized = true;
 	}
 	
 	void RenderAPIOpenGL::DeleteMaterialData(uint32_t id)

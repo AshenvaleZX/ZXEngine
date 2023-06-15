@@ -1077,9 +1077,10 @@ namespace ZXEngine
 		return materialDataID;
 	}
 
-	void RenderAPID3D12::SetUpMaterial(ShaderReference* shaderReference, MaterialData* materialData)
+	void RenderAPID3D12::SetUpMaterial(Material* material)
 	{
-		auto materialDataZXD3D12 = GetMaterialDataByIndex(materialData->GetID());
+		auto shaderReference = material->shader->reference;
+		auto materialDataZXD3D12 = GetMaterialDataByIndex(material->data->GetID());
 
 		// 计算Constant Buffer大小
 		UINT64 bufferSize = 0;
@@ -1105,7 +1106,7 @@ namespace ZXEngine
 				shaderReference->shaderInfo.fragProperties.textureProperties.size()
 			);
 
-			for (auto& matTexture : materialData->textures)
+			for (auto& matTexture : material->data->textures)
 			{
 				uint32_t binding = UINT32_MAX;
 				for (auto& textureProperty : shaderReference->shaderInfo.fragProperties.textureProperties)
@@ -1135,6 +1136,20 @@ namespace ZXEngine
 
 			materialDataZXD3D12->textureSets.push_back(materialTextureSet);
 		}
+
+		// 设置材质数据
+		for (auto& property : material->data->vec2Datas)
+			SetShaderVector(material, property.first, property.second, true);
+		for (auto& property : material->data->vec3Datas)
+			SetShaderVector(material, property.first, property.second, true);
+		for (auto& property : material->data->vec4Datas)
+			SetShaderVector(material, property.first, property.second, true);
+		for (auto& property : material->data->floatDatas)
+			SetShaderScalar(material, property.first, property.second, true);
+		for (auto& property : material->data->uintDatas)
+			SetShaderScalar(material, property.first, property.second, true);
+
+		material->data->initialized = true;
 	}
 
 	void RenderAPID3D12::UseMaterialData(uint32_t ID)

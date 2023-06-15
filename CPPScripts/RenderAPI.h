@@ -51,7 +51,7 @@ namespace ZXEngine
 
 		// ²ÄÖÊ
 		virtual uint32_t CreateMaterialData() = 0;
-		virtual void SetUpMaterial(ShaderReference* shaderReference, MaterialData* materialData) = 0;
+		virtual void SetUpMaterial(Material* material) = 0;
 		virtual void UseMaterialData(uint32_t ID) = 0;
 		virtual void DeleteMaterialData(uint32_t id) = 0;
 
