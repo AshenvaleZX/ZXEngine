@@ -72,7 +72,6 @@ namespace ZXEngine
 		RenderBatches(transparentQueue->GetBatches());
 
 		// äÖÈ¾Á£×ÓÏµÍ³
-		ParticleSystemManager::GetInstance()->Update();
 		ParticleSystemManager::GetInstance()->Render(camera);
 
 		renderAPI->GenerateDrawCommand(drawCommandID);

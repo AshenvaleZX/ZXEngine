@@ -7,6 +7,7 @@
 #include "LuaManager.h"
 #include "GameLogicManager.h"
 #include "ProjectSetting.h"
+#include "ParticleSystemManager.h"
 #ifdef ZX_EDITOR
 #include "Editor/EditorGUIManager.h"
 #include "Editor/EditorDataManager.h"
@@ -59,9 +60,13 @@ namespace ZXEngine
 
 #ifdef ZX_EDITOR
 		if (EditorDataManager::isGameStart && !EditorDataManager::isGamePause)
+		{
 			GameLogicManager::GetInstance()->Update();
+			ParticleSystemManager::GetInstance()->Update();
+		}
 #else
 		GameLogicManager::GetInstance()->Update();
+		ParticleSystemManager::GetInstance()->Update();
 #endif
 	}
 

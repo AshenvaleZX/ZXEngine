@@ -5,6 +5,7 @@
 #include "../Time.h"
 #include "../SceneManager.h"
 #include "../Resources.h"
+#include "../ParticleSystemManager.h"
 #include "../Vulkan/SPIRVCompiler.h"
 #include "../DirectX12/ZXD3D12Util.h"
 
@@ -144,6 +145,7 @@ namespace ZXEngine
 				{
 					Time::UpdateCurTime();
 					GameLogicManager::GetInstance()->Update();
+					ParticleSystemManager::GetInstance()->Update();
 				}
 			}
 		}
