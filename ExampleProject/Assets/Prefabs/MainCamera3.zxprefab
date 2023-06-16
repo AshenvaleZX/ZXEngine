@@ -1,0 +1,23 @@
+{
+    "Name": "MainCamera",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 10, -20],
+            "Rotation": [30, 0, 0],
+            "Scale": [1, 1, 1]
+        },
+        {
+            "Type": "Camera",
+            "FOV": 45,
+            "NearClipDis": 0.1,
+            "FarClipDis": 1000,
+            "EnableAfterEffects": false
+        },
+        {
+            "Type": "GameLogic",
+            "Lua": "Scripts/CameraMove.lua"
+        }
+    ]
+}

@@ -1,0 +1,330 @@
+// 此体积云算法参考了很多资料，整合在一起，并结合自己的需求调整了部分算法
+// 参考资料如下:
+
+// Noise and FBM: 
+// https://thebookofshaders.com/11/
+// https://thebookofshaders.com/12/
+// https://thebookofshaders.com/13/
+// https://iquilezles.org/articles/morenoise/
+
+// GPU Pro 7 - Chapter 2.4 Volumetric Clouds: 
+// https://zhuanlan.zhihu.com/p/580168048
+
+// Fuxiii's Blog:
+// https://fuxiii.github.io/Essentials.of.Vulkan/Application/VolumetricCloud.html
+
+// Shadertoy:
+// https://www.shadertoy.com/view/XttSz2
+
+// Youtube:
+// https://www.youtube.com/watch?v=BFld4EBO2RE (34m:50s)
+// https://www.youtube.com/watch?v=Qj_tK_mdRcA
+
+
+Vertex
+{
+    Input
+    {
+        0 vec3 aPos       : POSITION
+        1 vec2 aTexCoords : TEXCOORD
+        2 vec3 aNormal    : NORMAL
+    }
+
+    Output
+    {
+        0 vec3 WorldPos  : TEXCOORD0
+        1 vec3 Normal    : TEXCOORD1
+        2 vec2 TexCoords : TEXCOORD2
+    }
+
+    Properties
+    {
+        using ENGINE_Model
+        using ENGINE_View
+        using ENGINE_Projection
+        using ENGINE_Model_Inv
+    }
+
+    Program
+    {
+        void main()
+        {
+            WorldPos = to_vec3(mul(ENGINE_Model * vec4(aPos, 1.0)));
+            Normal = mul(transpose(to_mat3(ENGINE_Model_Inv)) * aNormal);
+            TexCoords = aTexCoords;
+            ZX_Position = mul(ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 1.0));
+        }
+    }
+}
+
+Fragment
+{
+    Input
+    {
+        0 vec3 WorldPos  : TEXCOORD0
+        1 vec3 Normal    : TEXCOORD1
+        2 vec2 TexCoords : TEXCOORD2
+    }
+
+    Output
+    {
+        0 vec4 FragColor : SV_Target
+    }
+
+    Properties
+    {
+        using ENGINE_Camera_Pos
+        vec3 _Size
+        float _Scale
+        float _Coverage
+        float _Transparency
+        float _FadeDistance
+        sampler2D _Texture1
+    }
+
+    Program
+    {
+        vec3 Hash33(vec3 p)
+        {
+            uint UI0 = 1597334673U;
+            uint UI1 = 3812015801U;
+            uvec2 UI2 = uvec2(UI0, UI1);
+            uvec3 UI3 = uvec3(UI0, UI1, 2798796415U);
+            float UIF = 1.0 / float(0xffffffffU);
+
+            uvec3 q = uvec3(ivec3(p)) * UI3;
+            q = (q.x ^ q.y ^ q.z) * UI3;
+            return -1.0 + 2.0 * vec3(q) * UIF;
+        }
+
+        float Random(float n)
+        {
+            return fract(sin(n) * 43758.5453);
+        }
+
+        float Remap(float x, float xMin, float xMax, float yMin, float yMax)
+        {
+            return yMin + (((x - xMin) / (xMax - xMin)) * (yMax - yMin));
+        }
+
+        // Gradient noise by iq (modified to be tileable)
+        float GradientNoise(vec3 x, float freq)
+        {
+            // grid
+            vec3 p = floor(x);
+            vec3 w = fract(x);
+            // quintic interpolant
+            vec3 u = w * w * w * (w * (w * 6.0 - 15.0) + 10.0);
+            // gradients
+            vec3 ga = Hash33(mod(p + vec3(0.0, 0.0, 0.0), freq));
+            vec3 gb = Hash33(mod(p + vec3(1.0, 0.0, 0.0), freq));
+            vec3 gc = Hash33(mod(p + vec3(0.0, 1.0, 0.0), freq));
+            vec3 gd = Hash33(mod(p + vec3(1.0, 1.0, 0.0), freq));
+            vec3 ge = Hash33(mod(p + vec3(0.0, 0.0, 1.0), freq));
+            vec3 gf = Hash33(mod(p + vec3(1.0, 0.0, 1.0), freq));
+            vec3 gg = Hash33(mod(p + vec3(0.0, 1.0, 1.0), freq));
+            vec3 gh = Hash33(mod(p + vec3(1.0, 1.0, 1.0), freq));
+            // projections
+            float va = dot(ga, w - vec3(0.0, 0.0, 0.0));
+            float vb = dot(gb, w - vec3(1.0, 0.0, 0.0));
+            float vc = dot(gc, w - vec3(0.0, 1.0, 0.0));
+            float vd = dot(gd, w - vec3(1.0, 1.0, 0.0));
+            float ve = dot(ge, w - vec3(0.0, 0.0, 1.0));
+            float vf = dot(gf, w - vec3(1.0, 0.0, 1.0));
+            float vg = dot(gg, w - vec3(0.0, 1.0, 1.0));
+            float vh = dot(gh, w - vec3(1.0, 1.0, 1.0));
+            // interpolation
+            return va + u.x * (vb - va) + u.y * (vc - va) + u.z * (ve - va) + u.x * u.y * (va - vb - vc + vd) + u.y * u.z * (va - vc - ve + vg) + u.z * u.x * (va - vb - ve + vf) + u.x * u.y * u.z * (-va + vb + vc - vd + ve - vf - vg + vh);
+        }
+
+        // 柏林FBM
+        float PerlinFBM(vec3 p, float freq, int octaves)
+        {
+            // exp2(x)表示2的x次方，该项为赫斯特指数
+            float G = exp2(-0.85);
+            // 一开始的赫斯特指数影响系数为1
+            float amp = 1.0;
+            // 一开始的噪音值为0
+            float noise = 0.0;
+            // 进行噪音叠加循环
+            for (int i = 0; i < octaves; ++i)
+            {
+                // 采样晶格噪音，并乘上赫斯特指数影响系数，并进行噪音叠加
+                noise += amp * GradientNoise(p * freq, freq);
+                // 提高频率
+                freq *= 2.0;
+                // 更新影响系数
+                amp *= G;
+            }
+            // 返回叠加结果
+            return noise;
+        }
+
+        float WorleyNoise(vec3 uvw, float freq)
+        {
+            // 同柏林噪音一样，采样点向下取整，唯一不同的是这个id点是在盒子的中心的
+            vec3 id = floor(uvw);
+            // 同柏林噪音一样，取小数点部分作为采样点，限制采样点范围
+            vec3 p = fract(uvw);
+            // 一开始的最小距离大一点，之后用于比较更新
+            float minDist = 10000.0;
+
+            // 如下三个循环就是分别遍历正方体上的27个点
+            for (float x = -1.0; x <= 1.0; ++x)
+            {
+                for (float y = -1.0; y <= 1.0; ++y)
+                {
+                    for (float z = -1.0; z <= 1.0; ++z)
+                    {
+                        vec3 offset = vec3(x, y, z);
+                        // id + offset就是以id为原点，计算周遭27个点的坐标(下文统称红点)
+                        // 在红点处调用hash33(...)，其实就是在算出一个特征点
+                        // 每个红点都有一个特征点
+                        vec3 h = Hash33(mod(id + offset, vec3(freq, freq, freq))) * 0.5 + 0.5;
+                        // h+offset其实就是算的是相对p点特征点的位置，应为p是最终的采样点
+                        h += offset;
+                        // 计算采样点和特征点的向量，主要是为了算距离
+                        vec3 d = p - h;
+                        // 其中向量自身的点乘其结果为自身向量长度的平方，这里不开根号的原因是应为开根号和开平方运算，导数都是大于0的，单调递增，平方最大也就意味着开根号也最大，当然，这里开根号也是可以的，只不多平方算的更快
+                        // 更新较小的那个值
+                        minDist = min(minDist, dot(d, d));
+                    }
+                }
+            }
+            // 这里1-minDist意思是将结果反过来，从纹理上来说就是黑的变成白的，白的变成黑的，由于原始的沃利噪音细胞部分是黑色的，这不是我们想要的，我们想要细胞部分用于模拟云的花椰菜的形状，结果反过来更加易于计算。
+            return 1. - minDist;
+        }
+        
+        float WorleyFBM(vec3 p, float freq)
+        {
+            return  WorleyNoise(p * freq, freq) * .625            // 原频率×权重
+                + WorleyNoise(p * freq * 2.0, freq * 2.0) * .25   // 二倍频率×权重
+                + WorleyNoise(p * freq * 4.0, freq * 4.0) * .125; // 四倍频率×权重
+        }
+
+        vec4 PerlinWorley(vec3 uvw)
+        {
+            // 声明要返回的颜色值
+            vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
+            float freq = 4;
+            // 计算获得uv点的柏林FBM噪音值。由于perlinfbm(...)返回的值范围为[-1,1]，而颜色范围为[0,1]，所以需要使用mix(1,perlinFBM,0.5)函数将噪音映射到[0,1]
+            // 等价于：float perlin_fbm = (perlinfbm(uvw, 4., 7)+1)/2;
+            float perlin_fbm = lerp(1., PerlinFBM(uvw, freq, 7), 0.5);
+            // 这里乘以2再减去1，按照GPU Pro 7的说法是让柏林FBM更具有云的蓬松感
+            perlin_fbm = abs(perlin_fbm * 2.0 - 1.0);
+            // G、B、A分量存储不同频率的沃利FBM噪音
+            color.g += WorleyFBM(uvw, freq);
+            color.b += WorleyFBM(uvw, freq * 2.0);
+            color.a += WorleyFBM(uvw, freq * 4.0);
+            // 柏林-沃利就是柏林FBM噪音在沃利FBM噪音上的重映射，并存储在R分量上，这样两者就结合在一起了。
+            color.r += Remap(perlin_fbm, 0.0, 1.0, color.g, 1.0);
+            // 返回结果
+            return color;
+        }
+
+        float GetPerlinWorleyCloudsDensity(vec3 uvw)
+        {
+            // 读取低频柏林-沃利和沃利噪音
+            vec4 low_frequency_noises = PerlinWorley(uvw);
+            // 使用低频柏林-沃利噪音创建FBM，并在低频的柏林-沃利噪音上增加细节
+            float low_freq_FBM = (low_frequency_noises.g * 0.625) + (low_frequency_noises.b * 0.25) + (low_frequency_noises.a * 0.125);
+            // 通过FBM构建基础的云体形状
+            float base_cloud = Remap(low_frequency_noises.r, -(1.0 - low_freq_FBM), 1.0, 0.0, 1.0);
+
+            // 获取使用高度-密度函数获取高度-密度数据，具体请参考1.3.2章节
+            // float density_height_gradient = GetDensityHeightGradientForPoint(p, weather_data);
+            // 将当前的高度函数应用到基础云体形状中
+            // base_cloud *= density_height_gradient
+
+            // 使用重映射应用云体的覆盖比
+            float base_cloud_with_coverage = Remap(base_cloud, _Coverage, 1.0, 0.0, 1.0);
+            // 将之前的结果乘上覆盖比后，小巧和轻量的云体将会比原来更好看
+            base_cloud_with_coverage *= _Coverage;
+
+            return base_cloud_with_coverage;
+        }
+
+        // ray-box intersection in box space
+        // 起点，方向，Box的边长
+        // 返回值：最近和最远的交点，如果没有交点，返回-1
+        vec2 iBox(vec3 ro, vec3 rd, vec3 rad) 
+        {
+            vec3 m = 1.0 / rd;
+            vec3 n = m * ro;
+            vec3 k = abs(m) * rad;
+            vec3 t1 = -n - k;
+            vec3 t2 = -n + k;
+            float tN = max(max(t1.x, t1.y), t1.z);
+            float tF = min(min(t2.x, t2.y), t2.z);
+
+            vec2 res = vec2(tN, tF);
+            if (tN > tF || tF < 0.0) 
+            {
+                res = vec2(-1.0, -1.0);
+            }
+            return res;
+        }
+
+        // Raymarch
+        float Interesect(vec3 ro, vec3 rd)
+        {
+            float res = -1.0;
+            // Bounding Volume
+            vec2 dis = iBox(ro, rd, _Size);
+
+            if (dis.y >= 0.0) 
+            {
+                // Raymarch
+                float dFar = dis.y;
+                float dNear = dis.x;
+                float step = 0.02;
+                float curDis = dNear;
+                float dense = 0.0;
+                for (int i=0; i < 64; i++)
+                {
+                    curDis += step;
+                    if (curDis > dFar) break;
+                    vec3 curPos = ro + rd * curDis;
+
+                    // 边缘淡出
+                    float edgeFade = 1.0;
+                    float edgeDis = min(_Size.x - abs(curPos.x), _Size.z - abs(curPos.z));
+                    if (edgeDis < _FadeDistance)
+                    {
+                        edgeFade = edgeDis / _FadeDistance;
+                    }
+
+                    vec3 rOffset = (vec3(Random(curPos.x), Random(curPos.y), Random(curPos.z)) * 2 - 1) / 100;
+                    curPos *= _Scale;
+                    float curDense = GetPerlinWorleyCloudsDensity(curPos + rOffset);
+                    dense += curDense * edgeFade;
+                }
+                res =  dense / _Transparency;
+            }
+            
+            return res;
+        }
+
+        void main()
+        {           
+            // 相机坐标
+            vec3 ro = WorldPos;
+            vec3 rd = normalize(vec3(0.1, 1.0, 0.1));
+
+            vec3 color = texture(_Texture1, TexCoords).rgb;
+
+            // vec2 uv = fract(TexCoords * 1.5);
+            // vec3 color = vec3(0.6, 0.6, 0.6);
+            // if (uv.x > 0.5 && uv.y > 0.5 || uv.x < 0.5 && uv.y < 0.5)
+            // {
+            //     color = vec3(0.8, 0.8, 0.8);
+            // }
+
+            float dense = Interesect(ro, rd);
+            dense = min(1, max(0, dense));
+            color *= lerp(vec3(1, 1, 1), vec3(0.6, 0.6, 0.6), dense);
+
+            FragColor = vec4(color, 1);
+        }
+    }
+}

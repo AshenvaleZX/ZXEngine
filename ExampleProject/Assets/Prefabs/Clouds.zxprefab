@@ -1,0 +1,19 @@
+{
+    "Name": "Clouds",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 0, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [4, 1, 4]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Geometry": 0,
+            "Material": "Materials/Clouds.zxmat",
+            "CastShadow": false,
+            "ReceiveShadow": false
+        }
+    ]
+}

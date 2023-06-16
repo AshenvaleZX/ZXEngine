@@ -1,0 +1,19 @@
+{
+    "Name": "Plane",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, -2, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [0.6, 1, 0.6]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Geometry": 4,
+            "Material": "Materials/CloudsShadow.zxmat",
+            "CastShadow": false,
+            "ReceiveShadow": true
+        }
+    ]
+}

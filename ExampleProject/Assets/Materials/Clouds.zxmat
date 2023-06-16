@@ -1,0 +1,30 @@
+{
+    "Type": "Material",
+    "Shader": "Shaders/VolumetricClouds.zxshader",
+    "Float":
+    [
+        {
+            "UniformName": "_Scale",
+            "Value": 0.5
+        },
+        {
+            "UniformName": "_Coverage",
+            "Value": 0.75
+        },
+        {
+            "UniformName": "_Transparency",
+            "Value": 24.0
+        },
+        {
+            "UniformName": "_FadeDistance",
+            "Value": 0.5
+        }
+    ],
+    "Vector3": 
+    [
+        {
+            "UniformName": "_Size",
+            "Value": [2.0, 0.5, 2.0]
+        }
+    ]
+}
