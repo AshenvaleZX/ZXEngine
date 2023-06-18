@@ -161,38 +161,32 @@ namespace ZXEngine
 
 		ImGui::PushItemWidth(60);
 		Vector3 position = component->GetLocalPosition();
-		float posX = position.x;
-		float posY = position.y;
-		float posZ = position.z;
 		ImGui::Text("Position    ");
 		ImGui::SameLine(); ImGui::Text("X");
-		ImGui::SameLine(); ImGui::DragFloat("##posX", &posX, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::DragFloat("##posX", &position.x, 0.15f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Y");
-		ImGui::SameLine(); ImGui::DragFloat("##posY", &posY, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::DragFloat("##posY", &position.y, 0.15f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Z");
-		ImGui::SameLine(); ImGui::DragFloat("##posZ", &posZ, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::DragFloat("##posZ", &position.z, 0.15f, -FLT_MAX, FLT_MAX);
+		component->SetLocalPosition(position);
 		Vector3 euler = component->GetLocalEulerAngles();
-		float rotX = euler.x;
-		float rotY = euler.y;
-		float rotZ = euler.z;
 		ImGui::Text("Rotation    ");
 		ImGui::SameLine(); ImGui::Text("X");
-		ImGui::SameLine(); ImGui::DragFloat("##rotX", &rotX, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::DragFloat("##rotX", &euler.x, 0.25f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Y");
-		ImGui::SameLine(); ImGui::DragFloat("##rotY", &rotY, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::DragFloat("##rotY", &euler.y, 0.25f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Z");
-		ImGui::SameLine(); ImGui::DragFloat("##rotZ", &rotZ, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::DragFloat("##rotZ", &euler.z, 0.25f, -FLT_MAX, FLT_MAX);
+		component->SetLocalEulerAngles(euler);
 		Vector3 scale = component->GetLocalScale();
-		float scaX = scale.x;
-		float scaY = scale.y;
-		float scaZ = scale.z;
 		ImGui::Text("Scale       ");
 		ImGui::SameLine(); ImGui::Text("X");
-		ImGui::SameLine(); ImGui::DragFloat("##scaX", &scaX, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::DragFloat("##scaX", &scale.x, 0.01f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Y");
-		ImGui::SameLine(); ImGui::DragFloat("##scaY", &scaY, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::DragFloat("##scaY", &scale.y, 0.01f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Z");
-		ImGui::SameLine(); ImGui::DragFloat("##scaZ", &scaZ, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::DragFloat("##scaZ", &scale.z, 0.01f, -FLT_MAX, FLT_MAX);
+		component->SetLocalScale(scale);
 		ImGui::PopItemWidth();
 	}
 
@@ -214,12 +208,10 @@ namespace ZXEngine
 		{
 			Debug::Log("Click Material");
 		}
-		bool castShadow = component->castShadow;
 		ImGui::Text("Cast Shadow     ");
-		ImGui::SameLine(); ImGui::Checkbox("##castShadow", &castShadow);
-		bool receiveShadow = component->receiveShadow;
+		ImGui::SameLine(); ImGui::Checkbox("##castShadow", &component->castShadow);
 		ImGui::Text("Receive Shadow  ");
-		ImGui::SameLine(); ImGui::Checkbox("##receiveShadow", &receiveShadow);
+		ImGui::SameLine(); ImGui::Checkbox("##receiveShadow", &component->receiveShadow);
 	}
 
 	void EditorInspectorPanel::DrawCamera(Camera* component)
@@ -228,23 +220,19 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("Camera"))
 			return;
 
-		float fov = component->Fov;
 		ImGui::Text("Field of View ");
 		ImGui::PushItemWidth(180);
-		ImGui::SameLine(); ImGui::SliderFloat("##fov", &fov, 1.0f, 179.0f, "");
+		ImGui::SameLine(); ImGui::SliderFloat("##fov", &component->Fov, 1.0f, 179.0f, "");
 		ImGui::PushItemWidth(50);
-		ImGui::SameLine(); ImGui::DragFloat("##fov", &fov, 0.1f, 1.0f, 179.0f);
+		ImGui::SameLine(); ImGui::DragFloat("##fov", &component->Fov, 0.1f, 1.0f, 179.0f);
 		ImGui::PopItemWidth();
 
-		float nearClipDis = component->nearClipDis;
 		ImGui::Text("Near Clip     ");
-		ImGui::SameLine(); ImGui::DragFloat("##nearClipDis", &nearClipDis, 0.1f, 0.0f, FLT_MAX);
-		float farClipDis = component->farClipDis;
+		ImGui::SameLine(); ImGui::DragFloat("##nearClipDis", &component->nearClipDis, 0.1f, 0.0f, FLT_MAX);
 		ImGui::Text("Far Clip      ");
-		ImGui::SameLine(); ImGui::DragFloat("##farClipDis", &farClipDis, 0.1f, 0.0f, FLT_MAX);
-		bool enableAfterEffects = component->enableAfterEffects;
+		ImGui::SameLine(); ImGui::DragFloat("##farClipDis", &component->farClipDis, 0.1f, 0.0f, FLT_MAX);
 		ImGui::Text("After Effects ");
-		ImGui::SameLine(); ImGui::Checkbox("##enableAfterEffects", &enableAfterEffects);
+		ImGui::SameLine(); ImGui::Checkbox("##enableAfterEffects", &component->enableAfterEffects);
 	}
 
 	void EditorInspectorPanel::DrawLight(Light* component)
