@@ -15,6 +15,7 @@
 #include <sstream>
 #include <algorithm>
 #include <filesystem>
+#include <thread>
 #include <nlohmann/json.hpp>
 
 // 防止windows.h里的宏定义max和min影响到其它库里的相同字段

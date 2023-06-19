@@ -61,23 +61,35 @@ namespace ZXEngine
 				{
 					if (ImGui::MenuItem("Compile All Shader for Vulkan"))
 					{
-						SPIRVCompiler::CompileAllShader(Resources::GetAssetsPath());
-						SPIRVCompiler::CompileAllShader(Resources::GetAssetFullPath("Shaders", true));
-						Debug::Log("The compilation of all shaders is complete.");
+						std::thread t([]
+						{
+							SPIRVCompiler::CompileAllShader(Resources::GetAssetsPath());
+							SPIRVCompiler::CompileAllShader(Resources::GetAssetFullPath("Shaders", true));
+							Debug::Log("The compilation of all shaders is complete.");
+						});
+						t.detach();
 					}
 
 					if (ImGui::MenuItem("Compile All Shader for DirectX12"))
 					{
-						ZXD3D12Util::CompileAllShader(Resources::GetAssetsPath());
-						ZXD3D12Util::CompileAllShader(Resources::GetAssetFullPath("Shaders", true));
-						Debug::Log("The compilation of all shaders is complete.");
+						std::thread t([]
+						{
+							ZXD3D12Util::CompileAllShader(Resources::GetAssetsPath());
+							ZXD3D12Util::CompileAllShader(Resources::GetAssetFullPath("Shaders", true));
+							Debug::Log("The compilation of all shaders is complete.");
+						});
+						t.detach();
 					}
 
 					if (ImGui::MenuItem("Generate HLSL for DirectX12"))
 					{
-						ZXD3D12Util::TranslateAllShaderToHLSL(Resources::GetAssetsPath());
-						ZXD3D12Util::TranslateAllShaderToHLSL(Resources::GetAssetFullPath("Shaders", true));
-						Debug::Log("The translation of all shaders is complete.");
+						std::thread t([]
+						{
+							ZXD3D12Util::TranslateAllShaderToHLSL(Resources::GetAssetsPath());
+							ZXD3D12Util::TranslateAllShaderToHLSL(Resources::GetAssetFullPath("Shaders", true));
+							Debug::Log("The translation of all shaders is complete.");
+						});
+						t.detach();
 					}
 
 					ImGui::EndMenu();
