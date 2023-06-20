@@ -397,6 +397,8 @@ namespace ZXEngine
 		Utils::ReplaceAllWord(glCode, "to_vec2", "vec2");
 		Utils::ReplaceAllWord(glCode, "to_vec3", "vec3");
 		Utils::ReplaceAllWord(glCode, "to_mat3", "mat3");
+		Utils::ReplaceAllWord(glCode, "build_mat3", "mat3");
+		Utils::ReplaceAllWord(glCode, "build_mat4", "mat4");
 		Utils::ReplaceAllString(glCode, "ZX_Depth", "gl_FragDepth");
 		Utils::ReplaceAllString(glCode, "ZX_Position", "gl_Position");
 		Utils::ReplaceAllString(glCode, "GS_IN_Position", "gl_Position");
@@ -545,6 +547,8 @@ namespace ZXEngine
 		Utils::ReplaceAllWord(vkCode, "to_vec2", "vec2");
 		Utils::ReplaceAllWord(vkCode, "to_vec3", "vec3");
 		Utils::ReplaceAllWord(vkCode, "to_mat3", "mat3");
+		Utils::ReplaceAllWord(vkCode, "build_mat3", "mat3");
+		Utils::ReplaceAllWord(vkCode, "build_mat4", "mat4");
 		Utils::ReplaceAllString(vkCode, "ZX_Depth", "gl_FragDepth");
 		Utils::ReplaceAllString(vkCode, "ZX_Position", "gl_Position");
 		Utils::ReplaceAllString(vkCode, "GS_IN_Position", "gl_Position");
@@ -563,8 +567,11 @@ namespace ZXEngine
 		string geomCode = GetCodeBlock(originCode, "Geometry");
 		string fragCode = GetCodeBlock(originCode, "Fragment");
 
+		// 把HLSL默认的行主序矩阵改为列主序
+		string dxCode = "#pragma pack_matrix(column_major)\n\n";
+
 		// 顶点着色器输入结构体
-		string dxCode = "struct VertexInput\n{\n";
+		dxCode += "struct VertexInput\n{\n";
 		string vertInputBlock = GetCodeBlock(vertCode, "Input");
 		vector<string> vertInputVariables;
 		auto lines = Utils::StringSplit(vertInputBlock, '\n');
@@ -756,7 +763,7 @@ namespace ZXEngine
 		{
 			if (line.find("main") != string::npos)
 				break;
-			dxCode += line + "\n";
+			dxCode += line;
 		}
 		// 重新生成VS main函数
 		string vertMainBlock = GetCodeBlock(vertProgramBlock, "main");
@@ -825,7 +832,7 @@ namespace ZXEngine
 			{
 				if (line.find("main") != string::npos)
 					break;
-				dxCode += line + "\n";
+				dxCode += line;
 			}
 			// 重新生成GS main函数
 			string geomMainBlock = GetCodeBlock(geomProgramBlock, "main");
@@ -896,7 +903,7 @@ namespace ZXEngine
 		{
 			if (line.find("main") != string::npos)
 				break;
-			dxCode += line + "\n";
+			dxCode += line;
 		}
 		// 重新生成PS main函数
 		string fragMainBlock = GetCodeBlock(fragProgramBlock, "main");
@@ -971,6 +978,38 @@ namespace ZXEngine
 			pos += newSentence.length();
 		}
 
+		// 处理矩阵构建，因为HLSL和GLSL的矩阵默认主序不一致，这里需要转置一下
+		pos = 0;
+		while ((pos = Utils::FindWord(dxCode, "build_mat3", pos)) != string::npos)
+		{
+			size_t sPos = string::npos;
+			size_t ePos = string::npos;
+			Utils::GetNextStringBlockPos(dxCode, pos, '(', ')', sPos, ePos);
+
+			string matContent = dxCode.substr(sPos + 1, ePos - sPos - 1);
+
+			string oldSentence = dxCode.substr(pos, ePos - pos + 1);
+			string newSentence = "transpose(float3x3(" + matContent + "))";
+			dxCode.replace(pos, oldSentence.length(), newSentence);
+
+			pos += newSentence.length();
+		}
+		pos = 0;
+		while ((pos = Utils::FindWord(dxCode, "build_mat4", pos)) != string::npos)
+		{
+			size_t sPos = string::npos;
+			size_t ePos = string::npos;
+			Utils::GetNextStringBlockPos(dxCode, pos, '(', ')', sPos, ePos);
+
+			string matContent = dxCode.substr(sPos + 1, ePos - sPos - 1);
+
+			string oldSentence = dxCode.substr(pos, ePos - pos + 1);
+			string newSentence = "transpose(float4x4(" + matContent + "))";
+			dxCode.replace(pos, oldSentence.length(), newSentence);
+
+			pos += newSentence.length();
+		}
+
 		// 强制类型转换
 		Utils::ReplaceAllWord(dxCode, "to_vec2", "(float2)");
 		Utils::ReplaceAllWord(dxCode, "to_vec3", "(float3)");
@@ -992,6 +1031,9 @@ namespace ZXEngine
 		// 替换内置函数名称
 		Utils::ReplaceAllWord(dxCode, "fract", "frac");
 		Utils::ReplaceAllWord(dxCode, "mod", "fmod");
+
+		// 特殊处理，由于DirectX 12和OpenGL/Vulkan的坐标系(NDC or 纹理采样坐标系?)在Y轴上是反的，代码是以GLSL的逻辑写的，所以这里要取反才正确
+		Utils::ReplaceAllWord(dxCode, "ddy", " -ddy");
 
 		return dxCode;
 	}

@@ -75,7 +75,7 @@ Fragment
             vec3 N = normalize(normal);
             vec3 T = normalize(Q1 * st2.y - Q2 * st1.y);
             vec3 B = -normalize(cross(N, T));
-            mat3 TBN = mat3(T, B, N);
+            mat3 TBN = build_mat3(T, B, N);
 
             return normalize(mul(TBN * tangentNormal));
         }
