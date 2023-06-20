@@ -1,8 +1,8 @@
 # ZXEngine
 
-这个项目是我个人为了学习游戏引擎技术创建的，目前同时支持Vulkan，DirectX 12和OpenGL。并且支持光线追踪渲染管线(基于Vulkan，暂未实现基于DirectX12的光线追踪)。
+这个项目是我个人为了学习游戏引擎技术创建的，目前同时支持Vulkan，DirectX 12和OpenGL。并且支持光线追踪渲染管线(基于Vulkan)。
 
-I created this project to learn and practice game engine technology, It now supports Vulkan, DirectX 12 and OpenGL.And it supports ray tracing rendering (only based on Vulkan for now, not support DXR).
+I created this project to learn and practice game engine technology, It now supports Vulkan, DirectX 12 and OpenGL.And it supports ray tracing rendering (Only based on Vulkan for now).
 
 截图展示(介绍后面有更多展示):
 
@@ -52,9 +52,9 @@ Then switch to a scene rendered with the ray tracing pipeline by double-clicking
 
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%203.png)
 
-下面是点击图像展示图像信息。
+接下来展示的是通过算法生成的体积云及其阴影投射效果。同时展示了点击图片文件后，Inspector面板显示的图像信息。
 
-Click on the image to display the image information.
+Shown next are code-generated volumetric clouds and their shadow casting effects. And the right side shows the image information displayed on the Inspector panel after clicking the image file.
 
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%204.png)
 
@@ -100,9 +100,9 @@ This is the configuration file for the game project created by ZXEngine, you can
 
 ### *.rgen  *.rmiss  *.rchit  *.rahit  *.rint
 
-光线追踪管线的各阶段Shader代码文件。目前暂未向光栅化管线那样，搞一个引擎专有的通用语言格式。
+光线追踪管线的各阶段Shader代码文件。因为目前引擎只支持基于Vulkan的光线追踪，所以暂未向光栅化管线那样，搞一个引擎专有的通用语言格式。
 
-Shader code files for each stage of the ray tracing pipeline. At present, there is no engine-specific universal language format like zxshader in the rasterization pipeline.
+Shader code files for each stage of the ray tracing pipeline. Because the current engine only supports Vulkan ray tracing, I have not yet created an engine-specific common language format like zxshader in the rasterization pipeline.
 
 ### Others
 
