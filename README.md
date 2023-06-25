@@ -151,7 +151,17 @@ return ObjectMove
 
 ## 注意事项 (Precautions)
 
-目前zxshader编写好后，在DirectX 12和OpenGL下直接运行即可。但是在Vulkan下需要先点击引擎菜单栏里的“Assets/Compile All Shader for Vulkan”按钮，将zxshader预编译后才可以运行。
+目前zxshader编写好后，在DirectX 12和OpenGL下直接运行即可。但是在Vulkan下需要先点击引擎菜单栏里的“Assets/Compile All Shader for Vulkan”按钮，将zxshader预编译后才可以运行。也就是说，在你第一次以Vulkan模式运行工程之前，至少需要先以DirectX 12或者OpenGL模式启动一次项目，完成一次预编译Vulkan着色器，然后才能正常的以Vulkan模式启动。这块做得不是很好，按理说不应该有这种奇怪的限制，日后改进。
+
+After zxshader is written, it can be run directly under DirectX 12 and OpenGL. But under Vulkan, you need to click the "Assets/Compile All Shader for Vulkan" button in the engine menu bar to precompile zxshader before it can run. In other words, before you run the project in Vulkan for the first time, you need to start the project in DirectX 12 or OpenGL at least once, complete a precompilation of the Vulkan shader, and then start engine in Vulkan. It's not very well done here, there shouldn't be such a strange restriction, and it will be improved in the future.
+
+切换图形API的方式是在pubh.h文件中修改宏定义。有3个宏定义ZX_API_VULKAN，ZX_API_D3D12和ZX_API_OPENGL，分别对应引擎支持的3个图形API。开启其中一个宏定义，并注释掉其它2个宏定义，重新编译引擎，就完成了对图形API的切换。
+
+The way to switch the graphics API is to modify the macro definition in the pubh.h file. There are 3 macro definitions ZX_API_VULKAN, ZX_API_D3D12 and ZX_API_OPENGL, corresponding to the 3 graphics APIs supported by the engine. Open one of the macro definitions, comment out the other two macro definitions, and recompile the engine to complete the switching of the graphics API.
+
+目前本引擎有个问题，就是DirectX 12的性能表现很差。按理说DirectX 12的性能表现应该是和Vulkan差不多的，但是在本引擎里它的性能表现甚至比OpenGL还稍微差一点。这个应该是我自己在写DirectX 12代码时有什么地方没写好，而不是DirectX 12本身的问题。我现在还没找到问题原因，如果有人能指点一下我会非常感激。可以通过issue指出问题，或者通过后面我给的联系方式告诉我。
+
+Currently there is a problem with this engine, that is, the performance of DirectX 12 is very poor. The performance of DirectX 12 should be similar to that of Vulkan, but its performance in this engine is even slightly worse than OpenGL. This should be something that I didn't do well when I wrote the DirectX 12 code, not a problem with DirectX 12 itself. I haven't found the cause of the problem so far, if someone can point out what I'm doing wrong, I'd be very grateful. You can point out the problem through issue, or contact me through the contact information I will give later.
 
 ### 一些废话 (Some mumbles)
 
