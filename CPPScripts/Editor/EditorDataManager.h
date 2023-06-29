@@ -36,6 +36,7 @@ namespace ZXEngine
 		void SetSelectedAsset(EditorAssetNode* asset);
 
 	private:
+		std::mutex logMutex;
 		long long lastClickTime = 0;
 
 		string GetTextFilePreview(string path);

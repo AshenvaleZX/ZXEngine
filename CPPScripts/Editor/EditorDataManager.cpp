@@ -25,6 +25,8 @@ namespace ZXEngine
 
 	void EditorDataManager::AddLog(LogType type, string msg)
 	{
+		std::lock_guard lock(logMutex);
+
 		auto newLog = new LogInfo();
 		newLog->type = type;
 		newLog->data = msg;

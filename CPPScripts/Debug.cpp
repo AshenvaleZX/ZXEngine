@@ -6,6 +6,8 @@
 
 namespace ZXEngine
 {
+	std::mutex Debug::mWriteMutex;
+
 	void Debug::Log(const std::string& message)
 	{
 		std::cout << "Log:     " << message << std::endl;
@@ -59,6 +61,8 @@ namespace ZXEngine
 
 	void Debug::WriteToFile(const std::string& message)
 	{
+		std::lock_guard lock(mWriteMutex);
+
 		std::ofstream f(ProjectSetting::projectPath + "/log.txt", std::ios::app);
 
 		if (!f.is_open())

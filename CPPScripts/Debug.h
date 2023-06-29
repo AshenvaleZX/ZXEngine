@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <mutex>
 
 // 条件编译调试代码开关
 // #define ZX_DEBUG
@@ -19,6 +20,7 @@ namespace ZXEngine
 #endif
 
 	private:
+		static std::mutex mWriteMutex;
 		static void WriteToFile(const std::string& message);
 	};
 }
