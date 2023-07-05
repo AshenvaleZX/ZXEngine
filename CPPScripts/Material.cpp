@@ -26,6 +26,7 @@ namespace ZXEngine
 		}
 		else if (type == MaterialType::RayTracing)
 		{
+			hitGroupIdx = matStruct->hitGroupIdx;
 			// 光追管线暂时不需要区分队列，用一个默认的Opaque队列
 			renderQueue = (int)RenderQueueType::Opaque;
 			RenderAPI::GetInstance()->SetUpRayTracingMaterialData(this);

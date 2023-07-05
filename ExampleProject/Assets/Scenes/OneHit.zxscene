@@ -34,6 +34,9 @@
         [
             {
                 "ClosestHit": "RTShaders/OneHit.rchit"
+            },
+            {
+                "ClosestHit": "RTShaders/OneHitPlane.rchit"
             }
         ]
     }

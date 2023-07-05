@@ -11,6 +11,7 @@ namespace ZXEngine
 	public:
 		string name = "";
 		string path = "";
+		uint32_t hitGroupIdx = 0;
 		Shader* shader = nullptr;
 		MaterialData* data = nullptr;
 		MaterialType type = MaterialType::Rasterization;

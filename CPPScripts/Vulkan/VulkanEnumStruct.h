@@ -125,6 +125,7 @@ namespace ZXEngine
     struct VulkanASInstanceData
     {
         uint32_t VAO = 0;
+        uint32_t hitGroupIdx = 0;
         uint32_t rtMaterialDataID = 0;
         Matrix4 transform;
     };

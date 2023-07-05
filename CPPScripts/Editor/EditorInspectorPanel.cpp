@@ -94,6 +94,12 @@ namespace ZXEngine
 				Debug::Log("Click Shader");
 			}
 		}
+		else
+		{
+			ImGui::Text("Hit Group:");
+			ImGui::SameLine(120);
+			ImGui::Text(std::to_string(material->hitGroupIdx).c_str());
+		}
 
 		uint32_t idx = 0;
 		ImGui::PushItemWidth(60);

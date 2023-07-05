@@ -102,7 +102,7 @@ namespace ZXEngine
 
 		// 数据更新
 		virtual void PushRayTracingMaterialData(Material* material) = 0;
-		virtual void PushAccelerationStructure(uint32_t VAO, uint32_t rtMaterialDataID, const Matrix4& transform) = 0;
+		virtual void PushAccelerationStructure(uint32_t VAO, uint32_t hitGroupIdx, uint32_t rtMaterialDataID, const Matrix4& transform) = 0;
 
 		// Ray Trace
 		virtual void RayTrace(uint32_t commandID, const RayTracingPipelineConstants& rtConstants) = 0;

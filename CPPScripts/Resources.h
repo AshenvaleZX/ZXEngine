@@ -20,7 +20,8 @@ namespace ZXEngine
 	{
 		string name;
 		string path;
-		string shaderPath;
+		string shaderPath;        // 光栅化管线的shader路径
+		uint32_t hitGroupIdx = 0; // 光追管线的hitGroup索引
 
 		map<string, float> floatDatas;
 		map<string, uint32_t> uintDatas;

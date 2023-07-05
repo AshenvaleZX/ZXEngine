@@ -219,6 +219,11 @@ namespace ZXEngine
 			string p = Resources::JsonStrToString(data["Shader"]);
 			matStruct->shaderPath = Resources::GetAssetFullPath(p, isBuiltIn);
 		}
+		else
+		{
+			if (!data["HitGroup"].is_null())
+				matStruct->hitGroupIdx = data["HitGroup"];
+		}
 
 		for (size_t i = 0; i < data["Float"].size(); i++)
 		{

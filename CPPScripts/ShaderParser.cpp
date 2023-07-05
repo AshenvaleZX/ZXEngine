@@ -1442,8 +1442,15 @@ namespace ZXEngine
 			SetAlignInfoStd140(property, offset);
 		}
 
-		auto& lastProperty = materialData->rtMaterialProperties.back();
-		materialData->rtMaterialDataSize = static_cast<uint32_t>(lastProperty.offset + lastProperty.size);
+		if (materialData->rtMaterialProperties.empty())
+		{
+			materialData->rtMaterialDataSize = 0;
+		}
+		else
+		{
+			auto& lastProperty = materialData->rtMaterialProperties.back();
+			materialData->rtMaterialDataSize = static_cast<uint32_t>(lastProperty.offset + lastProperty.size);
+		}
 	}
 
 	void ShaderParser::SetAlignInfoStd140(ShaderProperty& property, uint32_t& offset)

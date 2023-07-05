@@ -11,7 +11,7 @@
         {
             "Type": "MeshRenderer",
             "Geometry": 4,
-            "Material": "RTMaterials/White.zxrtmat",
+            "Material": "RTMaterials/HitGroup1.zxrtmat",
             "CastShadow": false,
             "ReceiveShadow": true
         }

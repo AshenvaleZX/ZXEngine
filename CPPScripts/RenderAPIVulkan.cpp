@@ -1561,12 +1561,14 @@ namespace ZXEngine
         }
     }
 
-    void RenderAPIVulkan::PushAccelerationStructure(uint32_t VAO, uint32_t rtMaterialDataID, const Matrix4& transform)
+    void RenderAPIVulkan::PushAccelerationStructure(uint32_t VAO, uint32_t hitGroupIdx, uint32_t rtMaterialDataID, const Matrix4& transform)
     {
-        asInstanceData.emplace_back();
-        asInstanceData.back().VAO = VAO;
-        asInstanceData.back().rtMaterialDataID = rtMaterialDataID;
-        asInstanceData.back().transform = transform;
+        VulkanASInstanceData asIns = {};
+        asIns.VAO = VAO;
+        asIns.hitGroupIdx = hitGroupIdx;
+        asIns.rtMaterialDataID = rtMaterialDataID;
+        asIns.transform = transform;
+        asInstanceData.push_back(std::move(asIns));
     }
 
     void RenderAPIVulkan::RayTrace(uint32_t commandID, const RayTracingPipelineConstants& rtConstants)
@@ -1728,7 +1730,7 @@ namespace ZXEngine
             asIns.transform = GetVkTransformMatrix(data.transform);
             asIns.instanceCustomIndex = i;
             asIns.mask = 0xFF;
-            asIns.instanceShaderBindingTableRecordOffset = 0;
+            asIns.instanceShaderBindingTableRecordOffset = data.hitGroupIdx;
             asIns.flags = VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR;
             asIns.accelerationStructureReference = meshData->blas.deviceAddress;
 

@@ -1,5 +1,6 @@
 {
     "Type": "RTMaterial",
+    "HitGroup": 0,
     "Textures":
     [
         {

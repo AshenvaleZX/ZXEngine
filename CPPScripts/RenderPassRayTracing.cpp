@@ -39,7 +39,7 @@ namespace ZXEngine
 			renderAPI->PushRayTracingMaterialData(renderer->matetrial);
 			for (auto mesh : renderer->meshes)
 			{
-				renderAPI->PushAccelerationStructure(mesh->VAO, renderer->matetrial->data->GetRTID(), renderer->GetTransform()->GetModelMatrix());
+				renderAPI->PushAccelerationStructure(mesh->VAO, renderer->matetrial->hitGroupIdx, renderer->matetrial->data->GetRTID(), renderer->GetTransform()->GetModelMatrix());
 			}
 		}
 
