@@ -1319,45 +1319,38 @@ namespace ZXEngine
             shaderGroupInfo.intersectionShader = VK_SHADER_UNUSED_KHR;
             shaderGroups.push_back(shaderGroupInfo);
         }
-        for (auto& path : rtShaderPathGroup.rClosestHitPaths)
+        for (auto& groupPath : rtShaderPathGroup.rHitGroupPaths)
         {
-			stageInfo.stage = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
-			stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath(path + ".spv")));
+            stageInfo.stage = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
+			stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath(groupPath.rClosestHitPath + ".spv")));
 			stages.push_back(stageInfo);
 
-			shaderGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
-			shaderGroupInfo.generalShader      = VK_SHADER_UNUSED_KHR;
+            shaderGroupInfo.type = groupPath.rIntersectionPath.empty() ? VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR : VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR;
+            shaderGroupInfo.generalShader      = VK_SHADER_UNUSED_KHR;
 			shaderGroupInfo.closestHitShader   = shaderIndex++;
 			shaderGroupInfo.anyHitShader       = VK_SHADER_UNUSED_KHR;
 			shaderGroupInfo.intersectionShader = VK_SHADER_UNUSED_KHR;
+
+            if (!groupPath.rAnyHitPath.empty())
+            {
+				stageInfo.stage = VK_SHADER_STAGE_ANY_HIT_BIT_KHR;
+				stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath(groupPath.rAnyHitPath + ".spv")));
+				stages.push_back(stageInfo);
+
+				shaderGroupInfo.anyHitShader = shaderIndex++;
+            }
+
+            if (!groupPath.rIntersectionPath.empty())
+            {
+                stageInfo.stage = VK_SHADER_STAGE_INTERSECTION_BIT_KHR;
+                stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath(groupPath.rIntersectionPath + ".spv")));
+                stages.push_back(stageInfo);
+
+                shaderGroupInfo.intersectionShader = shaderIndex++;
+            }
+
 			shaderGroups.push_back(shaderGroupInfo);
         }
-        for (auto& path : rtShaderPathGroup.rAnyHitPaths)
-        {
-            stageInfo.stage = VK_SHADER_STAGE_ANY_HIT_BIT_KHR;
-            stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath(path + ".spv")));
-            stages.push_back(stageInfo);
-
-            shaderGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
-            shaderGroupInfo.generalShader      = VK_SHADER_UNUSED_KHR;
-            shaderGroupInfo.closestHitShader   = VK_SHADER_UNUSED_KHR;
-            shaderGroupInfo.anyHitShader       = shaderIndex++;
-            shaderGroupInfo.intersectionShader = VK_SHADER_UNUSED_KHR;
-            shaderGroups.push_back(shaderGroupInfo);
-        }
-        for (auto& path : rtShaderPathGroup.rIntersectionPaths)
-        {
-			stageInfo.stage = VK_SHADER_STAGE_INTERSECTION_BIT_KHR;
-			stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath(path + ".spv")));
-			stages.push_back(stageInfo);
-
-            shaderGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR;
-            shaderGroupInfo.generalShader      = VK_SHADER_UNUSED_KHR;
-            shaderGroupInfo.closestHitShader   = VK_SHADER_UNUSED_KHR;
-            shaderGroupInfo.anyHitShader       = VK_SHADER_UNUSED_KHR;
-            shaderGroupInfo.intersectionShader = shaderIndex++;
-            shaderGroups.push_back(shaderGroupInfo);
-		}
 
         // 创建Pipeline
         VkRayTracingPipelineCreateInfoKHR rayPipelineInfo{};
@@ -1380,7 +1373,7 @@ namespace ZXEngine
 
         uint32_t rGenCount  = static_cast<uint32_t>(rtShaderPathGroup.rGenPaths.size());
         uint32_t rMissCount = static_cast<uint32_t>(rtShaderPathGroup.rMissPaths.size());
-        uint32_t rHitCount  = static_cast<uint32_t>(rtShaderPathGroup.rClosestHitPaths.size() + rtShaderPathGroup.rAnyHitPaths.size());
+        uint32_t rHitCount  = static_cast<uint32_t>(rtShaderPathGroup.rHitGroupPaths.size());
         uint32_t shaderHandleCount = rGenCount + rMissCount + rHitCount;
 
         // 这是一个Shader引用在SBT上的大小

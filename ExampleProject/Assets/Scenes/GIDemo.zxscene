@@ -36,9 +36,11 @@
             "RTShaders/PathTrace.rmiss",
             "RTShaders/PathTraceShadow.rmiss"
         ],
-        "ClosestHit":
+        "HitGroups":
         [
-            "RTShaders/PathTrace.rchit"
+            {
+                "ClosestHit": "RTShaders/PathTrace.rchit"
+            }
         ]
     }
 }

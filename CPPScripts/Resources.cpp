@@ -148,17 +148,22 @@ namespace ZXEngine
 				for (size_t i = 0; i < data["RayTracingShaderGroups"]["Miss"].size(); i++)
 					scene->rtShaderPathGroup.rMissPaths.push_back(Resources::JsonStrToString(data["RayTracingShaderGroups"]["Miss"][i]));
 
-			if (!data["RayTracingShaderGroups"]["ClosestHit"].is_null())
-				for (size_t i = 0; i < data["RayTracingShaderGroups"]["ClosestHit"].size(); i++)
-					scene->rtShaderPathGroup.rClosestHitPaths.push_back(Resources::JsonStrToString(data["RayTracingShaderGroups"]["ClosestHit"][i]));
+			if (!data["RayTracingShaderGroups"]["HitGroups"].is_null())
+			{
+				for (size_t i = 0; i < data["RayTracingShaderGroups"]["HitGroups"].size(); i++)
+				{
+					RayTracingHitGroupPath hitGroupPath;
 
-			if (!data["RayTracingShaderGroups"]["AnyHit"].is_null())
-				for (size_t i = 0; i < data["RayTracingShaderGroups"]["AnyHit"].size(); i++)
-					scene->rtShaderPathGroup.rAnyHitPaths.push_back(Resources::JsonStrToString(data["RayTracingShaderGroups"]["AnyHit"][i]));
+					if (!data["RayTracingShaderGroups"]["HitGroups"][i]["ClosestHit"].is_null())
+						hitGroupPath.rClosestHitPath = Resources::JsonStrToString(data["RayTracingShaderGroups"]["HitGroups"][i]["ClosestHit"]);
+					if (!data["RayTracingShaderGroups"]["HitGroups"][i]["AnyHit"].is_null())
+						hitGroupPath.rAnyHitPath = Resources::JsonStrToString(data["RayTracingShaderGroups"]["HitGroups"][i]["AnyHit"]);
+					if (!data["RayTracingShaderGroups"]["HitGroups"][i]["Intersection"].is_null())
+						hitGroupPath.rIntersectionPath = Resources::JsonStrToString(data["RayTracingShaderGroups"]["HitGroups"][i]["Intersection"]);
 
-			if (!data["RayTracingShaderGroups"]["Intersection"].is_null())
-				for (size_t i = 0; i < data["RayTracingShaderGroups"]["Intersection"].size(); i++)
-					scene->rtShaderPathGroup.rIntersectionPaths.push_back(Resources::JsonStrToString(data["RayTracingShaderGroups"]["Intersection"][i]));
+					scene->rtShaderPathGroup.rHitGroupPaths.push_back(std::move(hitGroupPath));
+				}
+			}
 		}
 
 		return scene;

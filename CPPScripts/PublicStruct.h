@@ -92,12 +92,17 @@ namespace ZXEngine
 		uint32_t frameCount;
 	};
 
+	struct RayTracingHitGroupPath
+	{
+		string rClosestHitPath;
+		string rAnyHitPath;
+		string rIntersectionPath;
+	};
+
 	struct RayTracingShaderPathGroup
 	{
 		vector<string> rGenPaths;
 		vector<string> rMissPaths;
-		vector<string> rClosestHitPaths;
-		vector<string> rAnyHitPaths;
-		vector<string> rIntersectionPaths;
+		vector<RayTracingHitGroupPath> rHitGroupPaths;
 	};
 }

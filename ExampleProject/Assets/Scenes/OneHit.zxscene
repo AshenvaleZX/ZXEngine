@@ -30,9 +30,11 @@
             "RTShaders/OneHit.rmiss",
             "RTShaders/OneHitShadow.rmiss"
         ],
-        "ClosestHit":
+        "HitGroups":
         [
-            "RTShaders/OneHit.rchit"
+            {
+                "ClosestHit": "RTShaders/OneHit.rchit"
+            }
         ]
     }
 }
