@@ -1,0 +1,18 @@
+{
+    "Type": "RTMaterial",
+    "HitGroup": 1,
+    "Vector3": 
+    [
+        {
+            "UniformName": "_Emittance",
+            "Value": [0, 0, 0]
+        }
+    ],
+    "Textures":
+    [
+        {
+            "UniformName": "_Texture1",
+            "Path": "Textures/white.png"
+        }
+    ]
+}

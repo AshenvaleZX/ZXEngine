@@ -1,0 +1,19 @@
+{
+    "Name": "ReflectionSphere",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [6.5, -8.5, -5],
+            "Rotation": [0, 0, 0],
+            "Scale": [3, 3, 3]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Geometry": 1,
+            "Material": "RTMaterials/GIDemo/Reflection.zxrtmat",
+            "CastShadow": false,
+            "ReceiveShadow": true
+        }
+    ]
+}
