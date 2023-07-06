@@ -14,8 +14,12 @@ struct HitPayload
 
 layout(location = 0) rayPayloadInEXT HitPayload _RayPayload;
 
+layout(set = 1, binding = 2) uniform samplerCube cubeMaps[];
+
 void main()
 {
-    _RayPayload.hitValue = vec3(0.2); // 光线从相机出来就直接Miss，采样天空盒，或Clear Color
-    _RayPayload.depth = 100; // 如果遇到Ray Miss了就直接结束光线追踪
+    // 采样天空盒，天空盒默认为cubeMaps中的第一个
+    _RayPayload.hitValue = texture(cubeMaps[0], gl_WorldRayDirectionEXT).rgb;
+    // 已经Ray Miss了，直接结束光线追踪
+    _RayPayload.depth = 100;
 }

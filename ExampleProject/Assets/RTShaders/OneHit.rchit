@@ -51,8 +51,8 @@ layout(buffer_reference, scalar) buffer VerticesBuffer { Vertex vertex[]; };
 layout(buffer_reference, scalar) buffer MaterialBuffer { Material material; };
 
 layout(set = 0, binding = 0) uniform accelerationStructureEXT _TLAS;
-layout(set = 1, binding = 0) uniform sampler2D textureSamplers[];
-layout(set = 1, binding = 1, scalar) buffer DataReferenceBuffer { RendererDataReference dataReference[]; } _ReferenceBuffer;
+layout(set = 1, binding = 0, scalar) buffer DataReferenceBuffer { RendererDataReference dataReference[]; } _ReferenceBuffer;
+layout(set = 1, binding = 1) uniform sampler2D textureSamplers[];
 
 layout(push_constant) uniform _PushConstant { RayTracingPipelineConstants _PC; };
 

@@ -1234,6 +1234,7 @@ namespace ZXEngine
         // 创建光追管线的DescriptorSetLayout
         vector<VkDescriptorSetLayoutBinding> bindings = {};
 
+        // layout(set = 0, binding = 0)
         VkDescriptorSetLayoutBinding asBinding = {};
         asBinding.binding = 0;
         asBinding.descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
@@ -1241,6 +1242,7 @@ namespace ZXEngine
         asBinding.stageFlags = VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
         bindings.push_back(asBinding);
 
+        // layout(set = 0, binding = 1)
         VkDescriptorSetLayoutBinding imageBinding = {};
         imageBinding.binding = 1;
         imageBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
@@ -1253,19 +1255,29 @@ namespace ZXEngine
         // 创建场景资源的DescriptorSetLayout
         bindings.clear();
 
+        // layout(set = 1, binding = 0)
+        VkDescriptorSetLayoutBinding dataReferencesBinding = {};
+        dataReferencesBinding.binding = 0;
+        dataReferencesBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        dataReferencesBinding.descriptorCount = 1;
+        dataReferencesBinding.stageFlags = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
+        bindings.push_back(dataReferencesBinding);
+
+        // layout(set = 1, binding = 1)
         VkDescriptorSetLayoutBinding texturesBinding = {};
-        texturesBinding.binding = 0;
+        texturesBinding.binding = 1;
         texturesBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         texturesBinding.descriptorCount = rtSceneTextureNum; // Todo: 这个数量应该是需要动态扩展的
         texturesBinding.stageFlags = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
         bindings.push_back(texturesBinding);
 
-        VkDescriptorSetLayoutBinding dataReferencesBinding = {};
-        dataReferencesBinding.binding = 1;
-        dataReferencesBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-        dataReferencesBinding.descriptorCount = 1;
-        dataReferencesBinding.stageFlags = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
-        bindings.push_back(dataReferencesBinding);
+        // layout(set = 1, binding = 2)
+        VkDescriptorSetLayoutBinding cubeMapBinding = {};
+        cubeMapBinding.binding = 2;
+        cubeMapBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        cubeMapBinding.descriptorCount = rtSceneCubeMapNum; // Todo: 这个数量应该是需要动态扩展的
+        cubeMapBinding.stageFlags = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR;
+        bindings.push_back(cubeMapBinding);
 
         rtPipeline->pipeline.sceneDescriptorSetLayout = CreateDescriptorSetLayout(bindings);
 
@@ -1525,16 +1537,34 @@ namespace ZXEngine
         rtMaterialDatasToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT));
     }
 
+    void RenderAPIVulkan::SetRayTracingSkyBox(uint32_t textureID)
+    {
+        // 天空盒纹理默认是当前这一帧的第一个CubeMap
+        curRTSceneCubeMapIndexMap[textureID] = 0;
+        curRTSceneCubeMapIndexes.push_back(textureID);
+    }
+
     void RenderAPIVulkan::PushRayTracingMaterialData(Material* material)
     {
         // 把这个材质使用的纹理添加到当前光追场景中的总纹理列表中
         for (auto& iter : material->data->textures)
         {
             auto textureID = iter.second->GetID();
-            if (curRTSceneTextureIndexMap.find(textureID) == curRTSceneTextureIndexMap.end())
+            if (iter.second->type == TextureType::ZX_2D)
             {
-				curRTSceneTextureIndexMap[textureID] = static_cast<uint32_t>(curRTSceneTextureIndexes.size());
-                curRTSceneTextureIndexes.emplace_back(textureID);
+                if (curRTSceneTextureIndexMap.find(textureID) == curRTSceneTextureIndexMap.end())
+                {
+                    curRTSceneTextureIndexMap[textureID] = static_cast<uint32_t>(curRTSceneTextureIndexes.size());
+                    curRTSceneTextureIndexes.emplace_back(textureID);
+                }
+            }
+            else if (iter.second->type == TextureType::ZX_Cube)
+            {
+                if (curRTSceneCubeMapIndexMap.find(textureID) == curRTSceneCubeMapIndexMap.end())
+                {
+                    curRTSceneCubeMapIndexMap[textureID] = static_cast<uint32_t>(curRTSceneCubeMapIndexes.size());
+                    curRTSceneCubeMapIndexes.emplace_back(textureID);
+				}
 			}
         }
 
@@ -1555,7 +1585,12 @@ namespace ZXEngine
         for (auto& iter : material->data->textures)
         {
             auto textureID = iter.second->GetID();
-            auto textureIdx = curRTSceneTextureIndexMap[textureID];
+            auto textureIdx = 0;
+
+            if (iter.second->type == TextureType::ZX_2D)
+				textureIdx = curRTSceneTextureIndexMap[textureID];
+			else if (iter.second->type == TextureType::ZX_Cube)
+				textureIdx = curRTSceneCubeMapIndexMap[textureID];
 
             SetShaderScalar(material, iter.first, textureIdx);
         }
@@ -1692,6 +1727,8 @@ namespace ZXEngine
         asInstanceData.clear();
         curRTSceneTextureIndexes.clear();
         curRTSceneTextureIndexMap.clear();
+        curRTSceneCubeMapIndexes.clear();
+        curRTSceneCubeMapIndexMap.clear();
         curRTSceneRTMaterialDatas.clear();
         curRTSceneRTMaterialDataMap.clear();
     }
@@ -4691,17 +4728,23 @@ namespace ZXEngine
         // 创建DescriptorPool
         vector<VkDescriptorPoolSize> poolSizes = {};
 
+        // 场景中各对象的材质信息
+        VkDescriptorPoolSize asPoolSize = {};
+        asPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        asPoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
+        poolSizes.push_back(asPoolSize);
+
         // 场景中所有的纹理
         VkDescriptorPoolSize imagePoolSize = {};
         imagePoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         imagePoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT * rtSceneTextureNum; // Todo: 这个数量可能需要动态扩展
         poolSizes.push_back(imagePoolSize);
 
-        // 场景中各对象的材质信息
-        VkDescriptorPoolSize asPoolSize = {};
-        asPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-        asPoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
-        poolSizes.push_back(asPoolSize);
+        // 场景中的所有CubeMap
+        VkDescriptorPoolSize cubeMapPoolSize = {};
+        cubeMapPoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        cubeMapPoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT * rtSceneCubeMapNum; // Todo: 这个数量可能需要动态扩展
+        poolSizes.push_back(cubeMapPoolSize);
 
         VkDescriptorPoolCreateInfo poolInfo = {};
         poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -4733,7 +4776,7 @@ namespace ZXEngine
             writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
             writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
             writeDescriptorSet.dstSet = rtPipeline->sceneData.descriptorSets[i];
-            writeDescriptorSet.dstBinding = 1;
+            writeDescriptorSet.dstBinding = 0;
             writeDescriptorSet.dstArrayElement = 0;
             writeDescriptorSet.descriptorCount = 1;
             writeDescriptorSet.pBufferInfo = &bufferInfo;
@@ -4784,11 +4827,51 @@ namespace ZXEngine
         writeImages.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         writeImages.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         writeImages.dstSet = rtPipeline->sceneData.descriptorSets[currentFrame];
-        writeImages.dstBinding = 0;
+        writeImages.dstBinding = 1;
         writeImages.descriptorCount = static_cast<uint32_t>(imageInfos.size());
         writeImages.pImageInfo = imageInfos.data();
+
+        // 所有的CubeMap信息
+        vector<VkDescriptorImageInfo> cubeMapInfos = {};
+
+        // 填入场景中的CubeMap
+        for (auto cubeMapID : curRTSceneCubeMapIndexes)
+        {
+			auto cubeMap = GetTextureByIndex(cubeMapID);
+
+			VkDescriptorImageInfo cubeMapInfo = {};
+			cubeMapInfo.sampler = cubeMap->sampler;
+			cubeMapInfo.imageView = cubeMap->imageView;
+			cubeMapInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+			cubeMapInfos.push_back(cubeMapInfo);
+		}
+
+        // 随便用一个CubeMap补齐创建VkPipelineLayout时，sceneDescriptorSetLayout中指定的rtSceneCubeMapNum个CubeMap数组
+        for (size_t i = curRTSceneCubeMapIndexes.size(); i < rtSceneCubeMapNum; i++)
+        {
+            auto cubeMap = GetTextureByIndex(curRTSceneCubeMapIndexes[0]);
+
+            VkDescriptorImageInfo cubeMapInfo = {};
+            cubeMapInfo.sampler = cubeMap->sampler;
+            cubeMapInfo.imageView = cubeMap->imageView;
+            cubeMapInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+            cubeMapInfos.push_back(cubeMapInfo);
+        }
+
+        // 更新所有CubeMap绑定的写入信息
+        VkWriteDescriptorSet writeCubeMaps = {};
+        writeCubeMaps.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        writeCubeMaps.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        writeCubeMaps.dstSet = rtPipeline->sceneData.descriptorSets[currentFrame];
+        writeCubeMaps.dstBinding = 2;
+        writeCubeMaps.descriptorCount = static_cast<uint32_t>(cubeMapInfos.size());
+        writeCubeMaps.pImageInfo = cubeMapInfos.data();
+
         // 重新绑定纹理
-        vkUpdateDescriptorSets(device, 1, &writeImages, 0, nullptr);
+        vector<VkWriteDescriptorSet> writeDescriptorSets = { writeImages, writeCubeMaps };
+        vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
 
         // 更新渲染对象的数据引用Buffer
         vector<VulkanRTRendererDataReference> dataReferences = {};

@@ -95,6 +95,7 @@ namespace ZXEngine
         virtual void DeleteRayTracingMaterialData(uint32_t id);
 
         // 数据更新
+        virtual void SetRayTracingSkyBox(uint32_t textureID);
         virtual void PushRayTracingMaterialData(Material* material);
         virtual void PushAccelerationStructure(uint32_t VAO, uint32_t hitGroupIdx, uint32_t rtMaterialDataID, const Matrix4& transform);
 
@@ -321,6 +322,8 @@ namespace ZXEngine
 
         // 场景中的纹理数量
         uint32_t rtSceneTextureNum = 100;
+        // 场景中的CubeMap数量
+        uint32_t rtSceneCubeMapNum = 10;
         // 场景中的渲染对象数量
         uint32_t rtSceneRenderObjectNum = 100;
 
@@ -330,6 +333,10 @@ namespace ZXEngine
         vector<uint32_t> curRTSceneTextureIndexes;
         // 当前场景中所有纹理的索引与纹理数组下标的映射表
         unordered_map<uint32_t, uint32_t> curRTSceneTextureIndexMap;
+        // 当前场景中所有CubeMap索引数组
+        vector<uint32_t> curRTSceneCubeMapIndexes;
+        // 当前场景中所有CubeMap的索引与CubeMap数组下标的映射表
+        unordered_map<uint32_t, uint32_t> curRTSceneCubeMapIndexMap;
         // 当前场景中所有光追材质索引数组
         vector<uint32_t> curRTSceneRTMaterialDatas;
         // 当前场景中所有光追材质的索引与光追材质数组下标的映射表

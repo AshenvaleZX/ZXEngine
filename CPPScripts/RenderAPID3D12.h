@@ -94,6 +94,7 @@ namespace ZXEngine
 		virtual void DeleteRayTracingMaterialData(uint32_t id) {};
 
 		// 数据更新
+		virtual void SetRayTracingSkyBox(uint32_t textureID) {};
 		virtual void PushRayTracingMaterialData(Material* material) {};
 		virtual void PushAccelerationStructure(uint32_t VAO, uint32_t hitGroupIdx, uint32_t rtMaterialDataID, const Matrix4& transform) {};
 

@@ -8,6 +8,8 @@
 #include "Light.h"
 #include "FBOManager.h"
 #include "GlobalData.h"
+#include "CubeMap.h"
+#include "SceneManager.h"
 
 namespace ZXEngine
 {
@@ -32,6 +34,9 @@ namespace ZXEngine
 		FBOManager::GetInstance()->SwitchFBO("RayTracing");
 		// ViewPort设置为窗口大小
 		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight);
+
+		// 设置天空盒
+		renderAPI->SetRayTracingSkyBox(SceneManager::GetInstance()->GetCurScene()->skyBox->GetID());
 
 		// 遍历渲染队列，将所有mesh的VAO和材质数据推入光追管线
 		for (auto renderer : renderQueue->GetRenderers())
