@@ -40,6 +40,9 @@
     <Filter Include="DirectX12">
       <UniqueIdentifier>{43c3bf07-a10a-46ca-b5e8-165b8d16888c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Concurrent">
+      <UniqueIdentifier>{796c206f-aa5c-434a-90bd-bbce83461097}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Vendor\Src\glad.c">
@@ -856,6 +859,9 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Editor\ImGuiTextureManagerD3D12.h">
       <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Concurrent\LockFreeQueue.h">
+      <Filter>Concurrent</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

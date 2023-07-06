@@ -294,6 +294,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\Component.h" />
+    <ClInclude Include="..\..\CPPScripts\Concurrent\LockFreeQueue.h" />
     <ClInclude Include="..\..\CPPScripts\CubeMap.h" />
     <ClInclude Include="..\..\CPPScripts\Debug.h" />
     <ClInclude Include="..\..\CPPScripts\DirectX12\D3D12EnumStruct.h" />

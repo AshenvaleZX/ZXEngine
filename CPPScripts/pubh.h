@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <thread>
+#include <atomic>
 #include <nlohmann/json.hpp>
 
 // 防止windows.h里的宏定义max和min影响到其它库里的相同字段
@@ -38,6 +39,10 @@ using std::ifstream;
 using std::ofstream;
 using std::stringstream;
 using std::to_string;
+using std::shared_ptr;
+using std::make_shared;
+using std::unique_ptr;
+using std::make_unique;
 using json = nlohmann::json;
 namespace filesystem = std::filesystem;
 
