@@ -863,5 +863,8 @@
     <ClInclude Include="..\..\CPPScripts\Concurrent\LockFreeQueue.h">
       <Filter>Concurrent</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Concurrent\Queue.h">
+      <Filter>Concurrent</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
