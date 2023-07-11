@@ -43,6 +43,9 @@
     <Filter Include="Concurrent">
       <UniqueIdentifier>{796c206f-aa5c-434a-90bd-bbce83461097}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PhysZ">
+      <UniqueIdentifier>{904b7534-7119-4d42-872c-31fb57e75dc5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Vendor\Src\glad.c">
@@ -437,6 +440,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Vendor\Src\volk.c">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\PhysZ\PointMass.cpp">
+      <Filter>PhysZ</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -865,6 +871,9 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Concurrent\Queue.h">
       <Filter>Concurrent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\PhysZ\PointMass.h">
+      <Filter>PhysZ</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
