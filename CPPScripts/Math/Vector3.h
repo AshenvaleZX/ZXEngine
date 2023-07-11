@@ -25,6 +25,7 @@ namespace ZXEngine
 		void ToArray(float* array) const;
 		std::string ToString() const;
 		float GetMagnitude() const;
+		void Clear();
 
 		float& operator[] (int i);
 		const float& operator[] (int i) const;

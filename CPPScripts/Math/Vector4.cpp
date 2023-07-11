@@ -103,6 +103,11 @@ namespace ZXEngine
 		return (float)sqrt(x * x + y * y + z * z + w * w);
 	}
 
+	void Vector4::Clear()
+	{
+		x = y = z = w = 0.0f;
+	}
+
 	float& Vector4::operator[] (int i)
 	{
 		switch (i)
