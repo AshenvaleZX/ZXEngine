@@ -3,6 +3,7 @@
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Matrix3.h"
+#include "../Math.h"
 #include "../Debug.h"
 
 namespace ZXEngine
@@ -42,6 +43,13 @@ namespace ZXEngine
 		this->z = z;
 	}
 
+	Vector3::Vector3(float x, const Vector2& v2)
+	{
+		this->x = x;
+		this->y = v2.x;
+		this->z = v2.y;
+	}
+
 	Vector3::Vector3(const Vector3& v)
 	{
 		this->x = v.x;
@@ -56,9 +64,17 @@ namespace ZXEngine
 		this->z = v.z;
 	}
 
-	Vector3 Vector3::Normalize() const
+	void Vector3::Normalize()
 	{
-		float l = (float)sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+		float l = sqrtf(powf(x, 2) + powf(y, 2) + powf(z, 2));
+		x /= l;
+		y /= l;
+		z /= l;
+	}
+
+	Vector3 Vector3::GetNormalized() const
+	{
+		float l = sqrtf(powf(x, 2) + powf(y, 2) + powf(z, 2));
 		return Vector3(x / l, y / l, z / l);
 	}
 
@@ -76,7 +92,7 @@ namespace ZXEngine
 
 	float Vector3::GetMagnitude() const
 	{
-		return (float)sqrt(x * x + y * y + z * z);
+		return sqrtf(x * x + y * y + z * z);
 	}
 
 	void Vector3::Clear()
@@ -122,12 +138,12 @@ namespace ZXEngine
 
 	bool Vector3::operator== (const Vector3& v) const
 	{
-		return x == v.x && y == v.y && z == v.z;
+		return Math::Approximately(x, v.x) && Math::Approximately(y, v.y) && Math::Approximately(z, v.z);
 	}
 
 	bool Vector3::operator!= (const Vector3& v) const
 	{
-		return x != v.x || y != v.y || z != v.z;
+		return !Math::Approximately(x, v.x) || !Math::Approximately(y, v.y) || !Math::Approximately(z, v.z);
 	}
 
 	Vector3& Vector3::operator= (const Vector3& v)

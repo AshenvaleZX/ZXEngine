@@ -137,7 +137,7 @@ namespace ZXEngine
 		// 固定参数模拟环境
 		engineProperties->camPos = camera->GetTransform()->GetPosition();
 		engineProperties->lightPos = Vector3(10.0f, 10.0f, -10.0f);
-		engineProperties->lightDir = Vector3(1.0f, 1.0f, -1.0f).Normalize();
+		engineProperties->lightDir = Vector3(1.0f, 1.0f, -1.0f).GetNormalized();
 		engineProperties->lightColor = Vector3(1.0f, 1.0f, 1.0f);
 		engineProperties->lightIntensity = 1.0f;
 		engineProperties->shadowCubeMap = shadowCubeMap->GetID();
@@ -162,7 +162,7 @@ namespace ZXEngine
 		previewModelMaterial->SetMatrix("ENGINE_View", mat_V);
 		previewModelMaterial->SetMatrix("ENGINE_Projection", mat_P);
 		previewModelMaterial->SetMatrix("ENGINE_Model_Inv", mat_M_Inv);
-		previewModelMaterial->SetVector("_Direction", Vector3(1.0f, 1.0f, -1.0f).Normalize());
+		previewModelMaterial->SetVector("_Direction", Vector3(1.0f, 1.0f, -1.0f).GetNormalized());
 
 		info->meshRenderer->Draw();
 	}

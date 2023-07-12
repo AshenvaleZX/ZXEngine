@@ -18,7 +18,8 @@ namespace ZXEngine
 		Vector2(const Vector3& v);
 		Vector2(const Vector4& v);
 
-		Vector2 Normalize() const;
+		void Normalize();
+		Vector2 GetNormalized() const;
 		void ToArray(float* array) const;
 		std::string ToString() const;
 		float GetMagnitude() const;

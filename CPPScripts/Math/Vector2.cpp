@@ -2,6 +2,7 @@
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
+#include "../Math.h"
 #include "../Debug.h"
 
 namespace ZXEngine
@@ -42,9 +43,16 @@ namespace ZXEngine
 		this->y = v.y;
 	}
 
-	Vector2 Vector2::Normalize() const
+	void Vector2::Normalize()
 	{
-		float l = (float)sqrt(pow(x, 2) + pow(y, 2));
+		float l = sqrtf(powf(x, 2) + powf(y, 2));
+		x /= l;
+		y /= l;
+	}
+
+	Vector2 Vector2::GetNormalized() const
+	{
+		float l = sqrtf(powf(x, 2) + powf(y, 2));
 		return Vector2(x / l, y / l);
 	}
 
@@ -61,7 +69,7 @@ namespace ZXEngine
 
 	float Vector2::GetMagnitude() const
 	{
-		return (float)sqrt(x * x + y * y);
+		return sqrtf(x * x + y * y);
 	}
 
 	void Vector2::Clear()
@@ -103,12 +111,12 @@ namespace ZXEngine
 
 	bool Vector2::operator== (const Vector2& v) const
 	{
-		return x == v.x && y == v.y;
+		return Math::Approximately(x, v.x) && Math::Approximately(y, v.y);
 	}
 
 	bool Vector2::operator!= (const Vector2& v) const
 	{
-		return x != v.x || y != v.y;
+		return !Math::Approximately(x, v.x) || !Math::Approximately(y, v.y);
 	}
 
 	Vector2& Vector2::operator= (const Vector2& v)

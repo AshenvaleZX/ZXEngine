@@ -42,7 +42,7 @@ namespace ZXEngine
 	{
 		// 更新当前位置和移动方向
 		Vector3 curPos = GetTransform()->GetPosition();
-		moveDir = (curPos - lastPos).Normalize();
+		moveDir = (curPos - lastPos).GetNormalized();
 		lastPos = curPos;
 
 		// 粒子生产的时间间隔

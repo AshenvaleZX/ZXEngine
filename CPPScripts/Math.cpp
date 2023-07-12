@@ -314,7 +314,8 @@ namespace ZXEngine
 		{
 			Debug::LogError("Invalid vector2 !");
 		}
-		return res.Normalize();
+		res.Normalize();
+		return res;
 	}
 
 	Vector3 Math::GetRandomPerpendicular(const Vector3& v)
@@ -342,7 +343,8 @@ namespace ZXEngine
 		{
 			Debug::LogError("Invalid vector3 !");
 		}
-		return res.Normalize();
+		res.Normalize();
+		return res;
 	}
 
 	Matrix4 Math::GetLookToMatrix(const Vector3& pos, const Vector3& forward, const Vector3& up)

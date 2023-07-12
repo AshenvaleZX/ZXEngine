@@ -3,6 +3,7 @@
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Matrix4.h"
+#include "../Math.h"
 #include "../Debug.h"
 
 namespace ZXEngine
@@ -55,6 +56,22 @@ namespace ZXEngine
 		this->w = w;
 	}
 
+	Vector4::Vector4(float x, const Vector2& v2, float w)
+	{
+		this->x = x;
+		this->y = v2.x;
+		this->z = v2.y;
+		this->w = w;
+	}
+
+	Vector4::Vector4(float x, float y, const Vector2& v2)
+	{
+		this->x = x;
+		this->y = y;
+		this->z = v2.x;
+		this->w = v2.y;
+	}
+
 	Vector4::Vector4(const Vector3& v3)
 	{
 		this->x = v3.x;
@@ -71,6 +88,14 @@ namespace ZXEngine
 		this->w = w;
 	}
 
+	Vector4::Vector4(float x, const Vector3& v3)
+	{
+		this->x = x;
+		this->y = v3.x;
+		this->z = v3.y;
+		this->w = v3.z;
+	}
+
 	Vector4::Vector4(const Vector4& v)
 	{
 		this->x = v.x;
@@ -79,9 +104,18 @@ namespace ZXEngine
 		this->w = v.w;
 	}
 
-	Vector4 Vector4::Normalize() const
+	void Vector4::Normalize()
 	{
-		float l = (float)sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2) + pow(w, 2));
+		float l = sqrtf(powf(x, 2) + powf(y, 2) + powf(z, 2) + powf(w, 2));
+		x /= l;
+		y /= l;
+		z /= l;
+		w /= l;
+	}
+
+	Vector4 Vector4::GetNormalized() const
+	{
+		float l = sqrtf(powf(x, 2) + powf(y, 2) + powf(z, 2) + powf(w, 2));
 		return Vector4(x / l, y / l, z / l, w / l);
 	}
 
@@ -100,7 +134,7 @@ namespace ZXEngine
 
 	float Vector4::GetMagnitude() const
 	{
-		return (float)sqrt(x * x + y * y + z * z + w * w);
+		return sqrtf(x * x + y * y + z * z + w * w);
 	}
 
 	void Vector4::Clear()
@@ -150,12 +184,12 @@ namespace ZXEngine
 
 	bool Vector4::operator== (const Vector4& v) const
 	{
-		return x == v.x && y == v.y && z == v.z && w == v.w;
+		return Math::Approximately(x, v.x) && Math::Approximately(y, v.y) && Math::Approximately(z, v.z) && Math::Approximately(w, v.w);
 	}
 
 	bool Vector4::operator!= (const Vector4& v) const
 	{
-		return x != v.x || y != v.y || z != v.z || w != v.w;
+		return !Math::Approximately(x, v.x) || !Math::Approximately(y, v.y) || !Math::Approximately(z, v.z) || !Math::Approximately(w, v.w);
 	}
 
 	Vector4& Vector4::operator= (const Vector4& v)

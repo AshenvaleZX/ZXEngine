@@ -102,13 +102,13 @@ namespace ZXEngine
 				v.Position.z = radius * sinf(phi) * sinf(theta);
 
 				// 因为是球，球心又在坐标系原点，所以坐标直接Normalize就是法线
-				v.Normal = v.Position.Normalize();
+				v.Normal = v.Position.GetNormalized();
 
 				// 重新推导切线
 				v.Tangent.x = -radius * sinf(phi) * sinf(theta);
 				v.Tangent.y = 0.0f;
 				v.Tangent.z = +radius * sinf(phi) * cosf(theta);
-				v.Tangent = v.Tangent.Normalize();
+				v.Tangent.Normalize();
 
 				v.TexCoords.x = theta / Math::PI;
 				v.TexCoords.y = phi / Math::PI;
@@ -199,7 +199,7 @@ namespace ZXEngine
 		for (size_t i = 0; i < vertices.size(); ++i)
 		{
 			// 调整法线
-			Vector3 n = vertices[i].Position.Normalize();
+			Vector3 n = vertices[i].Position.GetNormalized();
 			// 根据法线和半径重新计算位置
 			Vector3 p = radius * n;
 
@@ -221,7 +221,7 @@ namespace ZXEngine
 			vertices[i].Tangent.x = -radius * sinf(phi) * sinf(theta);
 			vertices[i].Tangent.y = 0.0f;
 			vertices[i].Tangent.z = +radius * sinf(phi) * cosf(theta);
-			vertices[i].Tangent = vertices[i].Tangent.Normalize();
+			vertices[i].Tangent.Normalize();
 		}
 
 		return new StaticMesh(vertices, indices);
@@ -473,9 +473,9 @@ namespace ZXEngine
 		Vertex v = {};
 		v.Position  =  0.5f * (p0 + p1);
 		v.TexCoords =  0.5f * (c0 + c1);
-		v.Normal    = (0.5f * (n0 + n1)).Normalize();
-		v.Tangent   = (0.5f * (t0 + t1)).Normalize();
-		v.Bitangent = (0.5f * (b0 + b1)).Normalize();
+		v.Normal    = (0.5f * (n0 + n1)).GetNormalized();
+		v.Tangent   = (0.5f * (t0 + t1)).GetNormalized();
+		v.Bitangent = (0.5f * (b0 + b1)).GetNormalized();
 
 		return v;
 	}

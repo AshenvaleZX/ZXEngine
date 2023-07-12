@@ -20,11 +20,15 @@ namespace ZXEngine
 		Vector4(const Vector2& v2);
 		Vector4(const Vector2& v2l, const Vector2& v2r);
 		Vector4(const Vector2& v2, float z, float w);
+		Vector4(float x, const Vector2& v2, float w);
+		Vector4(float x, float y, const Vector2& v2);
 		Vector4(const Vector3& v3);
 		Vector4(const Vector3& v3, float w);
+		Vector4(float x, const Vector3& v3);
 		Vector4(const Vector4& v);
 
-		Vector4 Normalize() const;
+		void Normalize();
+		Vector4 GetNormalized() const;
 		void ToArray(float* array) const;
 		std::string ToString() const;
 		float GetMagnitude() const;
