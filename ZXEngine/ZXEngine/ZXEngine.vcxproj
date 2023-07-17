@@ -255,6 +255,7 @@
     <ClCompile Include="..\..\CPPScripts\ParticleSystem.cpp" />
     <ClCompile Include="..\..\CPPScripts\ParticleSystemManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\PointMass.cpp" />
+    <ClCompile Include="..\..\CPPScripts\PhysZ\RigidBody.cpp" />
     <ClCompile Include="..\..\CPPScripts\ProjectSetting.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPI.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPID3D12.cpp" />
@@ -397,6 +398,7 @@
     <ClInclude Include="..\..\CPPScripts\ParticleSystem.h" />
     <ClInclude Include="..\..\CPPScripts\ParticleSystemManager.h" />
     <ClInclude Include="..\..\CPPScripts\PhysZ\PointMass.h" />
+    <ClInclude Include="..\..\CPPScripts\PhysZ\RigidBody.h" />
     <ClInclude Include="..\..\CPPScripts\ProjectSetting.h" />
     <ClInclude Include="..\..\CPPScripts\pubh.h" />
     <ClInclude Include="..\..\CPPScripts\PublicEnum.h" />
