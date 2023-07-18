@@ -22,6 +22,20 @@ namespace ZXEngine
 			mForceAccum += force;
 		}
 
+		void RigidBody::AddForceAtPoint(const Vector3& force, const Vector3& point)
+		{
+			// 相对于质心的位置
+			auto pos = point - mPosition;
+
+			mForceAccum += force;
+			mTorqueAccum += Math::Cross(pos, force);
+		}
+
+		void RigidBody::AddForceAtLocalPoint(const Vector3& force, const Vector3& point)
+		{
+			AddForceAtPoint(force, mTransform * Vector4(point, 1.0f));
+		}
+
 		void RigidBody::AddTorque(const Vector3& torque)
 		{
 			mTorqueAccum += torque;

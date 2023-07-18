@@ -12,9 +12,13 @@ namespace ZXEngine
 			~RigidBody() {};
 
 			void CalculateDerivedData();
-			// 添加一个作用力
+			// 直接在质心添加一个作用力(世界坐标系)
 			void AddForce(const Vector3& force);
-			// 添加一个力矩
+			// 在某个点(世界坐标系)上添加作用力(世界坐标系)
+			void AddForceAtPoint(const Vector3& force, const Vector3& point);
+			// 在某个点(局部坐标系)上添加作用力(世界坐标系)
+			void AddForceAtLocalPoint(const Vector3& force, const Vector3& point);
+			// 添加一个力矩(世界坐标系)
 			void AddTorque(const Vector3& torque);
 			// 清除当前累计的作用力和力矩
 			void ClearAccumulators();
