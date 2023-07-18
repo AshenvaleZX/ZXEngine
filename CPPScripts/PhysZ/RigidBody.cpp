@@ -6,7 +6,15 @@ namespace ZXEngine
 	{
 		void RigidBody::CalculateDerivedData()
 		{
+			UpdateWorldInertiaTensor();
+		}
 
+		void RigidBody::UpdateWorldInertiaTensor()
+		{
+			// 根据当前的transform信息，重新计算世界坐标系下的惯性张量
+			Matrix3 rot(mTransform);
+			// 惯性张量的变换公式为: I' = R * I * R^T，只需要考虑旋转变换即可
+			mWorldInverseInertiaTensor = rot * mLocalInverseInertiaTensor * Math::Transpose(rot);
 		}
 
 		void RigidBody::AddForce(const Vector3& force)
@@ -116,32 +124,32 @@ namespace ZXEngine
 
 		void RigidBody::SetInertiaTensor(const Matrix3& inertiaTensor)
 		{
-			mInverseInertiaTensor = Math::Inverse(inertiaTensor);
+			mLocalInverseInertiaTensor = Math::Inverse(inertiaTensor);
 		}
 
 		void RigidBody::GetInertiaTensor(Matrix3& inertiaTensor) const
 		{
-			inertiaTensor = Math::Inverse(mInverseInertiaTensor);
+			inertiaTensor = Math::Inverse(mLocalInverseInertiaTensor);
 		}
 
 		Matrix3 RigidBody::GetInertiaTensor() const
 		{
-			return Math::Inverse(mInverseInertiaTensor);
+			return Math::Inverse(mLocalInverseInertiaTensor);
 		}
 
 		void RigidBody::SetInverseInertiaTensor(const Matrix3& inverseInertiaTensor)
 		{
-			mInverseInertiaTensor = inverseInertiaTensor;
+			mLocalInverseInertiaTensor = inverseInertiaTensor;
 		}
 
 		void RigidBody::GetInverseInertiaTensor(Matrix3& inverseInertiaTensor) const
 		{
-			inverseInertiaTensor = mInverseInertiaTensor;
+			inverseInertiaTensor = mLocalInverseInertiaTensor;
 		}
 
 		Matrix3 RigidBody::GetInverseInertiaTensor() const
 		{
-			return mInverseInertiaTensor;
+			return mLocalInverseInertiaTensor;
 		}
 
 		void RigidBody::SetAngularDamping(float damping)

@@ -78,8 +78,10 @@ namespace ZXEngine
 			// 累积作用力
 			Vector3 mForceAccum;
 
-			// 惯性张量(以矩阵形式表达,存储逆矩阵方便计算)
-			Matrix3 mInverseInertiaTensor;
+			// Local惯性张量(以矩阵形式表达,存储逆矩阵方便计算)
+			Matrix3 mLocalInverseInertiaTensor;
+			// World惯性张量(以矩阵形式表达,存储逆矩阵方便计算)
+			Matrix3 mWorldInverseInertiaTensor;
 			// 旋转运动阻尼系数(1表示无阻尼)
 			float mAngularDamping = 1.0f;
 			// 旋转
@@ -90,7 +92,9 @@ namespace ZXEngine
 			Vector3 mTorqueAccum;
 
 			// local到world空间的变换
-			Matrix4 transform;
+			Matrix4 mTransform;
+
+			void UpdateWorldInertiaTensor();
 		};
 	}
 }
