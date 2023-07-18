@@ -254,6 +254,7 @@
     <ClCompile Include="..\..\CPPScripts\MeshRenderer.cpp" />
     <ClCompile Include="..\..\CPPScripts\ParticleSystem.cpp" />
     <ClCompile Include="..\..\CPPScripts\ParticleSystemManager.cpp" />
+    <ClCompile Include="..\..\CPPScripts\PhysZ\FGGravity.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\PointMass.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\RigidBody.cpp" />
     <ClCompile Include="..\..\CPPScripts\ProjectSetting.cpp" />
@@ -397,6 +398,8 @@
     <ClInclude Include="..\..\CPPScripts\OpenGLEnumStruct.h" />
     <ClInclude Include="..\..\CPPScripts\ParticleSystem.h" />
     <ClInclude Include="..\..\CPPScripts\ParticleSystemManager.h" />
+    <ClInclude Include="..\..\CPPScripts\PhysZ\FGGravity.h" />
+    <ClInclude Include="..\..\CPPScripts\PhysZ\ForceGenerator.h" />
     <ClInclude Include="..\..\CPPScripts\PhysZ\PointMass.h" />
     <ClInclude Include="..\..\CPPScripts\PhysZ\RigidBody.h" />
     <ClInclude Include="..\..\CPPScripts\ProjectSetting.h" />
