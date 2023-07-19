@@ -49,6 +49,9 @@
     <Filter Include="External">
       <UniqueIdentifier>{00d74f2e-2266-4907-ac95-b0247798b36e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PhysZ\Force">
+      <UniqueIdentifier>{c9bc3a81-4ef2-4877-9603-9d1a6bef5636}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\CPPScripts\GameObject.cpp">
@@ -441,12 +444,6 @@
     <ClCompile Include="..\..\CPPScripts\PhysZ\RigidBody.cpp">
       <Filter>PhysZ</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\PhysZ\FGGravity.cpp">
-      <Filter>PhysZ</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\PhysZ\FGSpring.cpp">
-      <Filter>PhysZ</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\CPPScripts\PhysZ\PScene.cpp">
       <Filter>PhysZ</Filter>
     </ClCompile>
@@ -458,6 +455,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Vendor\Src\volk.c">
       <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\PhysZ\Force\FGGravity.cpp">
+      <Filter>PhysZ\Force</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\PhysZ\Force\FGSpring.cpp">
+      <Filter>PhysZ\Force</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -893,17 +896,17 @@
     <ClInclude Include="..\..\CPPScripts\PhysZ\RigidBody.h">
       <Filter>PhysZ</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\ForceGenerator.h">
-      <Filter>PhysZ</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\FGGravity.h">
-      <Filter>PhysZ</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\FGSpring.h">
-      <Filter>PhysZ</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\CPPScripts\PhysZ\PScene.h">
       <Filter>PhysZ</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\PhysZ\Force\FGGravity.h">
+      <Filter>PhysZ\Force</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\PhysZ\Force\FGSpring.h">
+      <Filter>PhysZ\Force</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\PhysZ\Force\ForceGenerator.h">
+      <Filter>PhysZ\Force</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
