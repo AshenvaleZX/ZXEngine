@@ -9,12 +9,12 @@ namespace ZXEngine
 		float pitch = Math::Deg2Rad(x);
 		float yaw = Math::Deg2Rad(y);
 		float roll = Math::Deg2Rad(z);
-		float cp = (float)cos(pitch * 0.5);
-		float sp = (float)sin(pitch * 0.5);
-		float cy = (float)cos(yaw * 0.5);
-		float sy = (float)sin(yaw * 0.5);
-		float cr = (float)cos(roll * 0.5);
-		float sr = (float)sin(roll * 0.5);
+		float cp = cos(pitch * 0.5f);
+		float sp = sin(pitch * 0.5f);
+		float cy = cos(yaw * 0.5f);
+		float sy = sin(yaw * 0.5f);
+		float cr = cos(roll * 0.5f);
+		float sr = sin(roll * 0.5f);
 
 		Quaternion q;
 		q.x = cr * sp * cy + sr * cp * sy;
@@ -40,13 +40,21 @@ namespace ZXEngine
 
 	Quaternion::Quaternion(const Quaternion& q)
 	{
-		this->x = q.x;
-		this->y = q.y;
-		this->z = q.z;
-		this->w = q.w;
+		x = q.x;
+		y = q.y;
+		z = q.z;
+		w = q.w;
 	}
 
-	Quaternion::Quaternion(float x, float y, float z, float w) 
+	Quaternion::Quaternion(const Vector3& v, float w)
+	{
+		this->x = v.x;
+		this->y = v.y;
+		this->z = v.z;
+		this->w = w;
+	}
+
+	Quaternion::Quaternion(float x, float y, float z, float w)
 	{
 		this->x = x;
 		this->y = y;

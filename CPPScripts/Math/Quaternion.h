@@ -18,6 +18,7 @@ namespace ZXEngine
 
 		Quaternion();
 		Quaternion(const Quaternion& q);
+		Quaternion(const Vector3& v, float w);
 		Quaternion(float x, float y, float z, float w);
 		~Quaternion() {};
 
