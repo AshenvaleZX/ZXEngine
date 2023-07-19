@@ -52,12 +52,12 @@
     <Filter Include="External\ImGui">
       <UniqueIdentifier>{0ad4c03f-e08b-4115-9ee4-25e2aa4bd1cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component">
+      <UniqueIdentifier>{5c8f325c-a511-47ad-b8cf-375c6e7f2d31}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\CPPScripts\GameObject.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\Scene.cpp">
@@ -70,12 +70,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\Entry.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\ZCamera.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\MeshRenderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\StaticMesh.cpp">
@@ -117,13 +111,7 @@
     <ClCompile Include="..\..\CPPScripts\Time.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Light.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\CPPScripts\Math.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Transform.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\CubeMap.cpp">
@@ -144,9 +132,6 @@
     <ClCompile Include="..\..\CPPScripts\LuaManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\GameLogic.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\CPPScripts\GameLogicManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -165,19 +150,10 @@
     <ClCompile Include="..\..\CPPScripts\RenderPassUIRendering.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\UITextRenderer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\CPPScripts\TextCharactersManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\DynamicMesh.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\UITextureRenderer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\ParticleSystem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\ParticleSystemManager.cpp">
@@ -462,18 +438,36 @@
     <ClCompile Include="..\..\CPPScripts\External\ImGui\imgui_widgets.cpp">
       <Filter>External\ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\Component.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\GameLogic.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\Light.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\MeshRenderer.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\ParticleSystem.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\Transform.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\UITextRenderer.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\UITextureRenderer.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\ZCamera.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\GameObject.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Transform.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\MeshRenderer.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\SceneManager.h">
@@ -486,9 +480,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Game.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\ZCamera.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Debug.h">
@@ -536,9 +527,6 @@
     <ClInclude Include="..\..\CPPScripts\Time.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Light.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\CPPScripts\PublicStruct.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -575,9 +563,6 @@
     <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Resources.h">
       <Filter>LuaWrap</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\GameLogic.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\CPPScripts\GameLogicManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -602,16 +587,10 @@
     <ClInclude Include="..\..\CPPScripts\RenderPassUIRendering.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\UITextRenderer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\CPPScripts\TextCharactersManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\DynamicMesh.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\UITextureRenderer.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_GameObject.h">
@@ -619,9 +598,6 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_UITextRenderer.h">
       <Filter>LuaWrap</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\ParticleSystem.h">
-      <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\ParticleSystemManager.h">
       <Filter>头文件</Filter>
@@ -907,6 +883,33 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\External\ImGui\imstb_truetype.h">
       <Filter>External\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\Component.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\GameLogic.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\Light.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\MeshRenderer.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\ParticleSystem.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\Transform.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\UITextRenderer.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\UITextureRenderer.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\ZCamera.h">
+      <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
