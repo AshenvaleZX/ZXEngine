@@ -46,11 +46,11 @@
     <Filter Include="PhysZ">
       <UniqueIdentifier>{904b7534-7119-4d42-872c-31fb57e75dc5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External">
+      <UniqueIdentifier>{00d74f2e-2266-4907-ac95-b0247798b36e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Vendor\Src\glad.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\CPPScripts\GameObject.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -402,9 +402,6 @@
     <ClCompile Include="..\..\CPPScripts\Input\InputManagerWindows.cpp">
       <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Vendor\Src\d3dx12_property_format_table.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\CPPScripts\DirectX12\ZXD3D12DescriptorManager.cpp">
       <Filter>DirectX12</Filter>
     </ClCompile>
@@ -438,9 +435,6 @@
     <ClCompile Include="..\..\CPPScripts\GeometryGenerator.h">
       <Filter>头文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Vendor\Src\volk.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\CPPScripts\PhysZ\PointMass.cpp">
       <Filter>PhysZ</Filter>
     </ClCompile>
@@ -455,6 +449,15 @@
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\PhysZ\PScene.cpp">
       <Filter>PhysZ</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Vendor\Src\d3dx12_property_format_table.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Vendor\Src\glad.c">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Vendor\Src\volk.c">
+      <Filter>External</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
