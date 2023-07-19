@@ -3,7 +3,7 @@
 #include "RenderQueueManager.h"
 #include "CubeMap.h"
 #include "GameObject.h"
-#include "ZCamera.h"
+#include "Component/ZCamera.h"
 #include "Resources.h"
 #include "ProjectSetting.h"
 #include "RenderAPI.h"

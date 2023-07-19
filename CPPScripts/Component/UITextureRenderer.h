@@ -1,7 +1,7 @@
 #pragma once
-#include "pubh.h"
+#include "../pubh.h"
+#include "../Texture.h"
 #include "Component.h"
-#include "Texture.h"
 
 namespace ZXEngine
 {

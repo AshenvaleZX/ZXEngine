@@ -1,5 +1,5 @@
 #include "ParticleSystemManager.h"
-#include "ParticleSystem.h"
+#include "Component/ParticleSystem.h"
 #include "ZShader.h"
 #include "Resources.h"
 #include "RenderStateSetting.h"

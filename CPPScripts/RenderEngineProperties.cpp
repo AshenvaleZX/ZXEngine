@@ -1,8 +1,8 @@
 #include "RenderEngineProperties.h"
-#include "Light.h"
-#include "ZCamera.h"
-#include "Transform.h"
-#include "MeshRenderer.h"
+#include "Component/Light.h"
+#include "Component/ZCamera.h"
+#include "Component/Transform.h"
+#include "Component/MeshRenderer.h"
 
 namespace ZXEngine
 {

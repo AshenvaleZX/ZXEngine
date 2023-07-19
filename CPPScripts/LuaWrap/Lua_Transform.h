@@ -1,5 +1,5 @@
 #pragma once
-#include "../Transform.h"
+#include "../Component/Transform.h"
 
 extern "C"
 {

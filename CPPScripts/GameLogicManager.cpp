@@ -1,5 +1,5 @@
 #include "GameLogicManager.h"
-#include "GameLogic.h"
+#include "Component/GameLogic.h"
 
 namespace ZXEngine
 {

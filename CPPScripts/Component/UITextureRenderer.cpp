@@ -1,10 +1,10 @@
 #include "UITextureRenderer.h"
-#include "StaticMesh.h"
-#include "ZShader.h"
-#include "Material.h"
-#include "Resources.h"
-#include "GlobalData.h"
 #include "Transform.h"
+#include "../StaticMesh.h"
+#include "../ZShader.h"
+#include "../Material.h"
+#include "../Resources.h"
+#include "../GlobalData.h"
 
 namespace ZXEngine
 {

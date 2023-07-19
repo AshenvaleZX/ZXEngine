@@ -1,9 +1,9 @@
 #include "ZCamera.h"
-#include "RenderEngine.h"
-#include "EventManager.h"
-#include "Time.h"
 #include "Transform.h"
-#include "GlobalData.h"
+#include "../RenderEngine.h"
+#include "../EventManager.h"
+#include "../Time.h"
+#include "../GlobalData.h"
 
 namespace ZXEngine
 {

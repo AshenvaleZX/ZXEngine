@@ -1,5 +1,5 @@
 #pragma once
-#include "../UITextRenderer.h"
+#include "../Component/UITextRenderer.h"
 
 extern "C"
 {

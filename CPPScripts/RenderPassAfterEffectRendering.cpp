@@ -7,7 +7,7 @@
 #include "FBOManager.h"
 #include "RenderStateSetting.h"
 #include "ProjectSetting.h"
-#include "ZCamera.h"
+#include "Component/ZCamera.h"
 
 namespace ZXEngine
 {

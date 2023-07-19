@@ -1,5 +1,5 @@
 #include "MeshRenderer.h"
-#include "GeometryGenerator.h"
+#include "../GeometryGenerator.h"
 
 namespace ZXEngine
 {

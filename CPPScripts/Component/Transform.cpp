@@ -1,5 +1,5 @@
 #include "Transform.h"
-#include "GameObject.h"
+#include "../GameObject.h"
 
 namespace ZXEngine
 {

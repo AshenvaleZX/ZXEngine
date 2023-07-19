@@ -1,7 +1,7 @@
 #include "RenderPassUIRendering.h"
 #include "TextCharactersManager.h"
-#include "UITextRenderer.h"
-#include "UITextureRenderer.h"
+#include "Component/UITextRenderer.h"
+#include "Component/UITextureRenderer.h"
 #include "RenderQueueManager.h"
 #include "GameObject.h"
 

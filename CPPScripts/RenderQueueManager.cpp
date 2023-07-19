@@ -1,6 +1,6 @@
 #include "RenderQueueManager.h"
-#include "MeshRenderer.h"
 #include "GameObject.h"
+#include "Component/MeshRenderer.h"
 
 namespace ZXEngine
 {

@@ -1,10 +1,10 @@
 #include "UITextRenderer.h"
-#include "ZShader.h"
-#include "TextCharactersManager.h"
-#include "DynamicMesh.h"
 #include "Transform.h"
-#include "GlobalData.h"
-#include "Material.h"
+#include "../ZShader.h"
+#include "../TextCharactersManager.h"
+#include "../DynamicMesh.h"
+#include "../GlobalData.h"
+#include "../Material.h"
 
 namespace ZXEngine
 {

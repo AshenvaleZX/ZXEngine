@@ -4,7 +4,7 @@
 #include "../Time.h"
 #include "../Texture.h"
 #include "../Material.h"
-#include "../MeshRenderer.h"
+#include "../Component/MeshRenderer.h"
 #include "../SceneManager.h"
 
 namespace ZXEngine

@@ -1,7 +1,7 @@
 #include "GameLogic.h"
-#include "GameLogicManager.h"
-#include "LuaManager.h"
-#include "Resources.h"
+#include "../GameLogicManager.h"
+#include "../LuaManager.h"
+#include "../Resources.h"
 
 namespace ZXEngine
 {

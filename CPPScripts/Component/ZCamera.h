@@ -1,5 +1,5 @@
 #pragma once
-#include "pubh.h"
+#include "../pubh.h"
 #include "Component.h"
 
 namespace ZXEngine

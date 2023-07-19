@@ -1,15 +1,15 @@
 #pragma once
 #include "pubh.h"
-#include "Component.h"
-#include "Transform.h"
-#include "MeshRenderer.h"
-#include "ZCamera.h"
-#include "Light.h"
-#include "GameLogic.h"
-#include "UITextRenderer.h"
-#include "UITextureRenderer.h"
 #include "Resources.h"
-#include "ParticleSystem.h"
+#include "Component/Component.h"
+#include "Component/Transform.h"
+#include "Component/MeshRenderer.h"
+#include "Component/ZCamera.h"
+#include "Component/Light.h"
+#include "Component/GameLogic.h"
+#include "Component/UITextRenderer.h"
+#include "Component/UITextureRenderer.h"
+#include "Component/ParticleSystem.h"
 
 namespace ZXEngine
 {

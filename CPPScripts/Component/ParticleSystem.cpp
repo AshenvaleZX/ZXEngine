@@ -1,11 +1,11 @@
 #include "ParticleSystem.h"
-#include "ParticleSystemManager.h"
-#include "Time.h"
-#include "RenderAPI.h"
 #include "ZCamera.h"
-#include "ZShader.h"
-#include "Material.h"
 #include "Transform.h"
+#include "../Time.h"
+#include "../ZShader.h"
+#include "../Material.h"
+#include "../RenderAPI.h"
+#include "../ParticleSystemManager.h"
 
 namespace ZXEngine
 {

@@ -1,7 +1,7 @@
 #include "EditorEnumStruct.h"
 #include "../Texture.h"
 #include "../Material.h"
-#include "../MeshRenderer.h"
+#include "../Component/MeshRenderer.h"
 
 namespace ZXEngine
 {
