@@ -257,6 +257,7 @@
     <ClCompile Include="..\..\CPPScripts\PhysZ\FGGravity.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\FGSpring.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\PointMass.cpp" />
+    <ClCompile Include="..\..\CPPScripts\PhysZ\PScene.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\RigidBody.cpp" />
     <ClCompile Include="..\..\CPPScripts\ProjectSetting.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPI.cpp" />
@@ -403,6 +404,7 @@
     <ClInclude Include="..\..\CPPScripts\PhysZ\FGSpring.h" />
     <ClInclude Include="..\..\CPPScripts\PhysZ\ForceGenerator.h" />
     <ClInclude Include="..\..\CPPScripts\PhysZ\PointMass.h" />
+    <ClInclude Include="..\..\CPPScripts\PhysZ\PScene.h" />
     <ClInclude Include="..\..\CPPScripts\PhysZ\RigidBody.h" />
     <ClInclude Include="..\..\CPPScripts\ProjectSetting.h" />
     <ClInclude Include="..\..\CPPScripts\pubh.h" />
