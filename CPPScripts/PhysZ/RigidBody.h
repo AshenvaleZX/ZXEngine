@@ -11,6 +11,9 @@ namespace ZXEngine
 			RigidBody() {};
 			~RigidBody() {};
 
+			// 更新刚体的位置和旋转
+			void Integrate(float duration);
+			// 计算需要跟随刚体变化而变化的相关数据
 			void CalculateDerivedData();
 			// 直接在质心添加一个作用力(世界坐标系)
 			void AddForce(const Vector3& force);
@@ -80,6 +83,8 @@ namespace ZXEngine
 			Vector3 mVelocity;
 			// 加速度
 			Vector3 mAcceleration;
+			// 上一帧的加速度
+			Vector3 mLastAcceleration;
 			// 累积作用力
 			Vector3 mForceAccum;
 
@@ -99,6 +104,7 @@ namespace ZXEngine
 			// local到world空间的变换
 			Matrix4 mTransform;
 
+			void UpdateTransform();
 			void UpdateWorldInertiaTensor();
 		};
 	}

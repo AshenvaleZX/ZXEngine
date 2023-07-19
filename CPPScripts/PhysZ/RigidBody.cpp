@@ -4,9 +4,54 @@ namespace ZXEngine
 {
 	namespace PhysZ
 	{
+		void RigidBody::Integrate(float duration)
+		{
+			// 通过合力计算加速度
+			mLastAcceleration = mAcceleration;
+			mLastAcceleration += mForceAccum * mInverseMass;
+
+			// 通过合力矩计算角加速度
+			Vector3 angularAcceleration = mWorldInverseInertiaTensor * mTorqueAccum;
+
+			// 根据加速度更新速度
+			mVelocity += mLastAcceleration * duration;
+
+			// 根据角加速度更新角速度
+			mAngularVelocity += angularAcceleration * duration;
+
+			// 施加阻尼效果
+			mVelocity *= pow(mLinearDamping, duration);
+			mAngularVelocity *= pow(mAngularDamping, duration);
+
+			// 根据速度移动位置
+			mPosition += mVelocity * duration;
+
+			// 根据角速度更新旋转状态
+			Quaternion q(mAngularVelocity * duration, 0.0f);
+			q *= mRotation;
+			mRotation.x += q.x * 0.5f;
+			mRotation.y += q.y * 0.5f;
+			mRotation.z += q.z * 0.5f;
+			mRotation.w += q.w * 0.5f;
+			mRotation.Normalize();
+
+			// 更新其它数据
+			CalculateDerivedData();
+
+			// 清除累积的作用力和力矩
+			ClearAccumulators();
+		}
+
 		void RigidBody::CalculateDerivedData()
 		{
+			UpdateTransform();
 			UpdateWorldInertiaTensor();
+		}
+
+		void RigidBody::UpdateTransform()
+		{
+			mTransform = mRotation.ToMatrix();
+			mTransform = Math::Translate(mTransform, mPosition);
 		}
 
 		void RigidBody::UpdateWorldInertiaTensor()
