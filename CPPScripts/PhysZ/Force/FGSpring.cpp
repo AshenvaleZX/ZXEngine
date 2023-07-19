@@ -1,4 +1,5 @@
 #include "FGSpring.h"
+#include "../RigidBody.h"
 
 namespace ZXEngine
 {

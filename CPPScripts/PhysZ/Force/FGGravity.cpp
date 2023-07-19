@@ -1,4 +1,5 @@
 #include "FGGravity.h"
+#include "../RigidBody.h"
 
 namespace ZXEngine
 {

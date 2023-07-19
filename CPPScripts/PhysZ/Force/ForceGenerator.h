@@ -1,10 +1,11 @@
 #pragma once
-#include "RigidBody.h"
+#include "../../pubh.h"
 
 namespace ZXEngine
 {
 	namespace PhysZ
 	{
+		class RigidBody;
 		class ForceGenerator
 		{
 		public:
