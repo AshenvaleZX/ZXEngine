@@ -3,8 +3,8 @@ setlocal enabledelayedexpansion
 
 set "path_to_folder=..\CPPScripts"
 set "file_types=(.cpp .h)"
-set "exclude_path1=..\CPPScripts\Lua"
-set "exclude_path2=..\CPPScripts\ImGui"
+set "exclude_path1=..\CPPScripts\External\Lua"
+set "exclude_path2=..\CPPScripts\External\ImGui"
 set total_lines=0
 
 pushd "%exclude_path1%"
