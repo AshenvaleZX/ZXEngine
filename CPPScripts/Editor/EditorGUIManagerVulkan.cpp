@@ -8,8 +8,8 @@
 #include "ImGuiTextureManager.h"
 #include "../RenderAPIVulkan.h"
 #include "../Window/WindowManager.h"
-#include "../ImGui/imgui_impl_glfw.h"
-#include "../ImGui/imgui_impl_vulkan.h"
+#include "../External/ImGui/imgui_impl_glfw.h"
+#include "../External/ImGui/imgui_impl_vulkan.h"
 
 // Vulkan的ImGui接入比较麻烦，参考教程: https://frguthmann.github.io/posts/vulkan_imgui/
 static int g_MinImageCount = 2;

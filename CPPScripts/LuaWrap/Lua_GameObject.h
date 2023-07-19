@@ -4,9 +4,9 @@
 
 extern "C"
 {
-#include "../Lua/lua.h"
-#include "../Lua/lualib.h"
-#include "../Lua/lauxlib.h"
+#include "../External/Lua/lua.h"
+#include "../External/Lua/lualib.h"
+#include "../External/Lua/lauxlib.h"
 }
 
 static int GetComponent(lua_State* L)

@@ -8,8 +8,8 @@
 #include "../RenderAPID3D12.h"
 #include "../Window/WindowManager.h"
 #include "../DirectX12/ZXD3D12DescriptorManager.h"
-#include "../ImGui/imgui_impl_dx12.h"
-#include "../ImGui/imgui_impl_win32.h"
+#include "../External/ImGui/imgui_impl_dx12.h"
+#include "../External/ImGui/imgui_impl_win32.h"
 
 namespace ZXEngine
 {

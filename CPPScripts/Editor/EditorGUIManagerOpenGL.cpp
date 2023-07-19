@@ -7,8 +7,8 @@
 #include "EditorAssetPreviewer.h"
 #include "ImGuiTextureManager.h"
 #include "../Window/WindowManager.h"
-#include "../ImGui/imgui_impl_glfw.h"
-#include "../ImGui/imgui_impl_opengl3.h"
+#include "../External/ImGui/imgui_impl_glfw.h"
+#include "../External/ImGui/imgui_impl_opengl3.h"
 
 namespace ZXEngine
 {
