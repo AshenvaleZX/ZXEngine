@@ -52,6 +52,11 @@ namespace ZXEngine
 			return mInverseMass <= 0.0f;
 		}
 
+		Matrix4 RigidBody::GetTransform() const
+		{
+			return mTransform;
+		}
+
 		void RigidBody::SetMass(float mass)
 		{
 			if (mass <= 0.0f)

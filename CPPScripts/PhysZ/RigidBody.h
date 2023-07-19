@@ -25,6 +25,7 @@ namespace ZXEngine
 			// 判断质量是否为无穷大
 			bool IsInfiniteMass() const;
 			
+			Matrix4 GetTransform() const;
 
 			// ---------- 线性运动 ----------
 
