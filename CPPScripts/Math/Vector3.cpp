@@ -95,6 +95,11 @@ namespace ZXEngine
 		return sqrtf(x * x + y * y + z * z);
 	}
 
+	float Vector3::GetMagnitudeSquared() const
+	{
+		return x * x + y * y + z * z;
+	}
+
 	void Vector3::Clear()
 	{
 		x = y = z = 0.0f;

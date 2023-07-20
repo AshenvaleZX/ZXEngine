@@ -72,6 +72,11 @@ namespace ZXEngine
 		return sqrtf(x * x + y * y);
 	}
 
+	float Vector2::GetMagnitudeSquared() const
+	{
+		return x * x + y * y;
+	}
+
 	void Vector2::Clear()
 	{
 		x = y = 0.0f;
