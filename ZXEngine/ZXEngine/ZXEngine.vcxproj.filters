@@ -55,6 +55,9 @@
     <Filter Include="Component">
       <UniqueIdentifier>{5c8f325c-a511-47ad-b8cf-375c6e7f2d31}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PhysZ\BoundingVolume">
+      <UniqueIdentifier>{6e684a37-a362-4568-987b-9098dcde4b77}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\CPPScripts\GameObject.cpp">
@@ -464,6 +467,9 @@
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\Component\ZCamera.cpp">
       <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\PhysZ\BoundingVolume\BoundingSphere.cpp">
+      <Filter>PhysZ\BoundingVolume</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -910,6 +916,15 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Component\ZCamera.h">
       <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\PhysZ\BoundingVolume\BoundingSphere.h">
+      <Filter>PhysZ\BoundingVolume</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\PhysZ\PhysZEnumStruct.h">
+      <Filter>PhysZ</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\PhysZ\BVHNode.h">
+      <Filter>PhysZ</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
