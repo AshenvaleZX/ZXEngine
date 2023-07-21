@@ -22,11 +22,15 @@ namespace ZXEngine
 			// 包含该节点和所有子节点下的对象的BoundingVolume
 			BoundingVolume* mBoundingVolume;
 
-			BVHNode(BVHNode* parent, BoundingVolume* boundingVolume, RigidBody* rigidBody):
-			~BVHNode() {};
+			// parent为空表示是根节点
+			BVHNode(BVHNode* parent, BoundingVolume* boundingVolume, RigidBody* rigidBody);
+			// 析构函数会递归删除所有子节点
+			~BVHNode();
 
 			// 是否为叶子节点
 			bool IsLeaf() const;
+			// 在当前节点下插入一个刚体，如果当前节点是叶子节点会升级为父节点然后把原当前刚体和新刚体变成2个子节点
+			// 如果当前节点不是叶子节点，就会向下查找叶子节点然后插入
 			void Insert(const RigidBody* body, const BoundingVolume* volume);
 			// 检测当前节点的BV所包围的所有刚体之间的潜在碰撞，写入一个PotentialContact数组中
 			// 第一个参数是PotentialContact数组地址，第二个参数是PotentialContact数组长度
@@ -34,7 +38,9 @@ namespace ZXEngine
 			uint32_t GetPotentialContacts(PotentialContact* contacts, uint32_t limit) const;
 
 		private:
+			// 与另一个节点的BV是否有重叠
 			bool IsOverlapWith(const BVHNode* other) const;
+			// 重新生成当前节点的BV，默认会向根节点递归生成
 			void RecalculateBoundingVolume(bool recurse = true);
 			// 获取当前节点包围的所有刚体和另一个节点包围的所有刚体之间潜在的碰撞
 			// 第二个参数是PotentialContact数组地址，第三个参数是PotentialContact数组长度
@@ -53,9 +59,74 @@ namespace ZXEngine
 		}
 
 		template<class BoundingVolume>
+		BVHNode<BoundingVolume>::~BVHNode()
+		{
+			if (mParent != nullptr)
+			{
+				// 先找到兄弟节点
+				BVHNode* sibling = (mParent->mChildren[0] == this) ? mParent->mChildren[1] : mParent->mChildren[0];
+
+				// 把兄弟节点的数据复制到父节点
+				mParent->mRigidBody      = sibling->mRigidBody;
+				mParent->mChildren[0]    = sibling->mChildren[0];
+				mParent->mChildren[1]    = sibling->mChildren[1];
+				mParent->mBoundingVolume = sibling->mBoundingVolume;
+
+				// 然后把兄弟节点删除
+				sibling->mParent      = nullptr;
+				sibling->mRigidBody   = nullptr;
+				sibling->mChildren[0] = nullptr;
+				sibling->mChildren[1] = nullptr;
+				delete sibling;
+
+				// 最后重新计算父节点的BV
+				mParent->RecalculateBoundingVolume();
+			}
+			
+			// 递归删除子节点，删之前先把父节点引用清空，这样子节点删除时无需再处理兄弟节点
+			if (mChildren[0] != nullptr)
+			{
+				mChildren[0]->mParent = nullptr;
+				delete mChildren[0];
+			}
+			if (mChildren[1] != nullptr)
+			{
+				mChildren[1]->mParent = nullptr;
+				delete mChildren[1];
+			}
+		}
+
+		template<class BoundingVolume>
 		bool BVHNode<BoundingVolume>::IsLeaf() const
 		{
 			return mRigidBody != nullptr;
+		}
+
+		template<class BoundingVolume>
+		void BVHNode<BoundingVolume>::Insert(const RigidBody* body, const BoundingVolume* volume)
+		{
+			// 如果是叶子节点，就升级为父节点
+			if (IsLeaf())
+			{
+				// 用当前节点数据生成一个子节点
+				mChildren[0] = new BVHNode(this, mBoundingVolume, mRigidBody);
+				// 用新数据生成另一个子节点
+				mChildren[1] = new BVHNode(this, volume, body);
+
+				// 删掉当前节点的刚体
+				mRigidBody = nullptr;
+				// 重新生成当前节点和所有父节点的BV
+				RecalculateBoundingVolume();
+			}
+			// 如果不是叶子节点，就向下查找叶子节点然后插入
+			else
+			{
+				// 比较插入到两个子节点后的BV增长量，插入增长量更小的那个
+				if (mChildren[0]->mBoundingVolume->GetGrowth(volume) < mChildren[1]->mBoundingVolume->GetGrowth(volume))
+					mChildren[0]->Insert(body, volume);
+				else
+					mChildren[1]->Insert(body, volume);
+			}
 		}
 
 		template<class BoundingVolume>
@@ -115,6 +186,18 @@ namespace ZXEngine
 		bool BVHNode<BoundingVolume>::IsOverlapWith(const BVHNode* other) const
 		{
 			return mBoundingVolume->IsOverlapWith(other->mBoundingVolume);
+		}
+
+		template<class BoundingVolume>
+		void BVHNode<BoundingVolume>::RecalculateBoundingVolume(bool recurse)
+		{
+			// 叶子节点只包含一个刚体，目前的物理系统默认刚体不会变，所以无需重新计算BV大小
+			if (!IsLeaf())
+				mBoundingVolume = BoundingVolume(mChildren[0]->mBoundingVolume, mChildren[1]->mBoundingVolume);
+
+			// 如果需要递归，就递归更新父节点的BV
+			if (mParent != nullptr && recurse)
+				mParent->RecalculateBoundingVolume(true);
 		}
 	}
 }
