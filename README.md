@@ -1,8 +1,8 @@
 # ZXEngine
 
-这个项目是我个人为了学习游戏引擎技术创建的，目前同时支持Vulkan，DirectX 12和OpenGL。并且支持光线追踪渲染管线(基于Vulkan)。
+这个项目是我个人为了学习游戏引擎技术创建的，目前同时支持Vulkan，DirectX 12和OpenGL。并且支持光线追踪渲染管线(基于Vulkan)。并且正在开发自研物理引擎PhysZ。
 
-I created this project to learn and practice game engine technology, It now supports Vulkan, DirectX 12 and OpenGL.And it supports ray tracing rendering (Only based on Vulkan for now).
+I created this project to learn and practice game engine technology, It now supports Vulkan, DirectX 12 and OpenGL.And it supports ray tracing rendering (Only based on Vulkan for now). And is developing my own physics engine PhysZ.
 
 截图展示(介绍后面有更多展示):
 
