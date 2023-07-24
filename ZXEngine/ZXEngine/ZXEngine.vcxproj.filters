@@ -471,6 +471,18 @@
     <ClCompile Include="..\..\CPPScripts\PhysZ\BoundingVolume\BoundingSphere.cpp">
       <Filter>PhysZ\BoundingVolume</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\PhysZ\Contact.cpp">
+      <Filter>PhysZ</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\PhysZ\CollisionData.cpp">
+      <Filter>PhysZ</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\PhysZ\CollisionPrimitive.cpp">
+      <Filter>PhysZ</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\PhysZ\CollisionDetector.cpp">
+      <Filter>PhysZ</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\GameObject.h">
@@ -924,6 +936,18 @@
       <Filter>PhysZ</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\PhysZ\BVHNode.h">
+      <Filter>PhysZ</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\PhysZ\Contact.h">
+      <Filter>PhysZ</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\PhysZ\CollisionData.h">
+      <Filter>PhysZ</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\PhysZ\CollisionPrimitive.h">
+      <Filter>PhysZ</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\PhysZ\CollisionDetector.h">
       <Filter>PhysZ</Filter>
     </ClInclude>
   </ItemGroup>

@@ -259,6 +259,10 @@
     <ClCompile Include="..\..\CPPScripts\Math\Vector4.cpp" />
     <ClCompile Include="..\..\CPPScripts\ParticleSystemManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\BoundingVolume\BoundingSphere.cpp" />
+    <ClCompile Include="..\..\CPPScripts\PhysZ\CollisionData.cpp" />
+    <ClCompile Include="..\..\CPPScripts\PhysZ\CollisionDetector.cpp" />
+    <ClCompile Include="..\..\CPPScripts\PhysZ\CollisionPrimitive.cpp" />
+    <ClCompile Include="..\..\CPPScripts\PhysZ\Contact.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\Force\FGGravity.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\Force\FGSpring.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\PointMass.cpp" />
@@ -407,6 +411,10 @@
     <ClInclude Include="..\..\CPPScripts\ParticleSystemManager.h" />
     <ClInclude Include="..\..\CPPScripts\PhysZ\BoundingVolume\BoundingSphere.h" />
     <ClInclude Include="..\..\CPPScripts\PhysZ\BVHNode.h" />
+    <ClInclude Include="..\..\CPPScripts\PhysZ\CollisionData.h" />
+    <ClInclude Include="..\..\CPPScripts\PhysZ\CollisionDetector.h" />
+    <ClInclude Include="..\..\CPPScripts\PhysZ\CollisionPrimitive.h" />
+    <ClInclude Include="..\..\CPPScripts\PhysZ\Contact.h" />
     <ClInclude Include="..\..\CPPScripts\PhysZ\Force\FGGravity.h" />
     <ClInclude Include="..\..\CPPScripts\PhysZ\Force\FGSpring.h" />
     <ClInclude Include="..\..\CPPScripts\PhysZ\Force\ForceGenerator.h" />
