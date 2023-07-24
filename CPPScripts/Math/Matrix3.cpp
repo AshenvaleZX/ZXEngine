@@ -1,6 +1,7 @@
 #include "Vector3.h"
 #include "Matrix3.h"
 #include "Matrix4.h"
+#include "../Debug.h"
 
 namespace ZXEngine
 {
@@ -46,6 +47,38 @@ namespace ZXEngine
 	{
 		return (m00 * m11 * m22) + (m01 * m12 * m20) + (m02 * m10 * m21) - 
 			(m02 * m11 * m20) - (m00 * m12 * m21) - (m01 * m10 * m22);
+	}
+
+	Vector3 Matrix3::GetRow(uint32_t index) const
+	{
+		switch (index)
+		{
+		case 0:
+			return Vector3(m00, m01, m02);
+		case 1:
+			return Vector3(m10, m11, m12);
+		case 2:
+			return Vector3(m20, m21, m22);
+		default:
+			Debug::LogError("Get row index out of range.");
+			return Vector3();
+		}
+	}
+
+	Vector3 Matrix3::GetColumn(uint32_t index) const
+	{
+		switch (index)
+		{
+		case 0:
+			return Vector3(m00, m10, m20);
+		case 1:
+			return Vector3(m01, m11, m21);
+		case 2:
+			return Vector3(m02, m12, m22);
+		default:
+			Debug::LogError("Get column index out of range.");
+			return Vector3();
+		}
 	}
 
 	void Matrix3::ToRowMajorArray(float* array) const

@@ -20,8 +20,12 @@ namespace ZXEngine
 		);
 
 		float GetDeterminant() const;
+		Vector4 GetRow(uint32_t index) const;
+		Vector4 GetColumn(uint32_t index) const;
+
 		void ToRowMajorArray(float* array) const;
 		void ToColumnMajorArray(float* array) const;
+
 		std::string ToString();
 
 		bool operator== (const Matrix4& v) const;

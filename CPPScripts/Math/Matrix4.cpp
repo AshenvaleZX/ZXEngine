@@ -1,6 +1,7 @@
 #include "Vector4.h"
 #include "Matrix3.h"
 #include "Matrix4.h"
+#include "../Debug.h"
 
 namespace ZXEngine
 {
@@ -56,6 +57,42 @@ namespace ZXEngine
 		float a02 =  (m10 * m21 * m33) + (m11 * m23 * m30) + (m13 * m20 * m31) - (m13 * m21 * m30) - (m10 * m23 * m31) - (m11 * m20 * m33);
 		float a03 = -(m10 * m21 * m32) + (m11 * m22 * m30) + (m12 * m20 * m31) - (m12 * m21 * m30) - (m10 * m22 * m31) - (m11 * m20 * m32);
 		return m00 * a00 + m01 * a01 + m02 * a02 + m03 * a03;
+	}
+
+	Vector4 Matrix4::GetRow(uint32_t index) const
+	{
+		switch (index)
+		{
+		case 0:
+			return Vector4(m00, m01, m02, m03);
+		case 1:
+			return Vector4(m10, m11, m12, m13);
+		case 2:
+			return Vector4(m20, m21, m22, m23);
+		case 3:
+			return Vector4(m30, m31, m32, m33);
+		default:
+			Debug::LogError("Get row index out of range.");
+			return Vector4();
+		}
+	}
+
+	Vector4 Matrix4::GetColumn(uint32_t index) const
+	{
+		switch (index)
+		{
+		case 0:
+			return Vector4(m00, m10, m20, m30);
+		case 1:
+			return Vector4(m01, m11, m21, m31);
+		case 2:
+			return Vector4(m02, m12, m22, m32);
+		case 3:
+			return Vector4(m03, m13, m23, m33);
+		default:
+			Debug::LogError("Get column index out of range.");
+			return Vector4();
+		}
 	}
 
 	void Matrix4::ToRowMajorArray(float* array) const
