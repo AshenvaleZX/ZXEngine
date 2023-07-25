@@ -20,10 +20,15 @@ namespace ZXEngine
 
 		void Normalize();
 		Vector2 GetNormalized() const;
-		void ToArray(float* array) const;
-		std::string ToString() const;
+
+		void Absolutize();
+		Vector2 GetAbsolutized() const;
+
 		float GetMagnitude() const;
 		float GetMagnitudeSquared() const;
+
+		void ToArray(float* array) const;
+		std::string ToString() const;
 		void Clear();
 
 		float& operator[] (int i);

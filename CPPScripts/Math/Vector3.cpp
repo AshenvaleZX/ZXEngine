@@ -78,6 +78,18 @@ namespace ZXEngine
 		return Vector3(x / l, y / l, z / l);
 	}
 
+	void Vector3::Absolutize()
+	{
+		x = fabsf(x);
+		y = fabsf(y);
+		z = fabsf(z);
+	}
+
+	Vector3 Vector3::GetAbsolutized() const
+	{
+		return Vector3(fabsf(x), fabsf(y), fabsf(z));
+	}
+
 	void Vector3::ToArray(float* array) const
 	{
 		array[0] = x;

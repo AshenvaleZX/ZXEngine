@@ -29,10 +29,15 @@ namespace ZXEngine
 
 		void Normalize();
 		Vector4 GetNormalized() const;
-		void ToArray(float* array) const;
-		std::string ToString() const;
+
+		void Absolutize();
+		Vector4 GetAbsolutized() const;
+		
 		float GetMagnitude() const;
 		float GetMagnitudeSquared() const;
+		
+		void ToArray(float* array) const;
+		std::string ToString() const;
 		void Clear();
 
 		float& operator[] (int i);

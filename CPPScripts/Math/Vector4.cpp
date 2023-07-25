@@ -119,6 +119,19 @@ namespace ZXEngine
 		return Vector4(x / l, y / l, z / l, w / l);
 	}
 
+	void Vector4::Absolutize()
+	{
+		x = fabsf(x);
+		y = fabsf(y);
+		z = fabsf(z);
+		w = fabsf(w);
+	}
+
+	Vector4 Vector4::GetAbsolutized() const
+	{
+		return Vector4(fabsf(x), fabsf(y), fabsf(z), fabsf(w));
+	}
+
 	void Vector4::ToArray(float* array) const
 	{
 		array[0] = x;

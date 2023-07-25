@@ -56,6 +56,17 @@ namespace ZXEngine
 		return Vector2(x / l, y / l);
 	}
 
+	void Vector2::Absolutize()
+	{
+		x = fabsf(x);
+		y = fabsf(y);
+	}
+
+	Vector2 Vector2::GetAbsolutized() const
+	{
+		return Vector2(fabsf(x), fabsf(y));
+	}
+
 	void Vector2::ToArray(float* array) const
 	{
 		array[0] = x;
