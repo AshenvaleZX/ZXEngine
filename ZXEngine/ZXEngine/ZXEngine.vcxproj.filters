@@ -483,6 +483,9 @@
     <ClCompile Include="..\..\CPPScripts\PhysZ\CollisionDetector.cpp">
       <Filter>PhysZ</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\PhysZ\IntersectionDetector.cpp">
+      <Filter>PhysZ</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\GameObject.h">
@@ -948,6 +951,9 @@
       <Filter>PhysZ</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\PhysZ\CollisionDetector.h">
+      <Filter>PhysZ</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\PhysZ\IntersectionDetector.h">
       <Filter>PhysZ</Filter>
     </ClInclude>
   </ItemGroup>

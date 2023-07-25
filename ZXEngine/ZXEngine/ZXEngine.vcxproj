@@ -265,6 +265,7 @@
     <ClCompile Include="..\..\CPPScripts\PhysZ\Contact.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\Force\FGGravity.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\Force\FGSpring.cpp" />
+    <ClCompile Include="..\..\CPPScripts\PhysZ\IntersectionDetector.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\PointMass.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\PScene.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\RigidBody.cpp" />
@@ -418,6 +419,7 @@
     <ClInclude Include="..\..\CPPScripts\PhysZ\Force\FGGravity.h" />
     <ClInclude Include="..\..\CPPScripts\PhysZ\Force\FGSpring.h" />
     <ClInclude Include="..\..\CPPScripts\PhysZ\Force\ForceGenerator.h" />
+    <ClInclude Include="..\..\CPPScripts\PhysZ\IntersectionDetector.h" />
     <ClInclude Include="..\..\CPPScripts\PhysZ\PhysZEnumStruct.h" />
     <ClInclude Include="..\..\CPPScripts\PhysZ\PointMass.h" />
     <ClInclude Include="..\..\CPPScripts\PhysZ\PScene.h" />
