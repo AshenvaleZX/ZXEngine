@@ -22,6 +22,7 @@ namespace ZXEngine
 			// Ä¦²ÁÏµÊý
 			float mFriction;
 
+			bool IsFull() const;
 			void AddContacts(uint32_t count);
 		};
 	}

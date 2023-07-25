@@ -13,7 +13,7 @@ namespace ZXEngine
 			Vector3 mContactPoint;
 			// 碰撞法线
 			Vector3 mContactNormal;
-			// 碰撞深度
+			// 碰撞深度(有碰撞或相交时是正数)
 			float mPenetration;
 			// 恢复系数
 			float mRestitution;
