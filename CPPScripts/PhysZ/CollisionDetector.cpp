@@ -9,6 +9,70 @@ namespace ZXEngine
 {
 	namespace PhysZ
 	{
+		uint32_t CollisionDetector::Detect(const CollisionBox& box, const CollisionSphere& sphere, CollisionData* data)
+		{
+			// 还有剩余碰撞需要检测才继续
+			if (data->IsFull()) 
+				return 0;
+
+			// 世界坐标系下的球心
+			Vector3 gSphereCenter = sphere.mTransform.GetColumn(3);
+			// Box坐标系下的球心
+			Vector3 lSphereCenter = Math::Inverse(box.mTransform) * Vector4(gSphereCenter, 1.0f);
+
+			// 粗略判断是否相交(目的是提高性能，所以没必要做精确的相交检测)
+			if (fabsf(lSphereCenter.x) - sphere.mRadius > box.mHalfSize.x ||
+				fabsf(lSphereCenter.y) - sphere.mRadius > box.mHalfSize.y ||
+				fabsf(lSphereCenter.z) - sphere.mRadius > box.mHalfSize.z)
+			{
+				return 0;
+			}
+
+			// Box上离球心最近的点
+			Vector3 closestPoint(0.0f, 0.0f, 0.0f);
+			// 临时变量
+			float distance;
+
+			// 分轴计算最近点
+			distance = lSphereCenter.x;
+			if (distance >  box.mHalfSize.x) distance =  box.mHalfSize.x;
+			if (distance < -box.mHalfSize.x) distance = -box.mHalfSize.x;
+			closestPoint.x = distance;
+
+			distance = lSphereCenter.y;
+			if (distance >  box.mHalfSize.y) distance =  box.mHalfSize.y;
+			if (distance < -box.mHalfSize.y) distance = -box.mHalfSize.y;
+			closestPoint.y = distance;
+
+			distance = lSphereCenter.z;
+			if (distance >  box.mHalfSize.z) distance =  box.mHalfSize.z;
+			if (distance < -box.mHalfSize.z) distance = -box.mHalfSize.z;
+			closestPoint.z = distance;
+
+			// 判断是否相交
+			distance = (closestPoint - lSphereCenter).GetMagnitudeSquared();
+			if (distance > sphere.mRadius * sphere.mRadius)
+				return 0;
+
+			// 变换到世界坐标系
+			closestPoint = box.mTransform * Vector4(closestPoint, 1.0f);
+
+			// 当前要写入的碰撞
+			Contact* contact = data->mCurContact;
+			// 碰撞法线
+			contact->mContactNormal = (closestPoint - gSphereCenter).GetNormalized();
+			// 碰撞点
+			contact->mContactPoint = closestPoint;
+			// 碰撞深度
+			contact->mPenetration = sphere.mRadius - sqrtf(distance);
+			contact->mRestitution = data->mRestitution;
+			contact->mFriction = data->mFriction;
+			contact->SetRigidBodies(box.mRigidBody, sphere.mRigidBody);
+
+			data->AddContacts(1);
+			return 1;
+		}
+
 		uint32_t CollisionDetector::Detect(const CollisionSphere& sphere1, const CollisionSphere& sphere2, CollisionData* data)
 		{
 			// 还有剩余碰撞需要检测才继续
