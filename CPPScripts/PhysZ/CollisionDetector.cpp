@@ -9,6 +9,194 @@ namespace ZXEngine
 {
 	namespace PhysZ
 	{
+		// 用于辅助Box和Box的碰撞检测
+		// 基于分离轴算法，返回在某个轴上是否重叠，并更新最小重叠大小和对应的分离轴索引
+		static inline bool TryAxis(
+			const CollisionBox& box1, 
+			const CollisionBox& box2, 
+			Vector3 axis, 
+			const Vector3& centerLine, 
+			uint32_t index, 
+			float& smallestPenetration, 
+			uint32_t& smallestCase)
+		{
+			// 如果当前检测的分离轴的模长接近0，说明是由两个Box的两条轴(自己局部坐标系的XYZ轴之一)叉乘出来的分离轴
+			// 并且这两条轴几乎平行，跳过这种分离轴不检测
+			if (axis.GetMagnitudeSquared() < 0.0001f)
+				return true;
+
+			axis.Normalize();
+
+			// 计算两个Box在axis上的重叠长度
+			float penetration = IntersectionDetector::GetPenetrationOnAxis(box1, box2, axis, centerLine);
+
+			// 如果重叠长度小于0，说明两个Box在axis上没有重叠，不相交
+			if (penetration < 0.0f)
+				return false;
+
+			// 记录最小重叠长度和分离轴索引
+			if (penetration < smallestPenetration)
+			{
+				smallestPenetration = penetration;
+				smallestCase = index;
+			}
+
+			return true;
+		}
+
+		// 用于辅助Box和Box的碰撞检测
+		// 当Box2的一个顶点在Box1的内部时，添加一个点面碰撞
+		static void FillPointFaceContact(
+			const CollisionBox& box1,
+			const CollisionBox& box2,
+			const Vector3& centerLine,
+			CollisionData* data,
+			uint32_t axisIdx,
+			float penetration)
+		{
+			// 碰撞法线为Box1对应面的法线
+			Vector3 normal = box1.mTransform.GetColumn(axisIdx);
+			// 这里是让碰撞法线方向始终是从Box2到Box1的
+			if (Math::Dot(normal, centerLine) > 0.0f)
+				normal = normal * -1.0f;
+
+			// 计算具体是Box2的哪个顶点发生了碰撞
+			Vector3 vertex = box2.mHalfSize;
+			// 如果Box2在Box1的左侧，那么Box2的顶点的X坐标为Box2的半长
+			if (Math::Dot(box2.mTransform.GetColumn(0), normal) < 0.0f)
+				vertex.x = -vertex.x;
+			// 如果Box2在Box1的下侧，那么Box2的顶点的Y坐标为Box2的半宽
+			if (Math::Dot(box2.mTransform.GetColumn(1), normal) < 0.0f)
+				vertex.y = -vertex.y;
+			// 如果Box2在Box1的后侧，那么Box2的顶点的Z坐标为Box2的半高
+			if (Math::Dot(box2.mTransform.GetColumn(2), normal) < 0.0f)
+				vertex.z = -vertex.z;
+
+			// 当前要写入的碰撞
+			Contact* contact = data->mCurContact;
+			// 碰撞法线
+			contact->mContactNormal = normal;
+			// 碰撞点(Box2顶点变换到世界坐标系)
+			contact->mContactPoint = box2.mTransform * vertex;
+			// 碰撞深度
+			contact->mPenetration = penetration;
+			contact->mRestitution = data->mRestitution;
+			contact->mFriction = data->mFriction;
+			contact->SetRigidBodies(box1.mRigidBody, box2.mRigidBody);
+		}
+
+#define CHECK_OVERLAP(axis, index) if (!TryAxis(box1, box2, (axis), centerLine, (index), penetration, axisIdx)) return 0;
+
+		uint32_t CollisionDetector::Detect(const CollisionBox& box1, const CollisionBox& box2, CollisionData* data)
+		{
+			Vector3 centerLine = box2.mTransform.GetColumn(3) - box1.mTransform.GetColumn(3);
+
+			// 用于记录最小重叠长度和对应的分离轴索引
+			float penetration = FLT_MAX;
+			uint32_t axisIdx = 0xFF;
+
+			// 分别检测两个Box的三条轴
+			CHECK_OVERLAP(box1.mTransform.GetColumn(0), 0);
+			CHECK_OVERLAP(box1.mTransform.GetColumn(1), 1);
+			CHECK_OVERLAP(box1.mTransform.GetColumn(2), 2);
+
+			CHECK_OVERLAP(box2.mTransform.GetColumn(0), 3);
+			CHECK_OVERLAP(box2.mTransform.GetColumn(1), 4);
+			CHECK_OVERLAP(box2.mTransform.GetColumn(2), 5);
+
+			// 计算两个Box的三条轴的叉乘轴
+			CHECK_OVERLAP(Math::Cross(box1.mTransform.GetColumn(0), box2.mTransform.GetColumn(0)), 6);
+			CHECK_OVERLAP(Math::Cross(box1.mTransform.GetColumn(0), box2.mTransform.GetColumn(1)), 7);
+			CHECK_OVERLAP(Math::Cross(box1.mTransform.GetColumn(0), box2.mTransform.GetColumn(2)), 8);
+			CHECK_OVERLAP(Math::Cross(box1.mTransform.GetColumn(1), box2.mTransform.GetColumn(0)), 9);
+			CHECK_OVERLAP(Math::Cross(box1.mTransform.GetColumn(1), box2.mTransform.GetColumn(1)), 10);
+			CHECK_OVERLAP(Math::Cross(box1.mTransform.GetColumn(1), box2.mTransform.GetColumn(2)), 11);
+			CHECK_OVERLAP(Math::Cross(box1.mTransform.GetColumn(2), box2.mTransform.GetColumn(0)), 12);
+			CHECK_OVERLAP(Math::Cross(box1.mTransform.GetColumn(2), box2.mTransform.GetColumn(1)), 13);
+			CHECK_OVERLAP(Math::Cross(box1.mTransform.GetColumn(2), box2.mTransform.GetColumn(2)), 14);
+
+			if (axisIdx == 0xFF)
+			{
+				Debug::LogError("CollisionDetector::Detect: Invalid axis index!");
+				return 0;
+			}
+
+			// Box2的一个顶点碰撞到Box1的一个面
+			if (axisIdx < 3)
+			{
+				FillPointFaceContact(box1, box2, centerLine, data, axisIdx, penetration);
+				data->AddContacts(1);
+				return 1;
+			}
+			// Box1的一个顶点碰撞到Box2的一个面
+			else if (axisIdx < 6)
+			{
+				// 交换Box1和Box2，centerLine取反
+				FillPointFaceContact(box2, box1, centerLine * -1.0f, data, axisIdx - 3, penetration);
+				data->AddContacts(1);
+				return 1;
+			}
+			// Box1和Box2的一个边碰撞到对方的一个边
+			else
+			{
+				// 获取分离轴
+				axisIdx -= 6;
+				uint32_t box1AxisIdx = axisIdx / 3;
+				uint32_t box2AxisIdx = axisIdx % 3;
+				Vector3 axis1 = box1.mTransform.GetColumn(box1AxisIdx);
+				Vector3 axis2 = box2.mTransform.GetColumn(box2AxisIdx);
+				Vector3 axis = Math::Cross(axis1, axis2);
+				axis.Normalize();
+
+				// 确保分离轴从Box1指向Box2
+				if (Math::Dot(axis, centerLine) > 0.0f)
+					axis = axis * -1.0f;
+
+				// Box1和Box2上各自有4条边和分离轴垂直，需要定位相交的2条边
+				// 这里先计算各自4条边的中点里，离另一个Box最近的
+				Vector3 midPoint1 = box1.mHalfSize;
+				Vector3 midPoint2 = box2.mHalfSize;
+				for (uint32_t i = 0; i < 3; ++i)
+				{
+					if (i == box1AxisIdx)
+						midPoint1[i] = 0.0f;
+					else if (Math::Dot(box1.mTransform.GetColumn(i), axis) > 0.0f)
+						midPoint1[i] = -midPoint1[i];
+
+					if (i == box2AxisIdx)
+						midPoint2[i] = 0.0f;
+					else if (Math::Dot(box2.mTransform.GetColumn(i), axis) < 0.0f)
+						midPoint2[i] = -midPoint2[i];
+				}
+
+				// 把这两个中点转换到世界坐标系下
+				midPoint1 = box1.mTransform * Vector4(midPoint1, 1.0f);
+				midPoint2 = box2.mTransform * Vector4(midPoint2, 1.0f);
+
+				// 获取两条线段的交点
+				Vector3 contactPoint;
+				IntersectionDetector::DetectLineSegmentContact(
+					midPoint1, axis1, box1.mHalfSize[box1AxisIdx], 
+					midPoint2, axis2, box2.mHalfSize[box2AxisIdx],
+					contactPoint, axisIdx > 2);
+
+				// 当前要写入的碰撞
+				Contact* contact = data->mCurContact;
+				// 碰撞法线
+				contact->mContactNormal = axis;
+				// 碰撞点
+				contact->mContactPoint = contactPoint;
+				// 碰撞深度
+				contact->mPenetration = penetration;
+				contact->mRestitution = data->mRestitution;
+				contact->mFriction = data->mFriction;
+				contact->SetRigidBodies(box1.mRigidBody, box2.mRigidBody);
+
+				data->AddContacts(1);
+				return 1;
+			}
+		}
+
 		uint32_t CollisionDetector::Detect(const CollisionBox& box, const CollisionSphere& sphere, CollisionData* data)
 		{
 			// 还有剩余碰撞需要检测才继续
