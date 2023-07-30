@@ -25,6 +25,10 @@ namespace ZXEngine
 		private:
 			// 碰撞所对应的刚体
 			RigidBody* mRigidBodies[2];
+			// 从碰撞坐标系到世界坐标系的旋转矩阵
+			Matrix3 mContactToWorld;
+
+			void GenerateOrthogonalBasis();
 		};
 	}
 }
