@@ -27,6 +27,9 @@ namespace ZXEngine
 			void ClearAccumulators();
 			// 判断质量是否为无穷大
 			bool IsInfiniteMass() const;
+
+			void SetAwake(bool awake);
+			bool GetAwake() const;
 			
 			Matrix4 GetTransform() const;
 
@@ -51,6 +54,9 @@ namespace ZXEngine
 			void SetAcceleration(const Vector3& acceleration);
 			void GetAcceleration(Vector3& acceleration) const;
 			Vector3 GetAcceleration() const;
+
+			void GetLastAcceleration(Vector3& acceleration) const;
+			Vector3 GetLastAcceleration() const;
 
 			// ---------- 旋转运动 ----------
 
@@ -103,6 +109,8 @@ namespace ZXEngine
 
 			// local到world空间的变换
 			Matrix4 mTransform;
+			// 刚体可以进入sleep状态，然后不受物理引擎影响
+			bool mIsAwake = true;
 
 			void UpdateTransform();
 			void UpdateWorldInertiaTensor();

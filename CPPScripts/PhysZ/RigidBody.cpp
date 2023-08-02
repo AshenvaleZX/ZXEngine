@@ -6,6 +6,9 @@ namespace ZXEngine
 	{
 		void RigidBody::Integrate(float duration)
 		{
+			if (!mIsAwake)
+				return;
+
 			// 通过合力计算加速度
 			mLastAcceleration = mAcceleration;
 			mLastAcceleration += mForceAccum * mInverseMass;
@@ -65,6 +68,7 @@ namespace ZXEngine
 		void RigidBody::AddForce(const Vector3& force)
 		{
 			mForceAccum += force;
+			mIsAwake = true;
 		}
 
 		void RigidBody::AddForceAtPoint(const Vector3& force, const Vector3& point)
@@ -74,6 +78,8 @@ namespace ZXEngine
 
 			mForceAccum += force;
 			mTorqueAccum += Math::Cross(pos, force);
+
+			mIsAwake = true;
 		}
 
 		void RigidBody::AddForceAtLocalPoint(const Vector3& force, const Vector3& point)
@@ -84,6 +90,7 @@ namespace ZXEngine
 		void RigidBody::AddTorque(const Vector3& torque)
 		{
 			mTorqueAccum += torque;
+			mIsAwake = true;
 		}
 
 		void RigidBody::ClearAccumulators()
@@ -95,6 +102,16 @@ namespace ZXEngine
 		bool RigidBody::IsInfiniteMass() const
 		{
 			return mInverseMass <= 0.0f;
+		}
+
+		void RigidBody::SetAwake(bool awake)
+		{
+			mIsAwake = awake;
+		}
+
+		bool RigidBody::GetAwake() const
+		{
+			return mIsAwake;
 		}
 
 		Matrix4 RigidBody::GetTransform() const
@@ -184,6 +201,16 @@ namespace ZXEngine
 		Vector3 RigidBody::GetAcceleration() const
 		{
 			return mAcceleration;
+		}
+
+		void RigidBody::GetLastAcceleration(Vector3& acceleration) const
+		{
+			acceleration = mLastAcceleration;
+		}
+
+		Vector3 RigidBody::GetLastAcceleration() const
+		{
+			return mLastAcceleration;
 		}
 
 		void RigidBody::SetInertiaTensor(const Matrix3& inertiaTensor)
