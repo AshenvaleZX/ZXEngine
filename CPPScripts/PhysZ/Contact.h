@@ -8,6 +8,7 @@ namespace ZXEngine
 		class RigidBody;
 		class Contact
 		{
+			friend class ContactResolver;
 		public:
 			// 碰撞点坐标
 			Vector3 mContactPoint;
@@ -32,16 +33,22 @@ namespace ZXEngine
 			Vector3 mRelativeContactPosition[2];
 			// 碰撞点的闭合速度(即两个对象相互接近的速度)
 			Vector3 mContactVelocity;
-			// 当前碰撞所产生的期望速度变化量
+			// 当前碰撞所产生的期望速度变化量(闭合速度的变化量)
 			float mDesiredDeltaVelocity;
 
 			// 交换两个刚体，同时将碰撞法线取反(但是不会更新其它相关变量，如果需要更新手动调用UpdateInternalDatas)
 			void SwapRigidBodies();
+			// 更新碰撞中的刚体状态，如果其中一个刚体是Awake，另一个也必须Awake
+			void MatchAwakeState();
+
+			// 处理碰撞穿透，通过移动和旋转两个刚体，尽量让两个对象不交叉
+			void ResolvePenetration(Vector3 linearChange[2], Vector3 angularChange[2], float penetration);
 
 			// 更新当前碰撞点的各项内部数据
 			void UpdateInternalDatas(float duration);
 			// 更新碰撞坐标系到世界坐标系的旋转矩阵
 			void UpdateOrthogonalBasis();
+			// 计算当前碰撞所产生的期望速度变化量(闭合速度)
 			void UpdateDesiredDeltaVelocity(float duration);
 			
 			// 计算第index个刚体相对于碰撞点的速度
