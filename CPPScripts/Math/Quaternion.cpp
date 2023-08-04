@@ -118,6 +118,16 @@ namespace ZXEngine
 		SetEulerAngles(eulerAngles.x, eulerAngles.y, eulerAngles.z);
 	}
 
+	void Quaternion::RotateByVector(const Vector3& rotation, float scale)
+	{
+		Quaternion q(rotation * scale, 0.0f);
+		q *= *this;
+		x += q.x * 0.5f;
+		y += q.y * 0.5f;
+		z += q.z * 0.5f;
+		w += q.w * 0.5f;
+	}
+
 	Matrix4 Quaternion::ToMatrix() const
 	{
 		// µÚÒ»ÐÐ

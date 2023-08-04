@@ -30,13 +30,7 @@ namespace ZXEngine
 			mPosition += mVelocity * duration;
 
 			// 根据角速度更新旋转状态
-			Quaternion q(mAngularVelocity * duration, 0.0f);
-			q *= mRotation;
-			mRotation.x += q.x * 0.5f;
-			mRotation.y += q.y * 0.5f;
-			mRotation.z += q.z * 0.5f;
-			mRotation.w += q.w * 0.5f;
-			mRotation.Normalize();
+			mRotation.RotateByVector(mAngularVelocity, duration);
 
 			// 更新其它数据
 			CalculateDerivedData();

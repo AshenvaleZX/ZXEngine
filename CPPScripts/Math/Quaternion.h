@@ -24,9 +24,13 @@ namespace ZXEngine
 
 		void Normalize();
 		Quaternion GetInverse() const;
+
 		Vector3 GetEulerAngles() const;
 		void SetEulerAngles(float x, float y, float z);
 		void SetEulerAngles(const Vector3& eulerAngles);
+
+		void RotateByVector(const Vector3& rotation, float scale = 1.0f);
+
 		Matrix4 ToMatrix() const;
 
 		bool operator== (const Quaternion& q) const;
