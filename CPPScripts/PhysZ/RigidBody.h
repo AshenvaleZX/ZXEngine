@@ -66,6 +66,8 @@ namespace ZXEngine
 			void SetInverseInertiaTensor(const Matrix3& inverseInertiaTensor);
 			void GetInverseInertiaTensor(Matrix3& inverseInertiaTensor) const;
 			Matrix3 GetInverseInertiaTensor() const;
+			void GetInverseInertiaTensorWorld(Matrix3& inverseInertiaTensor) const;
+			Matrix3 GetInverseInertiaTensorWorld() const;
 
 			void SetAngularDamping(float damping);
 			float GetAngularDamping() const;

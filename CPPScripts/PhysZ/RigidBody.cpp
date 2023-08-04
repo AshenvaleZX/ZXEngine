@@ -243,6 +243,16 @@ namespace ZXEngine
 			return mLocalInverseInertiaTensor;
 		}
 
+		void RigidBody::GetInverseInertiaTensorWorld(Matrix3& inverseInertiaTensor) const
+		{
+			inverseInertiaTensor = mWorldInverseInertiaTensor;
+		}
+
+		Matrix3 RigidBody::GetInverseInertiaTensorWorld() const
+		{
+			return mWorldInverseInertiaTensor;
+		}
+
 		void RigidBody::SetAngularDamping(float damping)
 		{
 			mAngularDamping = damping;
