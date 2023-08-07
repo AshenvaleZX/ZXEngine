@@ -50,6 +50,7 @@ namespace ZXEngine
 			void SetVelocity(const Vector3& velocity);
 			void GetVelocity(Vector3& velocity) const;
 			Vector3 GetVelocity() const;
+			void AddVelocity(const Vector3& deltaVelocity);
 
 			void SetAcceleration(const Vector3& acceleration);
 			void GetAcceleration(Vector3& acceleration) const;
@@ -79,6 +80,7 @@ namespace ZXEngine
 			void SetAngularVelocity(const Vector3& angularVelocity);
 			void GetAngularVelocity(Vector3& angularVelocity) const;
 			Vector3 GetAngularVelocity() const;
+			void AddAngularVelocity(const Vector3& deltaAngularVelocity);
 
 		private:
 			// 质量的倒数(0代表质量无穷大，无视任何作用力)

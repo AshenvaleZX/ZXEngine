@@ -193,6 +193,87 @@ namespace ZXEngine
 			}
 		}
 
+		void Contact::ResolveVelocityChange(Vector3 linearVelocityChange[2], Vector3 angularVelocityChange[2])
+		{
+			// 获取两个刚体的逆惯性张量
+			Matrix3 inverseInertiaTensor[2];
+			mRigidBodies[0]->GetInverseInertiaTensorWorld(inverseInertiaTensor[0]);
+			if (mRigidBodies[1])
+				mRigidBodies[1]->GetInverseInertiaTensorWorld(inverseInertiaTensor[1]);
+
+			// 碰撞空间中的冲量
+			Vector3 impulseContact;
+			if (Math::Approximately(mFriction, 0.0f))
+				impulseContact = CalculateFrictionlessImpulse(inverseInertiaTensor);
+			else
+				impulseContact = CalculateFrictionImpulse(inverseInertiaTensor);
+			
+			// 转换到世界空间
+			Vector3 impulseWorld = mContactToWorld * impulseContact;
+
+			// 计算角冲量，Jt = r x Jf
+			Vector3 angularImpulse = Math::Cross(mRelativeContactPosition[0], impulseWorld);
+			// 角冲量公式为: Jt = I * w，其中w为角速度，所以w = I^-1 * Jt
+			angularVelocityChange[0] = inverseInertiaTensor[0] * angularImpulse;
+			// 线性冲量公式为: J = m * v，其中v为线速度，所以v = J / m
+			linearVelocityChange[0] = impulseWorld * mRigidBodies[0]->GetInverseMass();
+
+			// 更新刚体速度
+			mRigidBodies[0]->AddVelocity(linearVelocityChange[0]);
+			mRigidBodies[0]->AddAngularVelocity(angularVelocityChange[0]);
+
+			// 如果有第二个刚体，就更新第二个刚体的速度
+			if (mRigidBodies[1])
+			{
+				// 对于第二个刚体，冲量的作用是相反的
+				Vector3 i2 = Math::Cross(impulseWorld, mRelativeContactPosition[1]);
+				angularVelocityChange[1] = inverseInertiaTensor[1] * i2;
+				linearVelocityChange[1] = impulseWorld * -mRigidBodies[1]->GetInverseMass();
+
+				mRigidBodies[1]->AddVelocity(linearVelocityChange[1]);
+				mRigidBodies[1]->AddAngularVelocity(angularVelocityChange[1]);
+			}
+		}
+
+		Vector3 Contact::CalculateFrictionImpulse(Matrix3* inverseInertiaTensor)
+		{
+			// Todo
+			return Vector3();
+		}
+
+		Vector3 Contact::CalculateFrictionlessImpulse(Matrix3* inverseInertiaTensor)
+		{
+			// 单位线性冲量带来的旋转导致的速度变化(解释见ResolvePenetration)
+			Vector3 velocityPerUnitImpulseByRotation = Math::Cross(mRelativeContactPosition[0], mContactNormal);
+			velocityPerUnitImpulseByRotation = inverseInertiaTensor[0] * velocityPerUnitImpulseByRotation;
+			velocityPerUnitImpulseByRotation = Math::Cross(velocityPerUnitImpulseByRotation, mRelativeContactPosition[0]);
+
+			// 由单位线性冲量造成的旋转所导致的碰撞点的速度变化量在碰撞法线上的分量(解释见ResolvePenetration)
+			float velocityPerUnitImpulse = Math::Dot(velocityPerUnitImpulseByRotation, mContactNormal);
+
+			// GetInverseMass获取的是由单位冲量造成的线性速度变化量(解释见ResolvePenetration)
+			// 相加后得到由单位冲量造成的线性运动和角运动结合起来的速度变化量
+			velocityPerUnitImpulse += mRigidBodies[0]->GetInverseMass();
+
+			// 如果有第二个刚体，那么就把第二个刚体的速度变化量也加上
+			if (mRigidBodies[1])
+			{
+				// 过程同上
+				Vector3 v2 = Math::Cross(mRelativeContactPosition[1], mContactNormal);
+				v2 = inverseInertiaTensor[1] * v2;
+				v2 = Math::Cross(v2, mRelativeContactPosition[1]);
+
+				velocityPerUnitImpulse += Math::Dot(v2, mContactNormal);
+
+				velocityPerUnitImpulse += mRigidBodies[1]->GetInverseMass();
+			}
+
+			// 我们已经得到了单位冲量造成的速度变化量velocityPerUnitImpulse
+			// 所以用期望的速度变化量除以velocityPerUnitImpulse就可以得到造成对应速度变化所需要的冲量
+			// 碰撞产生的冲量方向是沿着碰撞法线的，这里返回的又是碰撞空间下的冲量，所以只计算x轴(规定碰撞法线在碰撞空间中是x轴方向)即可
+			return Vector3(mDesiredDeltaVelocity / velocityPerUnitImpulse, 0.0f, 0.0f);
+		}
+
 		void Contact::UpdateInternalDatas(float duration)
 		{
 			// 要计算第一个刚体的碰撞反馈，所以第一个刚体必须存在，第二个刚体可以不存在(墙壁/地面等不可移动对象)

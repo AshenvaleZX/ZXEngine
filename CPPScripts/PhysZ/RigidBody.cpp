@@ -182,6 +182,11 @@ namespace ZXEngine
 			return mVelocity;
 		}
 
+		void RigidBody::AddVelocity(const Vector3& deltaVelocity)
+		{
+			mVelocity += deltaVelocity;
+		}
+
 		void RigidBody::SetAcceleration(const Vector3& acceleration)
 		{
 			mAcceleration = acceleration;
@@ -285,6 +290,11 @@ namespace ZXEngine
 		Vector3 RigidBody::GetAngularVelocity() const
 		{
 			return mAngularVelocity;
+		}
+
+		void RigidBody::AddAngularVelocity(const Vector3& deltaAngularVelocity)
+		{
+			mAngularVelocity += deltaAngularVelocity;
 		}
 	}
 }

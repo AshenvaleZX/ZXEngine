@@ -42,7 +42,16 @@ namespace ZXEngine
 			void MatchAwakeState();
 
 			// 处理碰撞穿透，通过移动和旋转两个刚体，尽量让两个对象不交叉
+			// 然后通过前两个指针参数返回处理信息
+			// PS: 此函数虽然是在处理相交，也会改变刚体的位置和旋转状态，但是并不会直接改变mPenetration，而是由调用的地方去调整mPenetration
 			void ResolvePenetration(Vector3 linearChange[2], Vector3 angularChange[2], float penetration);
+			// 处理碰撞中的速度变化，计算两个刚体的速度变化量，然后通过参数返回
+			void ResolveVelocityChange(Vector3 linearVelocityChange[2], Vector3 angularVelocityChange[2]);
+
+			// 计算有摩擦力情况下的冲量
+			Vector3 CalculateFrictionImpulse(Matrix3* inverseInertiaTensor);
+			// 计算无摩擦力情况下的冲量
+			Vector3 CalculateFrictionlessImpulse(Matrix3* inverseInertiaTensor);
 
 			// 更新当前碰撞点的各项内部数据
 			void UpdateInternalDatas(float duration);
