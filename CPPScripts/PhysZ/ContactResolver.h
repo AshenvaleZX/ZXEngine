@@ -17,9 +17,13 @@ namespace ZXEngine
 			ContactResolver(uint32_t maxIterations, float velocityEpsilon = 0.01f, float positionEpsilon = 0.01f);
 			ContactResolver(uint32_t maxVelocityIterations, uint32_t maxPositionIterations, float velocityEpsilon = 0.01f, float positionEpsilon = 0.01f);
 
+			bool IsValid();
+
 			void SetMaxIterations(uint32_t maxIterations);
 			void SetVelocityEpsilon(float velocityEpsilon);
 			void SetPositionEpsilon(float positionEpsilon);
+
+			void ResolveContacts(Contact* contacts, uint32_t numContacts, float duration);
 
 		private:
 			float mVelocityEpsilon;
@@ -30,6 +34,13 @@ namespace ZXEngine
 			uint32_t mMaxVelocityIterations;
 			// 处理位置时的最大迭代次数
 			uint32_t mMaxPositionIterations;
+
+			// 处理碰撞前先更新碰撞数据
+			void PrepareContacts(Contact* contacts, uint32_t numContacts, float duration);
+			// 处理碰撞相交
+			void AdjustPositions(Contact* contacts, uint32_t numContacts, float duration);
+			// 处理碰撞速度变化
+			void AdjustVelocities(Contact* contacts, uint32_t numContacts, float duration);
 		};
 	}
 }
