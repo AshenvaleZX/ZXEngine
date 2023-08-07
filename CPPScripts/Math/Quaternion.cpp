@@ -118,6 +118,14 @@ namespace ZXEngine
 		SetEulerAngles(eulerAngles.x, eulerAngles.y, eulerAngles.z);
 	}
 
+	void Quaternion::Rotate(const Vector3& axis, float angle)
+	{
+		float halfAngle = angle * 0.5f;
+		float sinHalfAngle = sin(halfAngle);
+		Quaternion q(axis * sinHalfAngle, cos(halfAngle));
+		*this = q * *this;
+	}
+
 	void Quaternion::RotateByVector(const Vector3& rotation, float scale)
 	{
 		Quaternion q(rotation * scale, 0.0f);
@@ -160,6 +168,15 @@ namespace ZXEngine
 	bool Quaternion::operator!= (const Quaternion& q) const
 	{
 		return x != q.x || y != q.y || z != q.z || w != q.w;
+	}
+
+	Quaternion& Quaternion::operator= (const Quaternion& q)
+	{
+		x = q.x;
+		y = q.y;
+		z = q.z;
+		w = q.w;
+		return *this;
 	}
 
 	Quaternion Quaternion::operator* (const Quaternion& q) const

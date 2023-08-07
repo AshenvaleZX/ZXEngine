@@ -11,10 +11,10 @@ namespace ZXEngine
 		static Quaternion Euler(const Vector3& eulerAngles);
 
 	public:
-		float x;
-		float y;
-		float z;
-		float w;
+		union { float x, i; };
+		union { float y, j; };
+		union { float z, k; };
+		union { float w, r; };
 
 		Quaternion();
 		Quaternion(const Quaternion& q);
@@ -29,12 +29,19 @@ namespace ZXEngine
 		void SetEulerAngles(float x, float y, float z);
 		void SetEulerAngles(const Vector3& eulerAngles);
 
+		/// <summary>
+		/// 绕axis轴旋转angle度
+		/// </summary>
+		/// <param name="axis">旋转轴(必须是单位向量)</param>
+		/// <param name="angle">旋转角度(弧度制)</param>
+		void Rotate(const Vector3& axis, float angle);
 		void RotateByVector(const Vector3& rotation, float scale = 1.0f);
 
 		Matrix4 ToMatrix() const;
 
 		bool operator== (const Quaternion& q) const;
 		bool operator!= (const Quaternion& q) const;
+		Quaternion& operator= (const Quaternion& q);
 		Quaternion operator* (const Quaternion& q) const;
 		Quaternion& operator*= (const Quaternion& q);
 
