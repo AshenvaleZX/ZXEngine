@@ -1,6 +1,7 @@
 #include "Vector3.h"
 #include "Matrix3.h"
 #include "Matrix4.h"
+#include "../Math.h"
 #include "../Debug.h"
 
 namespace ZXEngine
@@ -41,6 +42,13 @@ namespace ZXEngine
 		this->m00 = m00; this->m01 = m01; this->m02 = m02;
 		this->m10 = m10; this->m11 = m11; this->m12 = m12;
 		this->m20 = m20; this->m21 = m21; this->m22 = m22;
+	}
+
+	Matrix3::Matrix3(const Vector3& v)
+	{
+		m00 =  0.0f; m01 = -v.z ; m02 =  v.y ;
+		m10 =  v.z ; m11 =  0.0f; m12 = -v.x ;
+		m20 = -v.y ; m21 =  v.x ; m22 =  0.0f;
 	}
 
 	float Matrix3::GetDeterminant() const
@@ -104,27 +112,41 @@ namespace ZXEngine
 			+"\n";
 	}
 
-	bool Matrix3::operator== (const Matrix3& v) const
+	Matrix3& Matrix3::operator= (const Matrix3& mat)
 	{
-		return m00 == v.m00 && m01 == v.m01 && m02 == v.m02 
-			&& m10 == v.m10 && m11 == v.m11 && m12 == v.m12
-			&& m20 == v.m20 && m21 == v.m21 && m22 == v.m22;
+		m00 = mat.m00; m01 = mat.m01; m02 = mat.m02;
+		m10 = mat.m10; m11 = mat.m11; m12 = mat.m12;
+		m20 = mat.m20; m21 = mat.m21; m22 = mat.m22;
+
+		return *this;
 	}
 
-	bool Matrix3::operator!= (const Matrix3& v) const
+	bool Matrix3::operator== (const Matrix3& mat) const
 	{
-		return m00 != v.m00 || m01 != v.m01 || m02 != v.m02
-			&& m10 != v.m10 || m11 != v.m11 || m12 != v.m12
-			&& m20 != v.m20 || m21 != v.m21 || m22 != v.m22;
+		return Math::Approximately(m00, mat.m00) && Math::Approximately(m01, mat.m01) && Math::Approximately(m02, mat.m02)
+			&& Math::Approximately(m10, mat.m10) && Math::Approximately(m11, mat.m11) && Math::Approximately(m12, mat.m12)
+			&& Math::Approximately(m20, mat.m20) && Math::Approximately(m21, mat.m21) && Math::Approximately(m22, mat.m22);
 	}
 
-	Vector3 Matrix3::operator* (const Vector3& v) const
+	bool Matrix3::operator!= (const Matrix3& mat) const
 	{
-		float x = m00 * v.x + m01 * v.y + m02 * v.z;
-		float y = m10 * v.x + m11 * v.y + m12 * v.z;
-		float z = m20 * v.x + m21 * v.y + m22 * v.z;
+		return !(*this == mat);
+	}
+	
+	Matrix3 Matrix3::operator- () const
+	{
+		return Matrix3(
+			-m00, -m01, -m02,
+			-m10, -m11, -m12,
+			-m20, -m21, -m22);
+	}
 
-		return Vector3(x, y, z);
+	Matrix3 Matrix3::operator* (float n) const
+	{
+		return Matrix3(
+			m00 * n, m01 * n, m02 * n,
+			m10 * n, m11 * n, m12 * n,
+			m20 * n, m21 * n, m22 * n);
 	}
 
 	Matrix3 Matrix3::operator+ (const Matrix3& mat) const
@@ -161,5 +183,62 @@ namespace ZXEngine
 			m00, m01, m02,
 			m10, m11, m12,
 			m20, m21, m22);
+	}
+
+	Matrix3& Matrix3::operator*= (float n)
+	{
+		m00 *= n; m01 *= n; m02 *= n;
+		m10 *= n; m11 *= n; m12 *= n;
+		m20 *= n; m21 *= n; m22 *= n;
+
+		return *this;
+	}
+
+	Matrix3& Matrix3::operator+= (const Matrix3& mat)
+	{
+		m00 += mat.m00; m01 += mat.m01; m02 += mat.m02;
+		m10 += mat.m10; m11 += mat.m11; m12 += mat.m12;
+		m20 += mat.m20; m21 += mat.m21; m22 += mat.m22;
+
+		return *this;
+	}
+
+	Matrix3& Matrix3::operator-= (const Matrix3& mat)
+	{
+		m00 -= mat.m00; m01 -= mat.m01; m02 -= mat.m02;
+		m10 -= mat.m10; m11 -= mat.m11; m12 -= mat.m12;
+		m20 -= mat.m20; m21 -= mat.m21; m22 -= mat.m22;
+
+		return *this;
+	}
+
+	Matrix3& Matrix3::operator*= (const Matrix3& mat)
+	{
+		float tmp_m00 = m00 * mat.m00 + m01 * mat.m10 + m02 * mat.m20;
+		float tmp_m01 = m00 * mat.m01 + m01 * mat.m11 + m02 * mat.m21;
+		float tmp_m02 = m00 * mat.m02 + m01 * mat.m12 + m02 * mat.m22;
+
+		float tmp_m10 = m10 * mat.m00 + m11 * mat.m10 + m12 * mat.m20;
+		float tmp_m11 = m10 * mat.m01 + m11 * mat.m11 + m12 * mat.m21;
+		float tmp_m12 = m10 * mat.m02 + m11 * mat.m12 + m12 * mat.m22;
+
+		float tmp_m20 = m20 * mat.m00 + m21 * mat.m10 + m22 * mat.m20;
+		float tmp_m21 = m20 * mat.m01 + m21 * mat.m11 + m22 * mat.m21;
+		float tmp_m22 = m20 * mat.m02 + m21 * mat.m12 + m22 * mat.m22;
+
+		m00 = tmp_m00; m01 = tmp_m01; m02 = tmp_m02;
+		m10 = tmp_m10; m11 = tmp_m11; m12 = tmp_m12;
+		m20 = tmp_m20; m21 = tmp_m21; m22 = tmp_m22;
+
+		return *this;
+	}
+
+	Vector3 Matrix3::operator* (const Vector3& v) const
+	{
+		float x = m00 * v.x + m01 * v.y + m02 * v.z;
+		float y = m10 * v.x + m11 * v.y + m12 * v.z;
+		float z = m20 * v.x + m21 * v.y + m22 * v.z;
+
+		return Vector3(x, y, z);
 	}
 }

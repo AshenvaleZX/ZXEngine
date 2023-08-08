@@ -18,6 +18,8 @@ namespace ZXEngine
 			float m10, float m11, float m12,
 			float m20, float m21, float m22
 		);
+		// 斜对称矩阵构造函数
+		Matrix3(const Vector3& v);
 
 		float GetDeterminant() const;
 		Vector3 GetRow(uint32_t index) const;
@@ -28,12 +30,19 @@ namespace ZXEngine
 
 		std::string ToString();
 
-		bool operator== (const Matrix3& v) const;
-		bool operator!= (const Matrix3& v) const;
-		Vector3 operator* (const Vector3& v) const;
+		Matrix3& operator= (const Matrix3& mat);
+		bool operator== (const Matrix3& mat) const;
+		bool operator!= (const Matrix3& mat) const;
+		Matrix3 operator- () const;
+		Matrix3 operator* (float n) const;
 		Matrix3 operator+ (const Matrix3& mat) const;
 		Matrix3 operator- (const Matrix3& mat) const;
 		Matrix3 operator* (const Matrix3& mat) const;
+		Matrix3& operator*= (float n);
+		Matrix3& operator+= (const Matrix3& mat);
+		Matrix3& operator-= (const Matrix3& mat);
+		Matrix3& operator*= (const Matrix3& mat);
+		Vector3 operator* (const Vector3& v) const;
 
 	private:
 		// 第一行

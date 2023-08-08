@@ -28,12 +28,19 @@ namespace ZXEngine
 
 		std::string ToString();
 
-		bool operator== (const Matrix4& v) const;
-		bool operator!= (const Matrix4& v) const;
-		Vector4 operator* (const Vector4& v) const;
+		Matrix4& operator= (const Matrix4& mat);
+		bool operator== (const Matrix4& mat) const;
+		bool operator!= (const Matrix4& mat) const;
+		Matrix4 operator- () const;
+		Matrix4 operator* (float n) const;
 		Matrix4 operator+ (const Matrix4& mat) const;
 		Matrix4 operator- (const Matrix4& mat) const;
 		Matrix4 operator* (const Matrix4& mat) const;
+		Matrix4& operator*= (float n);
+		Matrix4& operator+= (const Matrix4& mat);
+		Matrix4& operator-= (const Matrix4& mat);
+		Matrix4& operator*= (const Matrix4& mat);
+		Vector4 operator* (const Vector4& v) const;
 
 	private:
 		// µÚÒ»ÐÐ

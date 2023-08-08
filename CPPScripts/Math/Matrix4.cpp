@@ -1,6 +1,7 @@
 #include "Vector4.h"
 #include "Matrix3.h"
 #include "Matrix4.h"
+#include "../Math.h"
 #include "../Debug.h"
 
 namespace ZXEngine
@@ -121,30 +122,45 @@ namespace ZXEngine
 			+"\n";
 	}
 
-	bool Matrix4::operator== (const Matrix4& v) const
+	Matrix4& Matrix4::operator= (const Matrix4& mat)
 	{
-		return m00 == v.m00 && m01 == v.m01 && m02 == v.m02 && m03 == v.m03
-			&& m10 == v.m10 && m11 == v.m11 && m12 == v.m12 && m13 == v.m13
-			&& m20 == v.m20 && m21 == v.m21 && m22 == v.m22 && m23 == v.m23
-			&& m30 == v.m30 && m31 == v.m31 && m32 == v.m32 && m33 == v.m33;
+		m00 = mat.m00; m01 = mat.m01; m02 = mat.m02; m03 = mat.m03;
+		m10 = mat.m10; m11 = mat.m11; m12 = mat.m12; m13 = mat.m13;
+		m20 = mat.m20; m21 = mat.m21; m22 = mat.m22; m23 = mat.m23;
+		m30 = mat.m30; m31 = mat.m31; m32 = mat.m32; m33 = mat.m33;
+
+		return *this;
 	}
 
-	bool Matrix4::operator!= (const Matrix4& v) const
+	bool Matrix4::operator== (const Matrix4& mat) const
 	{
-		return m00 != v.m00 || m01 != v.m01 || m02 != v.m02 || m03 != v.m03
-			|| m10 != v.m10 || m11 != v.m11 || m12 != v.m12 || m13 != v.m13
-			|| m20 != v.m20 || m21 != v.m21 || m22 != v.m22 || m23 != v.m23
-			|| m30 != v.m30 || m31 != v.m31 || m32 != v.m32 || m33 != v.m33;
+		return Math::Approximately(m00, mat.m00) && Math::Approximately(m01, mat.m01) && Math::Approximately(m02, mat.m02) && Math::Approximately(m03, mat.m03)
+			&& Math::Approximately(m10, mat.m10) && Math::Approximately(m11, mat.m11) && Math::Approximately(m12, mat.m12) && Math::Approximately(m13, mat.m13)
+			&& Math::Approximately(m20, mat.m20) && Math::Approximately(m21, mat.m21) && Math::Approximately(m22, mat.m22) && Math::Approximately(m23, mat.m23)
+			&& Math::Approximately(m30, mat.m30) && Math::Approximately(m31, mat.m31) && Math::Approximately(m32, mat.m32) && Math::Approximately(m33, mat.m33);
 	}
 
-	Vector4 Matrix4::operator* (const Vector4& v) const
+	bool Matrix4::operator!= (const Matrix4& mat) const
 	{
-		float x = m00 * v.x + m01 * v.y + m02 * v.z + m03 * v.w;
-		float y = m10 * v.x + m11 * v.y + m12 * v.z + m13 * v.w;
-		float z = m20 * v.x + m21 * v.y + m22 * v.z + m23 * v.w;
-		float w = m30 * v.x + m31 * v.y + m32 * v.z + m33 * v.w;
+		return !(*this == mat);
+	}
 
-		return Vector4(x, y, z, w);
+	Matrix4 Matrix4::operator- () const
+	{
+		return Matrix4(
+			-m00, -m01, -m02, -m03,
+			-m10, -m11, -m12, -m13,
+			-m20, -m21, -m22, -m23,
+			-m30, -m31, -m32, -m33);
+	}
+
+	Matrix4 Matrix4::operator* (float n) const
+	{
+		return Matrix4(
+			m00 * n, m01 * n, m02 * n, m03 * n,
+			m10 * n, m11 * n, m12 * n, m13 * n,
+			m20 * n, m21 * n, m22 * n, m23 * n,
+			m30 * n, m31 * n, m32 * n, m33 * n);
 	}
 
 	Matrix4 Matrix4::operator+ (const Matrix4& mat) const
@@ -192,5 +208,75 @@ namespace ZXEngine
 			m10, m11, m12, m13,
 			m20, m21, m22, m23,
 			m30, m31, m32, m33);
+	}
+
+	Matrix4& Matrix4::operator*= (float n)
+	{
+		m00 *= n; m01 *= n; m02 *= n; m03 *= n;
+		m10 *= n; m11 *= n; m12 *= n; m13 *= n;
+		m20 *= n; m21 *= n; m22 *= n; m23 *= n;
+		m30 *= n; m31 *= n; m32 *= n; m33 *= n;
+
+		return *this;
+	}
+
+	Matrix4& Matrix4::operator+= (const Matrix4& mat)
+	{
+		m00 += mat.m00; m01 += mat.m01; m02 += mat.m02; m03 += mat.m03;
+		m10 += mat.m10; m11 += mat.m11; m12 += mat.m12; m13 += mat.m13;
+		m20 += mat.m20; m21 += mat.m21; m22 += mat.m22; m23 += mat.m23;
+		m30 += mat.m30; m31 += mat.m31; m32 += mat.m32; m33 += mat.m33;
+
+		return *this;
+	}
+
+	Matrix4& Matrix4::operator-= (const Matrix4& mat)
+	{
+		m00 -= mat.m00; m01 -= mat.m01; m02 -= mat.m02; m03 -= mat.m03;
+		m10 -= mat.m10; m11 -= mat.m11; m12 -= mat.m12; m13 -= mat.m13;
+		m20 -= mat.m20; m21 -= mat.m21; m22 -= mat.m22; m23 -= mat.m23;
+		m30 -= mat.m30; m31 -= mat.m31; m32 -= mat.m32; m33 -= mat.m33;
+
+		return *this;
+	}
+
+	Matrix4& Matrix4::operator*= (const Matrix4& mat)
+	{
+		float tmp_m00 = m00 * mat.m00 + m01 * mat.m10 + m02 * mat.m20 + m03 * mat.m30;
+		float tmp_m01 = m00 * mat.m01 + m01 * mat.m11 + m02 * mat.m21 + m03 * mat.m31;
+		float tmp_m02 = m00 * mat.m02 + m01 * mat.m12 + m02 * mat.m22 + m03 * mat.m32;
+		float tmp_m03 = m00 * mat.m03 + m01 * mat.m13 + m02 * mat.m23 + m03 * mat.m33;
+
+		float tmp_m10 = m10 * mat.m00 + m11 * mat.m10 + m12 * mat.m20 + m13 * mat.m30;
+		float tmp_m11 = m10 * mat.m01 + m11 * mat.m11 + m12 * mat.m21 + m13 * mat.m31;
+		float tmp_m12 = m10 * mat.m02 + m11 * mat.m12 + m12 * mat.m22 + m13 * mat.m32;
+		float tmp_m13 = m10 * mat.m03 + m11 * mat.m13 + m12 * mat.m23 + m13 * mat.m33;
+
+		float tmp_m20 = m20 * mat.m00 + m21 * mat.m10 + m22 * mat.m20 + m23 * mat.m30;
+		float tmp_m21 = m20 * mat.m01 + m21 * mat.m11 + m22 * mat.m21 + m23 * mat.m31;
+		float tmp_m22 = m20 * mat.m02 + m21 * mat.m12 + m22 * mat.m22 + m23 * mat.m32;
+		float tmp_m23 = m20 * mat.m03 + m21 * mat.m13 + m22 * mat.m23 + m23 * mat.m33;
+
+		float tmp_m30 = m30 * mat.m00 + m31 * mat.m10 + m32 * mat.m20 + m33 * mat.m30;
+		float tmp_m31 = m30 * mat.m01 + m31 * mat.m11 + m32 * mat.m21 + m33 * mat.m31;
+		float tmp_m32 = m30 * mat.m02 + m31 * mat.m12 + m32 * mat.m22 + m33 * mat.m32;
+		float tmp_m33 = m30 * mat.m03 + m31 * mat.m13 + m32 * mat.m23 + m33 * mat.m33;
+
+		m00 = tmp_m00; m01 = tmp_m01; m02 = tmp_m02; m03 = tmp_m03;
+		m10 = tmp_m10; m11 = tmp_m11; m12 = tmp_m12; m13 = tmp_m13;
+		m20 = tmp_m20; m21 = tmp_m21; m22 = tmp_m22; m23 = tmp_m23;
+		m30 = tmp_m30; m31 = tmp_m31; m32 = tmp_m32; m33 = tmp_m33;
+
+		return *this;
+	}
+
+	Vector4 Matrix4::operator* (const Vector4& v) const
+	{
+		float x = m00 * v.x + m01 * v.y + m02 * v.z + m03 * v.w;
+		float y = m10 * v.x + m11 * v.y + m12 * v.z + m13 * v.w;
+		float z = m20 * v.x + m21 * v.y + m22 * v.z + m23 * v.w;
+		float w = m30 * v.x + m31 * v.y + m32 * v.z + m33 * v.w;
+
+		return Vector4(x, y, z, w);
 	}
 }
