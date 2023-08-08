@@ -19,10 +19,6 @@
 #include <atomic>
 #include <nlohmann/json.hpp>
 
-// 防止windows.h里的宏定义max和min影响到其它库里的相同字段
-#define NOMINMAX
-#include <windows.h>
-
 using std::string; 
 using std::cout;
 using std::list;

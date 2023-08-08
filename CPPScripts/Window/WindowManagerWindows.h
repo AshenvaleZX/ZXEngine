@@ -1,6 +1,12 @@
 #pragma once
 #include "WindowManager.h"
 
+// 防止windows.h里的宏定义max和min影响到其它库里的相同字段
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+
 namespace ZXEngine
 {
 	class WindowManagerWindows : public WindowManager
