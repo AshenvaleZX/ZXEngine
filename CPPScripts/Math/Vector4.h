@@ -45,6 +45,7 @@ namespace ZXEngine
 		bool operator== (const Vector4& v) const;
 		bool operator!= (const Vector4& v) const;
 		Vector4& operator= (const Vector4& v);
+		Vector4 operator- () const;
 		Vector4 operator+ (const Vector4& v) const;
 		Vector4 operator- (const Vector4& v) const;
 		Vector4 operator* (const Vector4& v) const;
@@ -66,5 +67,6 @@ namespace ZXEngine
 		friend Vector4 operator* (float n, const Vector4& v);
 		friend Vector4 operator/ (float n, const Vector4& v);
 		Vector4 operator* (const Matrix4& mat) const;
+		Vector4 operator*= (const Matrix4& mat);
 	};
 }

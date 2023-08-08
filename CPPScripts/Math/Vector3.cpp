@@ -171,6 +171,11 @@ namespace ZXEngine
 		return *this;
 	}
 
+	Vector3 Vector3::operator- () const
+	{
+		return Vector3(-x, -y, -z);
+	}
+
 	Vector3 Vector3::operator+ (const Vector3& v) const
 	{
 		return Vector3(x + v.x, y + v.y, z + v.z);
@@ -302,5 +307,18 @@ namespace ZXEngine
 		float z = this->x * mat.m02 + this->y * mat.m12 + this->z * mat.m22;
 
 		return Vector3(x, y, z);
+	}
+
+	Vector3& Vector3::operator*= (const Matrix3& mat)
+	{
+		float tmp_x = x * mat.m00 + y * mat.m10 + z * mat.m20;
+		float tmp_y = x * mat.m01 + y * mat.m11 + z * mat.m21;
+		float tmp_z = x * mat.m02 + y * mat.m12 + z * mat.m22;
+
+		x = tmp_x;
+		y = tmp_y;
+		z = tmp_z;
+
+		return *this;
 	}
 }

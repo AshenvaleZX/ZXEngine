@@ -219,6 +219,11 @@ namespace ZXEngine
 		return *this;
 	}
 
+	Vector4 Vector4::operator- () const
+	{
+		return Vector4(-x, -y, -z, -w);
+	}
+
 	Vector4 Vector4::operator+ (const Vector4& v) const
 	{
 		return Vector4(x + v.x, y + v.y, z + v.z, w + v.w);
@@ -359,5 +364,20 @@ namespace ZXEngine
 		float w = this->x * mat.m03 + this->y * mat.m13 + this->z * mat.m23 + this->w * mat.m33;
 
 		return Vector4(x, y, z, w);
+	}
+
+	Vector4 Vector4::operator*= (const Matrix4& mat)
+	{
+		float tmp_x = x * mat.m00 + y * mat.m10 + z * mat.m20 + w * mat.m30;
+		float tmp_y = x * mat.m01 + y * mat.m11 + z * mat.m21 + w * mat.m31;
+		float tmp_z = x * mat.m02 + y * mat.m12 + z * mat.m22 + w * mat.m32;
+		float tmp_w = x * mat.m03 + y * mat.m13 + z * mat.m23 + w * mat.m33;
+
+		x = tmp_x;
+		y = tmp_y;
+		z = tmp_z;
+		w = tmp_w;
+
+		return *this;
 	}
 }
