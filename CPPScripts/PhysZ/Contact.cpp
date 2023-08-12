@@ -74,6 +74,7 @@ namespace ZXEngine
 					// 
 					// 由于线性冲量的方向就是碰撞法线的方向，所以碰撞法线可以当作是单位线性冲量
 					// 然后根据上面的公式计算得到在当前作用力下，单位线性冲量对应的单位角冲量
+					// 或者说这是在当前的这个碰撞点上，对于当前这个刚体，沿着碰撞法线的单位线性冲量对应的角冲量
 					Vector3 velocityPerUnitImpulseWorld = Math::Cross(mRelativeContactPosition[i], mContactNormal);
 					// 然后角冲量除以惯性张量(即惯性张量的逆矩阵*角冲量)得到角速度的变化量
 					// 这里得到的就是单位线性冲量带来的角速度变化
@@ -203,6 +204,9 @@ namespace ZXEngine
 
 			// 碰撞空间中的冲量
 			Vector3 impulseContact;
+			// 之前已经先通过两个碰撞对象当前的速度，加速度，恢复系数等信息计算出来了本次碰撞会产生的期望速度变化
+			// 这个期望速度变化是闭合速度的变化，不是直接等于两个碰撞对象速度的变化
+			// 这里通过期望的闭合速度变化倒推出需要的冲量，后面再根据这个冲量来计算两个对象的速度变化
 			if (Math::Approximately(mFriction, 0.0f))
 				impulseContact = CalculateFrictionlessImpulse(inverseInertiaTensor);
 			else
@@ -237,8 +241,148 @@ namespace ZXEngine
 
 		Vector3 Contact::CalculateFrictionImpulse(Matrix3* inverseInertiaTensor)
 		{
-			// Todo
-			return Vector3();
+			// 冲量公式为: J = m * v
+			// 所以这里取质量的倒数就直接等于单位冲量产生的线性速度变化值
+			float linearVelocity = mRigidBodies[0]->GetInverseMass();
+
+			// 这里用相对位置来构造斜对称矩阵
+			// 假设原向量为v0，构造出来的矩阵为m0，那么m0 * v1 = v0 x v1
+			Matrix3 impulseToTorque(mRelativeContactPosition[0]);
+
+			// 这里的逻辑和ResolvePenetration函数里的一样，区别在于ResolvePenetration里只计算了碰撞法线方向上的速度，所以用Vector3作为结果
+			// 而这里要计算的是三个坐标轴上的速度，所以有3个结果，用Matrix3表示(三个Vector3拼到一起)
+			// 
+			// 按照之前ResolvePenetration函数里的计算流程，这里应该先分别计算三个轴:
+			// Math::Cross(mRelativeContactPosition[i], axisX/axisY/axisZ);
+			// 因为当前在实际坐标系下，所以这三个轴实际上就是(1, 0, 0), (0, 1, 0), (0, 0, 1)
+			// 
+			// 这里可以借助矩阵和向量的乘法规则简化了一下代码，因为把三个轴分开计算的结果，和把三个轴放到一起组成矩阵再一次性计算的结果是一样的
+			// 所以上面的3次向量叉乘可以简化为 斜对称矩阵 * I (XYZ三个轴向量拼起来就是个单位矩阵)
+			// 结果还是那个斜对称矩阵，所以这里实际上比起ResolvePenetration里的计算就直接跳过了一步
+			// 此时这个斜对称矩阵的第一列，第二列和第三列分别对应了 mRelativeContactPosition[i] 与 axisX/axisY/axisZ 的叉乘结果
+			// 
+			// 本来第一步 Math::Cross(mRelativeContactPosition[i], mContactNormal); 的结果得到了沿着碰撞法线的单位线性冲量对应的角冲量
+			// 这里的impulseToTorque矩阵实际上直接就等于了沿着三个基坐标轴的单位线性冲量对应的角冲量
+			// 
+			// 然后这里就可以直接开始第二步，用逆惯性张量矩阵*角冲量得到一个角速度，即 w = I^-1 * Jt
+			// 在这里的意思就是，沿着三个基坐标轴的单位线性冲量带来的三个轴上的角速度变化
+			// x轴上的角速度变化在矩阵第一列，y轴在第二列，z轴在第三列
+			// 
+			// 这里在Cyclone引擎里本来是这样写的：
+			// Matrix3 deltaVelocityWorld = impulseToTorque * inverseInertiaTensor[0];
+			// 然后最后计算完后又 * -1，这里我改变了一下乘法顺序，就不用*-1了，而且和ResolvePenetration里的过程也更一致
+			// 这里之所以可以这样是因为impulseToTorque是一个斜对称矩阵，而惯性张量矩阵又是对称矩阵(实际上很多时候是对角矩阵)，惯性张量矩阵的逆矩阵也肯定是对称矩阵
+			// 这种情况下，假设斜对称矩阵为A，对称矩阵为B，那么 A * B = -(B * A)，所以Cyclone引擎里的实现和我这里的实现实际上是一样的
+			Matrix3 deltaVelocityWorld = inverseInertiaTensor[0] * impulseToTorque;
+			// 然后第三步，把角速度转换成线速度，这里同样是一次性算三个轴上的线速度
+			// 这里应该是三个轴上的角速度分别叉乘 mRelativeContactPosition[i]
+			// 三个轴上的角速度变化量已经在上一步的计算结果中了，即矩阵的第一二三列数据
+			// 这里直接 * impulseToTorque得到的矩阵的第一行就是x轴上的角速度变化量(即上一步算出来的矩阵的第一列)与mRelativeContactPosition[i]叉乘的结果
+			// 第二，三行分别是y轴，z轴上的角速度变化量与mRelativeContactPosition[i]叉乘的结果
+			// 所以这里的结果意思是，沿着三个基坐标轴的单位线性冲量带来的刚体旋转导致的当前碰撞点处在三个轴上的线性速度变化
+			deltaVelocityWorld *= impulseToTorque;
+
+			// 如果有第二个刚体，那么就把第二个刚体的速度变化也加进来
+			if (mRigidBodies[1])
+			{
+				impulseToTorque = Matrix3(mRelativeContactPosition[1]);
+
+				Matrix3 deltaVelocityWorld2 = inverseInertiaTensor[1] * impulseToTorque;
+				deltaVelocityWorld2 *= impulseToTorque;
+
+				// 把两个刚体的速度变化矩阵相加
+				deltaVelocityWorld += deltaVelocityWorld2;
+
+				// 把两个刚体的质量相加
+				linearVelocity += mRigidBodies[1]->GetInverseMass();
+			}
+
+			// 把速度变化矩阵转换到碰撞空间
+			Matrix3 deltaVelocityContact = Math::Transpose(mContactToWorld) * deltaVelocityWorld * mContactToWorld;
+
+			// 上面算的都是旋转带来的线性速度变化，这里再加上线性运动带来的线性速度变化
+			// 这里线性运动本身的速度变化同样也用矩阵表达，即 Matrix3(linearVelocity)
+			// 意思是，沿着三个基坐标轴的单位线性冲量带来的刚体线性运动导致的当前碰撞点处在三个轴上的线性速度变化
+			// 然后叠加到前面旋转导致的线性速度变化上，得到总的速度变化量
+			// 
+			// 此时这个矩阵的意义是，沿着三个基坐标轴的单位冲量带来的线性运动和旋转结合起来导致的当前碰撞点在三个轴上的速度变化
+			// 
+			// 如果按行来看待，第一行就是沿着x轴的单位冲量带来的碰撞点速度变化在xyz轴上的分量，因为有旋转所以x轴的冲量不止影响x轴上的速度
+			// 第二，三行就是沿着y，z轴的单位冲量带来的碰撞点速度变化在xyz轴上的分量
+			// 
+			// 如果按列来看待，第一列就是沿着xyz三个轴的单位冲量分别能带来的x轴上的速度变化量
+			// 第二，三列就是沿着xyz三个轴的单位冲量分别能带来的y，z轴上的速度变化量
+			deltaVelocityContact += Matrix3(linearVelocity);
+
+			// 通过计算速度变化矩阵的逆矩阵，得到单位速度变化所需要的冲量
+			// 这个矩阵的数值含义：
+			// 第一行第一列，在x轴上每变化一个单位速度所需要的x轴上的冲量大小
+			// 第一行第二列，在y轴上每变化一个单位速度所需要的x轴上的冲量大小
+			// 第一行第三列，在z轴上每变化一个单位速度所需要的x轴上的冲量大小
+			// 第二行第一列，在x轴上每变化一个单位速度所需要的y轴上的冲量大小
+			// 第二行第二列，在y轴上每变化一个单位速度所需要的y轴上的冲量大小
+			// 以此类推......
+			Matrix3 impulsePerUnitVelocity = Math::Inverse(deltaVelocityContact);
+
+			// 这是两个对象碰撞时要变化的速度(碰撞空间)
+			// x方向是碰撞法线方向，变化速度就是本次碰撞期望产生的，在碰撞法线上的变化速度
+			// y和z是会产生摩擦力的平面，这两个方向上的速度会因为摩擦力抵消掉(这一次碰撞可能不会完全抵消完)
+			Vector3 velocityToRemove(mDesiredDeltaVelocity, -mContactVelocity.y, -mContactVelocity.z);
+
+			// 计算移除上面那个速度所需要的冲量(碰撞空间)
+			// 这里按照(矩阵m * 向量v)的计算规则，结果中的x分量 = m00 * x + m01 * y + m02 * z
+			// 按照上面解释的此矩阵和此向量的含义，结果中的x分量意义就是要产生速度v所需要的冲量在x轴上的分量大小
+			// 整个结果向量的含义就是要产生速度v所需要的冲量大小
+			Vector3 impulseContact = impulsePerUnitVelocity * velocityToRemove;
+
+			// 这是产生上面那个速度所需要的冲量在yz平面上的大小
+			float planarImpulse = sqrtf(impulseContact.y * impulseContact.y + impulseContact.z * impulseContact.z);
+
+			// 这里这个判断的意思是这个冲量会不会大于摩擦力可以提供的冲量大小
+			// 
+			// 这个比较的依据来自摩擦力公式: Ff = u * Fn，其中Ff是摩擦力大小，u是摩擦系数，Fn是正压力大小(和摩擦平面垂直)
+			// 所以摩擦力和正压力大小成正比，系数为u，而冲量公式为: J = F * dt，其中J是冲量大小，F是力大小，dt是力的作用时间
+			// 这里dt是一样的，所以这里的碰撞产生的冲量在x轴(碰撞法线)上的分量大小也就和yz平面(摩擦平面)上的分量大小成正比，系数为u
+			// 
+			// 如果不大于，那么有点类似静摩擦，作用力和反作用力相等，摩擦力(yz平面上的反作用力)会足够大
+			// 也就足够让这次碰撞后yz平面上的相对速度被完全移除掉，所以直接返回刚刚计算的产生velocityToRemove速度的冲量即可
+			// 
+			// 否则相当于是动摩擦，会减小yz平面上的相对速度，此时重新计算冲量大小
+			// 这个冲量在yz平面上的大小就是动摩擦力(反作用力)产生的冲量，不足以完全移除yz平面的相对速度，而是使其减小
+			// 进而模拟了摩擦力在碰撞法线的切平面上产生的阻力效果
+			if (planarImpulse > impulseContact.x * mFriction)
+			{
+				// 摩擦力足够大的情况下，yz平面上的冲量就直接是移除yz平面所有速度的冲量
+				// 但是在这里摩擦力不够大的情况下，yz平面上的冲量就只能是x轴方向上冲量的u倍
+				// 注意是yz平面上的冲量是x轴上冲量的u倍，不等于y轴和z轴上的冲量是x轴的u倍
+				// 所以这里先算出单位冲量在y和z轴上的分量
+				impulseContact.y /= planarImpulse;
+				impulseContact.z /= planarImpulse;
+				
+				// deltaVelocityContact矩阵的意思是沿着三个基坐标轴的单位冲量带来的线性运动和旋转结合起来导致的当前碰撞点在三个轴上的速度变化
+				// 这里取到的向量x分量代表沿基坐标系x轴的单位冲量带来的在x轴上的速度变化量
+				// y分量代表沿基坐标系y轴的单位冲量带来的在x轴上的速度变化
+				// z分量代表沿基坐标轴z轴的单位冲量带来的在x轴上的速度变化
+				Vector3 velocityOnXPerUnitImpulse = deltaVelocityContact.GetRow(0);
+
+				// 我们假设x轴上的冲量为单位冲量，也就是1，当前这种滑动摩擦情况下，y轴和z轴的冲量实际上是根据x轴的冲量计算出来的
+				// 也就是yz平面上的冲量大小等于x轴上的u(滑动摩擦系数)倍，即也就是u，然后再把u分解到y轴和z轴上
+				// 这个分解在上面通过除以planarImpulse已完成，结果在impulseContact.y/z中，所以此时y轴和z轴上的冲量就表示为mFriction * impulseContact.y/z
+				// x轴上的速度变化会同时受xyz三个轴上的冲量影响，而y轴和z轴上的冲量大小又由x轴冲量和摩擦系数决定，所以最终x轴上的速度变化可以完全由x轴上的冲量决定
+				// 假设x轴上为单位冲量，那么x轴上的单位冲量带来的x轴速度变化表示如下
+				float velocityOnXPerUnitAxisXImpulse = velocityOnXPerUnitImpulse.x
+					+ velocityOnXPerUnitImpulse.y * mFriction * impulseContact.y
+					+ velocityOnXPerUnitImpulse.z * mFriction * impulseContact.z;
+
+				// mDesiredDeltaVelocity即期望的在x轴上的速度变化，除以x轴上每单位冲量带来的速度变化量，就得到最终在x轴上需要的冲大小
+				impulseContact.x = mDesiredDeltaVelocity / velocityOnXPerUnitAxisXImpulse;
+
+				// u * x轴冲量 = yz平面冲量，再乘以yz平面上的单位冲量在y轴和z轴上的分量得到最终y轴和z轴的冲量
+				impulseContact.y *= mFriction * impulseContact.x;
+				impulseContact.z *= mFriction * impulseContact.x;
+			}
+
+			return impulseContact;
 		}
 
 		Vector3 Contact::CalculateFrictionlessImpulse(Matrix3* inverseInertiaTensor)
@@ -387,12 +531,12 @@ namespace ZXEngine
 			velocity += rigidBody->GetVelocity();
 
 			// 将速度转换到碰撞坐标系(非碰撞法线上的速度分量体现了对象间彼此的移动速度，计算摩擦力的时候需要用)
-			Vector3 contactVelocity = mContactToWorld * velocity;
+			Vector3 contactVelocity = Math::Transpose(mContactToWorld) * velocity;
 
 			// 在不考虑反作用力的情况下，加速度带来的速度变化
 			Vector3 deltaVelocity = rigidBody->GetLastAcceleration() * duration;
 			// 转换到碰撞坐标系
-			deltaVelocity = mContactToWorld * deltaVelocity;
+			deltaVelocity = Math::Transpose(mContactToWorld) * deltaVelocity;
 			// 去掉碰撞法线上的分量，只保留在碰撞平面上的速度
 			deltaVelocity.x = 0.0f;
 			// 添加碰撞平面上的速度变化(如果有摩擦力这个速度会在后面被抵消掉)

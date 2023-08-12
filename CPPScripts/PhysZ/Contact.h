@@ -31,9 +31,9 @@ namespace ZXEngine
 
 			// 碰撞点相对于两个刚体的位置
 			Vector3 mRelativeContactPosition[2];
-			// 碰撞点的闭合速度(即两个对象相互接近的速度)
+			// 碰撞点的闭合速度(即两个对象相互接近的速度，碰撞空间)
 			Vector3 mContactVelocity;
-			// 当前碰撞所产生的期望速度变化量(闭合速度的变化量)
+			// 当前碰撞所产生的期望速度变化量(闭合速度在碰撞法线上的变化量)
 			float mDesiredDeltaVelocity;
 
 			// 交换两个刚体，同时将碰撞法线取反(但是不会更新其它相关变量，如果需要更新手动调用UpdateInternalDatas)
