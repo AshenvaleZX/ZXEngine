@@ -1,4 +1,5 @@
 #include "RigidBody.h"
+#include "PhysZEnumStruct.h"
 
 namespace ZXEngine
 {
@@ -37,6 +38,24 @@ namespace ZXEngine
 
 			// 清除累积的作用力和力矩
 			ClearAccumulators();
+
+			if (mCanSleep)
+			{
+				// 计算当前的运动值
+				float currentMotion = Math::Dot(mVelocity, mVelocity) + Math::Dot(mAngularVelocity, mAngularVelocity);
+
+				// 与之前的帧的运动值数据做累计平均
+				float bias = powf(0.5f, duration);
+				mMotion = bias * mMotion + (1 - bias) * currentMotion;
+
+				// 如果累计平均运动值太小了就当作静态对象，进入休眠状态，节约不必要的物理计算
+				if (mMotion < SleepMotionEpsilon)
+					SetAwake(false);
+				// 对累计运动值做一个最大值限制，如果一个高速移动物体突然停下来，会导致mMotion很大，然后需要很多帧才能把数据平均值拉下来
+				// 导致一个实际已经静止的物体要等很久才能进入休眠状态，所以这里如果值太大了进行限制
+				else if (mMotion > 10 * SleepMotionEpsilon)
+					mMotion = 10 * SleepMotionEpsilon;
+			}
 		}
 
 		void RigidBody::CalculateDerivedData()
@@ -100,12 +119,39 @@ namespace ZXEngine
 
 		void RigidBody::SetAwake(bool awake)
 		{
-			mIsAwake = awake;
+			if (awake)
+			{
+				mIsAwake = true;
+
+				// 唤醒后添加一点运动量，防止又立刻进入睡眠状态
+				mMotion = SleepMotionEpsilon * 2.0f;
+			}
+			else
+			{
+				mIsAwake = false;
+
+				// 休眠状态的刚体不应该有任何速度
+				mVelocity.Clear();
+				mAngularVelocity.Clear();
+			}
 		}
 
 		bool RigidBody::GetAwake() const
 		{
 			return mIsAwake;
+		}
+		
+		void RigidBody::SetCanSleep(bool canSleep)
+		{
+			mCanSleep = canSleep;
+
+			if (!canSleep && !mIsAwake)
+				SetAwake(true);
+		}
+
+		bool RigidBody::GetCanSleep() const
+		{
+			return mCanSleep;
 		}
 
 		Matrix4 RigidBody::GetTransform() const

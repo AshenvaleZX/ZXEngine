@@ -30,6 +30,8 @@ namespace ZXEngine
 
 			void SetAwake(bool awake);
 			bool GetAwake() const;
+			void SetCanSleep(bool canSleep);
+			bool GetCanSleep() const;
 			
 			Matrix4 GetTransform() const;
 
@@ -113,8 +115,14 @@ namespace ZXEngine
 
 			// local到world空间的变换
 			Matrix4 mTransform;
-			// 刚体可以进入sleep状态，然后不受物理引擎影响
+
+			// 睡眠状态的刚体不进行物理更新
 			bool mIsAwake = true;
+			// 刚体是否可以进入睡眠状态
+			// 一般默认为true，某些特殊对象，比如玩家操控的，可能随时手动产生作用力的对象可以设置为false
+			bool mCanSleep = true;
+			// 刚体当前的运动量，包含线性速度和角速度，无实际物理意义，仅用于评估运动状态
+			float mMotion = 0.0f;
 
 			void UpdateTransform();
 			void UpdateWorldInertiaTensor();
