@@ -31,6 +31,8 @@ namespace ZXEngine
 				ParsePlaneCollider(component);
 			else if (component["Type"] == "SphereCollider")
 				ParseSphereCollider(component);
+			else if (component["Type"] == "RigidBody")
+				ParseRigidBody(component);
 			else
 				Debug::LogError("Try parse undefined component type: " + component["Type"]);
 		}
@@ -215,5 +217,19 @@ namespace ZXEngine
 		sphereCollider->mBounceCombine = data["BounceCombine"];
 
 		sphereCollider->mCollider->mRadius = data["Radius"];
+	}
+
+	void GameObject::ParseRigidBody(json data)
+	{
+		ZRigidBody* rigidBody = AddComponent<ZRigidBody>();
+
+		rigidBody->mUseGravity = data["UseGravity"];
+		rigidBody->mRigidBody->SetMass(data["Mass"]);
+
+		float damping = data["Damping"];
+		rigidBody->mRigidBody->SetLinearDamping(1.0f - damping);
+
+		float angularDamping = data["AngularDamping"];
+		rigidBody->mRigidBody->SetAngularDamping(1.0f - angularDamping);
 	}
 }

@@ -62,6 +62,8 @@ namespace ZXEngine
 						DrawPlaneCollider(static_cast<PlaneCollider*>(iter.second));
 					else if (type == ComponentType::SphereCollider)
 						DrawSphereCollider(static_cast<SphereCollider*>(iter.second));
+					else if (type == ComponentType::RigidBody)
+						DrawRigidBody(static_cast<ZRigidBody*>(iter.second));
 					else if (type == ComponentType::MeshRenderer)
 					{
 						auto meshRenderer = static_cast<MeshRenderer*>(iter.second);
@@ -655,5 +657,32 @@ namespace ZXEngine
 		float radius = component->mCollider->mRadius;
 		ImGui::Text("Radius           ");
 		ImGui::SameLine(); ImGui::DragFloat("##radius", &radius, 0.01f, 0.0f, FLT_MAX);
+	}
+
+	void EditorInspectorPanel::DrawRigidBody(ZRigidBody* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("RigidBody"))
+			return;
+
+		// Mass
+		float mass = component->mRigidBody->GetMass();
+		ImGui::Text("Mass             ");
+		ImGui::SameLine(); ImGui::DragFloat("##mass", &mass, 0.01f, 0.0f, FLT_MAX);
+
+		// Linear Damping
+		float linearDamping = 1.0f - component->mRigidBody->GetLinearDamping();
+		ImGui::Text("Linear Damping   ");
+		ImGui::SameLine(); ImGui::DragFloat("##linearDamping", &linearDamping, 0.01f, 0.0f, 1.0f);
+
+		// Angular Damping
+		float angularDamping = 1.0f - component->mRigidBody->GetAngularDamping();
+		ImGui::Text("Angular Damping  ");
+		ImGui::SameLine(); ImGui::DragFloat("##angularDamping", &angularDamping, 0.01f, 0.0f, 1.0f);
+
+		// Use Gravity
+		bool useGravity = component->mUseGravity;
+		ImGui::Text("Use Gravity      ");
+		ImGui::SameLine(); ImGui::Checkbox("##useGravity", &useGravity);
 	}
 }

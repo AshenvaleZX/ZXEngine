@@ -13,6 +13,7 @@
 #include "Component/BoxCollider.h"
 #include "Component/PlaneCollider.h"
 #include "Component/SphereCollider.h"
+#include "Component/ZRigidBody.h"
 
 namespace ZXEngine
 {
@@ -50,6 +51,7 @@ namespace ZXEngine
 		void ParseBoxCollider(json data);
 		void ParsePlaneCollider(json data);
 		void ParseSphereCollider(json data);
+		void ParseRigidBody(json data);
 	};
 
 	template<class T>

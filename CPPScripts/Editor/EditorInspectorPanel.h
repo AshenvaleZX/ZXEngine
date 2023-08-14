@@ -16,6 +16,7 @@ namespace ZXEngine
 	class BoxCollider;
 	class PlaneCollider;
 	class SphereCollider;
+	class ZRigidBody;
 	class EditorInspectorPanel : public EditorPanel
 	{
 	public:
@@ -38,6 +39,7 @@ namespace ZXEngine
 		void DrawBoxCollider(BoxCollider* component);
 		void DrawPlaneCollider(PlaneCollider* component);
 		void DrawSphereCollider(SphereCollider* component);
+		void DrawRigidBody(ZRigidBody* component);
 		
 		// Asset
 		void DrawScript(AssetScriptInfo* info);
