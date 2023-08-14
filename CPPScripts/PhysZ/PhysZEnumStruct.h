@@ -9,6 +9,22 @@ namespace ZXEngine
 		// 所以这个数值应该在不造成模拟失真的前提下尽可能的大
 		static float SleepMotionEpsilon = 0.1f;
 
+		enum class ColliderType
+		{
+			None,
+			Box,
+			Plane,
+			Sphere,
+		};
+
+		enum class CombineType
+		{
+			Average,
+			Minimum,
+			Maximum,
+			Multiply,
+		};
+
 		class RigidBody;
 		struct PotentialContact
 		{

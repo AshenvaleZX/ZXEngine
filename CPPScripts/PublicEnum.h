@@ -129,6 +129,10 @@ namespace ZXEngine
 		UITextRenderer,
 		UITextureRenderer,
 		ParticleSystem,
+		Collider,
+		BoxCollider,
+		PlaneCollider,
+		SphereCollider,
 	};
 
 	enum class FaceCullOption

@@ -489,6 +489,18 @@
     <ClCompile Include="..\..\CPPScripts\PhysZ\ContactResolver.cpp">
       <Filter>PhysZ</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\Collider.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\BoxCollider.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\PlaneCollider.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\SphereCollider.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\GameObject.h">
@@ -961,6 +973,21 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\PhysZ\ContactResolver.h">
       <Filter>PhysZ</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\PhysZ\PhysZ.h">
+      <Filter>PhysZ</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\Collider.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\BoxCollider.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\PlaneCollider.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\SphereCollider.h">
+      <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
