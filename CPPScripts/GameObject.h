@@ -10,6 +10,9 @@
 #include "Component/UITextRenderer.h"
 #include "Component/UITextureRenderer.h"
 #include "Component/ParticleSystem.h"
+#include "Component/BoxCollider.h"
+#include "Component/PlaneCollider.h"
+#include "Component/SphereCollider.h"
 
 namespace ZXEngine
 {
@@ -44,6 +47,9 @@ namespace ZXEngine
 		void ParseUITextRenderer(json data);
 		void ParseUITextureRenderer(json data);
 		void ParseParticleSystem(json data);
+		void ParseBoxCollider(json data);
+		void ParsePlaneCollider(json data);
+		void ParseSphereCollider(json data);
 	};
 
 	template<class T>

@@ -10,6 +10,9 @@
 #include "../Component/UITextRenderer.h"
 #include "../Component/UITextureRenderer.h"
 #include "../Component/ParticleSystem.h"
+#include "../Component/BoxCollider.h"
+#include "../Component/PlaneCollider.h"
+#include "../Component/SphereCollider.h"
 #include "../ZShader.h"
 #include "../MaterialData.h"
 
@@ -53,6 +56,12 @@ namespace ZXEngine
 						DrawUITextureRenderer(static_cast<UITextureRenderer*>(iter.second));
 					else if (type == ComponentType::ParticleSystem)
 						DrawParticleSystem(static_cast<ParticleSystem*>(iter.second));
+					else if (type == ComponentType::BoxCollider)
+						DrawBoxCollider(static_cast<BoxCollider*>(iter.second));
+					else if (type == ComponentType::PlaneCollider)
+						DrawPlaneCollider(static_cast<PlaneCollider*>(iter.second));
+					else if (type == ComponentType::SphereCollider)
+						DrawSphereCollider(static_cast<SphereCollider*>(iter.second));
 					else if (type == ComponentType::MeshRenderer)
 					{
 						auto meshRenderer = static_cast<MeshRenderer*>(iter.second);
@@ -462,5 +471,189 @@ namespace ZXEngine
 		ImGui::Text("          Z:");
 		ImGui::SameLine(120);
 		ImGui::Text(to_string(info->meshRenderer->boundsSizeZ).c_str());
+	}
+
+	void EditorInspectorPanel::DrawBoxCollider(BoxCollider* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("BoxCollider"))
+			return;
+
+		// Friction
+		float friction = component->mFriction;
+		ImGui::Text("Friction         ");
+		ImGui::SameLine(); ImGui::DragFloat("##friction", &friction, 0.01f, 0.0f, FLT_MAX);
+
+		// Bounciness
+		float bounciness = component->mBounciness;
+		ImGui::Text("Bounciness       ");
+		ImGui::SameLine(); ImGui::DragFloat("##bounciness", &bounciness, 0.01f, 0.0f, 1.0f);
+
+		// Combine Type
+		const char* items[] = { "Average", "Minimum", "Maximum", "Multiply" };
+
+		// Friction Combine
+		static ImGuiComboFlags frictionCombineFlags = 0;
+		static int frictionCombineIdx = static_cast<int>(component->mFrictionCombine);
+		const char* frictionPreviewValue = items[frictionCombineIdx];
+		ImGui::Text("Friction Combine ");
+		ImGui::SameLine();
+		if (ImGui::BeginCombo("##FrictionType", frictionPreviewValue, frictionCombineFlags))
+		{
+			for (int i = 0; i < IM_ARRAYSIZE(items); i++)
+			{
+				const bool is_selected = (frictionCombineIdx == i);
+				if (ImGui::Selectable(items[i], is_selected))
+					frictionCombineIdx = i;
+			}
+			ImGui::EndCombo();
+		}
+
+		// Bounce Combine
+		static ImGuiComboFlags bounceCombineFlags = 0;
+		static int bounceCombineIdx = static_cast<int>(component->mBounceCombine);
+		const char* bouncePreviewValue = items[bounceCombineIdx];
+		ImGui::Text("Bounce Combine   ");
+		ImGui::SameLine();
+		if (ImGui::BeginCombo("##BounceType", bouncePreviewValue, bounceCombineFlags))
+		{
+			for (int i = 0; i < IM_ARRAYSIZE(items); i++)
+			{
+				const bool is_selected = (bounceCombineIdx == i);
+				if (ImGui::Selectable(items[i], is_selected))
+					bounceCombineIdx = i;
+			}
+			ImGui::EndCombo();
+		}
+
+		// Size
+		Vector3 size = component->mCollider->mHalfSize * 2.0f;
+		ImVec4 v = ImVec4(size.x, size.y, size.z, 1.0f);
+		ImGui::Text("Size             ");
+		ImGui::SameLine(); ImGui::DragFloat3("##size", (float*)&v, 0.01f, -FLT_MAX, FLT_MAX);
+	}
+
+	void EditorInspectorPanel::DrawPlaneCollider(PlaneCollider* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("PlaneCollider"))
+			return;
+
+		// Friction
+		float friction = component->mFriction;
+		ImGui::Text("Friction         ");
+		ImGui::SameLine(); ImGui::DragFloat("##friction", &friction, 0.01f, 0.0f, FLT_MAX);
+
+		// Bounciness
+		float bounciness = component->mBounciness;
+		ImGui::Text("Bounciness       ");
+		ImGui::SameLine(); ImGui::DragFloat("##bounciness", &bounciness, 0.01f, 0.0f, 1.0f);
+
+		// Combine Type
+		const char* items[] = { "Average", "Minimum", "Maximum", "Multiply" };
+
+		// Friction Combine
+		static ImGuiComboFlags frictionCombineFlags = 0;
+		static int frictionCombineIdx = static_cast<int>(component->mFrictionCombine);
+		const char* frictionPreviewValue = items[frictionCombineIdx];
+		ImGui::Text("Friction Combine ");
+		ImGui::SameLine();
+		if (ImGui::BeginCombo("##FrictionType", frictionPreviewValue, frictionCombineFlags))
+		{
+			for (int i = 0; i < IM_ARRAYSIZE(items); i++)
+			{
+				const bool is_selected = (frictionCombineIdx == i);
+				if (ImGui::Selectable(items[i], is_selected))
+					frictionCombineIdx = i;
+			}
+			ImGui::EndCombo();
+		}
+
+		// Bounce Combine
+		static ImGuiComboFlags bounceCombineFlags = 0;
+		static int bounceCombineIdx = static_cast<int>(component->mBounceCombine);
+		const char* bouncePreviewValue = items[bounceCombineIdx];
+		ImGui::Text("Bounce Combine   ");
+		ImGui::SameLine();
+		if (ImGui::BeginCombo("##BounceType", bouncePreviewValue, bounceCombineFlags))
+		{
+			for (int i = 0; i < IM_ARRAYSIZE(items); i++)
+			{
+				const bool is_selected = (bounceCombineIdx == i);
+				if (ImGui::Selectable(items[i], is_selected))
+					bounceCombineIdx = i;
+			}
+			ImGui::EndCombo();
+		}
+
+		// Normal
+		Vector3 normal = component->mCollider->mNormal;
+		ImVec4 v = ImVec4(normal.x, normal.y, normal.z, 1.0f);
+		ImGui::Text("Normal           ");
+		ImGui::SameLine(); ImGui::DragFloat3("##normal", (float*)&v, 0.01f, -FLT_MAX, FLT_MAX);
+
+		// Distance
+		float distance = component->mCollider->mDistance;
+		ImGui::Text("Distance         ");
+		ImGui::SameLine(); ImGui::DragFloat("##distance", &distance, 0.01f, -FLT_MAX, FLT_MAX);
+	}
+
+	void EditorInspectorPanel::DrawSphereCollider(SphereCollider* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("SphereCollider"))
+			return;
+
+		// Friction
+		float friction = component->mFriction;
+		ImGui::Text("Friction         ");
+		ImGui::SameLine(); ImGui::DragFloat("##friction", &friction, 0.01f, 0.0f, FLT_MAX);
+
+		// Bounciness
+		float bounciness = component->mBounciness;
+		ImGui::Text("Bounciness       ");
+		ImGui::SameLine(); ImGui::DragFloat("##bounciness", &bounciness, 0.01f, 0.0f, 1.0f);
+
+		// Combine Type
+		const char* items[] = { "Average", "Minimum", "Maximum", "Multiply" };
+
+		// Friction Combine
+		static ImGuiComboFlags frictionCombineFlags = 0;
+		static int frictionCombineIdx = static_cast<int>(component->mFrictionCombine);
+		const char* frictionPreviewValue = items[frictionCombineIdx];
+		ImGui::Text("Friction Combine ");
+		ImGui::SameLine();
+		if (ImGui::BeginCombo("##FrictionType", frictionPreviewValue, frictionCombineFlags))
+		{
+			for (int i = 0; i < IM_ARRAYSIZE(items); i++)
+			{
+				const bool is_selected = (frictionCombineIdx == i);
+				if (ImGui::Selectable(items[i], is_selected))
+					frictionCombineIdx = i;
+			}
+			ImGui::EndCombo();
+		}
+
+		// Bounce Combine
+		static ImGuiComboFlags bounceCombineFlags = 0;
+		static int bounceCombineIdx = static_cast<int>(component->mBounceCombine);
+		const char* bouncePreviewValue = items[bounceCombineIdx];
+		ImGui::Text("Bounce Combine   ");
+		ImGui::SameLine();
+		if (ImGui::BeginCombo("##BounceType", bouncePreviewValue, bounceCombineFlags))
+		{
+			for (int i = 0; i < IM_ARRAYSIZE(items); i++)
+			{
+				const bool is_selected = (bounceCombineIdx == i);
+				if (ImGui::Selectable(items[i], is_selected))
+					bounceCombineIdx = i;
+			}
+			ImGui::EndCombo();
+		}
+
+		// Radius
+		float radius = component->mCollider->mRadius;
+		ImGui::Text("Radius           ");
+		ImGui::SameLine(); ImGui::DragFloat("##radius", &radius, 0.01f, 0.0f, FLT_MAX);
 	}
 }

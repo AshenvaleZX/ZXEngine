@@ -13,6 +13,9 @@ namespace ZXEngine
 	class UITextRenderer;
 	class UITextureRenderer;
 	class ParticleSystem;
+	class BoxCollider;
+	class PlaneCollider;
+	class SphereCollider;
 	class EditorInspectorPanel : public EditorPanel
 	{
 	public:
@@ -32,6 +35,9 @@ namespace ZXEngine
 		void DrawUITextRenderer(UITextRenderer* component);
 		void DrawUITextureRenderer(UITextureRenderer* component);
 		void DrawParticleSystem(ParticleSystem* component);
+		void DrawBoxCollider(BoxCollider* component);
+		void DrawPlaneCollider(PlaneCollider* component);
+		void DrawSphereCollider(SphereCollider* component);
 		
 		// Asset
 		void DrawScript(AssetScriptInfo* info);

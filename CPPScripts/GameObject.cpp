@@ -25,6 +25,12 @@ namespace ZXEngine
 				ParseUITextureRenderer(component);
 			else if (component["Type"] == "ParticleSystem")
 				ParseParticleSystem(component);
+			else if (component["Type"] == "BoxCollider")
+				ParseBoxCollider(component);
+			else if (component["Type"] == "PlaneCollider")
+				ParsePlaneCollider(component);
+			else if (component["Type"] == "SphereCollider")
+				ParseSphereCollider(component);
 			else
 				Debug::LogError("Try parse undefined component type: " + component["Type"]);
 		}
@@ -172,5 +178,42 @@ namespace ZXEngine
 		particleSystem->velocity = Vector3(data["Velocity"][0], data["Velocity"][1], data["Velocity"][2]);
 		particleSystem->offset = Vector3(data["StartOffset"][0], data["StartOffset"][1], data["StartOffset"][2]);
 		particleSystem->GenerateParticles();
+	}
+
+	void GameObject::ParseBoxCollider(json data)
+	{
+		BoxCollider* boxCollider = AddComponent<BoxCollider>();
+
+		boxCollider->mFriction = data["Friction"];
+		boxCollider->mBounciness = data["Bounciness"];
+		boxCollider->mFrictionCombine = data["FrictionCombine"];
+		boxCollider->mBounceCombine = data["BounceCombine"];
+
+		boxCollider->mCollider->mHalfSize = Vector3(data["Size"][0] / 2.0f, data["Size"][1] / 2.0f, data["Size"][2] / 2.0f);
+	}
+
+	void GameObject::ParsePlaneCollider(json data)
+	{
+		PlaneCollider* planeCollider = AddComponent<PlaneCollider>();
+
+		planeCollider->mFriction = data["Friction"];
+		planeCollider->mBounciness = data["Bounciness"];
+		planeCollider->mFrictionCombine = data["FrictionCombine"];
+		planeCollider->mBounceCombine = data["BounceCombine"];
+
+		planeCollider->mCollider->mNormal = Vector3(data["Normal"][0], data["Normal"][1], data["Normal"][2]);
+		planeCollider->mCollider->mDistance = data["Distance"];
+	}
+
+	void GameObject::ParseSphereCollider(json data)
+	{
+		SphereCollider* sphereCollider = AddComponent<SphereCollider>();
+
+		sphereCollider->mFriction = data["Friction"];
+		sphereCollider->mBounciness = data["Bounciness"];
+		sphereCollider->mFrictionCombine = data["FrictionCombine"];
+		sphereCollider->mBounceCombine = data["BounceCombine"];
+
+		sphereCollider->mCollider->mRadius = data["Radius"];
 	}
 }
