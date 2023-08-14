@@ -105,7 +105,7 @@ namespace ZXEngine
 			// World惯性张量(以矩阵形式表达,存储逆矩阵方便计算)
 			Matrix3 mWorldInverseInertiaTensor;
 			// 旋转运动阻尼系数(1表示无阻尼)
-			float mAngularDamping = 1.0f;
+			float mAngularDamping = 0.95f;
 			// 旋转
 			Quaternion mRotation;
 			// 角速度

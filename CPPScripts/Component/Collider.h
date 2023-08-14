@@ -1,5 +1,4 @@
 #pragma once
-#include "../pubh.h"
 #include "Component.h"
 #include "../PhysZ/PhysZ.h"
 
