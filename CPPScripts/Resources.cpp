@@ -44,7 +44,7 @@ namespace ZXEngine
 		return path.substr(s + 1, path.length() - s - 1);
 	}
 
-	string Resources::JsonStrToString(json data)
+	string Resources::JsonStrToString(const json& data)
 	{
 		string p = to_string(data);
 		// 这个json字符串取出来前后会有双引号，需要去掉再用
@@ -181,13 +181,13 @@ namespace ZXEngine
 
 		prefab->name = data["Name"];
 		if (data["Layer"].is_null())
-			prefab->layer = (int)GameObjectLayer::Default;
+			prefab->layer = static_cast<uint32_t>(GameObjectLayer::Default);
 		else
 			prefab->layer = data["Layer"];
 
 		for (unsigned int i = 0; i < data["Components"].size(); i++)
 		{
-			json component = data["Components"][i];
+			const json& component = data["Components"][i];
 			prefab->components.push_back(component);
 		}
 
@@ -195,7 +195,7 @@ namespace ZXEngine
 		{
 			for (unsigned int i = 0; i < data["GameObjects"].size(); i++)
 			{
-				json subData = data["GameObjects"][i];
+				const json& subData = data["GameObjects"][i];
 				auto subPrefab = ParsePrefab(subData);
 				subPrefab->parent = prefab;
 				prefab->children.push_back(subPrefab);
@@ -258,7 +258,7 @@ namespace ZXEngine
 
 		for (size_t i = 0; i < data["Textures"].size(); i++)
 		{
-			json texture = data["Textures"][i];
+			const json& texture = data["Textures"][i];
 
 			TextureStruct* textureStruct = new TextureStruct();
 			textureStruct->path = Resources::GetAssetFullPath(Resources::JsonStrToString(texture["Path"]), isBuiltIn);
@@ -269,7 +269,7 @@ namespace ZXEngine
 
 		for (size_t i = 0; i < data["CubeMaps"].size(); i++)
 		{
-			json cubeMap = data["CubeMaps"][i];
+			const json& cubeMap = data["CubeMaps"][i];
 
 			CubeMapStruct* cubeMapStruct = new CubeMapStruct();
 			cubeMapStruct->paths = Resources::LoadCubeMap(cubeMap, isBuiltIn);
@@ -281,7 +281,7 @@ namespace ZXEngine
 		return matStruct;
 	}
 
-	vector<string> Resources::LoadCubeMap(json data, bool isBuiltIn)
+	vector<string> Resources::LoadCubeMap(const json& data, bool isBuiltIn)
 	{
 		vector<string> cube;
 		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]), isBuiltIn) + Resources::JsonStrToString(data["Right"]));

@@ -40,9 +40,9 @@ namespace ZXEngine
 	struct PrefabStruct
 	{
 		string name;
-		unsigned int layer;
+		uint32_t layer = 0;
 		list<json> components;
-		PrefabStruct* parent;
+		PrefabStruct* parent = nullptr;
 		vector<PrefabStruct*> children;
 
 		~PrefabStruct() { for (auto iter : children) delete iter; }
@@ -75,14 +75,14 @@ namespace ZXEngine
 		static string GetAssetExtension(const string& path);
 
 		static json LoadJson(const string& path);
-		static string JsonStrToString(json data);
+		static string JsonStrToString(const json& data);
 		static string LoadTextFile(const string& path);
 		static vector<char> LoadBinaryFile(const string& path);
 
 		static SceneStruct* LoadScene(const string& path);
 		static PrefabStruct* LoadPrefab(const string& path, bool isBuiltIn = false);
 		static MaterialStruct* LoadMaterial(const string& path, bool isBuiltIn = false);
-		static vector<string> LoadCubeMap(json data, bool isBuiltIn = false);
+		static vector<string> LoadCubeMap(const json& data, bool isBuiltIn = false);
 
 
 	private:
