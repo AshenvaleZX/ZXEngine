@@ -74,4 +74,13 @@ namespace ZXEngine
 
 		f.close();
 	}
+
+	void Debug::Replace(std::string& message, const std::string& from, const std::string& to)
+	{
+		size_t pos = 0;
+		if ((pos = message.find(from, pos)) != std::string::npos)
+		{
+			message.replace(pos, from.length(), to);
+		}
+	}
 }
