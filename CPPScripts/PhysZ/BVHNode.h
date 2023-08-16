@@ -20,10 +20,10 @@ namespace ZXEngine
 			// 该节点下的刚体(通常叶子节点才有)
 			RigidBody* mRigidBody;
 			// 包含该节点和所有子节点下的对象的BoundingVolume
-			BoundingVolume* mBoundingVolume;
+			BoundingVolume mBoundingVolume;
 
 			// parent为空表示是根节点
-			BVHNode(BVHNode* parent, BoundingVolume* boundingVolume, RigidBody* rigidBody);
+			BVHNode(BVHNode* parent, const BoundingVolume& boundingVolume, RigidBody* rigidBody);
 			// 析构函数会递归删除所有子节点
 			~BVHNode();
 
@@ -31,7 +31,7 @@ namespace ZXEngine
 			bool IsLeaf() const;
 			// 在当前节点下插入一个刚体，如果当前节点是叶子节点会升级为父节点然后把原当前刚体和新刚体变成2个子节点
 			// 如果当前节点不是叶子节点，就会向下查找叶子节点然后插入
-			void Insert(const RigidBody* body, const BoundingVolume* volume);
+			void Insert(const BoundingVolume& volume, RigidBody* body);
 			// 检测当前节点的BV所包围的所有刚体之间的潜在碰撞，写入一个PotentialContact数组中
 			// 第一个参数是PotentialContact数组地址，第二个参数是PotentialContact数组长度
 			// 返回值是实际写入的PotentialContact数量，也就是碰撞数量(不会超过limit)
@@ -50,7 +50,7 @@ namespace ZXEngine
 		};
 	
 		template<class BoundingVolume>
-		BVHNode<BoundingVolume>::BVHNode(BVHNode* parent, BoundingVolume* boundingVolume, RigidBody* rigidBody) :
+		BVHNode<BoundingVolume>::BVHNode(BVHNode* parent, const BoundingVolume& boundingVolume, RigidBody* rigidBody) :
 			mParent(parent),
 			mBoundingVolume(boundingVolume),
 			mRigidBody(rigidBody)
@@ -103,7 +103,7 @@ namespace ZXEngine
 		}
 
 		template<class BoundingVolume>
-		void BVHNode<BoundingVolume>::Insert(const RigidBody* body, const BoundingVolume* volume)
+		void BVHNode<BoundingVolume>::Insert(const BoundingVolume& volume, RigidBody* body)
 		{
 			// 如果是叶子节点，就升级为父节点
 			if (IsLeaf())
@@ -122,10 +122,10 @@ namespace ZXEngine
 			else
 			{
 				// 比较插入到两个子节点后的BV增长量，插入增长量更小的那个
-				if (mChildren[0]->mBoundingVolume->GetGrowth(volume) < mChildren[1]->mBoundingVolume->GetGrowth(volume))
-					mChildren[0]->Insert(body, volume);
+				if (mChildren[0]->mBoundingVolume.GetGrowth(volume) < mChildren[1]->mBoundingVolume.GetGrowth(volume))
+					mChildren[0]->Insert(volume, body);
 				else
-					mChildren[1]->Insert(body, volume);
+					mChildren[1]->Insert(volume, body);
 			}
 		}
 

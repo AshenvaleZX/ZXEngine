@@ -7,6 +7,12 @@ namespace ZXEngine
 	class CubeMap;
 	class GameObject;
 	struct SceneStruct;
+
+	namespace PhysZ
+	{
+		class PScene;
+	}
+
 	class Scene
 	{
 	public:
@@ -21,6 +27,7 @@ namespace ZXEngine
 		void Render();
 
 	private:
-		vector<Camera*> cameras;
+		PhysZ::PScene* mPhyScene;
+		vector<Camera*> mCameras;
 	};
 }

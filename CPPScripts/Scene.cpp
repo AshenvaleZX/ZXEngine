@@ -7,11 +7,13 @@
 #include "Resources.h"
 #include "ProjectSetting.h"
 #include "RenderAPI.h"
+#include "PhysZ/PhysZ.h"
 
 namespace ZXEngine
 {
 	Scene::Scene(SceneStruct* sceneStruct)
 	{
+		mPhyScene = new PhysZ::PScene(1000);
 		skyBox = new CubeMap(sceneStruct->skyBox);
 		renderPipelineType = sceneStruct->renderPipelineType;
 
@@ -25,7 +27,9 @@ namespace ZXEngine
 
 		for (auto prefab : sceneStruct->prefabs)
 		{
-			gameObjects.push_back(new GameObject(prefab));
+			auto gameObject = new GameObject(prefab);
+			gameObjects.push_back(gameObject);
+			mPhyScene->AddGameObject(gameObject);
 		}
 
 		ProjectSetting::renderPipelineType = curPipelineType;
