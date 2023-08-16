@@ -5,11 +5,15 @@ namespace ZXEngine
 {
 	namespace PhysZ
 	{
+		class CollisionPrimitive;
 		class RigidBody
 		{
 		public:
+			// 对应的碰撞体
+			CollisionPrimitive* mCollisionVolume = nullptr;
+
 			RigidBody() {};
-			~RigidBody() {};
+			~RigidBody();
 
 			// 更新刚体的位置和旋转
 			void Integrate(float duration);

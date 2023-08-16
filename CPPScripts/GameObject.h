@@ -14,6 +14,7 @@
 #include "Component/PlaneCollider.h"
 #include "Component/SphereCollider.h"
 #include "Component/ZRigidBody.h"
+#include "PhysZ/PhysZEnumStruct.h"
 
 namespace ZXEngine
 {
@@ -22,9 +23,10 @@ namespace ZXEngine
 		friend class EditorInspectorPanel;
 	public:
 		string name;
-		unsigned int layer = 0;
+		uint32_t layer = 0;
 		GameObject* parent = nullptr;
 		vector<GameObject*> children;
+		PhysZ::ColliderType mColliderType = PhysZ::ColliderType::None;
 
 		GameObject() {};
 		GameObject(PrefabStruct* prefab);

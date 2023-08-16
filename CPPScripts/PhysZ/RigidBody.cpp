@@ -1,10 +1,19 @@
 #include "RigidBody.h"
 #include "PhysZEnumStruct.h"
+#include "CollisionPrimitive.h"
 
 namespace ZXEngine
 {
 	namespace PhysZ
 	{
+		RigidBody::~RigidBody()
+		{
+			if (mCollisionVolume->mRigidBody == this)
+			{
+				mCollisionVolume->mRigidBody = nullptr;
+			}
+		}
+
 		void RigidBody::Integrate(float duration)
 		{
 			if (!mIsAwake)
@@ -114,7 +123,7 @@ namespace ZXEngine
 
 		bool RigidBody::IsInfiniteMass() const
 		{
-			return mInverseMass <= 0.0f;
+			return mInverseMass <= FLT_EPSILON;
 		}
 
 		void RigidBody::SetAwake(bool awake)

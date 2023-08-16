@@ -186,17 +186,30 @@ namespace ZXEngine
 	{
 		BoxCollider* boxCollider = AddComponent<BoxCollider>();
 
+		mColliderType = PhysZ::ColliderType::Box;
+
 		boxCollider->mFriction = data["Friction"];
 		boxCollider->mBounciness = data["Bounciness"];
 		boxCollider->mFrictionCombine = data["FrictionCombine"];
 		boxCollider->mBounceCombine = data["BounceCombine"];
 
 		boxCollider->mCollider->mHalfSize = Vector3(data["Size"][0] / 2.0f, data["Size"][1] / 2.0f, data["Size"][2] / 2.0f);
+
+		// 设置刚体的碰撞体和惯性张量(如果先解析RigidBody再解析Collider就会从这里设置)
+		auto rigidBody = GetComponent<ZRigidBody>();
+		if (rigidBody)
+		{
+			boxCollider->mCollider->mRigidBody = rigidBody->mRigidBody;
+			rigidBody->mRigidBody->mCollisionVolume = boxCollider->mCollider;
+			rigidBody->mRigidBody->SetInertiaTensor(boxCollider->mCollider->GetInertiaTensor(rigidBody->mRigidBody->GetMass()));
+		}
 	}
 
 	void GameObject::ParsePlaneCollider(json data)
 	{
 		PlaneCollider* planeCollider = AddComponent<PlaneCollider>();
+
+		mColliderType = PhysZ::ColliderType::Plane;
 
 		planeCollider->mFriction = data["Friction"];
 		planeCollider->mBounciness = data["Bounciness"];
@@ -205,11 +218,22 @@ namespace ZXEngine
 
 		planeCollider->mCollider->mNormal = Vector3(data["Normal"][0], data["Normal"][1], data["Normal"][2]);
 		planeCollider->mCollider->mDistance = data["Distance"];
+
+		// 设置刚体的碰撞体和惯性张量(如果先解析RigidBody再解析Collider就会从这里设置)
+		auto rigidBody = GetComponent<ZRigidBody>();
+		if (rigidBody)
+		{
+			planeCollider->mCollider->mRigidBody = rigidBody->mRigidBody;
+			rigidBody->mRigidBody->mCollisionVolume = planeCollider->mCollider;
+			rigidBody->mRigidBody->SetInertiaTensor(planeCollider->mCollider->GetInertiaTensor(rigidBody->mRigidBody->GetMass()));
+		}
 	}
 
 	void GameObject::ParseSphereCollider(json data)
 	{
 		SphereCollider* sphereCollider = AddComponent<SphereCollider>();
+
+		mColliderType = PhysZ::ColliderType::Sphere;
 
 		sphereCollider->mFriction = data["Friction"];
 		sphereCollider->mBounciness = data["Bounciness"];
@@ -217,6 +241,15 @@ namespace ZXEngine
 		sphereCollider->mBounceCombine = data["BounceCombine"];
 
 		sphereCollider->mCollider->mRadius = data["Radius"];
+
+		// 设置刚体的碰撞体和惯性张量(如果先解析RigidBody再解析Collider就会从这里设置)
+		auto rigidBody = GetComponent<ZRigidBody>();
+		if (rigidBody)
+		{
+			sphereCollider->mCollider->mRigidBody = rigidBody->mRigidBody;
+			rigidBody->mRigidBody->mCollisionVolume = sphereCollider->mCollider;
+			rigidBody->mRigidBody->SetInertiaTensor(sphereCollider->mCollider->GetInertiaTensor(rigidBody->mRigidBody->GetMass()));
+		}
 	}
 
 	void GameObject::ParseRigidBody(json data)
@@ -224,12 +257,52 @@ namespace ZXEngine
 		ZRigidBody* rigidBody = AddComponent<ZRigidBody>();
 
 		rigidBody->mUseGravity = data["UseGravity"];
-		rigidBody->mRigidBody->SetMass(data["Mass"]);
+
+		if (data["InfiniteMass"] == true)
+			rigidBody->mRigidBody->SetInverseMass(0.0f);
+		else
+			rigidBody->mRigidBody->SetMass(data["Mass"]);
 
 		float damping = data["Damping"];
 		rigidBody->mRigidBody->SetLinearDamping(1.0f - damping);
 
 		float angularDamping = data["AngularDamping"];
 		rigidBody->mRigidBody->SetAngularDamping(1.0f - angularDamping);
+
+		// 初始化刚体的位置和旋转
+		rigidBody->mRigidBody->SetPosition(GetComponent<Transform>()->GetPosition());
+		rigidBody->mRigidBody->SetRotation(GetComponent<Transform>()->GetRotation());
+
+		// 设置刚体的碰撞体和惯性张量(如果先解析Collider再解析RigidBody就会从这里设置)
+		if (mColliderType == PhysZ::ColliderType::Box)
+		{
+			auto boxCollider = GetComponent<BoxCollider>();
+			if (boxCollider)
+			{
+				boxCollider->mCollider->mRigidBody = rigidBody->mRigidBody;
+				rigidBody->mRigidBody->mCollisionVolume = boxCollider->mCollider;
+				rigidBody->mRigidBody->SetInertiaTensor(boxCollider->mCollider->GetInertiaTensor(rigidBody->mRigidBody->GetMass()));
+			}
+		}
+		else if (mColliderType == PhysZ::ColliderType::Plane)
+		{
+			auto planeCollider = GetComponent<PlaneCollider>();
+			if (planeCollider)
+			{
+				planeCollider->mCollider->mRigidBody = rigidBody->mRigidBody;
+				rigidBody->mRigidBody->mCollisionVolume = planeCollider->mCollider;
+				rigidBody->mRigidBody->SetInertiaTensor(planeCollider->mCollider->GetInertiaTensor(rigidBody->mRigidBody->GetMass()));
+			}
+		}
+		else if (mColliderType == PhysZ::ColliderType::Sphere)
+		{
+			auto sphereCollider = GetComponent<SphereCollider>();
+			if (sphereCollider)
+			{
+				sphereCollider->mCollider->mRigidBody = rigidBody->mRigidBody;
+				rigidBody->mRigidBody->mCollisionVolume = sphereCollider->mCollider;
+				rigidBody->mRigidBody->SetInertiaTensor(sphereCollider->mCollider->GetInertiaTensor(rigidBody->mRigidBody->GetMass()));
+			}
+		}
 	}
 }
