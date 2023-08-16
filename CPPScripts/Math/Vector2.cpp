@@ -75,7 +75,7 @@ namespace ZXEngine
 
 	std::string Vector2::ToString() const
 	{
-		return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
+		return "Vector2(" + std::to_string(x) + ", " + std::to_string(y) + ")";
 	}
 
 	float Vector2::GetMagnitude() const

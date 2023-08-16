@@ -99,7 +99,7 @@ namespace ZXEngine
 
 	std::string Vector3::ToString() const
 	{
-		return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ")";
+		return "Vector3(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ")";
 	}
 
 	float Vector3::GetMagnitude() const

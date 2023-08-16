@@ -142,7 +142,7 @@ namespace ZXEngine
 
 	std::string Vector4::ToString() const
 	{
-		return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ", " + std::to_string(w) + ")";
+		return "Vector4(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ", " + std::to_string(w) + ")";
 	}
 
 	float Vector4::GetMagnitude() const

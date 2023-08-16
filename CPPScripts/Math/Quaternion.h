@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 namespace ZXEngine
 {
@@ -38,6 +39,7 @@ namespace ZXEngine
 		void RotateByVector(const Vector3& rotation, float scale = 1.0f);
 
 		Matrix4 ToMatrix() const;
+		std::string ToString() const;
 
 		bool operator== (const Quaternion& q) const;
 		bool operator!= (const Quaternion& q) const;

@@ -112,14 +112,13 @@ namespace ZXEngine
 		array[12] = m03; array[13] = m13; array[14] = m23; array[15] = m33;
 	}
 
-	std::string Matrix4::ToString()
+	std::string Matrix4::ToString() const
 	{
-		return "\n" +
-			std::to_string(m00) + ", " + std::to_string(m01) + ", " + std::to_string(m02) + ", " + std::to_string(m03) + "\n" +
-			std::to_string(m10) + ", " + std::to_string(m11) + ", " + std::to_string(m12) + ", " + std::to_string(m13) + "\n" +
-			std::to_string(m20) + ", " + std::to_string(m21) + ", " + std::to_string(m22) + ", " + std::to_string(m23) + "\n" +
-			std::to_string(m30) + ", " + std::to_string(m31) + ", " + std::to_string(m32) + ", " + std::to_string(m33) + "\n" +
-			+"\n";
+		return "\n"
+			+ std::to_string(m00) + ", " + std::to_string(m01) + ", " + std::to_string(m02) + ", " + std::to_string(m03) + "\n"
+			+ std::to_string(m10) + ", " + std::to_string(m11) + ", " + std::to_string(m12) + ", " + std::to_string(m13) + "\n"
+			+ std::to_string(m20) + ", " + std::to_string(m21) + ", " + std::to_string(m22) + ", " + std::to_string(m23) + "\n"
+			+ std::to_string(m30) + ", " + std::to_string(m31) + ", " + std::to_string(m32) + ", " + std::to_string(m33) + "\n";
 	}
 
 	Matrix4& Matrix4::operator= (const Matrix4& mat)

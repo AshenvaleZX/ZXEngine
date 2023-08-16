@@ -28,7 +28,7 @@ namespace ZXEngine
 		void ToRowMajorArray(float* array) const;
 		void ToColumnMajorArray(float* array) const;
 
-		std::string ToString();
+		std::string ToString() const;
 
 		Matrix3& operator= (const Matrix3& mat);
 		bool operator== (const Matrix3& mat) const;

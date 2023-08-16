@@ -103,13 +103,12 @@ namespace ZXEngine
 		array[6] = m02; array[7] = m12; array[8] = m22;
 	}
 
-	std::string Matrix3::ToString()
+	std::string Matrix3::ToString() const
 	{
-		return "\n" +
-			std::to_string(m00) + ", " + std::to_string(m01) + ", " + std::to_string(m02) + "\n" +
-			std::to_string(m10) + ", " + std::to_string(m11) + ", " + std::to_string(m12) + "\n" +
-			std::to_string(m20) + ", " + std::to_string(m21) + ", " + std::to_string(m22) + "\n" +
-			+"\n";
+		return "\n"
+			+ std::to_string(m00) + ", " + std::to_string(m01) + ", " + std::to_string(m02) + "\n"
+			+ std::to_string(m10) + ", " + std::to_string(m11) + ", " + std::to_string(m12) + "\n"
+			+ std::to_string(m20) + ", " + std::to_string(m21) + ", " + std::to_string(m22) + "\n";
 	}
 
 	Matrix3& Matrix3::operator= (const Matrix3& mat)
