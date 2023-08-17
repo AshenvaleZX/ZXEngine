@@ -9,6 +9,66 @@ namespace ZXEngine
 {
 	namespace PhysZ
 	{
+		uint32_t CollisionDetector::Detect(const CollisionPrimitive* p1, const CollisionPrimitive* p2, CollisionData* data)
+		{
+			if (p1 == nullptr || p2 == nullptr || data == nullptr)
+				return 0;
+
+			auto type1 = p1->GetType();
+			auto type2 = p2->GetType();
+
+			if (type1 == ColliderType::Box && type2 == ColliderType::Box)
+			{
+				auto c1 = static_cast<const CollisionBox*>(p1);
+				auto c2 = static_cast<const CollisionBox*>(p2);
+				return Detect(*c1, *c2, data);
+			}
+			else if (type1 == ColliderType::Box && type2 == ColliderType::Sphere)
+			{
+				auto c1 = static_cast<const CollisionBox*>(p1);
+				auto c2 = static_cast<const CollisionSphere*>(p2);
+				return Detect(*c1, *c2, data);
+			}
+			else if (type1 == ColliderType::Sphere && type2 == ColliderType::Box)
+			{
+				auto c1 = static_cast<const CollisionSphere*>(p1);
+				auto c2 = static_cast<const CollisionBox*>(p2);
+				return Detect(*c2, *c1, data);
+			}
+			else if (type1 == ColliderType::Sphere && type2 == ColliderType::Sphere)
+			{
+				auto c1 = static_cast<const CollisionSphere*>(p1);
+				auto c2 = static_cast<const CollisionSphere*>(p2);
+				return Detect(*c1, *c2, data);
+			}
+			else if (type1 == ColliderType::Box && type2 == ColliderType::Plane)
+			{
+				auto c1 = static_cast<const CollisionBox*>(p1);
+				auto c2 = static_cast<const CollisionPlane*>(p2);
+				return Detect(*c1, *c2, data);
+			}
+			else if (type1 == ColliderType::Plane && type2 == ColliderType::Box)
+			{
+				auto c1 = static_cast<const CollisionPlane*>(p1);
+				auto c2 = static_cast<const CollisionBox*>(p2);
+				return Detect(*c2, *c1, data);
+			}
+			else if (type1 == ColliderType::Sphere && type2 == ColliderType::Plane)
+			{
+				auto c1 = static_cast<const CollisionSphere*>(p1);
+				auto c2 = static_cast<const CollisionPlane*>(p2);
+				return Detect(*c1, *c2, data);
+			}
+			else if (type1 == ColliderType::Plane && type2 == ColliderType::Sphere)
+			{
+				auto c1 = static_cast<const CollisionPlane*>(p1);
+				auto c2 = static_cast<const CollisionSphere*>(p2);
+				return Detect(*c2, *c1, data);
+			}
+
+			return 0;
+		}
+
 		// 用于辅助Box和Box的碰撞检测
 		// 基于分离轴算法，返回在某个轴上是否重叠，并更新最小重叠大小和对应的分离轴索引
 		static inline bool TryAxis(

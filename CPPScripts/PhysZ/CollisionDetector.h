@@ -9,9 +9,12 @@ namespace ZXEngine
 		class CollisionBox;
 		class CollisionPlane;
 		class CollisionSphere;
+		class CollisionPrimitive;
 		class CollisionDetector
 		{
 		public:
+			static uint32_t Detect(const CollisionPrimitive* p1, const CollisionPrimitive* p2, CollisionData* data);
+
 			static uint32_t Detect(const CollisionBox& box1, const CollisionBox& box2, CollisionData* data);
 			static uint32_t Detect(const CollisionBox& box, const CollisionSphere& sphere, CollisionData* data);
 			static uint32_t Detect(const CollisionSphere& sphere1, const CollisionSphere& sphere2, CollisionData* data);
