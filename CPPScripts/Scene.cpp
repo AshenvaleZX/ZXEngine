@@ -8,12 +8,13 @@
 #include "ProjectSetting.h"
 #include "RenderAPI.h"
 #include "PhysZ/PhysZ.h"
+#include "Time.h"
 
 namespace ZXEngine
 {
 	Scene::Scene(SceneStruct* sceneStruct)
 	{
-		mPhyScene = new PhysZ::PScene(1000);
+		mPhyScene = new PhysZ::PScene(1000, 1000);
 		skyBox = new CubeMap(sceneStruct->skyBox);
 		renderPipelineType = sceneStruct->renderPipelineType;
 
@@ -60,5 +61,12 @@ namespace ZXEngine
 
 			RenderEngine::GetInstance()->Render(camera);
 		}
+	}
+
+	void Scene::UpdatePhysics()
+	{
+		mPhyScene->BeginFrame();
+		mPhyScene->Update(Time::deltaTime);
+		mPhyScene->EndFrame();
 	}
 }

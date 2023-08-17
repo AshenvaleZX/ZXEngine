@@ -2,6 +2,8 @@
 #include "BVHNode.h"
 #include "Contact.h"
 #include "RigidBody.h"
+#include "CollisionData.h"
+#include "CollisionDetector.h"
 #include "ContactResolver.h"
 #include "BoundingVolume/BoundingSphere.h"
 #include "../GameObject.h"
@@ -12,34 +14,80 @@ namespace ZXEngine
 	{
 		PScene::PScene(uint32_t maxContacts, uint32_t iterations) 
 		{
-			mMaxContacts = maxContacts;
-			mContacts = new Contact[mMaxContacts];
+			mCollisionData = new CollisionData(1000);
 			mContactResolver = new ContactResolver(iterations);
+			mPotentialContacts = new PotentialContact[mMaxPotentialContacts];
 		};
 
 		PScene::~PScene() 
 		{
-			delete[] mContacts;
 			delete mContactResolver;
 		};
 
 		void PScene::BeginFrame()
 		{
-			for (auto rigidBody : mAllRigidBodies)
+			if (mBVHRoot == nullptr)
+				return;
+
+			// 重置碰撞数据
+			mCollisionData->Reset();
+
+			for (auto& iter : mAllRigidBodyGO)
 			{
 				// 清除刚体在上一帧累计的力和力矩
-				rigidBody->ClearAccumulators();
+				iter.second->ClearAccumulators();
 				// 更新刚体在这一帧的相关数据
-				rigidBody->CalculateDerivedData();
+				iter.second->CalculateDerivedData();
 			}
 		}
 
 		void PScene::Update(float deltaTime)
 		{
-			for (auto rigidBody : mAllRigidBodies)
+			if (mBVHRoot == nullptr)
+				return;
+
+			for (auto& iter : mAllRigidBodyGO)
 			{
 				// 更新刚体的位置和旋转
-				rigidBody->Integrate(deltaTime);
+				iter.second->Integrate(deltaTime);
+			}
+
+			// 生成潜在碰撞
+			uint32_t potentialContactCount = mBVHRoot->GetPotentialContacts(mPotentialContacts, mMaxPotentialContacts);
+			
+			// 从潜在碰撞中检测碰撞
+			uint32_t i = 0;
+			while (i < potentialContactCount)
+			{
+				uint32_t collisionCount = CollisionDetector::Detect(
+					mPotentialContacts[i].mRigidBodies[0]->mCollisionVolume, 
+					mPotentialContacts[i].mRigidBodies[1]->mCollisionVolume, 
+					mCollisionData
+				);
+				i++;
+			}
+
+			// 处理碰撞
+			mContactResolver->ResolveContacts(mCollisionData->mContactArray, mCollisionData->mCurContactCount, deltaTime);
+		}
+
+		void PScene::EndFrame()
+		{
+			if (mBVHRoot == nullptr)
+				return;
+
+			for (auto& iter : mAllRigidBodyGO)
+			{
+				auto transform = iter.first->GetComponent<Transform>();
+				transform->SetPosition(iter.second->GetPosition());
+				transform->SetRotation(iter.second->GetRotation());
+
+				// 更新BV的位置
+				if (iter.second->mBVHNode)
+				{
+					iter.second->mBVHNode->mBoundingVolume.mCenter = iter.second->GetPosition();
+					iter.second->mBVHNode->UpdateBoundingVolume();
+				}
 			}
 		}
 
@@ -49,7 +97,7 @@ namespace ZXEngine
 			auto rigidBody = rigidBodyComp ? rigidBodyComp->mRigidBody : nullptr;
 
 			if (rigidBody)
-				mAllRigidBodies.push_back(rigidBody);
+				mAllRigidBodyGO.push_back(pair(gameObject, rigidBody));
 
 			if (gameObject->mColliderType == PhysZ::ColliderType::Box)
 			{
@@ -99,7 +147,7 @@ namespace ZXEngine
 			if (mBVHRoot)
 				mBVHRoot->Insert(boundingVolume, rigidBody);
 			else
-				mBVHRoot = new BVHNode<BoundingSphere>(nullptr, boundingVolume, rigidBody);
+				mBVHRoot = new BVHNode(nullptr, boundingVolume, rigidBody);
 		}
 	}
 }

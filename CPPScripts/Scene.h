@@ -25,6 +25,7 @@ namespace ZXEngine
 		~Scene();
 
 		void Render();
+		void UpdatePhysics();
 
 	private:
 		PhysZ::PScene* mPhyScene;

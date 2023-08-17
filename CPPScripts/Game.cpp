@@ -61,10 +61,12 @@ namespace ZXEngine
 #ifdef ZX_EDITOR
 		if (EditorDataManager::isGameStart && !EditorDataManager::isGamePause)
 		{
+			SceneManager::GetInstance()->GetCurScene()->UpdatePhysics();
 			GameLogicManager::GetInstance()->Update();
 			ParticleSystemManager::GetInstance()->Update();
 		}
 #else
+		SceneManager::GetInstance()->GetCurScene()->UpdatePhysics();
 		GameLogicManager::GetInstance()->Update();
 		ParticleSystemManager::GetInstance()->Update();
 #endif
