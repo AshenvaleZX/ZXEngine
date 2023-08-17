@@ -1,0 +1,35 @@
+{
+    "Name": "Plane",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, -10, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [5, 1, 5]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Geometry": 4,
+            "Material": "Materials/CheckerBoard.zxmat",
+            "CastShadow": false,
+            "ReceiveShadow": true
+        },
+        {
+            "Type": "PlaneCollider",
+            "Friction": 0.4,
+            "Bounciness": 0,
+            "FrictionCombine": 0,
+            "BounceCombine": 0,
+            "Normal": [0, 1, 0],
+            "Distance": -10
+        },
+        {
+            "Type": "RigidBody",
+            "InfiniteMass": true,
+            "Damping": 0,
+            "AngularDamping": 0.05,
+            "UseGravity": false
+        }
+    ]
+}

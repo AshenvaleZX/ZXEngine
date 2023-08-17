@@ -1,0 +1,34 @@
+{
+    "Name": "Box",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 0, 0],
+            "Rotation": [0, 0, 45],
+            "Scale": [4, 2, 4]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Geometry": 0,
+            "Material": "Materials/BlinnPhongWhite.zxmat",
+            "CastShadow": true,
+            "ReceiveShadow": true
+        },
+        {
+            "Type": "BoxCollider",
+            "Friction": 0.4,
+            "Bounciness": 0,
+            "FrictionCombine": 0,
+            "BounceCombine": 0,
+            "Size": [4, 2, 4]
+        },
+        {
+            "Type": "RigidBody",
+            "Mass": 1,
+            "Damping": 0,
+            "AngularDamping": 0.05,
+            "UseGravity": true
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+{
+    "SkyBox": 
+    {
+        "Path": "Textures/BrightSky/",
+        "Right": "right.png",
+        "Left": "left.png",
+        "Up": "up.png",
+        "Down": "down.png",
+        "Front": "front.png",
+        "Back": "back.png"
+    },
+    "GameObjects": 
+    [
+        "Prefabs/PointLight.zxprefab",
+        "Prefabs/PhysZDemo/Box.zxprefab",
+        "Prefabs/PhysZDemo/Plane.zxprefab",
+        "Prefabs/MainCamera3.zxprefab",
+        "Prefabs/UI/FPSText.zxprefab"
+    ]
+}

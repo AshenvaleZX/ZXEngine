@@ -1,0 +1,19 @@
+{
+    "Type": "Material",
+    "Shader": "Shaders/CheckerBoard.zxshader",
+    "Float":
+    [
+        {
+            "UniformName": "_Scale",
+            "Value": 5
+        },
+        {
+            "UniformName": "_Ambient",
+            "Value": 0.25
+        },
+        {
+            "UniformName": "_Specular",
+            "Value": 0.1
+        }
+    ]
+}

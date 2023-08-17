@@ -61,6 +61,8 @@ Fragment
     {
         using ENGINE_Light_Pos
         using ENGINE_Camera_Pos
+        float _Ambient
+        float _Specular
         sampler2D _Texture1
     }
 
@@ -70,7 +72,7 @@ Fragment
         {           
             vec3 color = texture(_Texture1, TexCoords).rgb;
             // ambient
-            vec3 ambient = 0.15 * color;
+            vec3 ambient = _Ambient * color;
             // diffuse
             vec3 lightDir = normalize(ENGINE_Light_Pos - WorldPos);
             vec3 normal = normalize(Normal);
@@ -81,7 +83,7 @@ Fragment
             vec3 reflectDir = reflect(-lightDir, normal);
             vec3 halfwayDir = normalize(lightDir + viewDir);  
             float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
-            vec3 specular = to_vec3(1) * spec; // assuming bright white light color
+            vec3 specular = to_vec3(_Specular) * spec; // assuming bright white light color
 
             FragColor = vec4(ambient + diffuse + specular, 1.0);
         }

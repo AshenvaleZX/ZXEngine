@@ -5,18 +5,18 @@
     [
         {
             "UniformName": "_Ambient",
-            "Value": 0.15
+            "Value": 0.25
         },
         {
             "UniformName": "_Specular",
-            "Value": 1.0
+            "Value": 0.2
         }
     ],
     "Textures":
     [
         {
             "UniformName": "_Texture1",
-            "Path": "Textures/red.png"
+            "Path": "Textures/white.png"
         }
     ]
 }
