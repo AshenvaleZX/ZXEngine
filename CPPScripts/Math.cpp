@@ -286,7 +286,7 @@ namespace ZXEngine
 
 	float Math::Dot(const Vector3& left, const Vector3& right)
 	{
-		return left.x * right.x + left.y + right.y + left.z + right.z;
+		return left.x * right.x + left.y * right.y + left.z * right.z;
 	}
 
 	Vector3 Math::Cross(const Vector3& left, const Vector3& right)
