@@ -5,10 +5,13 @@ namespace ZXEngine
 {
 	namespace PhysZ
 	{
+		class BVHNode;
 		class CollisionPrimitive;
 		class RigidBody
 		{
 		public:
+			// 对应的BVH节点
+			BVHNode* mBVHNode = nullptr;
 			// 对应的碰撞体
 			CollisionPrimitive* mCollisionVolume = nullptr;
 

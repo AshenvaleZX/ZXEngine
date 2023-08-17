@@ -77,6 +77,10 @@ namespace ZXEngine
 		{
 			mTransform = mRotation.ToMatrix();
 			mTransform = Math::Translate(mTransform, mPosition);
+
+			// 如果有碰撞体，同步碰撞体的Transform
+			if (mCollisionVolume)
+				mCollisionVolume->mTransform = mTransform;
 		}
 
 		void RigidBody::UpdateWorldInertiaTensor()
