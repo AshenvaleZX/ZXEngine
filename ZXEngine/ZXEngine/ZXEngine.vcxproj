@@ -264,6 +264,7 @@
     <ClCompile Include="..\..\CPPScripts\Math\Vector4.cpp" />
     <ClCompile Include="..\..\CPPScripts\ParticleSystemManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\BoundingVolume\BoundingSphere.cpp" />
+    <ClCompile Include="..\..\CPPScripts\PhysZ\BVHNode.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\CollisionData.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\CollisionDetector.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\CollisionPrimitive.cpp" />
