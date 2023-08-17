@@ -5,6 +5,12 @@ namespace ZXEngine
 {
 	namespace PhysZ
 	{
+		Contact::Contact(RigidBody* rigidBody1, RigidBody* rigidBody2)
+		{
+			mRigidBodies[0] = rigidBody1;
+			mRigidBodies[1] = rigidBody2;
+		}
+
 		void Contact::SetRigidBodies(RigidBody* rigidBody1, RigidBody* rigidBody2)
 		{
 			mRigidBodies[0] = rigidBody1;

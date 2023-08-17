@@ -50,9 +50,9 @@ namespace ZXEngine
             return 1.33333333333f * Math::PI * mRadius * mRadius * mRadius;
         }
 
-        bool BoundingSphere::IsOverlapWith(const BoundingSphere* other) const
+        bool BoundingSphere::IsOverlapWith(const BoundingSphere& other) const
         {
-            return (mCenter - other->mCenter).GetMagnitudeSquared() <= (mRadius + other->mRadius) * (mRadius + other->mRadius);
+            return (mCenter - other.mCenter).GetMagnitudeSquared() <= (mRadius + other.mRadius) * (mRadius + other.mRadius);
         }
 
         float BoundingSphere::GetGrowth(const BoundingSphere& other) const
