@@ -26,6 +26,9 @@ namespace ZXEngine
 		void Normalize();
 		Quaternion GetInverse() const;
 
+		float GetMagnitude() const;
+		float GetMagnitudeSquare() const;
+
 		Vector3 GetEulerAngles() const;
 		void SetEulerAngles(float x, float y, float z);
 		void SetEulerAngles(const Vector3& eulerAngles);
@@ -46,9 +49,5 @@ namespace ZXEngine
 		Quaternion& operator= (const Quaternion& q);
 		Quaternion operator* (const Quaternion& q) const;
 		Quaternion& operator*= (const Quaternion& q);
-
-	private:
-		float Magnitude() const;
-		float MagnitudeSquare() const;
 	};
 }

@@ -64,7 +64,7 @@ namespace ZXEngine
 
 	void Quaternion::Normalize()
 	{
-		float sqrNorm = MagnitudeSquare();
+		float sqrNorm = GetMagnitudeSquare();
 		if (!Math::Approximately(sqrNorm, 0.f))
 		{
 			float normInverse = 1.0f / sqrtf(sqrNorm);
@@ -82,6 +82,15 @@ namespace ZXEngine
 		return Quaternion(-x, -y, -z, w);
 	}
 
+	float Quaternion::GetMagnitude() const
+	{
+		return sqrtf(GetMagnitudeSquare());
+	}
+
+	float Quaternion::GetMagnitudeSquare() const
+	{
+		return x * x + y * y + z * z + w * w;
+	}
 	Vector3 Quaternion::GetEulerAngles() const
 	{
 		// 参考: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
@@ -134,6 +143,7 @@ namespace ZXEngine
 		y += q.y * 0.5f;
 		z += q.z * 0.5f;
 		w += q.w * 0.5f;
+		Normalize();
 	}
 
 	Matrix4 Quaternion::ToMatrix() const
@@ -187,9 +197,9 @@ namespace ZXEngine
 	Quaternion Quaternion::operator* (const Quaternion& q) const
 	{
 		// 参考: https://www.mathworks.com/help/aeroblks/quaternionmultiplication.html
-		float qx =  q.x * w + q.y * z - q.z * y + q.w * x;
-		float qy = -q.x * z + q.y * w + q.z * x + q.w * y;
-		float qz =  q.x * y - q.y * x + q.z * w + q.w * z;
+		float qx =  q.x * w - q.y * z + q.z * y + q.w * x;
+		float qy =  q.x * z + q.y * w - q.z * x + q.w * y;
+		float qz = -q.x * y + q.y * x + q.z * w + q.w * z;
 		float qw = -q.x * x - q.y * y - q.z * z + q.w * w;
 		Quaternion result = Quaternion(qx, qy, qz, qw);
 		result.Normalize();
@@ -201,15 +211,5 @@ namespace ZXEngine
 		// 把this解引用再乘
 		*this = *this * q;
 		return *this;
-	}
-
-	float Quaternion::Magnitude() const
-	{
-		return sqrtf(MagnitudeSquare());
-	}
-
-	float Quaternion::MagnitudeSquare() const
-	{
-		return x * x + y * y + z * z + w * w;
 	}
 }
