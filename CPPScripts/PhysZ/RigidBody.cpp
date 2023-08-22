@@ -1,5 +1,4 @@
 #include "RigidBody.h"
-#include "PhysZEnumStruct.h"
 #include "CollisionPrimitive.h"
 
 namespace ZXEngine

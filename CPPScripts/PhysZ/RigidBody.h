@@ -1,5 +1,6 @@
 #pragma once
 #include "../pubh.h"
+#include "PhysZEnumStruct.h"
 
 namespace ZXEngine
 {
@@ -129,7 +130,7 @@ namespace ZXEngine
 			// 一般默认为true，某些特殊对象，比如玩家操控的，可能随时手动产生作用力的对象可以设置为false
 			bool mCanSleep = true;
 			// 刚体当前的运动量，包含线性速度和角速度，无实际物理意义，仅用于评估运动状态
-			float mMotion = 0.0f;
+			float mMotion = SleepMotionEpsilon * 2.0f;
 
 			void UpdateTransform();
 			void UpdateWorldInertiaTensor();
