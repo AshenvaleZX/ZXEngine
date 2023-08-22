@@ -40,7 +40,7 @@ namespace ZXEngine
 			mPosition += mVelocity * duration;
 
 			// 根据角速度更新旋转状态
-			mRotation.RotateByVector(mAngularVelocity, duration);
+			mRotation.Rotate(mAngularVelocity, duration);
 
 			// 更新其它数据
 			CalculateDerivedData();

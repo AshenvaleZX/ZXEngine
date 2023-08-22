@@ -189,7 +189,8 @@ namespace ZXEngine
 					// 调整刚体旋转(通过角运动远离另一个碰撞对象)
 					Quaternion q;
 					mRigidBodies[i]->GetRotation(q);
-					q.RotateByVector(angularChange[i]);
+					float magnitude = q.GetMagnitude();
+					q.Rotate(angularChange[i] / magnitude, magnitude);
 					mRigidBodies[i]->SetRotation(q);
 
 					// 如果刚体处于Sleep状态，手动调用接口更新相关数据

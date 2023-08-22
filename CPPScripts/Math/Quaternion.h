@@ -39,6 +39,8 @@ namespace ZXEngine
 		/// <param name="axis">旋转轴(必须是单位向量)</param>
 		/// <param name="angle">旋转角度(弧度制)</param>
 		void Rotate(const Vector3& axis, float angle);
+		// Cyclone引擎里用向量旋转四元数的接口，看不懂实现逻辑，运行起来也是错的，先暂时保留在这里当参考
+		// 实际PhysZ引擎里都改用了上面真正符合数学公式的Rotate接口
 		void RotateByVector(const Vector3& rotation, float scale = 1.0f);
 
 		Matrix4 ToMatrix() const;
