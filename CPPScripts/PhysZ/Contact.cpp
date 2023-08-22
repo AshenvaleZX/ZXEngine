@@ -273,28 +273,43 @@ namespace ZXEngine
 			// 然后这里就可以直接开始第二步，用逆惯性张量矩阵*角冲量得到一个角速度，即 w = I^-1 * Jt
 			// 在这里的意思就是，沿着三个基坐标轴的单位线性冲量带来的三个轴上的角速度变化
 			// x轴上的角速度变化在矩阵第一列，y轴在第二列，z轴在第三列
+			// 所以第二步应该是这样的：
+			// Matrix3 deltaVelocityWorld = inverseInertiaTensor[0] * impulseToTorque;
 			// 
-			// 这里在Cyclone引擎里本来是这样写的：
-			// Matrix3 deltaVelocityWorld = impulseToTorque * inverseInertiaTensor[0];
-			// 然后最后计算完后又 * -1，这里我改变了一下乘法顺序，就不用*-1了，而且和ResolvePenetration里的过程也更一致
-			// 这里之所以可以这样是因为impulseToTorque是一个斜对称矩阵，而惯性张量矩阵又是对称矩阵(实际上很多时候是对角矩阵)，惯性张量矩阵的逆矩阵也肯定是对称矩阵
-			// 这种情况下，假设斜对称矩阵为A，对称矩阵为B，那么 A * B = -(B * A)，所以Cyclone引擎里的实现和我这里的实现实际上是一样的
-			Matrix3 deltaVelocityWorld = inverseInertiaTensor[0] * impulseToTorque;
 			// 然后第三步，把角速度转换成线速度，这里同样是一次性算三个轴上的线速度
 			// 这里应该是三个轴上的角速度分别叉乘 mRelativeContactPosition[i]
 			// 三个轴上的角速度变化量已经在上一步的计算结果中了，即矩阵的第一二三列数据
 			// 这里直接 * impulseToTorque得到的矩阵的第一行就是x轴上的角速度变化量(即上一步算出来的矩阵的第一列)与mRelativeContactPosition[i]叉乘的结果
 			// 第二，三行分别是y轴，z轴上的角速度变化量与mRelativeContactPosition[i]叉乘的结果
 			// 所以这里的结果意思是，沿着三个基坐标轴的单位线性冲量带来的刚体旋转导致的当前碰撞点处在三个轴上的线性速度变化
-			deltaVelocityWorld *= impulseToTorque;
+			// 第三步应该是这样的：
+			// deltaVelocityWorld *= impulseToTorque;
+			// 
+			// 最终代码等于：
+			// Matrix3 deltaVelocityWorld = inverseInertiaTensor[0] * impulseToTorque * impulseToTorque;
+			// 
+			// 但是这个和Cyclone引擎里的代码不一样，并且运行出来会产生错误碰撞效果，所以这里最终实际代码还是参照了Cyclone引擎里的
+			// 然而我并没有理解Cyclone引擎里的代码为什么是这样的
+			// 本来我以为惯性张量矩阵是对称矩阵(设为A)，impulseToTorque是斜对称矩阵(设为B)，那么由矩阵性质可得 A * B = -(B * A)
+			// 所以Cyclone引擎的写法和我的写法是等价的，但是实际这里的惯性张量矩阵是被转换到了世界坐标系下的，所以不再是对称矩阵了
+			// 我的写法就不等价于Cyclone引擎里的了，而且我的写法错了，现在还没想通为什么要写成Cyclone引擎里的这个样子
+			Matrix3 deltaVelocityWorld = impulseToTorque * inverseInertiaTensor[0] * impulseToTorque * -1.0f;
+
+			// 
+			// 这里在Cyclone引擎里本来是这样写的：
+			// Matrix3 deltaVelocityWorld = impulseToTorque * inverseInertiaTensor[0];
+			// 然后最后计算完后又 * -1，这里我改变了一下乘法顺序，就不用*-1了，而且和ResolvePenetration里的过程也更一致
+			// 这里之所以可以这样是因为impulseToTorque是一个斜对称矩阵，而惯性张量矩阵又是对称矩阵(实际上很多时候是对角矩阵)，惯性张量矩阵的逆矩阵也肯定是对称矩阵
+			// 这种情况下，假设斜对称矩阵为A，对称矩阵为B，那么 A * B = -(B * A)，所以Cyclone引擎里的实现和我这里的实现实际上是一样的
+			//Matrix3 deltaVelocityWorld = inverseInertiaTensor[0] * impulseToTorque;
+
 
 			// 如果有第二个刚体，那么就把第二个刚体的速度变化也加进来
 			if (mRigidBodies[1])
 			{
 				impulseToTorque = Matrix3(mRelativeContactPosition[1]);
 
-				Matrix3 deltaVelocityWorld2 = inverseInertiaTensor[1] * impulseToTorque;
-				deltaVelocityWorld2 *= impulseToTorque;
+				Matrix3 deltaVelocityWorld2 = impulseToTorque * inverseInertiaTensor[1] * impulseToTorque * -1.0f;
 
 				// 把两个刚体的速度变化矩阵相加
 				deltaVelocityWorld += deltaVelocityWorld2;
