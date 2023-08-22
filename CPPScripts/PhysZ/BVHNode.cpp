@@ -106,7 +106,15 @@ namespace ZXEngine
 			if (IsLeaf() || limit == 0)
 				return 0;
 
-			return mChildren[0]->GetPotentialContactsWith(mChildren[1], contacts, limit);
+			uint32_t count = mChildren[0]->GetPotentialContactsWith(mChildren[1], contacts, limit);
+
+			if (limit > count)
+				count += mChildren[0]->GetPotentialContacts(contacts + count, limit - count);
+
+			if (limit > count)
+				count += mChildren[1]->GetPotentialContacts(contacts + count, limit - count);
+
+			return count;
 		}
 
 		uint32_t BVHNode::GetPotentialContactsWith(const BVHNode* other, PotentialContact* contacts, uint32_t limit) const
