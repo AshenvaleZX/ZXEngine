@@ -240,4 +240,12 @@ namespace ZXEngine
 
 		return Vector3(x, y, z);
 	}
+
+	Matrix3 operator* (float n, const Matrix3& mat)
+	{
+		return Matrix3(
+			mat.m00 * n, mat.m01 * n, mat.m02 * n,
+			mat.m10 * n, mat.m11 * n, mat.m12 * n,
+			mat.m20 * n, mat.m21 * n, mat.m22 * n);
+	}
 }

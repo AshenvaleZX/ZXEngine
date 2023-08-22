@@ -41,6 +41,7 @@ namespace ZXEngine
 		Matrix4& operator-= (const Matrix4& mat);
 		Matrix4& operator*= (const Matrix4& mat);
 		Vector4 operator* (const Vector4& v) const;
+		friend Matrix4 operator* (float n, const Matrix4& mat);
 
 	private:
 		// µÚÒ»ÐÐ

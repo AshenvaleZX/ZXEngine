@@ -43,6 +43,7 @@ namespace ZXEngine
 		Matrix3& operator-= (const Matrix3& mat);
 		Matrix3& operator*= (const Matrix3& mat);
 		Vector3 operator* (const Vector3& v) const;
+		friend Matrix3 operator* (float n, const Matrix3& mat);
 
 	private:
 		// µÚÒ»ÐÐ

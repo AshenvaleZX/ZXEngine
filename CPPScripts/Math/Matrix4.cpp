@@ -278,4 +278,13 @@ namespace ZXEngine
 
 		return Vector4(x, y, z, w);
 	}
+
+	Matrix4 operator* (float n, const Matrix4& mat)
+	{
+		return Matrix4(
+			mat.m00 * n, mat.m01 * n, mat.m02 * n, mat.m03 * n,
+			mat.m10 * n, mat.m11 * n, mat.m12 * n, mat.m13 * n,
+			mat.m20 * n, mat.m21 * n, mat.m22 * n, mat.m23 * n,
+			mat.m30 * n, mat.m31 * n, mat.m32 * n, mat.m33 * n);
+	}
 }

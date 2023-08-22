@@ -201,7 +201,7 @@ namespace ZXEngine
 		float qy =  q.x * z + q.y * w - q.z * x + q.w * y;
 		float qz = -q.x * y + q.y * x + q.z * w + q.w * z;
 		float qw = -q.x * x - q.y * y - q.z * z + q.w * w;
-		Quaternion result = Quaternion(qx, qy, qz, qw);
+		Quaternion result(qx, qy, qz, qw);
 		result.Normalize();
 		return result;
 	}
