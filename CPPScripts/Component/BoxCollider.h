@@ -15,5 +15,6 @@ namespace ZXEngine
 		~BoxCollider();
 
 		virtual ComponentType GetInsType();
+		virtual void SynchronizeData();
 	};
 }

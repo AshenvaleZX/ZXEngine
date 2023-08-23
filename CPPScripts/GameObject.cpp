@@ -195,6 +195,8 @@ namespace ZXEngine
 
 		boxCollider->mCollider->mHalfSize = Vector3(data["Size"][0] / 2.0f, data["Size"][1] / 2.0f, data["Size"][2] / 2.0f);
 
+		boxCollider->SynchronizeData();
+
 		// 设置刚体的碰撞体和惯性张量(如果先解析RigidBody再解析Collider就会从这里设置)
 		auto rigidBody = GetComponent<ZRigidBody>();
 		if (rigidBody)
@@ -219,6 +221,8 @@ namespace ZXEngine
 		planeCollider->mCollider->mNormal = Vector3(data["Normal"][0], data["Normal"][1], data["Normal"][2]);
 		planeCollider->mCollider->mDistance = data["Distance"];
 
+		planeCollider->SynchronizeData();
+
 		// 设置刚体的碰撞体和惯性张量(如果先解析RigidBody再解析Collider就会从这里设置)
 		auto rigidBody = GetComponent<ZRigidBody>();
 		if (rigidBody)
@@ -241,6 +245,8 @@ namespace ZXEngine
 		sphereCollider->mBounceCombine = data["BounceCombine"];
 
 		sphereCollider->mCollider->mRadius = data["Radius"];
+
+		sphereCollider->SynchronizeData();
 
 		// 设置刚体的碰撞体和惯性张量(如果先解析RigidBody再解析Collider就会从这里设置)
 		auto rigidBody = GetComponent<ZRigidBody>();

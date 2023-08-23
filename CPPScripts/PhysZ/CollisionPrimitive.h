@@ -16,6 +16,14 @@ namespace ZXEngine
 			Matrix4 mOffset;
 			// 碰撞体相对于世界的变换矩阵
 			Matrix4 mTransform;
+			// 摩擦系数
+			float mFriction = 0.4f;
+			// 回弹系数
+			float mBounciness = 0.0f;
+			// 摩擦系数组合方式
+			CombineType mFrictionCombine = CombineType::Average;
+			// 回弹系数组合方式
+			CombineType mBounceCombine = CombineType::Average;
 
 			virtual ~CollisionPrimitive();
 

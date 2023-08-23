@@ -21,4 +21,12 @@ namespace ZXEngine
 	{
 		return ComponentType::SphereCollider;
 	}
+
+	void SphereCollider::SynchronizeData()
+	{
+		mCollider->mFriction = mFriction;
+		mCollider->mBounciness = mBounciness;
+		mCollider->mFrictionCombine = mFrictionCombine;
+		mCollider->mBounceCombine = mBounceCombine;
+	}
 }

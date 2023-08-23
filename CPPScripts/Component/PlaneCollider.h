@@ -15,5 +15,6 @@ namespace ZXEngine
 		~PlaneCollider();
 
 		virtual ComponentType GetInsType();
+		virtual void SynchronizeData();
 	};
 }

@@ -19,10 +19,6 @@ namespace ZXEngine
 			uint32_t mContactsLeft;
 			// 碰撞数组当前大小
 			uint32_t mCurContactCount;
-			// 恢复系数
-			float mRestitution = 0.0f;
-			// 摩擦系数
-			float mFriction = 0.0f;
 
 			CollisionData(uint32_t maxContacts);
 			~CollisionData();

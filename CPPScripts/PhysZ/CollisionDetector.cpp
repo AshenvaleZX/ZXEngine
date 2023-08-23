@@ -140,8 +140,6 @@ namespace ZXEngine
 			contact->mContactPoint = box2.mTransform * vertex;
 			// 碰撞深度
 			contact->mPenetration = penetration;
-			contact->mRestitution = data->mRestitution;
-			contact->mFriction = data->mFriction;
 			contact->SetRigidBodies(box1.mRigidBody, box2.mRigidBody);
 		}
 
@@ -248,8 +246,6 @@ namespace ZXEngine
 				contact->mContactPoint = contactPoint;
 				// 碰撞深度
 				contact->mPenetration = penetration;
-				contact->mRestitution = data->mRestitution;
-				contact->mFriction = data->mFriction;
 				contact->SetRigidBodies(box1.mRigidBody, box2.mRigidBody);
 
 				data->AddContacts(1);
@@ -313,8 +309,6 @@ namespace ZXEngine
 			contact->mContactPoint = closestPoint;
 			// 碰撞深度
 			contact->mPenetration = sphere.mRadius - sqrtf(distance);
-			contact->mRestitution = data->mRestitution;
-			contact->mFriction = data->mFriction;
 			contact->SetRigidBodies(box.mRigidBody, sphere.mRigidBody);
 
 			data->AddContacts(1);
@@ -348,8 +342,6 @@ namespace ZXEngine
 			contact->mContactPoint = pos1 - contact->mContactNormal * sphere1.mRadius;
 			// 碰撞深度
 			contact->mPenetration = (sphere1.mRadius + sphere2.mRadius) - distance;
-			contact->mRestitution = data->mRestitution;
-			contact->mFriction = data->mFriction;
 			contact->SetRigidBodies(sphere1.mRigidBody, sphere2.mRigidBody);
 
 			data->AddContacts(1);
@@ -388,8 +380,6 @@ namespace ZXEngine
 					contact->mContactPoint = vertexPos + plane.mNormal * (plane.mDistance - distance);
 					// 碰撞深度(碰撞点到平面的距离)
 					contact->mPenetration = plane.mDistance - distance;
-					contact->mRestitution = data->mRestitution;
-					contact->mFriction = data->mFriction;
 					contact->SetRigidBodies(box.mRigidBody, nullptr);
 					
 					// 指针后移
@@ -451,8 +441,6 @@ namespace ZXEngine
 			contact->mContactPoint = pos - plane.mNormal * distance;
 			// 碰撞深度(碰撞点到平面的距离)
 			contact->mPenetration = penetration;
-			contact->mRestitution = data->mRestitution;
-			contact->mFriction = data->mFriction;
 			contact->SetRigidBodies(sphere.mRigidBody, nullptr);
 
 			data->AddContacts(1);
@@ -483,8 +471,6 @@ namespace ZXEngine
 			contact->mContactPoint = pos - plane.mNormal * (distance + sphere.mRadius);
 			// 碰撞深度(碰撞点到平面的距离)
 			contact->mPenetration = -distance;
-			contact->mRestitution = data->mRestitution;
-			contact->mFriction = data->mFriction;
 			contact->SetRigidBodies(sphere.mRigidBody, nullptr);
 
 			data->AddContacts(1);

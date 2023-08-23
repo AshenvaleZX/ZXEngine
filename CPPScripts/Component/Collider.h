@@ -16,5 +16,6 @@ namespace ZXEngine
 		PhysZ::CombineType mBounceCombine = PhysZ::CombineType::Average;
 
 		virtual ComponentType GetInsType();
+		virtual void SynchronizeData() = 0;
 	};
 }

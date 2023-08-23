@@ -1,5 +1,6 @@
 #include "Contact.h"
 #include "RigidBody.h"
+#include "CollisionPrimitive.h"
 
 namespace ZXEngine
 {
@@ -9,12 +10,33 @@ namespace ZXEngine
 		{
 			mRigidBodies[0] = rigidBody1;
 			mRigidBodies[1] = rigidBody2;
+			UpdateCoefficient();
 		}
 
 		void Contact::SetRigidBodies(RigidBody* rigidBody1, RigidBody* rigidBody2)
 		{
 			mRigidBodies[0] = rigidBody1;
 			mRigidBodies[1] = rigidBody2;
+			UpdateCoefficient();
+		}
+
+		void Contact::UpdateCoefficient()
+		{
+			if (mRigidBodies[0] && mRigidBodies[1])
+			{
+				mFriction = (mRigidBodies[0]->mCollisionVolume->mFriction + mRigidBodies[1]->mCollisionVolume->mFriction) * 0.5f;
+				mRestitution = (mRigidBodies[0]->mCollisionVolume->mBounciness + mRigidBodies[1]->mCollisionVolume->mBounciness) * 0.5f;
+			}
+			else if (mRigidBodies[0])
+			{
+				mFriction = mRigidBodies[0]->mCollisionVolume->mFriction;
+				mRestitution = mRigidBodies[0]->mCollisionVolume->mBounciness;
+			}
+			else if (mRigidBodies[1])
+			{
+				mFriction = mRigidBodies[1]->mCollisionVolume->mFriction;
+				mRestitution = mRigidBodies[1]->mCollisionVolume->mBounciness;
+			}
 		}
 
 		void Contact::SwapRigidBodies()

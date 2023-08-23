@@ -38,6 +38,8 @@ namespace ZXEngine
 			// 当前碰撞所产生的期望速度变化量(闭合速度在碰撞法线上的变化量)
 			float mDesiredDeltaVelocity = 0.0f;
 
+			// 更新摩擦系数和恢复系数
+			void UpdateCoefficient();
 			// 交换两个刚体，同时将碰撞法线取反(但是不会更新其它相关变量，如果需要更新手动调用UpdateInternalDatas)
 			void SwapRigidBodies();
 			// 更新碰撞中的刚体状态，如果其中一个刚体是Awake，另一个也必须Awake

@@ -21,4 +21,12 @@ namespace ZXEngine
 	{
 		return ComponentType::BoxCollider;
 	}
+
+	void BoxCollider::SynchronizeData()
+	{
+		mCollider->mFriction = mFriction;
+		mCollider->mBounciness = mBounciness;
+		mCollider->mFrictionCombine = mFrictionCombine;
+		mCollider->mBounceCombine = mBounceCombine;
+	}
 }
