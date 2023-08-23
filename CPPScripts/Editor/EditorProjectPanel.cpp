@@ -211,6 +211,7 @@ namespace ZXEngine
 
 		extTypeMap.insert(make_pair<string, AssetType>(".png",      AssetType::Texture           ));
 		extTypeMap.insert(make_pair<string, AssetType>(".tga",      AssetType::Texture           ));
+		extTypeMap.insert(make_pair<string, AssetType>(".jpg",      AssetType::Texture           ));
 
 		extTypeMap.insert(make_pair<string, AssetType>(".zxscene",  AssetType::Scene             ));
 
