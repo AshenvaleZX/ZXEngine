@@ -18,7 +18,7 @@
         {
             "Type": "PlaneCollider",
             "Friction": 0.4,
-            "Bounciness": 0,
+            "Bounciness": 0.2,
             "FrictionCombine": 0,
             "BounceCombine": 0,
             "Normal": [0, 1, 0],

@@ -1,27 +1,27 @@
 {
-    "Name": "Box",
+    "Name": "Sphere",
     "Components":
     [
         {
             "Type": "Transform",
-            "Position": [-1, 3, 0],
-            "Rotation": [0, 0, 45],
-            "Scale": [4, 2, 4]
+            "Position": [0, -3, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [4, 4, 4]
         },
         {
             "Type": "MeshRenderer",
-            "Geometry": 0,
+            "Geometry": 1,
             "Material": "Materials/BlinnPhongWood.zxmat",
             "CastShadow": true,
             "ReceiveShadow": true
         },
         {
-            "Type": "BoxCollider",
+            "Type": "SphereCollider",
             "Friction": 0.4,
-            "Bounciness": 0.2,
+            "Bounciness": 0.5,
             "FrictionCombine": 0,
             "BounceCombine": 0,
-            "Size": [4, 2, 4]
+            "Radius": 2
         },
         {
             "Type": "RigidBody",

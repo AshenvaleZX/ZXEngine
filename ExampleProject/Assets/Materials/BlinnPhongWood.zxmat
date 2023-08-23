@@ -1,6 +1,6 @@
 {
     "Type": "Material",
-    "Shader": "Shaders/BlinnPhong_PointLight.zxshader",
+    "Shader": "Shaders/BlinnPhong_PointL_S.zxshader",
     "Float":
     [
         {
@@ -9,14 +9,14 @@
         },
         {
             "UniformName": "_Specular",
-            "Value": 0.2
+            "Value": 0.1
         }
     ],
     "Textures":
     [
         {
             "UniformName": "_Texture1",
-            "Path": "Textures/white.png"
+            "Path": "Textures/wood.jpg"
         }
     ]
 }

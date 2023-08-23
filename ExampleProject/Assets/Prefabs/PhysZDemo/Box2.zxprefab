@@ -4,9 +4,9 @@
     [
         {
             "Type": "Transform",
-            "Position": [-1, 3, 0],
-            "Rotation": [0, 0, 45],
-            "Scale": [4, 2, 4]
+            "Position": [5, 0, 0],
+            "Rotation": [-45, 0, 0],
+            "Scale": [2, 2, 4]
         },
         {
             "Type": "MeshRenderer",
@@ -21,11 +21,11 @@
             "Bounciness": 0.2,
             "FrictionCombine": 0,
             "BounceCombine": 0,
-            "Size": [4, 2, 4]
+            "Size": [2, 2, 4]
         },
         {
             "Type": "RigidBody",
-            "Mass": 1,
+            "Mass": 0.5,
             "Damping": 0,
             "AngularDamping": 0.05,
             "UseGravity": true
