@@ -264,6 +264,11 @@ namespace ZXEngine
 
 		rigidBody->mUseGravity = data["UseGravity"];
 
+		// 添加重力加速度
+		// TODO: 这里暂时直接添加一个固定加速度模拟重力，后续如果要考虑弹簧链接等其它情况，应该需要统一使用作用力生成器来模拟重力
+		if (rigidBody->mUseGravity)
+			rigidBody->mRigidBody->SetAcceleration(Vector3(0.0f, -9.8f, 0.0f));
+
 		if (data["InfiniteMass"] == true)
 			rigidBody->mRigidBody->SetInverseMass(0.0f);
 		else
