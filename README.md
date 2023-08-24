@@ -1,8 +1,12 @@
 # ZXEngine
 
-这个项目是我个人为了学习游戏引擎技术创建的，目前同时支持Vulkan，DirectX 12和OpenGL。并且支持光线追踪渲染管线(基于Vulkan)。并且正在开发自研物理引擎PhysZ。
+这个项目是我个人为了学习游戏引擎技术创建的，目前同时支持Vulkan，DirectX 12和OpenGL。并且支持光线追踪渲染管线(基于Vulkan)。
 
-I created this project to learn and practice game engine technology, It now supports Vulkan, DirectX 12 and OpenGL.And it supports ray tracing rendering (Only based on Vulkan for now). And is developing my own physics engine PhysZ.
+I created this project to learn and practice game engine technology, It now supports Vulkan, DirectX 12 and OpenGL.And it supports ray tracing rendering (Only based on Vulkan for now).
+
+本引擎内置自研物理引擎PhysZ(改写自Cyclone引擎)，支持基本的刚体力学模拟。
+
+This engine has a built-in physics engine which I called it PhysZ (rewritten from the Cyclone engine), supports rigid body mechanics simulation.
 
 截图展示(介绍后面有更多展示):
 
@@ -66,7 +70,25 @@ The following is the code preview on the Inspector after clicking zxshader and L
 
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%206.png)
 
-## 引擎文件格式介绍 (Engine File format introduction)
+## PhysZ引擎简介(PhysZ Engine Introduction)
+
+先展示一下PhysZ引擎对刚体力学的模拟效果(GIF演示，截屏大小和帧率都有压缩):
+
+Here is a GIF of the simulation of rigid mechanics in PhysZ (the size and framerate of the screenshots are compressed):
+
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/PhysZ0.gif)
+
+使用PhysZ物理引擎只需要关心两个Component，Collider和Rigidbody。其中Collider目前提供了三种类型：BoxCollider，PlaneCollider和SphereCollider。下面是这两个Component在引擎里编辑器里的截图：
+
+Using the PhysZ engine involves only two Components, Collider and Rigidbody. Collider currently provides three types: BoxCollider, PlaneCollider and SphereCollider. The following are screenshots of these two Components in the editor in the engine:
+
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/PhysZ1.png)
+
+各参数作用顾名思义即可。其中Damping参数是模拟各种形式的阻尼效果的，Linear Damping和Angular Damping分别对应线性运动和角运动，数值为0代表无阻尼。
+
+The function of each parameter is just as the name implies. And the Damping parameter is used to simulate various forms of damping effects. Linear Damping and Angular Damping correspond to linear motion and angular motion respectively. A value of 0 represents no damping.
+
+## 引擎文件格式介绍 (Engine file format introduction)
 
 ### *.zxscene
 
