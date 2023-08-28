@@ -32,6 +32,6 @@ namespace ZXEngine
 		void CallGlobalFunction(const char* func, const char* msg);
 
 	private:
-		lua_State* L;
+		lua_State* L = nullptr;
 	};
 }

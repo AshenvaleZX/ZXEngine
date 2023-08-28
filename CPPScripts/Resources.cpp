@@ -2,24 +2,24 @@
 
 namespace ZXEngine
 {
-	string Resources::assetsPath;
-	const string Resources::builtInAssetsPath = "../../BuiltInAssets/";
+	string Resources::mAssetsPath;
+	const string Resources::mBuiltInAssetsPath = "../../BuiltInAssets/";
 	void Resources::SetAssetsPath(const string& path)
 	{
-		assetsPath = path;
+		mAssetsPath = path;
 	}
 	
 	string Resources::GetAssetsPath()
 	{
-		return assetsPath;
+		return mAssetsPath;
 	}
 
 	string Resources::GetAssetFullPath(const string& path, bool isBuiltIn)
 	{
 		if (isBuiltIn)
-			return builtInAssetsPath + path;
+			return mBuiltInAssetsPath + path;
 		else
-			return assetsPath + path;
+			return mAssetsPath + path;
 	}
 
 	string Resources::GetAssetLocalPath(const string& path)

@@ -61,6 +61,9 @@ namespace ZXEngine
 	class Resources
 	{
 	public:
+		// 内置资产路径
+		static const string mBuiltInAssetsPath;
+
 		Resources() {};
 		~Resources() {};
 
@@ -86,8 +89,7 @@ namespace ZXEngine
 
 
 	private:
-		static string assetsPath;
-		static const string builtInAssetsPath;
+		static string mAssetsPath;
 
 		static json GetAssetData(const string& path, bool isBuiltIn = false);
 		static PrefabStruct* ParsePrefab(json data);

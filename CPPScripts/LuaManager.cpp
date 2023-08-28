@@ -76,7 +76,7 @@ namespace ZXEngine
 
 	LuaManager::LuaManager()
 	{
-		InitLuaState();
+		// InitLuaState();
 	}
 
 	lua_State* LuaManager::GetState()
@@ -86,20 +86,31 @@ namespace ZXEngine
 
 	void LuaManager::InitLuaState()
 	{
-		L = luaL_newstate();  /* create state */
-		luaL_openlibs(L);  /* open standard libraries */
-		luaL_openMyLibs(L); /* 加载自定义库 */
+		L = luaL_newstate(); /* create state */
+		luaL_openlibs(L);    /* 加载标准库 */
+		luaL_openMyLibs(L);  /* 加载自定义库 */
+
+		// 将内置Lua源码的路径加入package.path
+		lua_getglobal(L, "package");
+		lua_getfield(L, -1, "path");         /* 获取package.path */
+		const char* cur_path = lua_tostring(L, -1);
+		string new_path(cur_path);
+		new_path += ";" + Resources::mBuiltInAssetsPath + "/Scripts/?.lua";
+		lua_pop(L, 1);                       /* 弹出原来的package.path */
+		lua_pushstring(L, new_path.c_str()); /* 压入新的package.path */
+		lua_setfield(L, -2, "path");         /* 对package.path赋值 */
+		lua_pop(L, 1);                       /* 弹出package库 */
 
 		// 执行Lua启动脚本
-		auto suc = luaL_dofile(L, Resources::GetAssetFullPath("Scripts/Init.lua").c_str());
+		auto suc = luaL_dofile(L, Resources::GetAssetFullPath("Scripts/Init.lua", true).c_str());
 		// 输出错误日志
 		if (suc != LUA_OK)
-			Debug::Log(lua_tostring(L, -1));
+			Debug::LogError(lua_tostring(L, -1));
 	}
 
 	void LuaManager::RestartLuaState()
 	{
-		lua_close(L);
+		if (L) lua_close(L);
 		InitLuaState();
 	}
 
