@@ -14,6 +14,7 @@
 #include "../Component/PlaneCollider.h"
 #include "../Component/SphereCollider.h"
 #include "../ZShader.h"
+#include "../Material.h"
 #include "../MaterialData.h"
 
 // 防止windows.h里的宏定义max和min影响到其它库里的相同字段
@@ -67,7 +68,7 @@ namespace ZXEngine
 					else if (type == ComponentType::MeshRenderer)
 					{
 						auto meshRenderer = static_cast<MeshRenderer*>(iter.second);
-						mat = meshRenderer->matetrial;
+						mat = meshRenderer->mMatetrial;
 						DrawMeshRenderer(meshRenderer);
 					}
 				}
@@ -221,20 +222,20 @@ namespace ZXEngine
 
 		ImGui::Text("Mesh            ");
 		ImGui::SameLine(); 
-		if (ImGui::Button(component->modelName.c_str()))
+		if (ImGui::Button(component->mModelName.c_str()))
 		{
 			Debug::Log("Click Mesh");
 		}
 		ImGui::Text("Material        ");
 		ImGui::SameLine(); 
-		if (ImGui::Button(component->matetrial->name.c_str()))
+		if (ImGui::Button(component->mMatetrial->name.c_str()))
 		{
 			Debug::Log("Click Material");
 		}
 		ImGui::Text("Cast Shadow     ");
-		ImGui::SameLine(); ImGui::Checkbox("##castShadow", &component->castShadow);
+		ImGui::SameLine(); ImGui::Checkbox("##castShadow", &component->mCastShadow);
 		ImGui::Text("Receive Shadow  ");
-		ImGui::SameLine(); ImGui::Checkbox("##receiveShadow", &component->receiveShadow);
+		ImGui::SameLine(); ImGui::Checkbox("##receiveShadow", &component->mReceiveShadow);
 	}
 
 	void EditorInspectorPanel::DrawCamera(Camera* component)
@@ -457,22 +458,22 @@ namespace ZXEngine
 
 		ImGui::Text("Vertices Num:");
 		ImGui::SameLine(120);
-		ImGui::Text(to_string(info->meshRenderer->verticesNum).c_str());
+		ImGui::Text(to_string(info->meshRenderer->mVerticesNum).c_str());
 
 		ImGui::Text("Triangles Num:");
 		ImGui::SameLine(120);
-		ImGui::Text(to_string(info->meshRenderer->trianglesNum).c_str());
+		ImGui::Text(to_string(info->meshRenderer->mTrianglesNum).c_str());
 
 		ImGui::Text("Bounds Size:");
 		ImGui::Text("          X:");
 		ImGui::SameLine(120);
-		ImGui::Text(to_string(info->meshRenderer->boundsSizeX).c_str());
+		ImGui::Text(to_string(info->meshRenderer->mAABBSizeX).c_str());
 		ImGui::Text("          Y:");
 		ImGui::SameLine(120);
-		ImGui::Text(to_string(info->meshRenderer->boundsSizeY).c_str());
+		ImGui::Text(to_string(info->meshRenderer->mAABBSizeY).c_str());
 		ImGui::Text("          Z:");
 		ImGui::SameLine(120);
-		ImGui::Text(to_string(info->meshRenderer->boundsSizeZ).c_str());
+		ImGui::Text(to_string(info->meshRenderer->mAABBSizeZ).c_str());
 	}
 
 	void EditorInspectorPanel::DrawBoxCollider(BoxCollider* component)

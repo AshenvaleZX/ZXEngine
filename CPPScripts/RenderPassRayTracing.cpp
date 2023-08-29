@@ -10,6 +10,8 @@
 #include "GlobalData.h"
 #include "CubeMap.h"
 #include "SceneManager.h"
+#include "Material.h"
+#include "StaticMesh.h"
 
 namespace ZXEngine
 {
@@ -41,10 +43,10 @@ namespace ZXEngine
 		// 遍历渲染队列，将所有mesh的VAO和材质数据推入光追管线
 		for (auto renderer : renderQueue->GetRenderers())
 		{
-			renderAPI->PushRayTracingMaterialData(renderer->matetrial);
-			for (auto mesh : renderer->meshes)
+			renderAPI->PushRayTracingMaterialData(renderer->mMatetrial);
+			for (auto mesh : renderer->mMeshes)
 			{
-				renderAPI->PushAccelerationStructure(mesh->VAO, renderer->matetrial->hitGroupIdx, renderer->matetrial->data->GetRTID(), renderer->GetTransform()->GetModelMatrix());
+				renderAPI->PushAccelerationStructure(mesh->VAO, renderer->mMatetrial->hitGroupIdx, renderer->mMatetrial->data->GetRTID(), renderer->GetTransform()->GetModelMatrix());
 			}
 		}
 

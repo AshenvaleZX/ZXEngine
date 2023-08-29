@@ -10,6 +10,8 @@
 #include "../RenderStateSetting.h"
 #include "../ZShader.h"
 #include "../RenderEngineProperties.h"
+#include "../Material.h"
+#include "../StaticMesh.h"
 
 namespace ZXEngine
 {
@@ -22,7 +24,7 @@ namespace ZXEngine
 		delete prefab;
 
 		materialSphere = new MeshRenderer();
-		materialSphere->GenerateGeometry(GeometryType::Sphere);
+		materialSphere->LoadModel(GeometryType::Sphere);
 
 		vector<string> cubeMapPath;
 		cubeMapPath.push_back(Resources::GetAssetFullPath("Textures/white.png", true));

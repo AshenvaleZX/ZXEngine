@@ -1,35 +1,33 @@
 #pragma once
 #include "Component.h"
-#include "../Material.h"
-#include "../StaticMesh.h"
-#include <assimp/scene.h>
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
+#include "../PublicStruct.h"
 
 namespace ZXEngine
 {
+	class Mesh;
+	class Material;
 	class MeshRenderer : public Component
 	{
 	public:
 		static ComponentType GetType();
 
 	public:
-		bool castShadow = false;
-		bool receiveShadow = false;
-		string modelName = "";
-		Material* matetrial = nullptr;
-		Material* shadowCastMaterial = nullptr;
-		size_t verticesNum = 0;
-		size_t trianglesNum = 0;
-		vector<Mesh*> meshes;
+		bool mCastShadow = false;
+		bool mReceiveShadow = false;
+		string mModelName = "";
+		Material* mMatetrial = nullptr;
+		Material* mShadowCastMaterial = nullptr;
+		size_t mVerticesNum = 0;
+		size_t mTrianglesNum = 0;
+		vector<Mesh*> mMeshes;
 		// 在xyz方向上最远的点，0-5分别对应+x, -x, +y, -y, +z, -z
-		Vertex extremeVertices[6];
+		array<Vertex, 6> mExtremeVertices;
 		// 模型在X轴上的长度
-		float boundsSizeX = 0.0f;
+		float mAABBSizeX = 0.0f;
 		// 模型在Y轴上的长度
-		float boundsSizeY = 0.0f;
+		float mAABBSizeY = 0.0f;
 		// 模型在Z轴上的长度
-		float boundsSizeZ = 0.0f;
+		float mAABBSizeZ = 0.0f;
 
 		MeshRenderer();
 		~MeshRenderer();
@@ -37,15 +35,10 @@ namespace ZXEngine
 		virtual ComponentType GetInsType();
 
 		void Draw();
-		// 使用ASSIMP加载模型文件
-		void LoadModel(string const& path);
-		// 算法生成几何体模型
-		void GenerateGeometry(GeometryType type);
+		void LoadModel(GeometryType type);
+		void LoadModel(const string& path);
 
 	private:
-		// Processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
-		void ProcessNode(aiNode* node, const aiScene* scene);
-		StaticMesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
-		void CheckExtremeVertex(const Vertex& vertex);
+		void UpdateInternalData();
 	};
 }

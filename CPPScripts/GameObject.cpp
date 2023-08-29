@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "Material.h"
 
 namespace ZXEngine
 {
@@ -91,8 +92,8 @@ namespace ZXEngine
 		MeshRenderer* meshRenderer = AddComponent<MeshRenderer>();
 		string p = "";
 
-		meshRenderer->castShadow = data["CastShadow"];
-		meshRenderer->receiveShadow = data["ReceiveShadow"];
+		meshRenderer->mCastShadow = data["CastShadow"];
+		meshRenderer->mReceiveShadow = data["ReceiveShadow"];
 
 		// ²ÄÖÊ
 		if (data["Material"].is_null())
@@ -103,18 +104,19 @@ namespace ZXEngine
 		{
 			p = Resources::JsonStrToString(data["Material"]);
 			MaterialStruct* matStruct = Resources::LoadMaterial(p);
-			meshRenderer->matetrial = new Material(matStruct);
+			meshRenderer->mMatetrial = new Material(matStruct);
 		}
 
 		// Mesh
 		if (!data["Geometry"].is_null())
 		{
-			meshRenderer->GenerateGeometry(data["Geometry"]);
+			GeometryType type = data["Geometry"];
+			meshRenderer->LoadModel(type);
 		}
 		else if (!data["Mesh"].is_null())
 		{
 			p = Resources::JsonStrToString(data["Mesh"]);
-			meshRenderer->modelName = Resources::GetAssetName(p);
+			meshRenderer->mModelName = Resources::GetAssetName(p);
 			p = Resources::GetAssetFullPath(p);
 			meshRenderer->LoadModel(p);
 		}

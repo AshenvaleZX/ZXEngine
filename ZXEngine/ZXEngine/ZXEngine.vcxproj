@@ -262,6 +262,7 @@
     <ClCompile Include="..\..\CPPScripts\Math\Vector2.cpp" />
     <ClCompile Include="..\..\CPPScripts\Math\Vector3.cpp" />
     <ClCompile Include="..\..\CPPScripts\Math\Vector4.cpp" />
+    <ClCompile Include="..\..\CPPScripts\ModelUtil.cpp" />
     <ClCompile Include="..\..\CPPScripts\ParticleSystemManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\BoundingVolume\BoundingSphere.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\BVHNode.cpp" />
@@ -420,6 +421,7 @@
     <ClInclude Include="..\..\CPPScripts\Math\Vector2.h" />
     <ClInclude Include="..\..\CPPScripts\Math\Vector3.h" />
     <ClInclude Include="..\..\CPPScripts\Math\Vector4.h" />
+    <ClInclude Include="..\..\CPPScripts\ModelUtil.h" />
     <ClInclude Include="..\..\CPPScripts\OpenGLEnumStruct.h" />
     <ClInclude Include="..\..\CPPScripts\ParticleSystemManager.h" />
     <ClInclude Include="..\..\CPPScripts\PhysZ\BoundingVolume\BoundingSphere.h" />

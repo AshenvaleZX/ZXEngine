@@ -46,7 +46,7 @@ namespace ZXEngine
 		uint32_t binding = 0;     // 在Vulkan中代表Uniform Buffer和纹理的layout binding，在D3D12中代表纹理的register(t)索引
 		uint32_t arrayLength = 0; // 属性数组长度
 		uint32_t arrayOffset = 0; // 如果是数组的话，一个属性在数组内的偏移量
-		ShaderPropertyType type;
+		ShaderPropertyType type = ShaderPropertyType::FLOAT;
 	};
 
 	struct ShaderPropertiesInfo

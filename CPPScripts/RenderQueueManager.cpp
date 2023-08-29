@@ -1,6 +1,7 @@
 #include "RenderQueueManager.h"
 #include "GameObject.h"
 #include "Component/MeshRenderer.h"
+#include "Material.h"
 
 namespace ZXEngine
 {
@@ -48,7 +49,7 @@ namespace ZXEngine
 
 	void RenderQueueManager::AddRenderer(MeshRenderer* meshRenderer)
 	{
-		int queue = meshRenderer->matetrial->GetRenderQueue();
+		int queue = meshRenderer->mMatetrial->GetRenderQueue();
 		auto renderQueue = this->GetRenderQueue(queue);
 		renderQueue->AddRenderer(meshRenderer);
 	}

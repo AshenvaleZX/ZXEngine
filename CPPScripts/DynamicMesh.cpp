@@ -18,8 +18,8 @@ namespace ZXEngine
 			return;
 		}
 
-		this->vertices = vertices;
-		this->indices = indices;
+		this->mVertices = vertices;
+		this->mIndices = indices;
 
 		RenderAPI::GetInstance()->UpdateDynamicMesh(VAO, vertices, indices);
 	}

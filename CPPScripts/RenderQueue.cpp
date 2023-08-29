@@ -1,7 +1,9 @@
 #include "RenderQueue.h"
 #include "GameObject.h"
+#include "StaticMesh.h"
 #include "ZShader.h"
 #include "ProjectSetting.h"
+#include "Material.h"
 
 namespace ZXEngine
 {
@@ -45,7 +47,7 @@ namespace ZXEngine
 	{
 		for (auto renderer : renderers)
 		{
-			batches[renderer->matetrial->shader->GetID()].push_back(renderer);
+			batches[renderer->mMatetrial->shader->GetID()].push_back(renderer);
 		}
 
 		// 动态合批
@@ -66,7 +68,7 @@ namespace ZXEngine
 		// 这里接受的参数是相同Shader的对象，再按材质分组
 		map<string, RendererList> matMap;
 		for (auto renderer : batchRenderers)
-			matMap[renderer->matetrial->path].push_back(renderer);
+			matMap[renderer->mMatetrial->path].push_back(renderer);
 
 		RendererList newList;
 		for (auto& iter : matMap)
@@ -99,9 +101,9 @@ namespace ZXEngine
 		{
 			auto mat_M = renderer->GetTransform()->GetModelMatrix();
 			auto mat_M_IT = Math::Transpose(Math::Inverse(mat_M));
-			for (auto mesh : renderer->meshes)
+			for (auto mesh : renderer->mMeshes)
 			{
-				for (auto& vertex : mesh->vertices)
+				for (auto& vertex : mesh->mVertices)
 				{
 					Vertex newVertex;
 					newVertex.Position = mat_M * Vector4(vertex.Position, 1.0f);
@@ -112,21 +114,21 @@ namespace ZXEngine
 					newVertices.push_back(newVertex);
 				}
 
-				for (auto idx : mesh->indices)
+				for (auto idx : mesh->mIndices)
 					newIndices.push_back(idx + idxOffset);
 
-				idxOffset += (unsigned int)mesh->vertices.size();
+				idxOffset += (unsigned int)mesh->mVertices.size();
 			}
 		}
 
 		auto newMesh = new StaticMesh(newVertices, newIndices);
 		temporaryMeshPool.push_back(newMesh);
 		auto newMeshRenderer = GetTemporaryRenderer();
-		newMeshRenderer->matetrial = batchRenderers[0]->matetrial;
-		newMeshRenderer->receiveShadow = batchRenderers[0]->receiveShadow;
+		newMeshRenderer->mMatetrial = batchRenderers[0]->mMatetrial;
+		newMeshRenderer->mReceiveShadow = batchRenderers[0]->mReceiveShadow;
 		// 之前可能有数据，先清掉
-		newMeshRenderer->meshes.clear();
-		newMeshRenderer->meshes.push_back(newMesh);
+		newMeshRenderer->mMeshes.clear();
+		newMeshRenderer->mMeshes.push_back(newMesh);
 
 		return newMeshRenderer;
 	}

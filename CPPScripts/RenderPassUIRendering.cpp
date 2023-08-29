@@ -4,6 +4,7 @@
 #include "Component/UITextureRenderer.h"
 #include "RenderQueueManager.h"
 #include "GameObject.h"
+#include "RenderAPI.h"
 
 namespace ZXEngine
 {

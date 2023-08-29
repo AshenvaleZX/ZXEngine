@@ -14,6 +14,7 @@
 #include "RenderStateSetting.h"
 #include "RenderEngineProperties.h"
 #include "MaterialData.h"
+#include "StaticMesh.h"
 
 namespace ZXEngine
 {
@@ -84,12 +85,12 @@ namespace ZXEngine
 	{
 		for (auto& batch : batchs)
 		{
-			auto shader = batch.second[0]->matetrial->shader;
+			auto shader = batch.second[0]->mMatetrial->shader;
 			shader->Use();
 
 			for (auto renderer : batch.second)
 			{
-				auto material = renderer->matetrial;
+				auto material = renderer->mMatetrial;
 				material->SetMaterialProperties();
 
 				RenderEngineProperties::GetInstance()->SetRendererProperties(renderer);

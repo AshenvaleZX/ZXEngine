@@ -9,6 +9,7 @@
 #include "Component/MeshRenderer.h"
 #include "GlobalData.h"
 #include "RenderStateSetting.h"
+#include "Material.h"
 #include "MaterialData.h"
 
 namespace ZXEngine
@@ -87,19 +88,19 @@ namespace ZXEngine
 		for (auto renderer : renderQueue->GetRenderers())
 		{
 			// 跳过不投射阴影的物体
-			if (!renderer->castShadow)
+			if (!renderer->mCastShadow)
 				continue;
 
-			if (renderer->shadowCastMaterial == nullptr)
-				renderer->shadowCastMaterial = new Material(shadowCubeMapShader);
+			if (renderer->mShadowCastMaterial == nullptr)
+				renderer->mShadowCastMaterial = new Material(shadowCubeMapShader);
 
-			renderer->shadowCastMaterial->Use();
+			renderer->mShadowCastMaterial->Use();
 			Matrix4 mat_M = renderer->GetTransform()->GetModelMatrix();
-			renderer->shadowCastMaterial->SetMatrix("ENGINE_Model", mat_M);
+			renderer->mShadowCastMaterial->SetMatrix("ENGINE_Model", mat_M);
 			for (unsigned int i = 0; i < 6; ++i)
-				renderer->shadowCastMaterial->SetMatrix("_ShadowMatrices", shadowTransforms[i], i);
-			renderer->shadowCastMaterial->SetScalar("_FarPlane", GlobalData::shadowCubeMapFarPlane);
-			renderer->shadowCastMaterial->SetVector("_LightPos", lightPos);
+				renderer->mShadowCastMaterial->SetMatrix("_ShadowMatrices", shadowTransforms[i], i);
+			renderer->mShadowCastMaterial->SetScalar("_FarPlane", GlobalData::shadowCubeMapFarPlane);
+			renderer->mShadowCastMaterial->SetVector("_LightPos", lightPos);
 
 			renderer->Draw();
 		}

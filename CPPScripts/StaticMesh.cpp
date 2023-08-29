@@ -4,8 +4,8 @@ namespace ZXEngine
 {
 	StaticMesh::StaticMesh(vector<Vertex> vertices, vector<unsigned int> indices)
 	{
-		this->vertices = vertices;
-		this->indices = indices;
+		this->mVertices = vertices;
+		this->mIndices = indices;
 
 		RenderAPI::GetInstance()->SetUpStaticMesh(VAO, vertices, indices);
 	}
