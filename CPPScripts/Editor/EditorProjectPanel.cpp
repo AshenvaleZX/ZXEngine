@@ -216,12 +216,12 @@ namespace ZXEngine
 		extTypeMap.insert(make_pair<string, AssetType>(".zxscene",  AssetType::Scene             ));
 
 		extTypeMap.insert(make_pair<string, AssetType>(".obj",      AssetType::Model             ));
-		extTypeMap.insert(make_pair<string, AssetType>(".FBX",      AssetType::Model             ));
+		extTypeMap.insert(make_pair<string, AssetType>(".fbx",      AssetType::Model             ));
 	}
 
-	AssetType EditorProjectPanel::GetAssetType(string extension)
+	AssetType EditorProjectPanel::GetAssetType(const string& extension)
 	{
-		auto iter = extTypeMap.find(extension);
+		auto iter = extTypeMap.find(Utils::StringToLower(extension));
 		if (iter == extTypeMap.end())
 			return AssetType::Other;
 		else

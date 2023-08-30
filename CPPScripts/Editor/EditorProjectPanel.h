@@ -23,7 +23,7 @@ namespace ZXEngine
 
 		unordered_map<string, AssetType> extTypeMap;
 		void InitAssetType();
-		AssetType GetAssetType(string extension);
+		AssetType GetAssetType(const string& extension);
 
 		// 文件名大小
 		const ImVec2 nameSize = ImVec2(72.0f, 20.0f);

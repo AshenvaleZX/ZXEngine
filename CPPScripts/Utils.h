@@ -1,13 +1,20 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <algorithm>
 
 namespace ZXEngine
 {
 	class Utils
 	{
 	public:
+		// 字符串转换为小写
+		static inline std::string StringToLower(const std::string& str);
+		// 字符串转换为大写
+		static inline std::string StringToUpper(const std::string& str);
+		// 字符串分割
 		static std::vector<std::string> StringSplit(const std::string& oriStr, char p);
+		// 提取字符串中的所有单词
 		static std::vector<std::string> ExtractWords(const std::string& str);
 		// 是否为合法单词字符
 		static bool IsValidWordChar(char c);
@@ -21,6 +28,28 @@ namespace ZXEngine
 		static void GetNextStringBlockPos(std::string& oriStr, size_t offset, char sChar, char eChar, size_t& sPos, size_t& ePos);
 		// 字符串拼接
 		static std::string ConcatenateStrings(const std::vector<std::string>& strings);
-		static std::string ConvertPathToWindowsFormat(std::string path);
+		// 路径转换为Windows格式
+		static inline std::string ConvertPathToWindowsFormat(const std::string path);
 	};
+
+	std::string Utils::StringToLower(const std::string& str)
+	{
+		std::string res = str;
+		std::transform(res.begin(), res.end(), res.begin(), ::tolower);
+		return res;
+	}
+
+	std::string Utils::StringToUpper(const std::string& str)
+	{
+		std::string res = str;
+		std::transform(res.begin(), res.end(), res.begin(), ::toupper);
+		return res;
+	}
+
+	std::string Utils::ConvertPathToWindowsFormat(const std::string path)
+	{
+		std::string res = path;
+		std::replace(res.begin(), res.end(), '/', '\\');
+		return res;
+	}
 }
