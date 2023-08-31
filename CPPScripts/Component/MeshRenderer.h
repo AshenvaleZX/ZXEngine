@@ -14,12 +14,19 @@ namespace ZXEngine
 	public:
 		bool mCastShadow = false;
 		bool mReceiveShadow = false;
+
 		string mModelName = "";
+
 		Material* mMatetrial = nullptr;
 		Material* mShadowCastMaterial = nullptr;
+
 		size_t mVerticesNum = 0;
 		size_t mTrianglesNum = 0;
 		vector<Mesh*> mMeshes;
+
+		// 模型骨骼根节点
+		BoneNode* mRootBone = nullptr;
+
 		// 在xyz方向上最远的点，0-5分别对应+x, -x, +y, -y, +z, -z
 		array<Vertex, 6> mExtremeVertices;
 		// 模型在X轴上的长度

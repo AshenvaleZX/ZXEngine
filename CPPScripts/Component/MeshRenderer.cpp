@@ -45,7 +45,7 @@ namespace ZXEngine
 
     void MeshRenderer::LoadModel(const string& path)
     {
-        mMeshes = ModelUtil::LoadModel(path);
+        ModelUtil::LoadModel(path, this);
         UpdateInternalData();
     }
 

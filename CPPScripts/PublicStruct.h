@@ -36,6 +36,13 @@ namespace ZXEngine
 		}
 	};
 
+	struct BoneNode
+	{
+		string name;
+		Matrix4 transform;
+		vector<BoneNode*> children;
+	};
+
 	struct BoneInfo
 	{
 		Matrix4 offset;
