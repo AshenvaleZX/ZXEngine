@@ -241,6 +241,8 @@ namespace ZXEngine
 		// XZ平面上每一圈的弧度增量
 		float dTheta = Math::PIx2 / sliceCount;
 
+		// 临时变量，用于计算切线
+		Vector3 bitangent;
 		// 从下到上计算每一圈的顶点
 		for (uint32_t i = 0; i < ringCount; i++)
 		{
@@ -264,9 +266,9 @@ namespace ZXEngine
 				vertex.Tangent = { -s, 0.0f, c };
 
 				float dr = bottomRadius - topRadius;
-				vertex.Bitangent = { dr * c, -height, dr * s };
+				bitangent = { dr * c, -height, dr * s };
 
-				vertex.Normal = Math::Cross(vertex.Tangent, vertex.Bitangent);
+				vertex.Normal = Math::Cross(vertex.Tangent, bitangent);
 
 				vertices.push_back(vertex);
 			}
@@ -467,15 +469,11 @@ namespace ZXEngine
 		auto& t0 = v0.Tangent;
 		auto& t1 = v1.Tangent;
 
-		auto& b0 = v0.Bitangent;
-		auto& b1 = v1.Bitangent;
-
 		Vertex v = {};
 		v.Position  =  0.5f * (p0 + p1);
 		v.TexCoords =  0.5f * (c0 + c1);
 		v.Normal    = (0.5f * (n0 + n1)).GetNormalized();
 		v.Tangent   = (0.5f * (t0 + t1)).GetNormalized();
-		v.Bitangent = (0.5f * (b0 + b1)).GetNormalized();
 
 		return v;
 	}

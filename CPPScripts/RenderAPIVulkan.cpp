@@ -1091,7 +1091,7 @@ namespace ZXEngine
         vmaDestroyBuffer(vmaAllocator, vertexStagingBuffer, vertexStagingBufferAlloc);
 
         // ----------------------------------------------- Index Buffer -----------------------------------------------
-        VkDeviceSize indexBufferSize = sizeof(unsigned int) * indices.size();
+        VkDeviceSize indexBufferSize = sizeof(uint32_t) * indices.size();
 
         // 建立StagingBuffer
         VkBufferCreateInfo indexStagingBufferInfo = {};
@@ -1111,7 +1111,7 @@ namespace ZXEngine
         // 拷贝数据到StagingBuffer
         void* indexData;
         vmaMapMemory(vmaAllocator, indexStagingBufferAlloc, &indexData);
-        memcpy(indexData, indices.data(), indices.size() * sizeof(unsigned int));
+        memcpy(indexData, indices.data(), indices.size() * sizeof(uint32_t));
         vmaUnmapMemory(vmaAllocator, indexStagingBufferAlloc);
 
         // 建立IndexBuffer
@@ -1185,7 +1185,7 @@ namespace ZXEngine
         vmaMapMemory(vmaAllocator, meshBuffer->vertexBufferAlloc, &meshBuffer->vertexBufferAddress);
 
         // IndexBuffer
-        VkDeviceSize indexBufferSize = sizeof(unsigned int) * indexSize;
+        VkDeviceSize indexBufferSize = sizeof(uint32_t) * indexSize;
 
         VkBufferCreateInfo indexBufferInfo = {};
         indexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -1204,7 +1204,7 @@ namespace ZXEngine
         auto meshBuffer = GetVAOByIndex(VAO);
 
         memcpy(meshBuffer->vertexBufferAddress, vertices.data(), vertices.size() * sizeof(Vertex));
-        memcpy(meshBuffer->indexBufferAddress, indices.data(), indices.size() * sizeof(unsigned int));
+        memcpy(meshBuffer->indexBufferAddress, indices.data(), indices.size() * sizeof(uint32_t));
     }
 
     void RenderAPIVulkan::GenerateParticleMesh(unsigned int& VAO)
@@ -4259,7 +4259,7 @@ namespace ZXEngine
         bindingDescription.binding = 0;
         bindingDescription.stride = sizeof(Vertex);
         bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-        array<VkVertexInputAttributeDescription, 5> attributeDescriptions = {};
+        array<VkVertexInputAttributeDescription, 6> attributeDescriptions = {};
         attributeDescriptions[0].binding = 0;
         attributeDescriptions[0].location = 0;
         attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
@@ -4278,8 +4278,12 @@ namespace ZXEngine
         attributeDescriptions[3].offset = offsetof(Vertex, Tangent);
         attributeDescriptions[4].binding = 0;
         attributeDescriptions[4].location = 4;
-        attributeDescriptions[4].format = VK_FORMAT_R32G32B32_SFLOAT;
-        attributeDescriptions[4].offset = offsetof(Vertex, Bitangent);
+        attributeDescriptions[4].format = VK_FORMAT_R32G32B32A32_SFLOAT;
+        attributeDescriptions[4].offset = offsetof(Vertex, Weights);
+        attributeDescriptions[5].binding = 0;
+        attributeDescriptions[5].location = 5;
+        attributeDescriptions[5].format = VK_FORMAT_R32G32B32A32_UINT;
+        attributeDescriptions[5].offset = offsetof(Vertex, BoneIDs);
         VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
         vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;

@@ -2,7 +2,7 @@
 
 namespace ZXEngine
 {
-	DynamicMesh::DynamicMesh(unsigned int vertexSize, unsigned int indexSize)
+	DynamicMesh::DynamicMesh(uint32_t vertexSize, uint32_t indexSize)
 	{
 		this->vertexSize = vertexSize;
 		this->indexSize = indexSize;
@@ -10,7 +10,7 @@ namespace ZXEngine
 		RenderAPI::GetInstance()->SetUpDynamicMesh(VAO, vertexSize, indexSize);
 	}
 
-	void DynamicMesh::UpdateData(vector<Vertex> vertices, vector<unsigned int> indices)
+	void DynamicMesh::UpdateData(const vector<Vertex>& vertices, const vector<uint32_t>& indices)
 	{
 		if (vertices.size() > vertexSize || indices.size() > indexSize)
 		{
@@ -18,8 +18,8 @@ namespace ZXEngine
 			return;
 		}
 
-		this->mVertices = vertices;
-		this->mIndices = indices;
+		mVertices = vertices;
+		mIndices = indices;
 
 		RenderAPI::GetInstance()->UpdateDynamicMesh(VAO, vertices, indices);
 	}

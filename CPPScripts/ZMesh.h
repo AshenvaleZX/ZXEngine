@@ -12,6 +12,11 @@ namespace ZXEngine
 		vector<Vertex> mVertices;
 		vector<uint32_t> mIndices;
 
+		// 骨骼数据数组
+		vector<BoneInfo> mBones;
+		// 骨骼名字到数组索引的映射
+		unordered_map<string, uint32_t> mBoneNameToIndexMap;
+
 		// 在xyz方向上最远的点，0-5分别对应+x, -x, +y, -y, +z, -z
 		array<Vertex, 6> mExtremeVertices;
 		// 模型在X轴上的长度

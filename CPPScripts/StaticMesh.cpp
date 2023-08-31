@@ -2,10 +2,10 @@
 
 namespace ZXEngine
 {
-	StaticMesh::StaticMesh(vector<Vertex> vertices, vector<unsigned int> indices)
+	StaticMesh::StaticMesh(const vector<Vertex>& vertices, const vector<uint32_t>& indices)
 	{
-		this->mVertices = vertices;
-		this->mIndices = indices;
+		mVertices = vertices;
+		mIndices = indices;
 
 		RenderAPI::GetInstance()->SetUpStaticMesh(VAO, vertices, indices);
 	}

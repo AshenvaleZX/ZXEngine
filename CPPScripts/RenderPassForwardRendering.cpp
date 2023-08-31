@@ -142,9 +142,6 @@ namespace ZXEngine
 		{
 			Vertex vertex;
 			vertex.Position = points[i];
-			vertex.Normal = Vector3(1);
-			vertex.Tangent = Vector3(1);
-			vertex.Bitangent = Vector3(1);
 			vertex.TexCoords = Vector2(1);
 			vertices.push_back(vertex);
 		}

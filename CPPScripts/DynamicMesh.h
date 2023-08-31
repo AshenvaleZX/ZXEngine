@@ -7,12 +7,12 @@ namespace ZXEngine
     class DynamicMesh : public Mesh
     {
     public:
-        DynamicMesh(unsigned int vertexSize, unsigned int indexSize);
+        DynamicMesh(uint32_t vertexSize, uint32_t indexSize);
 
-        void UpdateData(vector<Vertex> vertices, vector<unsigned int> indices);
+        void UpdateData(const vector<Vertex>& vertices, const vector<uint32_t>& indices);
 
     private:
-        unsigned int vertexSize;
-        unsigned int indexSize;
+        uint32_t vertexSize;
+        uint32_t indexSize;
     };
 }

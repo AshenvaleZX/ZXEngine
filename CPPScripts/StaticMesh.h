@@ -7,6 +7,6 @@ namespace ZXEngine
 	class StaticMesh : public Mesh
 	{
     public:
-        StaticMesh(vector<Vertex> vertices, vector<unsigned int> indices);
+        StaticMesh(const vector<Vertex>& vertices, const vector<uint32_t>& indices);
     };
 }

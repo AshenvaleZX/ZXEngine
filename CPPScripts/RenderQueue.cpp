@@ -109,7 +109,6 @@ namespace ZXEngine
 					newVertex.Position = mat_M * Vector4(vertex.Position, 1.0f);
 					newVertex.Normal = Matrix3(mat_M_IT) * vertex.Normal;
 					newVertex.Tangent = mat_M * Vector4(vertex.Tangent, 0.0f);
-					newVertex.Bitangent = mat_M * Vector4(vertex.Bitangent, 0.0f);
 					newVertex.TexCoords = vertex.TexCoords;
 					newVertices.push_back(newVertex);
 				}

@@ -4,6 +4,9 @@
 #include "Math.h"
 #include "PublicEnum.h"
 
+// 顶点最多关联4个骨骼
+#define MAX_NUM_BONES_PER_VERTEX 4
+
 using std::string;
 using std::vector;
 
@@ -15,7 +18,30 @@ namespace ZXEngine
 		Vector2 TexCoords = {};
 		Vector3 Normal    = {};
 		Vector3 Tangent   = {};
-		Vector3 Bitangent = {};
+		// 骨骼蒙皮数据
+		float    Weights[MAX_NUM_BONES_PER_VERTEX] = {};
+		uint32_t BoneIDs[MAX_NUM_BONES_PER_VERTEX] = {};
+
+		void AddBoneData(uint32_t boneID, float weight)
+		{
+			for (uint32_t i = 0; i < MAX_NUM_BONES_PER_VERTEX; i++)
+			{
+				if (Weights[i] == 0.0f)
+				{
+					BoneIDs[i] = boneID;
+					Weights[i] = weight;
+					return;
+				}
+			}
+		}
+	};
+
+	struct BoneInfo
+	{
+		Matrix4 offset;
+		Matrix4 curTransform;
+
+		BoneInfo(const Matrix4& offset) : offset(offset) {}
 	};
 
 	struct ClearInfo

@@ -97,9 +97,6 @@ namespace ZXEngine
 		{
 			Vertex vertex;
 			vertex.Position = points[i];
-			vertex.Normal = Vector3(1);
-			vertex.Tangent = Vector3(1);
-			vertex.Bitangent = Vector3(1);
 			vertex.TexCoords = coords[i];
 			vertices.push_back(vertex);
 		}

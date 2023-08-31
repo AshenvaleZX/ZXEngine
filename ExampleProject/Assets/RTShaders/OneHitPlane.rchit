@@ -19,7 +19,8 @@ struct Vertex
     vec2 TexCoords;
     vec3 Normal;
     vec3 Tangent;
-    vec3 Bitangent;
+    vec4 Weights;
+    ivec4 BoneIDs;
 };
 
 struct RendererDataReference
