@@ -41,6 +41,8 @@ namespace ZXEngine
 		string name;
 		Matrix4 transform;
 		vector<BoneNode*> children;
+
+		~BoneNode() { for (auto child : children) delete child; }
 	};
 
 	struct BoneInfo

@@ -6,6 +6,7 @@ namespace ZXEngine
 {
 	class Mesh;
 	class Material;
+	class AnimationController;
 	class MeshRenderer : public Component
 	{
 	public:
@@ -26,6 +27,9 @@ namespace ZXEngine
 
 		// 模型骨骼根节点
 		BoneNode* mRootBone = nullptr;
+
+		// 动画控制器
+		AnimationController* mAnimationController = nullptr;
 
 		// 在xyz方向上最远的点，0-5分别对应+x, -x, +y, -y, +z, -z
 		array<Vertex, 6> mExtremeVertices;

@@ -3,6 +3,7 @@
 #include "../RenderAPI.h"
 #include "../Material.h"
 #include "../ModelUtil.h"
+#include "../Animation/AnimationController.h"
 
 namespace ZXEngine
 {
@@ -19,6 +20,14 @@ namespace ZXEngine
     MeshRenderer::~MeshRenderer()
     {
         delete mMatetrial;
+        delete mShadowCastMaterial;
+
+        if (mRootBone)
+            delete mRootBone;
+
+        if (mAnimationController)
+            delete mAnimationController;
+
         for (auto mesh : mMeshes)
             delete mesh;
     }

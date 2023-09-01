@@ -58,6 +58,9 @@
     <Filter Include="PhysZ\BoundingVolume">
       <UniqueIdentifier>{6e684a37-a362-4568-987b-9098dcde4b77}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Animation">
+      <UniqueIdentifier>{4f78d138-d672-47a6-b1fe-9a8003edc545}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\CPPScripts\GameObject.cpp">
@@ -509,6 +512,15 @@
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\ModelUtil.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Animation\AnimationController.cpp">
+      <Filter>Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Animation\Animation.cpp">
+      <Filter>Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Animation\NodeAnimation.cpp">
+      <Filter>Animation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1003,6 +1015,15 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\ModelUtil.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Animation\AnimationController.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Animation\Animation.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Animation\NodeAnimation.h">
+      <Filter>Animation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
