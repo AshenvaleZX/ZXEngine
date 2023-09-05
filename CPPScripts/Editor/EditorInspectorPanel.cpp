@@ -65,6 +65,8 @@ namespace ZXEngine
 						DrawSphereCollider(static_cast<SphereCollider*>(iter.second));
 					else if (type == ComponentType::RigidBody)
 						DrawRigidBody(static_cast<ZRigidBody*>(iter.second));
+					else if (type == ComponentType::Animator)
+						DrawAnimator(static_cast<Animator*>(iter.second));
 					else if (type == ComponentType::MeshRenderer)
 					{
 						auto meshRenderer = static_cast<MeshRenderer*>(iter.second);
@@ -220,21 +222,21 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("MeshRenderer"))
 			return;
 
-		ImGui::Text("Mesh            ");
+		ImGui::Text("Mesh             ");
 		ImGui::SameLine(); 
 		if (ImGui::Button(component->mModelName.c_str()))
 		{
 			Debug::Log("Click Mesh");
 		}
-		ImGui::Text("Material        ");
+		ImGui::Text("Material         ");
 		ImGui::SameLine(); 
 		if (ImGui::Button(component->mMatetrial->name.c_str()))
 		{
 			Debug::Log("Click Material");
 		}
-		ImGui::Text("Cast Shadow     ");
+		ImGui::Text("Cast Shadow      ");
 		ImGui::SameLine(); ImGui::Checkbox("##castShadow", &component->mCastShadow);
-		ImGui::Text("Receive Shadow  ");
+		ImGui::Text("Receive Shadow   ");
 		ImGui::SameLine(); ImGui::Checkbox("##receiveShadow", &component->mReceiveShadow);
 	}
 
@@ -301,7 +303,7 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("GameLogic"))
 			return;
 
-		ImGui::Text("Lua Script    ");
+		ImGui::Text("Lua Script       ");
 		ImGui::SameLine();
 		if (ImGui::Button(component->luaName.c_str()))
 		{
@@ -352,28 +354,28 @@ namespace ZXEngine
 			return;
 
 		int particleNum = (int)component->particleNum;
-		ImGui::Text("ParticleNum ");
+		ImGui::Text("ParticleNum      ");
 		ImGui::SameLine(); ImGui::DragInt("##ParticleNum", &particleNum, 0.1f, 0, INT_MAX);
 
 		auto ImTextureMgr = ImGuiTextureManager::GetInstance();
 		uint32_t id = component->textureID;
 		if (!ImTextureMgr->CheckExistenceByEngineID(id))
 			ImTextureMgr->CreateFromEngineID(id);
-		ImGui::Text("Texture     ");
+		ImGui::Text("Texture          ");
 		ImGui::SameLine(); ImGui::Image(ImTextureMgr->GetImTextureIDByEngineID(id), ImVec2(50.0f, 50.0f));
 
 		float lifeTime = component->lifeTime;
-		ImGui::Text("LifeTime    ");
+		ImGui::Text("LifeTime         ");
 		ImGui::SameLine(); ImGui::DragFloat("##lifeTime", &lifeTime, 0.01f, 0.0f, FLT_MAX);
 
 		Vector3 velocity = component->velocity;
 		ImVec4 v = ImVec4(velocity.x, velocity.y, velocity.z, 1.0f);
-		ImGui::Text("Velocity    ");
+		ImGui::Text("Velocity         ");
 		ImGui::SameLine(); ImGui::DragFloat3("##velocity", (float*)&v, 0.01f, -FLT_MAX, FLT_MAX);
 
 		Vector3 offset = component->offset;
 		ImVec4 o = ImVec4(offset.x, offset.y, offset.z, 1.0f);
-		ImGui::Text("StartOffset ");
+		ImGui::Text("StartOffset      ");
 		ImGui::SameLine(); ImGui::DragFloat3("##offset", (float*)&o, 0.01f, -FLT_MAX, FLT_MAX);
 	}
 
@@ -685,5 +687,16 @@ namespace ZXEngine
 		bool useGravity = component->mUseGravity;
 		ImGui::Text("Use Gravity      ");
 		ImGui::SameLine(); ImGui::Checkbox("##useGravity", &useGravity);
+	}
+
+	void EditorInspectorPanel::DrawAnimator(Animator* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("Animator"))
+			return;
+
+		const string& avatarName = component->mAvatarName;
+		ImGui::Text("Avatar           ");
+		ImGui::SameLine(); ImGui::Text(avatarName.c_str());
 	}
 }

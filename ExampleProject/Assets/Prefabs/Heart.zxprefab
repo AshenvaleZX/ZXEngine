@@ -10,7 +10,7 @@
         },
         {
             "Type": "MeshRenderer",
-            "Mesh": "Models/12190_Heart_v1_L3.obj",
+            "Mesh": "Models/Crab.fbx",
             "Material": "Materials/BlinnPhong.zxmat",
             "CastShadow": true,
             "ReceiveShadow": false

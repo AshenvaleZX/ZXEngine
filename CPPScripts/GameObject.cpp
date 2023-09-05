@@ -1,5 +1,6 @@
 #include "GameObject.h"
 #include "Material.h"
+#include "ModelUtil.h"
 
 namespace ZXEngine
 {
@@ -66,6 +67,18 @@ namespace ZXEngine
 				delete static_cast<UITextureRenderer*>(iter.second);
 			else if (iter.first == ComponentType::ParticleSystem)
 				delete static_cast<ParticleSystem*>(iter.second);
+			else if (iter.first == ComponentType::BoxCollider)
+				delete static_cast<BoxCollider*>(iter.second);
+			else if (iter.first == ComponentType::PlaneCollider)
+				delete static_cast<PlaneCollider*>(iter.second);
+			else if (iter.first == ComponentType::SphereCollider)
+				delete static_cast<SphereCollider*>(iter.second);
+			else if (iter.first == ComponentType::RigidBody)
+				delete static_cast<ZRigidBody*>(iter.second);
+			else if (iter.first == ComponentType::Animator)
+				delete static_cast<Animator*>(iter.second);
+			else
+				Debug::LogError("Try delete undefined component type: %s", static_cast<int>(iter.first));
 		}
 
 		for (auto child : children)
@@ -111,14 +124,24 @@ namespace ZXEngine
 		if (!data["Geometry"].is_null())
 		{
 			GeometryType type = data["Geometry"];
-			meshRenderer->LoadModel(type);
+			meshRenderer->GenerateModel(type);
 		}
 		else if (!data["Mesh"].is_null())
 		{
 			p = Resources::JsonStrToString(data["Mesh"]);
 			meshRenderer->mModelName = Resources::GetAssetName(p);
 			p = Resources::GetAssetFullPath(p);
-			meshRenderer->LoadModel(p);
+
+			const ModelData& modelData = ModelUtil::LoadModel(p);
+			meshRenderer->SetMeshes(modelData.pMeshes);
+
+			if (modelData.pAnimationController)
+			{
+				Animator* animator = AddComponent<Animator>();
+				animator->mAvatarName = meshRenderer->mModelName + "Avatar";
+				animator->mRootBoneNode = modelData.pRootBoneNode;
+				animator->mAnimationController = modelData.pAnimationController;
+			}
 		}
 		else
 		{

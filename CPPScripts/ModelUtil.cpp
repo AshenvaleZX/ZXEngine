@@ -1,9 +1,7 @@
 #include "ModelUtil.h"
 #include "PublicStruct.h"
-#include "Material.h"
 #include "StaticMesh.h"
 #include "GeometryGenerator.h"
-#include "Component/MeshRenderer.h"
 #include "Animation/Animation.h"
 #include "Animation/NodeAnimation.h"
 #include "Animation/AnimationController.h"
@@ -75,8 +73,10 @@ namespace ZXEngine
         return GeometryTypeName.at(type);
     }
 
-    void ModelUtil::LoadModel(const string& path, MeshRenderer* pMeshRenderer)
+    ModelData ModelUtil::LoadModel(const string& path, bool loadAnim)
     {
+        ModelData modelData;
+
         // 用ASSIMP加载模型文件
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_FixInfacingNormals | aiProcess_FlipWindingOrder);
@@ -85,24 +85,34 @@ namespace ZXEngine
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
             Debug::LogError("ASSIMP: %s", importer.GetErrorString());
-            return;
+            return modelData;
         }
 
-        pMeshRenderer->mRootBone = new BoneNode();
+        // 处理动画数据
+        if (loadAnim)
+            modelData.pAnimationController = ProcessAnimation(scene);
 
         // 处理模型和骨骼数据
-        ProcessNode(scene->mRootNode, scene, pMeshRenderer, pMeshRenderer->mRootBone);
-        Matrix4 globalInverseTransform = Math::Inverse(aiMatrix4x4ToMatrix4(scene->mRootNode->mTransformation));
-        for (auto mesh : pMeshRenderer->mMeshes)
+        if (modelData.pAnimationController)
+        {
+            modelData.pRootBoneNode = new BoneNode();
+            ProcessNode(scene->mRootNode, scene, modelData, modelData.pRootBoneNode);
+            Matrix4 globalInverseTransform = Math::Inverse(aiMatrix4x4ToMatrix4(scene->mRootNode->mTransformation));
+            for (auto mesh : modelData.pMeshes)
+            {
+                mesh->mRootBoneToWorld = globalInverseTransform;
+            }
+        }
+        // 处理模型数据
+        else
 		{
-			mesh->mRootBoneToWorld = globalInverseTransform;
+			ProcessNode(scene->mRootNode, scene, modelData);
 		}
 
-        // 处理动画数据
-        ProcessAnimation(scene, pMeshRenderer);
+        return modelData;
     }
 
-    void ModelUtil::ProcessNode(const aiNode* pNode, const aiScene* pScene, MeshRenderer* pMeshRenderer, BoneNode* pBoneNode)
+    void ModelUtil::ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData& modelData)
     {
         // 处理Mesh数据
         for (unsigned int i = 0; i < pNode->mNumMeshes; i++)
@@ -110,7 +120,25 @@ namespace ZXEngine
             // aiNode仅包含索引来获取aiScene中的实际对象
             // aiScene包含所有数据，aiNode只是为了让数据组织起来(比如记录节点之间的关系)
             aiMesh* mesh = pScene->mMeshes[pNode->mMeshes[i]];
-            pMeshRenderer->mMeshes.push_back(ProcessMesh(mesh));
+            modelData.pMeshes.push_back(ProcessMesh(mesh));
+        }
+
+        // 递归处理子节点
+        for (unsigned int i = 0; i < pNode->mNumChildren; i++)
+        {
+            ProcessNode(pNode->mChildren[i], pScene, modelData);
+        }
+    }
+
+    void ModelUtil::ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData& modelData, BoneNode* pBoneNode)
+    {
+        // 处理Mesh数据
+        for (unsigned int i = 0; i < pNode->mNumMeshes; i++)
+        {
+            // aiNode仅包含索引来获取aiScene中的实际对象
+            // aiScene包含所有数据，aiNode只是为了让数据组织起来(比如记录节点之间的关系)
+            aiMesh* mesh = pScene->mMeshes[pNode->mMeshes[i]];
+            modelData.pMeshes.push_back(ProcessMesh(mesh));
         }
 
         // 加载骨骼数据
@@ -121,7 +149,7 @@ namespace ZXEngine
         for (unsigned int i = 0; i < pNode->mNumChildren; i++)
         {
             pBoneNode->children.push_back(new BoneNode());
-            ProcessNode(pNode->mChildren[i], pScene, pMeshRenderer, pBoneNode->children.back());
+            ProcessNode(pNode->mChildren[i], pScene, modelData, pBoneNode->children.back());
         }
     }
 
@@ -237,12 +265,12 @@ namespace ZXEngine
 		return newMesh;
     }
 
-    void ModelUtil::ProcessAnimation(const aiScene* pScene, MeshRenderer* pMeshRenderer)
+    AnimationController* ModelUtil::ProcessAnimation(const aiScene* pScene)
     {
         if (!pScene->HasAnimations())
-			return;
+			return nullptr;
 
-        pMeshRenderer->mAnimationController = new AnimationController();
+        AnimationController* animationController = new AnimationController();
 
         for (unsigned int i = 0; i < pScene->mNumAnimations; i++)
 		{
@@ -286,8 +314,10 @@ namespace ZXEngine
                 pAnim->AddNodeAnimation(pNode);
 			}
 
-			pMeshRenderer->mAnimationController->AddAnimation(pAnim);
+            animationController->AddAnimation(pAnim);
 		}
+
+		return animationController;
     }
 
     void ModelUtil::CheckExtremeVertex(const Vertex& vertex, array<Vertex, 6>& extremeVertices)

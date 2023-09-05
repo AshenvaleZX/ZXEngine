@@ -163,6 +163,7 @@
     <ClCompile Include="..\..\CPPScripts\Animation\Animation.cpp" />
     <ClCompile Include="..\..\CPPScripts\Animation\AnimationController.cpp" />
     <ClCompile Include="..\..\CPPScripts\Animation\NodeAnimation.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Component\Animator.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\BoxCollider.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\Collider.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\Component.cpp" />
@@ -318,6 +319,7 @@
     <ClInclude Include="..\..\CPPScripts\Animation\Animation.h" />
     <ClInclude Include="..\..\CPPScripts\Animation\AnimationController.h" />
     <ClInclude Include="..\..\CPPScripts\Animation\NodeAnimation.h" />
+    <ClInclude Include="..\..\CPPScripts\Component\Animator.h" />
     <ClInclude Include="..\..\CPPScripts\Component\BoxCollider.h" />
     <ClInclude Include="..\..\CPPScripts\Component\Collider.h" />
     <ClInclude Include="..\..\CPPScripts\Component\Component.h" />

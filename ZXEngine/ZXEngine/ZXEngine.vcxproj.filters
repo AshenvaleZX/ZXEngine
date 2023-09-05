@@ -522,6 +522,9 @@
     <ClCompile Include="..\..\CPPScripts\Animation\NodeAnimation.cpp">
       <Filter>Animation</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\Animator.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\GameObject.h">
@@ -1024,6 +1027,9 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Animation\NodeAnimation.h">
       <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\Animator.h">
+      <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

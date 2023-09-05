@@ -134,6 +134,7 @@ namespace ZXEngine
 		PlaneCollider,
 		SphereCollider,
 		RigidBody,
+		Animator,
 	};
 
 	enum class FaceCullOption

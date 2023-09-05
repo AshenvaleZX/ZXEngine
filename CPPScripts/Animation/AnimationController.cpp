@@ -33,7 +33,7 @@ namespace ZXEngine
 		}
 	}
 
-	void AnimationController::PlayAnimation(string name)
+	void AnimationController::PlayAnimation(const string& name)
 	{
 		if (mAnimations.find(name) != mAnimations.end())
 		{

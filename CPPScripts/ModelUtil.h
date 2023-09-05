@@ -11,11 +11,20 @@ namespace ZXEngine
 	class Mesh;
 	class StaticMesh;
 	class MeshRenderer;
+	class AnimationController;
+
+	struct ModelData
+	{
+		vector<Mesh*> pMeshes;
+		BoneNode* pRootBoneNode = nullptr;
+		AnimationController* pAnimationController = nullptr;
+	};
+
 	class ModelUtil
 	{
 	public:
 		// 使用ASSIMP加载模型文件
-		static void LoadModel(const string& path, MeshRenderer* pMeshRenderer);
+		static ModelData LoadModel(const string& path, bool loadAnim = true);
 		// 算法生成几何体模型
 		static Mesh* GenerateGeometry(GeometryType type);
 
@@ -23,9 +32,10 @@ namespace ZXEngine
 
 	private:
 		// Processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
-		static void ProcessNode(const aiNode* pNode, const aiScene* pScene, MeshRenderer* pMeshRenderer, BoneNode* pBoneNode);
+		static void ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData& modelData);
+		static void ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData& modelData, BoneNode* pBoneNode);
 		static StaticMesh* ProcessMesh(const aiMesh* mesh);
-		static void ProcessAnimation(const aiScene* pScene, MeshRenderer* pMeshRenderer);
+		static AnimationController* ProcessAnimation(const aiScene* pScene);
 
 		static inline Matrix4 aiMatrix4x4ToMatrix4(const aiMatrix4x4& mat);
 		static inline Vector3 aiVector3DToVector3(const aiVector3D& vec);

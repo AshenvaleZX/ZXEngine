@@ -6,6 +6,7 @@
 #include "../Material.h"
 #include "../Component/MeshRenderer.h"
 #include "../SceneManager.h"
+#include "../ModelUtil.h"
 
 namespace ZXEngine
 {
@@ -177,8 +178,11 @@ namespace ZXEngine
 			auto info = new AssetModelInfo();
 			info->name = asset->name;
 			info->format = asset->extension;
+
+			const ModelData& modelData = ModelUtil::LoadModel(asset->path, false);
 			info->meshRenderer = new MeshRenderer();
-			info->meshRenderer->LoadModel(asset->path);
+			info->meshRenderer->SetMeshes(modelData.pMeshes);
+
 			curAssetInfo = info;
 			float size = std::max({ info->meshRenderer->mAABBSizeX, info->meshRenderer->mAABBSizeY, info->meshRenderer->mAABBSizeZ });
 			EditorGUIManager::GetInstance()->assetPreviewer->Reset(size);

@@ -13,10 +13,10 @@ namespace ZXEngine
 
 		void Update(BoneNode* pBoneNode, const vector<Mesh*>& pMeshes);
 		void AddAnimation(Animation* anim);
-		void PlayAnimation(string name);
+		void PlayAnimation(const string& name);
 
 	private:
-		Animation* mCurAnimation;
+		Animation* mCurAnimation = nullptr;
 		unordered_map<string, Animation*> mAnimations;
 	};
 }

@@ -3,7 +3,6 @@
 #include "../RenderAPI.h"
 #include "../Material.h"
 #include "../ModelUtil.h"
-#include "../Animation/AnimationController.h"
 
 namespace ZXEngine
 {
@@ -22,12 +21,6 @@ namespace ZXEngine
         delete mMatetrial;
         delete mShadowCastMaterial;
 
-        if (mRootBone)
-            delete mRootBone;
-
-        if (mAnimationController)
-            delete mAnimationController;
-
         for (auto mesh : mMeshes)
             delete mesh;
     }
@@ -39,26 +32,23 @@ namespace ZXEngine
 
     void MeshRenderer::Draw()
     {
-        if (mAnimationController)
-            mAnimationController->Update(mRootBone, mMeshes);
-
         for (auto mesh : mMeshes)
         {
             RenderAPI::GetInstance()->Draw(mesh->VAO);
         }
     }
 
-    void MeshRenderer::LoadModel(GeometryType type)
+    void MeshRenderer::GenerateModel(GeometryType type)
     {
         mModelName = ModelUtil::GetGeometryTypeName(type);
         mMeshes.push_back(ModelUtil::GenerateGeometry(type));
         UpdateInternalData();
     }
 
-    void MeshRenderer::LoadModel(const string& path)
+    void MeshRenderer::SetMeshes(const vector<Mesh*>& meshes)
     {
-        ModelUtil::LoadModel(path, this);
-        UpdateInternalData();
+		mMeshes = meshes;
+		UpdateInternalData();
     }
 
     void MeshRenderer::UpdateInternalData()

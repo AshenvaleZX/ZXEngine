@@ -14,6 +14,7 @@
 #include "Component/PlaneCollider.h"
 #include "Component/SphereCollider.h"
 #include "Component/ZRigidBody.h"
+#include "Component/Animator.h"
 #include "PhysZ/PhysZEnumStruct.h"
 
 namespace ZXEngine
