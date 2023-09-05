@@ -175,6 +175,11 @@ namespace ZXEngine
 		return "Quaternion(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ", " + std::to_string(w) + ")";
 	}
 
+	Quaternion Quaternion::operator- () const
+	{
+		return Quaternion(-x, -y, -z, -w);
+	}
+
 	bool Quaternion::operator== (const Quaternion& q) const
 	{
 		return x == q.x && y == q.y && z == q.z && w == q.w;

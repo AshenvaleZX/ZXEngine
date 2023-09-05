@@ -20,6 +20,8 @@ namespace ZXEngine
 		);
 		// 斜对称矩阵构造函数
 		Matrix3(const Vector3& v);
+		// 旋转矩阵构造函数(绕axis轴旋转angle度)
+		Matrix3(const Vector3& axis, float angle);
 
 		float GetDeterminant() const;
 		Vector3 GetRow(uint32_t index) const;

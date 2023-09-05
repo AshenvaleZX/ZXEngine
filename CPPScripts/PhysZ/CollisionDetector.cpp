@@ -123,13 +123,13 @@ namespace ZXEngine
 			// 计算具体是Box2的哪个顶点发生了碰撞
 			Vector3 vertex = box2.mHalfSize;
 			// 如果Box2在Box1的左侧，那么Box2的顶点的X坐标为Box2的半长
-			if (Math::Dot(box2.mTransform.GetColumn(0), normal) < 0.0f)
+			if (Math::Dot(Vector3(box2.mTransform.GetColumn(0)), normal) < 0.0f)
 				vertex.x = -vertex.x;
 			// 如果Box2在Box1的下侧，那么Box2的顶点的Y坐标为Box2的半宽
-			if (Math::Dot(box2.mTransform.GetColumn(1), normal) < 0.0f)
+			if (Math::Dot(Vector3(box2.mTransform.GetColumn(1)), normal) < 0.0f)
 				vertex.y = -vertex.y;
 			// 如果Box2在Box1的后侧，那么Box2的顶点的Z坐标为Box2的半高
-			if (Math::Dot(box2.mTransform.GetColumn(2), normal) < 0.0f)
+			if (Math::Dot(Vector3(box2.mTransform.GetColumn(2)), normal) < 0.0f)
 				vertex.z = -vertex.z;
 
 			// 当前要写入的碰撞
@@ -218,12 +218,12 @@ namespace ZXEngine
 				{
 					if (i == box1AxisIdx)
 						midPoint1[i] = 0.0f;
-					else if (Math::Dot(box1.mTransform.GetColumn(i), axis) > 0.0f)
+					else if (Math::Dot(Vector3(box1.mTransform.GetColumn(i)), axis) > 0.0f)
 						midPoint1[i] = -midPoint1[i];
 
 					if (i == box2AxisIdx)
 						midPoint2[i] = 0.0f;
-					else if (Math::Dot(box2.mTransform.GetColumn(i), axis) < 0.0f)
+					else if (Math::Dot(Vector3(box2.mTransform.GetColumn(i)), axis) < 0.0f)
 						midPoint2[i] = -midPoint2[i];
 				}
 

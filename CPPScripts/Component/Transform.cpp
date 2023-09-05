@@ -15,11 +15,7 @@ namespace ZXEngine
 
 	Matrix4 Transform::GetLocalPositionMatrix() const
 	{
-		return Matrix4(
-			1, 0, 0, localPosition.x,
-			0, 1, 0, localPosition.y,
-			0, 0, 1, localPosition.z,
-			0, 0, 0, 1);
+		return Math::TranslationMatrix(localPosition);
 	}
 
 	Matrix4 Transform::GetLocalRotationMatrix() const
@@ -29,11 +25,7 @@ namespace ZXEngine
 
 	Matrix4 Transform::GetLocalScaleMatrix() const
 	{
-		return Matrix4(
-			localScale.x, 0,            0,            0,
-			0,            localScale.y, 0,            0,
-			0,            0,            localScale.z, 0,
-			0,            0,            0,            1);
+		return Math::ScaleMatrix(localScale);
 	}
 
 	Matrix4 Transform::GetModelMatrix() const

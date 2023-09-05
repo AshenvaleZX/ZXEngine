@@ -51,13 +51,13 @@ namespace ZXEngine
 			// 计算Box在平面法线上的投影长度
 			float projectedLength = box.GetHalfProjectedLength(plane.mNormal);
 			// Box到平面的距离
-			float distance = Math::Dot(plane.mNormal, box.mTransform.GetColumn(3)) - projectedLength;
+			float distance = Math::Dot(plane.mNormal, Vector3(box.mTransform.GetColumn(3))) - projectedLength;
 			return distance <= plane.mDistance;
 		}
 
 		bool IntersectionDetector::DetectSphereAndHalfSpace(const CollisionSphere& sphere, const CollisionPlane& plane)
 		{
-			float distance = Math::Dot(plane.mNormal, sphere.mTransform.GetColumn(3)) - sphere.mRadius;
+			float distance = Math::Dot(plane.mNormal, Vector3(sphere.mTransform.GetColumn(3))) - sphere.mRadius;
 			return distance <= plane.mDistance;
 		}
 

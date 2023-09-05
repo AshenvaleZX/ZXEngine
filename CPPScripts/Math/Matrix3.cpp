@@ -51,6 +51,23 @@ namespace ZXEngine
 		m20 = -v.y ; m21 =  v.x ; m22 =  0.0f;
 	}
 
+	Matrix3::Matrix3(const Vector3& axis, float angle)
+	{
+		// 此算法先是参考的Unity 4.3，发现Unity 4.3又是参考的Mesa OpenGL
+		// 同时GPT给出的算法也是这样的
+		float c = cosf(angle);
+		float s = sinf(angle);
+		float t = 1.0f - c;
+
+		float x = axis.x;
+		float y = axis.y;
+		float z = axis.z;
+
+		m00 = t * x * x + c;		m01 = t * x * y - s * z;	m02 = t * x * z + s * y;
+		m10 = t * x * y + s * z;	m11 = t * y * y + c;		m12 = t * y * z - s * x;
+		m20 = t * x * z - s * y;	m21 = t * y * z + s * x;	m22 = t * z * z + c;
+	}
+
 	float Matrix3::GetDeterminant() const
 	{
 		return (m00 * m11 * m22) + (m01 * m12 * m20) + (m02 * m10 * m21) - 

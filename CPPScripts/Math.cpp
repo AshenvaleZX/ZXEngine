@@ -6,30 +6,81 @@ namespace ZXEngine
 {
 	float Math::PI = 3.141592653f;
 	float Math::PIx2 = 6.283185306f;
+	float Math::SQRT2 = 1.414213562f;
+	float Math::INV_SQRT2 = 0.707106781f;
 
-	float Math::Deg2Rad(float degree)
+	Vector3 Math::Slerp(const Vector3& v1, const Vector3& v2, float t)
 	{
-		return Math::PI / 180.f * degree;
+		float v1Mag = v1.GetMagnitude();
+		float v2Mag = v2.GetMagnitude();
+
+		if (v1Mag < 0.00001f || v2Mag < 0.00001f)
+			return Lerp(v1, v2, t);
+
+		float lerpMag = Lerp(v1Mag, v2Mag, t);
+
+		float dot = Dot(v1, v2) / (v1Mag * v2Mag);
+
+		// 两个向量几乎一致
+		if (dot > 0.99999f)
+		{
+			return Lerp(v1, v2, t);
+		}
+		// 两个向量几乎相反
+		else if (dot < -0.99999f)
+		{
+			Vector3 v1Normalized = v1 / v1Mag;
+			Vector3 axis = GetPerpendicular(v1Normalized);
+			Matrix3 m(axis, PI * t);
+			return m * v1Normalized * lerpMag;
+		}
+		// 一般情况
+		else
+		{
+			float theta = acos(dot) * t;
+
+			Vector3 v1Normalized = v1 / v1Mag;
+			Vector3 v2Normalized = v2 / v2Mag;
+			Vector3 axis = Cross(v1Normalized, v2Normalized);
+
+			Matrix3 m(axis, theta);
+			return m * v1Normalized * lerpMag;
+		}
 	}
 
-	float Math::Rad2Deg(float radian)
+	Quaternion Math::Slerp(const Quaternion& q1, const Quaternion& q2, float t)
 	{
-		return radian / Math::PI * 180.f;
-	}
+		Quaternion qt = q2;
 
-	int Math::RandomInt(int min, int max)
-	{
-		return rand() % (max - min + 1) + min;
-	}
+		float cosTheta = Dot(q1, q2);
 
-	float Math::RandomFloat(float min, float max)
-	{
-		return min + float(rand() / double(RAND_MAX)) * (max - min);
-	}
+		if (cosTheta < 0.0f)
+		{
+			qt = -q2;
+			cosTheta = -cosTheta;
+		}
 
-	bool Math::Approximately(float a, float b, float eps) 
-	{
-		return fabs(a - b) <= eps;
+		float p1, p2;
+		// 如果两个四元数非常接近，那么直接线性插值即可
+		if (cosTheta > 0.95f)
+		{
+			p1 = 1.0f - t;
+			p2 = t;
+		}
+		else
+		{
+			float theta = acos(cosTheta);
+			float oneOverSinTheta = 1.0f / sin(theta);
+
+			p1 = sin((1.0f - t) * theta) * oneOverSinTheta;
+			p2 = sin(t * theta) * oneOverSinTheta;
+		}
+
+		return Quaternion(
+			p1 * q1.x + p2 * qt.x,
+			p1 * q1.y + p2 * qt.y,
+			p1 * q1.z + p2 * qt.z,
+			p1 * q1.w + p2 * qt.w);
 	}
 
 	Matrix4 Math::Perspective(float fov, float aspect, float nearClip, float farClip)
@@ -284,17 +335,27 @@ namespace ZXEngine
 			mat.m03, mat.m13, mat.m23, mat.m33);
 	}
 
-	float Math::Dot(const Vector3& left, const Vector3& right)
+	Vector2 Math::GetPerpendicular(const Vector2& v)
 	{
-		return left.x * right.x + left.y * right.y + left.z * right.z;
+		return Vector2(-v.y, v.x).GetNormalized();
 	}
 
-	Vector3 Math::Cross(const Vector3& left, const Vector3& right)
+	Vector3 Math::GetPerpendicular(const Vector3& v)
 	{
-		return Vector3(
-			left.y * right.z - left.z * right.y,
-			left.z * right.x - left.x * right.z,
-			left.x * right.y - left.y * right.x);
+		if (fabsf(v.z) > INV_SQRT2)
+		{
+			float a = v.y * v.y + v.z * v.z;
+			float k = 1.0f / sqrtf(a);
+			// YZ平面
+			return Vector3(0.0f, -v.z * k, v.y * k);
+		}
+		else
+		{
+			float a = v.x * v.x + v.y * v.y;
+			float k = 1.0f / sqrtf(a);
+			// XY平面
+			return Vector3(-v.y * k, v.x * k, 0.0f);
+		}
 	}
 
 	Vector2 Math::GetRandomPerpendicular(const Vector2& v)
@@ -365,15 +426,5 @@ namespace ZXEngine
 			0, 0, 0, 1);
 		
 		return viewMat * posMat;
-	}
-
-	float Math::Distance(const Vector2& a, const Vector2& b)
-	{
-		return (a - b).GetMagnitude();
-	}
-
-	float Math::Distance(const Vector3& a, const Vector3& b)
-	{
-		return (a - b).GetMagnitude();
 	}
 }

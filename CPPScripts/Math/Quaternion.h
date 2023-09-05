@@ -46,6 +46,7 @@ namespace ZXEngine
 		Matrix4 ToMatrix() const;
 		std::string ToString() const;
 
+		Quaternion operator- () const;
 		bool operator== (const Quaternion& q) const;
 		bool operator!= (const Quaternion& q) const;
 		Quaternion& operator= (const Quaternion& q);
