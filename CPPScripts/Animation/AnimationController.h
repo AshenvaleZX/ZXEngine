@@ -3,12 +3,15 @@
 
 namespace ZXEngine
 {
+	class Mesh;
+	struct BoneNode;
 	class Animation;
 	class AnimationController
 	{
 	public:
 		~AnimationController();
 
+		void Update(BoneNode* pBoneNode, const vector<Mesh*>& pMeshes);
 		void AddAnimation(Animation* anim);
 		void PlayAnimation(string name);
 

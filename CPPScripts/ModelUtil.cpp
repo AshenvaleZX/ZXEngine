@@ -92,6 +92,11 @@ namespace ZXEngine
 
         // 处理模型和骨骼数据
         ProcessNode(scene->mRootNode, scene, pMeshRenderer, pMeshRenderer->mRootBone);
+        Matrix4 globalInverseTransform = Math::Inverse(aiMatrix4x4ToMatrix4(scene->mRootNode->mTransformation));
+        for (auto mesh : pMeshRenderer->mMeshes)
+		{
+			mesh->mRootBoneToWorld = globalInverseTransform;
+		}
 
         // 处理动画数据
         ProcessAnimation(scene, pMeshRenderer);
@@ -262,18 +267,21 @@ namespace ZXEngine
                     const aiVectorKey& aiKey = pNodeAnim->mScalingKeys[k];
                     pNode->mKeyScales.push_back(KeyVector3(static_cast<float>(aiKey.mTime), aiVector3DToVector3(aiKey.mValue)));
                 }
+                pNode->mKeyScaleNum = pNode->mKeyScales.size();
 
 				for (unsigned int k = 0; k < pNodeAnim->mNumPositionKeys; k++)
 				{
 					const aiVectorKey& aiKey = pNodeAnim->mPositionKeys[k];
 					pNode->mKeyPositions.push_back(KeyVector3(static_cast<float>(aiKey.mTime), aiVector3DToVector3(aiKey.mValue)));
 				}
+                pNode->mKeyPositionNum = pNode->mKeyPositions.size();
 
 				for (unsigned int k = 0; k < pNodeAnim->mNumRotationKeys; k++)
 				{
 					const aiQuatKey& aiKey = pNodeAnim->mRotationKeys[k];
 					pNode->mKeyRotations.push_back(KeyQuaternion(static_cast<float>(aiKey.mTime), aiQuaternionToQuaternion(aiKey.mValue)));
 				}
+                pNode->mKeyRotationNum = pNode->mKeyRotations.size();
 
                 pAnim->AddNodeAnimation(pNode);
 			}

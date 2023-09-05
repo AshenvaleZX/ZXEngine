@@ -39,6 +39,9 @@ namespace ZXEngine
 
     void MeshRenderer::Draw()
     {
+        if (mAnimationController)
+            mAnimationController->Update(mRootBone, mMeshes);
+
         for (auto mesh : mMeshes)
         {
             RenderAPI::GetInstance()->Draw(mesh->VAO);

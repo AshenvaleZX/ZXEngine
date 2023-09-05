@@ -28,8 +28,20 @@ namespace ZXEngine
 		string mName;
 
 		// ¹Ø¼üÖ¡Êý¾Ý
+		size_t mKeyScaleNum = 0;
 		vector<KeyVector3> mKeyScales;
+		size_t mKeyPositionNum = 0;
 		vector<KeyVector3> mKeyPositions;
+		size_t mKeyRotationNum = 0;
 		vector<KeyQuaternion> mKeyRotations;
+
+		Vector3 GetScale(float time);
+		Vector3 GetPosition(float time);
+		Quaternion GetRotation(float time);
+
+	private:
+		size_t mCurScaleIdx = 0;
+		size_t mCurPositionIdx = 0;
+		size_t mCurRotationIdx = 0;
 	};
 }
