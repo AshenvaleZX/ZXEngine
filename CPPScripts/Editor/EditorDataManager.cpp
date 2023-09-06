@@ -179,9 +179,10 @@ namespace ZXEngine
 			info->name = asset->name;
 			info->format = asset->extension;
 
-			const ModelData& modelData = ModelUtil::LoadModel(asset->path, false);
+			ModelData modelData = ModelUtil::LoadModel(asset->path, false);
 			info->meshRenderer = new MeshRenderer();
 			info->meshRenderer->SetMeshes(modelData.pMeshes);
+			info->animBriefInfos = std::move(modelData.animBriefInfos);
 
 			curAssetInfo = info;
 			float size = std::max({ info->meshRenderer->mAABBSizeX, info->meshRenderer->mAABBSizeY, info->meshRenderer->mAABBSizeZ });

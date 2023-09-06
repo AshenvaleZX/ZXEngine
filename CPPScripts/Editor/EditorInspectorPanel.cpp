@@ -476,6 +476,16 @@ namespace ZXEngine
 		ImGui::Text("          Z:");
 		ImGui::SameLine(120);
 		ImGui::Text(to_string(info->meshRenderer->mAABBSizeZ).c_str());
+
+		ImGui::Text("Animations Num:  ");
+		ImGui::SameLine(); ImGui::Text(to_string(info->animBriefInfos.size()).c_str());
+		for (auto& animBrief : info->animBriefInfos)
+		{
+			ImGui::Text("    Name:        ");
+			ImGui::SameLine(); ImGui::Text(animBrief.name.c_str());
+			ImGui::Text("    Duration:    ");
+			ImGui::SameLine(); ImGui::Text(to_string(animBrief.duration).c_str());
+		}
 	}
 
 	void EditorInspectorPanel::DrawBoxCollider(BoxCollider* component)

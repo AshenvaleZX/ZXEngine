@@ -73,7 +73,7 @@ namespace ZXEngine
         return GeometryTypeName.at(type);
     }
 
-    ModelData ModelUtil::LoadModel(const string& path, bool loadAnim)
+    ModelData ModelUtil::LoadModel(const string& path, bool loadFullAnim)
     {
         ModelData modelData;
 
@@ -89,8 +89,10 @@ namespace ZXEngine
         }
 
         // 处理动画数据
-        if (loadAnim)
+        if (loadFullAnim)
             modelData.pAnimationController = ProcessAnimation(scene);
+        else
+            LoadAnimBriefInfos(scene, modelData);
 
         // 处理模型和骨骼数据
         if (modelData.pAnimationController)
@@ -318,6 +320,23 @@ namespace ZXEngine
 		}
 
 		return animationController;
+    }
+
+    void ModelUtil::LoadAnimBriefInfos(const aiScene* pScene, ModelData& modelData)
+    {
+        if (!pScene->HasAnimations())
+            return;
+
+        for (unsigned int i = 0; i < pScene->mNumAnimations; i++)
+        {
+            const aiAnimation* pAnimation = pScene->mAnimations[i];
+
+            AnimBriefInfo briefInfo;
+            briefInfo.name = pAnimation->mName.C_Str();
+            briefInfo.duration = static_cast<float>(pAnimation->mDuration);
+
+            modelData.animBriefInfos.push_back(std::move(briefInfo));
+        }
     }
 
     void ModelUtil::CheckExtremeVertex(const Vertex& vertex, array<Vertex, 6>& extremeVertices)

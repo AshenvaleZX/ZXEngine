@@ -53,6 +53,12 @@ namespace ZXEngine
 		BoneInfo(const Matrix4& offset) : offset(offset) {}
 	};
 
+	struct AnimBriefInfo
+	{
+		string name;
+		float duration = 0.0f;
+	};
+
 	struct ClearInfo
 	{
 		FrameBufferClearFlags clearFlags = ZX_CLEAR_FRAME_BUFFER_NONE_BIT;

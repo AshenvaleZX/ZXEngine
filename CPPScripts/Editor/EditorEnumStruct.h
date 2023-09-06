@@ -1,5 +1,6 @@
 #pragma once
 #include "../pubh.h"
+#include "../PublicStruct.h"
 
 namespace ZXEngine
 {
@@ -39,7 +40,7 @@ namespace ZXEngine
 	{
 		LogType type;
 		string data;
-		LogInfo* next;
+		LogInfo* next = nullptr;
 	};
 
 	struct AssetScriptInfo
@@ -81,6 +82,7 @@ namespace ZXEngine
 		string name;
 		string format;
 		MeshRenderer* meshRenderer;
+		vector<AnimBriefInfo> animBriefInfos;
 
 		AssetModelInfo();
 		~AssetModelInfo();

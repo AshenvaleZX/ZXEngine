@@ -18,13 +18,14 @@ namespace ZXEngine
 		vector<Mesh*> pMeshes;
 		BoneNode* pRootBoneNode = nullptr;
 		AnimationController* pAnimationController = nullptr;
+		vector<AnimBriefInfo> animBriefInfos;
 	};
 
 	class ModelUtil
 	{
 	public:
 		// 使用ASSIMP加载模型文件
-		static ModelData LoadModel(const string& path, bool loadAnim = true);
+		static ModelData LoadModel(const string& path, bool loadFullAnim = true);
 		// 算法生成几何体模型
 		static Mesh* GenerateGeometry(GeometryType type);
 
@@ -36,6 +37,7 @@ namespace ZXEngine
 		static void ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData& modelData, BoneNode* pBoneNode);
 		static StaticMesh* ProcessMesh(const aiMesh* mesh);
 		static AnimationController* ProcessAnimation(const aiScene* pScene);
+		static void LoadAnimBriefInfos(const aiScene* pScene, ModelData& modelData);
 
 		static inline Matrix4 aiMatrix4x4ToMatrix4(const aiMatrix4x4& mat);
 		static inline Vector3 aiVector3DToVector3(const aiVector3D& vec);
