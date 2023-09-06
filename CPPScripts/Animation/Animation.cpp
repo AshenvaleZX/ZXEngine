@@ -13,17 +13,45 @@ namespace ZXEngine
 			delete iter.second;
 		}
 	}
+	
+	void Animation::Play(bool isReplay)
+	{
+		mIsPlaying = true;
+		
+		if (isReplay)
+		{
+			mCurTime = 0.0f;
+		}
+	}
+
+	void Animation::Stop()
+	{
+		mIsPlaying = false;
+	}
+
+	bool Animation::IsPlaying() const
+	{
+		return mIsPlaying;
+	}
 
 	void Animation::Update(BoneNode* pBoneNode, const vector<Mesh*>& pMeshes)
 	{
+		if (!mIsPlaying)
+			return;
+
 		mCurTime += Time::deltaTime * mSpeed;
 
 		if (mCurTime >= mDuration)
 		{
 			if (mIsLoop)
+			{
 				mCurTime -= mDuration;
+			}
 			else
+			{
 				mCurTime = 0.0f;
+				Stop();
+			}
 		}
 
 		GetNodeTransform(pBoneNode, Matrix4(), pMeshes);
@@ -49,7 +77,6 @@ namespace ZXEngine
 		}
 		else
 		{
-			Debug::LogWarning("Animation try to get an non-existing node animation: %s", nodeName);
 			return nullptr;
 		}
 	}

@@ -37,7 +37,13 @@ namespace ZXEngine
 	{
 		if (mAnimations.find(name) != mAnimations.end())
 		{
+			if (mCurAnimation)
+			{
+				mCurAnimation->Stop();
+			}
+
 			mCurAnimation = mAnimations[name];
+			mCurAnimation->Play();
 		}
 		else
 		{

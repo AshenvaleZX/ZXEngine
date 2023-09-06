@@ -18,10 +18,14 @@ namespace ZXEngine
 
 		~Animation();
 
+		void Play(bool isReplay = true);
+		void Stop();
+		bool IsPlaying() const;
 		void Update(BoneNode* pBoneNode, const vector<Mesh*>& pMeshes);
 		void AddNodeAnimation(NodeAnimation* nodeAnimation);
 
 	private:
+		bool mIsPlaying = false;
 		unordered_map<string, NodeAnimation*> mNodeAnimations;
 
 		NodeAnimation* GetNodeAnimation(const string& nodeName);

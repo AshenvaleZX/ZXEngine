@@ -1,4 +1,5 @@
 #include "MeshRenderer.h"
+#include "Animator.h"
 #include "../ZMesh.h"
 #include "../RenderAPI.h"
 #include "../Material.h"
@@ -49,6 +50,12 @@ namespace ZXEngine
     {
 		mMeshes = meshes;
 		UpdateInternalData();
+    }
+
+    void MeshRenderer::UpdateAnimation()
+    {
+        if (mAnimator)
+            mAnimator->Update(mMeshes);
     }
 
     void MeshRenderer::UpdateInternalData()

@@ -6,6 +6,7 @@ namespace ZXEngine
 {
 	class Mesh;
 	class Material;
+	class Animator;
 	class MeshRenderer : public Component
 	{
 	public:
@@ -19,6 +20,8 @@ namespace ZXEngine
 
 		Material* mMatetrial = nullptr;
 		Material* mShadowCastMaterial = nullptr;
+
+		Animator* mAnimator = nullptr;
 
 		size_t mVerticesNum = 0;
 		size_t mTrianglesNum = 0;
@@ -41,6 +44,7 @@ namespace ZXEngine
 		void Draw();
 		void GenerateModel(GeometryType type);
 		void SetMeshes(const vector<Mesh*>& meshes);
+		void UpdateAnimation();
 
 	private:
 		void UpdateInternalData();

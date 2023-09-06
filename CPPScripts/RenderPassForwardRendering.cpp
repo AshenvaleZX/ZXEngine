@@ -96,6 +96,8 @@ namespace ZXEngine
 				RenderEngineProperties::GetInstance()->SetRendererProperties(renderer);
 				material->SetEngineProperties();
 
+				renderer->UpdateAnimation();
+
 				material->data->Use();
 				renderer->Draw();
 			}

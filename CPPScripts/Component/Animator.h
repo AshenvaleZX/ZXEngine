@@ -4,6 +4,7 @@
 
 namespace ZXEngine
 {
+	class Mesh;
 	class AnimationController;
 	class Animator : public Component
 	{
@@ -22,5 +23,6 @@ namespace ZXEngine
 		virtual ComponentType GetInsType();
 
 		void Play(const string& name);
+		void Update(const vector<Mesh*>& pMeshes);
 	};
 }

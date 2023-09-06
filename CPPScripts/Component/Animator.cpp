@@ -25,4 +25,9 @@ namespace ZXEngine
 	{
 		mAnimationController->PlayAnimation(name);
 	}
+
+	void Animator::Update(const vector<Mesh*>& pMeshes)
+	{
+		mAnimationController->Update(mRootBoneNode, pMeshes);
+	}
 }

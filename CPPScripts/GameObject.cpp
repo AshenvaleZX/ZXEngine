@@ -141,6 +141,8 @@ namespace ZXEngine
 				animator->mAvatarName = meshRenderer->mModelName + "Avatar";
 				animator->mRootBoneNode = modelData.pRootBoneNode;
 				animator->mAnimationController = modelData.pAnimationController;
+				// 为了方便，这里直接让MeshRenderer引用Animator
+				meshRenderer->mAnimator = animator;
 			}
 		}
 		else
