@@ -30,6 +30,14 @@ static int GetComponent(lua_State* L)
 		luaL_getmetatable(L, "ZXEngine.Transform");
 		lua_setmetatable(L, -2);
 	}
+	else if (type == "Animator")
+	{
+		size_t nbytes = sizeof(ZXEngine::Animator);
+		ZXEngine::Animator** t = (ZXEngine::Animator**)lua_newuserdata(L, nbytes);
+		*t = (*data)->GetComponent<ZXEngine::Animator>();
+		luaL_getmetatable(L, "ZXEngine.Animator");
+		lua_setmetatable(L, -2);
+	}
 	else
 	{ 
 		ZXEngine::Debug::LogError("Not find lua wrap component: " + type);

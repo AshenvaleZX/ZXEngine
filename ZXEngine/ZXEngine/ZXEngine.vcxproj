@@ -412,6 +412,7 @@
     <ClInclude Include="..\..\CPPScripts\Input\InputManagerGLFW.h" />
     <ClInclude Include="..\..\CPPScripts\Input\InputManagerWindows.h" />
     <ClInclude Include="..\..\CPPScripts\LuaManager.h" />
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Animator.h" />
     <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_GameObject.h" />
     <ClInclude Include="..\..\CPPScripts\LuaWrap\LuaWrap.h" />
     <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_InputManager.h" />

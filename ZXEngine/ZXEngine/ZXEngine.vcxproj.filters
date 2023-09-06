@@ -1031,5 +1031,8 @@
     <ClInclude Include="..\..\CPPScripts\Component\Animator.h">
       <Filter>Component</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Animator.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
