@@ -45,14 +45,6 @@ namespace ZXEngine
 		~BoneNode() { for (auto child : children) delete child; }
 	};
 
-	struct BoneInfo
-	{
-		Matrix4 offset;
-		Matrix4 curTransform;
-
-		BoneInfo(const Matrix4& offset) : offset(offset) {}
-	};
-
 	struct AnimBriefInfo
 	{
 		string name;

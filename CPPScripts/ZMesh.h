@@ -12,8 +12,10 @@ namespace ZXEngine
 		vector<Vertex> mVertices;
 		vector<uint32_t> mIndices;
 
-		// 骨骼数据数组
-		vector<BoneInfo> mBones;
+		// 骨骼偏移量数组
+		vector<Matrix4> mBonesOffset;
+		// 骨骼最终变换矩阵数组(列主序，会直接传给显存供Shader使用)
+		vector<Matrix4> mBonesFinalTransform;
 		// 骨骼名字到数组索引的映射
 		unordered_map<string, uint32_t> mBoneNameToIndexMap;
 		// 骨骼根节点到世界坐标系的变换矩阵

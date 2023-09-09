@@ -35,9 +35,10 @@ namespace ZXEngine
 		size_t mKeyRotationNum = 0;
 		vector<KeyQuaternion> mKeyRotations;
 
-		Vector3 GetScale(float time);
-		Vector3 GetPosition(float time);
-		Quaternion GetRotation(float time);
+		void Reset();
+		Vector3 GetScale(float tick);
+		Vector3 GetPosition(float tick);
+		Quaternion GetRotation(float tick);
 
 	private:
 		size_t mCurScaleIdx = 0;

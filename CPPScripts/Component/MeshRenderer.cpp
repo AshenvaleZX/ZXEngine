@@ -35,6 +35,9 @@ namespace ZXEngine
     {
         for (auto mesh : mMeshes)
         {
+            if (mAnimator)
+                mMatetrial->SetMatrix("_BoneMatrices", mesh->mBonesFinalTransform.data(), static_cast<uint32_t>(mesh->mBonesFinalTransform.size()));
+
             RenderAPI::GetInstance()->Draw(mesh->VAO);
         }
     }

@@ -20,13 +20,22 @@ namespace ZXEngine
 		
 		if (isReplay)
 		{
-			mCurTime = 0.0f;
+			mCurTick = 0.0f;
+			Reset();
 		}
 	}
 
 	void Animation::Stop()
 	{
 		mIsPlaying = false;
+	}
+
+	void Animation::Reset()
+	{
+		for (auto& pNodeAnim : mNodeAnimations)
+		{
+			pNodeAnim.second->Reset();
+		}
 	}
 
 	bool Animation::IsPlaying() const
@@ -39,19 +48,20 @@ namespace ZXEngine
 		if (!mIsPlaying)
 			return;
 
-		mCurTime += Time::deltaTime * mSpeed;
+		mCurTick += Time::deltaTime * mSpeed * mTicksPerSecond;
 
-		if (mCurTime >= mDuration)
+		if (mCurTick >= mFullTick)
 		{
 			if (mIsLoop)
 			{
-				mCurTime -= mDuration;
+				mCurTick -= mFullTick;
 			}
 			else
 			{
-				mCurTime = 0.0f;
+				mCurTick = 0.0f;
 				Stop();
 			}
+			Reset();
 		}
 
 		GetNodeTransform(pBoneNode, Matrix4(), pMeshes);
@@ -91,13 +101,13 @@ namespace ZXEngine
 
 		if (pNodeAnimation)
 		{
-			Vector3 scale = pNodeAnimation->GetScale(mCurTime);
+			Vector3 scale = pNodeAnimation->GetScale(mCurTick);
 			Matrix4 scaleMatrix = Math::ScaleMatrix(scale);
 
-			Vector3 translation = pNodeAnimation->GetPosition(mCurTime);
+			Vector3 translation = pNodeAnimation->GetPosition(mCurTick);
 			Matrix4 translationMatrix = Math::TranslationMatrix(translation);
 
-			Quaternion rotation = pNodeAnimation->GetRotation(mCurTime);
+			Quaternion rotation = pNodeAnimation->GetRotation(mCurTick);
 			Matrix4 rotationMatrix = rotation.ToMatrix();
 
 			nodeTransform = translationMatrix * rotationMatrix * scaleMatrix;
@@ -110,7 +120,8 @@ namespace ZXEngine
 			if (pMesh->mBoneNameToIndexMap.find(nodeName) != pMesh->mBoneNameToIndexMap.end())
 			{
 				uint32_t index = pMesh->mBoneNameToIndexMap[nodeName];
-				pMesh->mBones[index] = pMesh->mRootBoneToWorld * globalTransform * pMesh->mBones[index].offset;
+				// 此处的矩阵是给Shader用的，需要转置为列主序
+				pMesh->mBonesFinalTransform[index] = Math::Transpose(pMesh->mRootBoneToWorld * globalTransform * pMesh->mBonesOffset[index]);
 			}
 		}
 

@@ -212,7 +212,7 @@ namespace ZXEngine
             vertices.push_back(vertex);
         }
 
-        vector<BoneInfo> bones;
+        vector<Matrix4> boneOffsetMatrices;
         unordered_map<string, uint32_t> boneNameToIndexMap;
         // 添加骨骼信息
         if (mesh->HasBones())
@@ -223,7 +223,7 @@ namespace ZXEngine
 
                 string boneName(bone->mName.C_Str());
 
-                bones.push_back(BoneInfo(aiMatrix4x4ToMatrix4(bone->mOffsetMatrix)));
+                boneOffsetMatrices.push_back(aiMatrix4x4ToMatrix4(bone->mOffsetMatrix));
 
                 // 骨骼名到ID的映射
                 if (boneNameToIndexMap.find(boneName) == boneNameToIndexMap.end())
@@ -257,8 +257,10 @@ namespace ZXEngine
         }
 
         auto newMesh = new StaticMesh(vertices, indices);
-        newMesh->mBones = std::move(bones);
-		newMesh->mBoneNameToIndexMap = std::move(boneNameToIndexMap);
+        newMesh->mBonesFinalTransform.resize(boneOffsetMatrices.size());
+        newMesh->mBonesOffset = std::move(boneOffsetMatrices);
+        newMesh->mBoneNameToIndexMap = std::move(boneNameToIndexMap);
+
         newMesh->mExtremeVertices = std::move(extremeVertices);
         newMesh->mAABBSizeX = newMesh->mExtremeVertices[0].Position.x - newMesh->mExtremeVertices[1].Position.x;
         newMesh->mAABBSizeY = newMesh->mExtremeVertices[2].Position.y - newMesh->mExtremeVertices[3].Position.y;
@@ -280,7 +282,7 @@ namespace ZXEngine
 
 			Animation* pAnim = new Animation();
 			pAnim->mName = pAnimation->mName.C_Str();
-            pAnim->mDuration = static_cast<float>(pAnimation->mDuration);
+            pAnim->mFullTick = static_cast<float>(pAnimation->mDuration);
             pAnim->mTicksPerSecond = static_cast<float>(pAnimation->mTicksPerSecond);
 
 			for (unsigned int j = 0; j < pAnimation->mNumChannels; j++)

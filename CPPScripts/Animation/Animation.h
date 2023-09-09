@@ -10,16 +10,17 @@ namespace ZXEngine
 	{
 	public:
 		string mName;
-		bool mIsLoop = false;
+		bool mIsLoop = true;
 		float mSpeed = 1.0f;
-		float mCurTime = 0.0f;
-		float mDuration = 0.0f;
+		float mCurTick = 0.0f;
+		float mFullTick = 0.0f;
 		float mTicksPerSecond = 0.0f;
 
 		~Animation();
 
 		void Play(bool isReplay = true);
 		void Stop();
+		void Reset();
 		bool IsPlaying() const;
 		void Update(BoneNode* pBoneNode, const vector<Mesh*>& pMeshes);
 		void AddNodeAnimation(NodeAnimation* nodeAnimation);

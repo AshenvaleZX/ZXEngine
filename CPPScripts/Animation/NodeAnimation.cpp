@@ -2,15 +2,22 @@
 
 namespace ZXEngine
 {
-	Vector3 NodeAnimation::GetScale(float time)
+	void NodeAnimation::Reset()
+	{
+		mCurScaleIdx = 0;
+		mCurPositionIdx = 0;
+		mCurRotationIdx = 0;
+	}
+
+	Vector3 NodeAnimation::GetScale(float tick)
 	{
 		if (mKeyScaleNum > 1)
 		{
-			if (time >= mKeyScales[mCurScaleIdx + 1].mTime)
+			if (tick >= mKeyScales[mCurScaleIdx + 1].mTime)
 			{
 				for (size_t i = mCurScaleIdx + 1; i < mKeyScaleNum - 1; i++)
 				{
-					if (time < mKeyScales[i + 1].mTime)
+					if (tick < mKeyScales[i + 1].mTime)
 					{
 						mCurScaleIdx = i;
 						break;
@@ -20,7 +27,7 @@ namespace ZXEngine
 
 			float start = mKeyScales[mCurScaleIdx].mTime;
 			float end = mKeyScales[mCurScaleIdx + 1].mTime;
-			float t = (time - start) / (end - start);
+			float t = (tick - start) / (end - start);
 
 			Vector3 from = mKeyScales[mCurScaleIdx].mValue;
 			Vector3 to = mKeyScales[mCurScaleIdx + 1].mValue;
@@ -37,15 +44,15 @@ namespace ZXEngine
 		}
 	}
 
-	Vector3 NodeAnimation::GetPosition(float time)
+	Vector3 NodeAnimation::GetPosition(float tick)
 	{
 		if (mKeyPositionNum > 1)
 		{
-			if (time >= mKeyPositions[mCurPositionIdx + 1].mTime)
+			if (tick >= mKeyPositions[mCurPositionIdx + 1].mTime)
 			{
 				for (size_t i = mCurPositionIdx + 1; i < mKeyPositionNum - 1; i++)
 				{
-					if (time < mKeyPositions[i + 1].mTime)
+					if (tick < mKeyPositions[i + 1].mTime)
 					{
 						mCurPositionIdx = i;
 						break;
@@ -55,7 +62,7 @@ namespace ZXEngine
 
 			float start = mKeyPositions[mCurPositionIdx].mTime;
 			float end = mKeyPositions[mCurPositionIdx + 1].mTime;
-			float t = (time - start) / (end - start);
+			float t = (tick - start) / (end - start);
 
 			Vector3 from = mKeyPositions[mCurPositionIdx].mValue;
 			Vector3 to = mKeyPositions[mCurPositionIdx + 1].mValue;
@@ -72,15 +79,15 @@ namespace ZXEngine
 		}
 	}
 
-	Quaternion NodeAnimation::GetRotation(float time)
+	Quaternion NodeAnimation::GetRotation(float tick)
 	{
 		if (mKeyRotationNum > 1)
 		{
-			if (time >= mKeyRotations[mCurRotationIdx + 1].mTime)
+			if (tick >= mKeyRotations[mCurRotationIdx + 1].mTime)
 			{
 				for (size_t i = mCurRotationIdx + 1; i < mKeyRotationNum - 1; i++)
 				{
-					if (time < mKeyRotations[i + 1].mTime)
+					if (tick < mKeyRotations[i + 1].mTime)
 					{
 						mCurRotationIdx = i;
 						break;
@@ -90,7 +97,7 @@ namespace ZXEngine
 
 			float start = mKeyRotations[mCurRotationIdx].mTime;
 			float end = mKeyRotations[mCurRotationIdx + 1].mTime;
-			float t = (time - start) / (end - start);
+			float t = (tick - start) / (end - start);
 
 			Quaternion from = mKeyRotations[mCurRotationIdx].mValue;
 			Quaternion to = mKeyRotations[mCurRotationIdx + 1].mValue;
