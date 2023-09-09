@@ -7,7 +7,7 @@ namespace ZXEngine
 	{
 		CollisionPrimitive::~CollisionPrimitive()
 		{
-			if (mRigidBody->mCollisionVolume == this)
+			if (mRigidBody && mRigidBody->mCollisionVolume == this)
 			{
 				mRigidBody->mCollisionVolume = nullptr;
 			}
