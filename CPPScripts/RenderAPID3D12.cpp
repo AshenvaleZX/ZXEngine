@@ -1503,22 +1503,6 @@ namespace ZXEngine
 		mCurPipeLineIdx = ID;
 	}
 
-	// Integer
-	void RenderAPID3D12::SetShaderScalar(Material* material, const string& name, int value, bool allBuffer)
-	{
-		if (allBuffer)
-		{
-			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name);
-			for (auto valueAddress : valueAddresses)
-				memcpy(valueAddress, &value, sizeof(value));
-		}
-		else
-		{
-			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
-			memcpy(valueAddress, &value, sizeof(value));
-		}
-	}
-
 	// Boolean
 	void RenderAPID3D12::SetShaderScalar(Material* material, const string& name, bool value, bool allBuffer)
 	{
@@ -1537,6 +1521,22 @@ namespace ZXEngine
 
 	// Float
 	void RenderAPID3D12::SetShaderScalar(Material* material, const string& name, float value, bool allBuffer)
+	{
+		if (allBuffer)
+		{
+			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name);
+			for (auto valueAddress : valueAddresses)
+				memcpy(valueAddress, &value, sizeof(value));
+		}
+		else
+		{
+			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
+			memcpy(valueAddress, &value, sizeof(value));
+		}
+	}
+
+	// Integer
+	void RenderAPID3D12::SetShaderScalar(Material* material, const string& name, int32_t value, bool allBuffer)
 	{
 		if (allBuffer)
 		{
@@ -1635,6 +1635,20 @@ namespace ZXEngine
 		}
 		delete[] array;
 	}
+	void RenderAPID3D12::SetShaderVector(Material* material, const string& name, const Vector4* value, uint32_t count, bool allBuffer)
+	{
+		if (allBuffer)
+		{
+			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, 0);
+			for (auto valueAddress : valueAddresses)
+				memcpy(valueAddress, value, sizeof(Vector4) * count);
+		}
+		else
+		{
+			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, 0);
+			memcpy(valueAddress, value, sizeof(Vector4) * count);
+		}
+	}
 
 	// Matrix3
 	void RenderAPID3D12::SetShaderMatrix(Material* material, const string& name, const Matrix3& value, bool allBuffer)
@@ -1680,6 +1694,20 @@ namespace ZXEngine
 			memcpy(valueAddress, array, sizeof(float) * 16);
 		}
 		delete[] array;
+	}
+	void RenderAPID3D12::SetShaderMatrix(Material* material, const string& name, const Matrix4* value, uint32_t count, bool allBuffer)
+	{
+		if (allBuffer)
+		{
+			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, 0);
+			for (auto valueAddress : valueAddresses)
+				memcpy(valueAddress, value, sizeof(Matrix4) * count);
+		}
+		else
+		{
+			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, 0);
+			memcpy(valueAddress, value, sizeof(Matrix4) * count);
+		}
 	}
 
 	void RenderAPID3D12::SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer, bool isBuffer)

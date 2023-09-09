@@ -2140,8 +2140,8 @@ namespace ZXEngine
         }
     }
 
-    // Integer
-    void RenderAPIVulkan::SetShaderScalar(Material* material, const string& name, int value, bool allBuffer)
+    // Float
+    void RenderAPIVulkan::SetShaderScalar(Material* material, const string& name, float value, bool allBuffer)
     {
         if (allBuffer)
         {
@@ -2169,8 +2169,8 @@ namespace ZXEngine
         }
     }
 
-    // Float
-    void RenderAPIVulkan::SetShaderScalar(Material* material, const string& name, float value, bool allBuffer)
+    // Integer
+    void RenderAPIVulkan::SetShaderScalar(Material* material, const string& name, int32_t value, bool allBuffer)
     {
         if (allBuffer)
         {
@@ -2298,7 +2298,7 @@ namespace ZXEngine
         }
         delete[] array;
     }
-
+    
     // Vector4
     void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector4& value, bool allBuffer)
     {
@@ -2333,6 +2333,33 @@ namespace ZXEngine
                 memcpy(valueAddress, array, sizeof(float) * 4);
         }
         delete[] array;
+    }
+    void RenderAPIVulkan::SetShaderVector(Material* material, const string& name, const Vector4* value, uint32_t count, bool allBuffer)
+    {
+        if (allBuffer)
+        {
+            vector<void*> valueAddresses;
+
+            if (material->type == MaterialType::RayTracing)
+                valueAddresses = GetRTMaterialPropertyAddressAllBuffer(material->data, name, 0);
+            else
+                valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, 0);
+
+            for (auto valueAddress : valueAddresses)
+                memcpy(valueAddress, value, sizeof(Vector4) * count);
+        }
+        else
+        {
+            void* valueAddress = nullptr;
+
+            if (material->type == MaterialType::RayTracing)
+                valueAddress = GetRTMaterialPropertyAddress(material->data, name, 0);
+            else
+                valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, 0);
+
+            if (valueAddress != nullptr)
+                memcpy(valueAddress, value, sizeof(Vector4) * count);
+        }
     }
 
     // Matrix3
@@ -2370,7 +2397,7 @@ namespace ZXEngine
         }
         delete[] array;
     }
-
+    
     // Matrix4
     void RenderAPIVulkan::SetShaderMatrix(Material* material, const string& name, const Matrix4& value, bool allBuffer)
     {
@@ -2405,6 +2432,33 @@ namespace ZXEngine
                 memcpy(valueAddress, array, sizeof(float) * 16);
         }
         delete[] array;
+    }
+    void RenderAPIVulkan::SetShaderMatrix(Material* material, const string& name, const Matrix4* value, uint32_t count, bool allBuffer)
+    {
+        if (allBuffer)
+        {
+            vector<void*> valueAddresses;
+
+            if (material->type == MaterialType::RayTracing)
+                valueAddresses = GetRTMaterialPropertyAddressAllBuffer(material->data, name, 0);
+            else
+                valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, 0);
+
+            for (auto valueAddress : valueAddresses)
+                memcpy(valueAddress, value, sizeof(Matrix4) * count);
+        }
+        else
+        {
+            void* valueAddress = nullptr;
+
+            if (material->type == MaterialType::RayTracing)
+                valueAddress = GetRTMaterialPropertyAddress(material->data, name, 0);
+            else
+                valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, 0);
+
+            if (valueAddress != nullptr)
+                memcpy(valueAddress, value, sizeof(Matrix4) * count);
+        }
     }
 
     // Vulkan不需要第4个参数

@@ -26,21 +26,24 @@ namespace ZXEngine
 
 		void SetEngineProperties();
 		void SetMaterialProperties();
-		void SetScalar(string name, int value, bool allBuffer = false);
-		void SetScalar(string name, bool value, bool allBuffer = false);
-		void SetScalar(string name, float value, bool allBuffer = false);
-		void SetVector(string name, Vector2 value, bool allBuffer = false);
-		void SetVector(string name, Vector2 value, uint32_t idx, bool allBuffer = false);
-		void SetVector(string name, Vector3 value, bool allBuffer = false);
-		void SetVector(string name, Vector3 value, uint32_t idx, bool allBuffer = false);
-		void SetVector(string name, Vector4 value, bool allBuffer = false);
-		void SetVector(string name, Vector4 value, uint32_t idx, bool allBuffer = false);
-		void SetMatrix(string name, Matrix3 value, bool allBuffer = false);
-		void SetMatrix(string name, Matrix3 value, uint32_t idx, bool allBuffer = false);
-		void SetMatrix(string name, Matrix4 value, bool allBuffer = false);
-		void SetMatrix(string name, Matrix4 value, uint32_t idx, bool allBuffer = false);
-		void SetTexture(string name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
-		void SetCubeMap(string name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
+		void SetScalar(const string& name, bool value, bool allBuffer = false);
+		void SetScalar(const string& name, float value, bool allBuffer = false);
+		void SetScalar(const string& name, int32_t value, bool allBuffer = false);
+		void SetScalar(const string& name, uint32_t value, bool allBuffer = false);
+		void SetVector(const string& name, const Vector2& value, bool allBuffer = false);
+		void SetVector(const string& name, const Vector2& value, uint32_t idx, bool allBuffer = false);
+		void SetVector(const string& name, const Vector3& value, bool allBuffer = false);
+		void SetVector(const string& name, const Vector3& value, uint32_t idx, bool allBuffer = false);
+		void SetVector(const string& name, const Vector4& value, bool allBuffer = false);
+		void SetVector(const string& name, const Vector4& value, uint32_t idx, bool allBuffer = false);
+		void SetVector(const string& name, const Vector4* value, uint32_t count, bool allBuffer = false);
+		void SetMatrix(const string& name, const Matrix3& value, bool allBuffer = false);
+		void SetMatrix(const string& name, const Matrix3& value, uint32_t idx, bool allBuffer = false);
+		void SetMatrix(const string& name, const Matrix4& value, bool allBuffer = false);
+		void SetMatrix(const string& name, const Matrix4& value, uint32_t idx, bool allBuffer = false);
+		void SetMatrix(const string& name, const Matrix4* value, uint32_t count, bool allBuffer = false);
+		void SetTexture(const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
+		void SetCubeMap(const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
 
 	private:
 		// 这个材质引用的Shader是还有其他地方引用，会影响材质销毁流程

@@ -19,17 +19,19 @@ namespace ZXEngine
 
 	struct OpenGLMaterialData
 	{
-		map<string, int> intList;
-		map<string, bool> boolList;
-		map<string, float> floatList;
-		map<string, uint32_t> uintList;
-		map<string, Vector2> vec2List;
-		map<string, Vector3> vec3List;
-		map<string, Vector4> vec4List;
-		map<string, Matrix3> mat3List;
-		map<string, Matrix4> mat4List;
-		map<string, array<uint32_t, 2>> textures;
-		map<string, array<uint32_t, 2>> cubeMaps;
+		unordered_map<string, bool> boolList;
+		unordered_map<string, float> floatList;
+		unordered_map<string, int32_t> intList;
+		unordered_map<string, uint32_t> uintList;
+		unordered_map<string, Vector2> vec2List;
+		unordered_map<string, Vector3> vec3List;
+		unordered_map<string, Vector4> vec4List;
+		unordered_map<string, pair<const Vector4*, uint32_t>> vec4ArrayList;
+		unordered_map<string, Matrix3> mat3List;
+		unordered_map<string, Matrix4> mat4List;
+		unordered_map<string, pair<const Matrix4*, uint32_t>> mat4ArrayList;
+		unordered_map<string, array<uint32_t, 2>> textures;
+		unordered_map<string, array<uint32_t, 2>> cubeMaps;
 		bool inUse = false;
 	};
 }
