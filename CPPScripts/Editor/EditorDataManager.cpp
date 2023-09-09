@@ -182,6 +182,7 @@ namespace ZXEngine
 			ModelData modelData = ModelUtil::LoadModel(asset->path, false);
 			info->meshRenderer = new MeshRenderer();
 			info->meshRenderer->SetMeshes(modelData.pMeshes);
+			info->boneNum = modelData.boneNum;
 			info->animBriefInfos = std::move(modelData.animBriefInfos);
 
 			curAssetInfo = info;

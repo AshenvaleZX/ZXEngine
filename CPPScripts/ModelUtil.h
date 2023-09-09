@@ -16,6 +16,7 @@ namespace ZXEngine
 	struct ModelData
 	{
 		vector<Mesh*> pMeshes;
+		uint32_t boneNum = 0;
 		BoneNode* pRootBoneNode = nullptr;
 		AnimationController* pAnimationController = nullptr;
 		vector<AnimBriefInfo> animBriefInfos;
@@ -37,6 +38,7 @@ namespace ZXEngine
 		static void ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData& modelData, BoneNode* pBoneNode);
 		static StaticMesh* ProcessMesh(const aiMesh* mesh);
 		static AnimationController* ProcessAnimation(const aiScene* pScene);
+		static void CountNode(const aiNode* pNode, uint32_t& count);
 		static void LoadAnimBriefInfos(const aiScene* pScene, ModelData& modelData);
 
 		static inline Matrix4 aiMatrix4x4ToMatrix4(const aiMatrix4x4& mat);

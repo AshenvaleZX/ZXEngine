@@ -82,6 +82,7 @@ namespace ZXEngine
 		string name;
 		string format;
 		MeshRenderer* meshRenderer;
+		uint32_t boneNum;
 		vector<AnimBriefInfo> animBriefInfos;
 
 		AssetModelInfo();

@@ -5,30 +5,28 @@
 
 namespace ZXEngine
 {
-	AssetTextureInfo::AssetTextureInfo()
-	{
-		texture = NULL;
-	}
+	AssetTextureInfo::AssetTextureInfo() :
+		texture(nullptr)
+	{}
 
 	AssetTextureInfo::~AssetTextureInfo()
 	{
 		delete texture;
 	}
 
-	AssetMaterialInfo::AssetMaterialInfo()
-	{
-		material = NULL;
-	}
+	AssetMaterialInfo::AssetMaterialInfo() :
+		material(nullptr)
+	{}
 
 	AssetMaterialInfo::~AssetMaterialInfo()
 	{
 		delete material;
 	}
 
-	AssetModelInfo::AssetModelInfo()
-	{
-		meshRenderer = NULL;
-	}
+	AssetModelInfo::AssetModelInfo() : 
+		boneNum(0),
+		meshRenderer(nullptr)
+	{}
 
 	AssetModelInfo::~AssetModelInfo()
 	{

@@ -324,10 +324,22 @@ namespace ZXEngine
 		return animationController;
     }
 
+    void ModelUtil::CountNode(const aiNode* pNode, uint32_t& count)
+    {
+        count++;
+
+        for (unsigned int i = 0; i < pNode->mNumChildren; i++)
+        {
+            CountNode(pNode->mChildren[i], count);
+        }
+    }
+
     void ModelUtil::LoadAnimBriefInfos(const aiScene* pScene, ModelData& modelData)
     {
         if (!pScene->HasAnimations())
             return;
+
+        CountNode(pScene->mRootNode, modelData.boneNum);
 
         for (unsigned int i = 0; i < pScene->mNumAnimations; i++)
         {
@@ -335,7 +347,7 @@ namespace ZXEngine
 
             AnimBriefInfo briefInfo;
             briefInfo.name = pAnimation->mName.C_Str();
-            briefInfo.duration = static_cast<float>(pAnimation->mDuration);
+            briefInfo.duration = static_cast<float>(pAnimation->mDuration / pAnimation->mTicksPerSecond);
 
             modelData.animBriefInfos.push_back(std::move(briefInfo));
         }

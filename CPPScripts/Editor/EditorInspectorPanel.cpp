@@ -477,6 +477,9 @@ namespace ZXEngine
 		ImGui::SameLine(120);
 		ImGui::Text(to_string(info->meshRenderer->mAABBSizeZ).c_str());
 
+		ImGui::Text("Bone Num:        ");
+		ImGui::SameLine(); ImGui::Text(to_string(info->boneNum).c_str());
+
 		ImGui::Text("Animations Num:  ");
 		ImGui::SameLine(); ImGui::Text(to_string(info->animBriefInfos.size()).c_str());
 		for (auto& animBrief : info->animBriefInfos)
