@@ -20,6 +20,7 @@ namespace ZXEngine
 		Matrix4 shadowProj;
 		vector<Matrix4> shadowTransforms;
 		Shader* shadowCubeMapShader;
+		Shader* animShadowCubeMapShader;
 		RenderStateSetting* renderState;
 
 		void RenderShadowMap(Light* light);

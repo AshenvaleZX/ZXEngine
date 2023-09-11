@@ -35,9 +35,6 @@ namespace ZXEngine
     {
         for (auto mesh : mMeshes)
         {
-            if (mAnimator)
-                mMatetrial->SetMatrix("_BoneMatrices", mesh->mBonesFinalTransform.data(), static_cast<uint32_t>(mesh->mBonesFinalTransform.size()));
-
             RenderAPI::GetInstance()->Draw(mesh->VAO);
         }
     }
@@ -59,6 +56,24 @@ namespace ZXEngine
     {
         if (mAnimator)
             mAnimator->Update(mMeshes);
+    }
+
+    void MeshRenderer::UpdateBoneTransformsForRender()
+    {
+        if (mAnimator)
+        {
+            for (auto mesh : mMeshes)
+                mMatetrial->SetMatrix("_BoneMatrices", mesh->mBonesFinalTransform.data(), static_cast<uint32_t>(mesh->mBonesFinalTransform.size()));
+        }
+    }
+
+    void MeshRenderer::UpdateBoneTransformsForShadow()
+    {
+        if (mAnimator)
+        {
+            for (auto mesh : mMeshes)
+                mShadowCastMaterial->SetMatrix("_BoneMatrices", mesh->mBonesFinalTransform.data(), static_cast<uint32_t>(mesh->mBonesFinalTransform.size()));
+        }
     }
 
     void MeshRenderer::UpdateInternalData()

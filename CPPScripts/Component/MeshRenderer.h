@@ -45,6 +45,8 @@ namespace ZXEngine
 		void GenerateModel(GeometryType type);
 		void SetMeshes(const vector<Mesh*>& meshes);
 		void UpdateAnimation();
+		void UpdateBoneTransformsForRender();
+		void UpdateBoneTransformsForShadow();
 
 	private:
 		void UpdateInternalData();

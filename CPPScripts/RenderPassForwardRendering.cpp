@@ -99,6 +99,9 @@ namespace ZXEngine
 				renderer->UpdateAnimation();
 
 				material->data->Use();
+
+				renderer->UpdateBoneTransformsForRender();
+
 				renderer->Draw();
 			}
 		}

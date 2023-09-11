@@ -22,6 +22,7 @@ namespace ZXEngine
 		shadowProj = Math::PerspectiveLH(Math::Deg2Rad(90.0f), (float)GlobalData::depthCubeMapWidth / (float)GlobalData::depthCubeMapWidth, GlobalData::shadowCubeMapNearPlane, GlobalData::shadowCubeMapFarPlane);
 #endif
 		shadowCubeMapShader = new Shader(Resources::GetAssetFullPath("Shaders/PointShadowDepth.zxshader", true), FrameBufferType::ShadowCubeMap);
+		animShadowCubeMapShader = new Shader(Resources::GetAssetFullPath("Shaders/PointShadowDepthAnim.zxshader", true), FrameBufferType::ShadowCubeMap);
 		renderState = new RenderStateSetting();
 		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ShadowGeneration);
 
@@ -92,7 +93,12 @@ namespace ZXEngine
 				continue;
 
 			if (renderer->mShadowCastMaterial == nullptr)
-				renderer->mShadowCastMaterial = new Material(shadowCubeMapShader);
+			{
+				if (renderer->mAnimator)
+					renderer->mShadowCastMaterial = new Material(animShadowCubeMapShader);
+				else
+					renderer->mShadowCastMaterial = new Material(shadowCubeMapShader);
+			}
 
 			renderer->mShadowCastMaterial->Use();
 			Matrix4 mat_M = renderer->GetTransform()->GetModelMatrix();
@@ -101,6 +107,8 @@ namespace ZXEngine
 				renderer->mShadowCastMaterial->SetMatrix("_ShadowMatrices", shadowTransforms[i], i);
 			renderer->mShadowCastMaterial->SetScalar("_FarPlane", GlobalData::shadowCubeMapFarPlane);
 			renderer->mShadowCastMaterial->SetVector("_LightPos", lightPos);
+
+			renderer->UpdateBoneTransformsForShadow();
 
 			renderer->Draw();
 		}
