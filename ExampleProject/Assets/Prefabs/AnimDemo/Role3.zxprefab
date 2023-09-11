@@ -1,0 +1,23 @@
+{
+    "Name": "Role3",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [8, -3, 0],
+            "Rotation": [0, 180, 0],
+            "Scale": [0.2, 0.2, 0.2]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Mesh": "Models/Doll.fbx",
+            "Material": "Materials/BlinnPhongAnim.zxmat",
+            "CastShadow": true,
+            "ReceiveShadow": false
+        },
+        {
+            "Type": "GameLogic",
+            "Lua": "Scripts/AnimTest3.lua"
+        }
+    ]
+}

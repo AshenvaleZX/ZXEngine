@@ -1,0 +1,19 @@
+{
+    "Name": "Plane",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, -4, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [5, 1, 5]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Geometry": 4,
+            "Material": "Materials/CheckerBoard.zxmat",
+            "CastShadow": false,
+            "ReceiveShadow": true
+        }
+    ]
+}

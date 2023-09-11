@@ -1,0 +1,22 @@
+{
+    "Type": "Material",
+    "Shader": "Shaders/BlinnPhong_Anim_PL.zxshader",
+    "Float":
+    [
+        {
+            "UniformName": "_Ambient",
+            "Value": 0.15
+        },
+        {
+            "UniformName": "_Specular",
+            "Value": 0.1
+        }
+    ],
+    "Textures":
+    [
+        {
+            "UniformName": "_Texture1",
+            "Path": "Textures/Doll_Base_Color.jpg"
+        }
+    ]
+}

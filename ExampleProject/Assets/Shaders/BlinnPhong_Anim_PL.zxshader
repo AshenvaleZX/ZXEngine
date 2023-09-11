@@ -1,0 +1,102 @@
+Setting 
+{
+    Blend SrcAlpha OneMinusSrcAlpha
+    BlendOp Add
+    Cull Back
+    ZTest Less
+    ZWrite On
+}
+
+Vertex
+{
+    Input
+    {
+        0 vec3  aPos       : POSITION
+        1 vec2  aTexCoords : TEXCOORD
+        2 vec3  aNormal    : NORMAL
+        4 vec4  aWeight    : WEIGHT
+        5 uvec4 aBoneID    : BONEID
+    }
+
+    Output
+    {
+        0 vec3 WorldPos  : TEXCOORD0
+        1 vec3 Normal    : TEXCOORD1
+        2 vec2 TexCoords : TEXCOORD2
+    }
+
+    Properties
+    {
+        using ENGINE_Model
+        using ENGINE_View
+        using ENGINE_Projection
+        using ENGINE_Model_Inv
+        mat4 _BoneMatrices[64]
+    }
+
+    Program
+    {
+        void main()
+        {
+            vec4 pos = vec4(0.0, 0.0, 0.0, 1.0);
+            pos += mul(_BoneMatrices[aBoneID.r] * vec4(aPos, 1.0)) * aWeight.r;
+            pos += mul(_BoneMatrices[aBoneID.g] * vec4(aPos, 1.0)) * aWeight.g;
+            pos += mul(_BoneMatrices[aBoneID.b] * vec4(aPos, 1.0)) * aWeight.b;
+            pos += mul(_BoneMatrices[aBoneID.a] * vec4(aPos, 1.0)) * aWeight.a;
+
+            // vec4 pos = vec4(aPos, 1.0);
+
+            WorldPos = to_vec3(mul(ENGINE_Model * pos));
+            Normal = mul(transpose(to_mat3(ENGINE_Model_Inv)) * aNormal);
+            TexCoords = aTexCoords;
+            ZX_Position = mul(ENGINE_Projection * ENGINE_View * ENGINE_Model * pos);
+        }
+    }
+}
+
+Fragment
+{
+    Input
+    {
+        0 vec3 WorldPos  : TEXCOORD0
+        1 vec3 Normal    : TEXCOORD1
+        2 vec2 TexCoords : TEXCOORD2
+    }
+
+    Output
+    {
+        0 vec4 FragColor : SV_Target
+    }
+
+    Properties
+    {
+        using ENGINE_Light_Pos
+        using ENGINE_Camera_Pos
+        float _Ambient
+        float _Specular
+        sampler2D _Texture1
+    }
+
+    Program
+    {
+        void main()
+        {           
+            vec3 color = texture(_Texture1, TexCoords).rgb;
+            // ambient
+            vec3 ambient = _Ambient * color;
+            // diffuse
+            vec3 lightDir = normalize(ENGINE_Light_Pos - WorldPos);
+            vec3 normal = normalize(Normal);
+            float diff = max(dot(lightDir, normal), 0.0);
+            vec3 diffuse = diff * color;
+            // specular
+            vec3 viewDir = normalize(ENGINE_Camera_Pos - WorldPos);
+            vec3 reflectDir = reflect(-lightDir, normal);
+            vec3 halfwayDir = normalize(lightDir + viewDir);  
+            float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+            vec3 specular = to_vec3(_Specular) * spec; // assuming bright white light color
+
+            FragColor = vec4(ambient + diffuse + specular, 1.0);
+        }
+    }
+}
