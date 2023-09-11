@@ -1,6 +1,6 @@
 # ZXEngine
 
-这是我自己开发的游戏引擎项目。创建这个项目的主要目的是为了我自己学习和实践游戏引擎技术，不过如果这个项目能对你产生帮助那就更好了。
+这是我自己开发的游戏引擎项目，创建这个项目的主要目的是为了我自己学习和实践游戏引擎技术，不过也希望这个项目能对你有所帮助。
 
 This is a game engine project developed by myself. The main purpose of creating this project is to learn and practice game engine technology for myself, but it would be better if this project can help you.
 
@@ -12,25 +12,21 @@ Screenshot display (more display later in the introduction):
 
 ## 引擎简介 (Engine Introduction)
 
-本引擎目前同时支持Vulkan，DirectX 12和OpenGL，使用自创的zxshader语言来编写shader，支持前面三种图形API，可一次编写3种环境运行。本引擎也支持光线追踪渲染管线(基于Vulkan)。
+本引擎目前同时支持Vulkan，DirectX 12和OpenGL，使用自创的zxshader语言来编写shader，支持前面三种图形API，可一次编写3种环境运行。同时也支持光线追踪渲染管线(基于Vulkan)。
 
 This engine currently supports Vulkan, DirectX 12 and OpenGL. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs. This engine also supports ray tracing rendering pipeline (Only based on Vulkan for now).
 
-本引擎内置我自己写的物理引擎PhysZ(学习和改写自Cyclone引擎)，支持基本的刚体力学模拟。
+本项目是游戏引擎项目，不是单纯的渲染引擎。所以还内置了我自己写的物理引擎PhysZ(学习和改写自Cyclone引擎)，支持基本的刚体力学模拟。同时我也开发了简单的骨骼蒙皮动画系统，粒子系统等。文档后面会有这些系统的图片展示。
 
-This engine has a built-in physics engine written by myself, which I called it PhysZ (learn and rewritten from the Cyclone engine), supports rigid body mechanics simulation.
-
-本引擎也支持骨骼蒙皮动画。
-
-And this engine also supports skeletal animation.
+This project is a game engine project, not just a rendering engine. Therefore, it also has a built-in physics engine written by myself, which I called it PhysZ (learn and rewritten from the Cyclone engine), supports rigid body mechanics simulation. And I also developed a simple skeletal animation system, particle system, etc. Images of these systems are shown later in this document.
 
 引擎本身用C++开发，GamePlay层使用Lua开发，引擎层封装部分C++接口给GamePlay层的Lua调用。使用方式类似Unity的XLua，通过一个GameLogic组件把Lua代码绑定到GameObject上，接收所挂载对象上来自引擎的Start和Update调用，并通过self访问GameObject对象(具体示例看后面)。
 
 The engine is developed with C++, the GamePlay layer is developed with Lua, and the engine encapsulates part of the C++ interface to the Lua call of the GamePlay layer. The usage is similar to Unity's XLua, you can bind the Lua code to the GameObject through a GameLogic component, receive Start and Update calls from the engine on the mounted object, and access the GameObject object through self (see later for specific examples).
 
-项目目前还比较简单，不过完成了引擎所需的基本的场景，预制体，材质，shader文件系统。有一个类Unity的引擎编辑器页面。场景中的对象都是Unity式的 GameObject - Component 结构。
+项目目前还比较简单，不过我已经完成了引擎所需的基本的场景，预制体，材质系统，shader文件系统等等的开发。本引擎有一个类Unity的引擎编辑器页面。场景中的对象都是Unity式的 GameObject - Component 结构。
 
-The project is still relatively simple, but the basic scenes, prefabs, materials, and shader file systems have been completed. There is a Unity-like engine editor. Objects in the scene are Unity-style GameObject - Component structures.
+The project is still relatively simple, but I have completed the development of the basic scenes, prefabs, materials system, shader file systems and so on that the engine need. This engine has a Unity-like engine editor. Objects in the scene are Unity-style GameObject - Component structures.
 
 ## 细节图片展示 (Detailed picture display)
 
