@@ -22,7 +22,7 @@ namespace ZXEngine
 		void Stop();
 		void Reset();
 		bool IsPlaying() const;
-		void Update(BoneNode* pBoneNode, const vector<Mesh*>& pMeshes);
+		void Update(const BoneNode* pBoneNode, const vector<Mesh*>& pMeshes);
 		void AddNodeAnimation(NodeAnimation* nodeAnimation);
 
 	private:

@@ -43,7 +43,7 @@ namespace ZXEngine
 		return mIsPlaying;
 	}
 
-	void Animation::Update(BoneNode* pBoneNode, const vector<Mesh*>& pMeshes)
+	void Animation::Update(const BoneNode* pBoneNode, const vector<Mesh*>& pMeshes)
 	{
 		if (!mIsPlaying)
 			return;
@@ -121,7 +121,7 @@ namespace ZXEngine
 			{
 				uint32_t index = pMesh->mBoneNameToIndexMap[nodeName];
 				// 此处的矩阵是给Shader用的，需要转置为列主序
-				pMesh->mBonesFinalTransform[index] = Math::Transpose(pMesh->mRootBoneToWorld * globalTransform * pMesh->mBonesOffset[index]);
+				pMesh->mBonesFinalTransform[index] = Math::Transpose(globalTransform * pMesh->mBonesOffset[index]);
 			}
 		}
 

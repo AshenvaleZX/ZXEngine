@@ -3,6 +3,7 @@
 #include <vector>
 #include "Math.h"
 #include "PublicEnum.h"
+#include "Debug.h"
 
 // 顶点最多关联4个骨骼
 #define MAX_NUM_BONES_PER_VERTEX 4
@@ -33,6 +34,7 @@ namespace ZXEngine
 					return;
 				}
 			}
+			Debug::LogWarning("Vertex has more than %s bones!", MAX_NUM_BONES_PER_VERTEX);
 		}
 	};
 

@@ -79,7 +79,8 @@ namespace ZXEngine
 
         // 用ASSIMP加载模型文件
         Assimp::Importer importer;
-        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_FixInfacingNormals | aiProcess_FlipWindingOrder);
+        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace 
+            | aiProcess_FixInfacingNormals | aiProcess_FlipWindingOrder | aiProcess_LimitBoneWeights);
         
         // 检查异常
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
@@ -99,11 +100,6 @@ namespace ZXEngine
         {
             modelData.pRootBoneNode = new BoneNode();
             ProcessNode(scene->mRootNode, scene, modelData, modelData.pRootBoneNode);
-            Matrix4 globalInverseTransform = Math::Inverse(aiMatrix4x4ToMatrix4(scene->mRootNode->mTransformation));
-            for (auto mesh : modelData.pMeshes)
-            {
-                mesh->mRootBoneToWorld = globalInverseTransform;
-            }
         }
         // 处理模型数据
         else

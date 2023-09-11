@@ -18,8 +18,6 @@ namespace ZXEngine
 		vector<Matrix4> mBonesFinalTransform;
 		// 骨骼名字到数组索引的映射
 		unordered_map<string, uint32_t> mBoneNameToIndexMap;
-		// 骨骼根节点到世界坐标系的变换矩阵
-		Matrix4 mRootBoneToWorld;
 
 		// 在xyz方向上最远的点，0-5分别对应+x, -x, +y, -y, +z, -z
 		array<Vertex, 6> mExtremeVertices;
