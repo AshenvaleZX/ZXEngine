@@ -1,24 +1,28 @@
 # ZXEngine
 
-这个项目是我个人为了学习游戏引擎技术创建的，目前同时支持Vulkan，DirectX 12和OpenGL。并且支持光线追踪渲染管线(基于Vulkan)。
+这是我自己开发的游戏引擎项目。创建这个项目的主要目的是为了我自己学习和实践游戏引擎技术，不过如果这个项目能对你产生帮助那就更好了。
 
-I created this project to learn and practice game engine technology, It now supports Vulkan, DirectX 12 and OpenGL.And it supports ray tracing rendering (Only based on Vulkan for now).
-
-本引擎内置自研物理引擎PhysZ(改写自Cyclone引擎)，支持基本的刚体力学模拟。
-
-This engine has a built-in physics engine which I called it PhysZ (rewritten from the Cyclone engine), supports rigid body mechanics simulation.
+This is a game engine project developed by myself. The main purpose of creating this project is to learn and practice game engine technology for myself, but it would be better if this project can help you.
 
 截图展示(介绍后面有更多展示):
 
 Screenshot display (more display later in the introduction):
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%200.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/EngineShow0.jpg)
 
 ## 引擎简介 (Engine Introduction)
 
-本引擎使用自创的zxshader语言来编写shader，同时支持Vulkan，DirectX 12和OpenGL。
+本引擎目前同时支持Vulkan，DirectX 12和OpenGL，使用自创的zxshader语言来编写shader，支持前面三种图形API，可一次编写3种环境运行。本引擎也支持光线追踪渲染管线(基于Vulkan)。
 
-This engine uses the self-created zxshader language to write shaders, and supports Vulkan, DirectX 12 and OpenGL at the same time.
+This engine currently supports Vulkan, DirectX 12 and OpenGL. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs. This engine also supports ray tracing rendering pipeline (Only based on Vulkan for now).
+
+本引擎内置我自己写的物理引擎PhysZ(学习和改写自Cyclone引擎)，支持基本的刚体力学模拟。
+
+This engine has a built-in physics engine written by myself, which I called it PhysZ (learn and rewritten from the Cyclone engine), supports rigid body mechanics simulation.
+
+本引擎也支持骨骼蒙皮动画。
+
+And this engine also supports skeletal animation.
 
 引擎本身用C++开发，GamePlay层使用Lua开发，引擎层封装部分C++接口给GamePlay层的Lua调用。使用方式类似Unity的XLua，通过一个GameLogic组件把Lua代码绑定到GameObject上，接收所挂载对象上来自引擎的Start和Update调用，并通过self访问GameObject对象(具体示例看后面)。
 
@@ -34,41 +38,41 @@ The project is still relatively simple, but the basic scenes, prefabs, materials
 
 The following are some picture displays, the engine is shown in the figure, which is similar to the Unity editor. The top is the main menu bar, the middle is the game screen window, the left is the Hierarchy panel showing the GameObject in the scene, the lower left is the Project panel showing the Assets file directory of the currently opened project, the middle is the Console panel showing the log, and the right is showing the currently selected Inspector panel for object details.
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%201.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/EngineShow1.jpg)
 
 当前选中了场景中的Sun对象，Inspector面板就展示这个GameObject所挂载的Component信息。
 
 The Sun object in the scene is currently selected, and the Inspector panel displays the Component information on the GameObject.
 
-点击主菜单栏的开始按钮，游戏开始运行，此时能看到场景中物体动了起来，粒子系统也开始工作。
+点击主菜单栏的运行按钮，游戏开始运行，此时能看到场景中物体动了起来，粒子系统也开始工作。
 
-Click the start button on the main menu bar, and the game starts to run. At this time, you can see the objects in the scene move, and the particle system starts to work. 
+Click the Play button on the main menu bar, and the game starts to run. At this time, you can see the objects in the scene move, and the particle system starts to work. 
 
 接下来展示的是一个基于PBR+IBL场景渲染，同时展示了点击材质文件后Inspector面板展示的材质信息和材质预览。
 
 Next picture is a scene rendering based on PBR+IBL, and also shows the material information and material preview displayed on the Inspector panel after clicking the material file.
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%202.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/EngineShow2.jpg)
 
-然后通过双击场景文件，切换到一个使用光线追踪渲染管线渲染的场景。同时展示了点击模型文件后Inspector面板展示的模型信息和模型预览。
+然后通过双击场景文件，切换到一个使用光线追踪渲染管线渲染的场景。同时展示了点击模型文件后Inspector面板展示的模型信息和模型预览，如果模型带有动画还会显示骨骼和动画信息。
 
-Then switch to a scene rendered with the ray tracing pipeline by double-clicking on the scene file. At the same time, it shows the model information and model preview displayed on the Inspector panel after clicking the model file.
+Then switch to a scene rendered with the ray tracing pipeline by double-clicking on the scene file. At the same time, it shows the model information and model preview displayed on the Inspector panel after clicking the model file. If the model has animation, the skeleton and animation information will also be displayed.
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%203.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/EngineShow3.jpg)
 
 接下来展示的是通过算法生成的体积云及其阴影投射效果。同时展示了点击图片文件后，Inspector面板显示的图像信息。
 
 Shown next are code-generated volumetric clouds and their shadow casting effects. And the right side shows the image information displayed on the Inspector panel after clicking the image file.
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%204.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/EngineShow4.jpg)
 
 下面是分别点击zxshader和Lua后Inspector上的代码预览。
 
 The following is the code preview on the Inspector after clicking zxshader and Lua respectively.
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%205.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/EngineShow5.jpg)
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Engine%20Show%206.png)
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/EngineShow6.jpg)
 
 ## PhysZ引擎简介(PhysZ Engine Introduction)
 
@@ -87,6 +91,18 @@ Using the PhysZ engine involves only two Components, Collider and Rigidbody. Col
 各参数作用顾名思义即可。其中Damping参数是模拟各种形式的阻尼效果的，Linear Damping和Angular Damping分别对应线性运动和角运动，数值为0代表无阻尼。
 
 The function of each parameter is just as the name implies. And the Damping parameter is used to simulate various forms of damping effects. Linear Damping and Angular Damping correspond to linear motion and angular motion respectively. A value of 0 represents no damping.
+
+## 骨骼蒙皮动画(Skeletal Animation)
+
+切换到AnimDemo场景，点击运行按钮后，可以看到骨骼蒙皮动画的展示:
+
+Switch to the AnimDemo scene and click Play button to see the skeletal animation display:
+
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Anim.gif)
+
+这里动画的播放代码属于业务逻辑模块而不是引擎，所以是写在Lua代码中的，通过GameLogic组件绑定到对应的GameObject上。
+
+The code to play the animation belongs to the GamePlay rather than the engine, so it‘s written in the Lua code and bound to the GameObject through the GameLogic component.
 
 ## 引擎文件格式介绍 (Engine file format introduction)
 
