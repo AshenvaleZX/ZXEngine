@@ -14,6 +14,7 @@ namespace ZXEngine
 		static StaticMesh* CreateCylinder(float topRadius, float bottomRadius, float height, uint32_t sliceCount, uint32_t stackCount);
 		static StaticMesh* CreatePlane(float xLength, float zLength, uint32_t xSplit, uint32_t zSplit);
 		static StaticMesh* CreateQuad(float xLength, float yLength);
+		static StaticMesh* CreateScreenQuad();
 
 	private:
 		static Vertex MidPoint(const Vertex& v0, const Vertex& v1);

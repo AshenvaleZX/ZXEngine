@@ -49,6 +49,5 @@ namespace ZXEngine
 		void RenderModelPreview(AssetModelInfo* info);
 		void RenderToQuad();
 		Matrix4 GetModelMatrix();
-		void InitPreviewQuad();
 	};
 }

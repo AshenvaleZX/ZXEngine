@@ -12,6 +12,7 @@
 #include "../RenderEngineProperties.h"
 #include "../Material.h"
 #include "../StaticMesh.h"
+#include "../GeometryGenerator.h"
 
 namespace ZXEngine
 {
@@ -35,7 +36,8 @@ namespace ZXEngine
 		cubeMapPath.push_back(Resources::GetAssetFullPath("Textures/white.png", true));
 		shadowCubeMap = new CubeMap(cubeMapPath);
 
-		InitPreviewQuad();
+		previewQuad = GeometryGenerator::CreateScreenQuad();
+		
 		previewQuadMaterial = new Material(new Shader(Resources::GetAssetFullPath("Shaders/RenderTexture.zxshader", true), FrameBufferType::Present));
 		previewModelMaterial = new Material(new Shader(Resources::GetAssetFullPath("Shaders/ModelPreview.zxshader", true), FrameBufferType::Normal));
 
@@ -211,53 +213,5 @@ namespace ZXEngine
 		mat = Math::Rotate(mat, yaw, Vector3(0.0f, 1.0f, 0.0f));
 		mat = Math::Rotate(mat, pitch, Vector3(1.0f, 0.0f, 0.0f));
 		return mat;
-	}
-
-	void EditorAssetPreviewer::InitPreviewQuad()
-	{
-		// 这里自己在代码里写一个Quad模型，就不从硬盘加载了
-		Vector3 points[4] =
-		{
-			Vector3(1, 1, 0),
-			Vector3(1, -1, 0),
-			Vector3(-1, 1, 0),
-			Vector3(-1, -1, 0),
-		};
-		Vector2 coords[4] =
-		{
-#if defined(ZX_API_OPENGL) || defined(ZX_API_VULKAN)
-			Vector2(1, 1),
-			Vector2(1, 0),
-			Vector2(0, 1),
-			Vector2(0, 0),
-#else
-			Vector2(1, 0),
-			Vector2(1, 1),
-			Vector2(0, 0),
-			Vector2(0, 1),
-#endif
-		};
-		vector<Vertex> vertices;
-		// 这里是直接手写的NDC坐标，所以需要考虑不同API的NDC坐标系差异，目前工程里都是以逆时针为图元正面
-		// OpenGL的(-1,-1,-1)在左下近点，Vulkan的(-1,-1,-1)在左上近点，DirectX12的(-1,-1,-1)在左上远点
-		// 因为OpenGL和DirectX12在Y轴和Z轴都是反的，所以负负得正，用同一个顶点索引顺序
-		vector<unsigned int> indices =
-		{
-#if defined(ZX_API_OPENGL) || defined(ZX_API_D3D12)
-			2, 3, 1,
-			2, 1, 0,
-#else
-			3, 2, 0,
-			3, 0, 1,
-#endif
-		};
-		for (unsigned int i = 0; i < 4; i++)
-		{
-			Vertex vertex;
-			vertex.Position = points[i];
-			vertex.TexCoords = coords[i];
-			vertices.push_back(vertex);
-		}
-		previewQuad = new StaticMesh(vertices, indices);
 	}
 }

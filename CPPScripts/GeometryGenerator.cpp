@@ -455,6 +455,83 @@ namespace ZXEngine
 		return new StaticMesh(vertices, indices);
 	}
 
+	StaticMesh* GeometryGenerator::CreateScreenQuad()
+	{
+		/*
+		此函数生成一个覆盖屏幕的四边形Mesh，无需MVP变换，直接手写的NDC顶点数据，所以需要格外注意不同API的NDC差异
+		各API的NDC坐标系如下：
+		|---------------------------------------------------|
+		| OpenGL  | X轴向右 | Y轴向上 | Z轴向靠近自己的方向 |
+		|---------|---------|---------|---------------------|
+		| Vulkan  | X轴向右 | Y轴向下 | Z轴向远离自己的方向 |
+		|---------|---------|---------|---------------------|
+		| DirectX | X轴向右 | Y轴向上 | Z轴向远离自己的方向 |
+		|---------------------------------------------------|
+		*/
+
+		// 四边形4个顶点坐标，位于DNC，与分辨率无关，也与图形API无关，坐标范围都是[-1, 1]
+		Vector3 points[4] =
+		{
+			Vector3( 1,  1, 0),
+			Vector3( 1, -1, 0),
+			Vector3(-1,  1, 0),
+			Vector3(-1, -1, 0),
+		};
+
+		/*
+		|---------------------------------------------|
+		| OpenGL  | NDC Y轴向上 | FrameBuffer Y轴向上 |
+		|---------|-------------|---------------------|
+		| Vulkan  | NDC Y轴向下 | FrameBuffer Y轴向下 |
+		|---------|-------------|---------------------|
+		| DirectX | NDC Y轴向上 | FrameBuffer Y轴向下 |
+		|---------------------------------------------|
+		
+		OpenGL和Vulkan的NDC和FrameBuffer在Y轴是同向的，而DirectX的NDC和FrameBuffer在Y轴是反向的
+		所以在OpenGL和Vulkan中的顶点坐标和UV在Y轴是对应的，即1对应1，-1对应0
+		而在DirectX中顶点坐标和UV在Y轴就是反的，即1对应0，-1对应1
+		*/
+		Vector2 coords[4] =
+		{
+#if defined(ZX_API_OPENGL) || defined(ZX_API_VULKAN)
+			Vector2(1, 1),
+			Vector2(1, 0),
+			Vector2(0, 1),
+			Vector2(0, 0),
+#else
+			Vector2(1, 0),
+			Vector2(1, 1),
+			Vector2(0, 0),
+			Vector2(0, 1),
+#endif
+		};
+
+		// 这里的顶点索引顺序决定了正反面，目前工程里都是以逆时针为图元正面
+		// 覆盖屏幕的四边形只考虑XY坐标，而OpenGL和DirectX的XY轴朝向是一致的，所以顶点索引顺序是一致的
+		// Vulkan的Y轴和其它来个API相反，所以顶点索引顺序是逆序的
+		vector<uint32_t> indices =
+		{
+#if defined(ZX_API_OPENGL) || defined(ZX_API_D3D12)
+			2, 3, 1,
+			2, 1, 0,
+#else
+			3, 2, 0,
+			3, 0, 1,
+#endif
+		};
+
+		vector<Vertex> vertices;
+		for (size_t i = 0; i < 4; i++)
+		{
+			Vertex vertex;
+			vertex.Position = points[i];
+			vertex.TexCoords = coords[i];
+			vertices.push_back(vertex);
+		}
+
+		return new StaticMesh(vertices, indices);
+	}
+
 	Vertex GeometryGenerator::MidPoint(const Vertex& v0, const Vertex& v1)
 	{
 		auto& p0 = v0.Position;

@@ -8,17 +8,19 @@
 #include "RenderStateSetting.h"
 #include "ProjectSetting.h"
 #include "Component/ZCamera.h"
+#include "GeometryGenerator.h"
 
 namespace ZXEngine
 {
 	RenderPassAfterEffectRendering::RenderPassAfterEffectRendering()
 	{
-		InitScreenQuad();
 		//InitGaussianBlur();
 		InitKawaseBlur();
 		InitExtractBrightArea();
 		InitBloomBlend(true);
 		InitCopy(true);
+
+		screenQuad = GeometryGenerator::CreateScreenQuad();
 
 		renderState = new RenderStateSetting();
 		renderState->depthTest = false;
@@ -93,54 +95,6 @@ namespace ZXEngine
 			return iter->second;
 		else
 			return nullptr;
-	}
-
-	void RenderPassAfterEffectRendering::InitScreenQuad()
-	{
-		// 这里自己在代码里写一个Quad模型，就不从硬盘加载了
-		Vector3 points[4] =
-		{
-			Vector3(1, 1, 0),
-			Vector3(1, -1, 0),
-			Vector3(-1, 1, 0),
-			Vector3(-1, -1, 0),
-		};
-		Vector2 coords[4] =
-		{
-#if defined(ZX_API_OPENGL) || defined(ZX_API_VULKAN)
-			Vector2(1, 1),
-			Vector2(1, 0),
-			Vector2(0, 1),
-			Vector2(0, 0),
-#else
-			Vector2(1, 0),
-			Vector2(1, 1),
-			Vector2(0, 0),
-			Vector2(0, 1),
-#endif
-		};
-		vector<Vertex> vertices;
-		// 这里是直接手写的NDC坐标，所以需要考虑不同API的NDC坐标系差异，目前工程里都是以逆时针为图元正面
-		// OpenGL的(-1,-1,-1)在左下近点，Vulkan的(-1,-1,-1)在左上近点，DirectX12的(-1,-1,-1)在左上远点
-		// 因为OpenGL和DirectX12在Y轴和Z轴都是反的，所以负负得正，用同一个顶点索引顺序
-		vector<unsigned int> indices =
-		{
-#if defined(ZX_API_OPENGL) || defined(ZX_API_D3D12)
-			2, 3, 1,
-			2, 1, 0,
-#else
-			3, 2, 0,
-			3, 0, 1,
-#endif
-		};
-		for (unsigned int i = 0; i < 4; i++)
-		{
-			Vertex vertex;
-			vertex.Position = points[i];
-			vertex.TexCoords = coords[i];
-			vertices.push_back(vertex);
-		}
-		screenQuad = new StaticMesh(vertices, indices);
 	}
 
 	void RenderPassAfterEffectRendering::InitExtractBrightArea(bool isFinal)

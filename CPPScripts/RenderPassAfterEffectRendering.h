@@ -31,7 +31,6 @@ namespace ZXEngine
 		uint32_t GetCommand(const string& name);
 		void CreateMaterial(string name, string path, FrameBufferType type, bool isBuiltIn = false);
 		Material* GetMaterial(string name);
-		void InitScreenQuad();
 
 		// 提取画面高亮部分
 		void InitExtractBrightArea(bool isFinal = false);
