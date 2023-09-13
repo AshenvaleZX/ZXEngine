@@ -9,6 +9,7 @@
 #include <iostream>
 #include <map>
 #include <set>
+#include <deque>
 #include <vector>
 #include <unordered_set>
 #include <fstream>
@@ -25,6 +26,7 @@ using std::list;
 using std::array;
 using std::map;
 using std::set;
+using std::deque;
 using std::unordered_map;
 using std::unordered_set;
 using std::pair;

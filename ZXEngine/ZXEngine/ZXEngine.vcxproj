@@ -196,6 +196,7 @@
     <ClCompile Include="..\..\CPPScripts\Editor\EditorConsolePanel.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorMainBarPanel.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorAssetPreviewer.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorDialogBoxManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\EditorProjectPanel.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\ImGuiTextureManager.cpp" />
     <ClCompile Include="..\..\CPPScripts\Editor\ImGuiTextureManagerD3D12.cpp" />
@@ -350,6 +351,7 @@
     <ClInclude Include="..\..\CPPScripts\Editor\EditorGUIManagerOpenGL.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorGUIManagerVulkan.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorHierarchyPanel.h" />
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorDialogBoxManager.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\ImGuiTextureManager.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorInputManager.h" />
     <ClInclude Include="..\..\CPPScripts\Editor\EditorInspectorPanel.h" />

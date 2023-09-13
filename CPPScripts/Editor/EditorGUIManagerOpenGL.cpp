@@ -5,7 +5,7 @@
 #include "EditorInspectorPanel.h"
 #include "EditorConsolePanel.h"
 #include "EditorAssetPreviewer.h"
-#include "ImGuiTextureManager.h"
+#include "EditorDialogBoxManager.h"
 #include "../Window/WindowManager.h"
 #include "../External/ImGui/imgui_impl_glfw.h"
 #include "../External/ImGui/imgui_impl_opengl3.h"
@@ -57,6 +57,9 @@ namespace ZXEngine
 		{
 			panel->DrawPanel();
 		}
+
+		EditorDialogBoxManager::GetInstance()->Draw();
+
 		ImGui::Render();
 	}
 

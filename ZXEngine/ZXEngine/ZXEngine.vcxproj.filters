@@ -525,6 +525,9 @@
     <ClCompile Include="..\..\CPPScripts\Component\Animator.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Editor\EditorDialogBoxManager.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\GameObject.h">
@@ -1033,6 +1036,9 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Animator.h">
       <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Editor\EditorDialogBoxManager.h">
+      <Filter>Editor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

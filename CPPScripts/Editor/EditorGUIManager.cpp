@@ -1,5 +1,6 @@
 #include "EditorGUIManager.h"
 #include "ImGuiTextureManager.h"
+#include "EditorDialogBoxManager.h"
 #ifdef ZX_API_OPENGL
 #include "EditorGUIManagerOpenGL.h"
 #endif
@@ -26,6 +27,7 @@ namespace ZXEngine
 		mInstance = new EditorGUIManagerDirectX12();
 #endif
 		ImGuiTextureManager::Creat();
+		EditorDialogBoxManager::Create();
 		mInstance->Init();
 	}
 
