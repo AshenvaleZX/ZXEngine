@@ -24,10 +24,10 @@ namespace ZXEngine
 		SceneManager() {};
 		~SceneManager() {};
 
-		Scene* GetScene(string name);
-		void LoadScene(string path, bool switchNow = true);
-		void SwitchScene(string name);
-		void DeleteScene(string name);
+		Scene* GetScene(const string& name);
+		void LoadScene(const string& path, bool switchNow = true);
+		void SwitchScene(const string& name);
+		void DeleteScene(const string& name);
 		void DeleteAllScene();
 		void ReloadScene();
 		Scene* GetCurScene();
@@ -36,6 +36,6 @@ namespace ZXEngine
 		SceneInfo* curScene = nullptr;
 		map<string, SceneInfo*> scenes;
 
-		SceneInfo* GetSceneInfo(string name);
+		SceneInfo* GetSceneInfo(const string& name);
 	};
 }

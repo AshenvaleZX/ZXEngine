@@ -628,6 +628,10 @@ namespace ZXEngine
 			FBO->ColorBuffer = UINT32_MAX;
 			FBO->DepthBuffer = depthCubeMap;
 		}
+		else if (type == FrameBufferType::RayTracing)
+		{
+			// OpenGL不支持光线追踪
+		}
 		else
 		{
 			Debug::LogError("Invalide frame buffer type.");

@@ -5,6 +5,10 @@
 #include "LuaManager.h"
 #include "RenderPassManager.h"
 
+#ifdef ZX_EDITOR
+#include "Editor/EditorDialogBoxManager.h"
+#endif
+
 namespace ZXEngine
 {
 	SceneManager* SceneManager::mInstance = nullptr;
@@ -20,7 +24,7 @@ namespace ZXEngine
 		return mInstance;
 	}
 
-	Scene* SceneManager::GetScene(string name)
+	Scene* SceneManager::GetScene(const string& name)
 	{
 		auto sceneInfo = GetSceneInfo(name);
 		if (sceneInfo == nullptr)
@@ -33,8 +37,25 @@ namespace ZXEngine
 		}
 	}
 
-	void SceneManager::LoadScene(string path, bool switchNow)
+	void SceneManager::LoadScene(const string& path, bool switchNow)
 	{
+		auto sceneStruct = Resources::LoadScene(path);
+
+#if defined(ZX_API_OPENGL) || defined(ZX_API_D3D12)
+		if (sceneStruct->renderPipelineType == RenderPipelineType::RayTracing)
+		{
+#ifdef ZX_EDITOR
+#ifdef ZX_API_OPENGL
+			EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "OpenGL do not support ray tracing scene.");
+#else
+			EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "Ray tracing based on DirectX12 has not yet been implemented.");
+#endif
+#endif
+			delete sceneStruct;
+			return;
+		}
+#endif
+
 		// 目前多场景同时管理还有问题，主要体现在GameLogic和Light等组件上，会记录到一个全局列表里
 		// 然后在遍历这种组件的时候，会遍历到不属于当前场景的对象，比如调用到不属于当前场景的Lua脚本
 		// 所以暂时只支持单场景，切场景的时候先卸载原场景
@@ -43,14 +64,16 @@ namespace ZXEngine
 
 		SceneInfo* info = new SceneInfo();
 		info->path = path;
-		info->scene = new Scene(Resources::LoadScene(path));
+		info->scene = new Scene(sceneStruct);
 		scenes.insert(pair<string, SceneInfo*>(name, info));
 
 		if (switchNow)
 			SwitchScene(name);
+
+		delete sceneStruct;
 	}
 
-	void SceneManager::SwitchScene(string name)
+	void SceneManager::SwitchScene(const string& name)
 	{
 		auto scene = GetSceneInfo(name);
 		if (scene == nullptr)
@@ -68,7 +91,7 @@ namespace ZXEngine
 		}
 	}
 
-	void SceneManager::DeleteScene(string name)
+	void SceneManager::DeleteScene(const string& name)
 	{
 		map<string, SceneInfo*>::iterator iter = scenes.find(name);
 		if (iter != scenes.end())
@@ -105,7 +128,7 @@ namespace ZXEngine
 		return curScene->scene;
 	}
 
-	SceneInfo* SceneManager::GetSceneInfo(string name)
+	SceneInfo* SceneManager::GetSceneInfo(const string& name)
 	{
 		map<string, SceneInfo*>::iterator iter = scenes.find(name);
 		if (iter != scenes.end())
