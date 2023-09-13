@@ -15,12 +15,13 @@
 #include "RenderEngineProperties.h"
 #include "MaterialData.h"
 #include "StaticMesh.h"
+#include "GeometryGenerator.h"
 
 namespace ZXEngine
 {
 	RenderPassForwardRendering::RenderPassForwardRendering()
 	{
-		InitSkyBox();
+		skyBox = GeometryGenerator::CreateSimpleInwardBox();
 		skyBoxMaterial = new Material(new Shader(Resources::GetAssetFullPath("Shaders/SkyBox.zxshader", true), FrameBufferType::Normal));
 
 		skyBoxRenderState = new RenderStateSetting();
@@ -105,52 +106,6 @@ namespace ZXEngine
 				renderer->Draw();
 			}
 		}
-	}
-
-	void RenderPassForwardRendering::InitSkyBox()
-	{
-		// 这里自己在代码里写一个Box模型，就不从硬盘加载了
-		Vector3 points[8] =
-		{
-			Vector3(1, 1, 1),
-			Vector3(1, 1, -1),
-			Vector3(1, -1, 1),
-			Vector3(1, -1, -1),
-			Vector3(-1, 1, 1),
-			Vector3(-1, 1, -1),
-			Vector3(-1, -1, 1),
-			Vector3(-1, -1, -1)
-		};
-		vector<Vertex> vertices;
-		vector<unsigned int> indices =
-		{
-			// 前
-			7,5,1,
-			3,7,1,
-			// 右
-			3,1,0,
-			2,3,0,
-			// 后
-			0,4,6,
-			2,0,6,
-			// 左
-			5,7,4,
-			7,6,4,
-			// 上
-			1,5,0,
-			5,4,0,
-			// 下
-			7,3,2,
-			2,6,7
-		};
-		for (unsigned int i = 0; i < 8; i++)
-		{
-			Vertex vertex;
-			vertex.Position = points[i];
-			vertex.TexCoords = Vector2(1);
-			vertices.push_back(vertex);
-		}
-		skyBox = new StaticMesh(vertices, indices);
 	}
 
 	void RenderPassForwardRendering::RenderSkyBox(Camera* camera)

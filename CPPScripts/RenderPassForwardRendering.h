@@ -25,7 +25,6 @@ namespace ZXEngine
 		RenderStateSetting* opaqueRenderState;
 		RenderStateSetting* transparentRenderState;
 
-		void InitSkyBox();
 		void RenderSkyBox(Camera* camera);
 		void RenderBatches(const map<uint32_t, vector<MeshRenderer*>>& batchs);
 	};
