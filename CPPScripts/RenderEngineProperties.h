@@ -5,6 +5,8 @@ namespace ZXEngine
 {
 	class Light;
 	class Camera;
+	class Texture;
+	class CubeMap;
 	class MeshRenderer;
 	class RenderEngineProperties
 	{
@@ -18,10 +20,15 @@ namespace ZXEngine
 		static RenderEngineProperties* mInstance;
 
 	public:
+		RenderEngineProperties();
+		~RenderEngineProperties();
+
 		void SetLightProperties(const vector<Light*>& lights);
 		void SetCameraProperties(Camera* camera);
 		void SetRendererProperties(MeshRenderer* renderer);
+		void SetEmptyShadowMap();
 		void SetShadowMap(uint32_t id, bool isBuffer = true);
+		void SetEmptyShadowCubeMap();
 		void SetShadowCubeMap(uint32_t id, bool isBuffer = true);
 
 	private:
@@ -37,8 +44,13 @@ namespace ZXEngine
 		float lightIntensity = 1.0f;
 
 		uint32_t shadowMap = 0;
+		Texture* emptyShadowMap;
+		// true: ShadowMap是一个Render Buffer, false: ShadowMap是一个纹理
 		bool isShadowMapBuffer = true;
+
 		uint32_t shadowCubeMap = 0;
+		CubeMap* emptyShadowCubeMap;
+		// true: ShadowCubeMap是一个Render Buffer, false: ShadowCubeMap是一个纹理
 		bool isShadowCubeMapBuffer = true;
 	};
 }

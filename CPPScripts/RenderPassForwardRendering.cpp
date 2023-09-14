@@ -57,7 +57,6 @@ namespace ZXEngine
 		// 设置引擎参数
 		RenderEngineProperties::GetInstance()->SetCameraProperties(camera);
 		RenderEngineProperties::GetInstance()->SetLightProperties(Light::GetAllLights());
-		RenderEngineProperties::GetInstance()->SetShadowCubeMap(FBOManager::GetInstance()->GetFBO("ShadowCubeMap")->DepthBuffer);
 
 		// 渲染不透明队列
 		renderAPI->SetRenderState(opaqueRenderState);
@@ -84,6 +83,9 @@ namespace ZXEngine
 
 	void RenderPassForwardRendering::RenderBatches(const map<uint32_t, vector<MeshRenderer*>>& batchs)
 	{
+		auto engineProperties = RenderEngineProperties::GetInstance();
+		auto shadowCubeMapID = FBOManager::GetInstance()->GetFBO("ShadowCubeMap")->DepthBuffer;
+
 		for (auto& batch : batchs)
 		{
 			auto shader = batch.second[0]->mMatetrial->shader;
@@ -94,7 +96,13 @@ namespace ZXEngine
 				auto material = renderer->mMatetrial;
 				material->SetMaterialProperties();
 
-				RenderEngineProperties::GetInstance()->SetRendererProperties(renderer);
+				engineProperties->SetRendererProperties(renderer);
+
+				if (renderer->mReceiveShadow)
+					engineProperties->SetShadowCubeMap(shadowCubeMapID);
+				else
+					engineProperties->SetEmptyShadowCubeMap();
+
 				material->SetEngineProperties();
 
 				renderer->UpdateAnimation();

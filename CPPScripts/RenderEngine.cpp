@@ -21,9 +21,9 @@ namespace ZXEngine
 	void RenderEngine::Create()
 	{
 		mInstance = new RenderEngine();
-		RenderEngineProperties::Create();
 		RenderQueueManager::Creat();
 		RenderAPI::Creat();
+		RenderEngineProperties::Create();
 		FBOManager::Create();
 		ParticleSystemManager::Create();
 		RenderPassManager::Create();
