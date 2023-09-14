@@ -129,6 +129,12 @@ namespace ZXEngine
 			ImGui::Text(iter.first.c_str());
 			ImGui::SameLine(120); ImGui::DragFloat(("##float" + to_string(idx)).c_str(), &value, 0.1f, -FLT_MAX, FLT_MAX);
 			idx++;
+
+			if (value != iter.second)
+			{
+				material->data->isDirty = true;
+				material->data->floatDatas[iter.first] = value;
+			}
 		}
 		for (auto& iter : material->data->uintDatas)
 		{
@@ -136,6 +142,13 @@ namespace ZXEngine
 			ImGui::Text(iter.first.c_str());
 			ImGui::SameLine(120); ImGui::DragInt(("##uint32_t" + to_string(idx)).c_str(), &value, 1.0f, 0, UINT32_MAX);
 			idx++;
+
+			uint32_t uValue = static_cast<uint32_t>(value);
+			if (uValue != iter.second)
+			{
+				material->data->isDirty = true;
+				material->data->uintDatas[iter.first] = uValue;
+			}
 		}
 		for (auto& iter : material->data->vec2Datas)
 		{
@@ -143,6 +156,13 @@ namespace ZXEngine
 			ImGui::Text(iter.first.c_str());
 			ImGui::SameLine(120); ImGui::DragFloat(("##Vec2X" + to_string(idx)).c_str(), &value.x, 0.25f, -FLT_MAX, FLT_MAX);
 			ImGui::SameLine(); ImGui::DragFloat(("##Vec2Y" + to_string(idx)).c_str(), &value.y, 0.25f, -FLT_MAX, FLT_MAX);
+			idx++;
+
+			if (value != iter.second)
+			{
+				material->data->isDirty = true;
+				material->data->vec2Datas[iter.first] = value;
+			}
 		}
 		for (auto& iter : material->data->vec3Datas)
 		{
@@ -152,6 +172,12 @@ namespace ZXEngine
 			ImGui::SameLine(); ImGui::DragFloat(("##Vec3Y" + to_string(idx)).c_str(), &value.y, 0.25f, -FLT_MAX, FLT_MAX);
 			ImGui::SameLine(); ImGui::DragFloat(("##Vec3Z" + to_string(idx)).c_str(), &value.z, 0.25f, -FLT_MAX, FLT_MAX);
 			idx++;
+
+			if (value != iter.second)
+			{
+				material->data->isDirty = true;
+				material->data->vec3Datas[iter.first] = value;
+			}
 		}
 		for (auto& iter : material->data->vec4Datas)
 		{
@@ -162,6 +188,12 @@ namespace ZXEngine
 			ImGui::SameLine(); ImGui::DragFloat(("##Vec4Z" + to_string(idx)).c_str(), &value.z, 0.25f, -FLT_MAX, FLT_MAX);
 			ImGui::SameLine(); ImGui::DragFloat(("##Vec4W" + to_string(idx)).c_str(), &value.w, 0.25f, -FLT_MAX, FLT_MAX);
 			idx++;
+
+			if (value != iter.second)
+			{
+				material->data->isDirty = true;
+				material->data->vec4Datas[iter.first] = value;
+			}
 		}
 		ImGui::PopItemWidth();
 

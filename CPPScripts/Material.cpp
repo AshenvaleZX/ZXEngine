@@ -115,6 +115,22 @@ namespace ZXEngine
 
 	void Material::SetMaterialProperties()
 	{
+		if (data->isDirty)
+		{
+			for (auto& iter : data->floatDatas)
+				SetScalar(iter.first, iter.second);
+			for (auto& iter : data->uintDatas)
+				SetScalar(iter.first, iter.second);
+			for (auto& iter : data->vec2Datas)
+				SetVector(iter.first, iter.second);
+			for (auto& iter : data->vec3Datas)
+				SetVector(iter.first, iter.second);
+			for (auto& iter : data->vec4Datas)
+				SetVector(iter.first, iter.second);
+
+			data->isDirty = false;
+		}
+
 		uint32_t textureNum = static_cast<uint32_t>(data->textures.size());
 
 		for (uint32_t i = 0; i < textureNum; i++)

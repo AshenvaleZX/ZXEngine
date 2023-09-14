@@ -9,6 +9,7 @@ namespace ZXEngine
 	{
 	public:
 		MaterialType type;
+		bool isDirty = false;
 		bool initialized = false;
 		map<string, float> floatDatas;
 		map<string, uint32_t> uintDatas;

@@ -1,6 +1,17 @@
 {
     "Type": "Material",
     "Shader": "Shaders/TerrainBlend2Layer.zxshader",
+    "Float":
+    [
+        {
+            "UniformName": "_Tiling",
+            "Value": 4.0
+        },
+        {
+            "UniformName": "_Height",
+            "Value": 0.1
+        }
+    ],
     "Textures":
     [
         {

@@ -25,6 +25,8 @@ Vertex
         using ENGINE_View
         using ENGINE_Projection
         using ENGINE_Model_Inv
+
+        float _Tiling
     }
 
     Program
@@ -35,9 +37,8 @@ Vertex
             Normal = mul(transpose(to_mat3(ENGINE_Model_Inv)) * aNormal);
 
             // 纹理采样放大缩小倍数
-            float tiling = 4;
-            uv1.xy = aTexCoords * tiling;
-            uv1.zw = aTexCoords * tiling;
+            uv1.xy = aTexCoords * _Tiling;
+            uv1.zw = aTexCoords * _Tiling;
             uvControl = aTexCoords;
 
             mat3 worldToObject = transpose(to_mat3(ENGINE_Model_Inv));
@@ -78,6 +79,8 @@ Fragment
         using ENGINE_Camera_Pos
         using ENGINE_Depth_Cube_Map
         using ENGINE_Far_Plane
+
+        float _Height
 
         sampler2D _Texture1
         sampler2D _Texture1N
@@ -144,8 +147,7 @@ Fragment
             vec2 blend = vec2(col1.a * control.x, col2.a * control.y);
             float ma = max(blend.x, blend.y);
             // 控制高度效果的参数（如果为1相当于直接使用_Control贴图混合，不使用高度优化效果）
-            float hWeight = 0.1;
-            blend = max(blend - ma + hWeight, 0) * control;
+            blend = max(blend - ma + _Height, 0) * control;
             // 保证blend的2个比例加起来总和为1
             blend = blend / (blend.x + blend.y);
 
