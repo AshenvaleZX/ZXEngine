@@ -13,11 +13,12 @@ namespace ZXEngine
 		}
 	}
 
-	void AnimationController::Update(BoneNode* pBoneNode, const vector<Mesh*>& pMeshes)
+	void AnimationController::Update(const BoneNode* pBoneNode, const vector<Mesh*>& pMeshes)
 	{
 		if (mCurAnimation)
 		{
-			mCurAnimation->Update(pBoneNode, pMeshes);
+			mCurAnimation->Update();
+			mCurAnimation->UpdateMeshes(pBoneNode, pMeshes);
 		}
 	}
 

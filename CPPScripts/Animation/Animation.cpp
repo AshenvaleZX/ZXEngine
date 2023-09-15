@@ -43,7 +43,7 @@ namespace ZXEngine
 		return mIsPlaying;
 	}
 
-	void Animation::Update(const BoneNode* pBoneNode, const vector<Mesh*>& pMeshes)
+	void Animation::Update()
 	{
 		if (!mIsPlaying)
 			return;
@@ -64,7 +64,25 @@ namespace ZXEngine
 			Reset();
 		}
 
-		GetNodeTransform(pBoneNode, Matrix4(), pMeshes);
+		UpdateNodeAnimations();
+	}
+
+	void Animation::UpdateMeshes(const BoneNode* pBoneNode, const vector<Mesh*>& pMeshes)
+	{
+		UpdateBoneTransforms(pBoneNode, Matrix4());
+
+		for (auto& pMesh : pMeshes)
+		{
+			for (auto& iter : mBoneTransforms)
+			{
+				if (pMesh->mBoneNameToIndexMap.find(iter.first) != pMesh->mBoneNameToIndexMap.end())
+				{
+					uint32_t index = pMesh->mBoneNameToIndexMap[iter.first];
+					// 此处的矩阵是给Shader用的，需要转置为列主序
+					pMesh->mBonesFinalTransform[index] = Math::Transpose(iter.second * pMesh->mBonesOffset[index]);
+				}
+			}
+		}
 	}
 
 	void Animation::AddNodeAnimation(NodeAnimation* nodeAnimation)
@@ -79,6 +97,43 @@ namespace ZXEngine
 		}
 	}
 
+	void Animation::UpdateNodeAnimations()
+	{
+		for (auto& iter : mNodeAnimations)
+		{
+			iter.second->UpdateCurFrame(mCurTick);
+		}
+	}
+
+	void Animation::UpdateBoneTransforms(const BoneNode* pBoneNode, const Matrix4& parentTransform)
+	{
+		string nodeName = pBoneNode->name;
+
+		Matrix4 nodeTransform(pBoneNode->transform);
+
+		NodeAnimation* pNodeAnimation = GetNodeAnimation(nodeName);
+
+		if (pNodeAnimation)
+		{
+			Matrix4 scaleMatrix = Math::ScaleMatrix(pNodeAnimation->mCurFrame.mScale);
+
+			Matrix4 translationMatrix = Math::TranslationMatrix(pNodeAnimation->mCurFrame.mPosition);
+
+			Matrix4 rotationMatrix = pNodeAnimation->mCurFrame.mRotation.ToMatrix();
+
+			nodeTransform = translationMatrix * rotationMatrix * scaleMatrix;
+		}
+
+		Matrix4 globalTransform = parentTransform * nodeTransform;
+
+		mBoneTransforms[nodeName] = globalTransform;
+
+		for (auto pChild : pBoneNode->children)
+		{
+			UpdateBoneTransforms(pChild, globalTransform);
+		}
+	}
+
 	NodeAnimation* Animation::GetNodeAnimation(const string& nodeName)
 	{
 		if (mNodeAnimations.find(nodeName) != mNodeAnimations.end())
@@ -88,46 +143,6 @@ namespace ZXEngine
 		else
 		{
 			return nullptr;
-		}
-	}
-
-	void Animation::GetNodeTransform(const BoneNode* pNode, const Matrix4& parentTransform, const vector<Mesh*>& pMeshes)
-	{
-		string nodeName = pNode->name;
-
-		Matrix4 nodeTransform(pNode->transform);
-
-		NodeAnimation* pNodeAnimation = GetNodeAnimation(nodeName);
-
-		if (pNodeAnimation)
-		{
-			Vector3 scale = pNodeAnimation->GetScale(mCurTick);
-			Matrix4 scaleMatrix = Math::ScaleMatrix(scale);
-
-			Vector3 translation = pNodeAnimation->GetPosition(mCurTick);
-			Matrix4 translationMatrix = Math::TranslationMatrix(translation);
-
-			Quaternion rotation = pNodeAnimation->GetRotation(mCurTick);
-			Matrix4 rotationMatrix = rotation.ToMatrix();
-
-			nodeTransform = translationMatrix * rotationMatrix * scaleMatrix;
-		}
-
-		Matrix4 globalTransform = parentTransform * nodeTransform;
-
-		for (auto pMesh : pMeshes)
-		{
-			if (pMesh->mBoneNameToIndexMap.find(nodeName) != pMesh->mBoneNameToIndexMap.end())
-			{
-				uint32_t index = pMesh->mBoneNameToIndexMap[nodeName];
-				// 此处的矩阵是给Shader用的，需要转置为列主序
-				pMesh->mBonesFinalTransform[index] = Math::Transpose(globalTransform * pMesh->mBonesOffset[index]);
-			}
-		}
-
-		for (auto pChild : pNode->children)
-		{
-			GetNodeTransform(pChild, globalTransform, pMeshes);
 		}
 	}
 }

@@ -11,7 +11,7 @@ namespace ZXEngine
 	public:
 		~AnimationController();
 
-		void Update(BoneNode* pBoneNode, const vector<Mesh*>& pMeshes);
+		void Update(const BoneNode* pBoneNode, const vector<Mesh*>& pMeshes);
 		void AddAnimation(Animation* anim);
 		void PlayAnimation(const string& name);
 

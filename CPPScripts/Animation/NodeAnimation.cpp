@@ -9,6 +9,13 @@ namespace ZXEngine
 		mCurRotationIdx = 0;
 	}
 
+	void NodeAnimation::UpdateCurFrame(float tick)
+	{
+		mCurFrame.mScale = GetScale(tick);
+		mCurFrame.mPosition = GetPosition(tick);
+		mCurFrame.mRotation = GetRotation(tick);
+	}
+
 	Vector3 NodeAnimation::GetScale(float tick)
 	{
 		if (mKeyScaleNum > 1)

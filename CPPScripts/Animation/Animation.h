@@ -22,14 +22,21 @@ namespace ZXEngine
 		void Stop();
 		void Reset();
 		bool IsPlaying() const;
-		void Update(const BoneNode* pBoneNode, const vector<Mesh*>& pMeshes);
+		// 更新所有骨骼节点列表里的动画
+		void Update();
+		// 将当前这一帧的骨骼变换矩阵更新到所有Mesh里(仅适用于单个动画播放)
+		void UpdateMeshes(const BoneNode* pBoneNode, const vector<Mesh*>& pMeshes);
 		void AddNodeAnimation(NodeAnimation* nodeAnimation);
 
 	private:
 		bool mIsPlaying = false;
+		// 所有骨骼结点的动画
 		unordered_map<string, NodeAnimation*> mNodeAnimations;
+		// 所有骨骼结点的最终变换矩阵(仅播放单个动画时有用)
+		unordered_map<string, Matrix4> mBoneTransforms;
 
+		void UpdateNodeAnimations();
+		void UpdateBoneTransforms(const BoneNode* pBoneNode, const Matrix4& parentTransform);
 		NodeAnimation* GetNodeAnimation(const string& nodeName);
-		void GetNodeTransform(const BoneNode* pNode, const Matrix4& parentTransform, const vector<Mesh*>& pMeshes);
 	};
 }

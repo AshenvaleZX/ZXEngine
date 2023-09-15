@@ -21,6 +21,13 @@ namespace ZXEngine
 		KeyQuaternion(float time, const Quaternion& value) : mTime(time), mValue(value) {}
 	};
 
+	struct KeyFrame
+	{
+		Vector3 mScale;
+		Vector3 mPosition;
+		Quaternion mRotation;
+	};
+
 	class NodeAnimation
 	{
 	public:
@@ -35,14 +42,18 @@ namespace ZXEngine
 		size_t mKeyRotationNum = 0;
 		vector<KeyQuaternion> mKeyRotations;
 
+		KeyFrame mCurFrame;
+
 		void Reset();
-		Vector3 GetScale(float tick);
-		Vector3 GetPosition(float tick);
-		Quaternion GetRotation(float tick);
+		void UpdateCurFrame(float tick);
 
 	private:
 		size_t mCurScaleIdx = 0;
 		size_t mCurPositionIdx = 0;
 		size_t mCurRotationIdx = 0;
+
+		Vector3 GetScale(float tick);
+		Vector3 GetPosition(float tick);
+		Quaternion GetRotation(float tick);
 	};
 }
