@@ -1,4 +1,5 @@
 #include "Animator.h"
+#include "MeshRenderer.h"
 #include "../Animation/AnimationController.h"
 
 namespace ZXEngine
@@ -8,9 +9,22 @@ namespace ZXEngine
 		return ComponentType::Animator;
 	}
 
+	vector<Animator*> Animator::mAnimators;
+
+	void Animator::Update()
+	{
+		for (auto pAnimator : mAnimators)
+			pAnimator->UpdateMeshes();
+	}
+
 	ComponentType Animator::GetInsType()
 	{
 		return ComponentType::Animator;
+	}
+
+	Animator::Animator()
+	{
+		mAnimators.push_back(this);
 	}
 
 	Animator::~Animator()
@@ -19,6 +33,9 @@ namespace ZXEngine
 			delete mRootBoneNode;
 		if (mAnimationController)
 			delete mAnimationController;
+
+		auto iter = std::find(mAnimators.begin(), mAnimators.end(), this);
+		mAnimators.erase(iter);
 	}
 
 	void Animator::Play(const string& name)
@@ -31,8 +48,8 @@ namespace ZXEngine
 		mAnimationController->Switch(name, time);
 	}
 
-	void Animator::Update(const vector<Mesh*>& pMeshes)
+	void Animator::UpdateMeshes()
 	{
-		mAnimationController->Update(mRootBoneNode, pMeshes);
+		mAnimationController->Update(mRootBoneNode, mMeshRenderer->mMeshes);
 	}
 }

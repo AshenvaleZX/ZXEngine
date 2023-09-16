@@ -8,6 +8,7 @@
 #include "../ParticleSystemManager.h"
 #include "../Vulkan/SPIRVCompiler.h"
 #include "../DirectX12/ZXD3D12Util.h"
+#include "../Component/Animator.h"
 
 namespace ZXEngine
 {
@@ -156,6 +157,7 @@ namespace ZXEngine
 				if (EditorDataManager::isGameStart && EditorDataManager::isGamePause)
 				{
 					Time::UpdateCurTime();
+					Animator::Update();
 					SceneManager::GetInstance()->GetCurScene()->UpdatePhysics();
 					GameLogicManager::GetInstance()->Update();
 					ParticleSystemManager::GetInstance()->Update();

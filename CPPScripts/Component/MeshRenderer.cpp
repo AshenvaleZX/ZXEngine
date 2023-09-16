@@ -52,12 +52,6 @@ namespace ZXEngine
 		UpdateInternalData();
     }
 
-    void MeshRenderer::UpdateAnimation()
-    {
-        if (mAnimator)
-            mAnimator->Update(mMeshes);
-    }
-
     void MeshRenderer::UpdateBoneTransformsForRender()
     {
         if (mAnimator)

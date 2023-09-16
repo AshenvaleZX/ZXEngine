@@ -105,8 +105,6 @@ namespace ZXEngine
 
 				material->SetEngineProperties();
 
-				renderer->UpdateAnimation();
-
 				material->data->Use();
 
 				renderer->UpdateBoneTransformsForRender();
