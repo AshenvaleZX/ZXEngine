@@ -279,6 +279,7 @@ namespace ZXEngine
 			Animation* pAnim = new Animation();
 			pAnim->mName = pAnimation->mName.C_Str();
             pAnim->mFullTick = static_cast<float>(pAnimation->mDuration);
+            pAnim->mDuration = static_cast<float>(pAnimation->mDuration / pAnimation->mTicksPerSecond);
             pAnim->mTicksPerSecond = static_cast<float>(pAnimation->mTicksPerSecond);
 
 			for (unsigned int j = 0; j < pAnimation->mNumChannels; j++)
@@ -314,7 +315,7 @@ namespace ZXEngine
                 pAnim->AddNodeAnimation(pNode);
 			}
 
-            animationController->AddAnimation(pAnim);
+            animationController->Add(pAnim);
 		}
 
 		return animationController;

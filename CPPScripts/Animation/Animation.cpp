@@ -67,6 +67,12 @@ namespace ZXEngine
 		UpdateNodeAnimations();
 	}
 
+	void Animation::Update(float tick)
+	{
+		mCurTick = tick;
+		UpdateNodeAnimations();
+	}
+
 	void Animation::UpdateMeshes(const BoneNode* pBoneNode, const vector<Mesh*>& pMeshes)
 	{
 		UpdateBoneTransforms(pBoneNode, Matrix4());
@@ -95,6 +101,16 @@ namespace ZXEngine
 		{
 			Debug::LogWarning("Animation try to add an existing node animation: %s", nodeAnimation->mName);
 		}
+	}
+
+	bool Animation::GetCurFrameByNode(const string& nodeName, KeyFrame& keyFrame)
+	{
+		auto pNodeAnim = GetNodeAnimation(nodeName);
+
+		if (pNodeAnim)
+			keyFrame = pNodeAnim->mCurFrame;
+
+		return pNodeAnim != nullptr;
 	}
 
 	void Animation::UpdateNodeAnimations()

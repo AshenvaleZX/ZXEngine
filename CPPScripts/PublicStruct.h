@@ -53,6 +53,13 @@ namespace ZXEngine
 		float duration = 0.0f;
 	};
 
+	struct KeyFrame
+	{
+		Vector3 mScale;
+		Vector3 mPosition;
+		Quaternion mRotation;
+	};
+
 	struct ClearInfo
 	{
 		FrameBufferClearFlags clearFlags = ZX_CLEAR_FRAME_BUFFER_NONE_BIT;

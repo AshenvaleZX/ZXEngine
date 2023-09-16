@@ -1,5 +1,6 @@
 #pragma once
 #include "../pubh.h"
+#include "../PublicStruct.h"
 
 namespace ZXEngine
 {
@@ -14,6 +15,7 @@ namespace ZXEngine
 		float mSpeed = 1.0f;
 		float mCurTick = 0.0f;
 		float mFullTick = 0.0f;
+		float mDuration = 0.0f;
 		float mTicksPerSecond = 0.0f;
 
 		~Animation();
@@ -24,9 +26,12 @@ namespace ZXEngine
 		bool IsPlaying() const;
 		// 更新所有骨骼节点列表里的动画
 		void Update();
+		// 更新所有骨骼节点列表里的动画(手动传入Tick)
+		void Update(float tick);
 		// 将当前这一帧的骨骼变换矩阵更新到所有Mesh里(仅适用于单个动画播放)
 		void UpdateMeshes(const BoneNode* pBoneNode, const vector<Mesh*>& pMeshes);
 		void AddNodeAnimation(NodeAnimation* nodeAnimation);
+		bool GetCurFrameByNode(const string& nodeName, KeyFrame& keyFrame);
 
 	private:
 		bool mIsPlaying = false;

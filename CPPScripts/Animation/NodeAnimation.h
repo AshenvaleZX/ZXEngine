@@ -1,5 +1,6 @@
 #pragma once
 #include "../pubh.h"
+#include "../PublicStruct.h"
 
 namespace ZXEngine
 {
@@ -19,13 +20,6 @@ namespace ZXEngine
 
 		KeyQuaternion() : mTime(0.0f), mValue() {}
 		KeyQuaternion(float time, const Quaternion& value) : mTime(time), mValue(value) {}
-	};
-
-	struct KeyFrame
-	{
-		Vector3 mScale;
-		Vector3 mPosition;
-		Quaternion mRotation;
 	};
 
 	class NodeAnimation

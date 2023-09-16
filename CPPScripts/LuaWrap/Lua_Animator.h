@@ -19,12 +19,43 @@ static int Play(lua_State* L)
 	return 0;
 }
 
+static int Switch(lua_State* L)
+{
+	int argc = lua_gettop(L);
+
+	if (argc == 2)
+	{
+		ZXEngine::Animator** animator = (ZXEngine::Animator**)luaL_checkudata(L, -2, "ZXEngine.Animator");
+
+		const char* animationName = lua_tostring(L, -1);
+
+		(*animator)->Switch(animationName);
+	}
+	else if (argc == 3)
+	{
+		ZXEngine::Animator** animator = (ZXEngine::Animator**)luaL_checkudata(L, -3, "ZXEngine.Animator");
+
+		const char* animationName = lua_tostring(L, -2);
+
+		float time = (float)lua_tonumber(L, -1);
+
+		(*animator)->Switch(animationName, time);
+	}
+	else
+	{
+		ZXEngine::Debug::LogError("No matched lua warp function to call: ZXEngine::Animator::Switch");
+	}
+
+	return 0;
+}
+
 static const luaL_Reg Animator_Funcs[] = {
 	{NULL, NULL}
 };
 
 static const luaL_Reg Animator_Funcs_Meta[] = {
 	{"Play", Play},
+	{"Switch", Switch},
 	{NULL, NULL}
 };
 

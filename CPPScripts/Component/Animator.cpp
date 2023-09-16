@@ -23,7 +23,12 @@ namespace ZXEngine
 
 	void Animator::Play(const string& name)
 	{
-		mAnimationController->PlayAnimation(name);
+		mAnimationController->Play(name);
+	}
+
+	void Animator::Switch(const string& name, float time)
+	{
+		mAnimationController->Switch(name, time);
 	}
 
 	void Animator::Update(const vector<Mesh*>& pMeshes)
