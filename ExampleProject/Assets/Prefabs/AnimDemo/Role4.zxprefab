@@ -1,11 +1,11 @@
 {
-    "Name": "Role3",
+    "Name": "Role4",
     "Components":
     [
         {
             "Type": "Transform",
-            "Position": [7, -3, 0],
-            "Rotation": [0, 180, 0],
+            "Position": [0, -3, 12],
+            "Rotation": [0, 90, 0],
             "Scale": [0.2, 0.2, 0.2]
         },
         {
@@ -17,7 +17,7 @@
         },
         {
             "Type": "GameLogic",
-            "Lua": "Scripts/AnimTest3.lua"
+            "Lua": "Scripts/AnimRoleMove.lua"
         }
     ]
 }
