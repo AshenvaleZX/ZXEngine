@@ -35,17 +35,26 @@ namespace ZXEngine
 				mBlendFactor = mBlendTime / mBlendDuration;
 
 				// 混合动画时长
-				float curDuration = Math::Lerp(mCurAnimation->mDuration, mTargetAnimation->mDuration, mBlendFactor);
+				float blendAnimDuration = Math::Lerp(mCurAnimation->mDuration, mTargetAnimation->mDuration, mBlendFactor);
 
 				// 混合动画播放进度
-				mCurBlendAnimTime += Time::deltaTime;
-				if (mCurBlendAnimTime > curDuration)
-					mCurBlendAnimTime -= curDuration;
-				float curProgress = mCurBlendAnimTime / curDuration;
+				float curAnimProgressDelta = Time::deltaTime / mCurAnimation->mDuration;
+				float targetAnimProgressDelta = Time::deltaTime / mTargetAnimation->mDuration;
+				float blendAnimProgressDelta = Math::Lerp(curAnimProgressDelta, targetAnimProgressDelta, mBlendFactor);
+				
+				mCurBlendAnimTime += blendAnimProgressDelta * blendAnimDuration;
+
+				if (mCurBlendAnimTime > blendAnimDuration)
+				{
+					mCurAnimation->Reset();
+					mTargetAnimation->Reset();
+					mCurBlendAnimTime -= blendAnimDuration;
+				}
+				float blendAnimProgress = mCurBlendAnimTime / blendAnimDuration;
 
 				// 混合动画的播放进度转换成tick
-				float curAnimTicks = curProgress * mCurAnimation->mFullTick;
-				float targetAnimTicks = curProgress * mTargetAnimation->mFullTick;
+				float curAnimTicks = blendAnimProgress * mCurAnimation->mFullTick;
+				float targetAnimTicks = blendAnimProgress * mTargetAnimation->mFullTick;
 
 				mCurAnimation->Update(curAnimTicks);
 				mTargetAnimation->Update(targetAnimTicks);
