@@ -44,6 +44,7 @@ namespace ZXEngine
         Present, // For swap chain
         Normal,
         Color,
+        ShadowMap,
         ShadowCubeMap,
         MAX,
     };

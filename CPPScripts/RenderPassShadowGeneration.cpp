@@ -11,6 +11,7 @@
 #include "RenderStateSetting.h"
 #include "Material.h"
 #include "MaterialData.h"
+#include "RenderEngineProperties.h"
 
 namespace ZXEngine
 {
@@ -21,6 +22,8 @@ namespace ZXEngine
 #else
 		shadowProj = Math::PerspectiveLH(Math::Deg2Rad(90.0f), (float)GlobalData::depthCubeMapWidth / (float)GlobalData::depthCubeMapWidth, GlobalData::shadowCubeMapNearPlane, GlobalData::shadowCubeMapFarPlane);
 #endif
+		shadowMapShader = new Shader(Resources::GetAssetFullPath("Shaders/DirectionalShadowDepth.zxshader", true), FrameBufferType::ShadowMap);
+		animShadowMapShader = new Shader(Resources::GetAssetFullPath("Shaders/DirectionalShadowDepthAnim.zxshader", true), FrameBufferType::ShadowMap);
 		shadowCubeMapShader = new Shader(Resources::GetAssetFullPath("Shaders/PointShadowDepth.zxshader", true), FrameBufferType::ShadowCubeMap);
 		animShadowCubeMapShader = new Shader(Resources::GetAssetFullPath("Shaders/PointShadowDepthAnim.zxshader", true), FrameBufferType::ShadowCubeMap);
 		renderState = new RenderStateSetting();
@@ -28,6 +31,7 @@ namespace ZXEngine
 
 		ClearInfo clearInfo = {};
 		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT;
+		FBOManager::GetInstance()->CreateFBO("ShadowMap", FrameBufferType::ShadowMap, clearInfo, GlobalData::depthMapWidth, GlobalData::depthMapWidth);
 		FBOManager::GetInstance()->CreateFBO("ShadowCubeMap", FrameBufferType::ShadowCubeMap, clearInfo, GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
 	}
 	
@@ -51,7 +55,47 @@ namespace ZXEngine
 
 	void RenderPassShadowGeneration::RenderShadowMap(Light* light)
 	{
+		auto renderAPI = RenderAPI::GetInstance();
+		// 切换到shadow FBO
+		FBOManager::GetInstance()->SwitchFBO("ShadowMap");
+		// ViewPort改成渲染ShadowMap的正方形
+		renderAPI->SetViewPort(GlobalData::depthMapWidth, GlobalData::depthMapWidth);
+		// 切换到阴影渲染设置
+		renderAPI->SetRenderState(renderState);
+		// 清理上一帧数据
+		renderAPI->ClearFrameBuffer();
 
+		// 类似相机的VP矩阵
+		Matrix4 shadowTransform = light->GetProjectionMatrix() * light->GetLightMatrix();
+		RenderEngineProperties::GetInstance()->SetLightMatrix(shadowTransform);
+
+		// 渲染投射阴影的物体
+		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Opaque);
+		for (auto renderer : renderQueue->GetRenderers())
+		{
+			// 跳过不投射阴影的物体
+			if (!renderer->mCastShadow)
+				continue;
+
+			if (renderer->mShadowCastMaterial == nullptr)
+			{
+				if (renderer->mAnimator)
+					renderer->mShadowCastMaterial = new Material(animShadowMapShader);
+				else
+					renderer->mShadowCastMaterial = new Material(shadowMapShader);
+			}
+
+			Matrix4 mat_M = renderer->GetTransform()->GetModelMatrix();
+
+			renderer->mShadowCastMaterial->Use();
+			renderer->mShadowCastMaterial->SetMatrix("_ShadowMatrix", shadowTransform * mat_M);
+
+			renderer->UpdateBoneTransformsForShadow();
+
+			renderer->Draw();
+		}
+
+		renderAPI->GenerateDrawCommand(drawCommandID);
 	}
 
 	void RenderPassShadowGeneration::RenderShadowCubeMap(Light* light)

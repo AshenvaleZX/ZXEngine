@@ -15,12 +15,19 @@ namespace ZXEngine
 
 	public:
 		Vector3 color;
-		float intensity;
-		LightType type;
+		float intensity = 0.0f;
+		LightType type = LightType::None;
 
 		Light();
 		~Light();
 
 		virtual ComponentType GetInsType();
+
+		// 获取将顶点从世界空间转换到光源空间的矩阵
+		Matrix4 GetLightMatrix();
+		Matrix4 GetProjectionMatrix();
+
+	private:
+		float mDirectionalLightSpaceSize = 20.0f;
 	};
 }

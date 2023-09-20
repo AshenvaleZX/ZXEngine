@@ -84,6 +84,7 @@ namespace ZXEngine
 	void RenderPassForwardRendering::RenderBatches(const map<uint32_t, vector<MeshRenderer*>>& batchs)
 	{
 		auto engineProperties = RenderEngineProperties::GetInstance();
+		auto shadowMapID = FBOManager::GetInstance()->GetFBO("ShadowMap")->DepthBuffer;
 		auto shadowCubeMapID = FBOManager::GetInstance()->GetFBO("ShadowCubeMap")->DepthBuffer;
 
 		for (auto& batch : batchs)
@@ -99,9 +100,15 @@ namespace ZXEngine
 				engineProperties->SetRendererProperties(renderer);
 
 				if (renderer->mReceiveShadow)
+				{
+					engineProperties->SetShadowMap(shadowMapID);
 					engineProperties->SetShadowCubeMap(shadowCubeMapID);
+				}
 				else
+				{
+					engineProperties->SetEmptyShadowMap();
 					engineProperties->SetEmptyShadowCubeMap();
+				}
 
 				material->SetEngineProperties();
 

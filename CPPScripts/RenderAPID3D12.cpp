@@ -493,6 +493,70 @@ namespace ZXEngine
 
 			D3D12FBO->inUse = true;
 		}
+		else if (type == FrameBufferType::ShadowMap)
+		{
+			FBO->ID = GetNextFBOIndex();
+			FBO->ColorBuffer = NULL;
+			FBO->DepthBuffer = GetNextRenderBufferIndex();
+			auto depthBuffer = GetRenderBufferByIndex(FBO->DepthBuffer);
+			depthBuffer->inUse = true;
+
+			auto D3D12FBO = GetFBOByIndex(FBO->ID);
+			D3D12FBO->depthBufferIdx = FBO->DepthBuffer;
+			D3D12FBO->bufferType = FrameBufferType::ShadowMap;
+			D3D12FBO->clearInfo = clearInfo;
+
+			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				// ´´½¨Depth Buffer
+				CD3DX12_HEAP_PROPERTIES depthBufferProps(D3D12_HEAP_TYPE_DEFAULT);
+
+				D3D12_RESOURCE_DESC depthBufferDesc = {};
+				depthBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+				depthBufferDesc.Alignment = 0;
+				depthBufferDesc.Width = width;
+				depthBufferDesc.Height = height;
+				depthBufferDesc.DepthOrArraySize = 1;
+				depthBufferDesc.MipLevels = 1;
+				depthBufferDesc.Format = DXGI_FORMAT_D16_UNORM;
+				depthBufferDesc.SampleDesc.Count = 1;
+				depthBufferDesc.SampleDesc.Quality = 0;
+				depthBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+				depthBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+				D3D12_CLEAR_VALUE optDepthClear = {};
+				optDepthClear.Format = DXGI_FORMAT_D16_UNORM;
+				optDepthClear.DepthStencil.Depth = clearInfo.depth;
+				optDepthClear.DepthStencil.Stencil = clearInfo.stencil;
+
+				ComPtr<ID3D12Resource> depthBufferResource;
+				ThrowIfFailed(mD3D12Device->CreateCommittedResource(
+					&depthBufferProps,
+					D3D12_HEAP_FLAG_NONE,
+					&depthBufferDesc,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					&optDepthClear,
+					IID_PPV_ARGS(&depthBufferResource)
+				));
+
+				D3D12_SHADER_RESOURCE_VIEW_DESC depthSrvDesc = {};
+				depthSrvDesc.Format = DXGI_FORMAT_R16_UNORM;
+				depthSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+				depthSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+				depthSrvDesc.Texture2D.MipLevels = 1;
+				depthSrvDesc.Texture2D.MostDetailedMip = 0;
+				depthSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+				D3D12_DEPTH_STENCIL_VIEW_DESC depthDsvDesc = {};
+				depthDsvDesc.Format = DXGI_FORMAT_D16_UNORM;
+				depthDsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+				depthDsvDesc.Texture2D.MipSlice = 0;
+
+				depthBuffer->renderBuffers[i] = CreateZXD3D12Texture(depthBufferResource, depthSrvDesc, depthDsvDesc);
+			}
+
+			D3D12FBO->inUse = true;
+		}
 		else if (type == FrameBufferType::ShadowCubeMap)
 		{
 			FBO->ID = GetNextFBOIndex();

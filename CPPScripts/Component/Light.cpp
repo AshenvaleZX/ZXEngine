@@ -1,4 +1,6 @@
 #include "Light.h"
+#include "Transform.h"
+#include "../GlobalData.h"
 
 namespace ZXEngine
 {
@@ -27,5 +29,18 @@ namespace ZXEngine
 	ComponentType Light::GetInsType()
 	{
 		return ComponentType::Light;
+	}
+
+	Matrix4 Light::GetLightMatrix()
+	{
+		// Óë Camera::GetViewMatrix Í¬Àí
+		Matrix4 model = GetTransform()->GetModelMatrix();
+		return Math::Inverse(model);
+	}
+
+	Matrix4 Light::GetProjectionMatrix()
+	{
+		return Math::Orthographic(-mDirectionalLightSpaceSize, mDirectionalLightSpaceSize, -mDirectionalLightSpaceSize, mDirectionalLightSpaceSize,
+			GlobalData::shadowMapNearPlane, GlobalData::shadowMapFarPlane);
 	}
 }

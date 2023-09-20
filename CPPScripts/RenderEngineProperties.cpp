@@ -41,13 +41,19 @@ namespace ZXEngine
 		delete emptyShadowCubeMap;
 	}
 
+	void RenderEngineProperties::SetLightMatrix(const Matrix4& mat)
+	{
+		lightMat = mat;
+	}
+
 	void RenderEngineProperties::SetLightProperties(const vector<Light*>& lights)
 	{
 		if (lights.empty())
 			return;
 
 		lightPos = lights[0]->GetTransform()->GetPosition();
-		lightDir = lights[0]->GetTransform()->GetForward();
+		// 光源方向是指向光源的，所以要取反
+		lightDir = -lights[0]->GetTransform()->GetForward();
 		lightColor = lights[0]->color;
 		lightIntensity = lights[0]->intensity;
 	}

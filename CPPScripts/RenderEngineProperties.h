@@ -23,6 +23,7 @@ namespace ZXEngine
 		RenderEngineProperties();
 		~RenderEngineProperties();
 
+		void SetLightMatrix(const Matrix4& mat);
 		void SetLightProperties(const vector<Light*>& lights);
 		void SetCameraProperties(Camera* camera);
 		void SetRendererProperties(MeshRenderer* renderer);
@@ -38,6 +39,7 @@ namespace ZXEngine
 		Matrix4 matM_Inv;
 		Vector3 camPos;
 
+		Matrix4 lightMat;
 		Vector3 lightPos;
 		Vector3 lightDir;
 		Vector3 lightColor;

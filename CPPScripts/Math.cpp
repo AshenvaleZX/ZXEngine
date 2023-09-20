@@ -195,7 +195,7 @@ namespace ZXEngine
 		resMat.m22 = 2.0f / (zFar - zNear);
 		resMat.m03 = -(right + left) / (right - left);
 		resMat.m13 = -(top + bottom) / (top - bottom);
-		resMat.m23 = -(zFar + zNear) / (zFar - zNear);
+		resMat.m23 = -zNear / (zFar - zNear);
 
 #ifdef ZX_API_VULKAN
 		// Vulkan的Y轴要反转一下，否则画面会颠倒

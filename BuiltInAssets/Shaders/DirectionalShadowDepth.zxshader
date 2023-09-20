@@ -1,0 +1,40 @@
+Setting 
+{
+    Blend SrcAlpha OneMinusSrcAlpha
+    BlendOp Add
+    Cull Front
+    ZTest Less
+    ZWrite On
+}
+
+Vertex
+{
+    Input
+    {
+        0 vec3 aPos : POSITION
+    }
+
+    Properties
+    {
+        mat4 _ShadowMatrix
+    }
+
+    Program
+    {
+        void main()
+        {
+            ZX_Position = mul(_ShadowMatrix * vec4(aPos, 1.0));
+        }
+    }
+}
+
+Fragment
+{
+    Program
+    {
+        void main()
+        {
+            // 自动写入深度即可
+        }
+    }
+}

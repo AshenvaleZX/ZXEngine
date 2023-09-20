@@ -6,11 +6,15 @@ namespace ZXEngine
 	class GlobalData
 	{
 	public:
-		static unsigned int srcWidth;
-		static unsigned int srcHeight;
+		static uint32_t srcWidth;
+		static uint32_t srcHeight;
 
-		static float shadowCubeMapNearPlane;
+		static uint32_t depthMapWidth;
+		static float shadowMapFarPlane;
+		static float shadowMapNearPlane;
+
+		static uint32_t depthCubeMapWidth;
 		static float shadowCubeMapFarPlane;
-		static unsigned int depthCubeMapWidth;
+		static float shadowCubeMapNearPlane;
 	};
 }

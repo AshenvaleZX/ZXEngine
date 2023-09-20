@@ -2,9 +2,14 @@
 
 namespace ZXEngine
 {
-	unsigned int GlobalData::srcWidth = 0;
-	unsigned int GlobalData::srcHeight = 0;
-	float GlobalData::shadowCubeMapNearPlane = 1.0f;
+	uint32_t GlobalData::srcWidth = 0;
+	uint32_t GlobalData::srcHeight = 0;
+
+	uint32_t GlobalData::depthMapWidth = 1024;
+	float GlobalData::shadowMapFarPlane = 100.0f;
+	float GlobalData::shadowMapNearPlane = 1.0f;
+
+	uint32_t GlobalData::depthCubeMapWidth = 1024;
 	float GlobalData::shadowCubeMapFarPlane = 100.0f;
-	unsigned int GlobalData::depthCubeMapWidth = 1024;
+	float GlobalData::shadowCubeMapNearPlane = 1.0f;
 }

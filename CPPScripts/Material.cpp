@@ -93,6 +93,8 @@ namespace ZXEngine
 			SetMatrix(name, engineProperties->matP);
 		else if (type == ShaderPropertyType::ENGINE_CAMERA_POS)
 			SetVector(name, engineProperties->camPos);
+		else if (type == ShaderPropertyType::ENGINE_LIGHT_MAT)
+			SetMatrix(name, engineProperties->lightMat);
 		else if (type == ShaderPropertyType::ENGINE_LIGHT_POS)
 			SetVector(name, engineProperties->lightPos);
 		else if (type == ShaderPropertyType::ENGINE_LIGHT_DIR)
@@ -105,6 +107,11 @@ namespace ZXEngine
 			SetScalar(name, GlobalData::shadowCubeMapFarPlane);
 		else if (type == ShaderPropertyType::ENGINE_MODEL_INV)
 			SetMatrix(name, engineProperties->matM_Inv);
+		else if (type == ShaderPropertyType::ENGINE_DEPTH_MAP)
+		{
+			SetTexture(name, engineProperties->shadowMap, textureIdx, false, engineProperties->isShadowMapBuffer);
+			textureIdx++;
+		}
 		else if (type == ShaderPropertyType::ENGINE_DEPTH_CUBE_MAP)
 		{
 			// 先设置SetMaterialProperties获得引擎纹理的初始textureIdx，然后++

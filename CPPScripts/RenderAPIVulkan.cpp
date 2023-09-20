@@ -56,8 +56,9 @@ namespace ZXEngine
 
     map<FrameBufferType, RenderPassType> vkFrameBufferTypeToRenderPassTypeMap =
     {
-        { FrameBufferType::Present, RenderPassType::Present }, { FrameBufferType::Normal,        RenderPassType::Normal       },
-        { FrameBufferType::Color,   RenderPassType::Color   }, { FrameBufferType::ShadowCubeMap, RenderPassType::ShadowCubeMap},
+        { FrameBufferType::Present,   RenderPassType::Present   }, { FrameBufferType::Normal,        RenderPassType::Normal       },
+        { FrameBufferType::Color,     RenderPassType::Color     }, { FrameBufferType::ShadowCubeMap, RenderPassType::ShadowCubeMap},
+        { FrameBufferType::ShadowMap, RenderPassType::ShadowMap },
     };
 
     // 自定义的Debug回调函数，VKAPI_ATTR和VKAPI_CALL确保了正确的函数签名，从而被Vulkan调用
@@ -774,6 +775,50 @@ namespace ZXEngine
 
             vulkanFBO->inUse = true;
         }
+        else if (type == FrameBufferType::ShadowMap)
+        {
+            FBO->ID = GetNextFBOIndex();
+            FBO->ColorBuffer = NULL;
+            FBO->DepthBuffer = GetNextAttachmentBufferIndex();
+            auto depthAttachmentBuffer = GetAttachmentBufferByIndex(FBO->DepthBuffer);
+            depthAttachmentBuffer->inUse = true;
+
+            auto vulkanFBO = GetFBOByIndex(FBO->ID);
+            vulkanFBO->depthAttachmentIdx = FBO->DepthBuffer;
+            vulkanFBO->bufferType = FrameBufferType::ShadowMap;
+            vulkanFBO->renderPassType = RenderPassType::ShadowMap;
+            vulkanFBO->clearInfo = clearInfo;
+
+            for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+            {
+                VulkanImage depthImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D16_UNORM, VK_IMAGE_TILING_OPTIMAL,
+                    VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+                TransitionImageLayout(depthImage.image,
+                    VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                    VK_IMAGE_ASPECT_DEPTH_BIT,
+                    VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
+                    VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
+                VkImageView depthImageView = CreateImageView(depthImage.image, VK_FORMAT_D16_UNORM, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkSampler depthSampler = CreateSampler(1);
+                depthAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(depthImage, depthImageView, depthSampler);
+
+                array<VkImageView, 1> attachments = { depthImageView };
+
+                VkFramebufferCreateInfo framebufferInfo{};
+                framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+                framebufferInfo.renderPass = GetRenderPass(RenderPassType::ShadowMap);
+                framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+                framebufferInfo.pAttachments = attachments.data();
+                framebufferInfo.width = width;
+                framebufferInfo.height = height;
+                framebufferInfo.layers = 1;
+
+                if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &vulkanFBO->frameBuffers[i]) != VK_SUCCESS)
+                    throw std::runtime_error("failed to create framebuffer!");
+            }
+
+            vulkanFBO->inUse = true;
+        }
         else if (type == FrameBufferType::ShadowCubeMap)
         {
             FBO->ID = GetNextFBOIndex();
@@ -935,7 +980,7 @@ namespace ZXEngine
             renderPassInfo.pClearValues = clearValues.data();
             renderPassInfo.clearValueCount = 2;
         }
-        else if (curFBO->renderPassType == RenderPassType::ShadowCubeMap)
+        else if (curFBO->renderPassType == RenderPassType::ShadowMap || curFBO->renderPassType == RenderPassType::ShadowCubeMap)
         {
             auto& clearInfo = curFBO->clearInfo;
             VkClearValue clearValue = {};
@@ -4039,9 +4084,10 @@ namespace ZXEngine
     {
         allVulkanRenderPass.resize((size_t)RenderPassType::MAX);
 
-        allVulkanRenderPass[(size_t)RenderPassType::Present] = CreateRenderPass(RenderPassType::Present);
-        allVulkanRenderPass[(size_t)RenderPassType::Normal] = CreateRenderPass(RenderPassType::Normal);
-        allVulkanRenderPass[(size_t)RenderPassType::Color] = CreateRenderPass(RenderPassType::Color);
+        allVulkanRenderPass[(size_t)RenderPassType::Present]       = CreateRenderPass(RenderPassType::Present);
+        allVulkanRenderPass[(size_t)RenderPassType::Normal]        = CreateRenderPass(RenderPassType::Normal);
+        allVulkanRenderPass[(size_t)RenderPassType::Color]         = CreateRenderPass(RenderPassType::Color);
+        allVulkanRenderPass[(size_t)RenderPassType::ShadowMap]     = CreateRenderPass(RenderPassType::ShadowMap);
         allVulkanRenderPass[(size_t)RenderPassType::ShadowCubeMap] = CreateRenderPass(RenderPassType::ShadowCubeMap);
     }
 
@@ -4226,7 +4272,7 @@ namespace ZXEngine
             if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
                 throw std::runtime_error("failed to create render pass!");
         }
-        else if (type == RenderPassType::ShadowCubeMap)
+        else if (type == RenderPassType::ShadowMap || type == RenderPassType::ShadowCubeMap)
         {
             VkAttachmentDescription depthAttachment = {};
             depthAttachment.format = VK_FORMAT_D16_UNORM;

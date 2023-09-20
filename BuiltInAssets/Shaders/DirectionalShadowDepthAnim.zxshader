@@ -1,0 +1,49 @@
+Setting 
+{
+    Blend SrcAlpha OneMinusSrcAlpha
+    BlendOp Add
+    Cull Off
+    ZTest Less
+    ZWrite On
+}
+
+Vertex
+{
+    Input
+    {
+        0 vec3  aPos    : POSITION
+        4 vec4  aWeight : WEIGHT
+        5 uvec4 aBoneID : BONEID
+    }
+
+    Properties
+    {
+        mat4 _ShadowMatrix
+        mat4 _BoneMatrices[64]
+    }
+
+    Program
+    {
+        void main()
+        {
+            vec4 pos = vec4(0.0, 0.0, 0.0, 1.0);
+            pos += mul(_BoneMatrices[aBoneID.r] * vec4(aPos, 1.0)) * aWeight.r;
+            pos += mul(_BoneMatrices[aBoneID.g] * vec4(aPos, 1.0)) * aWeight.g;
+            pos += mul(_BoneMatrices[aBoneID.b] * vec4(aPos, 1.0)) * aWeight.b;
+            pos += mul(_BoneMatrices[aBoneID.a] * vec4(aPos, 1.0)) * aWeight.a;
+
+            ZX_Position = mul(_ShadowMatrix * pos);
+        }
+    }
+}
+
+Fragment
+{
+    Program
+    {
+        void main()
+        {
+            // 自动写入深度即可
+        }
+    }
+}
