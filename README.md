@@ -197,10 +197,6 @@ After zxshader is written, it can be run directly under DirectX 12 and OpenGL. B
 
 The way to switch the graphics API is to modify the macro definition in the pubh.h file. There are 3 macro definitions ZX_API_VULKAN, ZX_API_D3D12 and ZX_API_OPENGL, corresponding to the 3 graphics APIs supported by the engine. Open one of the macro definitions, comment out the other two macro definitions, and recompile the engine to complete the switching of the graphics API.
 
-目前本引擎有个问题，就是DirectX 12的性能表现很差。按理说DirectX 12的性能表现应该是和Vulkan差不多的，但是在本引擎里它的性能表现甚至比OpenGL还稍微差一点。这个应该是我自己在写DirectX 12代码时有什么地方没写好，而不是DirectX 12本身的问题。我现在还没找到问题原因，如果有人能指点一下我会非常感激。可以通过issue指出问题，或者通过后面我给的联系方式告诉我。
-
-Currently there is a problem with this engine, that is, the performance of DirectX 12 is very poor. The performance of DirectX 12 should be similar to that of Vulkan, but its performance in this engine is even slightly worse than OpenGL. This should be something that I didn't do well when I wrote the DirectX 12 code, not a problem with DirectX 12 itself. I haven't found the cause of the problem so far, if someone can point out what I'm doing wrong, I'd be very grateful. You can point out the problem through issue, or contact me through the contact information I will give later.
-
 ### 一些废话 (Some mumbles)
 
 其实工程在2020年5月就创建了，但是最初其实只是想把2020年初学习OpenGL写的代码保存到GitHub上而已。当时写的代码也只是C语言风格的面向过程式编程，一个1000多行的渲染demo。随后花了1年多时间把《Real-Time Rendering 4th》看了，这期间光看书没再实际写东西了（因为这书实在是太偏理论了，没什么可以立刻实践的东西）。
