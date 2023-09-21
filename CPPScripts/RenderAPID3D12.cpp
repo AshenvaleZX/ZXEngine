@@ -73,8 +73,39 @@ namespace ZXEngine
 
 		ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&mDXGIFactory)));
 
-		// 优先使用硬件设备
-		HRESULT hardwareResult = D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&mD3D12Device));
+		// 找一个合适的显卡硬件
+		UINT adapterIndex = 0;
+		UINT bestAdapterIndex = UINT_MAX;
+		IDXGIAdapter1* pAdapter = nullptr;
+		while (mDXGIFactory->EnumAdapters1(adapterIndex, &pAdapter) != DXGI_ERROR_NOT_FOUND)
+		{
+			DXGI_ADAPTER_DESC1 adapterDesc;
+			pAdapter->GetDesc1(&adapterDesc);
+
+			// 0x8086代表Intel，这个判断是在找有没有独立显卡
+			if (adapterDesc.VendorId != 0x8086 && !(adapterDesc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE))
+				bestAdapterIndex = adapterIndex;
+
+			pAdapter->Release();
+			pAdapter = nullptr;
+
+			adapterIndex++;
+		}
+
+		// 如果没找到合适的显卡，不会进这个if，pAdapter会保持为空
+		if (bestAdapterIndex != UINT_MAX)
+			mDXGIFactory->EnumAdapters1(bestAdapterIndex, &pAdapter);
+
+		// 优先使用硬件设备，如果没找到合适的显卡，pAdapter此时为nullptr，这里允许空指针参数，表示自动找一个合适的
+		HRESULT hardwareResult = D3D12CreateDevice(pAdapter, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&mD3D12Device));
+
+		// 如果找到了合适的显卡，要手动释放一下Adapter
+		if (bestAdapterIndex != UINT_MAX)
+		{
+			pAdapter->Release();
+			pAdapter = nullptr;
+		}
+
 		// 如果硬件条件不支持，使用WARP设备(Windows Advanced Rasterization Platform，微软用软件模拟的光栅化硬件显卡)
 		if (FAILED(hardwareResult))
 		{
