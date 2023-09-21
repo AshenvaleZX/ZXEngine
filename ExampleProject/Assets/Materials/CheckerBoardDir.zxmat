@@ -1,8 +1,12 @@
 {
     "Type": "Material",
-    "Shader": "Shaders/BlinnPhong_DirL_S.zxshader",
+    "Shader": "Shaders/CheckerBoard_DirL.zxshader",
     "Float":
     [
+        {
+            "UniformName": "_Scale",
+            "Value": 5
+        },
         {
             "UniformName": "_Ambient",
             "Value": 0.25
@@ -10,13 +14,6 @@
         {
             "UniformName": "_Specular",
             "Value": 0.1
-        }
-    ],
-    "Textures":
-    [
-        {
-            "UniformName": "_Texture1",
-            "Path": "Textures/wood.jpg"
         }
     ]
 }

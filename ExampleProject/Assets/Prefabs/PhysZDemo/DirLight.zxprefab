@@ -1,11 +1,11 @@
 {
-    "Name": "PointLight",
+    "Name": "DirLight",
     "Components":
     [
         {
             "Type": "Transform",
             "Position": [-10, 10, -10],
-            "Rotation": [-45, -45, 0],
+            "Rotation": [45, 45, 0],
             "Scale": [2, 2, 2]
         },
         {
@@ -19,7 +19,7 @@
             "Type": "Light",
             "Color": [1, 1, 1],
             "Intensity": 1,
-            "LightType": 2
+            "LightType": 1
         }
     ]
 }
