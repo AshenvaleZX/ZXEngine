@@ -279,9 +279,11 @@ namespace ZXEngine
 		if (originCode.empty())
 			return "";
 
+		string preprocessedCode = PreprocessMacroDefine(originCode, "ZX_API_OPENGL");
+
 		string glCode = "#version 460 core\n\n";
 
-		string gsInOutBlock = GetCodeBlock(originCode, "GSInOut");
+		string gsInOutBlock = GetCodeBlock(preprocessedCode, "GSInOut");
 		if (!gsInOutBlock.empty())
 		{
 			glCode += "layout (triangles) in;\n";
@@ -297,7 +299,7 @@ namespace ZXEngine
 			}
 		}
 
-		string inputBlock = GetCodeBlock(originCode, "Input");
+		string inputBlock = GetCodeBlock(preprocessedCode, "Input");
 		auto lines = Utils::StringSplit(inputBlock, '\n');
 		for (auto& line : lines)
 		{
@@ -307,7 +309,7 @@ namespace ZXEngine
 		}
 		glCode += "\n";
 
-		string outputBlock = GetCodeBlock(originCode, "Output");
+		string outputBlock = GetCodeBlock(preprocessedCode, "Output");
 		lines = Utils::StringSplit(outputBlock, '\n');
 		for (auto& line : lines)
 		{
@@ -317,7 +319,7 @@ namespace ZXEngine
 		}
 		glCode += "\n";
 
-		string propertiesBlock = GetCodeBlock(originCode, "Properties");
+		string propertiesBlock = GetCodeBlock(preprocessedCode, "Properties");
 		lines = Utils::StringSplit(propertiesBlock, '\n');
 		for (auto& line : lines)
 		{
@@ -333,7 +335,7 @@ namespace ZXEngine
 		}
 		glCode += "\n";
 
-		string programCode = GetCodeBlock(originCode, "Program");
+		string programCode = GetCodeBlock(preprocessedCode, "Program");
 		lines = Utils::StringSplit(programCode, '\n');
 		for (auto& line : lines)
 		{
@@ -417,9 +419,11 @@ namespace ZXEngine
 		if (originCode.empty())
 			return "";
 
+		string preprocessedCode = PreprocessMacroDefine(originCode, "ZX_API_VULKAN");
+
 		string vkCode = "#version 460 core\n\n";
 
-		string gsInOutBlock = GetCodeBlock(originCode, "GSInOut");
+		string gsInOutBlock = GetCodeBlock(preprocessedCode, "GSInOut");
 		if (!gsInOutBlock.empty())
 		{
 			vkCode += "layout (triangles) in;\n";
@@ -435,7 +439,7 @@ namespace ZXEngine
 			}
 		}
 
-		string inputBlock = GetCodeBlock(originCode, "Input");
+		string inputBlock = GetCodeBlock(preprocessedCode, "Input");
 		auto lines = Utils::StringSplit(inputBlock, '\n');
 		for (auto& line : lines)
 		{
@@ -445,7 +449,7 @@ namespace ZXEngine
 		}
 		vkCode += "\n";
 
-		string outputBlock = GetCodeBlock(originCode, "Output");
+		string outputBlock = GetCodeBlock(preprocessedCode, "Output");
 		lines = Utils::StringSplit(outputBlock, '\n');
 		for (auto& line : lines)
 		{
@@ -477,7 +481,7 @@ namespace ZXEngine
 		vkCode += "\n";
 
 		// 处理UBO变量命名
-		string programBlock = GetCodeBlock(originCode, "Program");
+		string programBlock = GetCodeBlock(preprocessedCode, "Program");
 		if (!info.baseProperties.empty())
 		{
 			for (auto& property : info.baseProperties)
@@ -567,9 +571,11 @@ namespace ZXEngine
 		if (originCode.empty())
 			return "";
 
-		string vertCode = GetCodeBlock(originCode, "Vertex");
-		string geomCode = GetCodeBlock(originCode, "Geometry");
-		string fragCode = GetCodeBlock(originCode, "Fragment");
+		string preprocessedCode = PreprocessMacroDefine(originCode, "ZX_API_D3D12");
+
+		string vertCode = GetCodeBlock(preprocessedCode, "Vertex");
+		string geomCode = GetCodeBlock(preprocessedCode, "Geometry");
+		string fragCode = GetCodeBlock(preprocessedCode, "Fragment");
 
 		// 把HLSL默认的行主序矩阵改为列主序
 		string dxCode = "#pragma pack_matrix(column_major)\n\n";
@@ -611,7 +617,7 @@ namespace ZXEngine
 		vector<string> geomOutputVariables;
 		if (shaderInfo.stages & ZX_SHADER_STAGE_GEOMETRY_BIT)
 		{
-			string gsInOutBlock = GetCodeBlock(originCode, "GSInOut");
+			string gsInOutBlock = GetCodeBlock(preprocessedCode, "GSInOut");
 			size_t pos = 0;
 			if ((pos = Utils::FindWord(gsInOutBlock, "out", pos)) != string::npos)
 			{
@@ -1148,6 +1154,44 @@ namespace ZXEngine
 		name = propertyStr.substr(0, s);
 		string lengthStr = propertyStr.substr(s + 1, e - s - 1);
 		arrayLength = static_cast<uint32_t>(std::stoi(lengthStr));
+	}
+
+	string ShaderParser::PreprocessMacroDefine(const string& code, const string& macro)
+	{
+		if (code.find("#if") == string::npos)
+			return code;
+
+		string res;
+		bool reserve = true;
+
+		auto lines = Utils::StringSplit(code, '\n');
+		for (auto& line : lines)
+		{
+			if (line.find("#if") != string::npos)
+			{
+				auto words = Utils::ExtractWords(line);
+
+				if (words.size() < 2)
+				{
+					Debug::LogError("ShaderParser::PreprocessMacroDefine: #if statement error!");
+					reserve = false;
+					continue;
+				}
+
+				reserve = words[1] == macro;
+			}
+			else if (line.find("#endif") != string::npos)
+			{
+				reserve = true;
+			}
+			else
+			{
+				if (reserve)
+					res += line + "\n";
+			}
+		}
+
+		return res;
 	}
 
 	void ShaderParser::SetUpPropertiesStd140(ShaderInfo& info)

@@ -36,6 +36,8 @@ namespace ZXEngine
 		static string GetCodeBlock(const string& code, const string& blockName);
 		static void GetPropertyNameAndArrayLength(const string& propertyStr, string& name, uint32_t& arrayLength);
 
+		static string PreprocessMacroDefine(const string& code, const string& macro);
+
 		static void SetUpPropertiesStd140(ShaderInfo& info);
 		static UniformAlignInfo GetPropertyAlignInfoStd140(ShaderPropertyType type, uint32_t arrayLength);
 		static void SetUpPropertiesHLSL(ShaderInfo& info);
