@@ -116,6 +116,8 @@ namespace ZXEngine
 
 	void LuaManager::CallFunction(const char* table, const char* func, const char* msg, bool self)
 	{
+		// 记录当前栈大小
+		int stack_size = lua_gettop(L);
 		// global table名入栈
 		lua_getglobal(L, table);
 		// 函数名入栈
@@ -141,6 +143,8 @@ namespace ZXEngine
 			// 调用失败打印日志
 			Debug::LogError(lua_tostring(L, -1));
 		}
+		// 恢复栈大小(Pop掉这段代码在栈上产生的数据)
+		lua_settop(L, stack_size);
 	}
 
 	void LuaManager::CallGlobalFunction(const char* func, const char* msg)

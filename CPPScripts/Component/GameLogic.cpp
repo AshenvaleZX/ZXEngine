@@ -28,6 +28,9 @@ namespace ZXEngine
 	void GameLogic::Start()
 	{
 		lua_State* L = LuaManager::GetInstance()->GetState();
+		// 记录当前栈大小
+		int stack_size = lua_gettop(L);
+		// 加载绑定的lua代码
 		auto suc = luaL_dofile(L, luaFullPath.c_str());
 		if (suc == LUA_OK)
 		{
@@ -63,6 +66,8 @@ namespace ZXEngine
 		{
 			Debug::Log(lua_tostring(L, -1));
 		}
+		// 恢复栈大小(Pop掉这段代码在栈上产生的数据)
+		lua_settop(L, stack_size);
 	}
 
 	void GameLogic::Update()
@@ -79,6 +84,8 @@ namespace ZXEngine
 	void GameLogic::CallLuaFunction(const char* func)
 	{
 		lua_State* L = LuaManager::GetInstance()->GetState();
+		// 记录当前栈大小
+		int stack_size = lua_gettop(L);
 		// 此时全局table AllGameLogic在-1位置
 		lua_getglobal(L, "AllGameLogic");
 		// 此时全局table AllGameLogic在-2位置
@@ -103,5 +110,7 @@ namespace ZXEngine
 			// 调用失败打印日志
 			Debug::LogError(lua_tostring(L, -1));
 		}
+		// 恢复栈大小(Pop掉这段代码在栈上产生的数据)
+		lua_settop(L, stack_size);
 	}
 }
