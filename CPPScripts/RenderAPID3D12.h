@@ -105,7 +105,7 @@ namespace ZXEngine
 
 		// Acceleration Structure
 		virtual void BuildTopLevelAccelerationStructure(uint32_t commandID) {};
-		virtual void BuildBottomLevelAccelerationStructure(uint32_t VAO, bool isCompact) {};
+		virtual void BuildBottomLevelAccelerationStructure(uint32_t VAO, bool isCompact);
 
 
 		/// <summary>
@@ -138,7 +138,7 @@ namespace ZXEngine
 		vector<ZXD3D12Fence*> mFrameFences;
 
 		ComPtr<IDXGIFactory4> mDXGIFactory;
-		ComPtr<ID3D12Device> mD3D12Device;
+		ComPtr<ID3D12Device5> mD3D12Device;
 
 		uint32_t mPresentFBOIdx = 0;
 		const UINT mPresentBufferCount = 2;
@@ -200,7 +200,7 @@ namespace ZXEngine
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc);
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_RENDER_TARGET_VIEW_DESC& rtvDesc);
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_DEPTH_STENCIL_VIEW_DESC& dsvDesc);
-		ComPtr<ID3D12Resource> CreateDefaultBuffer(const void* initData, UINT64 byteSize);
+		ComPtr<ID3D12Resource> CreateDefaultBuffer(UINT64 size, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initState, const void* data = nullptr);
 
 		ZXD3D12ConstantBuffer CreateConstantBuffer(UINT64 byteSize);
 
@@ -215,7 +215,7 @@ namespace ZXEngine
 
 		ZXD3D12Fence* mImmediateExeFence;
 		ComPtr<ID3D12CommandAllocator> mImmediateExeAllocator;
-		ComPtr<ID3D12GraphicsCommandList> mImmediateExeCommandList;
+		ComPtr<ID3D12GraphicsCommandList4> mImmediateExeCommandList;
 
 		ViewPortInfo mViewPortInfo;
 
@@ -237,6 +237,6 @@ namespace ZXEngine
 
 		array<const CD3DX12_STATIC_SAMPLER_DESC, 4> GetStaticSamplersDesc();
 		void InitImmediateExecution();
-		void ImmediatelyExecute(std::function<void(ComPtr<ID3D12GraphicsCommandList> cmdList)>&& function);
+		void ImmediatelyExecute(std::function<void(ComPtr<ID3D12GraphicsCommandList4> cmdList)>&& function);
 	};
 }

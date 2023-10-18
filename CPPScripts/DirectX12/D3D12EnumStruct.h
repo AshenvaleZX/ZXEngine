@@ -53,7 +53,7 @@ namespace ZXEngine
         // 但是在一个Allocator所对应的所有CommandList中，只能有一个CommandList处于Recording状态
         // 这里稍微有点偷懒了，先直接搞成1对1，反正现在数量小
         vector<ComPtr<ID3D12CommandAllocator>> allocators;
-        vector<ComPtr<ID3D12GraphicsCommandList>> commandLists;
+        vector<ComPtr<ID3D12GraphicsCommandList4>> commandLists;
         bool inUse = false;
     };
 
@@ -82,18 +82,25 @@ namespace ZXEngine
         bool inUse = false;
     };
 
+    struct ZXD3D12AccelerationStructure
+    {
+        bool isBuilt = false;
+        ComPtr<ID3D12Resource> as;
+    };
+
     struct ZXD3D12VAO
     {
-        UINT size = 0;
-
+        UINT indexCount = 0; // 索引数量
         ComPtr<ID3D12Resource> indexBuffer = nullptr;
         D3D12_INDEX_BUFFER_VIEW indexBufferView = {};
         void* indexBufferAddress = nullptr; // Only for dynamic mesh
 
+        UINT vertexCount = 0; // 顶点数量
         ComPtr<ID3D12Resource> vertexBuffer = nullptr;
         D3D12_VERTEX_BUFFER_VIEW vertexBufferView = {};
         void* vertexBufferAddress = nullptr; // Only for dynamic mesh
 
+        ZXD3D12AccelerationStructure blas;
         bool inUse = false;
     };
 

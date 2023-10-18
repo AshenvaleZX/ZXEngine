@@ -767,7 +767,7 @@ namespace ZXEngine
 		));
 
 		// 上传纹理数据
-		ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList> cmdList)
+		ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList4> cmdList)
 		{
 			D3D12_SUBRESOURCE_DATA subresourceData = {};
 			subresourceData.pData = pixels;
@@ -856,7 +856,7 @@ namespace ZXEngine
 		));
 
 		// 上传纹理数据
-		ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList> cmdList)
+		ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList4> cmdList)
 		{
 			D3D12_SUBRESOURCE_DATA cubeMapData[6] = {};
 			for (int i = 0; i < 6; ++i)
@@ -927,7 +927,7 @@ namespace ZXEngine
 		));
 
 		// 上传纹理数据
-		ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList> cmdList)
+		ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList4> cmdList)
 		{
 			D3D12_SUBRESOURCE_DATA subresourceData = {};
 			subresourceData.pData = data;
@@ -1435,7 +1435,7 @@ namespace ZXEngine
 
 			drawCommandList->IASetIndexBuffer(&VAO->indexBufferView);
 			drawCommandList->IASetVertexBuffers(0, 1, &VAO->vertexBufferView);
-			drawCommandList->DrawIndexedInstanced(VAO->size, 1, 0, 0, 0);
+			drawCommandList->DrawIndexedInstanced(VAO->indexCount, 1, 0, 0, 0);
 		}
 
 		// 把状态切回去
@@ -1499,21 +1499,28 @@ namespace ZXEngine
 	{
 		VAO = GetNextVAOIndex();
 		auto meshBuffer = GetVAOByIndex(VAO);
-		meshBuffer->size = static_cast<UINT>(indices.size());
+		meshBuffer->indexCount = static_cast<UINT>(indices.size());
+		meshBuffer->vertexCount = static_cast<UINT>(vertices.size());
 
 		// 创建Vertex Buffer
 		UINT vertexBufferSize = static_cast<UINT>(sizeof(Vertex) * vertices.size());
-		meshBuffer->vertexBuffer = CreateDefaultBuffer(vertices.data(), vertexBufferSize);
+		meshBuffer->vertexBuffer = CreateDefaultBuffer(vertexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, vertices.data());
 		meshBuffer->vertexBufferView.SizeInBytes = vertexBufferSize;
 		meshBuffer->vertexBufferView.StrideInBytes = sizeof(Vertex);
 		meshBuffer->vertexBufferView.BufferLocation = meshBuffer->vertexBuffer->GetGPUVirtualAddress();
 
 		// 创建Index Buffer
 		UINT indexBufferSize = static_cast<UINT>(sizeof(uint32_t) * indices.size());
-		meshBuffer->indexBuffer = CreateDefaultBuffer(indices.data(), indexBufferSize);
+		meshBuffer->indexBuffer = CreateDefaultBuffer(indexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, indices.data());
 		meshBuffer->indexBufferView.Format = DXGI_FORMAT_R32_UINT;
 		meshBuffer->indexBufferView.SizeInBytes = indexBufferSize;
 		meshBuffer->indexBufferView.BufferLocation = meshBuffer->indexBuffer->GetGPUVirtualAddress();
+
+		// 如果是光追管线，还要创建一个BLAS( Bottom Level Acceleration Structure )
+		if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
+		{
+			BuildBottomLevelAccelerationStructure(VAO, true);
+		}
 
 		meshBuffer->inUse = true;
 	}
@@ -1522,7 +1529,8 @@ namespace ZXEngine
 	{
 		VAO = GetNextVAOIndex();
 		auto meshBuffer = GetVAOByIndex(VAO);
-		meshBuffer->size = static_cast<UINT>(indexSize);
+		meshBuffer->indexCount = static_cast<UINT>(indexSize);
+		meshBuffer->vertexCount = static_cast<UINT>(vertexSize);
 
 		// 创建动态Vertex Buffer
 		UINT vertexBufferSize = static_cast<UINT>(sizeof(Vertex) * vertexSize);
@@ -1882,6 +1890,65 @@ namespace ZXEngine
 	}
 
 
+	void RenderAPID3D12::BuildBottomLevelAccelerationStructure(uint32_t VAO, bool isCompact)
+	{
+		auto meshBuffer = GetVAOByIndex(VAO);
+
+		D3D12_RAYTRACING_GEOMETRY_DESC geometryDesc = {};
+		geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
+		geometryDesc.Triangles.VertexBuffer.StartAddress = meshBuffer->vertexBuffer->GetGPUVirtualAddress();
+		geometryDesc.Triangles.VertexBuffer.StrideInBytes = sizeof(Vertex);
+		// 顶点格式，BLAS只关心顶点位置这一项数据
+		geometryDesc.Triangles.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+		geometryDesc.Triangles.VertexCount = meshBuffer->vertexCount;
+		geometryDesc.Triangles.IndexBuffer = meshBuffer->indexBuffer->GetGPUVirtualAddress();
+		geometryDesc.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT;
+		geometryDesc.Triangles.IndexCount = meshBuffer->indexCount;
+		// 构建BLAS的时候可以对模型数据做一个变换，暂时不需要
+		geometryDesc.Triangles.Transform3x4 = NULL;
+		geometryDesc.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
+
+		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS inputs = {};
+		inputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL;
+		inputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
+		// 这里可以传数组一次性构建多个BLAS，暂时只传一个
+		inputs.NumDescs = 1;
+		inputs.pGeometryDescs = &geometryDesc;
+		// 指定PREFER_FAST_TRACE，构建时间更长，但是实时光追速度更快
+		inputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
+
+		// 计算BLAS所需要的内存大小
+		D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO prebuildInfo = {};
+		mD3D12Device->GetRaytracingAccelerationStructurePrebuildInfo(&inputs, &prebuildInfo);
+
+		UINT64 scratchSizeInBytes = Math::AlignUpPOT(prebuildInfo.ScratchDataSizeInBytes, static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
+		UINT64 resultSizeInBytes = Math::AlignUpPOT(prebuildInfo.ResultDataMaxSizeInBytes, static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
+
+		// 创建BLAS的scratch buffer
+		auto scratchBuffer = CreateDefaultBuffer(scratchSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COMMON);
+		// 创建BLAS的结果buffer
+		meshBuffer->blas.as = CreateDefaultBuffer(resultSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE);
+
+		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC asDesc = {};
+		asDesc.Inputs = inputs;
+		asDesc.DestAccelerationStructureData = meshBuffer->blas.as.Get()->GetGPUVirtualAddress();
+		asDesc.ScratchAccelerationStructureData = scratchBuffer->GetGPUVirtualAddress();
+		// 如果是更新BLAS需要指定之前的BLAS
+		asDesc.SourceAccelerationStructureData = NULL;
+
+		ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList4> cmdList)
+		{
+			// 构建BLAS
+			cmdList->BuildRaytracingAccelerationStructure(&asDesc, 0, nullptr);
+			// 确保BLAS在被使用之前已构建完成
+			auto uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(meshBuffer->blas.as.Get());
+			cmdList->ResourceBarrier(1, &uavBarrier);
+		});
+
+		meshBuffer->blas.isBuilt = true;
+	};
+
+
 	uint32_t RenderAPID3D12::GetNextVAOIndex()
 	{
 		uint32_t length = static_cast<uint32_t>(mVAOArray.size());
@@ -1917,9 +1984,15 @@ namespace ZXEngine
 			VAO->vertexBufferAddress = nullptr;
 		}
 
-		// 可能不需要手动调这个
+		// 可能不需要手动调这个Reset
 		VAO->indexBuffer.Reset();
 		VAO->vertexBuffer.Reset();
+
+		if (VAO->blas.isBuilt)
+		{
+			VAO->blas.as.Reset();
+			VAO->blas.isBuilt = false;
+		}
 
 		VAO->inUse = false;
 	}
@@ -2257,54 +2330,69 @@ namespace ZXEngine
 		return textureID;
 	}
 
-	ComPtr<ID3D12Resource> RenderAPID3D12::CreateDefaultBuffer(const void* data, UINT64 size)
+	ComPtr<ID3D12Resource> RenderAPID3D12::CreateDefaultBuffer(UINT64 size, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initState, const void* data)
 	{
+		D3D12_RESOURCE_DESC defaultBufferDesc = {};
+		defaultBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+		defaultBufferDesc.Alignment = 0;
+		defaultBufferDesc.Width = size;
+		defaultBufferDesc.Height = 1;
+		defaultBufferDesc.DepthOrArraySize = 1;
+		defaultBufferDesc.MipLevels = 1;
+		defaultBufferDesc.Format = DXGI_FORMAT_UNKNOWN;
+		defaultBufferDesc.SampleDesc.Count = 1;
+		defaultBufferDesc.SampleDesc.Quality = 0;
+		defaultBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+		defaultBufferDesc.Flags = flags;
+
 		CD3DX12_HEAP_PROPERTIES defaultBufferProps(D3D12_HEAP_TYPE_DEFAULT);
-		CD3DX12_RESOURCE_DESC defaultBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(size);
 		ComPtr<ID3D12Resource> defaultBuffer;
 		ThrowIfFailed(mD3D12Device->CreateCommittedResource(
 			&defaultBufferProps,
 			D3D12_HEAP_FLAG_NONE,
 			&defaultBufferDesc,
-			D3D12_RESOURCE_STATE_COMMON,
+			initState,
 			nullptr,
 			IID_PPV_ARGS(defaultBuffer.GetAddressOf())));
 
-		CD3DX12_HEAP_PROPERTIES uploadBufferProps(D3D12_HEAP_TYPE_UPLOAD);
-		CD3DX12_RESOURCE_DESC uploadBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(size);
-		ComPtr<ID3D12Resource> uploadBuffer;
-		ThrowIfFailed(mD3D12Device->CreateCommittedResource(
-			&uploadBufferProps,
-			D3D12_HEAP_FLAG_NONE,
-			&uploadBufferDesc,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			nullptr,
-			IID_PPV_ARGS(uploadBuffer.GetAddressOf())));
-
-		D3D12_SUBRESOURCE_DATA subResourceData = {};
-		subResourceData.pData = data;
-		subResourceData.RowPitch = size;
-		subResourceData.SlicePitch = subResourceData.RowPitch;
-
-		ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList> cmdList)
+		if (data)
 		{
-			// 其实可以直接在创建defaultBuffer的时候就把初始状态设置为D3D12_RESOURCE_STATE_COPY_DEST
-			// 没必要多一步这个转换，但是创建的时候如果不是以 D3D12_RESOURCE_STATE_COMMON 初始化，Debug Layer居然会给个Warning
-			// 所以为了没有Warning干扰排除问题，这里就这样写了
-			CD3DX12_RESOURCE_BARRIER barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(
-				defaultBuffer.Get(),
-				D3D12_RESOURCE_STATE_COMMON,
-				D3D12_RESOURCE_STATE_COPY_DEST);
-			cmdList->ResourceBarrier(1, &barrier1);
+			CD3DX12_HEAP_PROPERTIES uploadBufferProps(D3D12_HEAP_TYPE_UPLOAD);
+			CD3DX12_RESOURCE_DESC uploadBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(size);
+			ComPtr<ID3D12Resource> uploadBuffer;
+			ThrowIfFailed(mD3D12Device->CreateCommittedResource(
+				&uploadBufferProps,
+				D3D12_HEAP_FLAG_NONE,
+				&uploadBufferDesc,
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				nullptr,
+				IID_PPV_ARGS(uploadBuffer.GetAddressOf())));
 
-			UpdateSubresources<1>(cmdList.Get(), defaultBuffer.Get(), uploadBuffer.Get(), 0, 0, 1, &subResourceData);
+			D3D12_SUBRESOURCE_DATA subResourceData = {};
+			subResourceData.pData = data;
+			subResourceData.RowPitch = size;
+			subResourceData.SlicePitch = subResourceData.RowPitch;
 
-			CD3DX12_RESOURCE_BARRIER barrier2 = CD3DX12_RESOURCE_BARRIER::Transition(
-				defaultBuffer.Get(),
-				D3D12_RESOURCE_STATE_COPY_DEST,
-				D3D12_RESOURCE_STATE_GENERIC_READ);
-			cmdList->ResourceBarrier(1, &barrier2);
-		});
+			ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList4> cmdList)
+			{
+				// 其实可以直接在创建defaultBuffer的时候就把初始状态设置为D3D12_RESOURCE_STATE_COPY_DEST
+				// 没必要多一步这个转换，但是创建的时候如果不是以 D3D12_RESOURCE_STATE_COMMON 初始化，Debug Layer居然会给个Warning
+				// 所以为了没有Warning干扰排除问题，这里就这样写了
+				CD3DX12_RESOURCE_BARRIER barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(
+					defaultBuffer.Get(),
+					D3D12_RESOURCE_STATE_COMMON,
+					D3D12_RESOURCE_STATE_COPY_DEST);
+				cmdList->ResourceBarrier(1, &barrier1);
+
+				UpdateSubresources<1>(cmdList.Get(), defaultBuffer.Get(), uploadBuffer.Get(), 0, 0, 1, &subResourceData);
+
+				CD3DX12_RESOURCE_BARRIER barrier2 = CD3DX12_RESOURCE_BARRIER::Transition(
+					defaultBuffer.Get(),
+					D3D12_RESOURCE_STATE_COPY_DEST,
+					D3D12_RESOURCE_STATE_GENERIC_READ);
+				cmdList->ResourceBarrier(1, &barrier2);
+			});
+		}
 
 		return defaultBuffer;
 	}
@@ -2520,7 +2608,7 @@ namespace ZXEngine
 		mImmediateExeCommandList->Close();
 	}
 
-	void RenderAPID3D12::ImmediatelyExecute(std::function<void(ComPtr<ID3D12GraphicsCommandList> cmdList)>&& function)
+	void RenderAPID3D12::ImmediatelyExecute(std::function<void(ComPtr<ID3D12GraphicsCommandList4> cmdList)>&& function)
 	{
 		// 重置命令
 		ThrowIfFailed(mImmediateExeAllocator->Reset());
