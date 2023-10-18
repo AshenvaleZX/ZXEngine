@@ -10,13 +10,29 @@ Screenshot display (more display later in the introduction):
 
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/EngineShow0.jpg)
 
+## 目录(Contents)
+
+[引擎简介 (Engine Introduction)](https://github.com/AshenvaleZX/ZXEngine#%E5%BC%95%E6%93%8E%E7%AE%80%E4%BB%8B-engine-introduction)
+
+[细节图片展示 (Detailed picture display)](https://github.com/AshenvaleZX/ZXEngine#%E7%BB%86%E8%8A%82%E5%9B%BE%E7%89%87%E5%B1%95%E7%A4%BA-detailed-picture-display)
+
+[PhysZ引擎简介(PhysZ Engine Introduction)](https://github.com/AshenvaleZX/ZXEngine#physz%E5%BC%95%E6%93%8E%E7%AE%80%E4%BB%8Bphysz-engine-introduction)
+
+[骨骼蒙皮动画系统(Skeletal Animation System)](https://github.com/AshenvaleZX/ZXEngine#%E9%AA%A8%E9%AA%BC%E8%92%99%E7%9A%AE%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9Fskeletal-animation-system)
+
+[引擎文件格式介绍 (Engine file format introduction)](https://github.com/AshenvaleZX/ZXEngine#%E5%BC%95%E6%93%8E%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E4%BB%8B%E7%BB%8D-engine-file-format-introduction)
+
+[GamePlay层的Lua代码示例(Lua code example for GamePlay layer)](https://github.com/AshenvaleZX/ZXEngine#gameplay%E5%B1%82%E7%9A%84lua%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8Blua-code-example-for-gameplay-layer)
+
+[注意事项 (Precautions)](https://github.com/AshenvaleZX/ZXEngine#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9-precautions)
+
 ## 引擎简介 (Engine Introduction)
 
-本引擎目前同时支持Vulkan，DirectX 12和OpenGL，使用自创的zxshader语言来编写shader，支持前面三种图形API，可一次编写3种环境运行。同时也支持光线追踪渲染管线(基于Vulkan)。
+本引擎目前同时支持Vulkan，DirectX 12和OpenGL，使用自创的zxshader语言来编写shader，支持前面三种图形API，可一次编写3种环境运行。同时也支持光线追踪渲染管线(暂时只支持Vulkan，基于DirectX 12的正在开发)。
 
-This engine currently supports Vulkan, DirectX 12 and OpenGL. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs. This engine also supports ray tracing rendering pipeline (Only based on Vulkan for now).
+This engine currently supports Vulkan, DirectX 12 and OpenGL. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs. This engine also supports ray tracing rendering pipeline (Ray tracing currently only supports Vulkan, support for DirectX 12 is under development).
 
-本项目是游戏引擎项目，不是单纯的渲染引擎。所以还内置了我自己写的物理引擎PhysZ(学习和改写自Cyclone引擎)，支持基本的刚体力学模拟。同时我也开发了简单的骨骼蒙皮动画系统，粒子系统等。文档后面会有这些系统的图片展示。
+本项目是游戏引擎项目，不是单纯的渲染引擎。所以还内置了我写的物理引擎PhysZ(学习和改写自Cyclone引擎)，支持基本的刚体力学模拟。同时我也开发了简单的骨骼蒙皮动画系统，粒子系统等。文档后面会有这些系统的图片展示。
 
 This project is a game engine project, not just a rendering engine. Therefore, it also has a built-in physics engine written by myself, which I called it PhysZ (learn and rewritten from the Cyclone engine), supports rigid body mechanics simulation. And I also developed a simple skeletal animation system, particle system, etc. Images of these systems are shown later in this document.
 
@@ -88,7 +104,7 @@ Using the PhysZ engine involves only two Components, Collider and Rigidbody. Col
 
 The function of each parameter is just as the name implies. And the Damping parameter is used to simulate various forms of damping effects. Linear Damping and Angular Damping correspond to linear motion and angular motion respectively. A value of 0 represents no damping.
 
-## 骨骼蒙皮动画(Skeletal Animation)
+## 骨骼蒙皮动画系统(Skeletal Animation System)
 
 切换到AnimDemo场景，点击运行按钮后，可以看到骨骼蒙皮动画的展示:
 
@@ -203,11 +219,11 @@ The way to switch the graphics API is to modify the macro definition in the pubh
 
 In fact, the project was created in May 2020, but at first I just wanted to save the code I wrote when I learned OpenGL in early 2020 to GitHub. The code I wrote at that time was only procedure oriented programming in C language style, a rendering demo with less than 2000 lines. Then I spent more than a year reading "Real-Time Rendering 4th". During this period, I just read the book and didn't actually write anything (because this book is too theoretical, and there is nothing that can be practiced immediately).
 
-其实当时那个1000多行的demo写完我还想继续加点东西上去，但是感觉加不动了，面向过程的代码实在是难扩展。就一直想把这个demo改成一个正式一点的，有渲染框架的工程，但是不知道从何改起，就一直没动，先看书去了。书看完了还是不知道怎么开始，就沉寂了几个月。最后等到了2022年我才开始正式搭建这个工程，准备开发成一个自己的简单游戏引擎。其实我当时应该建一个新的GitHub仓库的，而不是用这个学习OpenGL的仓库。但是当时对C++工程还很陌生，感觉各种环境配置和库链接太麻烦了，就偷懒直接用这个已经搭好的OpenGL开发环境开始搭建引擎了。所以之前写的demo代码还遗留在这里面的。
+其实当时那个1000多行的demo写完我还想继续加点东西上去，但是感觉加不动了，面向过程的代码实在是难扩展。就一直想把这个demo改成一个正式一点的，有渲染框架的工程，但是不知道从何改起，就一直没动，先看书去了。书看完了还是不知道怎么开始，就沉寂了几个月。最后等到了2022年我才开始正式搭建这个工程，准备开发成一个自己的简单游戏引擎。其实我当时应该建一个新的GitHub仓库的，而不是用这个学习OpenGL的仓库。但是当时对C++工程还很陌生，感觉各种环境配置和库链接太麻烦了，就偷懒直接用这个已经搭好的OpenGL开发环境开始搭建引擎了。所以工程里还有之前的demo代码记录。
 
-In fact, after the demo was written, I wanted to continue to add something, but I felt that it couldn't be done, because the procedure oriented code was really difficult to expand. I have always wanted to make this demo a more formal project with a rendering framework, but I don't know where to start, so I haven't moved, and I read the book first. After reading the book, I still didn't know how to start, so I fell silent for several months. Finally, in 2022, I started to build this project, preparing to develop a simple game engine of my own. In fact, I should have built a new GitHub repository instead of using this repository for learning OpenGL. But at that time, I was still very unfamiliar with C++ projects. I felt that various environment configurations and library links were too troublesome, so I was slack off and started building the engine directly with this already established OpenGL development environment. So the demo code written before is still left here.
+In fact, after the demo was written, I wanted to continue to add something, but I felt that it couldn't be done, because the procedure oriented code was really difficult to expand. I have always wanted to make this demo a more formal project with a rendering framework, but I don't know where to start, so I haven't moved, and I read the book first. After reading the book, I still didn't know how to start, so I fell silent for several months. Finally, in 2022, I started to build this project, preparing to develop a simple game engine of my own. In fact, I should have built a new GitHub repository instead of using this repository for learning OpenGL. But at that time, I was still very unfamiliar with C++ projects. I felt that various environment configurations and library links were too troublesome, so I was slack off and started building the engine directly with this already established OpenGL development environment. So there are also previous demo code commits in the project.
 
-这个工程我准备用自己工作之余的时间长期更新下去，慢慢完善，添加更高级的特性。也把这个工程当作自己一个学习技术的平台，有什么感兴趣的技术可以在自己这个工程里实验一下。也希望同样对引擎技术感兴趣的人可以一起分享。因为我之前沉寂了几个月迟迟没有开始，就是因为不知道从何开始。我想找一个简单的参考项目，但是找不到。要么就是UE5这种过于庞大和成熟的引擎，要么就是一些很老的比如Ogre这样的引擎，反正我没有找到一个合适的项目让我学习。我这个项目有很多实现是自己瞎想的，还比较简单，换句话说也比较简陋。所以有大佬看到感觉写的不好的地方，欢迎提出建议。可以发邮件给我，ashenvalezx@gmail.com
+这个工程我准备用自己工作之余的时间长期更新下去，慢慢完善，添加更高级的特性。也把这个工程当作自己一个学习技术的平台，有什么感兴趣的技术可以在自己这个工程里实验一下。也希望同样对引擎技术感兴趣的人可以一起分享。因为我之前沉寂了几个月迟迟没有开始，就是因为不知道从何开始。我想找一个简单的参考项目，但是找不到。要么就是UE5这种过于庞大和成熟的引擎，要么就是一些很老的比如Ogre这样的引擎，反正我没有找到一个合适的项目让我学习。我这个项目有很多实现是自己瞎想的，还比较简单，换句话说也比较简陋。所以有大佬看到感觉写的不好的地方，欢迎提出建议。可以发邮件给我，ashenvalezx@gmail.com，或者点我头像进主页来知乎私信我。
 
 I plan to use my spare time to keep updating this project, gradually improve it, and add more advanced features. I also regard this project as a platform for my own learning. I can experiment with any interesting technologies in my own project. I also hope that people who are also interested in game engine technology can share it together. I waited for months and didn't start the project because I didn't know where to start. I'm trying to find a relatively simple project to learn from, but can't find it. Either it is an overly large and mature engine like UE5, or some very old engines such as Ogre. Anyway, I didn't find a suitable project for me to learn. Many of the implementations of my project are thought by myself, and they are relatively simple, in other words, they are relatively crude. So if someone sees some implementations that are not good, suggestions are welcome. You can email me, ashenvalezx@gmail.com
 
