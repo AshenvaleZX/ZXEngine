@@ -1504,14 +1504,14 @@ namespace ZXEngine
 
 		// 创建Vertex Buffer
 		UINT vertexBufferSize = static_cast<UINT>(sizeof(Vertex) * vertices.size());
-		meshBuffer->vertexBuffer = CreateDefaultBuffer(vertexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, vertices.data());
+		meshBuffer->vertexBuffer = CreateBuffer(vertexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, D3D12_HEAP_TYPE_DEFAULT, vertices.data());
 		meshBuffer->vertexBufferView.SizeInBytes = vertexBufferSize;
 		meshBuffer->vertexBufferView.StrideInBytes = sizeof(Vertex);
 		meshBuffer->vertexBufferView.BufferLocation = meshBuffer->vertexBuffer->GetGPUVirtualAddress();
 
 		// 创建Index Buffer
 		UINT indexBufferSize = static_cast<UINT>(sizeof(uint32_t) * indices.size());
-		meshBuffer->indexBuffer = CreateDefaultBuffer(indexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, indices.data());
+		meshBuffer->indexBuffer = CreateBuffer(indexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, D3D12_HEAP_TYPE_DEFAULT, indices.data());
 		meshBuffer->indexBufferView.Format = DXGI_FORMAT_R32_UINT;
 		meshBuffer->indexBufferView.SizeInBytes = indexBufferSize;
 		meshBuffer->indexBufferView.BufferLocation = meshBuffer->indexBuffer->GetGPUVirtualAddress();
@@ -1890,6 +1890,112 @@ namespace ZXEngine
 	}
 
 
+	void RenderAPID3D12::PushAccelerationStructure(uint32_t VAO, uint32_t hitGroupIdx, uint32_t rtMaterialDataID, const Matrix4& transform)
+	{
+		ZXD3D12ASInstanceData asIns = {};
+		asIns.VAO = VAO;
+		asIns.hitGroupIdx = hitGroupIdx;
+		asIns.rtMaterialDataID = rtMaterialDataID;
+		asIns.transform = transform;
+		asInstanceData.push_back(std::move(asIns));
+	}
+
+	void RenderAPID3D12::BuildTopLevelAccelerationStructure(uint32_t commandID)
+	{
+		auto command = GetDrawCommandByIndex(commandID);
+		auto& allocator = command->allocators[mCurrentFrame];
+		auto& commandList = command->commandLists[mCurrentFrame];
+
+		// 重置Command List
+		ThrowIfFailed(allocator->Reset());
+		ThrowIfFailed(commandList->Reset(allocator.Get(), nullptr));
+
+		// 获取当前帧的TLAS
+		auto& curTLAS = GetTLASGroupByIndex(mRTPipelines[mCurRTPipelineID]->tlasIdx)->asGroup[mCurrentFrame];
+		const bool isUpdate = curTLAS.isBuilt;
+
+		// 构建TLAS的输入参数
+		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS inputs = {};
+		inputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
+		inputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
+		inputs.NumDescs = static_cast<UINT>(asInstanceData.size());
+		inputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
+
+		// 计算TLAS所需要的内存大小
+		D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO prebuildInfo = {};
+		mD3D12Device->GetRaytracingAccelerationStructurePrebuildInfo(&inputs, &prebuildInfo);
+
+		// Scratch Buffer
+		UINT64 scratchSizeInBytes = Math::AlignUpPOT(prebuildInfo.ScratchDataSizeInBytes, static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
+		auto scratchBuffer = CreateBuffer(scratchSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_HEAP_TYPE_DEFAULT);
+		// 构建TLAS要用的BLAS数据Buffer
+		UINT64 instanceDescsSizeInBytes = Math::AlignUpPOT(static_cast<UINT64>(sizeof(D3D12_RAYTRACING_INSTANCE_DESC) * asInstanceData.size()), static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
+		auto instanceDescsBuffer = CreateBuffer(instanceDescsSizeInBytes, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
+		// 创建TLAS Buffer
+		if (!isUpdate)
+		{
+			UINT64 resultSizeInBytes = Math::AlignUpPOT(prebuildInfo.ResultDataMaxSizeInBytes, static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
+			curTLAS.as = CreateBuffer(resultSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, D3D12_HEAP_TYPE_DEFAULT);
+		}
+
+		// BLAS数据Buffer指针
+		D3D12_RAYTRACING_INSTANCE_DESC* instanceDescs = nullptr;
+		// 把Buffer映射到指针
+		instanceDescsBuffer->Map(0, nullptr, reinterpret_cast<void**>(&instanceDescs));
+		// 映射失败直接抛出异常
+		if (!instanceDescs)
+			throw std::logic_error("Failed to map instanceDescsBuffer.");
+
+		// BLAS实例数量
+		UINT instanceCount = static_cast<UINT>(asInstanceData.size());
+
+		// 新建TLAS的话先把BLAS数据Buffer清零
+		// 不知道这一步是否必要，Nvidia的光追教程里这样写的，也没解释为什么
+		if (!isUpdate)
+			memset(instanceDescs, 0, instanceDescsSizeInBytes);
+
+		// 填充场景中要渲染的对象实例数据
+		for (UINT i = 0; i < instanceCount; i++)
+		{
+			auto& data = asInstanceData[i];
+			auto meshData = GetVAOByIndex(data.VAO);
+
+			instanceDescs[i].InstanceID = static_cast<UINT>(i);
+			instanceDescs[i].InstanceContributionToHitGroupIndex = data.hitGroupIdx;
+			instanceDescs[i].InstanceMask = 0xFF;
+			instanceDescs[i].AccelerationStructure = meshData->blas.as->GetGPUVirtualAddress();
+			instanceDescs[i].Flags = D3D12_RAYTRACING_INSTANCE_FLAG_NONE;
+
+			float* array = new float[16];
+			data.transform.ToRowMajorArray(array);
+			for (int j = 0; j < 12; j++) instanceDescs[i].Transform[j / 4][j % 4] = array[j];
+			delete[] array;
+		}
+		instanceDescsBuffer->Unmap(0, nullptr);
+
+		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC asDesc = {};
+		asDesc.Inputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
+		asDesc.Inputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
+		asDesc.Inputs.NumDescs = instanceCount;
+		asDesc.Inputs.InstanceDescs = instanceDescsBuffer.Get()->GetGPUVirtualAddress();
+		asDesc.Inputs.Flags = isUpdate ? D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PERFORM_UPDATE : D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
+		asDesc.DestAccelerationStructureData = curTLAS.as->GetGPUVirtualAddress();
+		asDesc.SourceAccelerationStructureData = isUpdate ? curTLAS.as->GetGPUVirtualAddress() : NULL;
+		asDesc.ScratchAccelerationStructureData = scratchBuffer->GetGPUVirtualAddress();
+
+		// 构建TLAS
+		commandList->BuildRaytracingAccelerationStructure(&asDesc, 0, nullptr);
+
+		// 确保TLAS在被使用之前已构建完成
+		auto uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(curTLAS.as.Get());
+		commandList->ResourceBarrier(1, &uavBarrier);
+
+		// 结束并提交Command List
+		ThrowIfFailed(commandList->Close());
+		ID3D12CommandList* cmdsLists[] = { commandList.Get() };
+		mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+	};
+
 	void RenderAPID3D12::BuildBottomLevelAccelerationStructure(uint32_t VAO, bool isCompact)
 	{
 		auto meshBuffer = GetVAOByIndex(VAO);
@@ -1925,9 +2031,9 @@ namespace ZXEngine
 		UINT64 resultSizeInBytes = Math::AlignUpPOT(prebuildInfo.ResultDataMaxSizeInBytes, static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
 
 		// 创建BLAS的scratch buffer
-		auto scratchBuffer = CreateDefaultBuffer(scratchSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COMMON);
+		auto scratchBuffer = CreateBuffer(scratchSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COMMON, D3D12_HEAP_TYPE_DEFAULT);
 		// 创建BLAS的结果buffer
-		meshBuffer->blas.as = CreateDefaultBuffer(resultSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE);
+		meshBuffer->blas.as = CreateBuffer(resultSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, D3D12_HEAP_TYPE_DEFAULT);
 
 		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC asDesc = {};
 		asDesc.Inputs = inputs;
@@ -1990,8 +2096,7 @@ namespace ZXEngine
 
 		if (VAO->blas.isBuilt)
 		{
-			VAO->blas.as.Reset();
-			VAO->blas.isBuilt = false;
+			DestroyAccelerationStructure(VAO->blas);
 		}
 
 		VAO->inUse = false;
@@ -2330,7 +2435,7 @@ namespace ZXEngine
 		return textureID;
 	}
 
-	ComPtr<ID3D12Resource> RenderAPID3D12::CreateDefaultBuffer(UINT64 size, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initState, const void* data)
+	ComPtr<ID3D12Resource> RenderAPID3D12::CreateBuffer(UINT64 size, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initState, D3D12_HEAP_TYPE heapType, const void* data)
 	{
 		D3D12_RESOURCE_DESC defaultBufferDesc = {};
 		defaultBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
@@ -2415,6 +2520,43 @@ namespace ZXEngine
 		ThrowIfFailed(constantBuffer.constantBuffer->Map(0, nullptr, static_cast<void**>(&constantBuffer.constantBufferAddress)));
 
 		return constantBuffer;
+	}
+
+
+	uint32_t RenderAPID3D12::GetNextTLASGroupIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mTLASGroupArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mTLASGroupArray[i]->inUse)
+				return i;
+		}
+
+		mTLASGroupArray.push_back(new ZXD3D12ASGroup());
+
+		return length;
+	}
+
+	ZXD3D12ASGroup* RenderAPID3D12::GetTLASGroupByIndex(uint32_t idx)
+	{
+		return mTLASGroupArray[idx];
+	}
+
+	void RenderAPID3D12::DestroyTLASGroupByIndex(uint32_t idx)
+	{
+		auto tlasGroup = GetTLASGroupByIndex(idx);
+
+		for (auto& tlas : tlasGroup->asGroup)
+			DestroyAccelerationStructure(tlas);
+
+		tlasGroup->inUse = false;
+	}
+
+	void RenderAPID3D12::DestroyAccelerationStructure(ZXD3D12AccelerationStructure& accelerationStructure)
+	{
+		accelerationStructure.as.Reset();
+		accelerationStructure.isBuilt = false;
 	}
 
 

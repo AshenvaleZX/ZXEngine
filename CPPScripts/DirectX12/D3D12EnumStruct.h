@@ -88,6 +88,12 @@ namespace ZXEngine
         ComPtr<ID3D12Resource> as;
     };
 
+    struct ZXD3D12ASGroup
+    {
+        vector<ZXD3D12AccelerationStructure> asGroup;
+        bool inUse = false;
+    };
+
     struct ZXD3D12VAO
     {
         UINT indexCount = 0; // Ë÷ÒýÊýÁ¿
@@ -143,5 +149,19 @@ namespace ZXEngine
         vector<ZXD3D12ConstantBuffer> constantBuffers;
         vector<ZXD3D12MaterialTextureSet> textureSets;
         bool inUse = false;
+    };
+
+    struct ZXD3D12ASInstanceData
+    {
+        uint32_t VAO = 0;
+        uint32_t hitGroupIdx = 0;
+        uint32_t rtMaterialDataID = 0;
+        Matrix4 transform;
+    };
+
+    struct ZXD3D12RTPipeline
+    {
+        uint32_t tlasIdx = 0;
+        ZXD3D12Pipeline pipeline;
     };
 }

@@ -98,13 +98,13 @@ namespace ZXEngine
 		// 数据更新
 		virtual void SetRayTracingSkyBox(uint32_t textureID) {};
 		virtual void PushRayTracingMaterialData(Material* material) {};
-		virtual void PushAccelerationStructure(uint32_t VAO, uint32_t hitGroupIdx, uint32_t rtMaterialDataID, const Matrix4& transform) {};
+		virtual void PushAccelerationStructure(uint32_t VAO, uint32_t hitGroupIdx, uint32_t rtMaterialDataID, const Matrix4& transform);
 
 		// Ray Trace
 		virtual void RayTrace(uint32_t commandID, const RayTracingPipelineConstants& rtConstants) {};
 
 		// Acceleration Structure
-		virtual void BuildTopLevelAccelerationStructure(uint32_t commandID) {};
+		virtual void BuildTopLevelAccelerationStructure(uint32_t commandID);
 		virtual void BuildBottomLevelAccelerationStructure(uint32_t VAO, bool isCompact);
 
 
@@ -200,9 +200,31 @@ namespace ZXEngine
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc);
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_RENDER_TARGET_VIEW_DESC& rtvDesc);
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_DEPTH_STENCIL_VIEW_DESC& dsvDesc);
-		ComPtr<ID3D12Resource> CreateDefaultBuffer(UINT64 size, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initState, const void* data = nullptr);
+		ComPtr<ID3D12Resource> CreateBuffer(UINT64 size, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initState, D3D12_HEAP_TYPE heapType, const void* data = nullptr);
 
 		ZXD3D12ConstantBuffer CreateConstantBuffer(UINT64 byteSize);
+
+
+		/// <summary>
+		/// D3D12光线追踪相关资源和接口
+		/// </summary>
+	private:
+		// 当前的光线追踪管线ID
+		uint32_t mCurRTPipelineID = 0;
+		// 光线追踪管线
+		vector<ZXD3D12RTPipeline*> mRTPipelines;
+
+		// 当前这一帧要绘制的对象信息数组
+		vector<ZXD3D12ASInstanceData> asInstanceData;
+
+		// TLAS Group，一个场景有一个TLAS Group
+		vector<ZXD3D12ASGroup*> mTLASGroupArray;
+
+		uint32_t GetNextTLASGroupIndex();
+		ZXD3D12ASGroup* GetTLASGroupByIndex(uint32_t idx);
+		void DestroyTLASGroupByIndex(uint32_t idx);
+
+		void DestroyAccelerationStructure(ZXD3D12AccelerationStructure& accelerationStructure);
 
 
 		/// <summary>
