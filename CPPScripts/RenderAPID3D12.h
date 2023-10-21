@@ -209,6 +209,11 @@ namespace ZXEngine
 		/// D3D12光线追踪相关资源和接口
 		/// </summary>
 	private:
+		// 光追Shader编译库
+		IDxcLibrary* mDxcLibrary = nullptr;
+		IDxcCompiler* mDxcCompiler = nullptr;
+		IDxcIncludeHandler* mDxcIncludeHandler = nullptr;
+
 		// 当前的光线追踪管线ID
 		uint32_t mCurRTPipelineID = 0;
 		// 光线追踪管线
@@ -220,9 +225,14 @@ namespace ZXEngine
 		// TLAS Group，一个场景有一个TLAS Group
 		vector<ZXD3D12ASGroup*> mTLASGroupArray;
 
+		// 初始化全局的光追相关资源
+		void InitDXR();
+
 		uint32_t GetNextTLASGroupIndex();
 		ZXD3D12ASGroup* GetTLASGroupByIndex(uint32_t idx);
 		void DestroyTLASGroupByIndex(uint32_t idx);
+
+		ComPtr<IDxcBlob> CompileRTShader(const string& path);
 
 		void DestroyAccelerationStructure(ZXD3D12AccelerationStructure& accelerationStructure);
 

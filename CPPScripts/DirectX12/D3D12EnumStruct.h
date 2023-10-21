@@ -4,6 +4,7 @@
 #include <wrl.h>
 #include <comdef.h>
 #include <dxgi1_5.h>
+#include <dxcapi.h>
 #include "../PublicStruct.h"
 
 // 链接D3D12的相关库
@@ -11,6 +12,7 @@
 #pragma comment(lib, "D3D12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "dxcompiler.lib")
 
 using Microsoft::WRL::ComPtr;
 

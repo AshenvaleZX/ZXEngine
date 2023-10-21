@@ -181,6 +181,9 @@ namespace ZXEngine
 			mDynamicDescriptorOffsets[i] = 0;
 			mD3D12Device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&mDynamicDescriptorHeaps[i]));
 		}
+
+		// 初始化光追相关对象
+		InitDXR();
 	}
 
 	void RenderAPID3D12::GetDeviceProperties()
@@ -2523,6 +2526,13 @@ namespace ZXEngine
 	}
 
 
+	void RenderAPID3D12::InitDXR()
+	{
+		ThrowIfFailed(DxcCreateInstance(CLSID_DxcCompiler, __uuidof(IDxcCompiler), (void**)&mDxcCompiler));
+		ThrowIfFailed(DxcCreateInstance(CLSID_DxcLibrary, __uuidof(IDxcLibrary), (void**)&mDxcLibrary));
+		ThrowIfFailed(mDxcLibrary->CreateIncludeHandler(&mDxcIncludeHandler));
+	}
+
 	uint32_t RenderAPID3D12::GetNextTLASGroupIndex()
 	{
 		uint32_t length = static_cast<uint32_t>(mTLASGroupArray.size());
@@ -2551,6 +2561,60 @@ namespace ZXEngine
 			DestroyAccelerationStructure(tlas);
 
 		tlasGroup->inUse = false;
+	}
+
+	ComPtr<IDxcBlob> RenderAPID3D12::CompileRTShader(const string& path)
+	{
+		// 读取HLSL代码
+		auto code = Resources::LoadTextFile(Resources::GetAssetFullPath(path));
+
+		// 创建HLSL代码的Blob
+		ComPtr<IDxcBlobEncoding> shaderBlobEncoding;
+		ThrowIfFailed(mDxcLibrary->CreateBlobWithEncodingFromPinned((LPBYTE)code.c_str(), (UINT32)code.size(), 0, &shaderBlobEncoding));
+
+		// 获取一下代码名字，调试和Include用
+		string name = Resources::GetAssetName(path);
+		std::wstringstream wss;
+		wss << std::wstring(name.begin(), name.end());
+		std::wstring wName = wss.str();
+
+		// 编译HLSL代码
+		ComPtr<IDxcOperationResult> operationResult;
+		ThrowIfFailed(mDxcCompiler->Compile(
+			shaderBlobEncoding.Get(),
+			wName.c_str(),
+			L"",
+			L"lib_6_3",
+			nullptr,
+			0,
+			nullptr,
+			0,
+			mDxcIncludeHandler,
+			&operationResult
+		));
+
+		// 检查编译结果，如果有错误就输出错误信息
+		HRESULT resultCode;
+		ThrowIfFailed(operationResult->GetStatus(&resultCode));
+		if (FAILED(resultCode))
+		{
+			if (operationResult)
+			{
+				ComPtr<IDxcBlobEncoding> errorBlob;
+				ThrowIfFailed(operationResult->GetErrorBuffer(&errorBlob));
+				if (errorBlob)
+				{
+					string errorString = string(static_cast<char*>(errorBlob->GetBufferPointer()), errorBlob->GetBufferSize());
+					Debug::LogError(errorString);
+				}
+			}
+			ThrowIfFailed(resultCode);
+		}
+
+		// 获取并返回编译结果
+		ComPtr<IDxcBlob> shaderBlob;
+		ThrowIfFailed(operationResult->GetResult(&shaderBlob));
+		return shaderBlob;
 	}
 
 	void RenderAPID3D12::DestroyAccelerationStructure(ZXD3D12AccelerationStructure& accelerationStructure)
