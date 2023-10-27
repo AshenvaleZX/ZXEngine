@@ -135,10 +135,10 @@ namespace ZXEngine
         bool inUse = false;
 	};
 
-    struct ZXD3D12ConstantBuffer
+    struct ZXD3D12MappedBuffer
     {
-        ComPtr<ID3D12Resource> constantBuffer = nullptr;
-        void* constantBufferAddress = nullptr;
+        ComPtr<ID3D12Resource> buffer = nullptr;
+        void* bufferAddress = nullptr;
     };
 
     struct ZXD3D12MaterialTextureSet
@@ -148,7 +148,7 @@ namespace ZXEngine
 
     struct ZXD3D12MaterialData
     {
-        vector<ZXD3D12ConstantBuffer> constantBuffers;
+        vector<ZXD3D12MappedBuffer> constantBuffers;
         vector<ZXD3D12MaterialTextureSet> textureSets;
         bool inUse = false;
     };
@@ -164,6 +164,17 @@ namespace ZXEngine
     struct ZXD3D12RTPipeline
     {
         uint32_t tlasIdx = 0;
-        ZXD3D12Pipeline pipeline;
+        ComPtr<ID3D12StateObject> pipeline;
+        ComPtr<ID3D12DescriptorHeap> descriptorHeap;
+        vector<ZXD3D12MappedBuffer> constantBuffers;
+        vector<ZXD3D12MappedBuffer> dataReferenceBuffers;
+        vector<ZXD3D12MappedBuffer> SBT;
+    };
+
+    struct ZXD3D12RTRendererDataReference
+    {
+        D3D12_GPU_VIRTUAL_ADDRESS indexAddress;
+        D3D12_GPU_VIRTUAL_ADDRESS vertexAddress;
+        D3D12_GPU_VIRTUAL_ADDRESS materialAddress;
     };
 }

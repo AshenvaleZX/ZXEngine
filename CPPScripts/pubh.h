@@ -21,6 +21,7 @@
 #include <nlohmann/json.hpp>
 
 using std::string; 
+using std::wstring;
 using std::cout;
 using std::list;
 using std::array;
@@ -37,6 +38,7 @@ using std::ifstream;
 using std::ofstream;
 using std::stringstream;
 using std::to_string;
+using std::to_wstring;
 using std::shared_ptr;
 using std::make_shared;
 using std::unique_ptr;

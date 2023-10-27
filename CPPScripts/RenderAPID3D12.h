@@ -87,7 +87,7 @@ namespace ZXEngine
 		/// </summary>
 	public:
 		// Pipeline
-		virtual uint32_t CreateRayTracingPipeline(const RayTracingShaderPathGroup& rtShaderPathGroup) { return 0; };
+		virtual uint32_t CreateRayTracingPipeline(const RayTracingShaderPathGroup& rtShaderPathGroup);
 		virtual void SwitchRayTracingPipeline(uint32_t rtPipelineID) {};
 
 		// Material
@@ -202,7 +202,7 @@ namespace ZXEngine
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_DEPTH_STENCIL_VIEW_DESC& dsvDesc);
 		ComPtr<ID3D12Resource> CreateBuffer(UINT64 size, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initState, D3D12_HEAP_TYPE heapType, const void* data = nullptr);
 
-		ZXD3D12ConstantBuffer CreateConstantBuffer(UINT64 byteSize);
+		ZXD3D12MappedBuffer CreateConstantBuffer(UINT64 byteSize);
 
 
 		/// <summary>
@@ -219,8 +219,41 @@ namespace ZXEngine
 		// 光线追踪管线
 		vector<ZXD3D12RTPipeline*> mRTPipelines;
 
+		// 场景中的纹理数量
+		uint32_t mRTSceneTextureNum = 100;
+		// 场景中的CubeMap数量
+		uint32_t mRTSceneCubeMapNum = 10;
+		// 场景中的渲染对象数量
+		uint32_t mRTSceneRenderObjectNum = 100;
+
+		// 根签名中各参数在描述符堆中的偏移量
+		// register(t0, space0) TLAS
+		const uint32_t mRTRootParamOffsetInDescriptorHeapTLAS = 0;
+		// register(u0, space0) 输出图像
+		const uint32_t mRTRootParamOffsetInDescriptorHeapOutputImage = 1;
+		// register(t1, space0) 数据索引Buffer
+		const uint32_t mRTRootParamOffsetInDescriptorHeapDataReference = 2;
+		// register(t0, space1) 2D纹理数组
+		const uint32_t mRTRootParamOffsetInDescriptorHeapTexture2DArray = 4;
+		// register(t0, space2) CubeMap纹理数组
+		const uint32_t mRTRootParamOffsetInDescriptorHeapTextureCubeArray = 4 + mRTSceneTextureNum;
+		// register(b0, space0) 常量Buffer (Vulkan PushConstants)
+		const uint32_t mRTRootParamOffsetInDescriptorHeapConstantBuffer = 3;
+
 		// 当前这一帧要绘制的对象信息数组
-		vector<ZXD3D12ASInstanceData> asInstanceData;
+		vector<ZXD3D12ASInstanceData> mASInstanceData;
+		// 当前场景中所有纹理索引数组
+		vector<uint32_t> mCurRTSceneTextureIndexes;
+		// 当前场景中所有纹理的索引与纹理数组下标的映射表
+		unordered_map<uint32_t, uint32_t> mCurRTSceneTextureIndexMap;
+		// 当前场景中所有CubeMap索引数组
+		vector<uint32_t> mCurRTSceneCubeMapIndexes;
+		// 当前场景中所有CubeMap的索引与CubeMap数组下标的映射表
+		unordered_map<uint32_t, uint32_t> mCurRTSceneCubeMapIndexMap;
+		// 当前场景中所有光追材质索引数组
+		vector<uint32_t> mCurRTSceneRTMaterialDatas;
+		// 当前场景中所有光追材质的索引与光追材质数组下标的映射表
+		unordered_map<uint32_t, uint32_t> mCurRTSceneRTMaterialDataMap;
 
 		// TLAS Group，一个场景有一个TLAS Group
 		vector<ZXD3D12ASGroup*> mTLASGroupArray;
@@ -233,8 +266,15 @@ namespace ZXEngine
 		void DestroyTLASGroupByIndex(uint32_t idx);
 
 		ComPtr<IDxcBlob> CompileRTShader(const string& path);
+		D3D12_DXIL_LIBRARY_DESC CreateDXILLibrary(const ComPtr<IDxcBlob>& dxilBlob, const vector<wstring>& exportedSymbols);
 
 		void DestroyAccelerationStructure(ZXD3D12AccelerationStructure& accelerationStructure);
+
+		void CreateRTPipelineData(uint32_t id);
+		void UpdateRTPipelineData(uint32_t id);
+
+		void CreateRTSceneData(uint32_t id);
+		void UpdateRTSceneData(uint32_t id);
 
 
 		/// <summary>
