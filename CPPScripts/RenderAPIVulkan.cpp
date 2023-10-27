@@ -1279,7 +1279,7 @@ namespace ZXEngine
         // 创建光追管线的DescriptorSetLayout
         vector<VkDescriptorSetLayoutBinding> bindings = {};
 
-        // layout(set = 0, binding = 0)
+        // layout(set = 0, binding = 0) TLAS
         VkDescriptorSetLayoutBinding asBinding = {};
         asBinding.binding = 0;
         asBinding.descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
@@ -1287,7 +1287,7 @@ namespace ZXEngine
         asBinding.stageFlags = VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
         bindings.push_back(asBinding);
 
-        // layout(set = 0, binding = 1)
+        // layout(set = 0, binding = 1) 输出图像
         VkDescriptorSetLayoutBinding imageBinding = {};
         imageBinding.binding = 1;
         imageBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
@@ -1300,7 +1300,7 @@ namespace ZXEngine
         // 创建场景资源的DescriptorSetLayout
         bindings.clear();
 
-        // layout(set = 1, binding = 0)
+        // layout(set = 1, binding = 0) 数据索引Buffer
         VkDescriptorSetLayoutBinding dataReferencesBinding = {};
         dataReferencesBinding.binding = 0;
         dataReferencesBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
@@ -1308,7 +1308,7 @@ namespace ZXEngine
         dataReferencesBinding.stageFlags = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
         bindings.push_back(dataReferencesBinding);
 
-        // layout(set = 1, binding = 1)
+        // layout(set = 1, binding = 1) 2D纹理
         VkDescriptorSetLayoutBinding texturesBinding = {};
         texturesBinding.binding = 1;
         texturesBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -1316,7 +1316,7 @@ namespace ZXEngine
         texturesBinding.stageFlags = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
         bindings.push_back(texturesBinding);
 
-        // layout(set = 1, binding = 2)
+        // layout(set = 1, binding = 2) CubeMap纹理
         VkDescriptorSetLayoutBinding cubeMapBinding = {};
         cubeMapBinding.binding = 2;
         cubeMapBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
