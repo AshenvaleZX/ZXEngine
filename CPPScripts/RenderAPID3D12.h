@@ -91,13 +91,13 @@ namespace ZXEngine
 		virtual void SwitchRayTracingPipeline(uint32_t rtPipelineID) {};
 
 		// Material
-		virtual uint32_t CreateRayTracingMaterialData() { return 0; };
-		virtual void SetUpRayTracingMaterialData(Material* material) {};
-		virtual void DeleteRayTracingMaterialData(uint32_t id) {};
+		virtual uint32_t CreateRayTracingMaterialData();
+		virtual void SetUpRayTracingMaterialData(Material* material);
+		virtual void DeleteRayTracingMaterialData(uint32_t id);
 
 		// 数据更新
-		virtual void SetRayTracingSkyBox(uint32_t textureID) {};
-		virtual void PushRayTracingMaterialData(Material* material) {};
+		virtual void SetRayTracingSkyBox(uint32_t textureID);
+		virtual void PushRayTracingMaterialData(Material* material);
 		virtual void PushAccelerationStructure(uint32_t VAO, uint32_t hitGroupIdx, uint32_t rtMaterialDataID, const Matrix4& transform);
 
 		// Ray Trace
@@ -200,9 +200,8 @@ namespace ZXEngine
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc);
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_RENDER_TARGET_VIEW_DESC& rtvDesc);
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_DEPTH_STENCIL_VIEW_DESC& dsvDesc);
-		ComPtr<ID3D12Resource> CreateBuffer(UINT64 size, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initState, D3D12_HEAP_TYPE heapType, const void* data = nullptr);
-
-		ZXD3D12MappedBuffer CreateConstantBuffer(UINT64 byteSize);
+		ZXD3D12Buffer CreateBuffer(UINT64 size, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initState, D3D12_HEAP_TYPE heapType, bool cpuAddress = false, bool gpuAddress = false, const void* data = nullptr);
+		void DestroyBuffer(ZXD3D12Buffer& buffer);
 
 
 		/// <summary>
@@ -257,6 +256,10 @@ namespace ZXEngine
 
 		// TLAS Group，一个场景有一个TLAS Group
 		vector<ZXD3D12ASGroup*> mTLASGroupArray;
+		// 所有的光追材质数组，其中可能包括已销毁的，未在场景中的
+		vector<ZXD3D12RTMaterialData*> mRTMaterialDataArray;
+		// 准备销毁的光追材质
+		unordered_map<uint32_t, uint32_t> rtMaterialDatasToDelete;
 
 		// 初始化全局的光追相关资源
 		void InitDXR();
@@ -264,6 +267,9 @@ namespace ZXEngine
 		uint32_t GetNextTLASGroupIndex();
 		ZXD3D12ASGroup* GetTLASGroupByIndex(uint32_t idx);
 		void DestroyTLASGroupByIndex(uint32_t idx);
+		uint32_t GetNextRTMaterialDataIndex();
+		ZXD3D12RTMaterialData* GetRTMaterialDataByIndex(uint32_t idx);
+		void DestroyRTMaterialDataByIndex(uint32_t idx);
 
 		ComPtr<IDxcBlob> CompileRTShader(const string& path);
 		D3D12_DXIL_LIBRARY_DESC CreateDXILLibrary(const ComPtr<IDxcBlob>& dxilBlob, const vector<wstring>& exportedSymbols);
@@ -275,6 +281,9 @@ namespace ZXEngine
 
 		void CreateRTSceneData(uint32_t id);
 		void UpdateRTSceneData(uint32_t id);
+
+		void* GetRTMaterialPropertyAddress(MaterialData* materialData, const string& name, uint32_t idx = 0);
+		vector<void*> GetRTMaterialPropertyAddressAllBuffer(MaterialData* materialData, const string& name, uint32_t idx = 0);
 
 
 		/// <summary>

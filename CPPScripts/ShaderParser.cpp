@@ -162,7 +162,7 @@ namespace ZXEngine
 			|| type == ShaderPropertyType::ENGINE_DEPTH_MAP || type == ShaderPropertyType::ENGINE_DEPTH_CUBE_MAP);
 	}
 
-	UniformAlignInfo ShaderParser::GetPropertyAlignInfoStd140(ShaderPropertyType type, uint32_t arrayLength)
+	PropertyAlignInfo ShaderParser::GetPropertyAlignInfoStd140(ShaderPropertyType type, uint32_t arrayLength)
 	{
 		// 这里要注意Vulkan的内存对齐规范: https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap15.html#interfaces-resources-layout
 		// 这里是按照std140标准实现的内存对齐
@@ -1363,7 +1363,7 @@ namespace ZXEngine
 		}
 	}
 
-	D3D12ConstAlignInfo ShaderParser::GetPropertyAlignInfoHLSL(ShaderPropertyType type, uint32_t arrayLength)
+	PropertyAlignInfo ShaderParser::GetPropertyAlignInfoHLSL(ShaderPropertyType type, uint32_t arrayLength)
 	{
 		uint32_t std_size = sizeof(float);
 		if (type == ShaderPropertyType::BOOL || type == ShaderPropertyType::INT || type == ShaderPropertyType::UINT
@@ -1422,12 +1422,6 @@ namespace ZXEngine
 
 	void ShaderParser::SetUpRTMaterialData(MaterialData* materialData, GraphicsAPI api)
 	{
-		if (api == GraphicsAPI::Vulkan)
-			SetUpRTMaterialDataStd140(materialData);
-	}
-
-	void ShaderParser::SetUpRTMaterialDataStd140(MaterialData* materialData)
-	{
 		uint32_t offset = 0;
 
 		for (auto& vec2Data : materialData->vec2Datas)
@@ -1437,7 +1431,7 @@ namespace ZXEngine
 			property.arrayLength = 0;
 			property.name = vec2Data.first;
 
-			SetAlignInfoStd140(property, offset);
+			SetPropertyAlignInfo(property, offset, api);
 		}
 
 		for (auto& vec3Data : materialData->vec3Datas)
@@ -1447,7 +1441,7 @@ namespace ZXEngine
 			property.arrayLength = 0;
 			property.name = vec3Data.first;
 
-			SetAlignInfoStd140(property, offset);
+			SetPropertyAlignInfo(property, offset, api);
 		}
 
 		for (auto& vec4Data : materialData->vec4Datas)
@@ -1457,7 +1451,7 @@ namespace ZXEngine
 			property.arrayLength = 0;
 			property.name = vec4Data.first;
 
-			SetAlignInfoStd140(property, offset);
+			SetPropertyAlignInfo(property, offset, api);
 		}
 
 		for (auto& floatData : materialData->floatDatas)
@@ -1467,7 +1461,7 @@ namespace ZXEngine
 			property.arrayLength = 0;
 			property.name = floatData.first;
 
-			SetAlignInfoStd140(property, offset);
+			SetPropertyAlignInfo(property, offset, api);
 		}
 
 		for (auto& uintData : materialData->uintDatas)
@@ -1477,7 +1471,7 @@ namespace ZXEngine
 			property.arrayLength = 0;
 			property.name = uintData.first;
 
-			SetAlignInfoStd140(property, offset);
+			SetPropertyAlignInfo(property, offset, api);
 		}
 
 		for (auto& texture : materialData->textures)
@@ -1487,7 +1481,7 @@ namespace ZXEngine
 			property.arrayLength = 0;
 			property.name = texture.first;
 
-			SetAlignInfoStd140(property, offset);
+			SetPropertyAlignInfo(property, offset, api);
 		}
 
 		if (materialData->rtMaterialProperties.empty())
@@ -1501,9 +1495,10 @@ namespace ZXEngine
 		}
 	}
 
-	void ShaderParser::SetAlignInfoStd140(ShaderProperty& property, uint32_t& offset)
+	void ShaderParser::SetPropertyAlignInfo(ShaderProperty& property, uint32_t& offset, GraphicsAPI api)
 	{
-		auto alignInfo = GetPropertyAlignInfoStd140(property.type, property.arrayLength);
+		auto alignInfo = api == GraphicsAPI::D3D12 ? 
+			GetPropertyAlignInfoHLSL(property.type, property.arrayLength) : GetPropertyAlignInfoStd140(property.type, property.arrayLength);
 
 		property.size = alignInfo.size;
 		property.align = alignInfo.align;

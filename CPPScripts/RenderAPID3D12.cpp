@@ -1196,7 +1196,7 @@ namespace ZXEngine
 		{
 			// 创建Constant Buffer
 			if (bufferSize > 0)
-				materialDataZXD3D12->constantBuffers.push_back(CreateConstantBuffer(bufferSize));
+				materialDataZXD3D12->constantBuffers.push_back(CreateBuffer(bufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, true, true));
 
 			ZXD3D12MaterialTextureSet materialTextureSet;
 			materialTextureSet.textureHandles.resize(
@@ -1410,7 +1410,7 @@ namespace ZXEngine
 			drawCommandList->SetPipelineState(pipeline->pipelineState.Get());
 
 			if (!materialData->constantBuffers.empty())
-				drawCommandList->SetGraphicsRootConstantBufferView(0, materialData->constantBuffers[mCurrentFrame].buffer->GetGPUVirtualAddress());
+				drawCommandList->SetGraphicsRootConstantBufferView(0, materialData->constantBuffers[mCurrentFrame].gpuAddress);
 
 			// 如果Shader有纹理，绑定纹理资源
 			if (pipeline->textureNum > 0)
@@ -1507,17 +1507,17 @@ namespace ZXEngine
 
 		// 创建Vertex Buffer
 		UINT vertexBufferSize = static_cast<UINT>(sizeof(Vertex) * vertices.size());
-		meshBuffer->vertexBuffer = CreateBuffer(vertexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, D3D12_HEAP_TYPE_DEFAULT, vertices.data());
+		meshBuffer->vertexBuffer = CreateBuffer(vertexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, D3D12_HEAP_TYPE_DEFAULT, false, true, vertices.data());
 		meshBuffer->vertexBufferView.SizeInBytes = vertexBufferSize;
 		meshBuffer->vertexBufferView.StrideInBytes = sizeof(Vertex);
-		meshBuffer->vertexBufferView.BufferLocation = meshBuffer->vertexBuffer->GetGPUVirtualAddress();
+		meshBuffer->vertexBufferView.BufferLocation = meshBuffer->vertexBuffer.gpuAddress;
 
 		// 创建Index Buffer
 		UINT indexBufferSize = static_cast<UINT>(sizeof(uint32_t) * indices.size());
-		meshBuffer->indexBuffer = CreateBuffer(indexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, D3D12_HEAP_TYPE_DEFAULT, indices.data());
+		meshBuffer->indexBuffer = CreateBuffer(indexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, D3D12_HEAP_TYPE_DEFAULT, false, true, indices.data());
 		meshBuffer->indexBufferView.Format = DXGI_FORMAT_R32_UINT;
 		meshBuffer->indexBufferView.SizeInBytes = indexBufferSize;
-		meshBuffer->indexBufferView.BufferLocation = meshBuffer->indexBuffer->GetGPUVirtualAddress();
+		meshBuffer->indexBufferView.BufferLocation = meshBuffer->indexBuffer.gpuAddress;
 
 		// 如果是光追管线，还要创建一个BLAS( Bottom Level Acceleration Structure )
 		if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
@@ -1537,37 +1537,17 @@ namespace ZXEngine
 
 		// 创建动态Vertex Buffer
 		UINT vertexBufferSize = static_cast<UINT>(sizeof(Vertex) * vertexSize);
-		CD3DX12_HEAP_PROPERTIES vertexBufferProps(D3D12_HEAP_TYPE_UPLOAD);
-		CD3DX12_RESOURCE_DESC vertexBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
-		ThrowIfFailed(mD3D12Device->CreateCommittedResource(
-			&vertexBufferProps,
-			D3D12_HEAP_FLAG_NONE,
-			&vertexBufferDesc,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			nullptr,
-			IID_PPV_ARGS(meshBuffer->vertexBuffer.GetAddressOf())));
-
-		meshBuffer->vertexBuffer->Map(0, nullptr, &meshBuffer->vertexBufferAddress);
+		meshBuffer->vertexBuffer = CreateBuffer(vertexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, true, true, nullptr);
 		meshBuffer->vertexBufferView.SizeInBytes = vertexBufferSize;
 		meshBuffer->vertexBufferView.StrideInBytes = sizeof(Vertex);
-		meshBuffer->vertexBufferView.BufferLocation = meshBuffer->vertexBuffer->GetGPUVirtualAddress();
+		meshBuffer->vertexBufferView.BufferLocation = meshBuffer->vertexBuffer.gpuAddress;
 
 		// 创建动态Index Buffer
 		UINT indexBufferSize = static_cast<UINT>(sizeof(uint32_t) * indexSize);
-		CD3DX12_HEAP_PROPERTIES indexBufferProps(D3D12_HEAP_TYPE_UPLOAD);
-		CD3DX12_RESOURCE_DESC indexBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(indexBufferSize);
-		ThrowIfFailed(mD3D12Device->CreateCommittedResource(
-			&indexBufferProps,
-			D3D12_HEAP_FLAG_NONE,
-			&indexBufferDesc,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			nullptr,
-			IID_PPV_ARGS(meshBuffer->indexBuffer.GetAddressOf())));
-
-		meshBuffer->indexBuffer->Map(0, nullptr, &meshBuffer->indexBufferAddress);
+		meshBuffer->indexBuffer = CreateBuffer(indexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, true, true, nullptr);
 		meshBuffer->indexBufferView.Format = DXGI_FORMAT_R32_UINT;
 		meshBuffer->indexBufferView.SizeInBytes = indexBufferSize;
-		meshBuffer->indexBufferView.BufferLocation = meshBuffer->indexBuffer->GetGPUVirtualAddress();
+		meshBuffer->indexBufferView.BufferLocation = meshBuffer->indexBuffer.gpuAddress;
 
 		meshBuffer->inUse = true;
 	}
@@ -1576,8 +1556,8 @@ namespace ZXEngine
 	{
 		auto meshBuffer = GetVAOByIndex(VAO);
 
-		memcpy(meshBuffer->vertexBufferAddress, vertices.data(), vertices.size() * sizeof(Vertex));
-		memcpy(meshBuffer->indexBufferAddress, indices.data(), indices.size() * sizeof(uint32_t));
+		memcpy(meshBuffer->vertexBuffer.cpuAddress, vertices.data(), vertices.size() * sizeof(Vertex));
+		memcpy(meshBuffer->indexBuffer.cpuAddress, indices.data(), indices.size() * sizeof(uint32_t));
 	}
 
 	void RenderAPID3D12::GenerateParticleMesh(unsigned int& VAO)
@@ -1614,14 +1594,27 @@ namespace ZXEngine
 	{
 		if (allBuffer)
 		{
-			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name);
+			vector<void*> valueAddresses;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddresses = GetRTMaterialPropertyAddressAllBuffer(material->data, name);
+			else
+				valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name);
+
 			for (auto valueAddress : valueAddresses)
 				memcpy(valueAddress, &value, sizeof(value));
 		}
 		else
 		{
-			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
-			memcpy(valueAddress, &value, sizeof(value));
+			void* valueAddress = nullptr;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddress = GetRTMaterialPropertyAddress(material->data, name);
+			else
+				valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
+
+			if (valueAddress != nullptr)
+				memcpy(valueAddress, &value, sizeof(value));
 		}
 	}
 
@@ -1630,14 +1623,27 @@ namespace ZXEngine
 	{
 		if (allBuffer)
 		{
-			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name);
+			vector<void*> valueAddresses;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddresses = GetRTMaterialPropertyAddressAllBuffer(material->data, name);
+			else
+				valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name);
+
 			for (auto valueAddress : valueAddresses)
 				memcpy(valueAddress, &value, sizeof(value));
 		}
 		else
 		{
-			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
-			memcpy(valueAddress, &value, sizeof(value));
+			void* valueAddress = nullptr;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddress = GetRTMaterialPropertyAddress(material->data, name);
+			else
+				valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
+
+			if (valueAddress != nullptr)
+				memcpy(valueAddress, &value, sizeof(value));
 		}
 	}
 
@@ -1646,14 +1652,27 @@ namespace ZXEngine
 	{
 		if (allBuffer)
 		{
-			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name);
+			vector<void*> valueAddresses;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddresses = GetRTMaterialPropertyAddressAllBuffer(material->data, name);
+			else
+				valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name);
+
 			for (auto valueAddress : valueAddresses)
 				memcpy(valueAddress, &value, sizeof(value));
 		}
 		else
 		{
-			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
-			memcpy(valueAddress, &value, sizeof(value));
+			void* valueAddress = nullptr;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddress = GetRTMaterialPropertyAddress(material->data, name);
+			else
+				valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
+
+			if (valueAddress != nullptr)
+				memcpy(valueAddress, &value, sizeof(value));
 		}
 	}
 
@@ -1662,14 +1681,27 @@ namespace ZXEngine
 	{
 		if (allBuffer)
 		{
-			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name);
+			vector<void*> valueAddresses;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddresses = GetRTMaterialPropertyAddressAllBuffer(material->data, name);
+			else
+				valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name);
+
 			for (auto valueAddress : valueAddresses)
 				memcpy(valueAddress, &value, sizeof(value));
 		}
 		else
 		{
-			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
-			memcpy(valueAddress, &value, sizeof(value));
+			void* valueAddress = nullptr;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddress = GetRTMaterialPropertyAddress(material->data, name);
+			else
+				valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name);
+
+			if (valueAddress != nullptr)
+				memcpy(valueAddress, &value, sizeof(value));
 		}
 	}
 
@@ -1684,14 +1716,27 @@ namespace ZXEngine
 		value.ToArray(array);
 		if (allBuffer)
 		{
-			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+			vector<void*> valueAddresses;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddresses = GetRTMaterialPropertyAddressAllBuffer(material->data, name, idx);
+			else
+				valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+
 			for (auto valueAddress : valueAddresses)
 				memcpy(valueAddress, array, sizeof(float) * 2);
 		}
 		else
 		{
-			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
-			memcpy(valueAddress, array, sizeof(float) * 2);
+			void* valueAddress = nullptr;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddress = GetRTMaterialPropertyAddress(material->data, name, idx);
+			else
+				valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
+
+			if (valueAddress != nullptr)
+				memcpy(valueAddress, array, sizeof(float) * 2);
 		}
 		delete[] array;
 	}
@@ -1707,14 +1752,27 @@ namespace ZXEngine
 		value.ToArray(array);
 		if (allBuffer)
 		{
-			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+			vector<void*> valueAddresses;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddresses = GetRTMaterialPropertyAddressAllBuffer(material->data, name, idx);
+			else
+				valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+
 			for (auto valueAddress : valueAddresses)
 				memcpy(valueAddress, array, sizeof(float) * 3);
 		}
 		else
 		{
-			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
-			memcpy(valueAddress, array, sizeof(float) * 3);
+			void* valueAddress = nullptr;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddress = GetRTMaterialPropertyAddress(material->data, name, idx);
+			else
+				valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
+
+			if (valueAddress != nullptr)
+				memcpy(valueAddress, array, sizeof(float) * 3);
 		}
 		delete[] array;
 	}
@@ -1730,14 +1788,27 @@ namespace ZXEngine
 		value.ToArray(array);
 		if (allBuffer)
 		{
-			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+			vector<void*> valueAddresses;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddresses = GetRTMaterialPropertyAddressAllBuffer(material->data, name, idx);
+			else
+				valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+
 			for (auto valueAddress : valueAddresses)
 				memcpy(valueAddress, array, sizeof(float) * 4);
 		}
 		else
 		{
-			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
-			memcpy(valueAddress, array, sizeof(float) * 4);
+			void* valueAddress = nullptr;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddress = GetRTMaterialPropertyAddress(material->data, name, idx);
+			else
+				valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
+
+			if (valueAddress != nullptr)
+				memcpy(valueAddress, array, sizeof(float) * 4);
 		}
 		delete[] array;
 	}
@@ -1745,14 +1816,27 @@ namespace ZXEngine
 	{
 		if (allBuffer)
 		{
-			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, 0);
+			vector<void*> valueAddresses;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddresses = GetRTMaterialPropertyAddressAllBuffer(material->data, name, 0);
+			else
+				valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, 0);
+
 			for (auto valueAddress : valueAddresses)
 				memcpy(valueAddress, value, sizeof(Vector4) * count);
 		}
 		else
 		{
-			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, 0);
-			memcpy(valueAddress, value, sizeof(Vector4) * count);
+			void* valueAddress = nullptr;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddress = GetRTMaterialPropertyAddress(material->data, name, 0);
+			else
+				valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, 0);
+
+			if (valueAddress != nullptr)
+				memcpy(valueAddress, value, sizeof(Vector4) * count);
 		}
 	}
 
@@ -1767,14 +1851,27 @@ namespace ZXEngine
 		value.ToColumnMajorArray(array);
 		if (allBuffer)
 		{
-			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+			vector<void*> valueAddresses;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddresses = GetRTMaterialPropertyAddressAllBuffer(material->data, name, idx);
+			else
+				valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+
 			for (auto valueAddress : valueAddresses)
 				memcpy(valueAddress, array, sizeof(float) * 9);
 		}
 		else
 		{
-			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
-			memcpy(valueAddress, array, sizeof(float) * 9);
+			void* valueAddress = nullptr;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddress = GetRTMaterialPropertyAddress(material->data, name, idx);
+			else
+				valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
+
+			if (valueAddress != nullptr)
+				memcpy(valueAddress, array, sizeof(float) * 9);
 		}
 		delete[] array;
 	}
@@ -1790,14 +1887,27 @@ namespace ZXEngine
 		value.ToColumnMajorArray(array);
 		if (allBuffer)
 		{
-			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+			vector<void*> valueAddresses;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddresses = GetRTMaterialPropertyAddressAllBuffer(material->data, name, idx);
+			else
+				valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
+
 			for (auto valueAddress : valueAddresses)
 				memcpy(valueAddress, array, sizeof(float) * 16);
 		}
 		else
 		{
-			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
-			memcpy(valueAddress, array, sizeof(float) * 16);
+			void* valueAddress = nullptr;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddress = GetRTMaterialPropertyAddress(material->data, name, idx);
+			else
+				valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
+
+			if (valueAddress != nullptr)
+				memcpy(valueAddress, array, sizeof(float) * 16);
 		}
 		delete[] array;
 	}
@@ -1805,13 +1915,26 @@ namespace ZXEngine
 	{
 		if (allBuffer)
 		{
-			auto valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, 0);
+			vector<void*> valueAddresses;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddresses = GetRTMaterialPropertyAddressAllBuffer(material->data, name, 0);
+			else
+				valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, 0);
+
 			for (auto valueAddress : valueAddresses)
 				memcpy(valueAddress, value, sizeof(Matrix4) * count);
 		}
 		else
 		{
-			void* valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, 0);
+			void* valueAddress = nullptr;
+
+			if (material->type == MaterialType::RayTracing)
+				valueAddress = GetRTMaterialPropertyAddress(material->data, name, 0);
+			else
+				valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, 0);
+
+			if (valueAddress != nullptr)
 			memcpy(valueAddress, value, sizeof(Matrix4) * count);
 		}
 	}
@@ -2118,8 +2241,7 @@ namespace ZXEngine
 		rtPipeline->SBT.resize(DX_MAX_FRAMES_IN_FLIGHT);
 		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 		{
-			rtPipeline->SBT[i].buffer = CreateBuffer(sbtSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
-			ThrowIfFailed(rtPipeline->SBT[i].buffer->Map(0, nullptr, static_cast<void**>(&rtPipeline->SBT[i].bufferAddress)));
+			rtPipeline->SBT[i] = CreateBuffer(sbtSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, true, false);
 		}
 
 		// 填充SBT Buffer数据
@@ -2128,7 +2250,7 @@ namespace ZXEngine
 		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 		{
 			uint32_t offset = 0;
-			char* pSBT = static_cast<char*>(rtPipeline->SBT[i].bufferAddress);
+			char* pSBT = static_cast<char*>(rtPipeline->SBT[i].cpuAddress);
 
 			for (size_t j = 0; j < rtShaderPathGroup.rGenPaths.size(); j++)
 			{
@@ -2182,6 +2304,105 @@ namespace ZXEngine
 		return rtPipelineID;
 	}
 
+	uint32_t RenderAPID3D12::CreateRayTracingMaterialData()
+	{ 
+		uint32_t rtMaterialDataID = GetNextRTMaterialDataIndex();
+		auto rtMaterialData = GetRTMaterialDataByIndex(rtMaterialDataID);
+
+		rtMaterialData->inUse = true;
+
+		return rtMaterialDataID;
+	};
+
+	void RenderAPID3D12::SetUpRayTracingMaterialData(Material* material)
+	{
+		auto rtMaterialData = GetRTMaterialDataByIndex(material->data->GetRTID());
+
+		ShaderParser::SetUpRTMaterialData(material->data, GraphicsAPI::D3D12);
+
+		rtMaterialData->buffers.resize(DX_MAX_FRAMES_IN_FLIGHT);
+
+		UINT64 bufferSize = static_cast<UINT64>(material->data->rtMaterialDataSize);
+		if (bufferSize > 0)
+		{
+			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				// 这个Buffer可能是一次性创建不再修改的，可以考虑优化成D3D12_HEAP_TYPE_DEFAULT
+				rtMaterialData->buffers[i] = CreateBuffer(bufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, true, false);
+			}
+		}
+
+		for (auto& property : material->data->vec2Datas)
+			SetShaderVector(material, property.first, property.second, true);
+		for (auto& property : material->data->vec3Datas)
+			SetShaderVector(material, property.first, property.second, true);
+		for (auto& property : material->data->vec4Datas)
+			SetShaderVector(material, property.first, property.second, true);
+		for (auto& property : material->data->floatDatas)
+			SetShaderScalar(material, property.first, property.second, true);
+		for (auto& property : material->data->uintDatas)
+			SetShaderScalar(material, property.first, property.second, true);
+	};
+
+	void RenderAPID3D12::DeleteRayTracingMaterialData(uint32_t id)
+	{
+		rtMaterialDatasToDelete.insert(pair(id, DX_MAX_FRAMES_IN_FLIGHT));
+	};
+
+	void RenderAPID3D12::SetRayTracingSkyBox(uint32_t textureID)
+	{
+		// 天空盒纹理默认是当前这一帧的第一个CubeMap
+		mCurRTSceneCubeMapIndexMap[textureID] = 0;
+		mCurRTSceneCubeMapIndexes.push_back(textureID);
+	}
+
+	void RenderAPID3D12::PushRayTracingMaterialData(Material* material)
+	{
+		// 把这个材质使用的纹理添加到当前光追场景中的总纹理列表中
+		for (auto& iter : material->data->textures)
+		{
+			auto textureID = iter.second->GetID();
+			if (iter.second->type == TextureType::ZX_2D)
+			{
+				if (mCurRTSceneTextureIndexMap.find(textureID) == mCurRTSceneTextureIndexMap.end())
+				{
+					mCurRTSceneTextureIndexMap[textureID] = static_cast<uint32_t>(mCurRTSceneTextureIndexes.size());
+					mCurRTSceneTextureIndexes.emplace_back(textureID);
+				}
+			}
+			else if (iter.second->type == TextureType::ZX_Cube)
+			{
+				if (mCurRTSceneCubeMapIndexMap.find(textureID) == mCurRTSceneCubeMapIndexMap.end())
+				{
+					mCurRTSceneCubeMapIndexMap[textureID] = static_cast<uint32_t>(mCurRTSceneCubeMapIndexes.size());
+					mCurRTSceneCubeMapIndexes.emplace_back(textureID);
+				}
+			}
+		}
+
+		// 把这个光追材质添加到当前光追场景中的总光追材质列表中
+		auto rtMaterialDataID = material->data->GetRTID();
+		if (mCurRTSceneRTMaterialDataMap.find(rtMaterialDataID) == mCurRTSceneRTMaterialDataMap.end())
+		{
+			mCurRTSceneRTMaterialDataMap[rtMaterialDataID] = static_cast<uint32_t>(mCurRTSceneRTMaterialDatas.size());
+			mCurRTSceneRTMaterialDatas.emplace_back(rtMaterialDataID);
+		}
+
+		// 遍历纹理，并把引用索引写入Buffer
+		for (auto& iter : material->data->textures)
+		{
+			auto textureID = iter.second->GetID();
+			auto textureIdx = 0;
+
+			if (iter.second->type == TextureType::ZX_2D)
+				textureIdx = mCurRTSceneTextureIndexMap[textureID];
+			else if (iter.second->type == TextureType::ZX_Cube)
+				textureIdx = mCurRTSceneCubeMapIndexMap[textureID];
+
+			SetShaderScalar(material, iter.first, textureIdx);
+		}
+	}
+
 	void RenderAPID3D12::PushAccelerationStructure(uint32_t VAO, uint32_t hitGroupIdx, uint32_t rtMaterialDataID, const Matrix4& transform)
 	{
 		ZXD3D12ASInstanceData asIns = {};
@@ -2219,10 +2440,10 @@ namespace ZXEngine
 
 		// Scratch Buffer
 		UINT64 scratchSizeInBytes = Math::AlignUpPOT(prebuildInfo.ScratchDataSizeInBytes, static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
-		auto scratchBuffer = CreateBuffer(scratchSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_HEAP_TYPE_DEFAULT);
+		auto scratchBuffer = CreateBuffer(scratchSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_HEAP_TYPE_DEFAULT, false, true);
 		// 构建TLAS要用的BLAS数据Buffer
 		UINT64 instanceDescsSizeInBytes = Math::AlignUpPOT(static_cast<UINT64>(sizeof(D3D12_RAYTRACING_INSTANCE_DESC) * mASInstanceData.size()), static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
-		auto instanceDescsBuffer = CreateBuffer(instanceDescsSizeInBytes, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
+		auto instanceDescsBuffer = CreateBuffer(instanceDescsSizeInBytes, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, false, true);
 		// 创建TLAS Buffer
 		if (!isUpdate)
 		{
@@ -2233,7 +2454,7 @@ namespace ZXEngine
 		// BLAS数据Buffer指针
 		D3D12_RAYTRACING_INSTANCE_DESC* instanceDescs = nullptr;
 		// 把Buffer映射到指针
-		instanceDescsBuffer->Map(0, nullptr, reinterpret_cast<void**>(&instanceDescs));
+		instanceDescsBuffer.buffer->Map(0, nullptr, reinterpret_cast<void**>(&instanceDescs));
 		// 映射失败直接抛出异常
 		if (!instanceDescs)
 			throw std::logic_error("Failed to map instanceDescsBuffer.");
@@ -2255,7 +2476,7 @@ namespace ZXEngine
 			instanceDescs[i].InstanceID = static_cast<UINT>(i);
 			instanceDescs[i].InstanceContributionToHitGroupIndex = data.hitGroupIdx;
 			instanceDescs[i].InstanceMask = 0xFF;
-			instanceDescs[i].AccelerationStructure = meshData->blas.as->GetGPUVirtualAddress();
+			instanceDescs[i].AccelerationStructure = meshData->blas.as.gpuAddress;
 			instanceDescs[i].Flags = D3D12_RAYTRACING_INSTANCE_FLAG_NONE;
 
 			float* array = new float[16];
@@ -2263,23 +2484,23 @@ namespace ZXEngine
 			for (int j = 0; j < 12; j++) instanceDescs[i].Transform[j / 4][j % 4] = array[j];
 			delete[] array;
 		}
-		instanceDescsBuffer->Unmap(0, nullptr);
+		instanceDescsBuffer.buffer->Unmap(0, nullptr);
 
 		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC asDesc = {};
 		asDesc.Inputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
 		asDesc.Inputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
 		asDesc.Inputs.NumDescs = instanceCount;
-		asDesc.Inputs.InstanceDescs = instanceDescsBuffer.Get()->GetGPUVirtualAddress();
+		asDesc.Inputs.InstanceDescs = instanceDescsBuffer.gpuAddress;
 		asDesc.Inputs.Flags = isUpdate ? D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PERFORM_UPDATE : D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
-		asDesc.DestAccelerationStructureData = curTLAS.as->GetGPUVirtualAddress();
-		asDesc.SourceAccelerationStructureData = isUpdate ? curTLAS.as->GetGPUVirtualAddress() : NULL;
-		asDesc.ScratchAccelerationStructureData = scratchBuffer->GetGPUVirtualAddress();
+		asDesc.DestAccelerationStructureData = curTLAS.as.gpuAddress;
+		asDesc.SourceAccelerationStructureData = isUpdate ? curTLAS.as.gpuAddress : NULL;
+		asDesc.ScratchAccelerationStructureData = scratchBuffer.gpuAddress;
 
 		// 构建TLAS
 		commandList->BuildRaytracingAccelerationStructure(&asDesc, 0, nullptr);
 
 		// 确保TLAS在被使用之前已构建完成
-		auto uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(curTLAS.as.Get());
+		auto uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(curTLAS.as.buffer.Get());
 		commandList->ResourceBarrier(1, &uavBarrier);
 
 		// 结束并提交Command List
@@ -2294,12 +2515,12 @@ namespace ZXEngine
 
 		D3D12_RAYTRACING_GEOMETRY_DESC geometryDesc = {};
 		geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
-		geometryDesc.Triangles.VertexBuffer.StartAddress = meshBuffer->vertexBuffer->GetGPUVirtualAddress();
+		geometryDesc.Triangles.VertexBuffer.StartAddress = meshBuffer->vertexBuffer.gpuAddress;
 		geometryDesc.Triangles.VertexBuffer.StrideInBytes = sizeof(Vertex);
 		// 顶点格式，BLAS只关心顶点位置这一项数据
 		geometryDesc.Triangles.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
 		geometryDesc.Triangles.VertexCount = meshBuffer->vertexCount;
-		geometryDesc.Triangles.IndexBuffer = meshBuffer->indexBuffer->GetGPUVirtualAddress();
+		geometryDesc.Triangles.IndexBuffer = meshBuffer->indexBuffer.gpuAddress;
 		geometryDesc.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT;
 		geometryDesc.Triangles.IndexCount = meshBuffer->indexCount;
 		// 构建BLAS的时候可以对模型数据做一个变换，暂时不需要
@@ -2323,14 +2544,14 @@ namespace ZXEngine
 		UINT64 resultSizeInBytes = Math::AlignUpPOT(prebuildInfo.ResultDataMaxSizeInBytes, static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
 
 		// 创建BLAS的scratch buffer
-		auto scratchBuffer = CreateBuffer(scratchSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COMMON, D3D12_HEAP_TYPE_DEFAULT);
+		auto scratchBuffer = CreateBuffer(scratchSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COMMON, D3D12_HEAP_TYPE_DEFAULT, false, true);
 		// 创建BLAS的结果buffer
-		meshBuffer->blas.as = CreateBuffer(resultSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, D3D12_HEAP_TYPE_DEFAULT);
+		meshBuffer->blas.as = CreateBuffer(resultSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, D3D12_HEAP_TYPE_DEFAULT, false, true);
 
 		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC asDesc = {};
 		asDesc.Inputs = inputs;
-		asDesc.DestAccelerationStructureData = meshBuffer->blas.as.Get()->GetGPUVirtualAddress();
-		asDesc.ScratchAccelerationStructureData = scratchBuffer->GetGPUVirtualAddress();
+		asDesc.DestAccelerationStructureData = meshBuffer->blas.as.gpuAddress;
+		asDesc.ScratchAccelerationStructureData = scratchBuffer.gpuAddress;
 		// 如果是更新BLAS需要指定之前的BLAS
 		asDesc.SourceAccelerationStructureData = NULL;
 
@@ -2339,7 +2560,7 @@ namespace ZXEngine
 			// 构建BLAS
 			cmdList->BuildRaytracingAccelerationStructure(&asDesc, 0, nullptr);
 			// 确保BLAS在被使用之前已构建完成
-			auto uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(meshBuffer->blas.as.Get());
+			auto uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(meshBuffer->blas.as.buffer.Get());
 			cmdList->ResourceBarrier(1, &uavBarrier);
 		});
 
@@ -2371,20 +2592,8 @@ namespace ZXEngine
 	{
 		auto VAO = mVAOArray[idx];
 
-		if (VAO->indexBufferAddress != nullptr)
-		{
-			VAO->indexBuffer->Unmap(0, nullptr);
-			VAO->indexBufferAddress = nullptr;
-		}
-		if (VAO->vertexBufferAddress != nullptr)
-		{
-			VAO->vertexBuffer->Unmap(0, nullptr);
-			VAO->vertexBufferAddress = nullptr;
-		}
-
-		// 可能不需要手动调这个Reset
-		VAO->indexBuffer.Reset();
-		VAO->vertexBuffer.Reset();
+		DestroyBuffer(VAO->indexBuffer);
+		DestroyBuffer(VAO->vertexBuffer);
 
 		if (VAO->blas.isBuilt)
 		{
@@ -2575,10 +2784,9 @@ namespace ZXEngine
 	{
 		auto materialData = mMaterialDataArray[idx];
 
-		for (auto& iter : materialData->constantBuffers)
+		for (auto& buffer : materialData->constantBuffers)
 		{
-			iter.buffer->Unmap(0, nullptr);
-			iter.buffer.Reset();
+			DestroyBuffer(buffer);
 		}
 		materialData->constantBuffers.clear();
 
@@ -2625,6 +2833,21 @@ namespace ZXEngine
 		{
 			DestroyMaterialDataByIndex(id);
 			mMaterialDatasToDelete.erase(id);
+		}
+
+		// 光追材质
+		deleteList.clear();
+		for (auto& iter : rtMaterialDatasToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroyRTMaterialDataByIndex(id);
+			rtMaterialDatasToDelete.erase(id);
 		}
 
 		// Texture
@@ -2727,8 +2950,10 @@ namespace ZXEngine
 		return textureID;
 	}
 
-	ComPtr<ID3D12Resource> RenderAPID3D12::CreateBuffer(UINT64 size, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initState, D3D12_HEAP_TYPE heapType, const void* data)
+	ZXD3D12Buffer RenderAPID3D12::CreateBuffer(UINT64 size, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initState, D3D12_HEAP_TYPE heapType, bool cpuAddress, bool gpuAddress, const void* data)
 	{
+		ZXD3D12Buffer buffer;
+
 		D3D12_RESOURCE_DESC bufferDesc = {};
 		bufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
 		bufferDesc.Alignment = 0;
@@ -2743,14 +2968,20 @@ namespace ZXEngine
 		bufferDesc.Flags = flags;
 
 		CD3DX12_HEAP_PROPERTIES bufferProps(heapType);
-		ComPtr<ID3D12Resource> buffer;
 		ThrowIfFailed(mD3D12Device->CreateCommittedResource(
 			&bufferProps,
 			D3D12_HEAP_FLAG_NONE,
 			&bufferDesc,
 			initState,
 			nullptr,
-			IID_PPV_ARGS(buffer.GetAddressOf())));
+			IID_PPV_ARGS(buffer.buffer.GetAddressOf()))
+		);
+
+		if (cpuAddress)
+			ThrowIfFailed(buffer.buffer->Map(0, nullptr, reinterpret_cast<void**>(&buffer.cpuAddress)));
+
+		if (gpuAddress)
+			buffer.gpuAddress = buffer.buffer->GetGPUVirtualAddress();
 
 		if (data)
 		{
@@ -2776,15 +3007,15 @@ namespace ZXEngine
 				// 没必要多一步这个转换，但是创建的时候如果不是以 D3D12_RESOURCE_STATE_COMMON 初始化，Debug Layer居然会给个Warning
 				// 所以为了没有Warning干扰排除问题，这里就这样写了
 				CD3DX12_RESOURCE_BARRIER barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(
-					buffer.Get(),
+					buffer.buffer.Get(),
 					D3D12_RESOURCE_STATE_COMMON,
 					D3D12_RESOURCE_STATE_COPY_DEST);
 				cmdList->ResourceBarrier(1, &barrier1);
 
-				UpdateSubresources<1>(cmdList.Get(), buffer.Get(), uploadBuffer.Get(), 0, 0, 1, &subResourceData);
+				UpdateSubresources<1>(cmdList.Get(), buffer.buffer.Get(), uploadBuffer.Get(), 0, 0, 1, &subResourceData);
 
 				CD3DX12_RESOURCE_BARRIER barrier2 = CD3DX12_RESOURCE_BARRIER::Transition(
-					buffer.Get(),
+					buffer.buffer.Get(),
 					D3D12_RESOURCE_STATE_COPY_DEST,
 					D3D12_RESOURCE_STATE_GENERIC_READ);
 				cmdList->ResourceBarrier(1, &barrier2);
@@ -2794,24 +3025,11 @@ namespace ZXEngine
 		return buffer;
 	}
 
-	ZXD3D12MappedBuffer RenderAPID3D12::CreateConstantBuffer(UINT64 byteSize)
+	void RenderAPID3D12::DestroyBuffer(ZXD3D12Buffer& buffer)
 	{
-		ZXD3D12MappedBuffer constantBuffer;
-
-		CD3DX12_HEAP_PROPERTIES constantBufferProps(D3D12_HEAP_TYPE_UPLOAD);
-		CD3DX12_RESOURCE_DESC constantBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(byteSize);
-		ThrowIfFailed(mD3D12Device->CreateCommittedResource(
-			&constantBufferProps,
-			D3D12_HEAP_FLAG_NONE,
-			&constantBufferDesc,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			nullptr,
-			IID_PPV_ARGS(&constantBuffer.buffer))
-		);
-
-		ThrowIfFailed(constantBuffer.buffer->Map(0, nullptr, static_cast<void**>(&constantBuffer.bufferAddress)));
-
-		return constantBuffer;
+		buffer.buffer.Reset();
+		buffer.cpuAddress = nullptr;
+		buffer.gpuAddress = 0;
 	}
 
 
@@ -2850,6 +3068,40 @@ namespace ZXEngine
 			DestroyAccelerationStructure(tlas);
 
 		tlasGroup->inUse = false;
+	}
+
+	uint32_t RenderAPID3D12::GetNextRTMaterialDataIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mRTMaterialDataArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mRTMaterialDataArray[i]->inUse)
+				return i;
+		}
+
+		mRTMaterialDataArray.push_back(new ZXD3D12RTMaterialData());
+
+		return length;
+	}
+
+	ZXD3D12RTMaterialData* RenderAPID3D12::GetRTMaterialDataByIndex(uint32_t idx)
+	{
+		return mRTMaterialDataArray[idx];
+	}
+
+	void RenderAPID3D12::DestroyRTMaterialDataByIndex(uint32_t idx)
+	{
+		auto rtMaterialData = GetRTMaterialDataByIndex(idx);
+
+		for (auto& buffer : rtMaterialData->buffers)
+		{
+			DestroyBuffer(buffer);
+		}
+
+		rtMaterialData->buffers.clear();
+
+		rtMaterialData->inUse = false;
 	}
 
 	ComPtr<IDxcBlob> RenderAPID3D12::CompileRTShader(const string& path)
@@ -2928,7 +3180,7 @@ namespace ZXEngine
 
 	void RenderAPID3D12::DestroyAccelerationStructure(ZXD3D12AccelerationStructure& accelerationStructure)
 	{
-		accelerationStructure.as.Reset();
+		DestroyBuffer(accelerationStructure.as);
 		accelerationStructure.isBuilt = false;
 	}
 
@@ -2941,8 +3193,7 @@ namespace ZXEngine
 		UINT64 bufferSize = sizeof(RayTracingPipelineConstants);
 		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 		{
-			rtPipeline->constantBuffers[i].buffer = CreateBuffer(bufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
-			ThrowIfFailed(rtPipeline->constantBuffers[i].buffer->Map(0, nullptr, static_cast<void**>(&rtPipeline->constantBuffers[i].bufferAddress)));
+			rtPipeline->constantBuffers[i] = CreateBuffer(bufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, true, false);
 		}
 	}
 
@@ -2959,7 +3210,7 @@ namespace ZXEngine
 		srvDesc.Format = DXGI_FORMAT_UNKNOWN;
 		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_RAYTRACING_ACCELERATION_STRUCTURE;
 		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		srvDesc.RaytracingAccelerationStructure.Location = curTLAS.as->GetGPUVirtualAddress();
+		srvDesc.RaytracingAccelerationStructure.Location = curTLAS.as.gpuAddress;
 		mD3D12Device->CreateShaderResourceView(nullptr, &srvDesc, cpuHandle);
 
 		// 获取光追管线输出的目标图像
@@ -2983,8 +3234,7 @@ namespace ZXEngine
 		UINT64 bufferSize = sizeof(ZXD3D12RTRendererDataReference) * mRTSceneRenderObjectNum;
 		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 		{
-			rtPipeline->dataReferenceBuffers[i].buffer = CreateBuffer(bufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
-			ThrowIfFailed(rtPipeline->dataReferenceBuffers[i].buffer->Map(0, nullptr, static_cast<void**>(&rtPipeline->dataReferenceBuffers[i].bufferAddress)));
+			rtPipeline->dataReferenceBuffers[i] = CreateBuffer(bufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, true, false);
 		}
 	}
 
@@ -3027,17 +3277,18 @@ namespace ZXEngine
 		for (auto& iter : mASInstanceData)
 		{
 			auto meshBuffer = GetVAOByIndex(iter.VAO);
-			// auto rtMaterial = GetRTMaterialDataByIndex(iter.rtMaterialDataID);
+			auto rtMaterial = GetRTMaterialDataByIndex(iter.rtMaterialDataID);
 
 			ZXD3D12RTRendererDataReference dataReference = {};
-			dataReference.indexAddress = meshBuffer->indexBuffer->GetGPUVirtualAddress();
-			dataReference.vertexAddress = meshBuffer->vertexBuffer->GetGPUVirtualAddress();
+			dataReference.indexAddress = meshBuffer->indexBuffer.gpuAddress;
+			dataReference.vertexAddress = meshBuffer->vertexBuffer.gpuAddress;
+			dataReference.materialAddress = rtMaterial->buffers[mCurrentFrame].gpuAddress;
 
 			dataReferences.push_back(dataReference);
 		}
 
 		// 更新数据
-		auto dataReferencePtr = rtPipeline->dataReferenceBuffers[mCurrentFrame].bufferAddress;
+		auto dataReferencePtr = rtPipeline->dataReferenceBuffers[mCurrentFrame].cpuAddress;
 		memcpy(dataReferencePtr, dataReferences.data(), sizeof(ZXD3D12RTRendererDataReference) * dataReferences.size());
 	}
 
@@ -3129,15 +3380,15 @@ namespace ZXEngine
 
 		for (auto& property : reference->shaderInfo.vertProperties.baseProperties)
 			if (name == property.name)
-				return reinterpret_cast<void*>(reinterpret_cast<char*>(materialData->constantBuffers[mCurrentFrame].bufferAddress) + property.offset + property.arrayOffset * idx);
+				return reinterpret_cast<void*>(reinterpret_cast<char*>(materialData->constantBuffers[mCurrentFrame].cpuAddress) + property.offset + property.arrayOffset * idx);
 
 		for (auto& property : reference->shaderInfo.geomProperties.baseProperties)
 			if (name == property.name)
-				return reinterpret_cast<void*>(reinterpret_cast<char*>(materialData->constantBuffers[mCurrentFrame].bufferAddress) + property.offset + property.arrayOffset * idx);
+				return reinterpret_cast<void*>(reinterpret_cast<char*>(materialData->constantBuffers[mCurrentFrame].cpuAddress) + property.offset + property.arrayOffset * idx);
 
 		for (auto& property : reference->shaderInfo.fragProperties.baseProperties)
 			if (name == property.name)
-				return reinterpret_cast<void*>(reinterpret_cast<char*>(materialData->constantBuffers[mCurrentFrame].bufferAddress) + property.offset + property.arrayOffset * idx);
+				return reinterpret_cast<void*>(reinterpret_cast<char*>(materialData->constantBuffers[mCurrentFrame].cpuAddress) + property.offset + property.arrayOffset * idx);
 
 		Debug::LogError("Could not find shader property named " + name);
 
@@ -3155,7 +3406,7 @@ namespace ZXEngine
 			{
 				uint32_t addressOffset = property.offset + property.arrayOffset * idx;
 				for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
-					addresses.push_back(reinterpret_cast<void*>(reinterpret_cast<char*>(materialData->constantBuffers[i].bufferAddress) + addressOffset));
+					addresses.push_back(reinterpret_cast<void*>(reinterpret_cast<char*>(materialData->constantBuffers[i].cpuAddress) + addressOffset));
 				return addresses;
 			}
 		}
@@ -3166,7 +3417,7 @@ namespace ZXEngine
 			{
 				uint32_t addressOffset = property.offset + property.arrayOffset * idx;
 				for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
-					addresses.push_back(reinterpret_cast<void*>(reinterpret_cast<char*>(materialData->constantBuffers[i].bufferAddress) + addressOffset));
+					addresses.push_back(reinterpret_cast<void*>(reinterpret_cast<char*>(materialData->constantBuffers[i].cpuAddress) + addressOffset));
 				return addresses;
 			}
 		}
@@ -3177,12 +3428,46 @@ namespace ZXEngine
 			{
 				uint32_t addressOffset = property.offset + property.arrayOffset * idx;
 				for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
-					addresses.push_back(reinterpret_cast<void*>(reinterpret_cast<char*>(materialData->constantBuffers[i].bufferAddress) + addressOffset));
+					addresses.push_back(reinterpret_cast<void*>(reinterpret_cast<char*>(materialData->constantBuffers[i].cpuAddress) + addressOffset));
 				return addresses;
 			}
 		}
 
 		Debug::LogError("Could not find shader property named " + name);
+
+		return addresses;
+	}
+
+	void* RenderAPID3D12::GetRTMaterialPropertyAddress(MaterialData* materialData, const string& name, uint32_t idx)
+	{
+		auto rtMaterialData = GetRTMaterialDataByIndex(materialData->GetRTID());
+
+		for (auto& property : materialData->rtMaterialProperties)
+			if (name == property.name)
+				return reinterpret_cast<void*>(reinterpret_cast<char*>(rtMaterialData->buffers[mCurrentFrame].cpuAddress) + property.offset + property.arrayOffset * idx);
+
+		Debug::LogError("Could not find ray tracing material property named " + name);
+
+		return nullptr;
+	}
+
+	vector<void*> RenderAPID3D12::GetRTMaterialPropertyAddressAllBuffer(MaterialData* materialData, const string& name, uint32_t idx)
+	{
+		vector<void*> addresses;
+		auto rtMaterialData = GetRTMaterialDataByIndex(materialData->GetRTID());
+
+		for (auto& property : materialData->rtMaterialProperties)
+		{
+			if (name == property.name)
+			{
+				uint32_t addressOffset = property.offset + property.arrayOffset * idx;
+				for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+					addresses.push_back(reinterpret_cast<void*>(reinterpret_cast<char*>(rtMaterialData->buffers[i].cpuAddress) + addressOffset));
+				return addresses;
+			}
+		}
+
+		Debug::LogError("Could not find ray tracing material property named " + name);
 
 		return addresses;
 	}

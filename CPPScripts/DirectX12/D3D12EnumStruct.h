@@ -84,10 +84,17 @@ namespace ZXEngine
         bool inUse = false;
     };
 
+    struct ZXD3D12Buffer
+    {
+        ComPtr<ID3D12Resource> buffer = nullptr;
+        void* cpuAddress = nullptr;
+        D3D12_GPU_VIRTUAL_ADDRESS gpuAddress = 0;
+    };
+
     struct ZXD3D12AccelerationStructure
     {
         bool isBuilt = false;
-        ComPtr<ID3D12Resource> as;
+        ZXD3D12Buffer as;
     };
 
     struct ZXD3D12ASGroup
@@ -99,14 +106,12 @@ namespace ZXEngine
     struct ZXD3D12VAO
     {
         UINT indexCount = 0; // 索引数量
-        ComPtr<ID3D12Resource> indexBuffer = nullptr;
+        ZXD3D12Buffer indexBuffer;
         D3D12_INDEX_BUFFER_VIEW indexBufferView = {};
-        void* indexBufferAddress = nullptr; // Only for dynamic mesh
 
         UINT vertexCount = 0; // 顶点数量
-        ComPtr<ID3D12Resource> vertexBuffer = nullptr;
+        ZXD3D12Buffer vertexBuffer;
         D3D12_VERTEX_BUFFER_VIEW vertexBufferView = {};
-        void* vertexBufferAddress = nullptr; // Only for dynamic mesh
 
         ZXD3D12AccelerationStructure blas;
         bool inUse = false;
@@ -135,12 +140,6 @@ namespace ZXEngine
         bool inUse = false;
 	};
 
-    struct ZXD3D12MappedBuffer
-    {
-        ComPtr<ID3D12Resource> buffer = nullptr;
-        void* bufferAddress = nullptr;
-    };
-
     struct ZXD3D12MaterialTextureSet
     {
         vector<ZXD3D12DescriptorHandle> textureHandles;
@@ -148,7 +147,7 @@ namespace ZXEngine
 
     struct ZXD3D12MaterialData
     {
-        vector<ZXD3D12MappedBuffer> constantBuffers;
+        vector<ZXD3D12Buffer> constantBuffers;
         vector<ZXD3D12MaterialTextureSet> textureSets;
         bool inUse = false;
     };
@@ -166,9 +165,15 @@ namespace ZXEngine
         uint32_t tlasIdx = 0;
         ComPtr<ID3D12StateObject> pipeline;
         ComPtr<ID3D12DescriptorHeap> descriptorHeap;
-        vector<ZXD3D12MappedBuffer> constantBuffers;
-        vector<ZXD3D12MappedBuffer> dataReferenceBuffers;
-        vector<ZXD3D12MappedBuffer> SBT;
+        vector<ZXD3D12Buffer> constantBuffers;
+        vector<ZXD3D12Buffer> dataReferenceBuffers;
+        vector<ZXD3D12Buffer> SBT;
+    };
+
+    struct ZXD3D12RTMaterialData
+    {
+        vector<ZXD3D12Buffer> buffers;
+        bool inUse = false;
     };
 
     struct ZXD3D12RTRendererDataReference

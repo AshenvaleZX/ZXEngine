@@ -4,14 +4,7 @@
 
 namespace ZXEngine
 {
-	struct UniformAlignInfo
-	{
-		uint32_t size = 0;
-		uint32_t align = 0;
-		uint32_t arrayOffset = 0;
-	};
-
-	struct D3D12ConstAlignInfo
+	struct PropertyAlignInfo
 	{
 		uint32_t size = 0;
 		uint32_t align = 0;
@@ -39,11 +32,10 @@ namespace ZXEngine
 		static string PreprocessMacroDefine(const string& code, const string& macro);
 
 		static void SetUpPropertiesStd140(ShaderInfo& info);
-		static UniformAlignInfo GetPropertyAlignInfoStd140(ShaderPropertyType type, uint32_t arrayLength);
+		static PropertyAlignInfo GetPropertyAlignInfoStd140(ShaderPropertyType type, uint32_t arrayLength);
 		static void SetUpPropertiesHLSL(ShaderInfo& info);
-		static D3D12ConstAlignInfo GetPropertyAlignInfoHLSL(ShaderPropertyType type, uint32_t arrayLength);
+		static PropertyAlignInfo GetPropertyAlignInfoHLSL(ShaderPropertyType type, uint32_t arrayLength);
 
-		static void SetUpRTMaterialDataStd140(MaterialData* materialData);
-		static void SetAlignInfoStd140(ShaderProperty& property, uint32_t& offset);
+		static void SetPropertyAlignInfo(ShaderProperty& property, uint32_t& offset, GraphicsAPI api);
 	};
 }
