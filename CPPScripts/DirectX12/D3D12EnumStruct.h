@@ -160,14 +160,26 @@ namespace ZXEngine
         Matrix4 transform;
     };
 
+    struct ZXD3D12SBT
+    {
+        vector<ZXD3D12Buffer> buffers;
+        UINT64 bufferSize = 0;
+        UINT64 rayGenEntrySize = 0;
+        UINT64 rayGenSectionSize = 0;
+        UINT64 missEntrySize = 0;
+        UINT64 missSectionSize = 0;
+        UINT64 hitGroupEntrySize = 0;
+        UINT64 hitGroupSectionSize = 0;
+	};
+
     struct ZXD3D12RTPipeline
     {
         uint32_t tlasIdx = 0;
+        ZXD3D12SBT SBT;
         ComPtr<ID3D12StateObject> pipeline;
         ComPtr<ID3D12DescriptorHeap> descriptorHeap;
         vector<ZXD3D12Buffer> constantBuffers;
         vector<ZXD3D12Buffer> dataReferenceBuffers;
-        vector<ZXD3D12Buffer> SBT;
     };
 
     struct ZXD3D12RTMaterialData

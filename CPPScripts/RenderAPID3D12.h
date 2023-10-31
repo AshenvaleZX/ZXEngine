@@ -88,7 +88,7 @@ namespace ZXEngine
 	public:
 		// Pipeline
 		virtual uint32_t CreateRayTracingPipeline(const RayTracingShaderPathGroup& rtShaderPathGroup);
-		virtual void SwitchRayTracingPipeline(uint32_t rtPipelineID) {};
+		virtual void SwitchRayTracingPipeline(uint32_t rtPipelineID);
 
 		// Material
 		virtual uint32_t CreateRayTracingMaterialData();
@@ -101,7 +101,7 @@ namespace ZXEngine
 		virtual void PushAccelerationStructure(uint32_t VAO, uint32_t hitGroupIdx, uint32_t rtMaterialDataID, const Matrix4& transform);
 
 		// Ray Trace
-		virtual void RayTrace(uint32_t commandID, const RayTracingPipelineConstants& rtConstants) {};
+		virtual void RayTrace(uint32_t commandID, const RayTracingPipelineConstants& rtConstants);
 
 		// Acceleration Structure
 		virtual void BuildTopLevelAccelerationStructure(uint32_t commandID);
@@ -217,6 +217,15 @@ namespace ZXEngine
 		uint32_t mCurRTPipelineID = 0;
 		// 光线追踪管线
 		vector<ZXD3D12RTPipeline*> mRTPipelines;
+
+		// 在累积式光追场景中，用来判断画面刷新的数据
+		vector<Matrix4> mRTVPMatrix;
+		vector<uint32_t> mRTFrameCount;
+
+		// 光追管线Constant Buffer可容纳的32位数据数量
+		uint32_t mRT32BitConstantNum = 128;
+		// 光追管线Constant Buffer的数据临时缓存地址
+		void* mRT32BitConstantBufferAddress = nullptr;
 
 		// 场景中的纹理数量
 		uint32_t mRTSceneTextureNum = 100;
