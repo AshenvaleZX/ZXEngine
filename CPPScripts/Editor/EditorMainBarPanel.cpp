@@ -1,6 +1,7 @@
 #include "EditorMainBarPanel.h"
 #include "EditorDataManager.h"
 #include "EditorGUIManager.h"
+#include "EditorDialogBoxManager.h"
 #include "../GameLogicManager.h"
 #include "../Time.h"
 #include "../SceneManager.h"
@@ -34,27 +35,27 @@ namespace ZXEngine
 				if (ImGui::BeginMenu("File"))
 				{
 					if (ImGui::MenuItem("New Scene"))
-						Debug::Log("Click New Scene");
+						EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "This feature is not implemented yet.");
 					if (ImGui::MenuItem("Open Scene"))
-						Debug::Log("Click Open Scene");
+						EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "This feature is not implemented yet.");
 					if (ImGui::MenuItem("Save Scene"))
-						Debug::Log("Click Save Scene");
+						EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "This feature is not implemented yet.");
 
 					ImGui::Separator();
 
 					if (ImGui::MenuItem("New Project"))
-						Debug::Log("Click New Project");
+						EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "This feature is not implemented yet.");
 					if (ImGui::MenuItem("Open Project"))
-						Debug::Log("Click Open Project");
+						EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "This feature is not implemented yet.");
 					if (ImGui::MenuItem("Save Project"))
-						Debug::Log("Click Save Project");
+						EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "This feature is not implemented yet.");
 
 					ImGui::EndMenu();
 				}
 				if (ImGui::BeginMenu("Edit"))
 				{
 					if (ImGui::MenuItem("Project Settings"))
-						Debug::Log("Click Project Settings");
+						EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "This feature is not implemented yet.");
 
 					ImGui::EndMenu();
 				}
