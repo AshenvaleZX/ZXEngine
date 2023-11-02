@@ -213,6 +213,10 @@ After zxshader is written, it can be run directly under DirectX 12 and OpenGL. B
 
 The way to switch the graphics API is to modify the macro definition in the pubh.h file. There are 3 macro definitions ZX_API_VULKAN, ZX_API_D3D12 and ZX_API_OPENGL, corresponding to the 3 graphics APIs supported by the engine. Open one of the macro definitions, comment out the other two macro definitions, and recompile the engine to complete the switching of the graphics API.
 
+由于我公司的开发环境以及我自己的电脑都是Windows，所以目前本项目仅支持Windows系统。编译器使用的是VS2023，我直接把VS的项目文件放到工程里了。同时我也提供了CMakeLists，不过在非WIndows环境下暂时还无法正确构建。跨平台的想法我是有的，但是我的精力有限，这只是我用空闲时间开发的项目，还有不少我想做的事情没做，所以短期内还不会做跨平台支持。
+
+Since my company's development environment and my own computer are all Windows, this project currently only supports Windows systems. The compiler uses VS2023, so I put the VS project file into the project. And I also provided CMakeLists, but it cannot be built correctly in non-WIndows environments. I have the idea of cross-platform, but my energy is limited. This is just a project I developed in my free time. There are still a lot of things I want to do that I have not done in this project, so I will not provide cross-platform support in the short term.
+
 ### 一些废话 (Some mumbles)
 
 其实工程在2020年5月就创建了，但是最初其实只是想把2020年初学习OpenGL写的代码保存到GitHub上而已。当时写的代码也只是C语言风格的面向过程式编程，一个1000多行的渲染demo。随后花了1年多时间把《Real-Time Rendering 4th》看了，这期间光看书没再实际写东西了（因为这书实在是太偏理论了，没什么可以立刻实践的东西）。
