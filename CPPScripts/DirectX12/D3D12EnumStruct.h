@@ -177,6 +177,7 @@ namespace ZXEngine
         uint32_t tlasIdx = 0;
         ZXD3D12SBT SBT;
         ComPtr<ID3D12StateObject> pipeline;
+        ComPtr<ID3D12RootSignature> rootSignature;
         ComPtr<ID3D12DescriptorHeap> descriptorHeap;
         vector<ZXD3D12Buffer> constantBuffers;
         vector<ZXD3D12Buffer> dataReferenceBuffers;
@@ -187,6 +188,27 @@ namespace ZXEngine
         vector<ZXD3D12Buffer> buffers;
         bool inUse = false;
     };
+
+    struct ZXD3D12DXILLibraryDesc
+    {
+        D3D12_DXIL_LIBRARY_DESC desc = {};
+        vector<D3D12_EXPORT_DESC> exportDescs;
+    };
+
+    struct ZXD3D12ShaderBlob
+    {
+        ComPtr<IDxcBlob> blob;
+        vector<wstring> exportNames;
+    };
+
+    struct ZXD3D12HitGroupDesc
+	{
+        wstring hitGroupName;
+        wstring closestHitShaderName;
+        wstring anyHitShaderName;
+        wstring intersectionShaderName;
+		D3D12_HIT_GROUP_DESC desc = {};
+	};
 
     struct ZXD3D12RTRendererDataReference
     {

@@ -217,6 +217,9 @@ namespace ZXEngine
 		uint32_t mCurRTPipelineID = 0;
 		// 光线追踪管线
 		vector<ZXD3D12RTPipeline*> mRTPipelines;
+		// 构建TLAS的中间Buffer
+		vector<ZXD3D12Buffer> mTLASScratchBuffers;
+		vector<ZXD3D12Buffer> mTLASInstanceBuffers;
 
 		// 在累积式光追场景中，用来判断画面刷新的数据
 		vector<Matrix4> mRTVPMatrix;
@@ -239,14 +242,18 @@ namespace ZXEngine
 		const uint32_t mRTRootParamOffsetInDescriptorHeapTLAS = 0;
 		// register(u0, space0) 输出图像
 		const uint32_t mRTRootParamOffsetInDescriptorHeapOutputImage = 1;
-		// register(t1, space0) 数据索引Buffer
-		const uint32_t mRTRootParamOffsetInDescriptorHeapDataReference = 2;
+		// register(t1, space0) 顶点索引Buffer
+		const uint32_t mRTRootParamOffsetInDescriptorHeapIndexBuffer = 2;
+		// register(t2, space0) 顶点Buffer
+		const uint32_t mRTRootParamOffsetInDescriptorHeapVertexBuffer = 3;
+		// register(t3, space0) 材质数据Buffer
+		const uint32_t mRTRootParamOffsetInDescriptorHeapMaterialData = 4;
 		// register(t0, space1) 2D纹理数组
-		const uint32_t mRTRootParamOffsetInDescriptorHeapTexture2DArray = 4;
+		const uint32_t mRTRootParamOffsetInDescriptorHeapTexture2DArray = 6;
 		// register(t0, space2) CubeMap纹理数组
-		const uint32_t mRTRootParamOffsetInDescriptorHeapTextureCubeArray = 4 + mRTSceneTextureNum;
+		const uint32_t mRTRootParamOffsetInDescriptorHeapTextureCubeArray = 6 + mRTSceneTextureNum;
 		// register(b0, space0) 常量Buffer (Vulkan PushConstants)
-		const uint32_t mRTRootParamOffsetInDescriptorHeapConstantBuffer = 3;
+		const uint32_t mRTRootParamOffsetInDescriptorHeapConstantBuffer = 5;
 
 		// 当前这一帧要绘制的对象信息数组
 		vector<ZXD3D12ASInstanceData> mASInstanceData;
@@ -270,8 +277,12 @@ namespace ZXEngine
 		// 准备销毁的光追材质
 		unordered_map<uint32_t, uint32_t> rtMaterialDatasToDelete;
 
+		ComPtr<ID3D12RootSignature> mEmptyLocalRootSignature;
+		ComPtr<ID3D12RootSignature> mEmptyGlobalRootSignature;
+
 		// 初始化全局的光追相关资源
 		void InitDXR();
+		void InitEmptyRootSignature();
 
 		uint32_t GetNextTLASGroupIndex();
 		ZXD3D12ASGroup* GetTLASGroupByIndex(uint32_t idx);
@@ -281,7 +292,7 @@ namespace ZXEngine
 		void DestroyRTMaterialDataByIndex(uint32_t idx);
 
 		ComPtr<IDxcBlob> CompileRTShader(const string& path);
-		D3D12_DXIL_LIBRARY_DESC CreateDXILLibrary(const ComPtr<IDxcBlob>& dxilBlob, const vector<wstring>& exportedSymbols);
+		ZXD3D12DXILLibraryDesc CreateDXILLibrary(const ComPtr<IDxcBlob>& dxilBlob, const vector<wstring>& exportedSymbols);
 
 		void DestroyAccelerationStructure(ZXD3D12AccelerationStructure& accelerationStructure);
 

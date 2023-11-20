@@ -63,15 +63,19 @@ namespace ZXEngine
 
 	void RenderAPID3D12::InitD3D12()
 	{
+		UINT dxgiFactoryFlags = 0;
+
 		// Debug
 		if (ProjectSetting::enableGraphicsDebug)
 		{
 			ComPtr<ID3D12Debug> debugController;
 			ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
 			debugController->EnableDebugLayer();
+
+			dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
 		}
 
-		ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&mDXGIFactory)));
+		ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&mDXGIFactory)));
 
 		// 找一个合适的显卡硬件
 		UINT adapterIndex = 0;
@@ -97,7 +101,7 @@ namespace ZXEngine
 			mDXGIFactory->EnumAdapters1(bestAdapterIndex, &pAdapter);
 
 		// 优先使用硬件设备，如果没找到合适的显卡，pAdapter此时为nullptr，这里允许空指针参数，表示自动找一个合适的
-		HRESULT hardwareResult = D3D12CreateDevice(pAdapter, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&mD3D12Device));
+		HRESULT hardwareResult = D3D12CreateDevice(pAdapter, D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&mD3D12Device));
 
 		// 如果找到了合适的显卡，要手动释放一下Adapter
 		if (bestAdapterIndex != UINT_MAX)
@@ -111,7 +115,7 @@ namespace ZXEngine
 		{
 			ComPtr<IDXGIAdapter> pWarpAdapter;
 			ThrowIfFailed(mDXGIFactory->EnumWarpAdapter(IID_PPV_ARGS(&pWarpAdapter)));
-			ThrowIfFailed(D3D12CreateDevice(pWarpAdapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&mD3D12Device)));
+			ThrowIfFailed(D3D12CreateDevice(pWarpAdapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&mD3D12Device)));
 		}
 
 		// 设置Debug输出筛选
@@ -2018,21 +2022,26 @@ namespace ZXEngine
 		uint32_t rtPipelineID = static_cast<uint32_t>(mRTPipelines.size() - 1);
 
 		// 准备根签名参数
-		vector<CD3DX12_ROOT_PARAMETER> rootParameters(6);
+		vector<CD3DX12_ROOT_PARAMETER> rootParameters(8);
 		// register(t0, space0) TLAS
 		rootParameters[0].InitAsShaderResourceView(0, 0, D3D12_SHADER_VISIBILITY_ALL);
 		// register(u0, space0) 输出图像
-		rootParameters[1].InitAsUnorderedAccessView(0, 0, D3D12_SHADER_VISIBILITY_ALL);
-		// register(t1, space0) 数据索引Buffer
+		CD3DX12_DESCRIPTOR_RANGE outputImage(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0, 0, mRTRootParamOffsetInDescriptorHeapOutputImage);
+		rootParameters[1].InitAsDescriptorTable(1, &outputImage, D3D12_SHADER_VISIBILITY_ALL);
+		// register(t1, space0) 顶点索引Buffer
 		rootParameters[2].InitAsShaderResourceView(1, 0, D3D12_SHADER_VISIBILITY_ALL);
+		// register(t2, space0) 顶点Buffer
+		rootParameters[3].InitAsShaderResourceView(2, 0, D3D12_SHADER_VISIBILITY_ALL);
+		// register(t3, space0) 材质数据Buffer
+		rootParameters[4].InitAsShaderResourceView(3, 0, D3D12_SHADER_VISIBILITY_ALL);
 		// register(t0, space1) 2D纹理数组
 		CD3DX12_DESCRIPTOR_RANGE texture2DArray(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, mRTSceneTextureNum, 0, 1, mRTRootParamOffsetInDescriptorHeapTexture2DArray);
-		rootParameters[3].InitAsDescriptorTable(1, &texture2DArray, D3D12_SHADER_VISIBILITY_ALL);
+		rootParameters[5].InitAsDescriptorTable(1, &texture2DArray, D3D12_SHADER_VISIBILITY_ALL);
 		// register(t0, space2) CubeMap纹理数组
 		CD3DX12_DESCRIPTOR_RANGE textureCubeMapArray(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, mRTSceneCubeMapNum, 0, 2, mRTRootParamOffsetInDescriptorHeapTextureCubeArray);
-		rootParameters[4].InitAsDescriptorTable(1, &textureCubeMapArray, D3D12_SHADER_VISIBILITY_ALL);
+		rootParameters[6].InitAsDescriptorTable(1, &textureCubeMapArray, D3D12_SHADER_VISIBILITY_ALL);
 		// register(b0, space0) 常量Buffer (Vulkan PushConstants)
-		rootParameters[5].InitAsConstants(mRT32BitConstantNum, 0, 0, D3D12_SHADER_VISIBILITY_ALL);
+		rootParameters[7].InitAsConstants(mRT32BitConstantNum, 0, 0, D3D12_SHADER_VISIBILITY_ALL);
 
 		auto samplers = GetStaticSamplersDesc();
 		CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
@@ -2052,64 +2061,92 @@ namespace ZXEngine
 		ThrowIfFailed(hr);
 
 		// 创建根签名(这里只创建了一个根签名，所有Shader共享，不过也可以给每个Shader创建单独的根签名，在Shader根参数差异很大的情况下单独创建性能可能更好)
-		ComPtr<ID3D12RootSignature> rootSignature;
-		ThrowIfFailed(mD3D12Device->CreateRootSignature(0, serializedRootSignature->GetBufferPointer(), serializedRootSignature->GetBufferSize(), IID_PPV_ARGS(&rootSignature)));
+		ThrowIfFailed(mD3D12Device->CreateRootSignature(0, serializedRootSignature->GetBufferPointer(), serializedRootSignature->GetBufferSize(), IID_PPV_ARGS(&rtPipeline->rootSignature)));
 
 		// 从HLSL代码里导出的Shader
-		vector<wstring> exportNames;
+		vector<ZXD3D12ShaderBlob> shaderBlobs;
 		// Hit Groups
-		vector<D3D12_HIT_GROUP_DESC> hitGroups;
+		vector<ZXD3D12HitGroupDesc> hitGroups;
+		// 导出的Ray Gen，Miss和Hit Group的名字
+		vector<wstring> allExportNames;
 		// 创建DXIL Library
 		// 一个HLSL代码文件会编译成一个DXIL Library，一个DXIL Library可以包含多个Shader
 		// 比如一个RayGen Shader和一个Miss Shader，或者多个Hit Shader等等
 		// 创建管线的时候需要把要用到的Shader从DXIL Library里面导出，放到D3D12_DXIL_LIBRARY_DESC的D3D12_EXPORT_DESC* pExports参数中
 		// 所以理论上整个光追管线的所有代码可以写到一个HLSL文件里面，然后编译成一个DXIL Library，导出所有Shader
-		vector<D3D12_DXIL_LIBRARY_DESC> dxilLibraries;
+		vector<ZXD3D12DXILLibraryDesc> dxilLibraries;
 		for (size_t i = 0; i < rtShaderPathGroup.rGenPaths.size(); i++)
 		{
+			ZXD3D12ShaderBlob shaderBlob;
+
 			wstring exportName = L"RayGen" + to_wstring(i);
-			exportNames.push_back(exportName);
-			auto blob = CompileRTShader(rtShaderPathGroup.rGenPaths[i]);
-			dxilLibraries.push_back(CreateDXILLibrary(blob, { exportName }));
+			allExportNames.push_back(exportName);
+			shaderBlob.exportNames.push_back(exportName);
+			shaderBlob.blob = CompileRTShader(rtShaderPathGroup.rGenPaths[i]);
+			shaderBlobs.push_back(shaderBlob);
+
+			dxilLibraries.push_back(CreateDXILLibrary(shaderBlobs.back().blob, shaderBlobs.back().exportNames));
 		}
 		for (size_t i = 0; i < rtShaderPathGroup.rMissPaths.size(); i++)
 		{
+			ZXD3D12ShaderBlob shaderBlob;
+
 			wstring exportName = L"Miss" + to_wstring(i);
-			exportNames.push_back(exportName);
-			auto blob = CompileRTShader(rtShaderPathGroup.rMissPaths[i]);
-			dxilLibraries.push_back(CreateDXILLibrary(blob, { exportName }));
+			allExportNames.push_back(exportName);
+			shaderBlob.exportNames.push_back(exportName);
+			shaderBlob.blob = CompileRTShader(rtShaderPathGroup.rMissPaths[i]);
+			shaderBlobs.push_back(shaderBlob);
+
+			dxilLibraries.push_back(CreateDXILLibrary(shaderBlobs.back().blob, shaderBlobs.back().exportNames));
 		}
 		for (size_t i = 0; i < rtShaderPathGroup.rHitGroupPaths.size(); i++)
 		{
-			wstring hitGroupExportName = L"HitGroup" + to_wstring(i);
-			exportNames.push_back(hitGroupExportName);
+			ZXD3D12HitGroupDesc hitGroup;
+			hitGroup.desc.Type = D3D12_HIT_GROUP_TYPE_TRIANGLES;
 
-			D3D12_HIT_GROUP_DESC hitGroup = {};
-			hitGroup.HitGroupExport = hitGroupExportName.c_str();
-			hitGroup.Type = D3D12_HIT_GROUP_TYPE_TRIANGLES;
+			hitGroup.hitGroupName = L"HitGroup" + to_wstring(i);
+			allExportNames.push_back(hitGroup.hitGroupName);
 
+			ZXD3D12ShaderBlob closestHitShaderBlob;
 			wstring closestHitExportName = L"ClosestHit" + to_wstring(i);
-			hitGroup.ClosestHitShaderImport = closestHitExportName.c_str();
-			auto rcBlob = CompileRTShader(rtShaderPathGroup.rHitGroupPaths[i].rClosestHitPath);
-			dxilLibraries.push_back(CreateDXILLibrary(rcBlob, { closestHitExportName }));
+			closestHitShaderBlob.exportNames.push_back(closestHitExportName);
+			closestHitShaderBlob.blob = CompileRTShader(rtShaderPathGroup.rHitGroupPaths[i].rClosestHitPath);
+			shaderBlobs.push_back(closestHitShaderBlob);
+			dxilLibraries.push_back(CreateDXILLibrary(shaderBlobs.back().blob, shaderBlobs.back().exportNames));
+
+			hitGroup.closestHitShaderName = closestHitExportName;
 
 			if (!rtShaderPathGroup.rHitGroupPaths[i].rAnyHitPath.empty())
 			{
+				ZXD3D12ShaderBlob anyHitShaderBlob;
 				wstring anyHitExportName = L"AnyHit" + to_wstring(i);
-				hitGroup.AnyHitShaderImport = anyHitExportName.c_str();
-				auto raBlob = CompileRTShader(rtShaderPathGroup.rHitGroupPaths[i].rAnyHitPath);
-				dxilLibraries.push_back(CreateDXILLibrary(raBlob, { anyHitExportName }));
+				anyHitShaderBlob.exportNames.push_back(anyHitExportName);
+				anyHitShaderBlob.blob = CompileRTShader(rtShaderPathGroup.rHitGroupPaths[i].rAnyHitPath);
+				shaderBlobs.push_back(anyHitShaderBlob);
+				dxilLibraries.push_back(CreateDXILLibrary(shaderBlobs.back().blob, shaderBlobs.back().exportNames));
+
+				hitGroup.anyHitShaderName = anyHitExportName;
 			}
 
 			if (!rtShaderPathGroup.rHitGroupPaths[i].rIntersectionPath.empty())
 			{
+				ZXD3D12ShaderBlob intersectionShaderBlob;
 				wstring intersectionExportName = L"Intersection" + to_wstring(i);
-				hitGroup.IntersectionShaderImport = intersectionExportName.c_str();
-				auto riBlob = CompileRTShader(rtShaderPathGroup.rHitGroupPaths[i].rIntersectionPath);
-				dxilLibraries.push_back(CreateDXILLibrary(riBlob, { intersectionExportName }));
+				intersectionShaderBlob.exportNames.push_back(intersectionExportName);
+				intersectionShaderBlob.blob = CompileRTShader(rtShaderPathGroup.rHitGroupPaths[i].rIntersectionPath);
+				shaderBlobs.push_back(intersectionShaderBlob);
+				dxilLibraries.push_back(CreateDXILLibrary(shaderBlobs.back().blob, shaderBlobs.back().exportNames));
+
+				hitGroup.intersectionShaderName = intersectionExportName;
 			}
 
 			hitGroups.push_back(hitGroup);
+			hitGroups.back().desc.HitGroupExport = hitGroups.back().hitGroupName.c_str();
+			hitGroups.back().desc.ClosestHitShaderImport = hitGroups.back().closestHitShaderName.c_str();
+			if (!hitGroups.back().anyHitShaderName.empty())
+				hitGroups.back().desc.AnyHitShaderImport = hitGroups.back().anyHitShaderName.c_str();
+			if (!hitGroups.back().intersectionShaderName.empty())
+				hitGroups.back().desc.IntersectionShaderImport = hitGroups.back().intersectionShaderName.c_str();
 		}
 
 		// D3D12的RayTracing管线是由State SubObject构成的，包括DXIL Library，Hit Group，Shader Config，Root Signature等等
@@ -2117,9 +2154,9 @@ namespace ZXEngine
 			dxilLibraries.size() +	// DXIL Library
 			hitGroups.size() +		// Hit Group声明
 			1 +						// Shader Config
-			1 +						// Shader Payload
+			1 +						// Associate the set of shaders with config
 			2 +						// 根签名及其对应的Exports Association(如果有多个根签名，这里为2*数量)
-			// 2 +						// Empty Global and Local Root Signature
+			2 +						// Empty Global and Local Root Signature
 			1;						// Pipeline Config
 
 		// 创建State SubObject
@@ -2130,7 +2167,7 @@ namespace ZXEngine
 		for (auto& dxilLibrary : dxilLibraries)
 		{
 			subObjects[index].Type = D3D12_STATE_SUBOBJECT_TYPE_DXIL_LIBRARY;
-			subObjects[index].pDesc = &dxilLibrary;
+			subObjects[index].pDesc = &dxilLibrary.desc;
 			index++;
 		}
 
@@ -2138,7 +2175,7 @@ namespace ZXEngine
 		for (auto& hitGroup : hitGroups)
 		{
 			subObjects[index].Type = D3D12_STATE_SUBOBJECT_TYPE_HIT_GROUP;
-			subObjects[index].pDesc = &hitGroup;
+			subObjects[index].pDesc = &hitGroup.desc;
 			index++;
 		}
 
@@ -2146,13 +2183,14 @@ namespace ZXEngine
 		D3D12_RAYTRACING_SHADER_CONFIG shaderConfig = {};
 		shaderConfig.MaxPayloadSizeInBytes = 4 * sizeof(float);
 		shaderConfig.MaxAttributeSizeInBytes = D3D12_RAYTRACING_MAX_ATTRIBUTE_SIZE_IN_BYTES;
+
 		subObjects[index].Type = D3D12_STATE_SUBOBJECT_TYPE_RAYTRACING_SHADER_CONFIG;
 		subObjects[index].pDesc = &shaderConfig;
 		index++;
 
-		// ------------------------------------ Shader Payload ------------------------------------
+		// ---------------------------- Associate the set of shaders with config ------------------
 		vector<LPCWSTR> shaderExports;
-		for (auto& exportName : exportNames)
+		for (auto& exportName : allExportNames)
 			shaderExports.push_back(exportName.c_str());
 
 		D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION shaderPayloadAssociation = {};
@@ -2165,20 +2203,41 @@ namespace ZXEngine
 		index++;
 
 		// ------------------------------------ Root Signature ------------------------------------
+		ID3D12RootSignature* rSig = rtPipeline->rootSignature.Get();
+
 		subObjects[index].Type = D3D12_STATE_SUBOBJECT_TYPE_LOCAL_ROOT_SIGNATURE;
-		subObjects[index].pDesc = rootSignature.Get();
+		subObjects[index].pDesc = &rSig;
 		index++;
 
 		// ------------------------------ Root Signature Association ------------------------------
 		// 前面Shader Config那里关联的是整个管线所有的Shader，这里关联的是单个根签名的
 		// 不过暂时只有一个全局根前面，所以这里关联的是一样的
+		vector<wstring> allExportNamesCopy = allExportNames;
+		vector<LPCWSTR> rootSignatureExports;
+		for (auto& exportName : allExportNamesCopy)
+			rootSignatureExports.push_back(exportName.c_str());
+
 		D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION rootSignatureAssociation = {};
-		rootSignatureAssociation.NumExports = static_cast<UINT>(shaderExports.size());
-		rootSignatureAssociation.pExports = shaderExports.data();
+		rootSignatureAssociation.NumExports = static_cast<UINT>(rootSignatureExports.size());
+		rootSignatureAssociation.pExports = rootSignatureExports.data();
 		rootSignatureAssociation.pSubobjectToAssociate = &subObjects[index - 1];
 
 		subObjects[index].Type = D3D12_STATE_SUBOBJECT_TYPE_SUBOBJECT_TO_EXPORTS_ASSOCIATION;
 		subObjects[index].pDesc = &rootSignatureAssociation;
+		index++;
+
+		// ------------------------------ Empty Local Root Signature ------------------------------
+		ID3D12RootSignature* lSig = mEmptyLocalRootSignature.Get();
+		
+		subObjects[index].Type = D3D12_STATE_SUBOBJECT_TYPE_LOCAL_ROOT_SIGNATURE;
+		subObjects[index].pDesc = &lSig;
+		index++;
+
+		// ----------------------------- Empty Global Root Signature ------------------------------
+		ID3D12RootSignature* gSig = mEmptyGlobalRootSignature.Get();
+		
+		subObjects[index].Type = D3D12_STATE_SUBOBJECT_TYPE_GLOBAL_ROOT_SIGNATURE;
+		subObjects[index].pDesc = &gSig;
 		index++;
 
 		// ----------------------------------- Pipeline Config ------------------------------------
@@ -2202,7 +2261,7 @@ namespace ZXEngine
 		// 创建光追管线数据的描述符堆
 		D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc = {};
 		// 对应6个根签名参数
-		descriptorHeapDesc.NumDescriptors = 4 + mRTSceneTextureNum + mRTSceneCubeMapNum;
+		descriptorHeapDesc.NumDescriptors = 6 + mRTSceneTextureNum + mRTSceneCubeMapNum;
 		descriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		descriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 		ThrowIfFailed(mD3D12Device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&rtPipeline->descriptorHeap)));
@@ -2212,30 +2271,32 @@ namespace ZXEngine
 		// 当前管线所有Shader都是固定6个参数，SBT需要存参数的64位地址，所以一个参数大小是8字节，这里就是6 * 8
 		UINT64 rootArgumentsSize = static_cast<UINT64>(6 * 8);
 		// 如果有多个Ray Generation，这里的参数大小按照最大的Ray Generation参数数量来算
-		rtPipeline->SBT.rayGenEntrySize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES + rootArgumentsSize;
-		rtPipeline->SBT.rayGenSectionSize = rtPipeline->SBT.rayGenEntrySize * rtShaderPathGroup.rGenPaths.size();
+		rtPipeline->SBT.rayGenEntrySize = Math::AlignUpPOT(D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES + rootArgumentsSize, (UINT64)D3D12_RAYTRACING_SHADER_RECORD_BYTE_ALIGNMENT);
+		rtPipeline->SBT.rayGenSectionSize = Math::AlignUpPOT(rtPipeline->SBT.rayGenEntrySize * rtShaderPathGroup.rGenPaths.size(), (UINT64)D3D12_RAYTRACING_SHADER_TABLE_BYTE_ALIGNMENT);
 		// Miss和HitGroup计算方式同理，不过在这里都是一样大的
-		rtPipeline->SBT.missEntrySize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES + rootArgumentsSize;
-		rtPipeline->SBT.missSectionSize = rtPipeline->SBT.missEntrySize * rtShaderPathGroup.rMissPaths.size();
-		rtPipeline->SBT.hitGroupEntrySize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES + rootArgumentsSize;
-		rtPipeline->SBT.hitGroupSectionSize = rtPipeline->SBT.hitGroupEntrySize * rtShaderPathGroup.rHitGroupPaths.size();
+		rtPipeline->SBT.missEntrySize = Math::AlignUpPOT(D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES + rootArgumentsSize, (UINT64)D3D12_RAYTRACING_SHADER_RECORD_BYTE_ALIGNMENT);
+		rtPipeline->SBT.missSectionSize = Math::AlignUpPOT(rtPipeline->SBT.missEntrySize * rtShaderPathGroup.rMissPaths.size(), (UINT64)D3D12_RAYTRACING_SHADER_TABLE_BYTE_ALIGNMENT);
+		rtPipeline->SBT.hitGroupEntrySize = Math::AlignUpPOT(D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES + rootArgumentsSize, (UINT64)D3D12_RAYTRACING_SHADER_RECORD_BYTE_ALIGNMENT);
+		rtPipeline->SBT.hitGroupSectionSize = Math::AlignUpPOT(rtPipeline->SBT.hitGroupEntrySize * rtShaderPathGroup.rHitGroupPaths.size(), (UINT64)D3D12_RAYTRACING_SHADER_TABLE_BYTE_ALIGNMENT);
 		UINT64 sbtSize = Math::AlignUpPOT(rtPipeline->SBT.rayGenSectionSize + rtPipeline->SBT.missSectionSize + rtPipeline->SBT.hitGroupSectionSize, (UINT64)256);
 
 		// Root Arguments GPU Handle
 		CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(rtPipeline->descriptorHeap->GetGPUDescriptorHandleForHeapStart());
-		D3D12_GPU_DESCRIPTOR_HANDLE rootArguments[6] = {};
+		D3D12_GPU_DESCRIPTOR_HANDLE rootArguments[8] = {};
 		rootArguments[0] = gpuHandle.Offset(mRTRootParamOffsetInDescriptorHeapTLAS, mCbvSrvUavDescriptorSize);
 		rootArguments[1] = gpuHandle.Offset(mRTRootParamOffsetInDescriptorHeapOutputImage, mCbvSrvUavDescriptorSize);
-		rootArguments[2] = gpuHandle.Offset(mRTRootParamOffsetInDescriptorHeapDataReference, mCbvSrvUavDescriptorSize);
-		rootArguments[3] = gpuHandle.Offset(mRTRootParamOffsetInDescriptorHeapTexture2DArray, mCbvSrvUavDescriptorSize);
-		rootArguments[4] = gpuHandle.Offset(mRTRootParamOffsetInDescriptorHeapTextureCubeArray, mCbvSrvUavDescriptorSize);
-		rootArguments[5] = gpuHandle.Offset(mRTRootParamOffsetInDescriptorHeapConstantBuffer, mCbvSrvUavDescriptorSize);
+		rootArguments[2] = gpuHandle.Offset(mRTRootParamOffsetInDescriptorHeapIndexBuffer, mCbvSrvUavDescriptorSize);
+		rootArguments[3] = gpuHandle.Offset(mRTRootParamOffsetInDescriptorHeapVertexBuffer, mCbvSrvUavDescriptorSize);
+		rootArguments[4] = gpuHandle.Offset(mRTRootParamOffsetInDescriptorHeapMaterialData, mCbvSrvUavDescriptorSize);
+		rootArguments[5] = gpuHandle.Offset(mRTRootParamOffsetInDescriptorHeapTexture2DArray, mCbvSrvUavDescriptorSize);
+		rootArguments[6] = gpuHandle.Offset(mRTRootParamOffsetInDescriptorHeapTextureCubeArray, mCbvSrvUavDescriptorSize);
+		rootArguments[7] = gpuHandle.Offset(mRTRootParamOffsetInDescriptorHeapConstantBuffer, mCbvSrvUavDescriptorSize);
 
 		// 创建SBT Buffer
 		rtPipeline->SBT.buffers.resize(DX_MAX_FRAMES_IN_FLIGHT);
 		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 		{
-			rtPipeline->SBT.buffers[i] = CreateBuffer(sbtSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, true, false);
+			rtPipeline->SBT.buffers[i] = CreateBuffer(sbtSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, true, true);
 		}
 
 		// 填充SBT Buffer数据
@@ -2294,6 +2355,9 @@ namespace ZXEngine
 		auto tlasGroup = GetTLASGroupByIndex(rtPipeline->tlasIdx);
 		tlasGroup->asGroup.resize(DX_MAX_FRAMES_IN_FLIGHT);
 		tlasGroup->inUse = true;
+		// 初始化构建TLAS的中间Buffer
+		mTLASScratchBuffers.resize(DX_MAX_FRAMES_IN_FLIGHT);
+		mTLASInstanceBuffers.resize(DX_MAX_FRAMES_IN_FLIGHT);
 
 		return rtPipelineID;
 	}
@@ -2459,6 +2523,8 @@ namespace ZXEngine
 		vector<ID3D12DescriptorHeap*> descriptorHeaps = { rtPipeline->descriptorHeap.Get() };
 		drawCommandList->SetDescriptorHeaps(static_cast<UINT>(descriptorHeaps.size()), descriptorHeaps.data());
 
+		// 设置光追根签名
+		drawCommandList->SetComputeRootSignature(rtPipeline->rootSignature.Get());
 		// 写入常量数据
 		char* ptr = static_cast<char*>(mRT32BitConstantBufferAddress);
 		if (ptr != NULL)
@@ -2483,7 +2549,7 @@ namespace ZXEngine
 
 			memcpy(ptr, &frameCount, sizeof(uint32_t));
 		}
-		drawCommandList->SetComputeRoot32BitConstants(5, mRT32BitConstantNum, ptr, 0);
+		drawCommandList->SetComputeRoot32BitConstants(7, mRT32BitConstantNum, ptr, 0);
 
 		D3D12_DISPATCH_RAYS_DESC dispatchRaysDesc = {};
 		// Ray Generation Shader
@@ -2551,21 +2617,24 @@ namespace ZXEngine
 
 		// Scratch Buffer
 		UINT64 scratchSizeInBytes = Math::AlignUpPOT(prebuildInfo.ScratchDataSizeInBytes, static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
-		auto scratchBuffer = CreateBuffer(scratchSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_HEAP_TYPE_DEFAULT, false, true);
+		mTLASScratchBuffers[mCurrentFrame] = CreateBuffer(scratchSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_HEAP_TYPE_DEFAULT, false, true);
 		// 构建TLAS要用的BLAS数据Buffer
 		UINT64 instanceDescsSizeInBytes = Math::AlignUpPOT(static_cast<UINT64>(sizeof(D3D12_RAYTRACING_INSTANCE_DESC) * mASInstanceData.size()), static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
-		auto instanceDescsBuffer = CreateBuffer(instanceDescsSizeInBytes, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, false, true);
+		mTLASInstanceBuffers[mCurrentFrame] = CreateBuffer(instanceDescsSizeInBytes, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, false, true);
 		// 创建TLAS Buffer
 		if (!isUpdate)
 		{
 			UINT64 resultSizeInBytes = Math::AlignUpPOT(prebuildInfo.ResultDataMaxSizeInBytes, static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
-			curTLAS.as = CreateBuffer(resultSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, D3D12_HEAP_TYPE_DEFAULT);
+			curTLAS.as = CreateBuffer(resultSizeInBytes, 
+				D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, 
+				D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, 
+				D3D12_HEAP_TYPE_DEFAULT, false, true);
 		}
 
 		// BLAS数据Buffer指针
 		D3D12_RAYTRACING_INSTANCE_DESC* instanceDescs = nullptr;
 		// 把Buffer映射到指针
-		instanceDescsBuffer.buffer->Map(0, nullptr, reinterpret_cast<void**>(&instanceDescs));
+		mTLASInstanceBuffers[mCurrentFrame].buffer->Map(0, nullptr, reinterpret_cast<void**>(&instanceDescs));
 		// 映射失败直接抛出异常
 		if (!instanceDescs)
 			throw std::logic_error("Failed to map instanceDescsBuffer.");
@@ -2595,17 +2664,17 @@ namespace ZXEngine
 			for (int j = 0; j < 12; j++) instanceDescs[i].Transform[j / 4][j % 4] = array[j];
 			delete[] array;
 		}
-		instanceDescsBuffer.buffer->Unmap(0, nullptr);
+		mTLASInstanceBuffers[mCurrentFrame].buffer->Unmap(0, nullptr);
 
 		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC asDesc = {};
 		asDesc.Inputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
 		asDesc.Inputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
 		asDesc.Inputs.NumDescs = instanceCount;
-		asDesc.Inputs.InstanceDescs = instanceDescsBuffer.gpuAddress;
+		asDesc.Inputs.InstanceDescs = mTLASInstanceBuffers[mCurrentFrame].gpuAddress;
 		asDesc.Inputs.Flags = isUpdate ? D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PERFORM_UPDATE : D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
 		asDesc.DestAccelerationStructureData = curTLAS.as.gpuAddress;
 		asDesc.SourceAccelerationStructureData = isUpdate ? curTLAS.as.gpuAddress : NULL;
-		asDesc.ScratchAccelerationStructureData = scratchBuffer.gpuAddress;
+		asDesc.ScratchAccelerationStructureData = mTLASScratchBuffers[mCurrentFrame].gpuAddress;
 
 		// 构建TLAS
 		commandList->BuildRaytracingAccelerationStructure(&asDesc, 0, nullptr);
@@ -3150,6 +3219,24 @@ namespace ZXEngine
 		ThrowIfFailed(DxcCreateInstance(CLSID_DxcCompiler, __uuidof(IDxcCompiler), (void**)&mDxcCompiler));
 		ThrowIfFailed(DxcCreateInstance(CLSID_DxcLibrary, __uuidof(IDxcLibrary), (void**)&mDxcLibrary));
 		ThrowIfFailed(mDxcLibrary->CreateIncludeHandler(&mDxcIncludeHandler));
+
+		InitEmptyRootSignature();
+	}
+
+	void RenderAPID3D12::InitEmptyRootSignature()
+	{
+		ComPtr<ID3DBlob> error;
+		CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
+
+		rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_LOCAL_ROOT_SIGNATURE);
+		ComPtr<ID3DBlob> localSignature;
+		ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &localSignature, &error));
+		ThrowIfFailed(mD3D12Device->CreateRootSignature(0, localSignature->GetBufferPointer(), localSignature->GetBufferSize(), IID_PPV_ARGS(&mEmptyLocalRootSignature)));
+
+		rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE);
+		ComPtr<ID3DBlob> globalSignature;
+		ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &globalSignature, &error));
+		ThrowIfFailed(mD3D12Device->CreateRootSignature(0, globalSignature->GetBufferPointer(), globalSignature->GetBufferSize(), IID_PPV_ARGS(&mEmptyGlobalRootSignature)));
 	}
 
 	uint32_t RenderAPID3D12::GetNextTLASGroupIndex()
@@ -3270,22 +3357,22 @@ namespace ZXEngine
 		return shaderBlob;
 	}
 
-	D3D12_DXIL_LIBRARY_DESC RenderAPID3D12::CreateDXILLibrary(const ComPtr<IDxcBlob>& dxilBlob, const vector<wstring>& exportedSymbols)
+	ZXD3D12DXILLibraryDesc RenderAPID3D12::CreateDXILLibrary(const ComPtr<IDxcBlob>& dxilBlob, const vector<wstring>& exportedSymbols)
 	{
-		D3D12_DXIL_LIBRARY_DESC dxilLibDesc = {};
+		ZXD3D12DXILLibraryDesc dxilLibDesc = {};
 
-		vector<D3D12_EXPORT_DESC> exportDescs(exportedSymbols.size());
+		dxilLibDesc.exportDescs.resize(exportedSymbols.size());
 		for (size_t i = 0; i < exportedSymbols.size(); i++)
 		{
-			exportDescs[i].Name = exportedSymbols[i].c_str();
-			exportDescs[i].ExportToRename = L"main";
-			exportDescs[i].Flags = D3D12_EXPORT_FLAG_NONE;
+			dxilLibDesc.exportDescs[i].Name = exportedSymbols[i].c_str();
+			dxilLibDesc.exportDescs[i].ExportToRename = L"main";
+			dxilLibDesc.exportDescs[i].Flags = D3D12_EXPORT_FLAG_NONE;
 		}
 
-		dxilLibDesc.DXILLibrary.pShaderBytecode = dxilBlob->GetBufferPointer();
-		dxilLibDesc.DXILLibrary.BytecodeLength = dxilBlob->GetBufferSize();
-		dxilLibDesc.NumExports = static_cast<UINT>(exportDescs.size());
-		dxilLibDesc.pExports = exportDescs.data();
+		dxilLibDesc.desc.DXILLibrary.pShaderBytecode = dxilBlob->GetBufferPointer();
+		dxilLibDesc.desc.DXILLibrary.BytecodeLength = dxilBlob->GetBufferSize();
+		dxilLibDesc.desc.NumExports = static_cast<UINT>(dxilLibDesc.exportDescs.size());
+		dxilLibDesc.desc.pExports = dxilLibDesc.exportDescs.data();
 
 		return dxilLibDesc;
 	}
@@ -3354,34 +3441,38 @@ namespace ZXEngine
 	{
 		auto rtPipeline = mRTPipelines[id];
 
-		CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(rtPipeline->descriptorHeap.Get()->GetCPUDescriptorHandleForHeapStart());
+		auto heapAddress = rtPipeline->descriptorHeap.Get()->GetCPUDescriptorHandleForHeapStart();
 
 		// 2D纹理数组
+		CD3DX12_CPU_DESCRIPTOR_HANDLE textureHandle(heapAddress);
+		textureHandle.Offset(static_cast<INT>(mRTRootParamOffsetInDescriptorHeapTexture2DArray), mCbvSrvUavDescriptorSize);
 		for (size_t i = 0; i < mCurRTSceneTextureIndexes.size(); i++)
 		{
 			auto texture = GetTextureByIndex(mCurRTSceneTextureIndexes[i]);
-			cpuHandle.Offset(static_cast<INT>(mRTRootParamOffsetInDescriptorHeapTexture2DArray + i), mCbvSrvUavDescriptorSize);
+			textureHandle.Offset(1, mCbvSrvUavDescriptorSize);
 
 			D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 			srvDesc.Format = mDefaultImageFormat;
 			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 			srvDesc.Texture2D.MipLevels = 1;
-			mD3D12Device->CreateShaderResourceView(texture->texture.Get(), &srvDesc, cpuHandle);
+			mD3D12Device->CreateShaderResourceView(texture->texture.Get(), &srvDesc, textureHandle);
 		}
 
 		// CubeMap数组
+		CD3DX12_CPU_DESCRIPTOR_HANDLE cubeMapHandle(heapAddress);
+		cubeMapHandle.Offset(static_cast<INT>(mRTRootParamOffsetInDescriptorHeapTextureCubeArray), mCbvSrvUavDescriptorSize);
 		for (size_t i = 0; i < mCurRTSceneCubeMapIndexes.size(); i++)
 		{
 			auto texture = GetTextureByIndex(mCurRTSceneCubeMapIndexes[i]);
-			cpuHandle.Offset(static_cast<INT>(mRTRootParamOffsetInDescriptorHeapTextureCubeArray + i), mCbvSrvUavDescriptorSize);
+			cubeMapHandle.Offset(1, mCbvSrvUavDescriptorSize);
 
 			D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 			srvDesc.Format = mDefaultImageFormat;
 			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
 			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 			srvDesc.TextureCube.MipLevels = 1;
-			mD3D12Device->CreateShaderResourceView(texture->texture.Get(), &srvDesc, cpuHandle);
+			mD3D12Device->CreateShaderResourceView(texture->texture.Get(), &srvDesc, cubeMapHandle);
 		}
 
 		// 数据索引Buffer
