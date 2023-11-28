@@ -36,10 +36,23 @@ namespace ZXEngine
     typedef uint32_t ZX_D3D12_TEXTURE_USAGE_FLAGS;
     typedef enum ZX_D3D12_TEXTURE_USAGE {
         ZX_D3D12_TEXTURE_USAGE_NONE_BIT = 0x00000000,
-        ZX_D3D12_TEXTURE_USAGE_SRV_BIT = 0x00000001,
-        ZX_D3D12_TEXTURE_USAGE_RTV_BIT = 0x00000002,
-        ZX_D3D12_TEXTURE_USAGE_DSV_BIT = 0x00000004,
+        ZX_D3D12_TEXTURE_USAGE_SRV_BIT  = 0x00000001,
+        ZX_D3D12_TEXTURE_USAGE_RTV_BIT  = 0x00000002,
+        ZX_D3D12_TEXTURE_USAGE_DSV_BIT  = 0x00000004,
     } ZX_D3D12_TEXTURE_USAGE;
+
+    enum ZX_D3D12_RT_ROOT_PARAMETER
+	{
+        ZX_D3D12_RT_ROOT_PARAMETER_TLAS,
+        ZX_D3D12_RT_ROOT_PARAMETER_OUTPUT_IMAGE,
+        ZX_D3D12_RT_ROOT_PARAMETER_INDEX_BUFFER,
+        ZX_D3D12_RT_ROOT_PARAMETER_VERTEX_BUFFER,
+        ZX_D3D12_RT_ROOT_PARAMETER_MATERIAL_DATA,
+        ZX_D3D12_RT_ROOT_PARAMETER_TEXTURE_2D,
+        ZX_D3D12_RT_ROOT_PARAMETER_TEXTURE_CUBE,
+        ZX_D3D12_RT_ROOT_PARAMETER_CONSTANT_BUFFER,
+        ZX_D3D12_RT_ROOT_PARAMETER_NUM
+	};
 
     struct ZXD3D12DrawIndex
     {
@@ -178,7 +191,7 @@ namespace ZXEngine
         ZXD3D12SBT SBT;
         ComPtr<ID3D12StateObject> pipeline;
         ComPtr<ID3D12RootSignature> rootSignature;
-        ComPtr<ID3D12DescriptorHeap> descriptorHeap;
+        vector<ComPtr<ID3D12DescriptorHeap>> descriptorHeaps;
         vector<ZXD3D12Buffer> constantBuffers;
         vector<ZXD3D12Buffer> dataReferenceBuffers;
     };

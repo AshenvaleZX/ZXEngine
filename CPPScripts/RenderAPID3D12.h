@@ -225,17 +225,14 @@ namespace ZXEngine
 		vector<Matrix4> mRTVPMatrix;
 		vector<uint32_t> mRTFrameCount;
 
-		// 光追管线Constant Buffer可容纳的32位数据数量
-		uint32_t mRT32BitConstantNum = 128;
-		// 光追管线Constant Buffer的数据临时缓存地址
-		void* mRT32BitConstantBufferAddress = nullptr;
-
 		// 场景中的纹理数量
 		uint32_t mRTSceneTextureNum = 100;
 		// 场景中的CubeMap数量
 		uint32_t mRTSceneCubeMapNum = 10;
 		// 场景中的渲染对象数量
 		uint32_t mRTSceneRenderObjectNum = 100;
+		// 光追管线常量Buffer大小(64个32位数据)
+		uint32_t mRTPipelineConstantBufferSize = 256;
 
 		// 根签名中各参数在描述符堆中的偏移量
 		// register(t0, space0) TLAS
@@ -254,6 +251,8 @@ namespace ZXEngine
 		const uint32_t mRTRootParamOffsetInDescriptorHeapTextureCubeArray = 6 + mRTSceneTextureNum;
 		// register(b0, space0) 常量Buffer (Vulkan PushConstants)
 		const uint32_t mRTRootParamOffsetInDescriptorHeapConstantBuffer = 5;
+		// 描述符堆总大小
+		const uint32_t mRTRootParamOffsetInDescriptorHeapSize = 6 + mRTSceneTextureNum + mRTSceneCubeMapNum;
 
 		// 当前这一帧要绘制的对象信息数组
 		vector<ZXD3D12ASInstanceData> mASInstanceData;
