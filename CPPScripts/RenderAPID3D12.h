@@ -239,20 +239,20 @@ namespace ZXEngine
 		const uint32_t mRTRootParamOffsetInDescriptorHeapTLAS = 0;
 		// register(u0, space0) 输出图像
 		const uint32_t mRTRootParamOffsetInDescriptorHeapOutputImage = 1;
-		// register(t1, space0) 顶点索引Buffer
-		const uint32_t mRTRootParamOffsetInDescriptorHeapIndexBuffer = 2;
-		// register(t2, space0) 顶点Buffer
-		const uint32_t mRTRootParamOffsetInDescriptorHeapVertexBuffer = 3;
-		// register(t3, space0) 材质数据Buffer
-		const uint32_t mRTRootParamOffsetInDescriptorHeapMaterialData = 4;
-		// register(t0, space1) 2D纹理数组
-		const uint32_t mRTRootParamOffsetInDescriptorHeapTexture2DArray = 6;
-		// register(t0, space2) CubeMap纹理数组
-		const uint32_t mRTRootParamOffsetInDescriptorHeapTextureCubeArray = 6 + mRTSceneTextureNum;
+		// register(t0, space1) 顶点索引Buffer
+		const uint32_t mRTRootParamOffsetInDescriptorHeapIndexBuffer = 3;
+		// register(t0, space2) 顶点Buffer
+		const uint32_t mRTRootParamOffsetInDescriptorHeapVertexBuffer = mRTRootParamOffsetInDescriptorHeapIndexBuffer + mRTSceneRenderObjectNum;
+		// register(t0, space3) 材质数据Buffer
+		const uint32_t mRTRootParamOffsetInDescriptorHeapMaterialData = mRTRootParamOffsetInDescriptorHeapVertexBuffer + mRTSceneRenderObjectNum;
+		// register(t0, space4) 2D纹理数组
+		const uint32_t mRTRootParamOffsetInDescriptorHeapTexture2DArray = mRTRootParamOffsetInDescriptorHeapMaterialData + mRTSceneRenderObjectNum;
+		// register(t0, space5) CubeMap纹理数组
+		const uint32_t mRTRootParamOffsetInDescriptorHeapTextureCubeArray = mRTRootParamOffsetInDescriptorHeapTexture2DArray + mRTSceneTextureNum;
 		// register(b0, space0) 常量Buffer (Vulkan PushConstants)
-		const uint32_t mRTRootParamOffsetInDescriptorHeapConstantBuffer = 5;
+		const uint32_t mRTRootParamOffsetInDescriptorHeapConstantBuffer = 2;
 		// 描述符堆总大小
-		const uint32_t mRTRootParamOffsetInDescriptorHeapSize = 6 + mRTSceneTextureNum + mRTSceneCubeMapNum;
+		const uint32_t mRTRootParamOffsetInDescriptorHeapSize = 3 + mRTSceneTextureNum + mRTSceneCubeMapNum + mRTSceneRenderObjectNum * 3;
 
 		// 当前这一帧要绘制的对象信息数组
 		vector<ZXD3D12ASInstanceData> mASInstanceData;

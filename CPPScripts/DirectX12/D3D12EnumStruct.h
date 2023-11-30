@@ -100,6 +100,7 @@ namespace ZXEngine
     struct ZXD3D12Buffer
     {
         ComPtr<ID3D12Resource> buffer = nullptr;
+        uint32_t size = 0;
         void* cpuAddress = nullptr;
         D3D12_GPU_VIRTUAL_ADDRESS gpuAddress = 0;
     };
@@ -193,7 +194,6 @@ namespace ZXEngine
         ComPtr<ID3D12RootSignature> rootSignature;
         vector<ComPtr<ID3D12DescriptorHeap>> descriptorHeaps;
         vector<ZXD3D12Buffer> constantBuffers;
-        vector<ZXD3D12Buffer> dataReferenceBuffers;
     };
 
     struct ZXD3D12RTMaterialData
@@ -222,11 +222,4 @@ namespace ZXEngine
         wstring intersectionShaderName;
 		D3D12_HIT_GROUP_DESC desc = {};
 	};
-
-    struct ZXD3D12RTRendererDataReference
-    {
-        D3D12_GPU_VIRTUAL_ADDRESS indexAddress;
-        D3D12_GPU_VIRTUAL_ADDRESS vertexAddress;
-        D3D12_GPU_VIRTUAL_ADDRESS materialAddress;
-    };
 }

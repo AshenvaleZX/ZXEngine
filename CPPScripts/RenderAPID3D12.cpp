@@ -2020,16 +2020,16 @@ namespace ZXEngine
 		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_TLAS]				= { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, mRTRootParamOffsetInDescriptorHeapTLAS };
 		// register(u0, space0) 输出图像
 		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_OUTPUT_IMAGE]		= { D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0, 0, mRTRootParamOffsetInDescriptorHeapOutputImage };
-		// register(t1, space0) 顶点索引Buffer
-		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_INDEX_BUFFER]		= { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, mRTRootParamOffsetInDescriptorHeapIndexBuffer };
-		// register(t2, space0) 顶点Buffer
-		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_VERTEX_BUFFER]		= { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2, 0, mRTRootParamOffsetInDescriptorHeapVertexBuffer };
-		// register(t3, space0) 材质数据Buffer
-		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_MATERIAL_DATA]		= { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3, 0, mRTRootParamOffsetInDescriptorHeapMaterialData };
-		// register(t0, space1) 2D纹理数组
-		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_TEXTURE_2D]			= { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, mRTSceneTextureNum, 0, 1, mRTRootParamOffsetInDescriptorHeapTexture2DArray };
-		// register(t0, space2) CubeMap纹理数组
-		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_TEXTURE_CUBE]		= { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, mRTSceneCubeMapNum, 0, 2, mRTRootParamOffsetInDescriptorHeapTextureCubeArray };
+		// register(t0, space1) 顶点索引Buffer
+		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_INDEX_BUFFER]		= { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, mRTSceneRenderObjectNum, 0, 1, mRTRootParamOffsetInDescriptorHeapIndexBuffer };
+		// register(t0, space2) 顶点Buffer
+		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_VERTEX_BUFFER]		= { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, mRTSceneRenderObjectNum, 0, 2, mRTRootParamOffsetInDescriptorHeapVertexBuffer };
+		// register(t0, space3) 材质数据Buffer
+		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_MATERIAL_DATA]		= { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, mRTSceneRenderObjectNum, 0, 3, mRTRootParamOffsetInDescriptorHeapMaterialData };
+		// register(t0, space4) 2D纹理数组
+		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_TEXTURE_2D]			= { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, mRTSceneTextureNum, 0, 4, mRTRootParamOffsetInDescriptorHeapTexture2DArray };
+		// register(t0, space5) CubeMap纹理数组
+		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_TEXTURE_CUBE]		= { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, mRTSceneCubeMapNum, 0, 5, mRTRootParamOffsetInDescriptorHeapTextureCubeArray };
 		// register(b0, space0) 常量Buffer (Vulkan PushConstants)
 		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_CONSTANT_BUFFER]	= { D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 0, mRTRootParamOffsetInDescriptorHeapConstantBuffer };
 		
@@ -3126,6 +3126,7 @@ namespace ZXEngine
 	ZXD3D12Buffer RenderAPID3D12::CreateBuffer(UINT64 size, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initState, D3D12_HEAP_TYPE heapType, bool cpuAddress, bool gpuAddress, const void* data)
 	{
 		ZXD3D12Buffer buffer;
+		buffer.size = static_cast<uint32_t>(size);
 
 		D3D12_RESOURCE_DESC bufferDesc = {};
 		bufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
@@ -3432,15 +3433,7 @@ namespace ZXEngine
 
 	void RenderAPID3D12::CreateRTSceneData(uint32_t id)
 	{
-		auto rtPipeline = mRTPipelines[id];
-
-		// 数据索引Buffer
-		rtPipeline->dataReferenceBuffers.resize(DX_MAX_FRAMES_IN_FLIGHT);
-		UINT64 bufferSize = sizeof(ZXD3D12RTRendererDataReference) * mRTSceneRenderObjectNum;
-		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
-		{
-			rtPipeline->dataReferenceBuffers[i] = CreateBuffer(bufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, true, false);
-		}
+		
 	}
 
 	void RenderAPID3D12::UpdateRTSceneData(uint32_t id)
@@ -3455,7 +3448,6 @@ namespace ZXEngine
 		for (size_t i = 0; i < mCurRTSceneTextureIndexes.size(); i++)
 		{
 			auto texture = GetTextureByIndex(mCurRTSceneTextureIndexes[i]);
-			textureHandle.Offset(1, mCbvSrvUavDescriptorSize);
 
 			D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 			srvDesc.Format = mDefaultImageFormat;
@@ -3463,6 +3455,8 @@ namespace ZXEngine
 			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 			srvDesc.Texture2D.MipLevels = 1;
 			mD3D12Device->CreateShaderResourceView(texture->texture.Get(), &srvDesc, textureHandle);
+
+			textureHandle.Offset(1, mCbvSrvUavDescriptorSize);
 		}
 
 		// CubeMap数组
@@ -3471,7 +3465,6 @@ namespace ZXEngine
 		for (size_t i = 0; i < mCurRTSceneCubeMapIndexes.size(); i++)
 		{
 			auto texture = GetTextureByIndex(mCurRTSceneCubeMapIndexes[i]);
-			cubeMapHandle.Offset(1, mCbvSrvUavDescriptorSize);
 
 			D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 			srvDesc.Format = mDefaultImageFormat;
@@ -3479,26 +3472,64 @@ namespace ZXEngine
 			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 			srvDesc.TextureCube.MipLevels = 1;
 			mD3D12Device->CreateShaderResourceView(texture->texture.Get(), &srvDesc, cubeMapHandle);
+
+			cubeMapHandle.Offset(1, mCbvSrvUavDescriptorSize);
 		}
 
-		// 数据索引Buffer
-		vector<ZXD3D12RTRendererDataReference> dataReferences = {};
-		for (auto& iter : mASInstanceData)
+		// 模型和材质数据
+		CD3DX12_CPU_DESCRIPTOR_HANDLE indexHandle(heapAddress);
+		indexHandle.Offset(static_cast<INT>(mRTRootParamOffsetInDescriptorHeapIndexBuffer), mCbvSrvUavDescriptorSize);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE vertexHandle(heapAddress);
+		vertexHandle.Offset(static_cast<INT>(mRTRootParamOffsetInDescriptorHeapVertexBuffer), mCbvSrvUavDescriptorSize);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE materialHandle(heapAddress);
+		materialHandle.Offset(static_cast<INT>(mRTRootParamOffsetInDescriptorHeapMaterialData), mCbvSrvUavDescriptorSize);
+
+		UINT instanceCount = static_cast<UINT>(mASInstanceData.size());
+		for (UINT i = 0; i < instanceCount; i++)
 		{
-			auto meshBuffer = GetVAOByIndex(iter.VAO);
-			auto rtMaterial = GetRTMaterialDataByIndex(iter.rtMaterialDataID);
+			auto& data = mASInstanceData[i];
+			auto meshData = GetVAOByIndex(data.VAO);
+			auto rtMaterialData = GetRTMaterialDataByIndex(data.rtMaterialDataID);
 
-			ZXD3D12RTRendererDataReference dataReference = {};
-			dataReference.indexAddress = meshBuffer->indexBuffer.gpuAddress;
-			dataReference.vertexAddress = meshBuffer->vertexBuffer.gpuAddress;
-			dataReference.materialAddress = rtMaterial->buffers[mCurrentFrame].gpuAddress;
+			// 索引，顶点和材质数据全部以ByteAddressBuffer的形式传入，数据格式由Shader自己解析
+			// ByteAddressBuffer需要Format固定为DXGI_FORMAT_R32_TYPELESS，Flags为D3D12_BUFFER_SRV_FLAG_RAW
+			D3D12_SHADER_RESOURCE_VIEW_DESC indexDesc = {};
+			indexDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+			indexDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+			indexDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			indexDesc.Buffer.FirstElement = 0;
+			indexDesc.Buffer.NumElements = meshData->indexCount;
+			indexDesc.Buffer.StructureByteStride = 0;
+			indexDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_RAW;
+			mD3D12Device->CreateShaderResourceView(meshData->indexBuffer.buffer.Get(), &indexDesc, indexHandle);
 
-			dataReferences.push_back(dataReference);
+			D3D12_SHADER_RESOURCE_VIEW_DESC vertexDesc = {};
+			vertexDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+			vertexDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+			vertexDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			vertexDesc.Buffer.FirstElement = 0;
+			vertexDesc.Buffer.NumElements = meshData->vertexBuffer.size / 4;
+			vertexDesc.Buffer.StructureByteStride = 0;
+			vertexDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_RAW;
+			mD3D12Device->CreateShaderResourceView(meshData->vertexBuffer.buffer.Get(), &vertexDesc, vertexHandle);
+
+			if (rtMaterialData->buffers[mCurrentFrame].size > 0)
+			{
+				D3D12_SHADER_RESOURCE_VIEW_DESC materialDesc = {};
+				materialDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+				materialDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+				materialDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+				materialDesc.Buffer.FirstElement = 0;
+				materialDesc.Buffer.NumElements = rtMaterialData->buffers[mCurrentFrame].size / 4;
+				materialDesc.Buffer.StructureByteStride = 0;
+				materialDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_RAW;
+				mD3D12Device->CreateShaderResourceView(rtMaterialData->buffers[mCurrentFrame].buffer.Get(), &materialDesc, materialHandle);
+			}
+
+			indexHandle.Offset(1, mCbvSrvUavDescriptorSize);
+			vertexHandle.Offset(1, mCbvSrvUavDescriptorSize);
+			materialHandle.Offset(1, mCbvSrvUavDescriptorSize);
 		}
-
-		// 更新数据
-		auto dataReferencePtr = rtPipeline->dataReferenceBuffers[mCurrentFrame].cpuAddress;
-		memcpy(dataReferencePtr, dataReferences.data(), sizeof(ZXD3D12RTRendererDataReference) * dataReferences.size());
 	}
 
 
