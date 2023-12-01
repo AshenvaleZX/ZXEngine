@@ -1,0 +1,77 @@
+#pragma pack_matrix(column_major)
+
+SamplerState _SampleLinearWrap       : register(s0);
+SamplerState _SampleLinearClamp      : register(s1);
+SamplerState _SampleAnisotropicWrap  : register(s2);
+SamplerState _SampleAnisotropicClamp : register(s3);
+
+// TLAS                         (SRV)
+RaytracingAccelerationStructure _TLAS           : register(t0, space0);
+// Output Image                 (UAV)
+RWTexture2D<float4>             _Image          : register(u0, space0);
+// Index Buffer                 (SRV)
+ByteAddressBuffer               _IndexBuffer[]  : register(t0, space1);
+// Vertex Buffer                (SRV)
+ByteAddressBuffer               _VertexBuffer[] : register(t0, space2);
+// Material Data Buffer         (SRV)
+ByteAddressBuffer               _MaterialData[] : register(t0, space3);
+// All 2D Texture               (SRV，DescriptorTable)
+Texture2D<float4>               _Textures[]     : register(t0, space4);
+// All CubeMap Texture          (SRV，DescriptorTable)
+TextureCube                     _CubeMaps[]     : register(t0, space5);
+// Constant Buffer              (CBV)
+cbuffer RayTracingPipelineConstants             : register(b0, space0)
+{
+    float4x4 _VP;
+    float4x4 _V_Inv;
+    float4x4 _P_Inv;
+    float3   _LightPos;
+    uint     _FrameCount;
+    float    _Time;
+};
+
+struct HitPayload
+{
+    float3 hitValue;
+};
+
+[shader("raygeneration")]
+void main()
+{
+    HitPayload _RayPayload;
+    _RayPayload.hitValue = float3(0, 0, 0);
+
+    uint2 launchIndex = DispatchRaysIndex().xy;
+    const float2 pixelCenter = float2(launchIndex) + float2(0.5, 0.5);
+    const float2 inUV = pixelCenter / float2(DispatchRaysDimensions().xy);
+    float2 d = inUV * 2.0 - 1.0;
+
+    // Camera world space position
+    float4 origin = mul(_V_Inv, float4(0, 0, 0, 1));
+    // Current ray in view space
+    float4 target = mul(_P_Inv, float4(d.x, -d.y, 1, 1));
+    // Perspective divide
+    target = target / target.w;
+    // Transform form View Space to World Space
+    float4 direction = mul(_V_Inv, float4(normalize(target.xyz), 0));
+
+    uint flags = RAY_FLAG_FORCE_OPAQUE;
+    
+    RayDesc ray;
+    ray.Origin = origin.xyz;
+    ray.Direction = direction.xyz;
+    ray.TMin = 0.001;
+    ray.TMax = 10000.0;
+
+    TraceRay(_TLAS,     // acceleration structure
+            flags,      // RayFlags
+            0xFF,       // InstanceInclusionMask
+            0,          // RayContributionToHitGroupIndex
+            0,          // MultiplierForGeometryContributionToHitGroupIndex
+            0,          // MissShaderIndex
+            ray,        // Ray
+            _RayPayload // Payload
+    );
+
+    _Image[launchIndex] = float4(_RayPayload.hitValue, 1.0);
+}

@@ -31,7 +31,7 @@ inline void ThrowIfFailed(HRESULT hr)
 
 namespace ZXEngine
 {
-    const uint32_t DX_MAX_FRAMES_IN_FLIGHT = 2;
+    const uint32_t DX_MAX_FRAMES_IN_FLIGHT = 1;
 
     typedef uint32_t ZX_D3D12_TEXTURE_USAGE_FLAGS;
     typedef enum ZX_D3D12_TEXTURE_USAGE {

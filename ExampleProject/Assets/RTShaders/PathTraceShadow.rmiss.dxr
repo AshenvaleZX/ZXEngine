@@ -1,0 +1,42 @@
+#pragma pack_matrix(column_major)
+
+SamplerState _SampleLinearWrap       : register(s0);
+SamplerState _SampleLinearClamp      : register(s1);
+SamplerState _SampleAnisotropicWrap  : register(s2);
+SamplerState _SampleAnisotropicClamp : register(s3);
+
+// TLAS                         (SRV)
+RaytracingAccelerationStructure _TLAS           : register(t0, space0);
+// Output Image                 (UAV)
+RWTexture2D<float4>             _Image          : register(u0, space0);
+// Index Buffer                 (SRV)
+ByteAddressBuffer               _IndexBuffer[]  : register(t0, space1);
+// Vertex Buffer                (SRV)
+ByteAddressBuffer               _VertexBuffer[] : register(t0, space2);
+// Material Data Buffer         (SRV)
+ByteAddressBuffer               _MaterialData[] : register(t0, space3);
+// All 2D Texture               (SRV，DescriptorTable)
+Texture2D<float4>               _Textures[]     : register(t0, space4);
+// All CubeMap Texture          (SRV，DescriptorTable)
+TextureCube                     _CubeMaps[]     : register(t0, space5);
+// Constant Buffer              (CBV)
+cbuffer RayTracingPipelineConstants             : register(b0, space0)
+{
+    float4x4 _VP;
+    float4x4 _V_Inv;
+    float4x4 _P_Inv;
+    float3   _LightPos;
+    uint     _FrameCount;
+    float    _Time;
+};
+
+struct ShadowPayload
+{
+    bool isShadowed;
+};
+
+[shader("miss")]
+void main(inout ShadowPayload _Payload : SV_RayPayload)
+{
+    _Payload.isShadowed = false;
+}

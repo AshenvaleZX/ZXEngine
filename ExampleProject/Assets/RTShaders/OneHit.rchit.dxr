@@ -1,0 +1,167 @@
+#pragma pack_matrix(column_major)
+
+SamplerState _SampleLinearWrap       : register(s0);
+SamplerState _SampleLinearClamp      : register(s1);
+SamplerState _SampleAnisotropicWrap  : register(s2);
+SamplerState _SampleAnisotropicClamp : register(s3);
+
+// TLAS                         (SRV)
+RaytracingAccelerationStructure _TLAS           : register(t0, space0);
+// Output Image                 (UAV)
+RWTexture2D<float4>             _Image          : register(u0, space0);
+// Index Buffer                 (SRV)
+ByteAddressBuffer               _IndexBuffer[]  : register(t0, space1);
+// Vertex Buffer                (SRV)
+ByteAddressBuffer               _VertexBuffer[] : register(t0, space2);
+// Material Data Buffer         (SRV)
+ByteAddressBuffer               _MaterialData[] : register(t0, space3);
+// All 2D Texture               (SRV，DescriptorTable)
+Texture2D<float4>               _Textures[]     : register(t0, space4);
+// All CubeMap Texture          (SRV，DescriptorTable)
+TextureCube                     _CubeMaps[]     : register(t0, space5);
+// Constant Buffer              (CBV)
+cbuffer RayTracingPipelineConstants             : register(b0, space0)
+{
+    float4x4 _VP;
+    float4x4 _V_Inv;
+    float4x4 _P_Inv;
+    float3   _LightPos;
+    uint     _FrameCount;
+    float    _Time;
+};
+
+struct Vertex
+{
+    float3 Position;
+    float2 TexCoords;
+    float3 Normal;
+    float3 Tangent;
+    float4 Weights;
+    uint4 BoneIDs;
+};
+
+struct Material
+{
+    uint _TextureID;
+};
+
+struct HitPayload
+{
+    float3 hitValue;
+};
+
+struct Attributes
+{
+    float2 bary;
+};
+
+struct ShadowPayload
+{
+    bool isShadowed;
+};
+
+[shader("closesthit")]
+void main(inout HitPayload _RayPayload, in Attributes attribs)
+{
+    // Current vertex data
+    uint insID = InstanceID();
+    uint vertID = 3 * PrimitiveIndex();
+
+    uint idx0 = _IndexBuffer[insID].Load<uint>(vertID * sizeof(uint));
+    uint idx1 = _IndexBuffer[insID].Load<uint>((vertID + 1) * sizeof(uint));
+    uint idx2 = _IndexBuffer[insID].Load<uint>((vertID + 2) * sizeof(uint));
+
+    Vertex v0 = _VertexBuffer[insID].Load<Vertex>(idx0 * sizeof(Vertex));
+    Vertex v1 = _VertexBuffer[insID].Load<Vertex>(idx1 * sizeof(Vertex));
+    Vertex v2 = _VertexBuffer[insID].Load<Vertex>(idx2 * sizeof(Vertex));
+    
+    Material mat = _MaterialData[insID].Load<Material>(0);
+
+    // Current barycentric coordinates
+    const float3 barycentrics = float3(1.0 - attribs.bary.x - attribs.bary.y, attribs.bary.x, attribs.bary.y);
+
+    // Build 4x4 ObjectToWorld Matrix
+    const float3x4 objectToWorld3x4 = ObjectToWorld3x4();
+    const float4x4 objectToWorld4x4 = float4x4(
+        objectToWorld3x4._m00_m01_m02_m03,
+        objectToWorld3x4._m10_m11_m12_m13,
+        objectToWorld3x4._m20_m21_m22_m23,
+        float4(0, 0, 0, 1)
+    );
+
+    // Current hit position
+    const float3 pos = v0.Position * barycentrics.x + v1.Position * barycentrics.y + v2.Position * barycentrics.z;
+    const float3 worldPos = mul(objectToWorld4x4, float4(pos, 1.0)).xyz;
+
+    // Build 3x3 WorldToObject Matrix
+    const float3x4 worldToObject3x4 = WorldToObject3x4();
+    const float3x3 worldToObject3x3 = float3x3(
+        worldToObject3x4._m00_m01_m02,
+        worldToObject3x4._m10_m11_m12,
+        worldToObject3x4._m20_m21_m22
+    );
+
+    // Current hit normal
+    const float3 normal = v0.Normal * barycentrics.x + v1.Normal * barycentrics.y + v2.Normal * barycentrics.z;
+    const float3 wNormal = normalize(mul(normal, worldToObject3x3));
+
+    // Point Light
+    float3 lDir = _LightPos - worldPos;
+    float lightDistance = length(lDir);
+    float3 L = normalize(lDir);
+
+    // Texture Color
+    float2 texCoord = v0.TexCoords * barycentrics.x + v1.TexCoords * barycentrics.y + v2.TexCoords * barycentrics.z;
+    float3 texColor = _Textures[mat._TextureID].SampleLevel(_SampleLinearWrap, texCoord, 0).rgb;
+
+    // Diffuse
+    float dotNL = max(dot(wNormal, L), 0.0);
+    float3 diffuse = texColor * dotNL;
+
+    float3 specular = float3(0, 0, 0);
+    float attenuation = 1;
+
+    // Determine whether it is in front of the light source.
+    if(dot(wNormal, L) > 0)
+    {
+        uint flags = RAY_FLAG_FORCE_OPAQUE | RAY_FLAG_ACCEPT_FIRST_HIT_AND_END_SEARCH | RAY_FLAG_SKIP_CLOSEST_HIT_SHADER;
+    
+        RayDesc ray;
+        ray.Origin = WorldRayOrigin() + WorldRayDirection() * RayTCurrent();
+        ray.Direction = L;
+        ray.TMin = 0.001;
+        ray.TMax = lightDistance;
+        
+        ShadowPayload payload;
+        payload.isShadowed = true;
+        // Trace a ray to detect whether it is in shadow
+        TraceRay(_TLAS, // acceleration structure
+                flags,  // RayFlags
+                0xFF,   // InstanceInclusionMask
+                0,      // RayContributionToHitGroupIndex
+                0,      // MultiplierForGeometryContributionToHitGroupIndex
+                1,      // MissShaderIndex
+                ray,    // Ray
+                payload // Payload
+        );
+
+        if(payload.isShadowed)
+        {
+            attenuation = 0.3;
+        }
+        else
+        {
+            // Specular
+            const float kPi = 3.14159265;
+            const float kShininess = 2;
+
+            const float kEnergyConservation = (2.0 + kShininess) / (2.0 * kPi);
+            float3 V = normalize(-WorldRayDirection());
+            float3 R = reflect(-L, wNormal);
+            float S = kEnergyConservation * pow(max(dot(V, R), 0.0), kShininess);
+            specular = float3(S, S, S);
+        }
+    }
+
+    _RayPayload.hitValue = float3(attenuation * (diffuse + specular));
+}

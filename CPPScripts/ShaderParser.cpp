@@ -717,10 +717,10 @@ namespace ZXEngine
 		dxCode += "\n";
 
 		// 采样器
-		dxCode += "SamplerState sampleLinearWrap       : register(s0);\n";
-		dxCode += "SamplerState sampleLinearClamp      : register(s1);\n";
-		dxCode += "SamplerState sampleAnisotropicWrap  : register(s2);\n";
-		dxCode += "SamplerState sampleAnisotropicClamp : register(s3);\n\n";
+		dxCode += "SamplerState _SampleLinearWrap       : register(s0);\n";
+		dxCode += "SamplerState _SampleLinearClamp      : register(s1);\n";
+		dxCode += "SamplerState _SampleAnisotropicWrap  : register(s2);\n";
+		dxCode += "SamplerState _SampleAnisotropicClamp : register(s3);\n\n";
 
 		// 顶点着色器
 		string vertProgramBlock = GetCodeBlock(vertCode, "Program");
@@ -952,7 +952,7 @@ namespace ZXEngine
 			string textureStr = sampleSentence.substr(0, splitPos);
 			string coordStr = sampleSentence.substr(splitPos + 1, sampleSentence.size() - splitPos - 1);
 			string oldSentence = dxCode.substr(pos, ePos - pos + 1);
-			string newSentence = textureStr + ".Sample(sampleLinearWrap," + coordStr + ")";
+			string newSentence = textureStr + ".Sample(_SampleLinearWrap," + coordStr + ")";
 			dxCode.replace(pos, oldSentence.length(), newSentence);
 
 			pos += newSentence.length();

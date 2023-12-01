@@ -41,15 +41,11 @@ namespace ZXEngine
 	{
 		auto sceneStruct = Resources::LoadScene(path);
 
-#if defined(ZX_API_OPENGL) || defined(ZX_API_D3D12)
+#if defined(ZX_API_OPENGL)
 		if (sceneStruct->renderPipelineType == RenderPipelineType::RayTracing)
 		{
 #ifdef ZX_EDITOR
-#ifdef ZX_API_OPENGL
 			EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "OpenGL do not support ray tracing scene.");
-#else
-			EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "Ray tracing based on DirectX12 has not yet been implemented.");
-#endif
 #endif
 			delete sceneStruct;
 			return;
