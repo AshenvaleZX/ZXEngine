@@ -83,7 +83,8 @@ namespace ZXEngine
 				auto curAssetInfo = EditorDataManager::GetInstance()->curAssetInfo;
 				if (curAsset->type == AssetType::Script)
 					DrawScript(static_cast<AssetScriptInfo*>(curAssetInfo));
-				else if (curAsset->type == AssetType::Shader)
+				else if (curAsset->type == AssetType::Shader ||
+					curAsset->type == AssetType::RayTracingShader)
 					DrawShader(static_cast<AssetShaderInfo*>(curAssetInfo));
 				else if (curAsset->type == AssetType::Texture)
 					DrawTexture(static_cast<AssetTextureInfo*>(curAssetInfo));

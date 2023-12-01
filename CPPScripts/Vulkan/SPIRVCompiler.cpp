@@ -12,16 +12,8 @@ namespace ZXEngine
 			string extension = entry.path().filename().extension().string();
 			if (extension == ".zxshader")
 				CompileShader(entry.path().string());
-			else if (extension == ".rgen")
-				GenerateSPIRVFile(entry.path(), ZX_SHADER_STAGE_RAYGEN_BIT);
-			else if (extension == ".rchit")
-				GenerateSPIRVFile(entry.path(), ZX_SHADER_STAGE_CLOSEST_HIT_BIT);
-			else if (extension == ".rmiss")
-				GenerateSPIRVFile(entry.path(), ZX_SHADER_STAGE_MISS_BIT);
-			else if (extension == ".rahit")
-				GenerateSPIRVFile(entry.path(), ZX_SHADER_STAGE_ANY_HIT_BIT);
-			else if (extension == ".rint")
-				GenerateSPIRVFile(entry.path(), ZX_SHADER_STAGE_INTERSECTION_BIT);
+			else if (extension == ".vkr")
+				GenerateSPIRVFile(entry.path());
 			else if (extension == "")
 				CompileAllShader(entry.path().string());
 		}
@@ -52,13 +44,15 @@ namespace ZXEngine
 			GenerateSPIRVFile(path, geomCode, ZX_SHADER_STAGE_GEOMETRY_BIT);
 	}
 
-	void SPIRVCompiler::GenerateSPIRVFile(const filesystem::path& path, ShaderStageFlagBit stage)
+	void SPIRVCompiler::GenerateSPIRVFile(const filesystem::path& path)
 	{
 		string filePath = path.string();
-		string outputFinalPath = filePath + ".spv";
+		string outputFinalPath = path.parent_path().string() + "\\" + path.stem().string() + ".spv";
+		string stage = Utils::GetFileExtension(path.stem().string());
 
 		string command = "..\\..\\Tools\\glslangValidator.exe -V " + Utils::ConvertPathToWindowsFormat(filePath) + 
-			" --target-env spirv1.6 -o " + Utils::ConvertPathToWindowsFormat(outputFinalPath);
+			" --target-env spirv1.6 -S " + stage + " -o " + Utils::ConvertPathToWindowsFormat(outputFinalPath);
+
 		std::system(command.c_str());
 	}
 

@@ -30,6 +30,8 @@ namespace ZXEngine
 		static std::string ConcatenateStrings(const std::vector<std::string>& strings);
 		// 路径转换为Windows格式
 		static inline std::string ConvertPathToWindowsFormat(const std::string path);
+		// 获取文件扩展名
+		static inline std::string GetFileExtension(const std::string& path);
 	};
 
 	std::string Utils::StringToLower(const std::string& str)
@@ -51,5 +53,13 @@ namespace ZXEngine
 		std::string res = path;
 		std::replace(res.begin(), res.end(), '/', '\\');
 		return res;
+	}
+
+	std::string Utils::GetFileExtension(const std::string& path)
+	{
+		size_t pos = path.rfind('.');
+		if (pos == std::string::npos)
+			return "";
+		return path.substr(pos + 1);
 	}
 }

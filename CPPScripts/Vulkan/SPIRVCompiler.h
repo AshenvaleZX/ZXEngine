@@ -13,7 +13,7 @@ namespace ZXEngine
 
 	private:
 		static void CompileShader(const filesystem::path& path);
-		static void GenerateSPIRVFile(const filesystem::path& path, ShaderStageFlagBit stage);
+		static void GenerateSPIRVFile(const filesystem::path& path);
 		static void GenerateSPIRVFile(const filesystem::path& path, const string& code, ShaderStageFlagBit stage);
 
 

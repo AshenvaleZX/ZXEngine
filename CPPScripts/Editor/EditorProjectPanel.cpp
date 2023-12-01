@@ -209,6 +209,9 @@ namespace ZXEngine
 		extTypeMap.insert(make_pair<string, AssetType>(".lua",      AssetType::Script            ));
 		extTypeMap.insert(make_pair<string, AssetType>(".zxshader", AssetType::Shader            ));
 
+		extTypeMap.insert(make_pair<string, AssetType>(".dxr",      AssetType::RayTracingShader  ));
+		extTypeMap.insert(make_pair<string, AssetType>(".vkr",      AssetType::RayTracingShader  ));
+
 		extTypeMap.insert(make_pair<string, AssetType>(".png",      AssetType::Texture           ));
 		extTypeMap.insert(make_pair<string, AssetType>(".tga",      AssetType::Texture           ));
 		extTypeMap.insert(make_pair<string, AssetType>(".jpg",      AssetType::Texture           ));
@@ -241,5 +244,6 @@ namespace ZXEngine
 		fileIcons[(int)AssetType::Texture]            = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/texture.png",  true));
 		fileIcons[(int)AssetType::Scene]              = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/scene.png",    true));
 		fileIcons[(int)AssetType::Model]              = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/model.png",    true));
+		fileIcons[(int)AssetType::RayTracingShader]   = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/raytrace.png", true));
 	}
 }

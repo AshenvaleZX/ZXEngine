@@ -79,7 +79,8 @@ namespace ZXEngine
 			// delete上一个AssetInfo的时候需要先把指针映射成对应类型，才能正确调用析构函数，确保内存正确释放
 			if (selectedAsset->type == AssetType::Script)
 				delete static_cast<AssetScriptInfo*>(curAssetInfo);
-			else if (selectedAsset->type == AssetType::Shader)
+			else if (selectedAsset->type == AssetType::Shader ||
+				selectedAsset->type == AssetType::RayTracingShader)
 				delete static_cast<AssetShaderInfo*>(curAssetInfo);
 			else if (selectedAsset->type == AssetType::Texture)
 				delete static_cast<AssetTextureInfo*>(curAssetInfo);
@@ -124,7 +125,8 @@ namespace ZXEngine
 			// delete上一个AssetInfo的时候需要先把指针映射成对应类型，才能正确调用析构函数，确保内存正确释放
 			if (selectedAsset->type == AssetType::Script)
 				delete static_cast<AssetScriptInfo*>(curAssetInfo);
-			else if (selectedAsset->type == AssetType::Shader)
+			else if (selectedAsset->type == AssetType::Shader ||
+				selectedAsset->type == AssetType::RayTracingShader)
 				delete static_cast<AssetShaderInfo*>(curAssetInfo);
 			else if (selectedAsset->type == AssetType::Texture)
 				delete static_cast<AssetTextureInfo*>(curAssetInfo);
@@ -147,7 +149,7 @@ namespace ZXEngine
 			info->preview = GetTextFilePreview(asset->path);
 			curAssetInfo = info;
 		}
-		else if (asset->type == AssetType::Shader)
+		else if (asset->type == AssetType::Shader || asset->type == AssetType::RayTracingShader)
 		{
 			auto info = new AssetShaderInfo();
 			info->name = asset->name;

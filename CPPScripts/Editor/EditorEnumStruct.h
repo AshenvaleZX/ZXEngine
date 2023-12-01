@@ -16,6 +16,7 @@ namespace ZXEngine
 		Texture,
 		Scene,
 		Model,
+		RayTracingShader,
 		Count,
 	};
 
