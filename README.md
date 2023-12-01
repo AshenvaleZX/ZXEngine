@@ -32,9 +32,9 @@ Screenshot display (more display later in the introduction):
 
 ## 引擎简介 (Engine Introduction)
 
-本引擎目前同时支持Vulkan，DirectX 12和OpenGL，使用自创的zxshader语言来编写shader，支持前面三种图形API，可一次编写3种环境运行。同时也支持光线追踪渲染管线(暂时只支持Vulkan，基于DirectX 12的正在开发)。
+本引擎目前同时支持Vulkan，DirectX 12和OpenGL，使用自创的zxshader语言来编写shader，支持前面三种图形API，可一次编写3种环境运行。同时也支持基于Vulkan和DirectX12的光线追踪渲染管线。
 
-This engine currently supports Vulkan, DirectX 12 and OpenGL. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs. This engine also supports ray tracing rendering pipeline (Ray tracing currently only supports Vulkan, support for DirectX 12 is under development).
+This engine currently supports Vulkan, DirectX 12 and OpenGL. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs. This engine also supports ray tracing rendering pipeline based on Vulkan and DirectX12.
 
 本项目是游戏引擎项目，不是单纯的渲染引擎。所以还内置了我写的物理引擎PhysZ(学习和改写自Cyclone引擎)，支持基本的刚体力学模拟。同时我也开发了简单的骨骼蒙皮动画系统，粒子系统等。文档后面会有这些系统的图片展示。
 
@@ -138,6 +138,12 @@ Scene files, containing GameObjects, skyboxes, etc. If it is a ray tracing scene
 
 This is ZXEngine's own shader language file, but currently zxshader only supports the rasterization rendering pipeline of DirectX 12, Vulkan and OpenGL. Example code can be found in ExampleProject\Assets\Shaders.
 
+### *.vkr  *.dxr
+
+这两个后缀分别对应Vulkan和DirectX12的光线追踪Shader代码文件。目前暂未像光栅化管线Shader那样搞一个引擎专用的Shader语言。
+
+These two extension correspond to the ray tracing Shader code files of Vulkan and DirectX12 respectively. For now, there is no engine-specific ray tracing shader language like ZXShader in the rasterization pipeline.
+
 ### *.zxmat  *.zxrtmat
 
 分别是光栅化渲染管线和光线追踪渲染管线的材质文件。
@@ -155,12 +161,6 @@ The prefab file is similar to Unity's prefab.
 由ZXEngine创建的游戏项目工程的配置文件，可以在ExampleProject中找到参考示例。
 
 This is the configuration file for the game project created by ZXEngine, you can find the example in ExampleProject.
-
-### *.rgen  *.rmiss  *.rchit  *.rahit  *.rint
-
-光线追踪管线的各阶段Shader代码文件。因为目前引擎只支持基于Vulkan的光线追踪，所以暂未向光栅化管线那样，搞一个引擎专有的通用语言格式。
-
-Shader code files for each stage of the ray tracing pipeline. Because the current engine only supports Vulkan ray tracing, I have not yet created an engine-specific common language format like zxshader in the rasterization pipeline.
 
 ### Others
 
