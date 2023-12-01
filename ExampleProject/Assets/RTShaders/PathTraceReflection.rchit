@@ -48,6 +48,7 @@ struct RayTracingPipelineConstants
     mat4 P_Inv;
     vec3 lightPos;
     uint frameCount;
+    float time;
 };
 
 layout(location = 0) rayPayloadInEXT HitPayload _RayPayload;

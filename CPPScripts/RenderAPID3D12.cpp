@@ -2174,7 +2174,7 @@ namespace ZXEngine
 
 		// ------------------------------------ Shader Config -------------------------------------
 		D3D12_RAYTRACING_SHADER_CONFIG shaderConfig = {};
-		shaderConfig.MaxPayloadSizeInBytes = 4 * sizeof(float);
+		shaderConfig.MaxPayloadSizeInBytes = 32 * sizeof(float);
 		shaderConfig.MaxAttributeSizeInBytes = D3D12_RAYTRACING_MAX_ATTRIBUTE_SIZE_IN_BYTES;
 
 		subObjects[index].Type = D3D12_STATE_SUBOBJECT_TYPE_RAYTRACING_SHADER_CONFIG;
@@ -2542,6 +2542,9 @@ namespace ZXEngine
 			cBufferPtr += 3 * sizeof(float);
 
 			memcpy(cBufferPtr, &frameCount, sizeof(uint32_t));
+			cBufferPtr += sizeof(uint32_t);
+
+			memcpy(cBufferPtr, &rtConstants.time, sizeof(float));
 		}
 		
 		D3D12_DISPATCH_RAYS_DESC dispatchRaysDesc = {};

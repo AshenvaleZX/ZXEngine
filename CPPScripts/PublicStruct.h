@@ -132,6 +132,7 @@ namespace ZXEngine
 		Matrix4 P_Inv;
 		Vector3 lightPos;
 		uint32_t frameCount;
+		float time;
 	};
 
 	struct RayTracingHitGroupPath

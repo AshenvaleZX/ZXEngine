@@ -9,6 +9,9 @@ namespace ZXEngine
 	long long Time::curSysTime_micro = 0;
 	float Time::curTime = 0.0f;
 	float Time::deltaTime = 0.0f;
+#ifdef ZX_EDITOR
+	float Time::curEditorTime = 0.0f;
+#endif
 
 	void Time::Update()
 	{
@@ -19,6 +22,9 @@ namespace ZXEngine
 		if (curSysTime_micro != 0)
 		{
 #ifdef ZX_EDITOR
+			// 编辑器时间不受暂停影响
+			curEditorTime += (time_micro - curSysTime_micro) / 1000000.0f;
+
 			if (EditorDataManager::isGameStart && EditorDataManager::isGamePause)
 				deltaTime = 0.02f;
 			else

@@ -88,6 +88,7 @@ namespace ZXEngine
         CreateAllRenderPass();
         CreatePresentFrameBuffer();
 
+        rtPushConstantBuffer = malloc(rtPushConstantBufferSize);
         inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
         presentImageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
@@ -1704,8 +1705,7 @@ namespace ZXEngine
 
         // 转一下Push Constants数据格式，按std140内存布局规则存放
         // 这里因为是固定数据，就简单手动处理了，没像Uniform Buffer那样写一个通用的函数
-        void* pushConstants = malloc(208); // (16 * 3 + 3 + 1) * 4
-        char* ptr = static_cast<char*>(pushConstants);
+        char* ptr = static_cast<char*>(rtPushConstantBuffer);
         if (ptr != NULL)
         {
             float matVP[16];
@@ -1727,14 +1727,15 @@ namespace ZXEngine
             ptr += 3 * sizeof(float);
 
             memcpy(ptr, &frameCount, sizeof(uint32_t));
+            ptr += sizeof(uint32_t);
+
+            memcpy(ptr, &rtConstants.time, sizeof(float));
         }
 
         // 绑定光追管线常量
         vkCmdPushConstants(commandBuffer, rtPipeline->pipeline.pipelineLayout, 
             VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR,
-            0, sizeof(float) * 52, pushConstants);
-
-        free(pushConstants);
+            0, sizeof(float) * 52, rtPushConstantBuffer);
 
 		// Ray Trace
 		vkCmdTraceRaysKHR(commandBuffer, 

@@ -12,6 +12,7 @@
 #include "SceneManager.h"
 #include "Material.h"
 #include "StaticMesh.h"
+#include "Time.h"
 
 namespace ZXEngine
 {
@@ -57,6 +58,11 @@ namespace ZXEngine
 		rtConstants.VP = camera->GetProjectionMatrix() * camera->GetViewMatrix();
 		rtConstants.V_Inv = camera->GetViewMatrixInverse();
 		rtConstants.P_Inv = camera->GetProjectionMatrixInverse();
+#ifdef ZX_EDITOR
+		rtConstants.time = Time::curEditorTime;
+#else
+		rtConstants.time = Time::curTime;
+#endif
 
 		// π‚‘¥Œª÷√
 		auto allLights = Light::GetAllLights();

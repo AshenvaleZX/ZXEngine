@@ -318,6 +318,11 @@ namespace ZXEngine
         vector<VulkanBuffer> rtTLASScratchBuffers;
         vector<VulkanBuffer> rtTLASInstanceBuffers;
 
+        // 存放PushConstant数据的临时Buffer
+        void* rtPushConstantBuffer = nullptr;
+        // 存放PushConstant数据的临时Buffer的大小(64个32位数据)
+        uint32_t rtPushConstantBufferSize = 256;
+
         // 在累积式光追场景中，用来判断画面刷新的数据
         vector<Matrix4> rtVPMatrix;
         vector<uint32_t> rtFrameCount;
