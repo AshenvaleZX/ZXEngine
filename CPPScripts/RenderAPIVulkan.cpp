@@ -1814,7 +1814,7 @@ namespace ZXEngine
             asIns.instanceCustomIndex = i;
             asIns.mask = 0xFF;
             asIns.instanceShaderBindingTableRecordOffset = data.hitGroupIdx;
-            asIns.flags = VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR;
+            asIns.flags = VK_GEOMETRY_INSTANCE_TRIANGLE_FRONT_COUNTERCLOCKWISE_BIT_KHR;
             asIns.accelerationStructureReference = meshData->blas.deviceAddress;
 
             instances.push_back(asIns);

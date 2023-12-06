@@ -2653,7 +2653,7 @@ namespace ZXEngine
 			instanceDescs[i].InstanceContributionToHitGroupIndex = data.hitGroupIdx;
 			instanceDescs[i].InstanceMask = 0xFF;
 			instanceDescs[i].AccelerationStructure = meshData->blas.as.gpuAddress;
-			instanceDescs[i].Flags = D3D12_RAYTRACING_INSTANCE_FLAG_NONE;
+			instanceDescs[i].Flags = D3D12_RAYTRACING_INSTANCE_FLAG_TRIANGLE_FRONT_COUNTERCLOCKWISE;
 
 			float* array = new float[16];
 			data.transform.ToRowMajorArray(array);
