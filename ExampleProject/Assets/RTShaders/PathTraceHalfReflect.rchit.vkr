@@ -1,0 +1,120 @@
+#version 460
+#extension GL_EXT_ray_tracing : require
+#extension GL_EXT_nonuniform_qualifier : enable
+#extension GL_EXT_scalar_block_layout : enable
+
+#extension GL_EXT_shader_explicit_arithmetic_types_int64 : require
+#extension GL_EXT_buffer_reference2 : require
+
+hitAttributeEXT vec2 attribs;
+
+struct HitPayload
+{
+    vec3 hitValue;
+    uint seed;
+    uint depth;
+    vec3 rayOrigin;
+    vec3 rayDirection;
+    vec3 weight;
+};
+
+struct Vertex
+{
+    vec3 Position;
+    vec2 TexCoords;
+    vec3 Normal;
+    vec3 Tangent;
+    vec4 Weights;
+    ivec4 BoneIDs;
+};
+
+struct Material
+{
+    vec3 _Emittance;
+};
+
+struct RendererDataReference
+{
+    uint64_t indexAddress;    // Address of the index buffer
+    uint64_t vertexAddress;   // Address of the Vertex buffer
+    uint64_t materialAddress; // Address of the material buffer
+};
+
+layout(location = 0) rayPayloadInEXT HitPayload _RayPayload;
+
+layout(buffer_reference, scalar) buffer IndicesBuffer { ivec3 index[]; };
+layout(buffer_reference, scalar) buffer VerticesBuffer { Vertex vertex[]; };
+layout(buffer_reference, scalar) buffer MaterialBuffer { Material material; };
+
+layout(set = 1, binding = 0, scalar) buffer DataReferenceBuffer { RendererDataReference dataReference[]; } _ReferenceBuffer;
+
+// Generate a random unsigned int in [0, 2^24) given the previous RNG state
+// using the Numerical Recipes linear congruential generator
+uint LinearCongruentialGenerator(inout uint prev)
+{
+    uint LCG_A = 1664525u;
+    uint LCG_C = 1013904223u;
+    prev = (LCG_A * prev + LCG_C);
+    return prev & 0x00FFFFFF;
+}
+
+// Generate a random float in [0, 1) given the previous RNG state
+float RandomFloat(inout uint prev)
+{
+  return (float(LinearCongruentialGenerator(prev)) / float(0x01000000));
+}
+
+void main()
+{
+    // 取出当前渲染对象的Buffer引用地址，获取到对应的Buffer数据
+    RendererDataReference reference = _ReferenceBuffer.dataReference[gl_InstanceCustomIndexEXT];
+    IndicesBuffer indices = IndicesBuffer(reference.indexAddress);
+    VerticesBuffer vertices = VerticesBuffer(reference.vertexAddress);
+    MaterialBuffer materials = MaterialBuffer(reference.materialAddress);
+
+    // 获取当前三角形的顶点索引
+    ivec3 ind = indices.index[gl_PrimitiveID];
+
+    // 获取当前三角形的顶点
+    Vertex v0 = vertices.vertex[ind.x];
+    Vertex v1 = vertices.vertex[ind.y];
+    Vertex v2 = vertices.vertex[ind.z];
+
+    // 获取当前交点在三角形上的偏移信息
+    const vec3 barycentrics = vec3(1.0 - attribs.x - attribs.y, attribs.x, attribs.y);
+
+    // 计算当前交点的坐标
+    const vec3 pos = v0.Position * barycentrics.x + v1.Position * barycentrics.y + v2.Position * barycentrics.z;
+    // 变换到世界空间
+    const vec3 worldPos = vec3(gl_ObjectToWorldEXT * vec4(pos, 1.0));
+
+    // 计算当前交点的法线
+    const vec3 normal = v0.Normal * barycentrics.x + v1.Normal * barycentrics.y + v2.Normal * barycentrics.z;
+    // 变换到世界空间
+    const vec3 wNormal = normalize(vec3(normal * gl_WorldToObjectEXT));
+
+    vec3 weight = vec3(1.0);
+    vec3 emittance = vec3(0.0);
+    vec3 rayDirection = normalize(_RayPayload.rayDirection);
+
+    float prob = RandomFloat(_RayPayload.seed);
+    if (prob > 0.6)
+    {
+        rayDirection = reflect(gl_WorldRayDirectionEXT, wNormal);
+    }
+    else
+    {
+        Material mat = materials.material;
+        emittance = mat._Emittance;
+        // End ray tracing
+        _RayPayload.depth = 100;
+    }
+
+    // The current intersection point is used as the starting point of the next ray
+    vec3 rayOrigin = worldPos;
+
+    _RayPayload.rayOrigin    = rayOrigin;
+    _RayPayload.rayDirection = rayDirection;
+    _RayPayload.hitValue     = emittance;
+    _RayPayload.weight       = weight;
+}

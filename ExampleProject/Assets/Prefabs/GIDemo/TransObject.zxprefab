@@ -1,0 +1,19 @@
+{
+    "Name": "TransObject",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [5, -2, 5.5],
+            "Rotation": [0, 0, 0],
+            "Scale": [4, 4, 4]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Geometry": 1,
+            "Material": "RTMaterials/GIDemo/Transparent.zxrtmat",
+            "CastShadow": false,
+            "ReceiveShadow": true
+        }
+    ]
+}

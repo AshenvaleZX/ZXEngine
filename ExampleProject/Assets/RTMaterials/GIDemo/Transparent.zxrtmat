@@ -1,0 +1,11 @@
+{
+    "Type": "RTMaterial",
+    "HitGroup": 2,
+    "Vector3": 
+    [
+        {
+            "UniformName": "_Emittance",
+            "Value": [0, 0, 0]
+        }
+    ]
+}

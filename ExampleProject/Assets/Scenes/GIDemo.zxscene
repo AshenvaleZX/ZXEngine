@@ -22,6 +22,7 @@
         "Prefabs/GIDemo/Rabbit.zxprefab",
         "Prefabs/GIDemo/Box.zxprefab",
         "Prefabs/GIDemo/Sphere.zxprefab",
+        "Prefabs/GIDemo/TransObject.zxprefab",
         "Prefabs/GIDemo/ReflectionSphere.zxprefab",
         "Prefabs/MainCamera2.zxprefab",
         "Prefabs/UI/FPSText.zxprefab"
@@ -44,6 +45,12 @@
             },
             {
                 "ClosestHit": "RTShaders/PathTraceReflection.rchit"
+            },
+            {
+                "ClosestHit": "RTShaders/PathTraceTransparent.rchit"
+            },
+            {
+                "ClosestHit": "RTShaders/PathTraceHalfReflect.rchit"
             }
         ]
     }

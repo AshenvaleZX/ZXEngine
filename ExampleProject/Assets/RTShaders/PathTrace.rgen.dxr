@@ -80,7 +80,7 @@ void main()
     // Random Seed
     uint seed = TinyEncryptionAlgorithm(launchIndex.y * DispatchRaysDimensions().x + launchIndex.x, asuint(round(_Time * 1000)));
 
-    uint rayFlags = RAY_FLAG_FORCE_OPAQUE;
+    uint rayFlags = RAY_FLAG_FORCE_OPAQUE | RAY_FLAG_CULL_BACK_FACING_TRIANGLES;
     
     RayDesc ray;
     ray.TMin = 0.001;

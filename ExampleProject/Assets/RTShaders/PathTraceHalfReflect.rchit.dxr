@@ -1,0 +1,147 @@
+#pragma pack_matrix(column_major)
+
+SamplerState _SampleLinearWrap       : register(s0);
+SamplerState _SampleLinearClamp      : register(s1);
+SamplerState _SampleAnisotropicWrap  : register(s2);
+SamplerState _SampleAnisotropicClamp : register(s3);
+
+// TLAS                         (SRV)
+RaytracingAccelerationStructure _TLAS           : register(t0, space0);
+// Output Image                 (UAV)
+RWTexture2D<float4>             _Image          : register(u0, space0);
+// Index Buffer                 (SRV)
+ByteAddressBuffer               _IndexBuffer[]  : register(t0, space1);
+// Vertex Buffer                (SRV)
+ByteAddressBuffer               _VertexBuffer[] : register(t0, space2);
+// Material Data Buffer         (SRV)
+ByteAddressBuffer               _MaterialData[] : register(t0, space3);
+// All 2D Texture               (SRV，DescriptorTable)
+Texture2D<float4>               _Textures[]     : register(t0, space4);
+// All CubeMap Texture          (SRV，DescriptorTable)
+TextureCube                     _CubeMaps[]     : register(t0, space5);
+// Constant Buffer              (CBV)
+cbuffer RayTracingPipelineConstants             : register(b0, space0)
+{
+    float4x4 _VP;
+    float4x4 _V_Inv;
+    float4x4 _P_Inv;
+    float3   _LightPos;
+    uint     _FrameCount;
+    float    _Time;
+};
+
+struct Vertex
+{
+    float3 Position;
+    float2 TexCoords;
+    float3 Normal;
+    float3 Tangent;
+    float4 Weights;
+    uint4 BoneIDs;
+};
+
+struct HitPayload
+{
+    float3 hitValue;
+    uint   seed;
+    uint   depth;
+    float3 rayOrigin;
+    float3 rayDirection;
+    float3 weight;
+};
+
+struct Attributes
+{
+    float2 bary;
+};
+
+struct Material
+{
+    float3 _Emittance;
+};
+
+// Generate a random unsigned int in [0, 2^24) given the previous RNG state
+// using the Numerical Recipes linear congruential generator
+uint LinearCongruentialGenerator(inout uint prev)
+{
+    uint LCG_A = 1664525u;
+    uint LCG_C = 1013904223u;
+    prev = (LCG_A * prev + LCG_C);
+    return prev & 0x00FFFFFF;
+}
+
+// Generate a random float in [0, 1) given the previous RNG state
+float RandomFloat(inout uint prev)
+{
+    return (float(LinearCongruentialGenerator(prev)) / float(0x01000000));
+}
+
+[shader("closesthit")]
+void main(inout HitPayload _RayPayload, in Attributes attribs)
+{
+    uint insID = InstanceID();
+    uint vertID = 3 * PrimitiveIndex();
+
+    // Current hit triangle index
+    uint idx0 = _IndexBuffer[insID].Load<uint>(vertID * sizeof(uint));
+    uint idx1 = _IndexBuffer[insID].Load<uint>((vertID + 1) * sizeof(uint));
+    uint idx2 = _IndexBuffer[insID].Load<uint>((vertID + 2) * sizeof(uint));
+
+    // Current hit triangle vertex
+    Vertex v0 = _VertexBuffer[insID].Load<Vertex>(idx0 * sizeof(Vertex));
+    Vertex v1 = _VertexBuffer[insID].Load<Vertex>(idx1 * sizeof(Vertex));
+    Vertex v2 = _VertexBuffer[insID].Load<Vertex>(idx2 * sizeof(Vertex));
+
+    // Current hit barycentrics
+    const float3 barycentrics = float3(1.0 - attribs.bary.x - attribs.bary.y, attribs.bary.x, attribs.bary.y);
+
+    // Build 4x4 ObjectToWorld Matrix
+    const float3x4 objectToWorld3x4 = ObjectToWorld3x4();
+    const float4x4 objectToWorld4x4 = float4x4(
+        objectToWorld3x4._m00_m01_m02_m03,
+        objectToWorld3x4._m10_m11_m12_m13,
+        objectToWorld3x4._m20_m21_m22_m23,
+        float4(0, 0, 0, 1)
+    );
+
+    // Current hit position
+    const float3 pos = v0.Position * barycentrics.x + v1.Position * barycentrics.y + v2.Position * barycentrics.z;
+    const float3 worldPos = mul(objectToWorld4x4, float4(pos, 1.0)).xyz;
+
+    // Build 3x3 WorldToObject Matrix
+    const float3x4 worldToObject3x4 = WorldToObject3x4();
+    const float3x3 worldToObject3x3 = float3x3(
+        worldToObject3x4._m00_m01_m02,
+        worldToObject3x4._m10_m11_m12,
+        worldToObject3x4._m20_m21_m22
+    );
+
+    // Current hit normal
+    const float3 normal = v0.Normal * barycentrics.x + v1.Normal * barycentrics.y + v2.Normal * barycentrics.z;
+    const float3 wNormal = normalize(mul(normal, worldToObject3x3));
+
+    float3 weight = float3(1.0, 1.0, 1.0);
+    float3 emittance = float3(0.0, 0.0, 0.0);
+    float3 rayDirection = normalize(_RayPayload.rayDirection);
+
+    float prob = RandomFloat(_RayPayload.seed);
+    if (prob > 0.6)
+    {
+        rayDirection = reflect(WorldRayDirection(), wNormal);
+    }
+    else
+    {
+        Material mat = _MaterialData[insID].Load<Material>(0);
+        emittance = mat._Emittance;
+        // End ray tracing
+        _RayPayload.depth = 100;
+    }
+
+    // The current intersection point is used as the starting point of the next ray
+    float3 rayOrigin = worldPos;
+
+    _RayPayload.rayOrigin    = rayOrigin;
+    _RayPayload.rayDirection = rayDirection;
+    _RayPayload.hitValue     = emittance;
+    _RayPayload.weight       = weight;
+}
