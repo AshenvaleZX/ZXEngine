@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <mutex>
+#include <chrono>
+#include <unordered_map>
 
 // 条件编译调试代码开关
 // #define ZX_DEBUG
@@ -9,6 +11,9 @@ namespace ZXEngine
 {
 	class Debug
 	{
+	/// <summary>
+	/// 日志模块
+	/// </summary>
 	public:
 		static void Log(const std::string& message);
 		static void LogWarning(const std::string& message);
@@ -39,6 +44,24 @@ namespace ZXEngine
 		static void Format(std::string& message, const T& t);
 		template<typename T, typename... Args>
 		static void Format(std::string& message, const T& t, const Args&... args);
+
+
+	/// <summary>
+	/// 计时器模块
+	/// </summary>
+	public:
+		static void PushTimer();
+		static void PopTimer(const std::string& name = "");
+
+		static void StartTimer(const std::string& name);
+		static void EndTimer(const std::string& name);
+
+	private:
+		static size_t mTimerStackTop;
+		static const size_t mTimerStackSize = 64;
+		static std::chrono::steady_clock::time_point mTimerStack[mTimerStackSize];
+
+		static std::unordered_map<std::string, std::chrono::steady_clock::time_point> mTimerMap;
 	};
 
 	// 基本模板函数(各种特化版本都匹配不上的时候就会用这个)

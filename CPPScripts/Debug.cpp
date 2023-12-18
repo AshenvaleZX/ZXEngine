@@ -6,6 +6,10 @@
 
 namespace ZXEngine
 {
+	/// <summary>
+	/// 日志模块
+	/// </summary>
+	
 	std::mutex Debug::mWriteMutex;
 
 	void Debug::Log(const std::string& message)
@@ -82,5 +86,52 @@ namespace ZXEngine
 		{
 			message.replace(pos, from.length(), to);
 		}
+	}
+	
+	/// <summary>
+	/// 计时器模块
+	/// </summary>
+	
+	size_t Debug::mTimerStackTop = 0;
+	std::chrono::steady_clock::time_point Debug::mTimerStack[];
+
+	std::unordered_map<std::string, std::chrono::steady_clock::time_point> Debug::mTimerMap;
+
+	void Debug::PushTimer()
+	{
+		if (mTimerStackTop >= mTimerStackSize)
+		{
+			LogError("Timer stack overflow !");
+			return;
+		}
+
+		mTimerStack[mTimerStackTop++] = std::chrono::high_resolution_clock::now();
+	}
+
+	void Debug::PopTimer(const std::string& name)
+	{
+		if (mTimerStackTop == 0)
+		{
+			LogError("Timer stack underflow !");
+			return;
+		}
+
+		auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - mTimerStack[--mTimerStackTop]).count();
+
+		// 没有用Log，因为Log速度慢一倍，会影响计时，如果有需要写入文件再用Log
+		// 先拼接再输出，效率比直接用<<高
+		cout << (name + " : " + std::to_string(duration) + " ns\n");
+	}
+
+	void Debug::StartTimer(const std::string& name)
+	{
+		mTimerMap[name] = std::chrono::high_resolution_clock::now();
+	}
+
+	void Debug::EndTimer(const std::string& name)
+	{
+		auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - mTimerMap[name]).count();
+
+		cout << (name + " : " + std::to_string(duration) + " ns");
 	}
 }
