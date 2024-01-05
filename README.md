@@ -16,21 +16,21 @@ Screenshot display (more display later in the introduction):
 
 ## 目录(Contents)
 
-[引擎简介 (Engine Introduction)](https://github.com/AshenvaleZX/ZXEngine#%E5%BC%95%E6%93%8E%E7%AE%80%E4%BB%8B-engine-introduction)
+[引擎简介 (Engine Introduction)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E5%BC%95%E6%93%8E%E7%AE%80%E4%BB%8B-engine-introduction)
 
-[细节图片展示 (Detailed picture display)](https://github.com/AshenvaleZX/ZXEngine#%E7%BB%86%E8%8A%82%E5%9B%BE%E7%89%87%E5%B1%95%E7%A4%BA-detailed-picture-display)
+[细节图片展示 (Detailed picture display)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E7%BB%86%E8%8A%82%E5%9B%BE%E7%89%87%E5%B1%95%E7%A4%BA-detailed-picture-display)
 
-[PhysZ引擎简介(PhysZ Engine Introduction)](https://github.com/AshenvaleZX/ZXEngine#physz%E5%BC%95%E6%93%8E%E7%AE%80%E4%BB%8Bphysz-engine-introduction)
+[PhysZ引擎简介(PhysZ Engine Introduction)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#physz%E5%BC%95%E6%93%8E%E7%AE%80%E4%BB%8Bphysz-engine-introduction)
 
-[骨骼蒙皮动画系统(Skeletal Animation System)](https://github.com/AshenvaleZX/ZXEngine#%E9%AA%A8%E9%AA%BC%E8%92%99%E7%9A%AE%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9Fskeletal-animation-system)
+[骨骼蒙皮动画系统(Skeletal Animation System)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E9%AA%A8%E9%AA%BC%E8%92%99%E7%9A%AE%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9Fskeletal-animation-system)
 
-[引擎文件格式介绍 (Engine file format introduction)](https://github.com/AshenvaleZX/ZXEngine#%E5%BC%95%E6%93%8E%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E4%BB%8B%E7%BB%8D-engine-file-format-introduction)
+[引擎文件格式介绍 (Engine file format introduction)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E5%BC%95%E6%93%8E%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E4%BB%8B%E7%BB%8D-engine-file-format-introduction)
 
-[GamePlay层的Lua代码示例(Lua code example for GamePlay layer)](https://github.com/AshenvaleZX/ZXEngine#gameplay%E5%B1%82%E7%9A%84lua%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8Blua-code-example-for-gameplay-layer)
+[GamePlay层的Lua代码示例(Lua code example for GamePlay layer)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#gameplay%E5%B1%82%E7%9A%84lua%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8Blua-code-example-for-gameplay-layer)
 
-[构建(Build)](https://github.com/AshenvaleZX/ZXEngine#%E6%9E%84%E5%BB%BAbuild)
+[构建(Build)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E6%9E%84%E5%BB%BAbuild)
 
-[注意事项 (Precautions)](https://github.com/AshenvaleZX/ZXEngine#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9-precautions)
+[注意事项 (Precautions)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9-precautions)
 
 ## 引擎简介 (Engine Introduction)
 
