@@ -28,6 +28,8 @@ Screenshot display (more display later in the introduction):
 
 [GamePlay层的Lua代码示例(Lua code example for GamePlay layer)](https://github.com/AshenvaleZX/ZXEngine#gameplay%E5%B1%82%E7%9A%84lua%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8Blua-code-example-for-gameplay-layer)
 
+[构建(Build)](https://github.com/AshenvaleZX/ZXEngine#%E6%9E%84%E5%BB%BA-build)
+
 [注意事项 (Precautions)](https://github.com/AshenvaleZX/ZXEngine#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9-precautions)
 
 ## 引擎简介 (Engine Introduction)
@@ -207,6 +209,16 @@ end
 return ObjectMove
 ```
 
+## 构建(Build)
+
+本项目使用Visual Studio 2022构建，暂时不支持跨平台。VS项目文件已经放到ZXEngine文件夹下了，直接打开.sln构建即可。同时也提供了CMakeLists，不过在非WIndows环境下暂时还无法正确构建。
+
+This project is built using Visual Studio 2022 and does not support cross-platform for now. The VS project file has been placed in the ZXEngine folder, and you can directly open the .sln file to build. CMakeLists is also provided, but it cannot be built correctly in non-WIndows environments yet.
+
+由于我公司的开发环境以及我自己的电脑都是Windows，所以目前本项目仅支持Windows系统。跨平台的想法我是有的，但是我的精力有限，这只是我用空闲时间开发的项目，还有不少我想做的事情没做，所以短期内还不会做跨平台支持。感谢大家的理解和支持。
+
+Since my company's development environment and my own computer are all Windows, this project currently only supports Windows systems. I have the idea of cross-platform, but my energy is limited. This is just a project I developed in my free time. There are still a lot of things I want to do that I have not done in this project, so I will not provide cross-platform support in the short term. I appreciate your understanding and support.
+
 ## 注意事项 (Precautions)
 
 目前zxshader编写好后，在DirectX 12和OpenGL下直接运行即可。但是在Vulkan下需要先点击引擎菜单栏里的“Assets/Compile All Shader for Vulkan”按钮，将zxshader预编译后才可以运行。也就是说，在你第一次以Vulkan模式运行工程之前，至少需要先以DirectX 12或者OpenGL模式启动一次项目，完成一次预编译Vulkan着色器，然后才能正常的以Vulkan模式启动。这块做得不是很好，按理说不应该有这种奇怪的限制，日后改进。
@@ -216,10 +228,6 @@ After zxshader is written, it can be run directly under DirectX 12 and OpenGL. B
 切换图形API的方式是在pubh.h文件中修改宏定义。有3个宏定义ZX_API_VULKAN，ZX_API_D3D12和ZX_API_OPENGL，分别对应引擎支持的3个图形API。开启其中一个宏定义，并注释掉其它2个宏定义，重新编译引擎，就完成了对图形API的切换。
 
 The way to switch the graphics API is to modify the macro definition in the pubh.h file. There are 3 macro definitions ZX_API_VULKAN, ZX_API_D3D12 and ZX_API_OPENGL, corresponding to the 3 graphics APIs supported by the engine. Open one of the macro definitions, comment out the other two macro definitions, and recompile the engine to complete the switching of the graphics API.
-
-由于我公司的开发环境以及我自己的电脑都是Windows，所以目前本项目仅支持Windows系统。编译器使用的是VS2023，我直接把VS的项目文件放到工程里了。同时我也提供了CMakeLists，不过在非WIndows环境下暂时还无法正确构建。跨平台的想法我是有的，但是我的精力有限，这只是我用空闲时间开发的项目，还有不少我想做的事情没做，所以短期内还不会做跨平台支持。
-
-Since my company's development environment and my own computer are all Windows, this project currently only supports Windows systems. The compiler uses VS2023, so I put the VS project file into the project. And I also provided CMakeLists, but it cannot be built correctly in non-WIndows environments. I have the idea of cross-platform, but my energy is limited. This is just a project I developed in my free time. There are still a lot of things I want to do that I have not done in this project, so I will not provide cross-platform support in the short term.
 
 ### 一些废话 (Some mumbles)
 
