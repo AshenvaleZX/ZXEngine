@@ -28,7 +28,7 @@ Screenshot display (more display later in the introduction):
 
 [GamePlay层的Lua代码示例(Lua code example for GamePlay layer)](https://github.com/AshenvaleZX/ZXEngine#gameplay%E5%B1%82%E7%9A%84lua%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8Blua-code-example-for-gameplay-layer)
 
-[构建(Build)](https://github.com/AshenvaleZX/ZXEngine#%E6%9E%84%E5%BB%BA-build)
+[构建(Build)](https://github.com/AshenvaleZX/ZXEngine#%E6%9E%84%E5%BB%BAbuild)
 
 [注意事项 (Precautions)](https://github.com/AshenvaleZX/ZXEngine#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9-precautions)
 
