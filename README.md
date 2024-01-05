@@ -215,9 +215,9 @@ return ObjectMove
 
 This project is built using Visual Studio 2022 and does not support cross-platform for now. The VS project file has been placed in the ZXEngine folder, and you can directly open the .sln file to build. CMakeLists is also provided, but it cannot be built correctly in non-WIndows environments yet.
 
-由于我公司的开发环境以及我自己的电脑都是Windows，所以目前本项目仅支持Windows系统。跨平台的想法我是有的，但是我的精力有限，这只是我用空闲时间开发的项目，还有不少我想做的事情没做，所以短期内还不会做跨平台支持。感谢大家的理解和支持。
+由于我公司的开发环境以及我自己的电脑都是Windows，所以目前本项目仅支持Windows系统。跨平台的想法我是有的，但是我的精力有限。这只是我用空闲时间开发的项目，还有不少我想做的东西没做，所以短期内还不会做跨平台支持，感谢大家的理解。
 
-Since my company's development environment and my own computer are all Windows, this project currently only supports Windows systems. I have the idea of cross-platform, but my energy is limited. This is just a project I developed in my free time. There are still a lot of things I want to do that I have not done in this project, so I will not provide cross-platform support in the short term. I appreciate your understanding and support.
+Since the development environment of the company I work for and my own computer are both Windows, this project currently only supports Windows systems. I have the idea of cross-platform, but my energy is limited. This is just a project I developed in my free time. There are a lot of things I want to do but haven't done yet, so I will not provide cross-platform support in the short term. I appreciate your understanding.
 
 ## 注意事项 (Precautions)
 
