@@ -18,9 +18,9 @@ namespace ZXEngine
 	RenderPassShadowGeneration::RenderPassShadowGeneration()
 	{
 #if defined(ZX_API_OPENGL) || defined(ZX_API_VULKAN)
-		shadowProj = Math::PerspectiveRH(Math::Deg2Rad(90.0f), (float)GlobalData::depthCubeMapWidth / (float)GlobalData::depthCubeMapWidth, GlobalData::shadowCubeMapNearPlane, GlobalData::shadowCubeMapFarPlane);
+		shadowProj = Math::PerspectiveRHNO(Math::Deg2Rad(90.0f), (float)GlobalData::depthCubeMapWidth / (float)GlobalData::depthCubeMapWidth, GlobalData::shadowCubeMapNearPlane, GlobalData::shadowCubeMapFarPlane);
 #else
-		shadowProj = Math::PerspectiveLH(Math::Deg2Rad(90.0f), (float)GlobalData::depthCubeMapWidth / (float)GlobalData::depthCubeMapWidth, GlobalData::shadowCubeMapNearPlane, GlobalData::shadowCubeMapFarPlane);
+		shadowProj = Math::PerspectiveLHNO(Math::Deg2Rad(90.0f), (float)GlobalData::depthCubeMapWidth / (float)GlobalData::depthCubeMapWidth, GlobalData::shadowCubeMapNearPlane, GlobalData::shadowCubeMapFarPlane);
 #endif
 		shadowMapShader = new Shader(Resources::GetAssetFullPath("Shaders/DirectionalShadowDepth.zxshader", true), FrameBufferType::ShadowMap);
 		animShadowMapShader = new Shader(Resources::GetAssetFullPath("Shaders/DirectionalShadowDepthAnim.zxshader", true), FrameBufferType::ShadowMap);

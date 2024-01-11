@@ -86,11 +86,10 @@ namespace ZXEngine
 	Matrix4 Math::Perspective(float fov, float aspect, float nearClip, float farClip)
 	{
 		// 默认用左手坐标系的
-		return PerspectiveLH(fov, aspect, nearClip, farClip);
+		return PerspectiveLHNO(fov, aspect, nearClip, farClip);
 	}
 
-	// 基于左手坐标系
-	Matrix4 Math::PerspectiveLH(float fov, float aspect, float nearClip, float farClip)
+	Matrix4 Math::PerspectiveLHNO(float fov, float aspect, float nearClip, float farClip)
 	{
 		// 参考：https://www.ogldev.org/www/tutorial12/tutorial12.html
 
@@ -109,8 +108,8 @@ namespace ZXEngine
 		// 第三行
 		float m20 = 0;
 		float m21 = 0;
-		float m22 = -(farClip + nearClip) / (nearClip - farClip);
-		float m23 = 2 * farClip * nearClip / (nearClip - farClip);
+		float m22 = (farClip + nearClip) / (farClip - nearClip);
+		float m23 = (2 * farClip * nearClip) / (nearClip - farClip);
 
 		// 第四行
 		float m30 = 0;
@@ -130,8 +129,45 @@ namespace ZXEngine
 			m30, m31, m32, m33);
 	}
 
-	// 基于右手坐标系
-	Matrix4 Math::PerspectiveRH(float fov, float aspect, float nearClip, float farClip)
+	Matrix4 Math::PerspectiveLHZO(float fov, float aspect, float nearClip, float farClip)
+	{
+		// 第一行
+		float m00 = 1 / (aspect * tan(fov * 0.5f));
+		float m01 = 0;
+		float m02 = 0;
+		float m03 = 0;
+
+		// 第二行
+		float m10 = 0;
+		float m11 = 1 / tan(fov * 0.5f);
+		float m12 = 0;
+		float m13 = 0;
+
+		// 第三行
+		float m20 = 0;
+		float m21 = 0;
+		float m22 = farClip / (farClip - nearClip);
+		float m23 = (farClip * nearClip) / (nearClip - farClip);
+
+		// 第四行
+		float m30 = 0;
+		float m31 = 0;
+		float m32 = 1;
+		float m33 = 0;
+
+#ifdef ZX_API_VULKAN
+		// Vulkan的Y轴要反转一下，否则画面会颠倒
+		m11 *= -1;
+#endif
+
+		return Matrix4(
+			m00, m01, m02, m03,
+			m10, m11, m12, m13,
+			m20, m21, m22, m23,
+			m30, m31, m32, m33);
+	}
+
+	Matrix4 Math::PerspectiveRHNO(float fov, float aspect, float nearClip, float farClip)
 	{
 		// 第一行
 		float m00 = 1 / (aspect * tan(fov * 0.5f));
@@ -149,7 +185,40 @@ namespace ZXEngine
 		float m20 = 0;
 		float m21 = 0;
 		float m22 = (farClip + nearClip) / (nearClip - farClip);
-		float m23 = 2 * farClip * nearClip / (nearClip - farClip);
+		float m23 = (2 * farClip * nearClip) / (nearClip - farClip);
+
+		// 第四行
+		float m30 = 0;
+		float m31 = 0;
+		float m32 = -1;
+		float m33 = 0;
+
+		return Matrix4(
+			m00, m01, m02, m03,
+			m10, m11, m12, m13,
+			m20, m21, m22, m23,
+			m30, m31, m32, m33);
+	}
+
+	Matrix4 Math::PerspectiveRHZO(float fov, float aspect, float nearClip, float farClip)
+	{
+		// 第一行
+		float m00 = 1 / (aspect * tan(fov * 0.5f));
+		float m01 = 0;
+		float m02 = 0;
+		float m03 = 0;
+
+		// 第二行
+		float m10 = 0;
+		float m11 = 1 / tan(fov * 0.5f);
+		float m12 = 0;
+		float m13 = 0;
+
+		// 第三行
+		float m20 = 0;
+		float m21 = 0;
+		float m22 = farClip / (nearClip - farClip);
+		float m23 = (farClip * nearClip) / (nearClip - farClip);
 
 		// 第四行
 		float m30 = 0;
@@ -170,8 +239,8 @@ namespace ZXEngine
 		resMat.m00 = 2 / (right - left);
 		resMat.m11 = 2 / (top - bottom);
 		resMat.m22 = -1;
-		resMat.m03 = -(right + left) / (right - left);
-		resMat.m13 = -(top + bottom) / (top - bottom);
+		resMat.m03 = (right + left) / (left - right);
+		resMat.m13 = (top + bottom) / (bottom - top);
 
 #ifdef ZX_API_VULKAN
 		// Vulkan的Y轴要反转一下，否则画面会颠倒
@@ -184,18 +253,18 @@ namespace ZXEngine
 	Matrix4 Math::Orthographic(float left, float right, float bottom, float top, float zNear, float zFar)
 	{
 		// 默认用左手坐标系的
-		return OrthographicLH(left, right, bottom, top, zNear, zFar);
+		return OrthographicLHZO(left, right, bottom, top, zNear, zFar);
 	}
 
-	Matrix4 Math::OrthographicLH(float left, float right, float bottom, float top, float zNear, float zFar)
+	Matrix4 Math::OrthographicLHNO(float left, float right, float bottom, float top, float zNear, float zFar)
 	{
 		Matrix4 resMat(1);
 		resMat.m00 = 2.0f / (right - left);
 		resMat.m11 = 2.0f / (top - bottom);
 		resMat.m22 = 2.0f / (zFar - zNear);
-		resMat.m03 = -(right + left) / (right - left);
-		resMat.m13 = -(top + bottom) / (top - bottom);
-		resMat.m23 = -zNear / (zFar - zNear);
+		resMat.m03 = (right + left) / (left - right);
+		resMat.m13 = (top + bottom) / (bottom - top);
+		resMat.m23 = (zFar + zNear) / (zNear - zFar);
 
 #ifdef ZX_API_VULKAN
 		// Vulkan的Y轴要反转一下，否则画面会颠倒
@@ -205,15 +274,45 @@ namespace ZXEngine
 		return resMat;
 	}
 
-	Matrix4 Math::OrthographicRH(float left, float right, float bottom, float top, float zNear, float zFar)
+	Matrix4 Math::OrthographicLHZO(float left, float right, float bottom, float top, float zNear, float zFar)
 	{
 		Matrix4 resMat(1);
 		resMat.m00 = 2.0f / (right - left);
 		resMat.m11 = 2.0f / (top - bottom);
-		resMat.m22 = -2.0f / (zFar - zNear);
-		resMat.m03 = -(right + left) / (right - left);
-		resMat.m13 = -(top + bottom) / (top - bottom);
-		resMat.m23 = -(zFar + zNear) / (zFar - zNear);
+		resMat.m22 = 1.0f / (zFar - zNear);
+		resMat.m03 = (right + left) / (left - right);
+		resMat.m13 = (top + bottom) / (bottom - top);
+		resMat.m23 = zNear / (zNear - zFar);
+
+#ifdef ZX_API_VULKAN
+		// Vulkan的Y轴要反转一下，否则画面会颠倒
+		resMat.m11 *= -1;
+#endif
+
+		return resMat;
+	}
+
+	Matrix4 Math::OrthographicRHNO(float left, float right, float bottom, float top, float zNear, float zFar)
+	{
+		Matrix4 resMat(1);
+		resMat.m00 = 2.0f / (right - left);
+		resMat.m11 = 2.0f / (top - bottom);
+		resMat.m22 = 2.0f / (zNear - zFar);
+		resMat.m03 = (right + left) / (left - right);
+		resMat.m13 = (top + bottom) / (bottom - top);
+		resMat.m23 = (zFar + zNear) / (zNear - zFar);
+		return resMat;
+	}
+
+	Matrix4 Math::OrthographicRHZO(float left, float right, float bottom, float top, float zNear, float zFar)
+	{
+		Matrix4 resMat(1);
+		resMat.m00 = 2.0f / (right - left);
+		resMat.m11 = 2.0f / (top - bottom);
+		resMat.m22 = 1.0f / (zNear - zFar);
+		resMat.m03 = (right + left) / (left - right);
+		resMat.m13 = (top + bottom) / (bottom - top);
+		resMat.m23 = zNear / (zNear - zFar);
 		return resMat;
 	}
 

@@ -52,14 +52,26 @@ namespace ZXEngine
 
 		// 计算透视投影矩阵
 		static Matrix4 Perspective(float fov, float aspect, float nearClip, float farClip);
-		static Matrix4 PerspectiveLH(float fov, float aspect, float nearClip, float farClip);
-		static Matrix4 PerspectiveRH(float fov, float aspect, float nearClip, float farClip);
+		// 左手坐标系，Z范围[-1, 1]
+		static Matrix4 PerspectiveLHNO(float fov, float aspect, float nearClip, float farClip);
+		// 左手坐标系，Z范围[0, 1]
+		static Matrix4 PerspectiveLHZO(float fov, float aspect, float nearClip, float farClip);
+		// 右手坐标系，Z范围[-1, 1]
+		static Matrix4 PerspectiveRHNO(float fov, float aspect, float nearClip, float farClip);
+		// 右手坐标系，Z范围[0, 1]
+		static Matrix4 PerspectiveRHZO(float fov, float aspect, float nearClip, float farClip);
 
 		// 计算正交投影矩阵
 		static Matrix4 Orthographic(float left, float right, float bottom, float top);
 		static Matrix4 Orthographic(float left, float right, float bottom, float top, float zNear, float zFar);
-		static Matrix4 OrthographicLH(float left, float right, float bottom, float top, float zNear, float zFar);
-		static Matrix4 OrthographicRH(float left, float right, float bottom, float top, float zNear, float zFar);
+		// 左手坐标系，Z范围[-1, 1]
+		static Matrix4 OrthographicLHNO(float left, float right, float bottom, float top, float zNear, float zFar);
+		// 左手坐标系，Z范围[0, 1]
+		static Matrix4 OrthographicLHZO(float left, float right, float bottom, float top, float zNear, float zFar);
+		// 右手坐标系，Z范围[-1, 1]
+		static Matrix4 OrthographicRHNO(float left, float right, float bottom, float top, float zNear, float zFar);
+		// 右手坐标系，Z范围[0, 1]
+		static Matrix4 OrthographicRHZO(float left, float right, float bottom, float top, float zNear, float zFar);
 
 		// 位移
 		static Matrix4 Translate(const Matrix4& oriMat, const Vector3& v);
