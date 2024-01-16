@@ -11,7 +11,9 @@ namespace ZXEngine
 			mOther(other), 
 			mSpringConstant(springConstant), 
 			mRestLength(restLength)
-		{}
+		{
+            mType = ForceGeneratorType::Spring;
+        }
 
         void FGSpring::UpdateForce(RigidBody* rigidBody, float duration)
         {

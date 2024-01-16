@@ -5,10 +5,19 @@ namespace ZXEngine
 {
 	namespace PhysZ
 	{
+		enum class ForceGeneratorType
+		{
+			None,
+			Gravity,
+			Spring,
+		};
+
 		class RigidBody;
 		class ForceGenerator
 		{
 		public:
+			ForceGeneratorType mType;
+
 			virtual void UpdateForce(RigidBody* rigidBody, float duration) = 0;
 		};
 	}

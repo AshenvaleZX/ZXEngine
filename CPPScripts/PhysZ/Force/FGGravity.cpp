@@ -5,6 +5,11 @@ namespace ZXEngine
 {
 	namespace PhysZ
 	{
+		FGGravity::FGGravity(const Vector3& gravity) : mGravity(gravity)
+		{ 
+			mType = ForceGeneratorType::Gravity;
+		}
+
 		void FGGravity::UpdateForce(RigidBody* rigidBody, float duration)
 		{
 			// 如果质量无限大表示不受力
@@ -12,7 +17,7 @@ namespace ZXEngine
 				return;
 
 			// 添加重力
-			rigidBody->AddForce(gravity * rigidBody->GetMass());
+			rigidBody->AddForce(mGravity * rigidBody->GetMass());
 		}
 	}
 }

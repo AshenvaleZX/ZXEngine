@@ -8,12 +8,12 @@ namespace ZXEngine
 		class FGGravity : public ForceGenerator
 		{
 		public:
-			FGGravity(const Vector3& gravity) : gravity(gravity) {};
+			FGGravity(const Vector3& gravity);
 
 			virtual void UpdateForce(RigidBody* rigidBody, float duration);
 
 		private:
-			Vector3 gravity;
+			Vector3 mGravity;
 		};
 	}
 }

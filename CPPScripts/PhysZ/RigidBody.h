@@ -7,6 +7,7 @@ namespace ZXEngine
 	namespace PhysZ
 	{
 		class BVHNode;
+		class ForceGenerator;
 		class CollisionPrimitive;
 		class RigidBody
 		{
@@ -42,6 +43,8 @@ namespace ZXEngine
 			bool GetCanSleep() const;
 			
 			Matrix4 GetTransform() const;
+
+			void AddForceGenerator(ForceGenerator* generator);
 
 			// ---------- 线性运动 ----------
 
@@ -93,6 +96,9 @@ namespace ZXEngine
 			void AddAngularVelocity(const Vector3& deltaAngularVelocity);
 
 		private:
+			// 此刚体上的作用力生成器列表
+			vector<ForceGenerator*> mForceGenerators;
+
 			// 质量的倒数(0代表质量无穷大，无视任何作用力)
 			float mInverseMass = 1.0f;
 			// 线性运动阻尼系数(1表示无阻尼)
@@ -131,6 +137,8 @@ namespace ZXEngine
 			bool mCanSleep = true;
 			// 刚体当前的运动量，包含线性速度和角速度，无实际物理意义，仅用于评估运动状态
 			float mMotion = SleepMotionEpsilon * 2.0f;
+
+			void IntegrateForceGenerators(float duration);
 
 			void UpdateTransform();
 			void UpdateWorldInertiaTensor();

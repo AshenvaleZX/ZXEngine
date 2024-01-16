@@ -1,5 +1,7 @@
 #include "RigidBody.h"
 #include "CollisionPrimitive.h"
+#include "Force/FGGravity.h"
+#include "Force/FGSpring.h"
 
 namespace ZXEngine
 {
@@ -11,12 +13,28 @@ namespace ZXEngine
 			{
 				mCollisionVolume->mRigidBody = nullptr;
 			}
+
+			for (auto generator : mForceGenerators)
+			{
+				if (generator->mType == ForceGeneratorType::Gravity)
+					delete static_cast<FGGravity*>(generator);
+				else if (generator->mType == ForceGeneratorType::Spring)
+					delete static_cast<FGSpring*>(generator);
+				else
+				{
+					Debug::LogWarning("Delete unknown force generator type, there may be a memory leak.");
+					delete generator;
+				}
+			}
 		}
 
 		void RigidBody::Integrate(float duration)
 		{
 			if (!mIsAwake)
 				return;
+
+			// 计算当前作用力生成器的合力
+			IntegrateForceGenerators(duration);
 
 			// 通过合力计算加速度
 			mLastAcceleration = mAcceleration;
@@ -169,6 +187,19 @@ namespace ZXEngine
 		Matrix4 RigidBody::GetTransform() const
 		{
 			return mTransform;
+		}
+
+		void RigidBody::AddForceGenerator(ForceGenerator* generator)
+		{
+			mForceGenerators.push_back(generator);
+		}
+
+		void RigidBody::IntegrateForceGenerators(float duration)
+		{
+			for (auto generator : mForceGenerators)
+			{
+				generator->UpdateForce(this, duration);
+			}
 		}
 
 		void RigidBody::SetMass(float mass)
