@@ -23,6 +23,13 @@ namespace ZXEngine
 	{
 		friend class EditorInspectorPanel;
 	public:
+		static GameObject* Find(const string& path);
+
+	private:
+		static GameObject* Find(const vector<GameObject*>& gameObjects, const vector<string> paths, int& recursion);
+
+
+	public:
 		string name;
 		uint32_t layer = 0;
 		GameObject* parent = nullptr;
@@ -38,6 +45,7 @@ namespace ZXEngine
 		template<class T>
 		inline T* AddComponent();
 
+		GameObject* FindChildren(const string& path);
 		void AddComponent(ComponentType type, Component* component);
 
 	private:

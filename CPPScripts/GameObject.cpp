@@ -1,10 +1,45 @@
 #include "GameObject.h"
 #include "Material.h"
 #include "ModelUtil.h"
+#include "SceneManager.h"
 #include "PhysZ/Force/FGGravity.h"
 
 namespace ZXEngine
 {
+	GameObject* GameObject::Find(const string& path)
+	{
+		auto paths = Utils::StringSplit(path, '/');
+		int recursion = 0;
+		return Find(SceneManager::GetInstance()->GetCurScene()->gameObjects, paths, recursion);
+	}
+
+	GameObject* GameObject::Find(const vector<GameObject*>& gameObjects, const vector<string> paths, int& recursion)
+	{
+		if (recursion == paths.size())
+			return nullptr;
+
+		for (auto gameObject : gameObjects)
+		{
+			if (gameObject->name == paths[recursion])
+			{
+				recursion++;
+				if (recursion == paths.size())
+					return gameObject;
+				else
+					return Find(gameObject->children, paths, recursion);
+			}
+		}
+
+		return nullptr;
+	}
+
+	GameObject* GameObject::FindChildren(const string& path)
+	{
+		auto paths = Utils::StringSplit(path, '/');
+		int recursion = 0;
+		return GameObject::Find(children, paths, recursion);
+	}
+
 	GameObject::GameObject(PrefabStruct* prefab)
 	{
 		name = prefab->name;
