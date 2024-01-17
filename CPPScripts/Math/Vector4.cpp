@@ -8,6 +8,9 @@
 
 namespace ZXEngine
 {
+	const Vector4 Vector4::Zero = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+	const Vector4 Vector4::One  = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+
 	Vector4::Vector4()
 	{
 		this->x = 0.0f;

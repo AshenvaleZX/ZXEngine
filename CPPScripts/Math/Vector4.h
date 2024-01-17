@@ -9,6 +9,10 @@ namespace ZXEngine
 	class Vector4
 	{
 	public:
+		static const Vector4 Zero;
+		static const Vector4 One;
+
+	public:
 		union { float x, r; };
 		union { float y, g; };
 		union { float z, b; };

@@ -8,6 +8,14 @@ namespace ZXEngine
 	class Vector2
 	{
 	public:
+		static const Vector2 Zero;
+		static const Vector2 One;
+		static const Vector2 Up;
+		static const Vector2 Down;
+		static const Vector2 Left;
+		static const Vector2 Right;
+
+	public:
 		union { float x, r; };
 		union { float y, g; };
 
