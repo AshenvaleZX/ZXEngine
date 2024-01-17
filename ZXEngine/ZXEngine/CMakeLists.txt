@@ -16,10 +16,6 @@ source_group("Animation" FILES ${Animation})
 set(Component
     "../../CPPScripts/Component/Animator.cpp"
     "../../CPPScripts/Component/Animator.h"
-    "../../CPPScripts/Component/BoxCollider.cpp"
-    "../../CPPScripts/Component/BoxCollider.h"
-    "../../CPPScripts/Component/Collider.cpp"
-    "../../CPPScripts/Component/Collider.h"
     "../../CPPScripts/Component/Component.cpp"
     "../../CPPScripts/Component/Component.h"
     "../../CPPScripts/Component/GameLogic.cpp"
@@ -30,10 +26,6 @@ set(Component
     "../../CPPScripts/Component/MeshRenderer.h"
     "../../CPPScripts/Component/ParticleSystem.cpp"
     "../../CPPScripts/Component/ParticleSystem.h"
-    "../../CPPScripts/Component/PlaneCollider.cpp"
-    "../../CPPScripts/Component/PlaneCollider.h"
-    "../../CPPScripts/Component/SphereCollider.cpp"
-    "../../CPPScripts/Component/SphereCollider.h"
     "../../CPPScripts/Component/Transform.cpp"
     "../../CPPScripts/Component/Transform.h"
     "../../CPPScripts/Component/UITextRenderer.cpp"
@@ -42,10 +34,22 @@ set(Component
     "../../CPPScripts/Component/UITextureRenderer.h"
     "../../CPPScripts/Component/ZCamera.cpp"
     "../../CPPScripts/Component/ZCamera.h"
-    "../../CPPScripts/Component/ZRigidBody.cpp"
-    "../../CPPScripts/Component/ZRigidBody.h"
 )
 source_group("Component" FILES ${Component})
+
+set(Component__Physics
+    "../../CPPScripts/Component/Physics/BoxCollider.cpp"
+    "../../CPPScripts/Component/Physics/BoxCollider.h"
+    "../../CPPScripts/Component/Physics/Collider.cpp"
+    "../../CPPScripts/Component/Physics/Collider.h"
+    "../../CPPScripts/Component/Physics/PlaneCollider.cpp"
+    "../../CPPScripts/Component/Physics/PlaneCollider.h"
+    "../../CPPScripts/Component/Physics/SphereCollider.cpp"
+    "../../CPPScripts/Component/Physics/SphereCollider.h"
+    "../../CPPScripts/Component/Physics/ZRigidBody.cpp"
+    "../../CPPScripts/Component/Physics/ZRigidBody.h"
+)
+source_group("Component\\Physics" FILES ${Component__Physics})
 
 set(Concurrent
     "../../CPPScripts/Concurrent/LockFreeQueue.h"
@@ -403,6 +407,7 @@ source_group("源文件" FILES ${})
 set(ALL_FILES
     ${Animation}
     ${Component}
+    ${Component__Physics}
     ${Concurrent}
     ${DirectX12}
     ${Editor}
@@ -450,17 +455,6 @@ elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x86")
         INTERPROCEDURAL_OPTIMIZATION_RELEASE "TRUE"
     )
 endif()
-################################################################################
-# Include directories
-################################################################################
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x86")
-    target_include_directories(${PROJECT_NAME} PUBLIC
-        "$<$<CONFIG:Debug>:"
-            "${CMAKE_CURRENT_SOURCE_DIR}/../../Vendor/Include/glm"
-        ">"
-    )
-endif()
-
 ################################################################################
 # Compile definitions
 ################################################################################

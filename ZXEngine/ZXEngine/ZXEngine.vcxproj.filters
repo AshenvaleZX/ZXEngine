@@ -61,6 +61,9 @@
     <Filter Include="Animation">
       <UniqueIdentifier>{4f78d138-d672-47a6-b1fe-9a8003edc545}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\Physics">
+      <UniqueIdentifier>{fc01f6de-0886-41ea-901a-b014b7e11b5b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\CPPScripts\GameObject.cpp">
@@ -492,21 +495,6 @@
     <ClCompile Include="..\..\CPPScripts\PhysZ\ContactResolver.cpp">
       <Filter>PhysZ</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\Collider.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\BoxCollider.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\PlaneCollider.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\SphereCollider.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\ZRigidBody.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\CPPScripts\PhysZ\BVHNode.cpp">
       <Filter>PhysZ</Filter>
     </ClCompile>
@@ -527,6 +515,21 @@
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\Editor\EditorDialogBoxManager.cpp">
       <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\Physics\BoxCollider.cpp">
+      <Filter>Component\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\Physics\Collider.cpp">
+      <Filter>Component\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\Physics\PlaneCollider.cpp">
+      <Filter>Component\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\Physics\SphereCollider.cpp">
+      <Filter>Component\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\Physics\ZRigidBody.cpp">
+      <Filter>Component\Physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1004,21 +1007,6 @@
     <ClInclude Include="..\..\CPPScripts\PhysZ\PhysZ.h">
       <Filter>PhysZ</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\Collider.h">
-      <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\BoxCollider.h">
-      <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\PlaneCollider.h">
-      <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\SphereCollider.h">
-      <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\ZRigidBody.h">
-      <Filter>Component</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\CPPScripts\ModelUtil.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -1039,6 +1027,21 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Editor\EditorDialogBoxManager.h">
       <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\Physics\BoxCollider.h">
+      <Filter>Component\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\Physics\Collider.h">
+      <Filter>Component\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\Physics\PlaneCollider.h">
+      <Filter>Component\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\Physics\SphereCollider.h">
+      <Filter>Component\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\Physics\ZRigidBody.h">
+      <Filter>Component\Physics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

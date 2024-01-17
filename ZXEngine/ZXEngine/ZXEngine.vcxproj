@@ -96,7 +96,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Vendor\Include\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -164,20 +164,20 @@
     <ClCompile Include="..\..\CPPScripts\Animation\AnimationController.cpp" />
     <ClCompile Include="..\..\CPPScripts\Animation\NodeAnimation.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\Animator.cpp" />
-    <ClCompile Include="..\..\CPPScripts\Component\BoxCollider.cpp" />
-    <ClCompile Include="..\..\CPPScripts\Component\Collider.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\Component.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\GameLogic.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\Light.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\MeshRenderer.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\ParticleSystem.cpp" />
-    <ClCompile Include="..\..\CPPScripts\Component\PlaneCollider.cpp" />
-    <ClCompile Include="..\..\CPPScripts\Component\SphereCollider.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Component\Physics\BoxCollider.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Component\Physics\Collider.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Component\Physics\PlaneCollider.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Component\Physics\SphereCollider.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Component\Physics\ZRigidBody.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\Transform.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\UITextRenderer.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\UITextureRenderer.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\ZCamera.cpp" />
-    <ClCompile Include="..\..\CPPScripts\Component\ZRigidBody.cpp" />
     <ClCompile Include="..\..\CPPScripts\CubeMap.cpp" />
     <ClCompile Include="..\..\CPPScripts\Debug.cpp" />
     <ClCompile Include="..\..\CPPScripts\DirectX12\ZXD3D12DescriptorAllocator.cpp" />
@@ -321,20 +321,20 @@
     <ClInclude Include="..\..\CPPScripts\Animation\AnimationController.h" />
     <ClInclude Include="..\..\CPPScripts\Animation\NodeAnimation.h" />
     <ClInclude Include="..\..\CPPScripts\Component\Animator.h" />
-    <ClInclude Include="..\..\CPPScripts\Component\BoxCollider.h" />
-    <ClInclude Include="..\..\CPPScripts\Component\Collider.h" />
     <ClInclude Include="..\..\CPPScripts\Component\Component.h" />
     <ClInclude Include="..\..\CPPScripts\Component\GameLogic.h" />
     <ClInclude Include="..\..\CPPScripts\Component\Light.h" />
     <ClInclude Include="..\..\CPPScripts\Component\MeshRenderer.h" />
     <ClInclude Include="..\..\CPPScripts\Component\ParticleSystem.h" />
-    <ClInclude Include="..\..\CPPScripts\Component\PlaneCollider.h" />
-    <ClInclude Include="..\..\CPPScripts\Component\SphereCollider.h" />
+    <ClInclude Include="..\..\CPPScripts\Component\Physics\BoxCollider.h" />
+    <ClInclude Include="..\..\CPPScripts\Component\Physics\Collider.h" />
+    <ClInclude Include="..\..\CPPScripts\Component\Physics\PlaneCollider.h" />
+    <ClInclude Include="..\..\CPPScripts\Component\Physics\SphereCollider.h" />
+    <ClInclude Include="..\..\CPPScripts\Component\Physics\ZRigidBody.h" />
     <ClInclude Include="..\..\CPPScripts\Component\Transform.h" />
     <ClInclude Include="..\..\CPPScripts\Component\UITextRenderer.h" />
     <ClInclude Include="..\..\CPPScripts\Component\UITextureRenderer.h" />
     <ClInclude Include="..\..\CPPScripts\Component\ZCamera.h" />
-    <ClInclude Include="..\..\CPPScripts\Component\ZRigidBody.h" />
     <ClInclude Include="..\..\CPPScripts\Concurrent\LockFreeQueue.h" />
     <ClInclude Include="..\..\CPPScripts\Concurrent\Queue.h" />
     <ClInclude Include="..\..\CPPScripts\CubeMap.h" />
