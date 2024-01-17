@@ -1,6 +1,6 @@
 #pragma once
-#include "Component.h"
-#include "../PhysZ/PhysZ.h"
+#include "../Component.h"
+#include "../../PhysZ/PhysZ.h"
 
 namespace ZXEngine
 {
