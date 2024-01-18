@@ -67,6 +67,8 @@ namespace ZXEngine
 						DrawRigidBody(static_cast<ZRigidBody*>(iter.second));
 					else if (type == ComponentType::Animator)
 						DrawAnimator(static_cast<Animator*>(iter.second));
+					else if (type == ComponentType::SpringJoint)
+						DrawSpringJoint(static_cast<SpringJoint*>(iter.second));
 					else if (type == ComponentType::MeshRenderer)
 					{
 						auto meshRenderer = static_cast<MeshRenderer*>(iter.second);
@@ -744,5 +746,39 @@ namespace ZXEngine
 		const string& avatarName = component->mAvatarName;
 		ImGui::Text("Avatar           ");
 		ImGui::SameLine(); ImGui::Text(avatarName.c_str());
+	}
+
+	void EditorInspectorPanel::DrawSpringJoint(SpringJoint* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("SpringJoint"))
+			return;
+
+		// Connected Body
+		string connectedBodyPath = component->mConnectedGOPath;
+		ImGui::Text("Connected Body   ");
+		ImGui::SameLine(); ImGui::Text(connectedBodyPath.c_str());
+
+		// Anchor
+		Vector3 anchor = component->mAnchor;
+		ImVec4 v = ImVec4(anchor.x, anchor.y, anchor.z, 1.0f);
+		ImGui::Text("Anchor           ");
+		ImGui::SameLine(); ImGui::DragFloat3("##anchor", (float*)&v, 0.01f, -FLT_MAX, FLT_MAX);
+
+		// Connected Anchor
+		Vector3 connectedAnchor = component->mOtherAnchor;
+		ImVec4 c = ImVec4(connectedAnchor.x, connectedAnchor.y, connectedAnchor.z, 1.0f);
+		ImGui::Text("Connected Anchor ");
+		ImGui::SameLine(); ImGui::DragFloat3("##connectedAnchor", (float*)&c, 0.01f, -FLT_MAX, FLT_MAX);
+
+		// Rest Length
+		float restLength = component->mRestLength;
+		ImGui::Text("Rest Length      ");
+		ImGui::SameLine(); ImGui::DragFloat("##restLength", &restLength, 0.01f, 0.0f, FLT_MAX);
+
+		// Spring Constant
+		float springConstant = component->mSpringConstant;
+		ImGui::Text("Spring Constant  ");
+		ImGui::SameLine(); ImGui::DragFloat("##springConstant", &springConstant, 0.01f, 0.0f, FLT_MAX);
 	}
 }
