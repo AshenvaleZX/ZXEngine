@@ -8,11 +8,11 @@ namespace ZXEngine
 	{
 		string path;
 		Scene* scene = nullptr;
-		~SceneInfo() { delete scene; };
 	};
 
 	class SceneManager
 	{
+		friend class Scene;
 	public:
 		static void Create();
 		static SceneManager* GetInstance();

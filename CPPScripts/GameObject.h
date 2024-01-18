@@ -14,6 +14,7 @@
 #include "Component/Physics/PlaneCollider.h"
 #include "Component/Physics/SphereCollider.h"
 #include "Component/Physics/ZRigidBody.h"
+#include "Component/Physics/SpringJoint.h"
 #include "Component/Animator.h"
 #include "PhysZ/PhysZEnumStruct.h"
 
@@ -37,7 +38,7 @@ namespace ZXEngine
 		PhysZ::ColliderType mColliderType = PhysZ::ColliderType::None;
 
 		GameObject() {};
-		GameObject(PrefabStruct* prefab);
+		GameObject(PrefabStruct* prefab, GameObject* parent = nullptr);
 		~GameObject();
 
 		template<class T> 
@@ -47,9 +48,11 @@ namespace ZXEngine
 
 		GameObject* FindChildren(const string& path);
 		void AddComponent(ComponentType type, Component* component);
+		void EndConstruction();
 
 	private:
 		map<ComponentType, Component*> components = {};
+		vector<std::function<void()>> mConstructionCallBacks;
 
 		void ParseTransform(json data);
 		void ParseMeshRenderer(json data);
@@ -63,6 +66,7 @@ namespace ZXEngine
 		void ParsePlaneCollider(json data);
 		void ParseSphereCollider(json data);
 		void ParseRigidBody(json data);
+		void ParseSpringJoint(json data);
 	};
 
 	template<class T>

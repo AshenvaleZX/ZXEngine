@@ -2,7 +2,6 @@
 #include "Material.h"
 #include "ModelUtil.h"
 #include "SceneManager.h"
-#include "PhysZ/Force/FGGravity.h"
 
 namespace ZXEngine
 {
@@ -40,10 +39,11 @@ namespace ZXEngine
 		return GameObject::Find(children, paths, recursion);
 	}
 
-	GameObject::GameObject(PrefabStruct* prefab)
+	GameObject::GameObject(PrefabStruct* prefab, GameObject* parent)
 	{
 		name = prefab->name;
 		layer = prefab->layer;
+		this->parent = parent;
 
 		for (auto& component : prefab->components)
 		{
@@ -71,14 +71,15 @@ namespace ZXEngine
 				ParseSphereCollider(component);
 			else if (component["Type"] == "RigidBody")
 				ParseRigidBody(component);
+			else if (component["Type"] == "SpringJoint")
+				ParseSpringJoint(component);
 			else
 				Debug::LogError("Try parse undefined component type: " + component["Type"]);
 		}
 
 		for (auto subPrefab : prefab->children)
 		{
-			auto subGameObject = new GameObject(subPrefab);
-			subGameObject->parent = this;
+			auto subGameObject = new GameObject(subPrefab, this);
 			children.push_back(subGameObject);
 		}
 	}
@@ -113,6 +114,8 @@ namespace ZXEngine
 				delete static_cast<ZRigidBody*>(iter.second);
 			else if (iter.first == ComponentType::Animator)
 				delete static_cast<Animator*>(iter.second);
+			else if (iter.first == ComponentType::SpringJoint)
+				delete static_cast<SpringJoint*>(iter.second);
 			else
 				Debug::LogError("Try delete undefined component type: %s", static_cast<int>(iter.first));
 		}
@@ -125,6 +128,17 @@ namespace ZXEngine
 	{
 		component->gameObject = this;
 		components.insert(pair<ComponentType, Component*>(type, component));
+	}
+
+	void GameObject::EndConstruction()
+	{
+		for (auto& callback : mConstructionCallBacks)
+			callback();
+
+		mConstructionCallBacks.clear();
+
+		for (auto child : children)
+			child->EndConstruction();
 	}
 
 	void GameObject::ParseTransform(json data)
@@ -381,5 +395,21 @@ namespace ZXEngine
 				rigidBody->mRigidBody->SetInertiaTensor(sphereCollider->mCollider->GetInertiaTensor(rigidBody->mRigidBody->GetMass()));
 			}
 		}
+	}
+
+	void GameObject::ParseSpringJoint(json data)
+	{
+		SpringJoint* springJoint = AddComponent<SpringJoint>();
+
+		springJoint->mConnectedGOPath = data["Connected"];
+		springJoint->mRestLength = data["RestLength"];
+		springJoint->mSpringConstant = data["SpringConstant"];
+		springJoint->mAnchor = Vector3(data["Anchor"][0], data["Anchor"][1], data["Anchor"][2]);
+		springJoint->mOtherAnchor = Vector3(data["OtherAnchor"][0], data["OtherAnchor"][1], data["OtherAnchor"][2]);
+
+		mConstructionCallBacks.push_back([springJoint]()
+		{
+			springJoint->Init();
+		});
 	}
 }

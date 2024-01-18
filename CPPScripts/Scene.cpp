@@ -9,6 +9,7 @@
 #include "RenderAPI.h"
 #include "PhysZ/PhysZ.h"
 #include "Time.h"
+#include "SceneManager.h"
 
 namespace ZXEngine
 {
@@ -26,6 +27,12 @@ namespace ZXEngine
 		auto curPipelineType = ProjectSetting::renderPipelineType;
 		ProjectSetting::renderPipelineType = renderPipelineType;
 
+		// 临时切换SceneManager里的当前场景为this，因为GameObject在构造的时候可能会需要用到当前这个场景
+		auto tmpScene = new SceneInfo();
+		tmpScene->scene = this;
+		auto curScene = SceneManager::GetInstance()->curScene;
+		SceneManager::GetInstance()->curScene = tmpScene;
+
 		for (auto prefab : sceneStruct->prefabs)
 		{
 			auto gameObject = new GameObject(prefab);
@@ -33,7 +40,14 @@ namespace ZXEngine
 			mPhyScene->AddGameObject(gameObject);
 		}
 
+		for (auto gameObject : gameObjects)
+		{
+			gameObject->EndConstruction();
+		}
+
 		ProjectSetting::renderPipelineType = curPipelineType;
+		SceneManager::GetInstance()->curScene = curScene;
+		delete tmpScene;
 	}
 
 	Scene::~Scene()

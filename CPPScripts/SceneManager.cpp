@@ -92,6 +92,7 @@ namespace ZXEngine
 		map<string, SceneInfo*>::iterator iter = scenes.find(name);
 		if (iter != scenes.end())
 		{
+			delete iter->second->scene;
 			delete iter->second;
 			scenes.erase(iter);
 		}
@@ -105,6 +106,7 @@ namespace ZXEngine
 	{
 		for (auto& iter : scenes)
 		{
+			delete iter.second->scene;
 			delete iter.second;
 		}
 		scenes.clear();
