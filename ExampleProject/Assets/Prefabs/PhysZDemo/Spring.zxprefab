@@ -1,0 +1,114 @@
+{
+    "Name": "Spring",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 0, 8],
+            "Rotation": [0, 0, 0],
+            "Scale": [1, 1, 1]
+        }
+    ],
+    "GameObjects":
+    [
+        {
+            "Name": "SpringObj",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 0, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [2, 2, 2]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Mesh": "Models/Spring.obj",
+                    "Material": "Materials/BlinnPhongMetal.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "GameLogic",
+                    "Lua": "Scripts/SpringMove.lua"
+                }
+            ]
+        },
+        {
+            "Name": "JointObj1",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 4, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [4, 4, 4]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/BlinnPhongWood.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "SphereCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.5,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Radius": 2
+                },
+                {
+                    "Type": "RigidBody",
+                    "Mass": 1,
+                    "Damping": 0,
+                    "AngularDamping": 0.05,
+                    "UseGravity": false
+                }
+            ]
+        },
+        {
+            "Name": "JointObj2",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, -4, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [4, 4, 4]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/BlinnPhongWood.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "SphereCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.5,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Radius": 2
+                },
+                {
+                    "Type": "RigidBody",
+                    "Mass": 1,
+                    "Damping": 0,
+                    "AngularDamping": 0.05,
+                    "UseGravity": false
+                },
+                {
+                    "Type": "SpringJoint",
+                    "Connected": "Spring/JointObj1",
+                    "Anchor": [0, 0, 0],
+                    "OtherAnchor": [0, 0, 0],
+                    "RestLength": 7,
+                    "SpringConstant": 10
+                }
+            ]
+        }
+    ]
+}

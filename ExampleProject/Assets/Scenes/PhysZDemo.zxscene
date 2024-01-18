@@ -14,6 +14,7 @@
         "Prefabs/PhysZDemo/Box.zxprefab",
         "Prefabs/PhysZDemo/Box2.zxprefab",
         "Prefabs/PhysZDemo/Sphere.zxprefab",
+        "Prefabs/PhysZDemo/Spring.zxprefab",
         "Prefabs/PhysZDemo/Plane.zxprefab",
         "Prefabs/PhysZDemo/DirLight.zxprefab",
         "Prefabs/MainCamera3.zxprefab",
