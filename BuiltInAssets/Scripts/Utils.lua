@@ -1,6 +1,6 @@
 Utils = {}
 
-function Utils:StringSplit(oriStr, p)
+function Utils.StringSplit(oriStr, p)
     if not oriStr or not p then
         return {}
     end
@@ -18,10 +18,6 @@ function Utils:StringSplit(oriStr, p)
 		nSplitIndex = nSplitIndex + 1
 	end
 	return nSplitArray
-end
-
-function Utils:Clamp(num, min, max)
-    return math.max(math.min(num, max), min)
 end
 
 local logType = 0

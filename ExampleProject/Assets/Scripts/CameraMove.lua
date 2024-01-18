@@ -34,7 +34,7 @@ function CameraMove:UnregisterCameraControl()
 end
 
 function CameraMove:MouseMoveCallBack(args)
-    local argList = Utils:StringSplit(args, '|')
+    local argList = Utils.StringSplit(args, '|')
     local xpos = tonumber(argList[1])
     local ypos = tonumber(argList[2])
     if self.firstMouse then
@@ -58,7 +58,7 @@ function CameraMove:RotateAngleOfView(horizontalOffset, verticalOffset)
 
     local eulerAngle = self.trans:GetEulerAngles()
     eulerAngle.x = eulerAngle.x - verticalOffset
-    eulerAngle.x = Utils:Clamp(eulerAngle.x, -89, 89)
+    eulerAngle.x = Math.Clamp(eulerAngle.x, -89, 89)
     eulerAngle.y = eulerAngle.y + horizontalOffset
     self.trans:SetEulerAngles(eulerAngle.x, eulerAngle.y, eulerAngle.z)
 end
