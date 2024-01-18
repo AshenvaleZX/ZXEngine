@@ -46,6 +46,8 @@ set(Component__Physics
     "../../CPPScripts/Component/Physics/PlaneCollider.h"
     "../../CPPScripts/Component/Physics/SphereCollider.cpp"
     "../../CPPScripts/Component/Physics/SphereCollider.h"
+    "../../CPPScripts/Component/Physics/SpringJoint.cpp"
+    "../../CPPScripts/Component/Physics/SpringJoint.h"
     "../../CPPScripts/Component/Physics/ZRigidBody.cpp"
     "../../CPPScripts/Component/Physics/ZRigidBody.h"
 )

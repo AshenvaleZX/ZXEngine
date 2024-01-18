@@ -14,9 +14,9 @@ namespace ZXEngine
 
 		private:
 			// 弹簧在当前对象上的连接点(对象的局部空间)
-			Vector3 mConnectionPoint;
+			Vector4 mConnectionPoint;
 			// 弹簧在另一个对象上的连接点(另一个对象的局部空间)
-			Vector3 mOtherConnectionPoint;
+			Vector4 mOtherConnectionPoint;
 			// 弹簧另一端的刚体
 			RigidBody* mOther;
 			// 弹簧系数

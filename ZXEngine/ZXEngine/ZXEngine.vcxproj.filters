@@ -531,6 +531,9 @@
     <ClCompile Include="..\..\CPPScripts\Component\Physics\ZRigidBody.cpp">
       <Filter>Component\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\Physics\SpringJoint.cpp">
+      <Filter>Component\Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\GameObject.h">
@@ -1041,6 +1044,9 @@
       <Filter>Component\Physics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Component\Physics\ZRigidBody.h">
+      <Filter>Component\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\Physics\SpringJoint.h">
       <Filter>Component\Physics</Filter>
     </ClInclude>
   </ItemGroup>

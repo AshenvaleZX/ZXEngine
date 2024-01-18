@@ -173,6 +173,7 @@
     <ClCompile Include="..\..\CPPScripts\Component\Physics\Collider.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\Physics\PlaneCollider.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\Physics\SphereCollider.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Component\Physics\SpringJoint.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\Physics\ZRigidBody.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\Transform.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\UITextRenderer.cpp" />
@@ -330,6 +331,7 @@
     <ClInclude Include="..\..\CPPScripts\Component\Physics\Collider.h" />
     <ClInclude Include="..\..\CPPScripts\Component\Physics\PlaneCollider.h" />
     <ClInclude Include="..\..\CPPScripts\Component\Physics\SphereCollider.h" />
+    <ClInclude Include="..\..\CPPScripts\Component\Physics\SpringJoint.h" />
     <ClInclude Include="..\..\CPPScripts\Component\Physics\ZRigidBody.h" />
     <ClInclude Include="..\..\CPPScripts\Component\Transform.h" />
     <ClInclude Include="..\..\CPPScripts\Component\UITextRenderer.h" />
