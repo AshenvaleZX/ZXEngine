@@ -9,6 +9,25 @@ extern "C"
 #include "../External/Lua/lauxlib.h"
 }
 
+static int Find(lua_State* L)
+{
+	string path = lua_tostring(L, -1);
+	ZXEngine::GameObject* go = ZXEngine::GameObject::Find(path);
+	if (go == nullptr)
+	{
+		lua_pushnil(L);
+		return 1;
+	}
+
+	size_t nbytes = sizeof(ZXEngine::GameObject);
+	ZXEngine::GameObject** t = (ZXEngine::GameObject**)lua_newuserdata(L, nbytes);
+	*t = go;
+	luaL_getmetatable(L, "ZXEngine.GameObject");
+	lua_setmetatable(L, -2);
+
+	return 1;
+}
+
 static int GetComponent(lua_State* L)
 {
 	ZXEngine::GameObject** data = (ZXEngine::GameObject**)luaL_checkudata(L, -2, "ZXEngine.GameObject");
@@ -47,12 +66,13 @@ static int GetComponent(lua_State* L)
 }
 
 static const luaL_Reg GameObject_Funcs[] = {
-	{NULL, NULL}
+	{ "Find", Find },
+	{ NULL, NULL }
 };
 
 static const luaL_Reg GameObject_Funcs_Meta[] = {
-	{"GetComponent", GetComponent},
-	{NULL, NULL}
+	{ "GetComponent", GetComponent },
+	{ NULL, NULL }
 };
 
 LUAMOD_API int luaopen_GameObject(lua_State* L) {
