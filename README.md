@@ -100,7 +100,7 @@ Here is a GIF of the simulation of rigid mechanics in PhysZ (the size and framer
 
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/PhysZ0.gif)
 
-使用PhysZ物理引擎只需要关心两个Component，Collider和Rigidbody。其中Collider目前提供了三种类型：BoxCollider，PlaneCollider和SphereCollider。下面是这两个Component在引擎里编辑器里的截图：
+使用基本的PhysZ物理引擎只需要关心两个Component，Collider和Rigidbody。其中Collider目前提供了三种类型：BoxCollider，PlaneCollider和SphereCollider。下面是这两个Component在引擎里编辑器里的截图：
 
 Using the PhysZ engine involves only two Components, Collider and Rigidbody. Collider currently provides three types: BoxCollider, PlaneCollider and SphereCollider. The following are screenshots of these two Components in the editor in the engine:
 
@@ -109,6 +109,12 @@ Using the PhysZ engine involves only two Components, Collider and Rigidbody. Col
 各参数作用顾名思义即可。其中Damping参数是模拟各种形式的阻尼效果的，Linear Damping和Angular Damping分别对应线性运动和角运动，数值为0代表无阻尼。
 
 The function of each parameter is just as the name implies. And the Damping parameter is used to simulate various forms of damping effects. Linear Damping and Angular Damping correspond to linear motion and angular motion respectively. A value of 0 represents no damping.
+
+弹簧组件如图，类似Unity的SpringJoint，参数分别是连接对象，自己和连接对象的锚点(各自的模型空间)，弹簧的松弛长度和弹簧系数。
+
+The spring component is shown in the figure, similar to Unity's SpringJoint. The parameters are the connection object, the anchor points of itself and the connection object (their respective model spaces), the rest length and spring coefficient of the spring.
+
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/PhysZ2.png)
 
 ## 骨骼蒙皮动画系统(Skeletal Animation System)
 
