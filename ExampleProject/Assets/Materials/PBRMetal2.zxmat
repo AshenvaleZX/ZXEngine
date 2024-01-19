@@ -1,0 +1,40 @@
+{
+    "Type": "Material",
+    "Shader": "Shaders/BasicPBR.zxshader",
+    "Textures":
+    [
+        {
+            "UniformName": "_AlbedoMap",
+            "Path": "Textures/PBRMetal2/BaseColor.jpg"
+        },
+        {
+            "UniformName": "_NormalMap",
+            "Path": "Textures/PBRMetal2/Normal.png"
+        },
+        {
+            "UniformName": "_MetallicMap",
+            "Path": "Textures/PBRMetal2/Metallic.jpg"
+        },
+        {
+            "UniformName": "_RoughnessMap",
+            "Path": "Textures/PBRMetal2/Roughness.jpg"
+        },
+        {
+            "UniformName": "_BRDF_LUT",
+            "Path": "Textures/ibl_brdf_lut.png"
+        }
+    ],
+    "CubeMaps":
+    [
+        {
+            "UniformName": "_PrefilterMap",
+            "Path": "Textures/BrightSky/",
+            "Right": "right.png",
+            "Left": "left.png",
+            "Up": "up.png",
+            "Down": "down.png",
+            "Front": "front.png",
+            "Back": "back.png"
+        }
+    ]
+}

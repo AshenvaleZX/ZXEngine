@@ -11,7 +11,8 @@
     },
     "GameObjects": 
     [
-        "Prefabs/CyborgWeapon.zxprefab",
+        "Prefabs/PBRDemo/MetalSphere.zxprefab",
+        "Prefabs/PBRDemo/CyborgWeapon.zxprefab",
         "Prefabs/MainCamera.zxprefab",
         "Prefabs/PointLight.zxprefab",
         "Prefabs/UI/FPSText.zxprefab"

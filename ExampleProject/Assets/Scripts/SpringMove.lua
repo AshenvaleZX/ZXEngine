@@ -15,8 +15,12 @@ function SpringMove:Update()
     local pos2 = self.jointTrans2:GetLocalPosition()
     self.trans:SetLocalPosition((pos1.x + pos2.x) / 2, (pos1.y + pos2.y) / 2, (pos1.z + pos2.z) / 2)
     
-    local dis = Math.MagnitudeVec3(Math.SubVec3(pos1, pos2))
+    local dir = Math.SubVec3(pos1, pos2)
+    local dis = Math.MagnitudeVec3(dir)
     self.trans:SetLocalScale(self.originScale.x, dis * 0.4, self.originScale.z)
+
+    local degree = math.atan(dir.y, dir.x) * 180 / math.pi - 90
+    self.trans:SetLocalEulerAngles(0, 0, degree)
 end
 
 return SpringMove

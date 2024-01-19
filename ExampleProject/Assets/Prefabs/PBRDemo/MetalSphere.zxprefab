@@ -1,0 +1,19 @@
+{
+    "Name": "MetalSphere",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 5, 18],
+            "Rotation": [0, 90, 0],
+            "Scale": [10, 10, 10]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Geometry": 1,
+            "Material": "Materials/PBRMetal1.zxmat",
+            "CastShadow": true,
+            "ReceiveShadow": false
+        }
+    ]
+}

@@ -17,14 +17,14 @@
             [
                 {
                     "Type": "Transform",
-                    "Position": [0, 0, 0],
-                    "Rotation": [0, 0, 0],
-                    "Scale": [2, 2, 2]
+                    "Position": [2, -0.5, 0],
+                    "Rotation": [0, 0, 23.95],
+                    "Scale": [2, 3.93, 2]
                 },
                 {
                     "Type": "MeshRenderer",
                     "Mesh": "Models/Spring.obj",
-                    "Material": "Materials/BlinnPhongMetal.zxmat",
+                    "Material": "Materials/PBRMetal2.zxmat",
                     "CastShadow": true,
                     "ReceiveShadow": false
                 },
@@ -74,7 +74,7 @@
             [
                 {
                     "Type": "Transform",
-                    "Position": [0, -4, 0],
+                    "Position": [4, -5, 0],
                     "Rotation": [0, 0, 0],
                     "Scale": [4, 4, 4]
                 },
@@ -98,7 +98,7 @@
                     "Mass": 1,
                     "Damping": 0,
                     "AngularDamping": 0.05,
-                    "UseGravity": false
+                    "UseGravity": true
                 },
                 {
                     "Type": "SpringJoint",
