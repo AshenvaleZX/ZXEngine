@@ -4,6 +4,7 @@
 
 namespace ZXEngine
 {
+	class Cloth;
 	class GameObject;
 	namespace PhysZ
 	{
@@ -25,6 +26,8 @@ namespace ZXEngine
 			void AddGameObject(GameObject* gameObject);
 
 		private:
+			// 当前场景中的所有布料
+			vector<Cloth*> mAllCloths;
 			// 当前场景中的所有刚体
 			vector<pair<GameObject*, RigidBody*>> mAllRigidBodyGO;
 			// Bounding Volume Hierarchy (BVH)树的根节点

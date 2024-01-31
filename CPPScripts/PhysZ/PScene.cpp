@@ -7,6 +7,7 @@
 #include "ContactResolver.h"
 #include "BoundingVolume/BoundingSphere.h"
 #include "../GameObject.h"
+#include "../DynamicMesh.h"
 
 namespace ZXEngine
 {
@@ -39,6 +40,15 @@ namespace ZXEngine
 				// 更新刚体在这一帧的相关数据
 				iter.second->CalculateDerivedData();
 			}
+
+			for (auto cloth : mAllCloths)
+			{
+				for (auto& iter : cloth->mParticles)
+				{
+					iter.first->ClearAccumulators();
+					iter.first->CalculateDerivedData();
+				}
+			}
 		}
 
 		void PScene::Update(float deltaTime)
@@ -50,6 +60,14 @@ namespace ZXEngine
 			{
 				// 更新刚体的位置和旋转
 				iter.second->Integrate(deltaTime);
+			}
+
+			for (auto cloth : mAllCloths)
+			{
+				for (auto& iter : cloth->mParticles)
+				{
+					iter.first->Integrate(deltaTime);
+				}
 			}
 
 			// 生成潜在碰撞
@@ -88,6 +106,28 @@ namespace ZXEngine
 					iter.second->mBVHNode->mBoundingVolume.mCenter = iter.second->GetPosition();
 					iter.second->mBVHNode->UpdateBoundingVolume();
 				}
+			}
+
+			for (auto cloth : mAllCloths)
+			{
+				Vector3 wPos = cloth->gameObject->GetComponent<Transform>()->GetPosition();
+
+				for (size_t i = 0; i < cloth->mParticles.size(); i++)
+				{
+					Vector3 pPos = cloth->mParticles[i].first->GetPosition();
+					Vector3 lPos = pPos - wPos;
+
+					cloth->mDynamicMesh->mVertices[i].Position = lPos;
+
+					// 更新BV的位置
+					if (cloth->mParticles[i].first->mBVHNode)
+					{
+						cloth->mParticles[i].first->mBVHNode->mBoundingVolume.mCenter = pPos;
+						cloth->mParticles[i].first->mBVHNode->UpdateBoundingVolume();
+					}
+				}
+
+				cloth->mDynamicMesh->UpdateData();
 			}
 		}
 
@@ -134,6 +174,20 @@ namespace ZXEngine
 					BoundingSphere bv(pos, radius);
 					AddBoundingVolume(bv, rigidBody);
 				}
+			}
+			else if (gameObject->mColliderType == PhysZ::ColliderType::Cloth)
+			{
+				auto cloth = gameObject->GetComponent<Cloth>();
+
+				for (auto& iter : cloth->mParticles)
+				{
+					float radius = iter.second->mHalfSize.GetMagnitude();
+					Vector3 pos = iter.first->GetPosition();
+					BoundingSphere bv(pos, radius);
+					AddBoundingVolume(bv, iter.first);
+				}
+
+				mAllCloths.push_back(cloth);
 			}
 
 			for (auto child : gameObject->children)

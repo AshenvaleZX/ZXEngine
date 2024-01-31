@@ -37,12 +37,12 @@ namespace ZXEngine
 		{
 			auto gameObject = new GameObject(prefab);
 			gameObjects.push_back(gameObject);
-			mPhyScene->AddGameObject(gameObject);
 		}
 
 		for (auto gameObject : gameObjects)
 		{
 			gameObject->EndConstruction();
+			mPhyScene->AddGameObject(gameObject);
 		}
 
 		ProjectSetting::renderPipelineType = curPipelineType;
