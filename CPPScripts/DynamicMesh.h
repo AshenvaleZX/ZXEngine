@@ -9,6 +9,7 @@ namespace ZXEngine
     public:
         DynamicMesh(uint32_t vertexSize, uint32_t indexSize);
 
+        void UpdateData();
         void UpdateData(const vector<Vertex>& vertices, const vector<uint32_t>& indices);
 
     private:
