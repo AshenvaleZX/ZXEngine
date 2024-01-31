@@ -1,6 +1,7 @@
 #include "ModelUtil.h"
 #include "PublicStruct.h"
 #include "StaticMesh.h"
+#include "DynamicMesh.h"
 #include "GeometryGenerator.h"
 #include "Animation/Animation.h"
 #include "Animation/NodeAnimation.h"
@@ -11,12 +12,13 @@ namespace ZXEngine
     const unordered_map<GeometryType, string> GeometryTypeName =
     {
         { GeometryType::Box,      "Box"      }, { GeometryType::Sphere, "Sphere" }, { GeometryType::TessellationSphere, "TessellationSphere" },
-        { GeometryType::Cylinder, "Cylinder" }, { GeometryType::Plane,  "Plane"  }, { GeometryType::Quad,               "Quad"               }
+        { GeometryType::Cylinder, "Cylinder" }, { GeometryType::Plane,  "Plane"  }, { GeometryType::Quad,               "Quad"               },
+		{ GeometryType::DynamicPlane, "DynamicPlane" }
     };
 
     Mesh* ModelUtil::GenerateGeometry(GeometryType type)
     {
-        StaticMesh* mesh = nullptr;
+        Mesh* mesh = nullptr;
 
         if (type == GeometryType::Box)
         {
@@ -59,6 +61,13 @@ namespace ZXEngine
             mesh->mAABBSizeX = 1.0f;
             mesh->mAABBSizeY = 1.0f;
             mesh->mAABBSizeZ = 0.0f;
+        }
+        else if (type == GeometryType::DynamicPlane)
+        {
+			mesh = GeometryGenerator::CreateDynamicPlane(6.0f, 6.0f, 11, 11);
+			mesh->mAABBSizeX = 6.0f;
+			mesh->mAABBSizeY = 0.0f;
+			mesh->mAABBSizeZ = 6.0f;
         }
         else
         {

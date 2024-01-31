@@ -5,6 +5,7 @@ namespace ZXEngine
 {
 	struct Vertex;
 	class StaticMesh;
+	class DynamicMesh;
 	class GeometryGenerator
 	{
 	public:
@@ -19,8 +20,11 @@ namespace ZXEngine
 		// 面朝内部的单位立方体
 		static StaticMesh* CreateSimpleInwardBox();
 
+		static DynamicMesh* CreateDynamicPlane(float xLength, float zLength, uint32_t xSplit, uint32_t zSplit);
+
 	private:
 		static Vertex MidPoint(const Vertex& v0, const Vertex& v1);
 		static void Subdivide(vector<Vertex>& vertices, vector<uint32_t>& indices);
+		static void CreatePlaneVertices(float xLength, float zLength, uint32_t xSplit, uint32_t zSplit, vector<Vertex>& vertices, vector<uint32_t>& indices);
 	};
 }

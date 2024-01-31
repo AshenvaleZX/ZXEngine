@@ -1,5 +1,6 @@
 #include "GeometryGenerator.h"
 #include "StaticMesh.h"
+#include "DynamicMesh.h"
 
 namespace ZXEngine
 {
@@ -381,6 +382,13 @@ namespace ZXEngine
 		vector<Vertex> vertices;
 		vector<uint32_t> indices;
 
+		CreatePlaneVertices(xLength, zLength, xSplit, zSplit, vertices, indices);
+
+		return new StaticMesh(vertices, indices);
+	}
+
+	void GeometryGenerator::CreatePlaneVertices(float xLength, float zLength, uint32_t xSplit, uint32_t zSplit, vector<Vertex>& vertices, vector<uint32_t>& indices)
+	{
 		uint32_t vertexCount = xSplit * zSplit;
 		uint32_t faceCount = (xSplit - 1) * (zSplit - 1) * 2;
 
@@ -429,8 +437,6 @@ namespace ZXEngine
 				k += 6;
 			}
 		}
-
-		return new StaticMesh(vertices, indices);
 	}
 
 	StaticMesh* GeometryGenerator::CreateQuad(float xLength, float yLength)
@@ -578,6 +584,19 @@ namespace ZXEngine
 		}
 
 		return new StaticMesh(vertices, indices);
+	}
+
+	DynamicMesh* GeometryGenerator::CreateDynamicPlane(float xLength, float zLength, uint32_t xSplit, uint32_t zSplit)
+	{
+		vector<Vertex> vertices;
+		vector<uint32_t> indices;
+
+		CreatePlaneVertices(xLength, zLength, xSplit, zSplit, vertices, indices);
+
+		DynamicMesh* mesh = new DynamicMesh(static_cast<uint32_t>(vertices.size()), static_cast<uint32_t>(indices.size()));
+		mesh->UpdateData(vertices, indices);
+
+		return mesh;
 	}
 
 	Vertex GeometryGenerator::MidPoint(const Vertex& v0, const Vertex& v1)
