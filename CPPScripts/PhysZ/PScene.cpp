@@ -22,7 +22,12 @@ namespace ZXEngine
 
 		PScene::~PScene() 
 		{
+			delete mCollisionData;
 			delete mContactResolver;
+			delete[] mPotentialContacts;
+
+			if (mBVHRoot)
+				delete mBVHRoot;
 		};
 
 		void PScene::BeginFrame()
