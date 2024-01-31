@@ -1,0 +1,27 @@
+{
+    "Name": "Cloth",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [-8, -0.5, 5],
+            "Rotation": [0, 0, 0],
+            "Scale": [1, 1, 1]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Geometry": 6,
+            "Material": "Materials/Fabric.zxmat",
+            "CastShadow": true,
+            "ReceiveShadow": false
+        },
+        {
+            "Type": "Cloth",
+            "Mass": 2.0,
+            "Friction": 1.0,
+            "BendStiffness": 0.05,
+            "StretchStiffness": 5.0,
+            "UseGravity": true
+        }
+    ]
+}

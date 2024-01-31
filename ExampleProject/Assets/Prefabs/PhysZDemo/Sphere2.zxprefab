@@ -1,0 +1,34 @@
+{
+    "Name": "Sphere2",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [-8, -3, 5],
+            "Rotation": [0, 0, 0],
+            "Scale": [4, 4, 4]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Geometry": 1,
+            "Material": "Materials/BlinnPhongWood.zxmat",
+            "CastShadow": true,
+            "ReceiveShadow": true
+        },
+        {
+            "Type": "SphereCollider",
+            "Friction": 1.0,
+            "Bounciness": 0.5,
+            "FrictionCombine": 0,
+            "BounceCombine": 0,
+            "Radius": 2
+        },
+        {
+            "Type": "RigidBody",
+            "Mass": 10000,
+            "Damping": 0,
+            "AngularDamping": 0.05,
+            "UseGravity": false
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "Type": "Material",
+    "Shader": "Shaders/BlinnPhong_PointLight.zxshader",
+    "Float":
+    [
+        {
+            "UniformName": "_Ambient",
+            "Value": 0.1
+        },
+        {
+            "UniformName": "_Specular",
+            "Value": 0.05
+        }
+    ],
+    "Textures":
+    [
+        {
+            "UniformName": "_Texture1",
+            "Path": "Textures/fabric.jpg"
+        }
+    ]
+}
