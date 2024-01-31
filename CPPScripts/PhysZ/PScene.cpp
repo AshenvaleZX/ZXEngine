@@ -132,6 +132,45 @@ namespace ZXEngine
 					}
 				}
 
+				// 行数(Z)
+				size_t row = 11;
+				// 列数(X)
+				size_t col = 11;
+				// 从后向前
+				for (size_t i = 1; i < (row - 1); i++)
+				{
+					// 从左向右
+					for (size_t j = 1; j < (col - 1); j++)
+					{
+						// 左
+						size_t pLeft = i * col + j - 1;
+						// 右
+						size_t pRight = i * col + j + 1;
+						// 后
+						size_t pBack = (i - 1) * col + j;
+						// 前
+						size_t pFront = (i + 1) * col + j;
+
+						if (i == 0)
+							pBack = i * col + j;
+						else if (i == (row - 1))
+							pFront = i * col + j;
+
+						if (j == 0)
+							pLeft = i * col + j;
+						else if (j == (col - 1))
+							pRight = i * col + j;
+
+						Vector3 normal = Math::Cross(
+							cloth->mDynamicMesh->mVertices[pLeft].Position - cloth->mDynamicMesh->mVertices[pRight].Position,
+							cloth->mDynamicMesh->mVertices[pBack].Position - cloth->mDynamicMesh->mVertices[pFront].Position
+						);
+						normal.Normalize();
+
+						cloth->mDynamicMesh->mVertices[i * col + j].Normal = normal;
+					}
+				}
+
 				cloth->mDynamicMesh->UpdateData();
 			}
 		}

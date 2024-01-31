@@ -402,9 +402,11 @@ namespace ZXEngine
 		float dv = 1.0f / (zSplit - 1);
 
 		vertices.resize(vertexCount);
+		// 从后向前
 		for (size_t i = 0; i < zSplit; i++)
 		{
 			float z = halfDepth - i * dz;
+			// 从左向右
 			for (size_t j = 0; j < xSplit; j++)
 			{
 				float x = -halfWidth + j * dx;

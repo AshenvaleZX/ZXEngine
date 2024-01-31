@@ -48,8 +48,10 @@ namespace ZXEngine
 		uint32_t row = 11;
 		// 列数(X)
 		uint32_t col = 11;
+		// 从后向前
 		for (uint32_t i = 0; i < row; i++)
 		{
+			// 从左向右
 			for (uint32_t j = 0; j < col; j++)
 			{
 				uint32_t otherIdx = 0;
