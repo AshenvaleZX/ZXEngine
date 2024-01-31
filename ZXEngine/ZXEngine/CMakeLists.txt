@@ -40,6 +40,8 @@ source_group("Component" FILES ${Component})
 set(Component__Physics
     "../../CPPScripts/Component/Physics/BoxCollider.cpp"
     "../../CPPScripts/Component/Physics/BoxCollider.h"
+    "../../CPPScripts/Component/Physics/Cloth.cpp"
+    "../../CPPScripts/Component/Physics/Cloth.h"
     "../../CPPScripts/Component/Physics/Collider.cpp"
     "../../CPPScripts/Component/Physics/Collider.h"
     "../../CPPScripts/Component/Physics/PlaneCollider.cpp"

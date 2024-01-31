@@ -15,6 +15,7 @@ namespace ZXEngine
 			Box,
 			Plane,
 			Sphere,
+			Cloth,
 		};
 
 		enum class CombineType

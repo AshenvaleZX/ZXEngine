@@ -170,6 +170,7 @@
     <ClCompile Include="..\..\CPPScripts\Component\MeshRenderer.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\ParticleSystem.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\Physics\BoxCollider.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Component\Physics\Cloth.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\Physics\Collider.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\Physics\PlaneCollider.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\Physics\SphereCollider.cpp" />
@@ -328,6 +329,7 @@
     <ClInclude Include="..\..\CPPScripts\Component\MeshRenderer.h" />
     <ClInclude Include="..\..\CPPScripts\Component\ParticleSystem.h" />
     <ClInclude Include="..\..\CPPScripts\Component\Physics\BoxCollider.h" />
+    <ClInclude Include="..\..\CPPScripts\Component\Physics\Cloth.h" />
     <ClInclude Include="..\..\CPPScripts\Component\Physics\Collider.h" />
     <ClInclude Include="..\..\CPPScripts\Component\Physics\PlaneCollider.h" />
     <ClInclude Include="..\..\CPPScripts\Component\Physics\SphereCollider.h" />

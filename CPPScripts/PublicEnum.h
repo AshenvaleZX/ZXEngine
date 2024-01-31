@@ -75,6 +75,8 @@ namespace ZXEngine
 		Cylinder,
 		Plane,
 		Quad,
+
+		DynamicPlane,
 	};
 
 	enum class ShadowType
@@ -136,6 +138,7 @@ namespace ZXEngine
 		RigidBody,
 		Animator,
 		SpringJoint,
+		Cloth,
 	};
 
 	enum class FaceCullOption
