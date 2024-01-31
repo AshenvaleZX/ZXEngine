@@ -19,6 +19,7 @@ namespace ZXEngine
 	class ZRigidBody;
 	class Animator;
 	class SpringJoint;
+	class Cloth;
 	class EditorInspectorPanel : public EditorPanel
 	{
 	public:
@@ -44,6 +45,7 @@ namespace ZXEngine
 		void DrawRigidBody(ZRigidBody* component);
 		void DrawAnimator(Animator* component);
 		void DrawSpringJoint(SpringJoint* component);
+		void DrawCloth(Cloth* component);
 		
 		// Asset
 		void DrawScript(AssetScriptInfo* info);

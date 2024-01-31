@@ -15,6 +15,7 @@
 #include "Component/Physics/SphereCollider.h"
 #include "Component/Physics/ZRigidBody.h"
 #include "Component/Physics/SpringJoint.h"
+#include "Component/Physics/Cloth.h"
 #include "Component/Animator.h"
 #include "PhysZ/PhysZEnumStruct.h"
 
@@ -67,6 +68,7 @@ namespace ZXEngine
 		void ParseSphereCollider(json data);
 		void ParseRigidBody(json data);
 		void ParseSpringJoint(json data);
+		void ParseCloth(json data);
 	};
 
 	template<class T>

@@ -69,6 +69,8 @@ namespace ZXEngine
 						DrawAnimator(static_cast<Animator*>(iter.second));
 					else if (type == ComponentType::SpringJoint)
 						DrawSpringJoint(static_cast<SpringJoint*>(iter.second));
+					else if (type == ComponentType::Cloth)
+						DrawCloth(static_cast<Cloth*>(iter.second));
 					else if (type == ComponentType::MeshRenderer)
 					{
 						auto meshRenderer = static_cast<MeshRenderer*>(iter.second);
@@ -780,5 +782,37 @@ namespace ZXEngine
 		float springConstant = component->mSpringConstant;
 		ImGui::Text("Spring Constant  ");
 		ImGui::SameLine(); ImGui::DragFloat("##springConstant", &springConstant, 0.01f, 0.0f, FLT_MAX);
+	}
+
+	void EditorInspectorPanel::DrawCloth(Cloth* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("Cloth"))
+			return;
+
+		// Mass
+		float mass = component->mMass;
+		ImGui::Text("Mass             ");
+		ImGui::SameLine(); ImGui::DragFloat("##mass", &mass, 0.01f, 0.0f, FLT_MAX);
+		
+		// Friction
+		float friction = component->mFriction;
+		ImGui::Text("Friction         ");
+		ImGui::SameLine(); ImGui::DragFloat("##friction", &friction, 0.01f, 0.0f, FLT_MAX);
+
+		// Bend Stiffness
+		float bendStiffness = component->mBendStiffness;
+		ImGui::Text("Bend Stiffness   ");
+		ImGui::SameLine(); ImGui::DragFloat("##bendStiffness", &bendStiffness, 0.01f, 0.0f, FLT_MAX);
+
+		// Stretch Stiffness
+		float stretchStiffness = component->mStretchStiffness;
+		ImGui::Text("Stretch Stiffness");
+		ImGui::SameLine(); ImGui::DragFloat("##stretchStiffness", &stretchStiffness, 0.01f, 0.0f, FLT_MAX);
+
+		// Use Gravity
+		bool useGravity = component->mUseGravity;
+		ImGui::Text("Use Gravity      ");
+		ImGui::SameLine(); ImGui::Checkbox("##useGravity", &useGravity);
 	}
 }

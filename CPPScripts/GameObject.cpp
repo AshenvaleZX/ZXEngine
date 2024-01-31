@@ -73,6 +73,8 @@ namespace ZXEngine
 				ParseRigidBody(component);
 			else if (component["Type"] == "SpringJoint")
 				ParseSpringJoint(component);
+			else if (component["Type"] == "Cloth")
+				ParseCloth(component);
 			else
 				Debug::LogError("Try parse undefined component type: " + component["Type"]);
 		}
@@ -116,6 +118,8 @@ namespace ZXEngine
 				delete static_cast<Animator*>(iter.second);
 			else if (iter.first == ComponentType::SpringJoint)
 				delete static_cast<SpringJoint*>(iter.second);
+			else if (iter.first == ComponentType::Cloth)
+				delete static_cast<Cloth*>(iter.second);
 			else
 				Debug::LogError("Try delete undefined component type: %s", static_cast<int>(iter.first));
 		}
@@ -410,6 +414,24 @@ namespace ZXEngine
 		mConstructionCallBacks.push_back([springJoint]()
 		{
 			springJoint->Init();
+		});
+	}
+
+	void GameObject::ParseCloth(json data)
+	{
+		Cloth* cloth = AddComponent<Cloth>();
+
+		mColliderType = PhysZ::ColliderType::Cloth;
+
+		cloth->mUseGravity = data["UseGravity"];
+		cloth->mMass = data["Mass"];
+		cloth->mFriction = data["Friction"];
+		cloth->mBendStiffness = data["BendStiffness"];
+		cloth->mStretchStiffness = data["StretchStiffness"];
+
+		mConstructionCallBacks.push_back([cloth]()
+		{
+			cloth->Init();
 		});
 	}
 }
