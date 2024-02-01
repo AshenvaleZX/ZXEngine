@@ -64,10 +64,10 @@ namespace ZXEngine
         }
         else if (type == GeometryType::DynamicPlane)
         {
-			mesh = GeometryGenerator::CreateDynamicPlane(6.0f, 6.0f, 11, 11);
-			mesh->mAABBSizeX = 6.0f;
+			mesh = GeometryGenerator::CreateDynamicPlane(5.0f, 5.0f, 11, 11);
+			mesh->mAABBSizeX = 5.0f;
 			mesh->mAABBSizeY = 0.0f;
-			mesh->mAABBSizeZ = 6.0f;
+			mesh->mAABBSizeZ = 5.0f;
         }
         else
         {
