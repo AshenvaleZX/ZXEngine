@@ -21,7 +21,7 @@
             "Bounciness": 0.5,
             "FrictionCombine": 0,
             "BounceCombine": 0,
-            "Radius": 2
+            "Radius": 2.1
         },
         {
             "Type": "RigidBody",

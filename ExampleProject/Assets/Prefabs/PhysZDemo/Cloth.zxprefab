@@ -4,7 +4,7 @@
     [
         {
             "Type": "Transform",
-            "Position": [-8, -0.5, 5],
+            "Position": [-8, 0, 5],
             "Rotation": [0, 0, 0],
             "Scale": [1, 1, 1]
         },
@@ -17,10 +17,10 @@
         },
         {
             "Type": "Cloth",
-            "Mass": 2.0,
+            "Mass": 2.5,
             "Friction": 1.0,
             "BendStiffness": 0.05,
-            "StretchStiffness": 5.0,
+            "StretchStiffness": 2.0,
             "UseGravity": true
         }
     ]
