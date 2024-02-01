@@ -28,7 +28,9 @@ namespace ZXEngine
 		void UpdatePhysics();
 
 	private:
-		PhysZ::PScene* mPhyScene;
 		vector<Camera*> mCameras;
+
+		PhysZ::PScene* mPhyScene;
+		long long mCurPhyFrame = 0;
 	};
 }

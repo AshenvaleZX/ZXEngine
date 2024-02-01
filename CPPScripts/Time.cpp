@@ -8,10 +8,16 @@ namespace ZXEngine
 	long long Time::curSysTime = 0;
 	long long Time::curSysTime_micro = 0;
 	float Time::curTime = 0.0f;
+	long long Time::curTime_micro = 0;
 	float Time::deltaTime = 0.0f;
+	long long Time::deltaTime_micro = 0;
 #ifdef ZX_EDITOR
 	float Time::curEditorTime = 0.0f;
 #endif
+
+	const int Time::fixedFrameRate = 100;
+	const float Time::fixedDeltaTime = 1.0f / Time::fixedFrameRate;
+	const long long Time::fixedDeltaTime_micro = 1'000'000 / Time::fixedFrameRate;
 
 	void Time::Update()
 	{
@@ -26,21 +32,32 @@ namespace ZXEngine
 			curEditorTime += (time_micro - curSysTime_micro) / 1000000.0f;
 
 			if (EditorDataManager::isGameStart && EditorDataManager::isGamePause)
+			{
 				deltaTime = 0.02f;
+				deltaTime_micro = 20000;
+			}
 			else
-				deltaTime = (time_micro - curSysTime_micro) / 1000000.0f;
+			{
+				deltaTime_micro = time_micro - curSysTime_micro;
+				deltaTime = deltaTime_micro / 1000000.0f;
+			}
 #else
 			// 这里用微秒计算deltaTime，用毫秒有可能精度不够
-			deltaTime = (time_micro - curSysTime_micro) / 1000000.0f;
+			deltaTime_micro = time_micro - curSysTime_micro;
+			deltaTime = deltaTime_micro / 1000000.0f;
 #endif
 		}
 
 #ifdef ZX_EDITOR
 		// 正常运行时直接在这里更新当前游戏时间，暂停状态下需要手动点击下一帧或取消暂停才更新
 		if (EditorDataManager::isGameStart && !EditorDataManager::isGamePause)
+		{
 			curTime += deltaTime;
+			curTime_micro += deltaTime_micro;
+		}
 #else
 		curTime += deltaTime;
+		curTime_micro += deltaTime_micro;
 #endif
 
 		curSysTime = time;
@@ -50,5 +67,6 @@ namespace ZXEngine
 	void Time::UpdateCurTime()
 	{
 		curTime += deltaTime;
+		curTime_micro += deltaTime_micro;
 	}
 }

@@ -4,5 +4,6 @@
     "DynamicBatch": false,
     "PreserveIntermediateShader": true,
     "EnableGraphicsDebug": false,
-    "LogToFile": false
+    "LogToFile": false,
+    "StablePhysics": true
 }

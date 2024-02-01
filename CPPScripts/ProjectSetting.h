@@ -15,6 +15,7 @@ namespace ZXEngine
 		static bool preserveIntermediateShader;
 		static bool enableGraphicsDebug;
 		static bool logToFile;
+		static bool stablePhysics;
 
 		// Editor
 		static unsigned int hierarchyWidth;

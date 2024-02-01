@@ -79,8 +79,33 @@ namespace ZXEngine
 
 	void Scene::UpdatePhysics()
 	{
-		mPhyScene->BeginFrame();
-		mPhyScene->Update(Time::deltaTime);
-		mPhyScene->EndFrame();
+		if (ProjectSetting::stablePhysics)
+		{
+			long long targetFrame = Time::curTime_micro / Time::fixedDeltaTime_micro;
+			long long deltaFrame = targetFrame - mCurPhyFrame;
+
+			// 当前游戏帧数高于物理引擎的目标帧数，跳过这一帧的物理更新
+			if (deltaFrame <= 0)
+				return;
+			// 当前游戏帧数低于物理引擎的目标帧数，需要补物理帧，但是不能补太多，否则会导致游戏帧率进一步降低，恶性循环然后卡死
+			else if (deltaFrame > 10)
+				deltaFrame = 10;
+
+			for (long long i = 0; i < deltaFrame; i++)
+			{
+				mPhyScene->BeginFrame();
+				mPhyScene->Update(Time::fixedDeltaTime);
+				mPhyScene->EndFrame();
+			}
+
+			// 无论有没有补帧，或者补了多少帧，都当作已经追上了目标帧数
+			mCurPhyFrame = targetFrame;
+		}
+		else
+		{
+			mPhyScene->BeginFrame();
+			mPhyScene->Update(Time::deltaTime);
+			mPhyScene->EndFrame();
+		}
 	}
 }

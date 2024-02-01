@@ -13,6 +13,7 @@ namespace ZXEngine
 	bool ProjectSetting::preserveIntermediateShader;
 	bool ProjectSetting::enableGraphicsDebug;
 	bool ProjectSetting::logToFile;
+	bool ProjectSetting::stablePhysics;
 
 	// Editor
 	unsigned int ProjectSetting::hierarchyWidth;
@@ -40,6 +41,7 @@ namespace ZXEngine
 		preserveIntermediateShader = data["PreserveIntermediateShader"];
 		enableGraphicsDebug = data["EnableGraphicsDebug"];
 		logToFile = data["LogToFile"];
+		stablePhysics = data["StablePhysics"];
 
 #ifdef ZX_EDITOR
 		SetWindowSize(200, 200, 200);
