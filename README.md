@@ -38,9 +38,9 @@ Screenshot display (more display later in the introduction):
 
 This engine currently supports Vulkan, DirectX 12 and OpenGL. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs. This engine also supports ray tracing rendering pipeline based on Vulkan and DirectX12.
 
-本项目是游戏引擎项目，不是单纯的渲染引擎。所以还内置了我写的物理引擎PhysZ(学习和改写自Cyclone引擎)，支持基本的刚体力学模拟。同时我也开发了简单的骨骼蒙皮动画系统，粒子系统等。文档后面会有这些系统的图片展示。
+本引擎内置了我写的物理引擎PhysZ(学习和改写自Cyclone引擎)，支持基本的刚体力学模拟和布料模拟。同时我也开发了简单的骨骼蒙皮动画系统，粒子系统等。文档后面会有这些系统的图片展示。
 
-This project is a game engine project, not just a rendering engine. Therefore, it also has a built-in physics engine written by myself, which I called it PhysZ (learn and rewritten from the Cyclone engine), supports rigid body mechanics simulation. And I also developed a simple skeletal animation system, particle system, etc. Images of these systems are shown later in this document.
+This engine has a built-in physics engine written by myself, which I called it PhysZ (learn and rewritten from the Cyclone engine), supports rigid body mechanics simulation and cloth simulation. And I also developed a simple skeletal animation system, particle system, etc. Images of these systems are shown later in this document.
 
 引擎本身用C++开发，GamePlay层使用Lua开发，引擎层封装部分C++接口给GamePlay层的Lua调用。使用方式类似Unity的XLua，通过一个GameLogic组件把Lua代码绑定到GameObject上，接收所挂载对象上来自引擎的Start和Update调用，并通过self访问GameObject对象(具体示例看后面)。
 
@@ -94,9 +94,9 @@ The following is the code preview on the Inspector after clicking zxshader and L
 
 ## PhysZ引擎简介(PhysZ Engine Introduction)
 
-先展示一下PhysZ引擎对刚体力学的模拟效果(GIF演示，截屏大小和帧率都有压缩):
+先展示一下PhysZ引擎对刚体力学和布料的模拟效果(GIF演示，截屏大小和帧率都有压缩):
 
-Here is a GIF of the simulation of rigid mechanics in PhysZ (the size and framerate of the screenshots are compressed):
+Here is a GIF of the simulation of rigid mechanics and cloth in PhysZ (the size and framerate of the screenshots are compressed):
 
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/PhysZ0.gif)
 
@@ -115,6 +115,12 @@ The function of each parameter is just as the name implies. And the Damping para
 The spring component is shown in the figure, similar to Unity's SpringJoint. The parameters are the connection object, the anchor points of itself and the connection object (their respective model spaces), the rest length and spring coefficient of the spring.
 
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/PhysZ2.png)
+
+布料模拟需要添加一个Cloth组件，参数分别是布料质量，摩擦系数，弯曲刚度，拉伸刚度和是否使用重力。注意布料需要配合动态Mesh，本引擎暂时只支持DynamicPlane。
+
+Cloth simulation needs to add a Cloth component, the parameters are cloth mass, friction coefficient, bend stiffness, stretch stiffness and whether to use gravity. Note that cloth needs to be matched with dynamic mesh. This engine currently only supports DynamicPlane.
+
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/PhysZ3.png)
 
 ## 骨骼蒙皮动画系统(Skeletal Animation System)
 
