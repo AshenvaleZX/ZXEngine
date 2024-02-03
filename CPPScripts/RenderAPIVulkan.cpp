@@ -3608,7 +3608,9 @@ namespace ZXEngine
         // 查一下有没有我们理想的格式和色彩空间组合，优先用这个
         for (const auto& availableFormat : availableFormats)
         {
-            if (availableFormat.format == VK_FORMAT_R8G8B8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+            if (availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR && (
+                availableFormat.format == VK_FORMAT_R8G8B8A8_UNORM || 
+                availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM))
                 return availableFormat;
         }
 
