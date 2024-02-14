@@ -17,12 +17,22 @@
 
 namespace ZXEngine
 {
-	void Game::Play()
+	void Game::Launch(const string& path)
 	{
 #ifdef ZX_EDITOR
 		EditorDataManager::Create();
 #endif
-		ProjectSetting::InitSetting("../../ExampleProject");
+
+		if (!ProjectSetting::InitSetting(path))
+		{
+			std::cerr << "Invalid project path: " << path << std::endl;
+			return;
+		}
+		else
+		{
+			std::cout << "ZXEngine launch project: " << path << std::endl;
+		}
+
 		EventManager::Create();
 		RenderEngine::Create();
 		InputManager::Create();

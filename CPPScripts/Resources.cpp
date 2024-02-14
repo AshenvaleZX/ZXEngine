@@ -58,6 +58,7 @@ namespace ZXEngine
 		if (!f.is_open())
 		{
 			Debug::LogError("Load asset failed: " + path);
+			return NULL;
 		}
 		json data;
 		try

@@ -29,7 +29,7 @@ namespace ZXEngine
 		static unsigned int mainBarWidth;
 		static unsigned int mainBarHeight;
 
-		static void InitSetting(string path);
+		static bool InitSetting(const string& path);
 
 #ifdef ZX_EDITOR
 		static void SetWindowSize(unsigned int hWidth, unsigned int pHeight, unsigned int iWidth);

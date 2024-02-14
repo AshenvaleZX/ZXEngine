@@ -11,10 +11,10 @@ namespace ZXEngine
 		Game() {};
 		~Game() {};
 
-		void Play();
-		void Update();
-		void Render();
+		void Launch(const string& path);
 
 	private:
+		void Update();
+		void Render();
 	};
 }

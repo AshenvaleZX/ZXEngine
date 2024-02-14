@@ -27,12 +27,15 @@ namespace ZXEngine
 	unsigned int ProjectSetting::mainBarWidth;
 	unsigned int ProjectSetting::mainBarHeight;
 
-	void ProjectSetting::InitSetting(string path)
+	bool ProjectSetting::InitSetting(const string& path)
 	{
 		projectPath = path;
 		Resources::SetAssetsPath(path + "/Assets/");
 
 		json data = Resources::LoadJson(path + "/ProjectSetting.zxprjcfg");
+
+		if (data == NULL)
+			return false;
 
 		GlobalData::srcWidth = data["WindowSize"][0];
 		GlobalData::srcHeight = data["WindowSize"][1];
@@ -48,6 +51,8 @@ namespace ZXEngine
 #else
 		SetWindowSize();
 #endif
+
+		return true;
 	}
 
 #ifdef ZX_EDITOR
