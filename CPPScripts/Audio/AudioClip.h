@@ -17,6 +17,9 @@ namespace ZXEngine
 		void Play3D(const Vector3& position, bool loop = false);
 		void Stop();
 		void SetPause(bool pause);
+		void SetLoop(bool loop);
+		void SetVolume(float volume);
+		void SetPosition(const Vector3& position);
 
 	private:
 		AudioEngine* mAudioEngine;

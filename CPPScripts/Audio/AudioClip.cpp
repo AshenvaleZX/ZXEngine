@@ -52,4 +52,28 @@ namespace ZXEngine
 
 		mSound->setIsPaused(pause);
 	}
+
+	void AudioClip::SetLoop(bool loop)
+	{
+		if (mSound == nullptr || mSound->isFinished())
+			return;
+
+		mSound->setIsLooped(loop);
+	}
+
+	void AudioClip::SetVolume(float volume)
+	{
+		if (mSound == nullptr || mSound->isFinished())
+			return;
+
+		mSound->setVolume(volume);
+	}
+
+	void AudioClip::SetPosition(const Vector3& position)
+	{
+		if (mSound == nullptr || mSound->isFinished())
+			return;
+
+		mSound->setPosition(irrklang::vec3df(position.x, position.y, position.z));
+	}
 }
