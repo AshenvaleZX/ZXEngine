@@ -14,7 +14,10 @@ namespace ZXEngine
 	AudioClip::~AudioClip()
 	{
 		if (mSound != nullptr)
+		{
+			mSound->stop();
 			mSound->drop();
+		}
 	}
 
 	void AudioClip::Play2D(bool loop)
@@ -23,7 +26,7 @@ namespace ZXEngine
 		{
 			mSound->drop();
 		}
-		mSound = mAudioEngine->mEngine->play2D(mAudioStream->mSoundSource, loop);
+		mSound = mAudioEngine->mEngine->play2D(mAudioStream->mSoundSource, loop, false, true);
 	}
 
 	void AudioClip::Play3D(const Vector3& position, bool loop)
@@ -32,7 +35,7 @@ namespace ZXEngine
 		{
 			mSound->drop();
 		}
-		mSound = mAudioEngine->mEngine->play3D(mAudioStream->mSoundSource, irrklang::vec3df(position.x, position.y, position.z), loop);
+		mSound = mAudioEngine->mEngine->play3D(mAudioStream->mSoundSource, irrklang::vec3df(position.x, position.y, position.z), loop, false, true);
 	}
 
 	void AudioClip::Stop()
