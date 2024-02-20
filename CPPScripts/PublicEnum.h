@@ -139,6 +139,7 @@ namespace ZXEngine
 		Animator,
 		SpringJoint,
 		Cloth,
+		AudioSource,
 	};
 
 	enum class FaceCullOption

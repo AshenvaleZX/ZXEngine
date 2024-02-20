@@ -549,6 +549,9 @@
     <ClCompile Include="..\..\CPPScripts\Audio\AudioStream.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Component\AudioSource.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\GameObject.h">
@@ -1078,6 +1081,9 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Audio\ZAudio.h">
       <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Component\AudioSource.h">
+      <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

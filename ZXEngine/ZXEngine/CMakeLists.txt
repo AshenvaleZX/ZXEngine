@@ -27,6 +27,8 @@ source_group("Audio" FILES ${Audio})
 set(Component
     "../../CPPScripts/Component/Animator.cpp"
     "../../CPPScripts/Component/Animator.h"
+    "../../CPPScripts/Component/AudioSource.cpp"
+    "../../CPPScripts/Component/AudioSource.h"
     "../../CPPScripts/Component/Component.cpp"
     "../../CPPScripts/Component/Component.h"
     "../../CPPScripts/Component/GameLogic.cpp"

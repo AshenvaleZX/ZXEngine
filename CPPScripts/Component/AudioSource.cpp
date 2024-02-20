@@ -1,0 +1,98 @@
+#include "AudioSource.h"
+#include "../Audio/ZAudio.h"
+#include "../GameObject.h"
+
+namespace ZXEngine
+{
+	ComponentType AudioSource::GetType()
+	{
+		return ComponentType::AudioSource;
+	}
+
+	ComponentType AudioSource::GetInsType()
+	{
+		return ComponentType::AudioSource;
+	}
+
+	AudioSource::~AudioSource()
+	{
+		if (mAudioClip != nullptr)
+			delete mAudioClip;
+	}
+
+	void AudioSource::Init(const string& path)
+	{
+		mAudioClip = AudioEngine::GetInstance()->CreateAudioClip(path);
+	}
+
+	void AudioSource::Play2D(bool loop)
+	{
+		mIs3D = false;
+		mIsLoop = loop;
+		mAudioClip->Play2D(loop);
+	}
+
+	void AudioSource::Play3D(bool loop)
+	{
+		mIs3D = true;
+		mIsLoop = loop;
+
+		Vector3 position = gameObject->GetComponent<Transform>()->GetPosition();
+		mAudioClip->Play3D(position, loop);
+	}
+
+	void AudioSource::Play3D(const Vector3& position, bool loop)
+	{
+		mIs3D = true;
+		mIsLoop = loop;
+		mAudioClip->Play3D(position, loop);
+	}
+
+	bool AudioSource::GetIs3D()
+	{
+		return mIs3D;
+	}
+
+	void AudioSource::Stop()
+	{
+		mAudioClip->Stop();
+	}
+
+	void AudioSource::SetPause(bool pause)
+	{
+		mIsPause = pause;
+		mAudioClip->SetPause(pause);
+	}
+
+	bool AudioSource::GetPause()
+	{
+		return mIsPause;
+	}
+
+	void AudioSource::SetLoop(bool loop)
+	{
+		mIsLoop = loop;
+		mAudioClip->SetLoop(loop);
+	}
+
+	bool AudioSource::GetLoop()
+	{
+		return mIsLoop;
+	}
+
+	void AudioSource::SetVolume(float volume)
+	{
+		mVolume = volume;
+		mAudioClip->SetVolume(volume);
+	}
+
+	float AudioSource::GetVolume()
+	{
+		return mVolume;
+	}
+
+	void AudioSource::SetPosition(const Vector3& position)
+	{
+		mAudioClip->SetPosition(position);
+	}
+}

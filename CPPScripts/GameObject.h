@@ -17,6 +17,7 @@
 #include "Component/Physics/SpringJoint.h"
 #include "Component/Physics/Cloth.h"
 #include "Component/Animator.h"
+#include "Component/AudioSource.h"
 #include "PhysZ/PhysZEnumStruct.h"
 
 namespace ZXEngine
@@ -69,6 +70,7 @@ namespace ZXEngine
 		void ParseRigidBody(json data);
 		void ParseSpringJoint(json data);
 		void ParseCloth(json data);
+		void ParseAudioSource(json data);
 	};
 
 	template<class T>

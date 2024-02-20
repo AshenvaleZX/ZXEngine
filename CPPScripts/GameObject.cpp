@@ -75,6 +75,8 @@ namespace ZXEngine
 				ParseSpringJoint(component);
 			else if (component["Type"] == "Cloth")
 				ParseCloth(component);
+			else if (component["Type"] == "AudioSource")
+				ParseAudioSource(component);
 			else
 				Debug::LogError("Try parse undefined component type: " + component["Type"]);
 		}
@@ -120,6 +122,8 @@ namespace ZXEngine
 				delete static_cast<SpringJoint*>(iter.second);
 			else if (iter.first == ComponentType::Cloth)
 				delete static_cast<Cloth*>(iter.second);
+			else if (iter.first == ComponentType::AudioSource)
+				delete static_cast<AudioSource*>(iter.second);
 			else
 				Debug::LogError("Try delete undefined component type: %s", static_cast<int>(iter.first));
 		}
@@ -433,5 +437,27 @@ namespace ZXEngine
 		{
 			cloth->Init();
 		});
+	}
+
+	void GameObject::ParseAudioSource(json data)
+	{
+		AudioSource* audioSource = AddComponent<AudioSource>();
+
+		string p = Resources::JsonStrToString(data["Clip"]);
+		audioSource->Init(p);
+		audioSource->SetLoop(data["Loop"]);
+		audioSource->SetVolume(data["Volume"]);
+
+		bool is3D = data["Is3D"];
+		if (data["PlayOnAwake"])
+		{
+			mConstructionCallBacks.push_back([audioSource, is3D]()
+			{
+				if (is3D)
+					audioSource->Play3D(audioSource->GetLoop());
+				else
+					audioSource->Play2D(audioSource->GetLoop());
+			});
+		}
 	}
 }
