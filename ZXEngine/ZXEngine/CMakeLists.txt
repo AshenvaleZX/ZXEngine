@@ -556,7 +556,8 @@ if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
         "glfw3;"
         "opengl32;"
         "freetype;"
-        "vulkan-1"
+        "vulkan-1;"
+        "irrKlang"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x86")
     set(ADDITIONAL_LIBRARY_DEPENDENCIES
