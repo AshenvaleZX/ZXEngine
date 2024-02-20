@@ -1,21 +1,20 @@
 #include "AudioClip.h"
 #include "AudioEngine.h"
+#include "AudioStream.h"
 #include "../Resources.h"
 
 namespace ZXEngine
 {
-	AudioClip::AudioClip(const string& path)
+	AudioClip::AudioClip(AudioStream* stream)
 	{
+		mAudioStream = stream;
 		mAudioEngine = AudioEngine::GetInstance();
-		mSoundSource = mAudioEngine->mEngine->addSoundSourceFromFile(Resources::GetAssetFullPath(path).c_str());
 	}
 
 	AudioClip::~AudioClip()
 	{
 		if (mSound != nullptr)
 			mSound->drop();
-
-		mAudioEngine->mEngine->removeSoundSource(mSoundSource);
 	}
 
 	void AudioClip::Play2D(bool loop)
@@ -24,7 +23,7 @@ namespace ZXEngine
 		{
 			mSound->drop();
 		}
-		mSound = mAudioEngine->mEngine->play2D(mSoundSource, loop);
+		mSound = mAudioEngine->mEngine->play2D(mAudioStream->mSoundSource, loop);
 	}
 
 	void AudioClip::Play3D(const Vector3& position, bool loop)
@@ -33,7 +32,7 @@ namespace ZXEngine
 		{
 			mSound->drop();
 		}
-		mSound = mAudioEngine->mEngine->play3D(mSoundSource, irrklang::vec3df(position.x, position.y, position.z), loop);
+		mSound = mAudioEngine->mEngine->play3D(mAudioStream->mSoundSource, irrklang::vec3df(position.x, position.y, position.z), loop);
 	}
 
 	void AudioClip::Stop()

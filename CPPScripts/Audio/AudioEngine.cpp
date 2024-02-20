@@ -1,4 +1,6 @@
 #include "AudioEngine.h"
+#include "AudioStream.h"
+#include "AudioClip.h"
 
 namespace ZXEngine
 {
@@ -29,6 +31,34 @@ namespace ZXEngine
 
 	AudioEngine::~AudioEngine()
 	{
+		for (auto& iter : mAudioStreams)
+			delete iter.second;
+
 		mEngine->drop();
+	}
+
+	AudioClip* AudioEngine::CreateAudioClip(const string& path)
+	{
+		AudioStream* stream = CreateAudioStream(path);
+		return new AudioClip(stream);
+	}
+
+	AudioClip* AudioEngine::CreateAudioClip(AudioStream* stream)
+	{
+		return new AudioClip(stream);
+	}
+
+	AudioStream* AudioEngine::CreateAudioStream(const string& path)
+	{
+		auto iter = mAudioStreams.find(path);
+		if (iter != mAudioStreams.end())
+		{
+			return iter->second;
+		}
+
+		AudioStream* stream = new AudioStream(path);
+		mAudioStreams[path] = stream;
+
+		return stream;
 	}
 }

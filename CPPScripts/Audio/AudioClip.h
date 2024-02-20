@@ -5,11 +5,12 @@
 namespace ZXEngine
 {
 	class AudioEngine;
+	class AudioStream;
 	class AudioClip
 	{
 		friend class AudioEngine;
 	public:
-		AudioClip(const string& path);
+		AudioClip(AudioStream* stream);
 		~AudioClip();
 
 		void Play2D(bool loop = false);
@@ -19,7 +20,7 @@ namespace ZXEngine
 
 	private:
 		AudioEngine* mAudioEngine;
+		AudioStream* mAudioStream;
 		irrklang::ISound* mSound = nullptr;
-		irrklang::ISoundSource* mSoundSource;
 	};
 }

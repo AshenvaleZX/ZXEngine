@@ -18,6 +18,9 @@ set(Audio
     "../../CPPScripts/Audio/AudioClip.h"
     "../../CPPScripts/Audio/AudioEngine.cpp"
     "../../CPPScripts/Audio/AudioEngine.h"
+    "../../CPPScripts/Audio/AudioStream.cpp"
+    "../../CPPScripts/Audio/AudioStream.h"
+    "../../CPPScripts/Audio/ZAudio.h"
 )
 source_group("Audio" FILES ${Audio})
 
