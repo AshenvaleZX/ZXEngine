@@ -64,6 +64,9 @@
     <Filter Include="Component\Physics">
       <UniqueIdentifier>{fc01f6de-0886-41ea-901a-b014b7e11b5b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Audio">
+      <UniqueIdentifier>{b12f2e85-684b-45eb-b65d-086f373c572a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\CPPScripts\GameObject.cpp">
@@ -536,6 +539,12 @@
     </ClCompile>
     <ClCompile Include="..\..\CPPScripts\Component\Physics\Cloth.cpp">
       <Filter>Component\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Audio\AudioEngine.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\Audio\AudioClip.cpp">
+      <Filter>Audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1054,6 +1063,12 @@
     </ClInclude>
     <ClInclude Include="..\..\CPPScripts\Component\Physics\Cloth.h">
       <Filter>Component\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Audio\AudioEngine.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPPScripts\Audio\AudioClip.h">
+      <Filter>Audio</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

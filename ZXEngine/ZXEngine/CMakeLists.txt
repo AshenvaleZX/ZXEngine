@@ -13,6 +13,14 @@ set(Animation
 )
 source_group("Animation" FILES ${Animation})
 
+set(Audio
+    "../../CPPScripts/Audio/AudioClip.cpp"
+    "../../CPPScripts/Audio/AudioClip.h"
+    "../../CPPScripts/Audio/AudioEngine.cpp"
+    "../../CPPScripts/Audio/AudioEngine.h"
+)
+source_group("Audio" FILES ${Audio})
+
 set(Component
     "../../CPPScripts/Component/Animator.cpp"
     "../../CPPScripts/Component/Animator.h"
@@ -410,6 +418,7 @@ source_group("源文件" FILES ${})
 
 set(ALL_FILES
     ${Animation}
+    ${Audio}
     ${Component}
     ${Component__Physics}
     ${Concurrent}

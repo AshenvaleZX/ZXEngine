@@ -9,6 +9,8 @@
 #include "ProjectSetting.h"
 #include "ParticleSystemManager.h"
 #include "Component/Animator.h"
+#include "Audio/AudioEngine.h"
+
 #ifdef ZX_EDITOR
 #include "Editor/EditorGUIManager.h"
 #include "Editor/EditorDataManager.h"
@@ -34,6 +36,7 @@ namespace ZXEngine
 		}
 
 		EventManager::Create();
+		AudioEngine::Create();
 		RenderEngine::Create();
 		InputManager::Create();
 		LuaManager::Create();
