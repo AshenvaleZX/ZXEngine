@@ -24,18 +24,22 @@ namespace ZXEngine
 	{
 		if (mSound != nullptr)
 		{
+			mSound->stop();
 			mSound->drop();
 		}
 		mSound = mAudioEngine->mEngine->play2D(mAudioStream->mSoundSource, loop, false, true);
+		mSound->setVolume(mVolume);
 	}
 
 	void AudioClip::Play3D(const Vector3& position, bool loop)
 	{
 		if (mSound != nullptr)
 		{
+			mSound->stop();
 			mSound->drop();
 		}
 		mSound = mAudioEngine->mEngine->play3D(mAudioStream->mSoundSource, irrklang::vec3df(position.x, position.y, position.z), loop, false, true);
+		mSound->setVolume(mVolume);
 	}
 
 	void AudioClip::Stop()
@@ -66,6 +70,8 @@ namespace ZXEngine
 
 	void AudioClip::SetVolume(float volume)
 	{
+		mVolume = volume;
+
 		if (mSound == nullptr || mSound->isFinished())
 			return;
 
@@ -78,5 +84,15 @@ namespace ZXEngine
 			return;
 
 		mSound->setPosition(irrklang::vec3df(position.x, position.y, position.z));
+	}
+
+	float AudioClip::GetLength()
+	{
+		return mAudioStream->mLength;
+	}
+
+	uint32_t AudioClip::GetLengthMS()
+	{
+		return mAudioStream->mLenthMS;
 	}
 }

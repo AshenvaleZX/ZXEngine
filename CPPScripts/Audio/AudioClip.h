@@ -20,8 +20,11 @@ namespace ZXEngine
 		void SetLoop(bool loop);
 		void SetVolume(float volume);
 		void SetPosition(const Vector3& position);
+		float GetLength();
+		uint32_t GetLengthMS();
 
 	private:
+		float mVolume = 1.0f;
 		AudioEngine* mAudioEngine;
 		AudioStream* mAudioStream;
 		irrklang::ISound* mSound = nullptr;
