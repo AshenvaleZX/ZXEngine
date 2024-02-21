@@ -158,10 +158,7 @@ namespace ZXEngine
 				if (EditorDataManager::isGameStart && EditorDataManager::isGamePause)
 				{
 					Time::UpdateCurTime();
-					Animator::Update();
-					SceneManager::GetInstance()->GetCurScene()->UpdatePhysics();
-					GameLogicManager::GetInstance()->Update();
-					ParticleSystemManager::GetInstance()->Update();
+					SceneManager::GetInstance()->GetCurScene()->Update();
 				}
 			}
 		}

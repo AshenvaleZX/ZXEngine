@@ -24,13 +24,15 @@ namespace ZXEngine
 		Scene(SceneStruct* sceneStruct);
 		~Scene();
 
+		void Update();
 		void Render();
-		void UpdatePhysics();
 
 	private:
 		vector<Camera*> mCameras;
 
 		PhysZ::PScene* mPhyScene;
 		long long mCurPhyFrame = 0;
+
+		void UpdatePhysics();
 	};
 }

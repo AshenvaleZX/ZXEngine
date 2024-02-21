@@ -7,7 +7,6 @@
 #include "LuaManager.h"
 #include "GameLogicManager.h"
 #include "ProjectSetting.h"
-#include "ParticleSystemManager.h"
 #include "Component/Animator.h"
 #include "Audio/AudioEngine.h"
 
@@ -75,16 +74,10 @@ namespace ZXEngine
 #ifdef ZX_EDITOR
 		if (EditorDataManager::isGameStart && !EditorDataManager::isGamePause)
 		{
-			Animator::Update();
-			SceneManager::GetInstance()->GetCurScene()->UpdatePhysics();
-			GameLogicManager::GetInstance()->Update();
-			ParticleSystemManager::GetInstance()->Update();
+			SceneManager::GetInstance()->GetCurScene()->Update();
 		}
 #else
-		Animator::Update();
-		SceneManager::GetInstance()->GetCurScene()->UpdatePhysics();
-		GameLogicManager::GetInstance()->Update();
-		ParticleSystemManager::GetInstance()->Update();
+		SceneManager::GetInstance()->GetCurScene()->Update();
 #endif
 	}
 
@@ -95,9 +88,7 @@ namespace ZXEngine
 		SceneManager::GetInstance()->GetCurScene()->Render();
 
 #ifdef ZX_EDITOR
-		EditorGUIManager::GetInstance()->BeginEditorRender();
-		EditorGUIManager::GetInstance()->EditorRender();
-		EditorGUIManager::GetInstance()->EndEditorRender();
+		EditorGUIManager::GetInstance()->Render();
 #endif
 
 		RenderEngine::GetInstance()->EndRender();

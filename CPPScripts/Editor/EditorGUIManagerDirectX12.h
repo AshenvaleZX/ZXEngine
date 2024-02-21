@@ -12,11 +12,13 @@ namespace ZXEngine
 		~EditorGUIManagerDirectX12();
 
 		virtual void Init();
+		virtual void ResetPanels();
+		virtual void OnWindowSizeChange();
+
+	protected:
 		virtual void BeginEditorRender();
 		virtual void EditorRender();
 		virtual void EndEditorRender();
-		virtual void ResetPanels();
-		virtual void OnWindowSizeChange();
 
 	private:
 		vector<EditorPanel*> allPanels;

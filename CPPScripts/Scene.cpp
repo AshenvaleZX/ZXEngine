@@ -10,6 +10,8 @@
 #include "PhysZ/PhysZ.h"
 #include "Time.h"
 #include "SceneManager.h"
+#include "GameLogicManager.h"
+#include "ParticleSystemManager.h"
 
 namespace ZXEngine
 {
@@ -58,6 +60,14 @@ namespace ZXEngine
 		{
 			delete gameObject;
 		}
+	}
+
+	void Scene::Update()
+	{
+		Animator::Update();
+		UpdatePhysics();
+		GameLogicManager::GetInstance()->Update();
+		ParticleSystemManager::GetInstance()->Update();
 	}
 	
 	void Scene::Render()

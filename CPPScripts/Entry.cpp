@@ -9,5 +9,6 @@ int main(int argc, char* argv[])
 
 	ZXEngine::Game::mInstance = new ZXEngine::Game();
 	ZXEngine::Game::mInstance->Launch(path);
+
 	return 0;
 }

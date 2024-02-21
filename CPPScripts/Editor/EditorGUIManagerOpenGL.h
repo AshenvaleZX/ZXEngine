@@ -10,13 +10,15 @@ namespace ZXEngine
 		~EditorGUIManagerOpenGL();
 
 		virtual void Init();
-		virtual void BeginEditorRender();
-		virtual void EditorRender();
-		virtual void EndEditorRender();
 		virtual void ResetPanels();
 		virtual void OnWindowSizeChange();
 
-private:
+	protected:
+		virtual void BeginEditorRender();
+		virtual void EditorRender();
+		virtual void EndEditorRender();
+
+	private:
 		vector<EditorPanel*> allPanels;
 	};
 }

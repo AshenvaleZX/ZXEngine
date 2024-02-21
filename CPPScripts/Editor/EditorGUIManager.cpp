@@ -35,4 +35,11 @@ namespace ZXEngine
 	{
 		return mInstance;
 	}
+
+	void EditorGUIManager::Render()
+	{
+		mInstance->BeginEditorRender();
+		mInstance->EditorRender();
+		mInstance->EndEditorRender();
+	}
 }
