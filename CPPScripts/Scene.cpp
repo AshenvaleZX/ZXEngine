@@ -64,6 +64,15 @@ namespace ZXEngine
 
 	void Scene::Update()
 	{
+		if (!mIsAwake)
+		{
+			for (auto gameObject : gameObjects)
+			{
+				gameObject->Awake();
+			}
+			mIsAwake = true;
+		}
+
 		Animator::Update();
 		UpdatePhysics();
 		GameLogicManager::GetInstance()->Update();

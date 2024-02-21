@@ -6,6 +6,7 @@ namespace ZXEngine
 	class AudioClip;
 	class AudioSource : public Component
 	{
+		friend class GameObject;
 	public:
 		static ComponentType GetType();
 
@@ -16,6 +17,7 @@ namespace ZXEngine
 		AudioSource() {};
 		~AudioSource();
 
+		virtual void Awake();
 		virtual ComponentType GetInsType();
 
 		void Init(const string& path);

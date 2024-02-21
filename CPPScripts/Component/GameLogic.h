@@ -10,13 +10,13 @@ namespace ZXEngine
 		static ComponentType GetType();
 
 	public:
-		int luaID = 0;
 		string luaName;
 		string luaFullPath;
 
 		GameLogic();
 		~GameLogic();
 
+		virtual void Awake();
 		virtual ComponentType GetInsType();
 
 		void Start();
@@ -24,6 +24,7 @@ namespace ZXEngine
 		void CallLuaFunction(const char* func);
 
 	private:
+		int luaID = 0;
 		bool firstCall = true;
 	};
 }

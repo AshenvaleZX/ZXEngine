@@ -43,6 +43,8 @@ namespace ZXEngine
 		GameObject(PrefabStruct* prefab, GameObject* parent = nullptr);
 		~GameObject();
 
+		void Awake();
+
 		template<class T> 
 		inline T* GetComponent();
 		template<class T>
@@ -53,6 +55,7 @@ namespace ZXEngine
 		void EndConstruction();
 
 	private:
+		bool mIsAwake = false;
 		map<ComponentType, Component*> components = {};
 		vector<std::function<void()>> mConstructionCallBacks;
 

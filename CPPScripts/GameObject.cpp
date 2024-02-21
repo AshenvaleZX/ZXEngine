@@ -32,6 +32,20 @@ namespace ZXEngine
 		return nullptr;
 	}
 
+	void GameObject::Awake()
+	{
+		if (mIsAwake)
+			return;
+
+		for (auto child : children)
+			child->Awake();
+
+		for (auto& iter : components)
+			iter.second->Awake();
+
+		mIsAwake = true;
+	}
+
 	GameObject* GameObject::FindChildren(const string& path)
 	{
 		auto paths = Utils::StringSplit(path, '/');
@@ -448,17 +462,6 @@ namespace ZXEngine
 		audioSource->SetLoop(data["Loop"]);
 		audioSource->SetVolume(data["Volume"]);
 		audioSource->mPlayOnAwake = data["PlayOnAwake"];
-
-		bool is3D = data["Is3D"];
-		if (data["PlayOnAwake"])
-		{
-			mConstructionCallBacks.push_back([audioSource, is3D]()
-			{
-				if (is3D)
-					audioSource->Play3D(audioSource->GetLoop());
-				else
-					audioSource->Play2D(audioSource->GetLoop());
-			});
-		}
+		audioSource->mIs3D = data["Is3D"];
 	}
 }

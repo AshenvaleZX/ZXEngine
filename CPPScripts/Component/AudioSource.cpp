@@ -21,6 +21,18 @@ namespace ZXEngine
 			delete mAudioClip;
 	}
 
+	void AudioSource::Awake()
+	{
+		if (mPlayOnAwake)
+		{
+			if (mIs3D)
+				Play3D(mIsLoop);
+			else
+				Play2D(mIsLoop);
+		}
+		mIsAwake = true;
+	}
+
 	void AudioSource::Init(const string& path)
 	{
 		mName = Resources::GetAssetNameWithExtension(path);

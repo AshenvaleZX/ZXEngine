@@ -28,6 +28,7 @@ namespace ZXEngine
 		void Render();
 
 	private:
+		bool mIsAwake = false;
 		vector<Camera*> mCameras;
 
 		PhysZ::PScene* mPhyScene;

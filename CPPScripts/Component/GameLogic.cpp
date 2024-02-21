@@ -25,7 +25,7 @@ namespace ZXEngine
 		return ComponentType::GameLogic;
 	}
 
-	void GameLogic::Start()
+	void GameLogic::Awake()
 	{
 		lua_State* L = LuaManager::GetInstance()->GetState();
 		// 记录当前栈大小
@@ -60,7 +60,7 @@ namespace ZXEngine
 			// 设置table["gameObject"] = this->gameObject
 			lua_settable(L, -3);
 
-			CallLuaFunction("Start");
+			CallLuaFunction("Awake");
 		}
 		else
 		{
@@ -68,6 +68,13 @@ namespace ZXEngine
 		}
 		// 恢复栈大小(Pop掉这段代码在栈上产生的数据)
 		lua_settop(L, stack_size);
+
+		mIsAwake = true;
+	}
+
+	void GameLogic::Start()
+	{
+		CallLuaFunction("Start");
 	}
 
 	void GameLogic::Update()
@@ -99,7 +106,12 @@ namespace ZXEngine
 		// 检查一下有没有这个函数
 		if (type != LUA_TFUNCTION)
 		{
-			Debug::LogWarning("Called invalid GameLogic function: " + (string)func);
+			// 恢复栈大小(Pop掉这段代码在栈上产生的数据)
+			lua_settop(L, stack_size);
+
+			if (func != "Awake" && func != "Start" && func != "Update")
+				Debug::LogWarning("GameLogic trying to call a lua function that doesn't exist: " + (string)func);
+
 			return;
 		}
 		// 把位于-2位置上的table复制一遍，重新入栈，作为调用func的参数(就是self，lua那边函数定义写的:)

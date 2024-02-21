@@ -16,11 +16,12 @@ namespace ZXEngine
 		Component() {};
 		~Component() {};
 
+		virtual void Awake();
 		virtual ComponentType GetInsType() = 0;
 
 		Transform* GetTransform();
 
-	private:
-		
+	protected:
+		bool mIsAwake = false;
 	};
 }
