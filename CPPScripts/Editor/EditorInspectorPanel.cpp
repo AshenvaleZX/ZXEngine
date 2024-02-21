@@ -16,6 +16,7 @@
 #include "../ZShader.h"
 #include "../Material.h"
 #include "../MaterialData.h"
+#include "../Audio/AudioClip.h"
 
 // 防止windows.h里的宏定义max和min影响到其它库里的相同字段
 #ifndef NOMINMAX
@@ -71,6 +72,8 @@ namespace ZXEngine
 						DrawSpringJoint(static_cast<SpringJoint*>(iter.second));
 					else if (type == ComponentType::Cloth)
 						DrawCloth(static_cast<Cloth*>(iter.second));
+					else if (type == ComponentType::AudioSource)
+						DrawAudioSource(static_cast<AudioSource*>(iter.second));
 					else if (type == ComponentType::MeshRenderer)
 					{
 						auto meshRenderer = static_cast<MeshRenderer*>(iter.second);
@@ -97,6 +100,8 @@ namespace ZXEngine
 					DrawMaterial(static_cast<AssetMaterialInfo*>(curAssetInfo));
 				else if (curAsset->type == AssetType::Model)
 					DrawModel(static_cast<AssetModelInfo*>(curAssetInfo));
+				else if (curAsset->type == AssetType::Audio)
+					DrawAudio(static_cast<AssetAudioInfo*>(curAssetInfo));
 			}
 		}
 		ImGui::End();
@@ -528,6 +533,32 @@ namespace ZXEngine
 		}
 	}
 
+	void EditorInspectorPanel::DrawAudio(AssetAudioInfo* info)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("Audio"))
+			return;
+
+		ImGui::Text("Name:");
+		ImGui::SameLine(120);
+		ImGui::Text(info->name.c_str());
+
+		ImGui::Text("Length:");
+		ImGui::SameLine(120);
+		ImGui::Text(info->lengthStr.c_str());
+
+		ImGui::Text("Size:");
+		ImGui::SameLine(120);
+		ImGui::Text(info->sizeStr.c_str());
+
+		static const ImVec2 audioBtnSize = ImVec2(60.0f, 20.0f);
+		ImGui::SetCursorPosX(80);
+		if (ImGui::Button("Play", audioBtnSize))
+		{
+			info->audioClip->Play2D();
+		}
+	}
+
 	void EditorInspectorPanel::DrawBoxCollider(BoxCollider* component)
 	{
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
@@ -814,5 +845,37 @@ namespace ZXEngine
 		bool useGravity = component->mUseGravity;
 		ImGui::Text("Use Gravity      ");
 		ImGui::SameLine(); ImGui::Checkbox("##useGravity", &useGravity);
+	}
+
+	void EditorInspectorPanel::DrawAudioSource(AudioSource* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("AudioSource"))
+			return;
+
+		// Clip
+		string clipName = component->mName;
+		ImGui::Text("Clip             ");
+		ImGui::SameLine(); ImGui::Text(clipName.c_str());
+
+		// Volume
+		float volume = component->GetVolume();
+		ImGui::Text("Volume           ");
+		ImGui::SameLine(); ImGui::DragFloat("##volume", &volume, 0.01f, 0.0f, 1.0f);
+
+		// Loop
+		bool loop = component->GetLoop();
+		ImGui::Text("Loop             ");
+		ImGui::SameLine(); ImGui::Checkbox("##loop", &loop);
+
+		// Play On Awake
+		bool playOnAwake = component->mPlayOnAwake;
+		ImGui::Text("Play On Awake    ");
+		ImGui::SameLine(); ImGui::Checkbox("##playOnAwake", &playOnAwake);
+
+		// 3D Sound
+		bool is3DSound = component->GetIs3D();
+		ImGui::Text("3D Sound         ");
+		ImGui::SameLine(); ImGui::Checkbox("##3DSound", &is3DSound);
 	}
 }

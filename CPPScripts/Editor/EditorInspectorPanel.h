@@ -20,6 +20,7 @@ namespace ZXEngine
 	class Animator;
 	class SpringJoint;
 	class Cloth;
+	class AudioSource;
 	class EditorInspectorPanel : public EditorPanel
 	{
 	public:
@@ -46,6 +47,7 @@ namespace ZXEngine
 		void DrawAnimator(Animator* component);
 		void DrawSpringJoint(SpringJoint* component);
 		void DrawCloth(Cloth* component);
+		void DrawAudioSource(AudioSource* component);
 		
 		// Asset
 		void DrawScript(AssetScriptInfo* info);
@@ -53,5 +55,6 @@ namespace ZXEngine
 		void DrawTexture(AssetTextureInfo* info);
 		void DrawMaterial(AssetMaterialInfo* info);
 		void DrawModel(AssetModelInfo* info);
+		void DrawAudio(AssetAudioInfo* info);
 	};
 }

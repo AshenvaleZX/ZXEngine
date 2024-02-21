@@ -2,6 +2,7 @@
 #include "../Texture.h"
 #include "../Material.h"
 #include "../Component/MeshRenderer.h"
+#include "../Audio/AudioClip.h"
 
 namespace ZXEngine
 {
@@ -31,5 +32,14 @@ namespace ZXEngine
 	AssetModelInfo::~AssetModelInfo()
 	{
 		delete meshRenderer;
+	}
+
+	AssetAudioInfo::AssetAudioInfo() :
+		audioClip(nullptr)
+	{}
+
+	AssetAudioInfo::~AssetAudioInfo()
+	{
+		delete audioClip;
 	}
 }

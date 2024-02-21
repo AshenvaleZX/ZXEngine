@@ -17,6 +17,7 @@ namespace ZXEngine
 		Scene,
 		Model,
 		RayTracingShader,
+		Audio,
 		Count,
 	};
 
@@ -32,6 +33,7 @@ namespace ZXEngine
 		string path;
 		string name;
 		string extension;
+		uint32_t size = 0;
 		AssetType type = AssetType::Other;
 		EditorAssetNode* parent = nullptr;
 		vector<EditorAssetNode*> children;
@@ -88,5 +90,17 @@ namespace ZXEngine
 
 		AssetModelInfo();
 		~AssetModelInfo();
+	};
+
+	class AudioClip;
+	struct AssetAudioInfo
+	{
+		string name;
+		string sizeStr;
+		string lengthStr;
+		AudioClip* audioClip;
+
+		AssetAudioInfo();
+		~AssetAudioInfo();
 	};
 }

@@ -7,6 +7,7 @@
 #include "../Component/MeshRenderer.h"
 #include "../SceneManager.h"
 #include "../ModelUtil.h"
+#include "../Audio/ZAudio.h"
 
 namespace ZXEngine
 {
@@ -89,6 +90,8 @@ namespace ZXEngine
 				delete static_cast<AssetMaterialInfo*>(curAssetInfo);
 			else if (selectedAsset->type == AssetType::Model)
 				delete static_cast<AssetModelInfo*>(curAssetInfo);
+			else if (selectedAsset->type == AssetType::Audio)
+				delete static_cast<AssetAudioInfo*>(curAssetInfo);
 			else
 				delete curAssetInfo;
 			// delete后立刻重新赋值为nullptr，防止连续delete指针出现无法预期的行为导致直接崩溃
@@ -135,6 +138,8 @@ namespace ZXEngine
 				delete static_cast<AssetMaterialInfo*>(curAssetInfo);
 			else if (selectedAsset->type == AssetType::Model)
 				delete static_cast<AssetModelInfo*>(curAssetInfo);
+			else if (selectedAsset->type == AssetType::Audio)
+				delete static_cast<AssetAudioInfo*>(curAssetInfo);
 			else
 				delete curAssetInfo;
 			// delete后立刻重新赋值为nullptr，防止连续delete指针出现无法预期的行为导致直接崩溃
@@ -190,6 +195,15 @@ namespace ZXEngine
 			curAssetInfo = info;
 			float size = std::max({ info->meshRenderer->mAABBSizeX, info->meshRenderer->mAABBSizeY, info->meshRenderer->mAABBSizeZ });
 			EditorGUIManager::GetInstance()->assetPreviewer->Reset(size);
+		}
+		else if (asset->type == AssetType::Audio)
+		{
+			auto info = new AssetAudioInfo();
+			info->name = asset->name + asset->extension;
+			info->sizeStr = Utils::DataSizeToString(asset->size);
+			info->audioClip = AudioEngine::GetInstance()->CreateAudioClip(asset->path);
+			info->lengthStr = Utils::MillisecondsToString(info->audioClip->GetLengthMS());
+			curAssetInfo = info;
 		}
 	}
 

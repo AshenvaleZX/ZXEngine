@@ -176,6 +176,7 @@ namespace ZXEngine
 			child->path = entry.path().string();
 			child->name = entry.path().filename().string();
 			child->extension = extension;
+			child->size = static_cast<uint32_t>(entry.file_size());
 			child->type = GetAssetType(child->extension);
 			// 把文件扩展(后缀名)截取掉
 			child->name = child->name.substr(0, child->name.length() - child->extension.length());
@@ -220,6 +221,9 @@ namespace ZXEngine
 
 		extTypeMap.insert(make_pair<string, AssetType>(".obj",      AssetType::Model             ));
 		extTypeMap.insert(make_pair<string, AssetType>(".fbx",      AssetType::Model             ));
+
+		extTypeMap.insert(make_pair<string, AssetType>(".wav",      AssetType::Audio             ));
+		extTypeMap.insert(make_pair<string, AssetType>(".ogg",      AssetType::Audio             ));
 	}
 
 	AssetType EditorProjectPanel::GetAssetType(const string& extension)
@@ -245,5 +249,6 @@ namespace ZXEngine
 		fileIcons[(int)AssetType::Scene]              = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/scene.png",    true));
 		fileIcons[(int)AssetType::Model]              = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/model.png",    true));
 		fileIcons[(int)AssetType::RayTracingShader]   = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/raytrace.png", true));
+		fileIcons[(int)AssetType::Audio]              = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/audio.png",    true));
 	}
 }
