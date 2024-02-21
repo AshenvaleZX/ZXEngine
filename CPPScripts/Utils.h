@@ -32,6 +32,13 @@ namespace ZXEngine
 		static inline std::string ConvertPathToWindowsFormat(const std::string path);
 		// 获取文件扩展名
 		static inline std::string GetFileExtension(const std::string& path);
+		// 时间(秒)转换为字符串
+		static std::string SecondsToString(float seconds);
+		static std::string SecondsToString(uint32_t seconds);
+		// 时间(毫秒)转换为字符串
+		static std::string MillisecondsToString(uint32_t milliseconds);
+		// 数据大小(Byte)转换为字符串
+		static std::string DataSizeToString(uint64_t size);
 	};
 
 	std::string Utils::StringToLower(const std::string& str)

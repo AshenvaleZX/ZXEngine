@@ -135,4 +135,101 @@ namespace ZXEngine
             res += str;
         return res;
     }
+
+    std::string Utils::SecondsToString(float seconds)
+    {
+        uint32_t sec_uint32 = static_cast<uint32_t>(seconds * 1000);
+
+        if (sec_uint32 < 60'000)
+        {
+            uint32_t frac = sec_uint32 % 1000;
+            uint32_t secs = sec_uint32 / 1000;
+
+            std::string fracStr;
+            if (frac < 10)
+                fracStr = "00" + std::to_string(frac);
+            else if (frac < 100)
+                fracStr = "0" + std::to_string(frac);
+            else
+                fracStr = std::to_string(frac);
+
+            std::string secsStr = (secs < 10 ? "0" : "") + std::to_string(secs);
+
+            return "00:00:" + secsStr + "." + fracStr;
+        }
+        else
+        {
+            return SecondsToString(sec_uint32 / 100);
+        }
+    }
+
+    std::string Utils::SecondsToString(uint32_t seconds)
+    {
+        uint32_t hours = seconds / 3600;
+        uint32_t minutes = (seconds % 3600) / 60;
+        uint32_t secs = seconds % 60;
+
+        std::string hoursStr = (hours < 10 ? "0" : "") + std::to_string(hours);
+        std::string minutesStr = (minutes < 10 ? "0" : "") + std::to_string(minutes);
+        std::string secsStr = (secs < 10 ? "0" : "") + std::to_string(secs);
+
+        return hoursStr + ":" + minutesStr + ":" + secsStr;
+    }
+
+    std::string Utils::MillisecondsToString(uint32_t milliseconds)
+    {
+		uint32_t seconds = milliseconds / 1000;
+        uint32_t frac = milliseconds % 1000;
+
+        std::string fracStr;
+        if (frac < 10)
+            fracStr = "00" + std::to_string(frac);
+        else if (frac < 100)
+            fracStr = "0" + std::to_string(frac);
+        else
+            fracStr = std::to_string(frac);
+
+        return SecondsToString(seconds) + "." + fracStr;
+    }
+
+    std::string Utils::DataSizeToString(uint64_t dataSize)
+    {
+        if (dataSize < 1024)
+        {
+            return std::to_string(dataSize) + "B";
+        }
+
+        std::string unit;
+        uint64_t stepSize;
+        if (dataSize < 1024Ui64 * 1024Ui64)
+        {
+            unit = "KB";
+            stepSize = 1024Ui64;
+        }
+        else if (dataSize < 1024Ui64 * 1024Ui64 * 1024Ui64)
+        {
+			unit = "MB";
+			stepSize = 1024Ui64 * 1024Ui64;
+        }
+        else if (dataSize < 1024Ui64 * 1024Ui64 * 1024Ui64 * 1024Ui64)
+        {
+            unit = "GB";
+            stepSize = 1024Ui64 * 1024Ui64 * 1024Ui64;
+        }
+        else
+        {
+			unit = "TB";
+			stepSize = 1024Ui64 * 1024Ui64 * 1024Ui64 * 1024Ui64;
+		}
+
+        double percentage = static_cast<double>(dataSize % stepSize) / stepSize * 100;
+        uint32_t percentage_u32 = static_cast<uint32_t>(percentage);
+
+        if (percentage_u32 == 0)
+            return std::to_string(dataSize / stepSize) + unit;
+        else if (percentage_u32 < 10)
+            return std::to_string(dataSize / stepSize) + ".0" + std::to_string(percentage_u32) + unit;
+        else
+            return std::to_string(dataSize / stepSize) + "." + std::to_string(percentage_u32) + unit;
+	}
 }
