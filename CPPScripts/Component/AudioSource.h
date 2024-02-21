@@ -10,6 +10,9 @@ namespace ZXEngine
 		static ComponentType GetType();
 
 	public:
+		string mName;
+		bool mPlayOnAwake = false;
+
 		AudioSource() {};
 		~AudioSource();
 

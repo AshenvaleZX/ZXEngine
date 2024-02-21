@@ -1,6 +1,7 @@
 #include "AudioSource.h"
 #include "../Audio/ZAudio.h"
 #include "../GameObject.h"
+#include "../Resources.h"
 
 namespace ZXEngine
 {
@@ -22,6 +23,7 @@ namespace ZXEngine
 
 	void AudioSource::Init(const string& path)
 	{
+		mName = Resources::GetAssetNameWithExtension(path);
 		mAudioClip = AudioEngine::GetInstance()->CreateAudioClip(path);
 	}
 

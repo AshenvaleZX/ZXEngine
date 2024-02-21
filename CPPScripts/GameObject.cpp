@@ -447,6 +447,7 @@ namespace ZXEngine
 		audioSource->Init(p);
 		audioSource->SetLoop(data["Loop"]);
 		audioSource->SetVolume(data["Volume"]);
+		audioSource->mPlayOnAwake = data["PlayOnAwake"];
 
 		bool is3D = data["Is3D"];
 		if (data["PlayOnAwake"])
