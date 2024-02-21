@@ -76,6 +76,7 @@ namespace ZXEngine
 		static string GetAssetLocalPath(const string& path);
 		static string GetAssetName(const string& path);
 		static string GetAssetExtension(const string& path);
+		static string GetAssetNameWithExtension(const string& path);
 
 		static json LoadJson(const string& path);
 		static string JsonStrToString(const json& data);

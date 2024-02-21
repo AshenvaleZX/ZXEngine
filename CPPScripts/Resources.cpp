@@ -44,6 +44,12 @@ namespace ZXEngine
 		return path.substr(s + 1, path.length() - s - 1);
 	}
 
+	string Resources::GetAssetNameWithExtension(const string& path)
+	{
+		size_t s = path.rfind("/");
+		return path.substr(s + 1, path.length() - s - 1);
+	}
+
 	string Resources::JsonStrToString(const json& data)
 	{
 		string p = to_string(data);
