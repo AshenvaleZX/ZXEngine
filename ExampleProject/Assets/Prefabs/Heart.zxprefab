@@ -18,6 +18,14 @@
         {
             "Type": "GameLogic",
             "Lua": "Scripts/ObjectMove.lua"
+        },
+        {
+            "Type": "AudioSource",
+            "Clip": "Audio/Snowfall.ogg",
+            "Loop": true,
+            "PlayOnAwake": true,
+            "Volume": 0.8,
+            "Is3D": false
         }
     ]
 }
