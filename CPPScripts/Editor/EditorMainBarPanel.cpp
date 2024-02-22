@@ -10,6 +10,7 @@
 #include "../Vulkan/SPIRVCompiler.h"
 #include "../DirectX12/ZXD3D12Util.h"
 #include "../Component/Animator.h"
+#include "../Audio/AudioEngine.h"
 
 namespace ZXEngine
 {
@@ -144,6 +145,7 @@ namespace ZXEngine
 			if (ImGui::Button("||", buttonSize))
 			{
 				EditorDataManager::isGamePause = !EditorDataManager::isGamePause;
+				AudioEngine::GetInstance()->SetAllPause(EditorDataManager::isGamePause);
 			}
 			if (isPop)
 			{

@@ -3,6 +3,10 @@
 #include "../GameObject.h"
 #include "../Resources.h"
 
+#ifdef ZX_EDITOR
+#include "../Editor/EditorDataManager.h"
+#endif
+
 namespace ZXEngine
 {
 	ComponentType AudioSource::GetType()
@@ -30,6 +34,14 @@ namespace ZXEngine
 			else
 				Play2D(mIsLoop);
 		}
+
+#ifdef ZX_EDITOR
+		// 在编辑器模式下，如果游戏以暂停状态启动，音频也应该处于暂停状态
+		if (EditorDataManager::isGamePause)
+		{
+			SetPause(true);
+		}
+#endif
 		mIsAwake = true;
 	}
 
