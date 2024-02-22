@@ -19,12 +19,15 @@ namespace ZXEngine
 		AudioEngine();
 		~AudioEngine();
 
+		void SetAllPause(bool pause);
+
 		AudioClip* CreateAudioClip(const string& path);
 		AudioClip* CreateAudioClip(AudioStream* stream);
 		AudioStream* CreateAudioStream(const string& path);
 
 	private:
 		irrklang::ISoundEngine* mEngine;
+		vector<AudioClip*> mAudioClips;
 		unordered_map<string, AudioStream*> mAudioStreams;
 	};
 }

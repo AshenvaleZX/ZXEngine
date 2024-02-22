@@ -9,6 +9,7 @@ namespace ZXEngine
 	{
 		mAudioStream = stream;
 		mAudioEngine = AudioEngine::GetInstance();
+		mAudioEngine->mAudioClips.push_back(this);
 	}
 
 	AudioClip::~AudioClip()
@@ -18,6 +19,7 @@ namespace ZXEngine
 			mSound->stop();
 			mSound->drop();
 		}
+		mAudioEngine->mAudioClips.erase(std::remove(mAudioEngine->mAudioClips.begin(), mAudioEngine->mAudioClips.end(), this), mAudioEngine->mAudioClips.end());
 	}
 
 	void AudioClip::Play2D(bool loop)

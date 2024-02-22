@@ -37,6 +37,14 @@ namespace ZXEngine
 		mEngine->drop();
 	}
 
+	void AudioEngine::SetAllPause(bool pause)
+	{
+		for (auto& iter : mAudioClips)
+		{
+			iter->SetPause(pause);
+		}
+	}
+
 	AudioClip* AudioEngine::CreateAudioClip(const string& path)
 	{
 		AudioStream* stream = CreateAudioStream(path);
