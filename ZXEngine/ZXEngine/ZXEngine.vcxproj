@@ -167,6 +167,7 @@
     <ClCompile Include="..\..\CPPScripts\Audio\AudioEngine.cpp" />
     <ClCompile Include="..\..\CPPScripts\Audio\AudioStream.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\Animator.cpp" />
+    <ClCompile Include="..\..\CPPScripts\Component\AudioListener.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\AudioSource.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\Component.cpp" />
     <ClCompile Include="..\..\CPPScripts\Component\GameLogic.cpp" />
@@ -331,6 +332,7 @@
     <ClInclude Include="..\..\CPPScripts\Audio\AudioStream.h" />
     <ClInclude Include="..\..\CPPScripts\Audio\ZAudio.h" />
     <ClInclude Include="..\..\CPPScripts\Component\Animator.h" />
+    <ClInclude Include="..\..\CPPScripts\Component\AudioListener.h" />
     <ClInclude Include="..\..\CPPScripts\Component\AudioSource.h" />
     <ClInclude Include="..\..\CPPScripts\Component\Component.h" />
     <ClInclude Include="..\..\CPPScripts\Component\GameLogic.h" />

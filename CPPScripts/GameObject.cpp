@@ -91,6 +91,8 @@ namespace ZXEngine
 				ParseCloth(component);
 			else if (component["Type"] == "AudioSource")
 				ParseAudioSource(component);
+			else if (component["Type"] == "AudioListener")
+				ParseAudioListener(component);
 			else
 				Debug::LogError("Try parse undefined component type: " + component["Type"]);
 		}
@@ -138,6 +140,8 @@ namespace ZXEngine
 				delete static_cast<Cloth*>(iter.second);
 			else if (iter.first == ComponentType::AudioSource)
 				delete static_cast<AudioSource*>(iter.second);
+			else if (iter.first == ComponentType::AudioListener)
+				delete static_cast<AudioListener*>(iter.second);
 			else
 				Debug::LogError("Try delete undefined component type: %s", static_cast<int>(iter.first));
 		}
@@ -463,5 +467,10 @@ namespace ZXEngine
 		audioSource->SetVolume(data["Volume"]);
 		audioSource->mPlayOnAwake = data["PlayOnAwake"];
 		audioSource->mIs3D = data["Is3D"];
+	}
+
+	void GameObject::ParseAudioListener(json data)
+	{
+		AddComponent<AudioListener>();
 	}
 }

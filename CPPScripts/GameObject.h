@@ -18,6 +18,7 @@
 #include "Component/Physics/Cloth.h"
 #include "Component/Animator.h"
 #include "Component/AudioSource.h"
+#include "Component/AudioListener.h"
 #include "PhysZ/PhysZEnumStruct.h"
 
 namespace ZXEngine
@@ -74,6 +75,7 @@ namespace ZXEngine
 		void ParseSpringJoint(json data);
 		void ParseCloth(json data);
 		void ParseAudioSource(json data);
+		void ParseAudioListener(json data);
 	};
 
 	template<class T>

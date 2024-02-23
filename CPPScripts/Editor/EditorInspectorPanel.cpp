@@ -74,6 +74,8 @@ namespace ZXEngine
 						DrawCloth(static_cast<Cloth*>(iter.second));
 					else if (type == ComponentType::AudioSource)
 						DrawAudioSource(static_cast<AudioSource*>(iter.second));
+					else if (type == ComponentType::AudioListener)
+						DrawAudioListener(static_cast<AudioListener*>(iter.second));
 					else if (type == ComponentType::MeshRenderer)
 					{
 						auto meshRenderer = static_cast<MeshRenderer*>(iter.second);
@@ -877,5 +879,12 @@ namespace ZXEngine
 		bool is3DSound = component->GetIs3D();
 		ImGui::Text("3D Sound         ");
 		ImGui::SameLine(); ImGui::Checkbox("##3DSound", &is3DSound);
+	}
+
+	void EditorInspectorPanel::DrawAudioListener(AudioListener* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("AudioListener"))
+			return;
 	}
 }

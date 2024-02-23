@@ -21,6 +21,7 @@ namespace ZXEngine
 	class SpringJoint;
 	class Cloth;
 	class AudioSource;
+	class AudioListener;
 	class EditorInspectorPanel : public EditorPanel
 	{
 	public:
@@ -48,6 +49,7 @@ namespace ZXEngine
 		void DrawSpringJoint(SpringJoint* component);
 		void DrawCloth(Cloth* component);
 		void DrawAudioSource(AudioSource* component);
+		void DrawAudioListener(AudioListener* component);
 		
 		// Asset
 		void DrawScript(AssetScriptInfo* info);

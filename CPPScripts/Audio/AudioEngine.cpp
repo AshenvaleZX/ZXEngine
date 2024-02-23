@@ -1,6 +1,7 @@
 #include "AudioEngine.h"
 #include "AudioStream.h"
 #include "AudioClip.h"
+#include "../GameObject.h"
 
 namespace ZXEngine
 {
@@ -42,6 +43,26 @@ namespace ZXEngine
 		for (auto& iter : mAudioClips)
 		{
 			iter->SetPause(pause);
+		}
+	}
+
+	void AudioEngine::SetListener(GameObject* listener)
+	{
+		if (mListener)
+		{
+			Debug::LogWarning("There is already a listener in the scene.");
+		}
+		else
+		{
+			mListener = listener;
+		}
+	}
+
+	void AudioEngine::RemoveListener(GameObject* listener)
+	{
+		if (mListener == listener)
+		{
+			mListener = nullptr;
 		}
 	}
 

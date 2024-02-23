@@ -126,6 +126,7 @@ namespace ZXEngine
 		Transform,
 		MeshRenderer,
 		Camera,
+		AudioListener,
 		Light,
 		GameLogic,
 		UITextRenderer,
