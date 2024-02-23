@@ -14,7 +14,7 @@ namespace ZXEngine
 		string mName;
 		bool mPlayOnAwake = false;
 
-		AudioSource() {};
+		AudioSource();
 		~AudioSource();
 
 		virtual void Awake();
@@ -33,6 +33,10 @@ namespace ZXEngine
 		void SetVolume(float volume);
 		float GetVolume();
 		void SetPosition(const Vector3& position);
+		void SetMinDistance(float distance);
+		float GetMinDistance();
+		void SetMaxDistance(float distance);
+		float GetMaxDistance();
 
 	private:
 		bool mIs3D = false;

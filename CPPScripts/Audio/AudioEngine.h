@@ -9,6 +9,7 @@ namespace ZXEngine
 	{
 		friend class AudioClip;
 		friend class AudioStream;
+		friend class AudioSource;
 	public:
 		static void Create();
 		static AudioEngine* GetInstance();
@@ -20,6 +21,7 @@ namespace ZXEngine
 		AudioEngine();
 		~AudioEngine();
 
+		void Update();
 		void SetAllPause(bool pause);
 		void SetListener(GameObject* listener);
 		void RemoveListener(GameObject* listener);
@@ -32,6 +34,7 @@ namespace ZXEngine
 		GameObject* mListener = nullptr;
 		irrklang::ISoundEngine* mEngine;
 		vector<AudioClip*> mAudioClips;
+		vector<AudioSource*> mAudioSources;
 		unordered_map<string, AudioStream*> mAudioStreams;
 	};
 }

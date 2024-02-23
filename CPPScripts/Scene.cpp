@@ -12,6 +12,7 @@
 #include "SceneManager.h"
 #include "GameLogicManager.h"
 #include "ParticleSystemManager.h"
+#include "Audio/AudioEngine.h"
 
 namespace ZXEngine
 {
@@ -75,6 +76,7 @@ namespace ZXEngine
 
 		Animator::Update();
 		UpdatePhysics();
+		AudioEngine::GetInstance()->Update();
 		GameLogicManager::GetInstance()->Update();
 		ParticleSystemManager::GetInstance()->Update();
 	}

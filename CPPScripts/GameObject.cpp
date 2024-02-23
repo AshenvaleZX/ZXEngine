@@ -467,6 +467,11 @@ namespace ZXEngine
 		audioSource->SetVolume(data["Volume"]);
 		audioSource->mPlayOnAwake = data["PlayOnAwake"];
 		audioSource->mIs3D = data["Is3D"];
+
+		if (!data["MinDistance"].is_null())
+			audioSource->SetMinDistance(data["MinDistance"]);
+		if (!data["MaxDistance"].is_null())
+			audioSource->SetMaxDistance(data["MaxDistance"]);
 	}
 
 	void GameObject::ParseAudioListener(json data)

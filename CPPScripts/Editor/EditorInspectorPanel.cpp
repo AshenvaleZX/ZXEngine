@@ -879,6 +879,16 @@ namespace ZXEngine
 		bool is3DSound = component->GetIs3D();
 		ImGui::Text("3D Sound         ");
 		ImGui::SameLine(); ImGui::Checkbox("##3DSound", &is3DSound);
+
+		// Min Distance
+		float minDistance = component->GetMinDistance();
+		ImGui::Text("Min Distance     ");
+		ImGui::SameLine(); ImGui::DragFloat("##minDistance", &minDistance, 0.01f, 0.0f, FLT_MAX);
+
+		// Max Distance
+		float maxDistance = component->GetMaxDistance();
+		ImGui::Text("Max Distance     ");
+		ImGui::SameLine(); ImGui::DragFloat("##maxDistance", &maxDistance, 0.01f, 0.0f, FLT_MAX);
 	}
 
 	void EditorInspectorPanel::DrawAudioListener(AudioListener* component)

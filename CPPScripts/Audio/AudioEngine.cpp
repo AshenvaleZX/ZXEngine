@@ -38,6 +38,24 @@ namespace ZXEngine
 		mEngine->drop();
 	}
 
+	void AudioEngine::Update()
+	{
+		if (mListener)
+		{
+			Matrix4 mat = Math::Inverse(mListener->GetComponent<Transform>()->GetModelMatrix());
+
+			for (auto source : mAudioSources)
+			{
+				if (source->GetIs3D())
+				{
+					Vector3 wPos = source->gameObject->GetComponent<Transform>()->GetPosition();
+					Vector3 lPos = mat * Vector4(wPos, 1.0f);
+					source->SetPosition(lPos);
+				}
+			}
+		}
+	}
+
 	void AudioEngine::SetAllPause(bool pause)
 	{
 		for (auto& iter : mAudioClips)

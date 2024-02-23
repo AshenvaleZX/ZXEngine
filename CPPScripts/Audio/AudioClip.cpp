@@ -31,6 +31,7 @@ namespace ZXEngine
 		}
 		mSound = mAudioEngine->mEngine->play2D(mAudioStream->mSoundSource, loop, false, true);
 		mSound->setVolume(mVolume);
+		mIs3D = false;
 	}
 
 	void AudioClip::Play3D(const Vector3& position, bool loop)
@@ -42,6 +43,9 @@ namespace ZXEngine
 		}
 		mSound = mAudioEngine->mEngine->play3D(mAudioStream->mSoundSource, irrklang::vec3df(position.x, position.y, position.z), loop, false, true);
 		mSound->setVolume(mVolume);
+		mSound->setMinDistance(mMinDistance);
+		mSound->setMaxDistance(mMaxDistance);
+		mIs3D = true;
 	}
 
 	void AudioClip::Stop()
@@ -88,6 +92,11 @@ namespace ZXEngine
 		mSound->setPosition(irrklang::vec3df(position.x, position.y, position.z));
 	}
 
+	bool AudioClip::GetIs3D()
+	{
+		return mIs3D;
+	}
+
 	float AudioClip::GetLength()
 	{
 		return mAudioStream->mLength;
@@ -96,5 +105,31 @@ namespace ZXEngine
 	uint32_t AudioClip::GetLengthMS()
 	{
 		return mAudioStream->mLenthMS;
+	}
+
+	void AudioClip::SetMinDistance(float distance)
+	{
+		mMinDistance = distance;
+
+		if (mSound)
+			mSound->setMinDistance(distance);
+	}
+
+	float AudioClip::GetMinDistance()
+	{
+		return mMinDistance;
+	}
+
+	void AudioClip::SetMaxDistance(float distance)
+	{
+		mMaxDistance = distance;
+
+		if (mSound)
+			mSound->setMaxDistance(distance);
+	}
+
+	float AudioClip::GetMaxDistance()
+	{
+		return mMaxDistance;
 	}
 }

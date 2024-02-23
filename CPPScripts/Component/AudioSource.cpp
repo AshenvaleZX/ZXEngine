@@ -19,10 +19,17 @@ namespace ZXEngine
 		return ComponentType::AudioSource;
 	}
 
+	AudioSource::AudioSource()
+	{
+		AudioEngine::GetInstance()->mAudioSources.push_back(this);
+	}
+
 	AudioSource::~AudioSource()
 	{
 		if (mAudioClip != nullptr)
 			delete mAudioClip;
+
+		AudioEngine::GetInstance()->mAudioSources.erase(std::remove(AudioEngine::GetInstance()->mAudioSources.begin(), AudioEngine::GetInstance()->mAudioSources.end(), this), AudioEngine::GetInstance()->mAudioSources.end());
 	}
 
 	void AudioSource::Awake()
@@ -120,5 +127,25 @@ namespace ZXEngine
 	void AudioSource::SetPosition(const Vector3& position)
 	{
 		mAudioClip->SetPosition(position);
+	}
+
+	void AudioSource::SetMinDistance(float distance)
+	{
+		mAudioClip->SetMinDistance(distance);
+	}
+
+	float AudioSource::GetMinDistance()
+	{
+		return mAudioClip->GetMinDistance();
+	}
+
+	void AudioSource::SetMaxDistance(float distance)
+	{
+		mAudioClip->SetMaxDistance(distance);
+	}
+
+	float AudioSource::GetMaxDistance()
+	{
+		return mAudioClip->GetMaxDistance();
 	}
 }
