@@ -16,6 +16,9 @@
             "EnableAfterEffects": true
         },
         {
+            "Type": "AudioListener"
+        },
+        {
             "Type": "GameLogic",
             "Lua": "Scripts/CameraMove.lua"
         }

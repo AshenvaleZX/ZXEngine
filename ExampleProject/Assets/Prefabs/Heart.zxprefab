@@ -25,7 +25,9 @@
             "Loop": true,
             "PlayOnAwake": true,
             "Volume": 0.8,
-            "Is3D": false
+            "Is3D": false,
+            "MinDistance": 30,
+            "MaxDistance": 80
         }
     ]
 }
