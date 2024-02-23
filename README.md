@@ -18,11 +18,15 @@ Screenshot display (more display later in the introduction):
 
 [引擎简介 (Engine Introduction)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E5%BC%95%E6%93%8E%E7%AE%80%E4%BB%8B-engine-introduction)
 
-[细节图片展示 (Detailed picture display)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E7%BB%86%E8%8A%82%E5%9B%BE%E7%89%87%E5%B1%95%E7%A4%BA-detailed-picture-display)
+[引擎编辑器和更多演示 (Engine Editor And More Demonstration)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E5%BC%95%E6%93%8E%E7%BC%96%E8%BE%91%E5%99%A8%E5%92%8C%E6%9B%B4%E5%A4%9A%E6%BC%94%E7%A4%BA-engine-editor-and-more-demonstration)
 
-[PhysZ引擎简介(PhysZ Engine Introduction)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#physz%E5%BC%95%E6%93%8E%E7%AE%80%E4%BB%8Bphysz-engine-introduction)
+[PhysZ物理引擎简介(PhysZ Physics Engine Introduction)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#physz%E7%89%A9%E7%90%86%E5%BC%95%E6%93%8E%E7%AE%80%E4%BB%8Bphysz-physics-engine-introduction)
+
+[ZXShader和材质系统(ZXShader And Material System)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#zxshader%E5%92%8C%E6%9D%90%E8%B4%A8%E7%B3%BB%E7%BB%9Fzxshader-and-material-system)
 
 [骨骼蒙皮动画系统(Skeletal Animation System)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E9%AA%A8%E9%AA%BC%E8%92%99%E7%9A%AE%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9Fskeletal-animation-system)
+
+[音频系统(Audio System)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E9%9F%B3%E9%A2%91%E7%B3%BB%E7%BB%9F-audio-system)
 
 [引擎文件格式介绍 (Engine file format introduction)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E5%BC%95%E6%93%8E%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E4%BB%8B%E7%BB%8D-engine-file-format-introduction)
 
@@ -38,9 +42,9 @@ Screenshot display (more display later in the introduction):
 
 This engine currently supports Vulkan, DirectX 12 and OpenGL. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs. This engine also supports ray tracing rendering pipeline based on Vulkan and DirectX12.
 
-本引擎内置了我写的物理引擎PhysZ(学习和改写自Cyclone引擎)，支持基本的刚体力学模拟和布料模拟。同时我也开发了简单的骨骼蒙皮动画系统，粒子系统等。文档后面会有这些系统的图片展示。
+本引擎内置了我写的物理引擎PhysZ(看了一些书和别人的项目之后的学习成果，详见后文)，支持基本的刚体力学模拟和布料模拟。同时我也开发了简单的骨骼蒙皮动画系统，粒子系统等。文档后面会有这些系统的图片展示。
 
-This engine has a built-in physics engine written by myself, which I called it PhysZ (learn and rewritten from the Cyclone engine), supports rigid body mechanics simulation and cloth simulation. And I also developed a simple skeletal animation system, particle system, etc. Images of these systems are shown later in this document.
+This engine has a built-in physics engine written by myself, which I called it PhysZ (It is the learning result after reading some books and other people’s projects), supports rigid body mechanics simulation and cloth simulation. And I also developed a simple skeletal animation system, particle system, etc. Images of these systems are shown later in this document.
 
 引擎本身用C++开发，GamePlay层使用Lua开发，引擎层封装部分C++接口给GamePlay层的Lua调用。使用方式类似Unity的XLua，通过一个GameLogic组件把Lua代码绑定到GameObject上，接收所挂载对象上来自引擎的Start和Update调用，并通过self访问GameObject对象(具体示例看后面)。
 
@@ -50,7 +54,7 @@ The engine is developed with C++, the GamePlay layer is developed with Lua, and 
 
 The project is still relatively simple, but I have completed the development of the basic scenes, prefabs, materials system, shader file systems and so on that the engine need. This engine has a Unity-like engine editor. Objects in the scene are Unity-style GameObject - Component structures.
 
-## 细节图片展示 (Detailed picture display)
+## 引擎编辑器和更多演示 (Engine Editor And More Demonstration)
 
 下面是一些图片展示，引擎页面如图，和Unity编辑器类似。上面是主菜单栏，中间是游戏画面窗口，左边是展示场景中GameObject的Hierarchy面板，下面左边是展示当前打开项目的Assets文件目录的Project面板，中间是展示日志的Console面板，右边是展示当前选中对象详细信息的Inspector面板。
 
@@ -92,7 +96,7 @@ The following is the code preview on the Inspector after clicking zxshader and L
 
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/EngineShow6.jpg)
 
-## PhysZ引擎简介(PhysZ Engine Introduction)
+## PhysZ物理引擎简介(PhysZ Physics Engine Introduction)
 
 先展示一下PhysZ引擎对刚体力学和布料的模拟效果(GIF演示，截屏大小和帧率都有压缩):
 
@@ -122,6 +126,28 @@ Cloth simulation needs to add a Cloth component, the parameters are cloth mass, 
 
 ![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/PhysZ3.png)
 
+PhysZ引擎主要是我在学习了Ian Millington的《Game Physics Engine Development》和Gabor Szauer的《Game Physics Cookbook》之后，加上一些自己的思考和实践的成果。引擎里的注释也比较多，欢迎对物理引擎感兴趣的人一起讨论学习。
+
+The PhysZ engine is the result of me studying Ian Millington's "Game Physics Engine Development" and Gabor Szauer's "Game Physics Cookbook", plus some of my own thinking and practice. If you are also interested in physics engines, I hope this engine can be helpful to you.
+
+## ZXShader和材质系统(ZXShader And Material System)
+
+ZXShader是专门给ZXEngine用的一套Shader系统，因为ZXEngine同时支持Vulkan/DirectX12/OpenGL，所以也需要一个统一的Shader语言才能支撑后面的材质系统。ZXShader目前暂时只支持光栅渲染管线，光追渲染管线的Shader是在VK和DX下独立写的。ZXShader语言本身并不复杂，对GLSL，HLSL或者Unity ShaderLab比较熟悉的人应该都能很快看懂，代码示例在ExampleProject\Assets\Shaders中。
+
+ZXShader is a shader system specially used for ZXEngine. Because ZXEngine supports Vulkan/DirectX12/OpenGL, a unified shader language is needed to support the material system. ZXShader currently only supports the rasterization rendering pipeline. The Shader of the raytracing rendering pipeline is written independently under VK and DX. The ZXShader language itself is not complicated. People who are familiar with GLSL, HLSL or Unity ShaderLab should be able to understand it quickly. The code examples are in ExampleProject\Assets\Shaders.
+
+材质系统和Unity的比较类似，就是挂一个Shader，然后可以在编辑器面板上看到这个Shader暴露给引擎的参数。并且可以通过引擎编辑器调整参数数值，然后实时看到渲染结果的动态反馈。直接调整正在运行的场景中的材质：
+
+The material system is similar to Unity's. Select a Shader, and then you can see the parameters exposed by this shader to the engine on the editor panel. And you can adjust parameter values through the engine editor, and then see the feedback of the rendering results in real time. For example, adjust the materials in the running scene:
+
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Material1.gif)
+
+选中Asset中的材质后，直接调整材质参数，在材质球上预览变化：
+
+This is after selecting the material in the Asset, adjusting the material parameters, and previewing the changes on the material ball:
+
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Material2.gif)
+
 ## 骨骼蒙皮动画系统(Skeletal Animation System)
 
 切换到AnimDemo场景，点击运行按钮后，可以看到骨骼蒙皮动画的展示:
@@ -137,6 +163,30 @@ The animation system of this engine supports animation blending, so in addition 
 这里动画的播放代码属于业务逻辑模块而不是引擎，所以是写在Lua代码中的，通过GameLogic组件绑定到对应的GameObject上。
 
 The code to play the animation belongs to the GamePlay rather than the engine, so it‘s written in the Lua code and bound to the GameObject through the GameLogic component.
+
+## 音频系统(Audio System)
+
+本引擎的音频系统类似Unity，主要依靠AudioListener和AudioSource这两个组件。
+
+The audio system of this engine is similar to Unity, mainly relying on the two components AudioListener and AudioSource.
+
+AudioSource如下，各参数都比较好理解。
+
+AudioSource is as shown below. These parameters are easy to understand.
+
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Audio1.png)
+
+其中最后两个参数只在勾选3D音效后生效。MinDistance表示小于这个距离之后音量不会再增大，MaxDistance表示大于这个距离后音量不会再减小。
+
+The last two parameters only take effect in 3D sound effects. When the distance is less than MinDistance, the volume will no longer increase, and when the distance is greater than MaxDistance, the volume will no longer decrease.
+
+AudioListener同样也是用于3D音效的，如果你不需要3D音效的话场景里可以没有这个组件。这个组件挂载到哪个GameObject上就会用哪个GameObject计算3D音效。和Unity一样这个组件不需要任何参数，一般会挂载到主相机所在的GameObject上，如图：
+
+![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Audio2.png)
+
+本引擎的绝大部分系统和模块都是我自己编写的，但是音频处理是一个和图形渲染，物理引擎一样很专业的领域，涉及音频编码和时域频域变换等相关专业知识。而我对音频相关的专业知识了解还不够，所以很惭愧，目前本引擎音频系统中的核心部分，即音频解码和播放功能使用了irrKlang这个第三方库。
+
+Most of the systems and modules of this engine are written by myself, but audio processing is a very professional field like graphics rendering and physics engine, involving audio coding, time domain and frequency domain transformation and other related professional knowledge. I don’t know enough about audio-related professional knowledge, so the core part of the audio system of this engine, that is, the audio decoding and playback functions, uses the third-party library irrKlang.
 
 ## 引擎文件格式介绍 (Engine file format introduction)
 
