@@ -26,7 +26,7 @@ Screenshot display (more display later in the introduction):
 
 [骨骼蒙皮动画系统(Skeletal Animation System)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E9%AA%A8%E9%AA%BC%E8%92%99%E7%9A%AE%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9Fskeletal-animation-system)
 
-[音频系统(Audio System)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E9%9F%B3%E9%A2%91%E7%B3%BB%E7%BB%9F-audio-system)
+[音频系统(Audio System)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E9%9F%B3%E9%A2%91%E7%B3%BB%E7%BB%9Faudio-system)
 
 [引擎文件格式介绍 (Engine file format introduction)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E5%BC%95%E6%93%8E%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E4%BB%8B%E7%BB%8D-engine-file-format-introduction)
 
