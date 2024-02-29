@@ -8,3 +8,5 @@
 
 #include "Force/FGGravity.h"
 #include "Force/FGSpring.h"
+
+#include "Joint/DistanceJoint.h"
