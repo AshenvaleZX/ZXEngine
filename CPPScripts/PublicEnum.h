@@ -139,6 +139,7 @@ namespace ZXEngine
 		RigidBody,
 		Animator,
 		SpringJoint,
+		DistanceJoint,
 		Cloth,
 		AudioSource,
 	};

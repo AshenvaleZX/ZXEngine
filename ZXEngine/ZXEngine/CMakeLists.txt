@@ -65,6 +65,8 @@ set(Component__Physics
     "../../CPPScripts/Component/Physics/SphereCollider.h"
     "../../CPPScripts/Component/Physics/SpringJoint.cpp"
     "../../CPPScripts/Component/Physics/SpringJoint.h"
+    "../../CPPScripts/Component/Physics/ZDistanceJoint.cpp"
+    "../../CPPScripts/Component/Physics/ZDistanceJoint.h"
     "../../CPPScripts/Component/Physics/ZRigidBody.cpp"
     "../../CPPScripts/Component/Physics/ZRigidBody.h"
 )
@@ -306,6 +308,14 @@ set(PhysZ__Force
 )
 source_group("PhysZ\\Force" FILES ${PhysZ__Force})
 
+set(PhysZ__Joint
+    "../../CPPScripts/PhysZ/Joint/DistanceJoint.cpp"
+    "../../CPPScripts/PhysZ/Joint/DistanceJoint.h"
+    "../../CPPScripts/PhysZ/Joint/Joint.cpp"
+    "../../CPPScripts/PhysZ/Joint/Joint.h"
+)
+source_group("PhysZ\\Joint" FILES ${PhysZ__Joint})
+
 set(Vulkan
     "../../CPPScripts/Vulkan/SPIRVCompiler.cpp"
     "../../CPPScripts/Vulkan/SPIRVCompiler.h"
@@ -440,6 +450,7 @@ set(ALL_FILES
     ${PhysZ}
     ${PhysZ__BoundingVolume}
     ${PhysZ__Force}
+    ${PhysZ__Joint}
     ${Vulkan}
     ${Window}
     ${}

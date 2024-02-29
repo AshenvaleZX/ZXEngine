@@ -87,6 +87,8 @@ namespace ZXEngine
 				ParseRigidBody(component);
 			else if (component["Type"] == "SpringJoint")
 				ParseSpringJoint(component);
+			else if (component["Type"] == "DistanceJoint")
+				ParseDistanceJoint(component);
 			else if (component["Type"] == "Cloth")
 				ParseCloth(component);
 			else if (component["Type"] == "AudioSource")
@@ -136,6 +138,8 @@ namespace ZXEngine
 				delete static_cast<Animator*>(iter.second);
 			else if (iter.first == ComponentType::SpringJoint)
 				delete static_cast<SpringJoint*>(iter.second);
+			else if (iter.first == ComponentType::DistanceJoint)
+				delete static_cast<ZDistanceJoint*>(iter.second);
 			else if (iter.first == ComponentType::Cloth)
 				delete static_cast<Cloth*>(iter.second);
 			else if (iter.first == ComponentType::AudioSource)
@@ -436,6 +440,21 @@ namespace ZXEngine
 		mConstructionCallBacks.push_back([springJoint]()
 		{
 			springJoint->Init();
+		});
+	}
+
+	void GameObject::ParseDistanceJoint(json data)
+	{
+		ZDistanceJoint* distanceJoint = AddComponent<ZDistanceJoint>();
+
+		distanceJoint->mConnectedGOPath = data["Connected"];
+		distanceJoint->mAnchor = Vector3(data["Anchor"][0], data["Anchor"][1], data["Anchor"][2]);
+		distanceJoint->mOtherAnchor = Vector3(data["OtherAnchor"][0], data["OtherAnchor"][1], data["OtherAnchor"][2]);
+		distanceJoint->mDistance = data["Distance"];
+
+		mConstructionCallBacks.push_back([distanceJoint]()
+		{
+			distanceJoint->Init();
 		});
 	}
 

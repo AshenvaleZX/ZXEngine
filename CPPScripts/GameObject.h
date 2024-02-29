@@ -15,6 +15,7 @@
 #include "Component/Physics/SphereCollider.h"
 #include "Component/Physics/ZRigidBody.h"
 #include "Component/Physics/SpringJoint.h"
+#include "Component/Physics/ZDistanceJoint.h"
 #include "Component/Physics/Cloth.h"
 #include "Component/Animator.h"
 #include "Component/AudioSource.h"
@@ -73,6 +74,7 @@ namespace ZXEngine
 		void ParseSphereCollider(json data);
 		void ParseRigidBody(json data);
 		void ParseSpringJoint(json data);
+		void ParseDistanceJoint(json data);
 		void ParseCloth(json data);
 		void ParseAudioSource(json data);
 		void ParseAudioListener(json data);
