@@ -6,6 +6,7 @@
 #include "CollisionDetector.h"
 #include "ContactResolver.h"
 #include "BoundingVolume/BoundingSphere.h"
+#include "Joint/Joint.h"
 #include "../GameObject.h"
 #include "../DynamicMesh.h"
 
@@ -88,6 +89,12 @@ namespace ZXEngine
 					mCollisionData
 				);
 				i++;
+			}
+
+			// 处理关节
+			for (auto joint : Joint::allJoints)
+			{
+				joint->Resolve(mCollisionData);
 			}
 
 			// 处理碰撞
