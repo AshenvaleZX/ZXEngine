@@ -42,7 +42,7 @@ namespace ZXEngine
 			void SetCanSleep(bool canSleep);
 			bool GetCanSleep() const;
 			
-			Matrix4 GetTransform() const;
+			const Matrix4& GetTransform() const;
 
 			void AddForceGenerator(ForceGenerator* generator);
 

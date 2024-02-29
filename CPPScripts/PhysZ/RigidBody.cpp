@@ -184,7 +184,7 @@ namespace ZXEngine
 			return mCanSleep;
 		}
 
-		Matrix4 RigidBody::GetTransform() const
+		const Matrix4& RigidBody::GetTransform() const
 		{
 			return mTransform;
 		}
