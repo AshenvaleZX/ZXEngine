@@ -57,6 +57,14 @@ static int GetComponent(lua_State* L)
 		luaL_getmetatable(L, "ZXEngine.Animator");
 		lua_setmetatable(L, -2);
 	}
+	else if (type == "RigidBody")
+	{
+		size_t nbytes = sizeof(ZXEngine::ZRigidBody);
+		ZXEngine::ZRigidBody** t = (ZXEngine::ZRigidBody**)lua_newuserdata(L, nbytes);
+		*t = (*data)->GetComponent<ZXEngine::ZRigidBody>();
+		luaL_getmetatable(L, "ZXEngine.RigidBody");
+		lua_setmetatable(L, -2);
+	}
 	else
 	{ 
 		ZXEngine::Debug::LogError("Not find lua wrap component: " + type);

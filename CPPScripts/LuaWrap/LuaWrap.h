@@ -7,6 +7,7 @@
 #include "Lua_UITextRenderer.h"
 #include "Lua_InputManager.h"
 #include "Lua_Animator.h"
+#include "Lua_Rigidbody.h"
 
 static const luaL_Reg myLibs[] = {
     {"Debug", luaopen_Debug},
@@ -17,6 +18,7 @@ static const luaL_Reg myLibs[] = {
     {"UITextRenderer", luaopen_UITextRenderer},
     {"InputManager", luaopen_InputManager},
     {"Animator", luaopen_Animator},
+    {"Rigidbody", luaopen_RigidBody},
     {NULL, NULL}
 };
 
