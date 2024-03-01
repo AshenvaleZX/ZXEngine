@@ -8,6 +8,11 @@ namespace ZXEngine
 		return ComponentType::Component;
 	}
 
+	bool Component::IsUnique(ComponentType type)
+	{
+		return !(type == ComponentType::SpringJoint || type == ComponentType::DistanceJoint);
+	}
+
 	void Component::Awake() 
 	{ 
 		mIsAwake = true; 

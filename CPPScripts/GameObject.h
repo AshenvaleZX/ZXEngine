@@ -58,7 +58,7 @@ namespace ZXEngine
 
 	private:
 		bool mIsAwake = false;
-		map<ComponentType, Component*> components = {};
+		multimap<ComponentType, Component*> components = {};
 		vector<std::function<void()>> mConstructionCallBacks;
 
 		void ParseTransform(json data);
@@ -84,7 +84,7 @@ namespace ZXEngine
 	inline T* GameObject::GetComponent()
 	{
 		ComponentType type = T::GetType();
-		map<ComponentType, Component*>::iterator iter = components.find(type);
+		auto iter = components.find(type);
 		if (iter != components.end()) {
 			return static_cast<T*> (iter->second);
 		}
@@ -99,6 +99,12 @@ namespace ZXEngine
 		T* t = new T();
 		t->gameObject = this;
 		ComponentType type = T::GetType();
+
+		if (Component::IsUnique(type) && components.count(type) > 0)
+		{
+			Debug::LogError("GameObject already has a component of type " + to_string((int)type));
+		}
+		
 		components.insert(pair<ComponentType, Component*>(type, t));
 		return t;
 	}

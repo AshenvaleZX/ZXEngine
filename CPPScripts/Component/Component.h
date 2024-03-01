@@ -9,6 +9,7 @@ namespace ZXEngine
 	{
 	public:
 		static ComponentType GetType();
+		static bool IsUnique(ComponentType type);
 
 	public:
 		GameObject* gameObject = nullptr;
