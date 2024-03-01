@@ -17,5 +17,15 @@ namespace ZXEngine
 		~ZRigidBody();
 
 		virtual ComponentType GetInsType();
+
+		void AddForce(const Vector3& force);
+		void AddForceAtPoint(const Vector3& force, const Vector3& point);
+		void AddForceAtLocalPoint(const Vector3& force, const Vector3& point);
+
+		Vector3 GetPosition() const;
+		void SetPosition(const Vector3& position);
+
+		Vector3 GetVelocity() const;
+		void SetVelocity(const Vector3& velocity);
 	};
 }
