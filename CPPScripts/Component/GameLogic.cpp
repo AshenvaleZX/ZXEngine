@@ -88,6 +88,11 @@ namespace ZXEngine
 		CallLuaFunction("Update");
 	}
 
+	void GameLogic::FixedUpdate()
+	{
+		CallLuaFunction("FixedUpdate");
+	}
+
 	void GameLogic::CallLuaFunction(const char* func)
 	{
 		lua_State* L = LuaManager::GetInstance()->GetState();
@@ -109,7 +114,7 @@ namespace ZXEngine
 			// 恢复栈大小(Pop掉这段代码在栈上产生的数据)
 			lua_settop(L, stack_size);
 
-			if (func != "Awake" && func != "Start" && func != "Update")
+			if (func != "Awake" && func != "Start" && func != "Update" && func != "FixedUpdate")
 				Debug::LogWarning("GameLogic trying to call a lua function that doesn't exist: " + (string)func);
 
 			return;

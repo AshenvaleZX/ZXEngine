@@ -21,6 +21,7 @@ namespace ZXEngine
 
 		void Start();
 		void Update();
+		void FixedUpdate();
 		void CallLuaFunction(const char* func);
 
 	private:

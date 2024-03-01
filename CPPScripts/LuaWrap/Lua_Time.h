@@ -14,8 +14,15 @@ static int GetDeltaTime(lua_State* L)
 	return 1;
 }
 
+static int GetFixedDeltaTime(lua_State* L)
+{
+	lua_pushnumber(L, ZXEngine::Time::fixedDeltaTime);
+	return 1;
+}
+
 static const luaL_Reg Time_Funcs[] = {
 	{"GetDeltaTime", GetDeltaTime},
+	{"GetFixedDeltaTime", GetFixedDeltaTime},
 	{NULL, NULL}
 };
 

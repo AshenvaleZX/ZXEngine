@@ -115,6 +115,7 @@ namespace ZXEngine
 			for (long long i = 0; i < deltaFrame; i++)
 			{
 				mPhyScene->BeginFrame();
+				GameLogicManager::GetInstance()->FixedUpdate();
 				mPhyScene->Update(Time::fixedDeltaTime);
 				mPhyScene->EndFrame();
 			}
@@ -125,6 +126,7 @@ namespace ZXEngine
 		else
 		{
 			mPhyScene->BeginFrame();
+			GameLogicManager::GetInstance()->FixedUpdate();
 			mPhyScene->Update(Time::deltaTime);
 			mPhyScene->EndFrame();
 		}

@@ -23,6 +23,14 @@ namespace ZXEngine
 		}
 	}
 
+	void GameLogicManager::FixedUpdate()
+	{
+		for (auto gameLogic : allGameLogic)
+		{
+			gameLogic->FixedUpdate();
+		}
+	}
+
 	void GameLogicManager::AddGameLogic(GameLogic* gameLogic)
 	{
 		allGameLogic.push_back(gameLogic);

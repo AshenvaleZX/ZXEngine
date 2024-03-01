@@ -14,6 +14,7 @@ namespace ZXEngine
 		static GameLogicManager* GetInstance();
 
 		void Update();
+		void FixedUpdate();
 		void AddGameLogic(GameLogic* gameLogic);
 		void RemoveGameLogic(GameLogic* gameLogic);
 
