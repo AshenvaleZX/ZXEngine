@@ -70,6 +70,8 @@ namespace ZXEngine
 						DrawAnimator(static_cast<Animator*>(iter.second));
 					else if (type == ComponentType::SpringJoint)
 						DrawSpringJoint(static_cast<SpringJoint*>(iter.second));
+					else if (type == ComponentType::DistanceJoint)
+						DrawDistanceJoint(static_cast<ZDistanceJoint*>(iter.second));
 					else if (type == ComponentType::Cloth)
 						DrawCloth(static_cast<Cloth*>(iter.second));
 					else if (type == ComponentType::AudioSource)
@@ -815,6 +817,35 @@ namespace ZXEngine
 		float springConstant = component->mSpringConstant;
 		ImGui::Text("Spring Constant  ");
 		ImGui::SameLine(); ImGui::DragFloat("##springConstant", &springConstant, 0.01f, 0.0f, FLT_MAX);
+	}
+
+	void EditorInspectorPanel::DrawDistanceJoint(ZDistanceJoint* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("DistanceJoint"))
+			return;
+
+		// Connected Body
+		string connectedBodyPath = component->mConnectedGOPath;
+		ImGui::Text("Connected Body   ");
+		ImGui::SameLine(); ImGui::Text(connectedBodyPath.c_str());
+
+		// Anchor
+		Vector3 anchor = component->mAnchor;
+		ImVec4 v = ImVec4(anchor.x, anchor.y, anchor.z, 1.0f);
+		ImGui::Text("Anchor           ");
+		ImGui::SameLine(); ImGui::DragFloat3("##anchor", (float*)&v, 0.01f, -FLT_MAX, FLT_MAX);
+
+		// Connected Anchor
+		Vector3 connectedAnchor = component->mOtherAnchor;
+		ImVec4 c = ImVec4(connectedAnchor.x, connectedAnchor.y, connectedAnchor.z, 1.0f);
+		ImGui::Text("Connected Anchor ");
+		ImGui::SameLine(); ImGui::DragFloat3("##connectedAnchor", (float*)&c, 0.01f, -FLT_MAX, FLT_MAX);
+
+		// Distance
+		float distance = component->mDistance;
+		ImGui::Text("Distance         ");
+		ImGui::SameLine(); ImGui::DragFloat("##distance", &distance, 0.01f, 0.0f, FLT_MAX);
 	}
 
 	void EditorInspectorPanel::DrawCloth(Cloth* component)

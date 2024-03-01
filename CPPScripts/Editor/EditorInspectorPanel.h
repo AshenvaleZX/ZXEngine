@@ -19,6 +19,7 @@ namespace ZXEngine
 	class ZRigidBody;
 	class Animator;
 	class SpringJoint;
+	class ZDistanceJoint;
 	class Cloth;
 	class AudioSource;
 	class AudioListener;
@@ -47,6 +48,7 @@ namespace ZXEngine
 		void DrawRigidBody(ZRigidBody* component);
 		void DrawAnimator(Animator* component);
 		void DrawSpringJoint(SpringJoint* component);
+		void DrawDistanceJoint(ZDistanceJoint* component);
 		void DrawCloth(Cloth* component);
 		void DrawAudioSource(AudioSource* component);
 		void DrawAudioListener(AudioListener* component);
