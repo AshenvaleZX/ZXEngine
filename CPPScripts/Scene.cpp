@@ -74,10 +74,10 @@ namespace ZXEngine
 			mIsAwake = true;
 		}
 
+		GameLogicManager::GetInstance()->Update();
 		Animator::Update();
 		UpdatePhysics();
 		AudioEngine::GetInstance()->Update();
-		GameLogicManager::GetInstance()->Update();
 		ParticleSystemManager::GetInstance()->Update();
 	}
 	
