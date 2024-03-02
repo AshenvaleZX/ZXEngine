@@ -8,7 +8,7 @@ extern "C"
 #include "../External/Lua/lauxlib.h"
 }
 
-static int AddForce(lua_State* L)
+static int RigidBody_AddForce(lua_State* L)
 {
 	int argc = lua_gettop(L);
 	if (argc == 2)
@@ -40,7 +40,7 @@ static int AddForce(lua_State* L)
 	return 0;
 }
 
-static int RigidBodyGetPosition(lua_State* L)
+static int RigidBody_GetPosition(lua_State* L)
 {
 	ZXEngine::ZRigidBody** rigidBody = (ZXEngine::ZRigidBody**)luaL_checkudata(L, -1, "ZXEngine.RigidBody");
 
@@ -56,7 +56,7 @@ static int RigidBodyGetPosition(lua_State* L)
 	return 1;
 }
 
-static int RigidBodySetPosition(lua_State* L)
+static int RigidBody_SetPosition(lua_State* L)
 {
 	int argc = lua_gettop(L);
 	if (argc == 2)
@@ -88,7 +88,7 @@ static int RigidBodySetPosition(lua_State* L)
 	return 0;
 }
 
-static int GetVelocity(lua_State* L)
+static int RigidBody_GetVelocity(lua_State* L)
 {
 	ZXEngine::ZRigidBody** rigidBody = (ZXEngine::ZRigidBody**)luaL_checkudata(L, -1, "ZXEngine.RigidBody");
 
@@ -104,7 +104,7 @@ static int GetVelocity(lua_State* L)
 	return 1;
 }
 
-static int SetVelocity(lua_State* L)
+static int RigidBody_SetVelocity(lua_State* L)
 {
 	int argc = lua_gettop(L);
 	if (argc == 2)
@@ -136,16 +136,18 @@ static int SetVelocity(lua_State* L)
 	return 0;
 }
 
-static const struct luaL_Reg RigidBody_Funcs[] = {
+static const struct luaL_Reg RigidBody_Funcs[] = 
+{
 	{ NULL, NULL }
 };
 
-static const struct luaL_Reg RigidBody_Funcs_Meta[] = {
-	{ "AddForce", AddForce },
-	{ "GetPosition", RigidBodyGetPosition },
-	{ "SetPosition", RigidBodySetPosition },
-	{ "GetVelocity", GetVelocity },
-	{ "SetVelocity", SetVelocity },
+static const struct luaL_Reg RigidBody_Funcs_Meta[] = 
+{
+	{ "AddForce",    RigidBody_AddForce    },
+	{ "GetPosition", RigidBody_GetPosition },
+	{ "SetPosition", RigidBody_SetPosition },
+	{ "GetVelocity", RigidBody_GetVelocity },
+	{ "SetVelocity", RigidBody_SetVelocity },
 	{ NULL, NULL }
 };
 

@@ -8,25 +8,27 @@ extern "C"
 #include "../External/Lua/lauxlib.h"
 }
 
-static int GetDeltaTime(lua_State* L)
+static int Time_GetDeltaTime(lua_State* L)
 {
 	lua_pushnumber(L, ZXEngine::Time::deltaTime);
 	return 1;
 }
 
-static int GetFixedDeltaTime(lua_State* L)
+static int Time_GetFixedDeltaTime(lua_State* L)
 {
 	lua_pushnumber(L, ZXEngine::Time::fixedDeltaTime);
 	return 1;
 }
 
-static const luaL_Reg Time_Funcs[] = {
-	{"GetDeltaTime", GetDeltaTime},
-	{"GetFixedDeltaTime", GetFixedDeltaTime},
-	{NULL, NULL}
+static const luaL_Reg Time_Funcs[] = 
+{
+	{ "GetDeltaTime",      Time_GetDeltaTime      },
+	{ "GetFixedDeltaTime", Time_GetFixedDeltaTime },
+	{ NULL, NULL }
 };
 
-LUAMOD_API int luaopen_Time(lua_State* L) {
+LUAMOD_API int luaopen_Time(lua_State* L) 
+{
 	luaL_newlib(L, Time_Funcs);
 	return 1;
 }

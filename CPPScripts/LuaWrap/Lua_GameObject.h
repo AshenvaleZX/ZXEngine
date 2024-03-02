@@ -9,7 +9,7 @@ extern "C"
 #include "../External/Lua/lauxlib.h"
 }
 
-static int Find(lua_State* L)
+static int GameObject_Find(lua_State* L)
 {
 	string path = lua_tostring(L, -1);
 	ZXEngine::GameObject* go = ZXEngine::GameObject::Find(path);
@@ -28,7 +28,7 @@ static int Find(lua_State* L)
 	return 1;
 }
 
-static int GetComponent(lua_State* L)
+static int GameObject_GetComponent(lua_State* L)
 {
 	ZXEngine::GameObject** data = (ZXEngine::GameObject**)luaL_checkudata(L, -2, "ZXEngine.GameObject");
 	string type = lua_tostring(L, -1);
@@ -73,21 +73,28 @@ static int GetComponent(lua_State* L)
 	return 1;
 }
 
-static const luaL_Reg GameObject_Funcs[] = {
-	{ "Find", Find },
+static const luaL_Reg GameObject_Funcs[] = 
+{
+	{ "Find", GameObject_Find },
 	{ NULL, NULL }
 };
 
-static const luaL_Reg GameObject_Funcs_Meta[] = {
-	{ "GetComponent", GetComponent },
+static const luaL_Reg GameObject_Funcs_Meta[] = 
+{
+	{ "GetComponent", GameObject_GetComponent },
 	{ NULL, NULL }
 };
 
-LUAMOD_API int luaopen_GameObject(lua_State* L) {
-	luaL_newmetatable(L, "ZXEngine.GameObject"); /* 创建元表 */
-	lua_pushvalue(L, -1); /* 复制元表，这个是为下一行代码调用准备参数 */
-	lua_setfield(L, -2, "__index"); /* mt.__index = mt 把-2位置上的mt表(第一行newmetatable的)的__index字段设置为mt(第二行pushvalue复制的)*/
-	luaL_setfuncs(L, GameObject_Funcs_Meta, 0); /* 注册元方法 */
+LUAMOD_API int luaopen_GameObject(lua_State* L) 
+{
+	// 创建元表
+	luaL_newmetatable(L, "ZXEngine.GameObject");
+	// 复制元表，为下一行代码调用准备参数
+	lua_pushvalue(L, -1);
+	// mt.__index = mt 把-2位置上的mt表(第一行newmetatable的)的__index字段设置为mt(第二行pushvalue复制的)
+	lua_setfield(L, -2, "__index");
+	// 注册元方法
+	luaL_setfuncs(L, GameObject_Funcs_Meta, 0);
 
 	luaL_newlib(L, GameObject_Funcs);
 	return 1;

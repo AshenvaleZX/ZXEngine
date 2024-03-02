@@ -8,7 +8,7 @@ extern "C"
 #include "../External/Lua/lauxlib.h"
 }
 
-static int GetLocalScale(lua_State* L)
+static int Transform_GetLocalScale(lua_State* L)
 {
 	ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
 
@@ -24,7 +24,7 @@ static int GetLocalScale(lua_State* L)
 	return 1;
 }
 
-static int GetLocalPosition(lua_State* L)
+static int Transform_GetLocalPosition(lua_State* L)
 {
 	ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
 
@@ -40,7 +40,7 @@ static int GetLocalPosition(lua_State* L)
 	return 1;
 }
 
-static int GetLocalEulerAngles(lua_State* L)
+static int Transform_GetLocalEulerAngles(lua_State* L)
 {
 	ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
 
@@ -56,7 +56,7 @@ static int GetLocalEulerAngles(lua_State* L)
 	return 1;
 }
 
-static int GetLocalRotation(lua_State* L)
+static int Transform_GetLocalRotation(lua_State* L)
 {
 	ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
 
@@ -74,7 +74,7 @@ static int GetLocalRotation(lua_State* L)
 	return 1;
 }
 
-static int SetLocalScale(lua_State* L)
+static int Transform_SetLocalScale(lua_State* L)
 {
 	int argc = lua_gettop(L);
 	if (argc == 2)
@@ -106,7 +106,7 @@ static int SetLocalScale(lua_State* L)
 	return 0;
 }
 
-static int SetLocalPosition(lua_State* L)
+static int Transform_SetLocalPosition(lua_State* L)
 {
 	int argc = lua_gettop(L);
 	if (argc == 2)
@@ -138,7 +138,7 @@ static int SetLocalPosition(lua_State* L)
 	return 0;
 }
 
-static int SetLocalEulerAngles(lua_State* L)
+static int Transform_SetLocalEulerAngles(lua_State* L)
 {
 	int argc = lua_gettop(L);
 	if (argc == 2)
@@ -170,7 +170,7 @@ static int SetLocalEulerAngles(lua_State* L)
 	return 0;
 }
 
-static int SetLocalRotation(lua_State* L)
+static int Transform_SetLocalRotation(lua_State* L)
 {
 	int argc = lua_gettop(L);
 	if (argc == 2)
@@ -206,7 +206,7 @@ static int SetLocalRotation(lua_State* L)
 	return 0;
 }
 
-static int GetPosition(lua_State* L)
+static int Transform_GetPosition(lua_State* L)
 {
 	ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
 
@@ -222,7 +222,7 @@ static int GetPosition(lua_State* L)
 	return 1;
 }
 
-static int GetEulerAngles(lua_State* L)
+static int Transform_GetEulerAngles(lua_State* L)
 {
 	ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
 
@@ -238,7 +238,7 @@ static int GetEulerAngles(lua_State* L)
 	return 1;
 }
 
-static int GetRotation(lua_State* L)
+static int Transform_GetRotation(lua_State* L)
 {
 	ZXEngine::Transform** transform = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
 
@@ -256,7 +256,7 @@ static int GetRotation(lua_State* L)
 	return 1;
 }
 
-static int SetPosition(lua_State* L)
+static int Transform_SetPosition(lua_State* L)
 {
 	int argc = lua_gettop(L);
 	if (argc == 2)
@@ -288,7 +288,7 @@ static int SetPosition(lua_State* L)
 	return 0;
 }
 
-static int SetEulerAngles(lua_State* L)
+static int Transform_SetEulerAngles(lua_State* L)
 {
 	int argc = lua_gettop(L);
 	if (argc == 2)
@@ -320,7 +320,7 @@ static int SetEulerAngles(lua_State* L)
 	return 0;
 }
 
-static int SetRotation(lua_State* L)
+static int Transform_SetRotation(lua_State* L)
 {
 	int argc = lua_gettop(L);
 	if (argc == 2)
@@ -356,7 +356,7 @@ static int SetRotation(lua_State* L)
 	return 0;
 }
 
-static int GetForward(lua_State* L)
+static int Transform_GetForward(lua_State* L)
 {
 	ZXEngine::Transform** data = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
 
@@ -372,7 +372,7 @@ static int GetForward(lua_State* L)
 	return 1;
 }
 
-static int GetRight(lua_State* L)
+static int Transform_GetRight(lua_State* L)
 {
 	ZXEngine::Transform** data = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
 
@@ -388,7 +388,7 @@ static int GetRight(lua_State* L)
 	return 1;
 }
 
-static int GetUp(lua_State* L)
+static int Transform_GetUp(lua_State* L)
 {
 	ZXEngine::Transform** data = (ZXEngine::Transform**)luaL_checkudata(L, -1, "ZXEngine.Transform");
 
@@ -404,36 +404,39 @@ static int GetUp(lua_State* L)
 	return 1;
 }
 
-static const luaL_Reg Transform_Funcs[] = {
-	{NULL, NULL}
+static const luaL_Reg Transform_Funcs[] = 
+{
+	{ NULL, NULL }
 };
 
-static const luaL_Reg Transform_Funcs_Meta[] = {
-	{"GetLocalScale", GetLocalScale},
-	{"GetLocalPosition", GetLocalPosition},
-	{"GetLocalEulerAngles", GetLocalEulerAngles},
-	{"GetLocalRotation", GetLocalRotation},
-	{"SetLocalScale", SetLocalScale},
-	{"SetLocalPosition", SetLocalPosition},
-	{"SetLocalEulerAngles", SetLocalEulerAngles},
-	{"SetLocalRotation", SetLocalRotation},
-	{"GetPosition", GetPosition},
-	{"GetEulerAngles", GetEulerAngles},
-	{"GetRotation", GetRotation},
-	{"SetPosition", SetPosition},
-	{"SetEulerAngles", SetEulerAngles},
-	{"SetRotation", SetRotation},
-	{"GetForward", GetForward},
-	{"GetRight", GetRight},
-	{"GetUp", GetUp},
-	{NULL, NULL}
+static const luaL_Reg Transform_Funcs_Meta[] = 
+{
+	{ "GetLocalScale",       Transform_GetLocalScale       },
+	{ "GetLocalPosition",    Transform_GetLocalPosition    },
+	{ "GetLocalEulerAngles", Transform_GetLocalEulerAngles },
+	{ "GetLocalRotation",    Transform_GetLocalRotation    },
+	{ "SetLocalScale",       Transform_SetLocalScale       },
+	{ "SetLocalPosition",    Transform_SetLocalPosition    },
+	{ "SetLocalEulerAngles", Transform_SetLocalEulerAngles },
+	{ "SetLocalRotation",    Transform_SetLocalRotation    },
+	{ "GetPosition",         Transform_GetPosition         },
+	{ "GetEulerAngles",      Transform_GetEulerAngles      },
+	{ "GetRotation",         Transform_GetRotation         },
+	{ "SetPosition",         Transform_SetPosition         },
+	{ "SetEulerAngles",      Transform_SetEulerAngles      },
+	{ "SetRotation",         Transform_SetRotation         },
+	{ "GetForward",          Transform_GetForward          },
+	{ "GetRight",            Transform_GetRight            },
+	{ "GetUp",               Transform_GetUp               },
+	{ NULL, NULL }
 };
 
-LUAMOD_API int luaopen_Transform(lua_State* L) {
-	luaL_newmetatable(L, "ZXEngine.Transform"); /* 创建元表 */
-	lua_pushvalue(L, -1); /* 复制元表，这个是为下一行代码调用准备参数 */
-	lua_setfield(L, -2, "__index"); /* mt.__index = mt 把-2位置上的mt表(第一行newmetatable的)的__index字段设置为mt(第二行pushvalue复制的)*/
-	luaL_setfuncs(L, Transform_Funcs_Meta, 0); /* 注册元方法 */
+LUAMOD_API int luaopen_Transform(lua_State* L) 
+{
+	luaL_newmetatable(L, "ZXEngine.Transform");
+	lua_pushvalue(L, -1);
+	lua_setfield(L, -2, "__index");
+	luaL_setfuncs(L, Transform_Funcs_Meta, 0);
 
 	luaL_newlib(L, Transform_Funcs);
 	return 1;

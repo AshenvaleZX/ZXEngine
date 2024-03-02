@@ -9,24 +9,27 @@
 #include "Lua_Animator.h"
 #include "Lua_Rigidbody.h"
 
-static const luaL_Reg myLibs[] = {
-    {"Debug", luaopen_Debug},
-    {"Resources", luaopen_Resources},
-    {"Time", luaopen_Time},
-    {"Transform", luaopen_Transform},
-    {"GameObject", luaopen_GameObject},
-    {"UITextRenderer", luaopen_UITextRenderer},
-    {"InputManager", luaopen_InputManager},
-    {"Animator", luaopen_Animator},
-    {"Rigidbody", luaopen_RigidBody},
-    {NULL, NULL}
+static const luaL_Reg myLibs[] = 
+{
+    { "Debug",          luaopen_Debug          },
+    { "Resources",      luaopen_Resources      },
+    { "Time",           luaopen_Time           },
+    { "Transform",      luaopen_Transform      },
+    { "GameObject",     luaopen_GameObject     },
+    { "UITextRenderer", luaopen_UITextRenderer },
+    { "InputManager",   luaopen_InputManager   },
+    { "Animator",       luaopen_Animator       },
+    { "Rigidbody",      luaopen_RigidBody      },
+    { NULL, NULL }
 };
 
-LUALIB_API void luaL_openMyLibs(lua_State* L) {
+LUALIB_API void luaL_openMyLibs(lua_State* L) 
+{
     const luaL_Reg* lib;
-    /* "require" functions from 'loadedlibs' and set results to global table */
-    for (lib = myLibs; lib->func; lib++) {
+    for (lib = myLibs; lib->func; lib++) 
+    {
         luaL_requiref(L, lib->name, lib->func, 1);
-        lua_pop(L, 1);  /* remove lib */
+        // remove lib
+        lua_pop(L, 1);
     }
 }
