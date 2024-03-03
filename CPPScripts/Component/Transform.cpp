@@ -144,7 +144,7 @@ namespace ZXEngine
 		else
 		{
 			auto parent = gameObject->parent->GetComponent<Transform>();
-			Vector3 offset = parent->GetRotationAndScaleMatrix() * localPosition;
+			Vector3 offset = parent->GetRotationAndScaleMatrix() * localPosition.ToPosVec4();
 			return parent->GetPosition() + offset;
 		}
 	}
