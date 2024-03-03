@@ -45,6 +45,9 @@ namespace ZXEngine
 		std::string ToString() const;
 		void Clear();
 
+		Vector4 ToPosVec4() const;
+		Vector4 ToDirVec4() const;
+
 		float& operator[] (int i);
 		const float& operator[] (int i) const;
 		bool operator== (const Vector3& v) const;

@@ -126,6 +126,16 @@ namespace ZXEngine
 		x = y = z = 0.0f;
 	}
 
+	Vector4 Vector3::ToPosVec4() const
+	{
+		return Vector4(x, y, z, 1.0f);
+	}
+
+	Vector4 Vector3::ToDirVec4() const
+	{
+		return Vector4(x, y, z, 0.0f);
+	}
+
 	float& Vector3::operator[] (int i)
 	{
 		switch (i)
