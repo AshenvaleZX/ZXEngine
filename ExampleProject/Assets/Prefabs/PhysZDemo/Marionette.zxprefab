@@ -1,0 +1,504 @@
+{
+    "Name": "Marionette",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, -9, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [1, 1, 1]
+        },
+        {
+            "Type": "GameLogic",
+            "Lua": "Scripts/MarionetteMove.lua"
+        }
+    ],
+    "GameObjects":
+    [
+        {
+            "Name": "Head",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 14.5, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [2, 2, 2]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/BlinnPhongWood.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": true
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [2, 2, 2]
+                },
+                {
+                    "Type": "RigidBody",
+                    "Mass": 1,
+                    "Damping": 0,
+                    "AngularDamping": 0.05,
+                    "UseGravity": false
+                },
+                {
+                    "Type": "DistanceJoint",
+                    "Connected": "Marionette/Body1",
+                    "Anchor": [0, -1, 0],
+                    "OtherAnchor": [0, 1, 0],
+                    "Distance": 0.5
+                }
+            ]
+        },
+        {
+            "Name": "Body1",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 12, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [4, 2, 2]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/BlinnPhongWood.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": true
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [4, 2, 2]
+                },
+                {
+                    "Type": "RigidBody",
+                    "Mass": 1,
+                    "Damping": 0,
+                    "AngularDamping": 0.05,
+                    "UseGravity": true
+                },
+                {
+                    "Type": "DistanceJoint",
+                    "Connected": "Marionette/Body2",
+                    "Anchor": [0, -1, 0],
+                    "OtherAnchor": [0, 0.75, 0],
+                    "Distance": 0.5
+                },
+                {
+                    "Type": "DistanceJoint",
+                    "Connected": "Marionette/LeftArm1",
+                    "Anchor": [-3, 1, 0],
+                    "OtherAnchor": [0, 1.5, 0],
+                    "Distance": 0.5
+                },
+                {
+                    "Type": "DistanceJoint",
+                    "Connected": "Marionette/RightArm1",
+                    "Anchor": [3, 1, 0],
+                    "OtherAnchor": [0, 1.5, 0],
+                    "Distance": 0.5
+                }
+            ]
+        },
+        {
+            "Name": "Body2",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 9.75, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [3, 1.5, 1.5]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/BlinnPhongWood.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": true
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [3, 1.5, 1.5]
+                },
+                {
+                    "Type": "RigidBody",
+                    "Mass": 1,
+                    "Damping": 0,
+                    "AngularDamping": 0.05,
+                    "UseGravity": true
+                },
+                {
+                    "Type": "DistanceJoint",
+                    "Connected": "Marionette/Body3",
+                    "Anchor": [0, -0.75, 0],
+                    "OtherAnchor": [0, 0.75, 0],
+                    "Distance": 0.5
+                }
+            ]
+        },
+        {
+            "Name": "Body3",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 7.75, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [3, 1.5, 1.5]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/BlinnPhongWood.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": true
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [3, 1.5, 1.5]
+                },
+                {
+                    "Type": "RigidBody",
+                    "Mass": 1,
+                    "Damping": 0,
+                    "AngularDamping": 0.05,
+                    "UseGravity": true
+                },
+                {
+                    "Type": "DistanceJoint",
+                    "Connected": "Marionette/LeftLeg1",
+                    "Anchor": [-1, -0.75, 0],
+                    "OtherAnchor": [0, 1.5, 0],
+                    "Distance": 0.5
+                },
+                {
+                    "Type": "DistanceJoint",
+                    "Connected": "Marionette/RightLeg1",
+                    "Anchor": [1, -0.75, 0],
+                    "OtherAnchor": [0, 1.5, 0],
+                    "Distance": 0.5
+                }
+            ]
+        },
+        {
+            "Name": "LeftLeg1",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [-1, 5, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 3, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/BlinnPhongWood.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": true
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [1, 3, 1]
+                },
+                {
+                    "Type": "RigidBody",
+                    "Mass": 1,
+                    "Damping": 0,
+                    "AngularDamping": 0.05,
+                    "UseGravity": true
+                },
+                {
+                    "Type": "DistanceJoint",
+                    "Connected": "Marionette/LeftLeg2",
+                    "Anchor": [0, -1.5, 0],
+                    "OtherAnchor": [0, 1.5, 0],
+                    "Distance": 0.5
+                }
+            ]
+        },
+        {
+            "Name": "LeftLeg2",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [-1, 1.5, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 3, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/BlinnPhongWood.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": true
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [1, 3, 1]
+                },
+                {
+                    "Type": "RigidBody",
+                    "Mass": 1,
+                    "Damping": 0,
+                    "AngularDamping": 0.05,
+                    "UseGravity": true
+                }
+            ]
+        },
+        {
+            "Name": "RightLeg1",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [1, 5, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 3, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/BlinnPhongWood.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": true
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [1, 3, 1]
+                },
+                {
+                    "Type": "RigidBody",
+                    "Mass": 1,
+                    "Damping": 0,
+                    "AngularDamping": 0.05,
+                    "UseGravity": true
+                },
+                {
+                    "Type": "DistanceJoint",
+                    "Connected": "Marionette/RightLeg2",
+                    "Anchor": [0, -1.5, 0],
+                    "OtherAnchor": [0, 1.5, 0],
+                    "Distance": 0.5
+                }
+            ]
+        },
+        {
+            "Name": "RightLeg2",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [1, 1.5, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 3, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/BlinnPhongWood.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": true
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [1, 3, 1]
+                },
+                {
+                    "Type": "RigidBody",
+                    "Mass": 1,
+                    "Damping": 0,
+                    "AngularDamping": 0.05,
+                    "UseGravity": true
+                }
+            ]
+        },
+        {
+            "Name": "LeftArm1",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [-3, 11, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 3, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/BlinnPhongWood.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": true
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [1, 3, 1]
+                },
+                {
+                    "Type": "RigidBody",
+                    "Mass": 1,
+                    "Damping": 0,
+                    "AngularDamping": 0.05,
+                    "UseGravity": true
+                },
+                {
+                    "Type": "DistanceJoint",
+                    "Connected": "Marionette/LeftArm2",
+                    "Anchor": [0, -1.5, 0],
+                    "OtherAnchor": [0, 1.5, 0],
+                    "Distance": 0.5
+                }
+            ]
+        },
+        {
+            "Name": "LeftArm2",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [-3, 7.5, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 3, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/BlinnPhongWood.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": true
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [1, 3, 1]
+                },
+                {
+                    "Type": "RigidBody",
+                    "Mass": 1,
+                    "Damping": 0,
+                    "AngularDamping": 0.05,
+                    "UseGravity": true
+                }
+            ]
+        },
+        {
+            "Name": "RightArm1",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [3, 11, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 3, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/BlinnPhongWood.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": true
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [1, 3, 1]
+                },
+                {
+                    "Type": "RigidBody",
+                    "Mass": 1,
+                    "Damping": 0,
+                    "AngularDamping": 0.05,
+                    "UseGravity": true
+                },
+                {
+                    "Type": "DistanceJoint",
+                    "Connected": "Marionette/RightArm2",
+                    "Anchor": [0, -1.5, 0],
+                    "OtherAnchor": [0, 1.5, 0],
+                    "Distance": 0.5
+                }
+            ]
+        },
+        {
+            "Name": "RightArm2",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [3, 7.5, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 3, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/BlinnPhongWood.zxmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": true
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [1, 3, 1]
+                },
+                {
+                    "Type": "RigidBody",
+                    "Mass": 1,
+                    "Damping": 0,
+                    "AngularDamping": 0.05,
+                    "UseGravity": true
+                }
+            ]
+        }
+    ]
+}
