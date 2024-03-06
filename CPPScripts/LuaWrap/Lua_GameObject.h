@@ -9,6 +9,13 @@ extern "C"
 #include "../External/Lua/lauxlib.h"
 }
 
+static int GameObject_AsyncCreate(lua_State* L)
+{
+	string path = lua_tostring(L, -1);
+	ZXEngine::GameObject::AsyncCreate(path);
+	return 0;
+}
+
 static int GameObject_Find(lua_State* L)
 {
 	string path = lua_tostring(L, -1);
@@ -75,7 +82,8 @@ static int GameObject_GetComponent(lua_State* L)
 
 static const luaL_Reg GameObject_Funcs[] = 
 {
-	{ "Find", GameObject_Find },
+	{ "AsyncCreate", GameObject_AsyncCreate },
+	{ "Find",        GameObject_Find        },
 	{ NULL, NULL }
 };
 
