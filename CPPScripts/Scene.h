@@ -26,6 +26,7 @@ namespace ZXEngine
 
 		void Update();
 		void Render();
+		void AddGameObject(GameObject* gameObject);
 
 	private:
 		bool mIsAwake = false;

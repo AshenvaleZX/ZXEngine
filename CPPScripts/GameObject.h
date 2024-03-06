@@ -28,6 +28,7 @@ namespace ZXEngine
 	{
 		friend class EditorInspectorPanel;
 	public:
+		static void AsyncCreate(const string& path);
 		static GameObject* Find(const string& path);
 
 	private:
@@ -62,7 +63,7 @@ namespace ZXEngine
 		vector<std::function<void()>> mConstructionCallBacks;
 
 		void ParseTransform(json data);
-		void ParseMeshRenderer(json data);
+		void ParseMeshRenderer(json data, const ModelData& modelData, MaterialStruct* material);
 		void ParseCamera(json data);
 		void ParseLight(json data);
 		void ParseGameLogic(json data);

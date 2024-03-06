@@ -30,6 +30,7 @@
 #include <filesystem>
 #include <thread>
 #include <atomic>
+#include <future>
 #include <nlohmann/json.hpp>
 
 using std::string; 

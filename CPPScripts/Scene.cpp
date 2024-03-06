@@ -65,6 +65,8 @@ namespace ZXEngine
 
 	void Scene::Update()
 	{
+		Resources::CheckAsyncLoad();
+
 		if (!mIsAwake)
 		{
 			for (auto gameObject : gameObjects)
@@ -96,6 +98,11 @@ namespace ZXEngine
 
 			RenderEngine::GetInstance()->Render(camera);
 		}
+	}
+
+	void Scene::AddGameObject(GameObject* gameObject)
+	{
+		gameObjects.push_back(gameObject);
 	}
 
 	void Scene::UpdatePhysics()

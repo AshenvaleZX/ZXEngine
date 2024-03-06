@@ -1,9 +1,13 @@
 #include "Resources.h"
+#include "ModelUtil.h"
+#include "ProjectSetting.h"
 
 namespace ZXEngine
 {
 	string Resources::mAssetsPath;
 	const string Resources::mBuiltInAssetsPath = "../../BuiltInAssets/";
+	vector<PrefabLoadHandle> Resources::mPrefabLoadHandles;
+
 	void Resources::SetAssetsPath(const string& path)
 	{
 		mAssetsPath = path;
@@ -138,12 +142,16 @@ namespace ZXEngine
 		if (!data["RenderPipelineType"].is_null())
 			scene->renderPipelineType = data["RenderPipelineType"];
 
+		// 临时切换一下渲染管线类型，加载完prefab后再切回来
+		auto curPipelineType = ProjectSetting::renderPipelineType;
+		ProjectSetting::renderPipelineType = scene->renderPipelineType;
 		for (size_t i = 0; i < data["GameObjects"].size(); i++)
 		{
 			string p = Resources::JsonStrToString(data["GameObjects"][i]);
 			PrefabStruct* prefab = Resources::LoadPrefab(p);
 			scene->prefabs.push_back(prefab);
 		}
+		ProjectSetting::renderPipelineType = curPipelineType;
 
 		if (scene->renderPipelineType == RenderPipelineType::RayTracing && !data["RayTracingShaderGroups"].is_null())
 		{
@@ -194,7 +202,24 @@ namespace ZXEngine
 
 		for (unsigned int i = 0; i < data["Components"].size(); i++)
 		{
-			const json& component = data["Components"][i];
+			json component = data["Components"][i];
+
+			if (component["Type"] == "MeshRenderer")
+			{
+				// 材质
+				string p = Resources::JsonStrToString(component["Material"]);
+				prefab->material = Resources::LoadMaterial(p);
+
+				// 模型
+				if (!component["Mesh"].is_null())
+				{
+					p = Resources::JsonStrToString(component["Mesh"]);
+					p = Resources::GetAssetFullPath(p);
+
+					prefab->modelData = ModelUtil::LoadModel(p);
+				}
+			}
+
 			prefab->components.push_back(component);
 		}
 
@@ -225,6 +250,7 @@ namespace ZXEngine
 		{
 			string p = Resources::JsonStrToString(data["Shader"]);
 			matStruct->shaderPath = Resources::GetAssetFullPath(p, isBuiltIn);
+			matStruct->shaderCode = Resources::LoadTextFile(matStruct->shaderPath);
 		}
 		else
 		{
@@ -270,6 +296,7 @@ namespace ZXEngine
 			TextureStruct* textureStruct = new TextureStruct();
 			textureStruct->path = Resources::GetAssetFullPath(Resources::JsonStrToString(texture["Path"]), isBuiltIn);
 			textureStruct->uniformName = Resources::JsonStrToString(texture["UniformName"]);
+			textureStruct->data = Resources::LoadTextureFullData(textureStruct->path, isBuiltIn);
 
 			matStruct->textures.push_back(textureStruct);
 		}
@@ -281,6 +308,7 @@ namespace ZXEngine
 			CubeMapStruct* cubeMapStruct = new CubeMapStruct();
 			cubeMapStruct->paths = Resources::LoadCubeMap(cubeMap, isBuiltIn);
 			cubeMapStruct->uniformName = Resources::JsonStrToString(cubeMap["UniformName"]);
+			cubeMapStruct->data = Resources::LoadCubeMapFullData(cubeMapStruct->paths, isBuiltIn);
 
 			matStruct->cubeMaps.push_back(cubeMapStruct);
 		}
@@ -298,5 +326,74 @@ namespace ZXEngine
 		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]), isBuiltIn) + Resources::JsonStrToString(data["Front"]));
 		cube.push_back(Resources::GetAssetFullPath(Resources::JsonStrToString(data["Path"]), isBuiltIn) + Resources::JsonStrToString(data["Back"]));
 		return cube;
+	}
+
+	TextureFullData* Resources::LoadTextureFullData(const string& path, bool isBuiltIn)
+	{
+		TextureFullData* textureFullData = new TextureFullData();
+#ifdef ZX_API_OPENGL
+		textureFullData->data = stbi_load(path.c_str(), &textureFullData->width, &textureFullData->height, &textureFullData->numChannel, 0);
+#else
+		textureFullData->data = stbi_load(path.c_str(), &textureFullData->width, &textureFullData->height, &textureFullData->numChannel, STBI_rgb_alpha);
+#endif
+
+		if (!textureFullData->data)
+			Debug::LogError("Failed to load texture: " + path);
+
+		return textureFullData;
+	}
+
+	CubeMapFullData* Resources::LoadCubeMapFullData(const vector<string>& paths, bool isBuiltIn)
+	{
+		CubeMapFullData* cubeMapFullData = new CubeMapFullData();
+
+		for (size_t i = 0; i < paths.size(); i++)
+		{
+#ifdef ZX_API_OPENGL
+			cubeMapFullData->data[i] = stbi_load(paths[i].c_str(), &cubeMapFullData->width, &cubeMapFullData->height, &cubeMapFullData->numChannel, 0);
+#else
+			cubeMapFullData->data[i] = stbi_load(paths[i].c_str(), &cubeMapFullData->width, &cubeMapFullData->height, &cubeMapFullData->numChannel, STBI_rgb_alpha);
+#endif
+
+			if (!cubeMapFullData->data[i])
+				Debug::LogError("Failed to load cube map: " + paths[i]);
+		}
+
+		return cubeMapFullData;
+	}
+
+	void Resources::CheckAsyncLoad()
+	{
+		for (size_t i = 0; i < mPrefabLoadHandles.size(); i++)
+		{
+			if (mPrefabLoadHandles[i].future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+			{
+				PrefabStruct* prefab = mPrefabLoadHandles[i].future.get();
+				mPrefabLoadHandles[i].callback(prefab);
+				// TODO: 检查内存泄漏
+				delete prefab;
+				mPrefabLoadHandles.erase(mPrefabLoadHandles.begin() + i);
+				i--;
+			}
+		}
+	}
+
+	void Resources::AsyncLoadPrefab(const string& path, std::function<void(PrefabStruct*)> callback, bool isBuiltIn)
+	{
+		std::promise<PrefabStruct*> promise;
+		std::future<PrefabStruct*> future = promise.get_future();
+		std::thread th(DoAsyncLoadPrefab, std::move(promise), path, isBuiltIn);
+		th.detach();
+
+		PrefabLoadHandle handle;
+		handle.future = std::move(future);
+		handle.callback = std::move(callback);
+		mPrefabLoadHandles.push_back(std::move(handle));
+	}
+
+	void Resources::DoAsyncLoadPrefab(std::promise<PrefabStruct*>&& promise, string path, bool isBuiltIn)
+	{
+		PrefabStruct* prefab = LoadPrefab(path, isBuiltIn);
+		promise.set_value(prefab);
 	}
 }

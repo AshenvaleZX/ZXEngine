@@ -20,7 +20,7 @@ namespace ZXEngine
 
 		if (type == MaterialType::Rasterization)
 		{
-			shader = new Shader(matStruct->shaderPath, FrameBufferType::Normal);
+			shader = new Shader(matStruct->shaderPath, matStruct->shaderCode, FrameBufferType::Normal);
 			renderQueue = (int)shader->reference->shaderInfo.stateSet.renderQueue;
 			RenderAPI::GetInstance()->SetUpMaterial(this);
 		}
@@ -239,13 +239,13 @@ namespace ZXEngine
 
 		for (auto textureStruct : matStruct->textures)
 		{
-			Texture* texture = new Texture(textureStruct->path.c_str());
+			Texture* texture = new Texture(textureStruct->data);
 			data->textures.push_back(make_pair(textureStruct->uniformName, texture));
 		}
 
 		for (auto cubeMapStruct : matStruct->cubeMaps)
 		{
-			Texture* texture = new Texture(cubeMapStruct->paths);
+			Texture* texture = new Texture(cubeMapStruct->data);
 			data->textures.push_back(make_pair(cubeMapStruct->uniformName, texture));
 		}
 	}

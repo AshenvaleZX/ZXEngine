@@ -5,6 +5,15 @@
 
 namespace ZXEngine
 {
+	void GameObject::AsyncCreate(const string& path)
+	{
+		Resources::AsyncLoadPrefab(path, [](PrefabStruct* prefab)
+		{
+			auto gameObject = new GameObject(prefab);
+			SceneManager::GetInstance()->GetCurScene()->AddGameObject(gameObject);
+		});
+	}
+
 	GameObject* GameObject::Find(const string& path)
 	{
 		auto paths = Utils::StringSplit(path, '/');
@@ -64,7 +73,7 @@ namespace ZXEngine
 			if (component["Type"] == "Transform")
 				ParseTransform(component);
 			else if (component["Type"] == "MeshRenderer")
-				ParseMeshRenderer(component);
+				ParseMeshRenderer(component, prefab->modelData, prefab->material);
 			else if (component["Type"] == "Camera")
 				ParseCamera(component);
 			else if (component["Type"] == "Light")
@@ -180,7 +189,7 @@ namespace ZXEngine
 		transform->SetLocalScale(Vector3(data["Scale"][0], data["Scale"][1], data["Scale"][2]));
 	}
 
-	void GameObject::ParseMeshRenderer(json data)
+	void GameObject::ParseMeshRenderer(json data, const ModelData& modelData, MaterialStruct* material)
 	{
 		MeshRenderer* meshRenderer = AddComponent<MeshRenderer>();
 		string p = "";
@@ -188,16 +197,13 @@ namespace ZXEngine
 		meshRenderer->mCastShadow = data["CastShadow"];
 		meshRenderer->mReceiveShadow = data["ReceiveShadow"];
 
-		// ²ÄÖÊ
-		if (data["Material"].is_null())
+		if (material)
 		{
-			Debug::LogWarning("No material !");
+			meshRenderer->mMatetrial = new Material(material);
 		}
 		else
 		{
-			p = Resources::JsonStrToString(data["Material"]);
-			MaterialStruct* matStruct = Resources::LoadMaterial(p);
-			meshRenderer->mMatetrial = new Material(matStruct);
+			Debug::LogWarning("No material !");
 		}
 
 		// Mesh
@@ -210,9 +216,7 @@ namespace ZXEngine
 		{
 			p = Resources::JsonStrToString(data["Mesh"]);
 			meshRenderer->mModelName = Resources::GetAssetName(p);
-			p = Resources::GetAssetFullPath(p);
 
-			const ModelData& modelData = ModelUtil::LoadModel(p);
 			meshRenderer->SetMeshes(modelData.pMeshes);
 
 			if (modelData.pAnimationController)
