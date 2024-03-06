@@ -12,16 +12,6 @@ namespace ZXEngine
 	class StaticMesh;
 	class MeshRenderer;
 	class AnimationController;
-
-	struct ModelData
-	{
-		vector<Mesh*> pMeshes;
-		uint32_t boneNum = 0;
-		BoneNode* pRootBoneNode = nullptr;
-		AnimationController* pAnimationController = nullptr;
-		vector<AnimBriefInfo> animBriefInfos;
-	};
-
 	class ModelUtil
 	{
 	public:

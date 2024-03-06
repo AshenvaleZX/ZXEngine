@@ -116,6 +116,7 @@ namespace ZXEngine
 			ProcessNode(scene->mRootNode, scene, modelData);
 		}
 
+        modelData.isConstructed = true;
         return modelData;
     }
 

@@ -293,6 +293,7 @@
     <ClCompile Include="..\..\CPPScripts\PhysZ\PScene.cpp" />
     <ClCompile Include="..\..\CPPScripts\PhysZ\RigidBody.cpp" />
     <ClCompile Include="..\..\CPPScripts\ProjectSetting.cpp" />
+    <ClCompile Include="..\..\CPPScripts\PublicStruct.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPI.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPID3D12.cpp" />
     <ClCompile Include="..\..\CPPScripts\RenderAPIOpenGL.cpp" />

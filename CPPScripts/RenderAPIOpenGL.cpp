@@ -304,6 +304,62 @@ namespace ZXEngine
 		return textureID;
 	}
 
+	unsigned int RenderAPIOpenGL::CreateTexture(TextureFullData* data)
+	{
+		unsigned int textureID;
+		glGenTextures(1, &textureID);
+
+		GLenum format = GL_RGB;
+		if (data->numChannel == 1)
+			format = GL_RED;
+		else if (data->numChannel == 3)
+			format = GL_RGB;
+		else if (data->numChannel == 4)
+			format = GL_RGBA;
+
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glTexImage2D(GL_TEXTURE_2D, 0, format, data->width, data->height, 0, format, GL_UNSIGNED_BYTE, data->data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		CheckError();
+
+		return textureID;
+	}
+
+	unsigned int RenderAPIOpenGL::CreateCubeMap(CubeMapFullData* data)
+	{
+		unsigned int textureID;
+		glGenTextures(1, &textureID);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+		for (unsigned int i = 0; i < 6; i++)
+		{
+			GLenum format = GL_RGB;
+			if (data->numChannel == 1)
+				format = GL_RED;
+			else if (data->numChannel == 3)
+				format = GL_RGB;
+			else if (data->numChannel == 4)
+				format = GL_RGBA;
+
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, data->width, data->height, 0, format, GL_UNSIGNED_BYTE, data->data[i]);
+		}
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE); // 纹理的第三个轴，类似普通点坐标的z，因为cubemap是3D的纹理
+
+		CheckError();
+
+		return textureID;
+	}
+
 	unsigned int RenderAPIOpenGL::GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data)
 	{
 		// 通过字形生成的位图是一个8位灰度图，它的每一个颜色都由一个字节来表示。因此我们需要将位图缓冲的每一字节都作为纹理的颜色值。
@@ -330,9 +386,14 @@ namespace ZXEngine
 		return textureID;
 	}
 
-	ShaderReference* RenderAPIOpenGL::LoadAndSetUpShader(const char* path, FrameBufferType type)
+	ShaderReference* RenderAPIOpenGL::LoadAndSetUpShader(const string& path, FrameBufferType type)
 	{
 		string shaderCode = Resources::LoadTextFile(path);
+		return SetUpShader(path, shaderCode, type);
+	}
+
+	ShaderReference* RenderAPIOpenGL::SetUpShader(const string& path, const string& shaderCode, FrameBufferType type)
+	{
 		string vertCode, geomCode, fragCode;
 		ShaderParser::ParseShaderCode(shaderCode, vertCode, geomCode, fragCode);
 

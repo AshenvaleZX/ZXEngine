@@ -42,11 +42,14 @@ namespace ZXEngine
 		// Œ∆¿Ì
 		virtual unsigned int LoadTexture(const char* path, int& width, int& height) = 0;
 		virtual unsigned int LoadCubeMap(const vector<string>& faces) = 0;
+		virtual unsigned int CreateTexture(TextureFullData* data) = 0;
+		virtual unsigned int CreateCubeMap(CubeMapFullData* data) = 0;
 		virtual unsigned int GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data) = 0;
 		virtual void DeleteTexture(unsigned int id) = 0;
 
 		// Shader
-		virtual ShaderReference* LoadAndSetUpShader(const char* path, FrameBufferType type) = 0;
+		virtual ShaderReference* LoadAndSetUpShader(const string& path, FrameBufferType type) = 0;
+		virtual ShaderReference* SetUpShader(const string& path, const string& shaderCode, FrameBufferType type) = 0;
 		virtual void DeleteShader(uint32_t id) = 0;
 
 		// ≤ƒ÷ 

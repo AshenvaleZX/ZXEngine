@@ -567,6 +567,9 @@
     <ClCompile Include="..\..\CPPScripts\Component\Physics\ZDistanceJoint.cpp">
       <Filter>Component\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\CPPScripts\PublicStruct.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CPPScripts\GameObject.h">

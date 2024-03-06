@@ -23,19 +23,7 @@ namespace ZXEngine
 		float    Weights[MAX_NUM_BONES_PER_VERTEX] = {};
 		uint32_t BoneIDs[MAX_NUM_BONES_PER_VERTEX] = {};
 
-		void AddBoneData(uint32_t boneID, float weight)
-		{
-			for (uint32_t i = 0; i < MAX_NUM_BONES_PER_VERTEX; i++)
-			{
-				if (Weights[i] == 0.0f)
-				{
-					BoneIDs[i] = boneID;
-					Weights[i] = weight;
-					return;
-				}
-			}
-			Debug::LogWarning("Vertex has more than %s bones!", MAX_NUM_BONES_PER_VERTEX);
-		}
+		void AddBoneData(uint32_t boneID, float weight);
 	};
 
 	struct BoneNode
@@ -44,13 +32,45 @@ namespace ZXEngine
 		Matrix4 transform;
 		vector<BoneNode*> children;
 
-		~BoneNode() { for (auto child : children) delete child; }
+		~BoneNode();
 	};
 
 	struct AnimBriefInfo
 	{
 		string name;
 		float duration = 0.0f;
+	};
+
+	struct TextureFullData
+	{
+		int width = 0;
+		int height = 0;
+		int numChannel = 0;
+		unsigned char* data = nullptr;
+
+		~TextureFullData();
+	};
+
+	struct CubeMapFullData
+	{
+		int width = 0;
+		int height = 0;
+		int numChannel = 0;
+		unsigned char* data[6] = {};
+
+		~CubeMapFullData();
+	};
+
+	class Mesh;
+	class AnimationController;
+	struct ModelData
+	{
+		vector<Mesh*> pMeshes;
+		uint32_t boneNum = 0;
+		BoneNode* pRootBoneNode = nullptr;
+		AnimationController* pAnimationController = nullptr;
+		vector<AnimBriefInfo> animBriefInfos;
+		bool isConstructed = false;
 	};
 
 	struct KeyFrame

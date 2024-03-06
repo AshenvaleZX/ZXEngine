@@ -406,6 +406,7 @@ set(
     "../../CPPScripts/ModelUtil.cpp"
     "../../CPPScripts/ParticleSystemManager.cpp"
     "../../CPPScripts/ProjectSetting.cpp"
+    "../../CPPScripts/PublicStruct.cpp"
     "../../CPPScripts/RenderAPI.cpp"
     "../../CPPScripts/RenderAPID3D12.cpp"
     "../../CPPScripts/RenderAPIOpenGL.cpp"

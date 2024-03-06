@@ -401,6 +401,147 @@ namespace ZXEngine
         return CreateVulkanTexture(image, imageView, sampler);
     }
 
+    unsigned int RenderAPIVulkan::CreateTexture(TextureFullData* data)
+    {
+        VkDeviceSize imageSize = VkDeviceSize(data->width * data->height * 4);
+        VulkanBuffer stagingBuffer = CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
+
+        // 把数据拷贝到stagingBuffer
+        void* pData;
+        void* pixelsPtr = data->data; // 为memcpy转换一下指针类型
+        vmaMapMemory(vmaAllocator, stagingBuffer.allocation, &pData);
+        memcpy(pData, pixelsPtr, static_cast<size_t>(imageSize));
+        vmaUnmapMemory(vmaAllocator, stagingBuffer.allocation);
+
+        uint32_t mipLevels = GetMipMapLevels(data->width, data->height);
+
+        VulkanImage image = CreateImage(data->width, data->height, mipLevels, 1, VK_SAMPLE_COUNT_1_BIT,
+            defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
+            // 这里我们要从一个stagingBuffer接收数据，所以要写一个VK_IMAGE_USAGE_TRANSFER_DST_BIT
+            // 又因为我们要生成mipmap，需要从这个原image读数据，所以又再加一个VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+            // 然后再写一个VK_IMAGE_USAGE_SAMPLED_BIT表示会用于shader代码采样纹理
+            VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+            VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+
+        TransitionImageLayout(image.image,
+            // 从初始的Layout转换到接收stagingBuffer数据的Layout
+            VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            // 从硬盘加载的图像默认都是Color
+            VK_IMAGE_ASPECT_COLOR_BIT,
+            // 转换可以直接开始，没有限制
+            VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
+            // 图像Transfer的写入操作需要在这个转换之后进行
+            VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT);
+
+        // 把数据从stagingBuffer复制到image
+        ImmediatelyExecute([=](VkCommandBuffer cmd)
+        {
+            VkBufferImageCopy region{};
+            // 从buffer读取数据的起始偏移量
+            region.bufferOffset = 0;
+            // 这两个参数明确像素在内存里的布局方式，如果我们只是简单的紧密排列数据，就填0
+            region.bufferRowLength = 0;
+            region.bufferImageHeight = 0;
+            // 下面4个参数都是在设置我们要把数据拷贝到image的哪一部分
+            region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            region.imageSubresource.mipLevel = 0;
+            region.imageSubresource.baseArrayLayer = 0;
+            region.imageSubresource.layerCount = 1;
+            // 这个也是在设置我们要把图像拷贝到哪一部分
+            // 如果是整张图片，offset就全是0，extent就直接是图像高宽
+            region.imageOffset = { 0, 0, 0 };
+            region.imageExtent = { (uint32_t)data->width, (uint32_t)data->height, 1 };
+
+            vkCmdCopyBufferToImage(
+                cmd,
+                stagingBuffer.buffer,
+                image.image,
+                // image当前的layout
+                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                1, &region
+            );
+        });
+
+        GenerateMipMaps(image.image, defaultImageFormat, data->width, data->height, mipLevels);
+
+        DestroyBuffer(stagingBuffer);
+
+        VkImageView imageView = CreateImageView(image.image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+        VkSampler sampler = CreateSampler(mipLevels);
+
+        return CreateVulkanTexture(image, imageView, sampler);
+    }
+
+    unsigned int RenderAPIVulkan::CreateCubeMap(CubeMapFullData* data)
+    {
+        VkDeviceSize singleImageSize = VkDeviceSize(data->width * data->height * 4);
+
+        VulkanImage image = CreateImage(data->width, data->height, 1, 6, VK_SAMPLE_COUNT_1_BIT,
+            defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
+            VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+            VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+
+        // 同LoadTexture
+        TransitionImageLayout(image.image,
+            VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
+            VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT);
+
+        vector<VulkanBuffer> stagingBuffers;
+        for (uint32_t i = 0; i < 6; i++)
+            stagingBuffers.push_back(CreateBuffer(singleImageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true));
+
+        // 把数据从stagingBuffer复制到image
+        ImmediatelyExecute([=](VkCommandBuffer cmd)
+        {
+            for (uint32_t i = 0; i < 6; i++)
+            {
+                // 把数据拷贝到stagingBuffer
+                void* pData;
+                void* pixelsPtr = data->data[i]; // 为memcpy转换一下指针类型
+                vmaMapMemory(vmaAllocator, stagingBuffers[i].allocation, &pData);
+                memcpy(pData, pixelsPtr, static_cast<size_t>(singleImageSize));
+                vmaUnmapMemory(vmaAllocator, stagingBuffers[i].allocation);
+
+                VkBufferImageCopy bufferCopyRegion = {};
+                // 从buffer读取数据的起始偏移量
+                bufferCopyRegion.bufferOffset = 0;
+                // 这两个参数明确像素在内存里的布局方式，如果我们只是简单的紧密排列数据，就填0
+                bufferCopyRegion.bufferRowLength = 0;
+                bufferCopyRegion.bufferImageHeight = 0;
+                // 下面4个参数都是在设置我们要把数据拷贝到image的哪一部分
+                bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                bufferCopyRegion.imageSubresource.mipLevel = 0;
+                bufferCopyRegion.imageSubresource.baseArrayLayer = i;
+                bufferCopyRegion.imageSubresource.layerCount = 1;
+                bufferCopyRegion.imageOffset = { 0, 0, 0 };
+                bufferCopyRegion.imageExtent = { static_cast<uint32_t>(data->width), static_cast<uint32_t>(data->height), 1 };
+
+                vkCmdCopyBufferToImage(cmd,
+                    stagingBuffers[i].buffer,
+                    image.image,
+                    // image当前的layout
+                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                    1, &bufferCopyRegion
+                );
+            }
+        });
+
+        for (auto& stagingBuffer : stagingBuffers)
+            DestroyBuffer(stagingBuffer);
+
+        TransitionImageLayout(image.image,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+            VK_IMAGE_ASPECT_COLOR_BIT,
+            VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT,
+            VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_SHADER_READ_BIT);
+
+        VkImageView imageView = CreateImageView(image.image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_CUBE);
+        VkSampler sampler = CreateSampler(1);
+
+        return CreateVulkanTexture(image, imageView, sampler);
+    }
+
     unsigned int RenderAPIVulkan::GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data)
     {
         // 一个文本像素8bit
@@ -461,9 +602,14 @@ namespace ZXEngine
         texturesToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT));
     }
 
-    ShaderReference* RenderAPIVulkan::LoadAndSetUpShader(const char* path, FrameBufferType type)
+    ShaderReference* RenderAPIVulkan::LoadAndSetUpShader(const string& path, FrameBufferType type)
     {
         string shaderCode = Resources::LoadTextFile(path);
+        return SetUpShader(path, shaderCode, type);
+    }
+
+    ShaderReference* RenderAPIVulkan::SetUpShader(const string& path, const string& shaderCode, FrameBufferType type)
+    {
         auto shaderInfo = ShaderParser::GetShaderInfo(shaderCode, GraphicsAPI::Vulkan);
 
         uint32_t pipelineID = GetNextPipelineIndex();
