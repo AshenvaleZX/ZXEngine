@@ -15,6 +15,18 @@ namespace ZXEngine
 		ID = RenderAPI::GetInstance()->LoadCubeMap(faces);
 	}
 
+	Texture::Texture(TextureFullData* data)
+	{
+		type = TextureType::ZX_2D;
+		ID = RenderAPI::GetInstance()->CreateTexture(data);
+	}
+
+	Texture::Texture(CubeMapFullData* data)
+	{
+		type = TextureType::ZX_Cube;
+		ID = RenderAPI::GetInstance()->CreateCubeMap(data);
+	}
+
 	Texture::~Texture()
 	{
 		RenderAPI::GetInstance()->DeleteTexture(ID);

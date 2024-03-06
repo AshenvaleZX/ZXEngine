@@ -1,5 +1,6 @@
 #pragma once
 #include "pubh.h"
+#include "PublicStruct.h"
 
 namespace ZXEngine
 {
@@ -12,6 +13,8 @@ namespace ZXEngine
 
 		Texture(const char* path);
 		Texture(const vector<string>& faces);
+		Texture(TextureFullData* data);
+		Texture(CubeMapFullData* data);
 		~Texture();
 
 		unsigned int GetID();

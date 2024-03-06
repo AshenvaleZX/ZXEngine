@@ -26,7 +26,28 @@ namespace ZXEngine
 		// 如果没有加载过，执行真正的加载和编译
 		if (reference == nullptr)
 		{
-			reference = RenderAPI::GetInstance()->LoadAndSetUpShader(path.c_str(), type);
+			reference = RenderAPI::GetInstance()->LoadAndSetUpShader(path, type);
+			reference->path = path;
+			loadedShaders.push_back(reference);
+		}
+	}
+
+	Shader::Shader(const string& path, const string& shaderCode, FrameBufferType type)
+	{
+		name = Resources::GetAssetName(path);
+
+		for (auto shaderReference : loadedShaders)
+		{
+			if (path == shaderReference->path)
+			{
+				reference = shaderReference;
+				reference->referenceCount++;
+				break;
+			}
+		}
+		if (reference == nullptr)
+		{
+			reference = RenderAPI::GetInstance()->SetUpShader(path, shaderCode, type);
 			reference->path = path;
 			loadedShaders.push_back(reference);
 		}
