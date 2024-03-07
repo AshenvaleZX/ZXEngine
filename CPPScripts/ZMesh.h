@@ -29,5 +29,7 @@ namespace ZXEngine
 		float mAABBSizeZ = 0.0f;
 
 		~Mesh();
+
+		virtual void SetUp() {};
 	};
 }

@@ -2,6 +2,7 @@
 #include "Material.h"
 #include "ModelUtil.h"
 #include "SceneManager.h"
+#include "ZMesh.h"
 
 namespace ZXEngine
 {
@@ -217,6 +218,10 @@ namespace ZXEngine
 			p = Resources::JsonStrToString(data["Mesh"]);
 			meshRenderer->mModelName = Resources::GetAssetName(p);
 
+			for (auto mesh : modelData.pMeshes)
+			{
+				mesh->SetUp();
+			}
 			meshRenderer->SetMeshes(modelData.pMeshes);
 
 			if (modelData.pAnimationController)
