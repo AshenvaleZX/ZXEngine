@@ -16,25 +16,19 @@ Screenshot display (more display later in the introduction):
 
 ## 目录(Contents)
 
-[引擎简介 (Engine Introduction)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E5%BC%95%E6%93%8E%E7%AE%80%E4%BB%8B-engine-introduction)
+- [引擎简介 (Engine Introduction)](#%E5%BC%95%E6%93%8E%E7%AE%80%E4%BB%8B-engine-introduction)
 
-[引擎编辑器和更多演示 (Engine Editor And More Demonstration)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E5%BC%95%E6%93%8E%E7%BC%96%E8%BE%91%E5%99%A8%E5%92%8C%E6%9B%B4%E5%A4%9A%E6%BC%94%E7%A4%BA-engine-editor-and-more-demonstration)
+- [引擎编辑器和更多演示 (Engine Editor And More Demonstration)](#%E5%BC%95%E6%93%8E%E7%BC%96%E8%BE%91%E5%99%A8%E5%92%8C%E6%9B%B4%E5%A4%9A%E6%BC%94%E7%A4%BA-engine-editor-and-more-demonstration)
 
-[PhysZ物理引擎简介(PhysZ Physics Engine Introduction)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#physz%E7%89%A9%E7%90%86%E5%BC%95%E6%93%8E%E7%AE%80%E4%BB%8Bphysz-physics-engine-introduction)
-
-[ZXShader和材质系统(ZXShader And Material System)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#zxshader%E5%92%8C%E6%9D%90%E8%B4%A8%E7%B3%BB%E7%BB%9Fzxshader-and-material-system)
-
-[骨骼蒙皮动画系统(Skeletal Animation System)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E9%AA%A8%E9%AA%BC%E8%92%99%E7%9A%AE%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9Fskeletal-animation-system)
-
-[音频系统(Audio System)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E9%9F%B3%E9%A2%91%E7%B3%BB%E7%BB%9Faudio-system)
-
-[引擎文件格式介绍 (Engine file format introduction)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E5%BC%95%E6%93%8E%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E4%BB%8B%E7%BB%8D-engine-file-format-introduction)
-
-[GamePlay层的Lua代码示例(Lua code example for GamePlay layer)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#gameplay%E5%B1%82%E7%9A%84lua%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8Blua-code-example-for-gameplay-layer)
-
-[构建(Build)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E6%9E%84%E5%BB%BAbuild)
-
-[注意事项 (Precautions)](https://github.com/AshenvaleZX/ZXEngine?tab=readme-ov-file#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9-precautions)
+- [PhysZ物理引擎简介(PhysZ Physics Engine Introduction)](#physz%E7%89%A9%E7%90%86%E5%BC%95%E6%93%8E%E7%AE%80%E4%BB%8Bphysz-physics-engine-introduction)
+- [ZXShader和材质系统(ZXShader And Material System)](#zxshader%E5%92%8C%E6%9D%90%E8%B4%A8%E7%B3%BB%E7%BB%9Fzxshader-and-material-system)
+- [骨骼蒙皮动画系统(Skeletal Animation System)](#%E9%AA%A8%E9%AA%BC%E8%92%99%E7%9A%AE%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9Fskeletal-animation-system)
+- [音频系统(Audio System)](#%E9%9F%B3%E9%A2%91%E7%B3%BB%E7%BB%9Faudio-system)
+- [多线程(Multithreading)](#%E5%A4%9A%E7%BA%BF%E7%A8%8B-multithreading)
+- [引擎文件格式介绍 (Engine File Format Introduction)](#%E5%BC%95%E6%93%8E%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E4%BB%8B%E7%BB%8D-engine-file-format-introduction)
+- [GamePlay层的Lua代码示例(Lua code example for GamePlay layer)](#gameplay%E5%B1%82%E7%9A%84lua%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8Blua-code-example-for-gameplay-layer)
+- [构建(Build)](#%E6%9E%84%E5%BB%BAbuild)
+- [注意事项 (Precautions)](#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9-precautions)
 
 ## 引擎简介 (Engine Introduction)
 
@@ -188,7 +182,31 @@ AudioListener同样也是用于3D音效的，如果你不需要3D音效的话场
 
 Most of the systems and modules of this engine are written by myself, but audio processing is a very professional field like graphics rendering and physics engine, involving audio coding, time domain and frequency domain transformation and other related professional knowledge. I don’t know enough about audio-related professional knowledge, so the core part of the audio system of this engine, that is, the audio decoding and playback functions, uses the third-party library irrKlang.
 
-## 引擎文件格式介绍 (Engine file format introduction)
+## 多线程(Multithreading)
+
+目前引擎中实现了多线程的部分有两个，异步加载资源和着色器预编译。其实我还想搞多线程渲染，也在实际尝试搞，但确实有点困难，需要大改引擎框架，所以还没搞好，先鸽着。
+
+Currently, there are two parts of the engine that implement multi-threading, asynchronous loading and shader pre-compilation. In fact, I also want to do multi-threaded rendering, and I‘m actually trying to do it, but it's indeed difficult and requires a lot of modifications to the engine framework, so I haven't done it yet.
+
+资源异步加载的接口如下，直接在主线程(也是逻辑线程)中调用即可：
+
+The interface for asynchronous loading is as follows, which can be called in the main thread (also the logical thread):
+
+```c++
+C++ Interface:
+static void ZXEngine::GameObject::AsyncCreate(const string& path)
+```
+
+```lua
+Lua Interface:
+GameObject.AsyncCreate(path)
+```
+
+然后是着色器预编译，在引擎编辑器顶部的菜单栏点击Asset/Compile All Shader for Vulkan或者Compile All Shader for DirectX12，就会开启一个线程去编译Shader。
+
+As for shader pre-compilation, click "Asset/Compile All Shader for Vulkan" or "Compile All Shader for DirectX12" in the menu bar at the top of the engine editor, and a thread will be created to compile the shaders.
+
+## 引擎文件格式介绍 (Engine File Format Introduction)
 
 ### *.zxscene
 
