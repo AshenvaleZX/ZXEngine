@@ -2762,7 +2762,7 @@ namespace ZXEngine
 
 		// Scratch Buffer
 		UINT64 scratchSizeInBytes = Math::AlignUpPOT(prebuildInfo.ScratchDataSizeInBytes, static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
-		mTLASScratchBuffers[mCurrentFrame] = CreateBuffer(scratchSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_HEAP_TYPE_DEFAULT, false, true);
+		mTLASScratchBuffers[mCurrentFrame] = CreateBuffer(scratchSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COMMON, D3D12_HEAP_TYPE_DEFAULT, false, true);
 		// 构建TLAS要用的BLAS数据Buffer
 		UINT64 instanceDescsSizeInBytes = Math::AlignUpPOT(static_cast<UINT64>(sizeof(D3D12_RAYTRACING_INSTANCE_DESC) * mASInstanceData.size()), static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
 		mTLASInstanceBuffers[mCurrentFrame] = CreateBuffer(instanceDescsSizeInBytes, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, false, true);
