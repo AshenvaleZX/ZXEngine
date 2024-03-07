@@ -184,13 +184,13 @@ namespace ZXEngine
 		return scene;
 	}
 
-	PrefabStruct* Resources::LoadPrefab(const string& path, bool isBuiltIn)
+	PrefabStruct* Resources::LoadPrefab(const string& path, bool isBuiltIn, bool async)
 	{
 		json data = Resources::GetAssetData(path, isBuiltIn);
-		return ParsePrefab(data);
+		return ParsePrefab(data, async);
 	}
 
-	PrefabStruct* Resources::ParsePrefab(json data)
+	PrefabStruct* Resources::ParsePrefab(json data, bool async)
 	{
 		PrefabStruct* prefab = new PrefabStruct;
 
@@ -216,7 +216,7 @@ namespace ZXEngine
 					p = Resources::JsonStrToString(component["Mesh"]);
 					p = Resources::GetAssetFullPath(p);
 
-					prefab->modelData = ModelUtil::LoadModel(p);
+					prefab->modelData = ModelUtil::LoadModel(p, true, async);
 				}
 			}
 
@@ -228,7 +228,7 @@ namespace ZXEngine
 			for (unsigned int i = 0; i < data["GameObjects"].size(); i++)
 			{
 				const json& subData = data["GameObjects"][i];
-				auto subPrefab = ParsePrefab(subData);
+				auto subPrefab = ParsePrefab(subData, async);
 				subPrefab->parent = prefab;
 				prefab->children.push_back(subPrefab);
 			}
@@ -393,7 +393,7 @@ namespace ZXEngine
 
 	void Resources::DoAsyncLoadPrefab(std::promise<PrefabStruct*>&& promise, string path, bool isBuiltIn)
 	{
-		PrefabStruct* prefab = LoadPrefab(path, isBuiltIn);
+		PrefabStruct* prefab = LoadPrefab(path, isBuiltIn, true);
 		promise.set_value(prefab);
 	}
 }

@@ -101,7 +101,7 @@ namespace ZXEngine
 		static vector<char> LoadBinaryFile(const string& path);
 
 		static SceneStruct* LoadScene(const string& path);
-		static PrefabStruct* LoadPrefab(const string& path, bool isBuiltIn = false);
+		static PrefabStruct* LoadPrefab(const string& path, bool isBuiltIn = false, bool async = false);
 		static MaterialStruct* LoadMaterial(const string& path, bool isBuiltIn = false);
 		static vector<string> LoadCubeMap(const json& data, bool isBuiltIn = false);
 
@@ -112,7 +112,7 @@ namespace ZXEngine
 		static string mAssetsPath;
 
 		static json GetAssetData(const string& path, bool isBuiltIn = false);
-		static PrefabStruct* ParsePrefab(json data);
+		static PrefabStruct* ParsePrefab(json data, bool async = false);
 
 
 		// -------- Òì²½½Ó¿Ú --------

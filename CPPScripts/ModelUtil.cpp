@@ -82,7 +82,7 @@ namespace ZXEngine
         return GeometryTypeName.at(type);
     }
 
-    ModelData ModelUtil::LoadModel(const string& path, bool loadFullAnim)
+    ModelData ModelUtil::LoadModel(const string& path, bool loadFullAnim, bool async)
     {
         ModelData modelData;
 
@@ -108,19 +108,19 @@ namespace ZXEngine
         if (modelData.pAnimationController)
         {
             modelData.pRootBoneNode = new BoneNode();
-            ProcessNode(scene->mRootNode, scene, modelData, modelData.pRootBoneNode);
+            ProcessNode(scene->mRootNode, scene, modelData, modelData.pRootBoneNode, async);
         }
         // 处理模型数据
         else
 		{
-			ProcessNode(scene->mRootNode, scene, modelData);
+			ProcessNode(scene->mRootNode, scene, modelData, async);
 		}
 
         modelData.isConstructed = true;
         return modelData;
     }
 
-    void ModelUtil::ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData& modelData)
+    void ModelUtil::ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData& modelData, bool async)
     {
         // 处理Mesh数据
         for (unsigned int i = 0; i < pNode->mNumMeshes; i++)
@@ -128,17 +128,17 @@ namespace ZXEngine
             // aiNode仅包含索引来获取aiScene中的实际对象
             // aiScene包含所有数据，aiNode只是为了让数据组织起来(比如记录节点之间的关系)
             aiMesh* mesh = pScene->mMeshes[pNode->mMeshes[i]];
-            modelData.pMeshes.push_back(ProcessMesh(mesh));
+            modelData.pMeshes.push_back(ProcessMesh(mesh, async));
         }
 
         // 递归处理子节点
         for (unsigned int i = 0; i < pNode->mNumChildren; i++)
         {
-            ProcessNode(pNode->mChildren[i], pScene, modelData);
+            ProcessNode(pNode->mChildren[i], pScene, modelData, async);
         }
     }
 
-    void ModelUtil::ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData& modelData, BoneNode* pBoneNode)
+    void ModelUtil::ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData& modelData, BoneNode* pBoneNode, bool async)
     {
         // 处理Mesh数据
         for (unsigned int i = 0; i < pNode->mNumMeshes; i++)
@@ -146,7 +146,7 @@ namespace ZXEngine
             // aiNode仅包含索引来获取aiScene中的实际对象
             // aiScene包含所有数据，aiNode只是为了让数据组织起来(比如记录节点之间的关系)
             aiMesh* mesh = pScene->mMeshes[pNode->mMeshes[i]];
-            modelData.pMeshes.push_back(ProcessMesh(mesh));
+            modelData.pMeshes.push_back(ProcessMesh(mesh, async));
         }
 
         // 加载骨骼数据
@@ -157,11 +157,11 @@ namespace ZXEngine
         for (unsigned int i = 0; i < pNode->mNumChildren; i++)
         {
             pBoneNode->children.push_back(new BoneNode());
-            ProcessNode(pNode->mChildren[i], pScene, modelData, pBoneNode->children.back());
+            ProcessNode(pNode->mChildren[i], pScene, modelData, pBoneNode->children.back(), async);
         }
     }
 
-    StaticMesh* ModelUtil::ProcessMesh(const aiMesh* mesh)
+    StaticMesh* ModelUtil::ProcessMesh(const aiMesh* mesh, bool async)
     {
         // data to fill
         vector<Vertex> vertices;
@@ -262,7 +262,7 @@ namespace ZXEngine
             }
         }
 
-        auto newMesh = new StaticMesh(vertices, indices, false);
+        auto newMesh = new StaticMesh(vertices, indices, !async);
         newMesh->mBonesFinalTransform.resize(boneOffsetMatrices.size());
         newMesh->mBonesOffset = std::move(boneOffsetMatrices);
         newMesh->mBoneNameToIndexMap = std::move(boneNameToIndexMap);
