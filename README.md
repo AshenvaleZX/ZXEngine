@@ -1,8 +1,8 @@
 # ZXEngine
 
-![Vulkan](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Badges/Vulkan-Supported.svg)
-![DirectX 12](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Badges/DirectX_12-Supported.svg)
-![OpenGL](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Badges/OpenGL-Supported.svg)
+![Vulkan](Documents/Badges/Vulkan-Supported.svg)
+![DirectX 12](Documents/Badges/DirectX_12-Supported.svg)
+![OpenGL](Documents/Badges/OpenGL-Supported.svg)
 
 这是我自己开发的游戏引擎项目，创建这个项目的主要目的是为了我自己学习和实践游戏引擎技术，不过也希望这个项目能对你有所帮助。
 
@@ -12,23 +12,33 @@ This is a game engine project developed by myself. The main purpose of creating 
 
 Screenshot display (more display later in the introduction):
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/EngineShow0.jpg)
+![](Documents/Images/EngineShow0.jpg)
 
-# 目录(Contents)
+## 目录(Contents)
 
 - [引擎简介 (Engine Introduction)](#引擎简介-engine-introduction)
+  
 - [引擎编辑器和更多演示 (Engine Editor And More Demonstration)](#引擎编辑器和更多演示-engine-editor-and-more-demonstration)
+  
 - [PhysZ物理引擎简介(PhysZ Physics Engine Introduction)](#physz物理引擎简介physz-physics-engine-introduction)
+  
 - [ZXShader和材质系统(ZXShader And Material System)](#zxshader和材质系统zxshader-and-material-system)
+  
 - [骨骼蒙皮动画系统(Skeletal Animation System)](#骨骼蒙皮动画系统skeletal-animation-system)
+  
 - [音频系统(Audio System)](#音频系统audio-system)
+  
 - [多线程(Multithreading)](#多线程multithreading)
+  
 - [引擎文件格式介绍 (Engine File Format Introduction)](#引擎文件格式介绍-engine-file-format-introduction)
+  
 - [GamePlay层的Lua代码示例(Lua code example for GamePlay layer)](#gameplay层的lua代码示例lua-code-example-for-gameplay-layer)
+  
 - [构建(Build)](#构建build)
+  
 - [注意事项 (Precautions)](#注意事项-precautions)
 
-# 引擎简介 (Engine Introduction)
+## 引擎简介 (Engine Introduction)
 
 本引擎目前同时支持Vulkan，DirectX 12和OpenGL，使用自创的zxshader语言来编写shader，支持前面三种图形API，可一次编写3种环境运行。同时也支持基于Vulkan和DirectX12的光线追踪渲染管线。
 
@@ -46,13 +56,13 @@ The engine is developed with C++, the GamePlay layer is developed with Lua, and 
 
 The project is still relatively simple, but I have completed the development of the basic scenes, prefabs, materials system, shader file systems and so on that the engine need. This engine has a Unity-like engine editor. Objects in the scene are Unity-style GameObject - Component structures.
 
-# 引擎编辑器和更多演示 (Engine Editor And More Demonstration)
+## 引擎编辑器和更多演示 (Engine Editor And More Demonstration)
 
 下面是一些图片展示，引擎页面如图，和Unity编辑器类似。上面是主菜单栏，中间是游戏画面窗口，左边是展示场景中GameObject的Hierarchy面板，下面左边是展示当前打开项目的Assets文件目录的Project面板，中间是展示日志的Console面板，右边是展示当前选中对象详细信息的Inspector面板。
 
 The following are some picture displays, the engine is shown in the figure, which is similar to the Unity editor. The top is the main menu bar, the middle is the game screen window, the left is the Hierarchy panel showing the GameObject in the scene, the lower left is the Project panel showing the Assets file directory of the currently opened project, the middle is the Console panel showing the log, and the right is showing the currently selected Inspector panel for object details.
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/EngineShow1.jpg)
+![](Documents/Images/EngineShow1.jpg)
 
 当前选中了场景中的Sun对象，Inspector面板就展示这个GameObject所挂载的Component信息。
 
@@ -66,41 +76,41 @@ Click the Play button on the main menu bar, and the game starts to run. At this 
 
 Next picture is a scene rendering based on PBR+IBL, and also shows the material information and material preview displayed on the Inspector panel after clicking the material file.
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/EngineShow2.jpg)
+![](Documents/Images/EngineShow2.jpg)
 
 然后通过双击场景文件，切换到一个使用光线追踪渲染管线渲染的场景。同时展示了点击模型文件后Inspector面板展示的模型信息和模型预览，如果模型带有动画还会显示骨骼和动画信息。
 
 Then switch to a scene rendered with the ray tracing pipeline by double-clicking on the scene file. At the same time, it shows the model information and model preview displayed on the Inspector panel after clicking the model file. If the model has animation, the skeleton and animation information will also be displayed.
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/EngineShow3.jpg)
+![](Documents/Images/EngineShow3.jpg)
 
 接下来展示的是通过算法生成的体积云及其阴影投射效果。同时展示了点击图片文件后，Inspector面板显示的图像信息。
 
 Shown next are code-generated volumetric clouds and their shadow casting effects. And the right side shows the image information displayed on the Inspector panel after clicking the image file.
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/EngineShow4.jpg)
+![](Documents/Images/EngineShow4.jpg)
 
 下面是分别点击zxshader和Lua后Inspector上的代码预览。
 
 The following is the code preview on the Inspector after clicking zxshader and Lua respectively.
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/EngineShow5.jpg)
+![](Documents/Images/EngineShow5.jpg)
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/EngineShow6.jpg)
+![](Documents/Images/EngineShow6.jpg)
 
-# PhysZ物理引擎简介(PhysZ Physics Engine Introduction)
+## PhysZ物理引擎简介(PhysZ Physics Engine Introduction)
 
 先展示一下PhysZ引擎对刚体力学和布料的模拟效果(GIF演示，截屏大小和帧率都有压缩):
 
 Here is a GIF of the simulation of rigid mechanics and cloth in PhysZ (the size and framerate of the screenshots are compressed):
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/PhysZ0.gif)
+![](Documents/Images/PhysZ0.gif)
 
 使用基本的PhysZ物理引擎只需要关心两个Component，Collider和Rigidbody。其中Collider目前提供了三种类型：BoxCollider，PlaneCollider和SphereCollider。下面是这两个Component在引擎里编辑器里的截图：
 
 Using the PhysZ engine involves only two Components, Collider and Rigidbody. Collider currently provides three types: BoxCollider, PlaneCollider and SphereCollider. The following are screenshots of these two Components in the editor in the engine:
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/PhysZ1.png)
+![](Documents/Images/PhysZ1.png)
 
 各参数作用顾名思义即可。其中Damping参数是模拟各种形式的阻尼效果的，Linear Damping和Angular Damping分别对应线性运动和角运动，数值为0代表无阻尼。
 
@@ -110,19 +120,19 @@ The function of each parameter is just as the name implies. And the Damping para
 
 The spring component is shown in the figure, similar to Unity's SpringJoint. The parameters are the connection object, the anchor points of itself and the connection object (their respective model spaces), the rest length and spring coefficient of the spring.
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/PhysZ2.png)
+![](Documents/Images/PhysZ2.png)
 
 布料模拟需要添加一个Cloth组件，参数分别是布料质量，摩擦系数，弯曲刚度，拉伸刚度和是否使用重力。注意布料需要配合动态Mesh，本引擎暂时只支持DynamicPlane。
 
 Cloth simulation needs to add a Cloth component, the parameters are cloth mass, friction coefficient, bend stiffness, stretch stiffness and whether to use gravity. Note that cloth needs to be matched with dynamic mesh. This engine currently only supports DynamicPlane.
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/PhysZ3.png)
+![](Documents/Images/PhysZ3.png)
 
 PhysZ引擎主要是我在学习了Ian Millington的《Game Physics Engine Development》和Gabor Szauer的《Game Physics Cookbook》之后，加上一些自己的思考和实践的成果。引擎里的注释也比较多，欢迎对物理引擎感兴趣的人一起讨论学习。
 
 The PhysZ engine is the result of me studying Ian Millington's "Game Physics Engine Development" and Gabor Szauer's "Game Physics Cookbook", plus some of my own thinking and practice. If you are also interested in physics engines, I hope this engine can be helpful to you.
 
-# ZXShader和材质系统(ZXShader And Material System)
+## ZXShader和材质系统(ZXShader And Material System)
 
 ZXShader是专门给ZXEngine用的一套Shader系统，因为ZXEngine同时支持Vulkan/DirectX12/OpenGL，所以也需要一个统一的Shader语言才能支撑后面的材质系统。ZXShader目前暂时只支持光栅渲染管线，光追渲染管线的Shader是在VK和DX下独立写的。ZXShader语言本身并不复杂，对GLSL，HLSL或者Unity ShaderLab比较熟悉的人应该都能很快看懂，代码示例在ExampleProject\Assets\Shaders中。
 
@@ -132,21 +142,21 @@ ZXShader is a shader system specially used for ZXEngine. Because ZXEngine suppor
 
 The material system is similar to Unity's. Select a Shader, and then you can see the parameters exposed by this shader to the engine on the editor panel. And you can adjust parameter values through the engine editor, and then see the feedback of the rendering results in real time. For example, adjust the materials in the running scene:
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Material1.gif)
+![](Documents/Images/Material1.gif)
 
 选中Asset中的材质后，直接调整材质参数，在材质球上预览变化：
 
 This is after selecting the material in the Asset, adjusting the material parameters, and previewing the changes on the material ball:
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Material2.gif)
+![](Documents/Images/Material2.gif)
 
-# 骨骼蒙皮动画系统(Skeletal Animation System)
+## 骨骼蒙皮动画系统(Skeletal Animation System)
 
 切换到AnimDemo场景，点击运行按钮后，可以看到骨骼蒙皮动画的展示:
 
 Switch to the AnimDemo scene and click Play button to see the skeletal animation display:
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Anim.gif)
+![](Documents/Images/Anim.gif)
 
 本引擎的动画系统支持动画混合，所以这里除了能看到单个动画播放外，还能看到人物从走路状态进入跑步状态时，两个动画之间流畅的过渡。
 
@@ -156,7 +166,7 @@ The animation system of this engine supports animation blending, so in addition 
 
 The code to play the animation belongs to the GamePlay rather than the engine, so it‘s written in the Lua code and bound to the GameObject through the GameLogic component.
 
-# 音频系统(Audio System)
+## 音频系统(Audio System)
 
 本引擎的音频系统类似Unity，主要依靠AudioListener和AudioSource这两个组件。
 
@@ -166,7 +176,7 @@ AudioSource如下，各参数都比较好理解。
 
 AudioSource is as shown below. These parameters are easy to understand.
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Audio1.png)
+![](Documents/Images/Audio1.png)
 
 其中最后两个参数只在勾选3D音效后生效。MinDistance表示小于这个距离之后音量不会再增大，MaxDistance表示大于这个距离后音量不会再减小。
 
@@ -174,13 +184,13 @@ The last two parameters only take effect in 3D sound effects. When the distance 
 
 AudioListener同样也是用于3D音效的，如果你不需要3D音效的话场景里可以没有这个组件。这个组件挂载到哪个GameObject上就会用哪个GameObject计算3D音效。和Unity一样这个组件不需要任何参数，一般会挂载到主相机所在的GameObject上，如图：
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/Audio2.png)
+![](Documents/Images/Audio2.png)
 
 本引擎的绝大部分系统和模块都是我自己编写的，但是音频处理是一个和图形渲染，物理引擎一样很专业的领域，涉及音频编码和时域频域变换等相关专业知识。而我对音频相关的专业知识了解还不够，所以很惭愧，目前本引擎音频系统中的核心部分，即音频解码和播放功能使用了irrKlang这个第三方库。
 
 Most of the systems and modules of this engine are written by myself, but audio processing is a very professional field like graphics rendering and physics engine, involving audio coding, time domain and frequency domain transformation and other related professional knowledge. I don’t know enough about audio-related professional knowledge, so the core part of the audio system of this engine, that is, the audio decoding and playback functions, uses the third-party library irrKlang.
 
-# 多线程(Multithreading)
+## 多线程(Multithreading)
 
 目前引擎中实现了多线程的部分有两个，异步加载资源和着色器预编译。其实我还想搞多线程渲染，也在实际尝试搞，但确实有点困难，需要大改引擎框架，所以还没搞好，先鸽着。
 
@@ -204,7 +214,7 @@ GameObject.AsyncCreate(path)
 
 As for shader pre-compilation, click "Asset/Compile All Shader for Vulkan" or "Compile All Shader for DirectX12" in the menu bar at the top of the engine editor, and a thread will be created to compile the shaders.
 
-# 引擎文件格式介绍 (Engine File Format Introduction)
+## 引擎文件格式介绍 (Engine File Format Introduction)
 
 ### *.zxscene
 
@@ -248,13 +258,13 @@ This is the configuration file for the game project created by ZXEngine, you can
 
 Models, textures, fonts, etc. are common file formats.
 
-# GamePlay层的Lua代码示例(Lua code example for GamePlay layer)
+## GamePlay层的Lua代码示例(Lua code example for GamePlay layer)
 
 以控制GameObject旋转移动举例，创建一个Lua代码，用GameLogic组件挂在到一个GameObject对象上：
 
 Take controlling the rotation and movement of GameObject as an example, create a Lua code, and use GameLogic component on a GameObject object:
 
-![](https://github.com/AshenvaleZX/ZXEngine/blob/master/Documents/Images/GameLogic.png)
+![](Documents/Images/GameLogic.png)
 
 然后Lua代码大致如下：
 
@@ -287,7 +297,7 @@ end
 return ObjectMove
 ```
 
-# 构建(Build)
+## 构建(Build)
 
 本项目使用Visual Studio 2022构建，暂时不支持跨平台。VS项目文件已经放到ZXEngine文件夹下了，直接打开.sln构建即可。同时也提供了CMakeLists，不过在非WIndows环境下暂时还无法正确构建。
 
@@ -297,7 +307,7 @@ This project is built using Visual Studio 2022 and does not support cross-platfo
 
 Since the development environment of the company I work for and my own computer are both Windows, this project currently only supports Windows systems. I have the idea of cross-platform, but my energy is limited. This is just a project I developed in my free time. There are a lot of things I want to do but haven't done yet, so I will not provide cross-platform support in the short term. I appreciate your understanding.
 
-# 注意事项 (Precautions)
+## 注意事项 (Precautions)
 
 目前zxshader编写好后，在DirectX 12和OpenGL下直接运行即可。但是在Vulkan下需要先点击引擎菜单栏里的“Assets/Compile All Shader for Vulkan”按钮，将zxshader预编译后才可以运行。也就是说，在你第一次以Vulkan模式运行工程之前，至少需要先以DirectX 12或者OpenGL模式启动一次项目，完成一次预编译Vulkan着色器，然后才能正常的以Vulkan模式启动。这块做得不是很好，按理说不应该有这种奇怪的限制，日后改进。
 
