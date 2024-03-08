@@ -5,8 +5,6 @@
 namespace ZXEngine
 {
 	class DynamicMesh;
-	class PhysZ::RigidBody;
-	class PhysZ::CollisionBox;
 	class Cloth : public Component
 	{
 		friend class PhysZ::PScene;
