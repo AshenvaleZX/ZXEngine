@@ -47,6 +47,7 @@ add_rules("basic_settings", "check-winsdk")
 add_deps("vulkan-sdk")
 add_linkdirs(path.join(os.projectdir(), "Vendor/Libs"))
 add_links("assimp-vc143-mt", "freetype", "glfw3", "irrKlang", "opengl32", "Shell32")
+set_pcxxheader("CPPScripts/pubh.h")
 add_defines("UNICODE")
 -- copy dll
 after_build(function(target)
