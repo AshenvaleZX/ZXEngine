@@ -230,7 +230,7 @@ namespace ZXEngine
 				animator->mAvatarName = meshRenderer->mModelName + "Avatar";
 				animator->mRootBoneNode = modelData.pRootBoneNode;
 				animator->mAnimationController = modelData.pAnimationController;
-				// Ϊ�˷��㣬����ֱ����MeshRenderer��Animator��������
+				// 为了方便，这里直接让MeshRenderer和Animator互相引用
 				meshRenderer->mAnimator = animator;
 				animator->mMeshRenderer = meshRenderer;
 			}
@@ -314,7 +314,7 @@ namespace ZXEngine
 
 		boxCollider->SynchronizeData();
 
-		// ���ø������ײ��͹�������(����Ƚ���RigidBody�ٽ���Collider�ͻ����������)
+		// 设置刚体的碰撞体和惯性张量(如果先解析RigidBody再解析Collider就会从这里设置)
 		auto rigidBody = GetComponent<ZRigidBody>();
 		if (rigidBody)
 		{
@@ -340,7 +340,7 @@ namespace ZXEngine
 
 		planeCollider->SynchronizeData();
 
-		// ���ø������ײ��͹�������(����Ƚ���RigidBody�ٽ���Collider�ͻ����������)
+		// 设置刚体的碰撞体和惯性张量(如果先解析RigidBody再解析Collider就会从这里设置)
 		auto rigidBody = GetComponent<ZRigidBody>();
 		if (rigidBody)
 		{
@@ -365,7 +365,7 @@ namespace ZXEngine
 
 		sphereCollider->SynchronizeData();
 
-		// ���ø������ײ��͹�������(����Ƚ���RigidBody�ٽ���Collider�ͻ����������)
+		// 设置刚体的碰撞体和惯性张量(如果先解析RigidBody再解析Collider就会从这里设置)
 		auto rigidBody = GetComponent<ZRigidBody>();
 		if (rigidBody)
 		{
@@ -381,7 +381,7 @@ namespace ZXEngine
 
 		rigidBody->mUseGravity = data["UseGravity"];
 
-		// �����������ٶ�
+		// 添加重力加速度
 		if (rigidBody->mUseGravity)
 		{
 			auto fgGravity = new PhysZ::FGGravity(Vector3(0.0f, -9.8f, 0.0f));
@@ -399,11 +399,11 @@ namespace ZXEngine
 		float angularDamping = data["AngularDamping"];
 		rigidBody->mRigidBody->SetAngularDamping(1.0f - angularDamping);
 
-		// ��ʼ�������λ�ú���ת
+		// 初始化刚体的位置和旋转
 		rigidBody->mRigidBody->SetPosition(GetComponent<Transform>()->GetPosition());
 		rigidBody->mRigidBody->SetRotation(GetComponent<Transform>()->GetRotation());
 
-		// ���ø������ײ��͹�������(����Ƚ���Collider�ٽ���RigidBody�ͻ����������)
+		// 设置刚体的碰撞体和惯性张量(如果先解析Collider再解析RigidBody就会从这里设置)
 		if (mColliderType == PhysZ::ColliderType::Box)
 		{
 			auto boxCollider = GetComponent<BoxCollider>();
