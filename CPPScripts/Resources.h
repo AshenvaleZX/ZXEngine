@@ -118,10 +118,12 @@ namespace ZXEngine
 		// -------- Òì²½½Ó¿Ú --------
 	public:
 		static void CheckAsyncLoad();
+		static void ClearAsyncLoad();
 		static void AsyncLoadPrefab(const string& path, std::function<void(PrefabStruct*)> callback, bool isBuiltIn = false);
 		
 	private:
 		static vector<PrefabLoadHandle> mPrefabLoadHandles;
+		static vector<PrefabLoadHandle> mDiscardedPrefabLoadHandles;
 		static void DoAsyncLoadPrefab(std::promise<PrefabStruct*>&& prms, string path, bool isBuiltIn);
 	};
 }

@@ -7,6 +7,7 @@ namespace ZXEngine
 	string Resources::mAssetsPath;
 	const string Resources::mBuiltInAssetsPath = "../../BuiltInAssets/";
 	vector<PrefabLoadHandle> Resources::mPrefabLoadHandles;
+	vector<PrefabLoadHandle> Resources::mDiscardedPrefabLoadHandles;
 
 	void Resources::SetAssetsPath(const string& path)
 	{
@@ -376,6 +377,24 @@ namespace ZXEngine
 				i--;
 			}
 		}
+
+		for (size_t i = 0; i < mDiscardedPrefabLoadHandles.size(); i++)
+		{
+			if (mDiscardedPrefabLoadHandles[i].future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+			{
+				mDiscardedPrefabLoadHandles.erase(mDiscardedPrefabLoadHandles.begin() + i);
+				i--;
+			}
+		}
+	}
+
+	void Resources::ClearAsyncLoad()
+	{
+		for (size_t i = 0; i < mPrefabLoadHandles.size(); i++)
+		{
+			mDiscardedPrefabLoadHandles.push_back(std::move(mPrefabLoadHandles[i]));
+		}
+		mPrefabLoadHandles.clear();
 	}
 
 	void Resources::AsyncLoadPrefab(const string& path, std::function<void(PrefabStruct*)> callback, bool isBuiltIn)

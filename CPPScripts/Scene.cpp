@@ -61,6 +61,8 @@ namespace ZXEngine
 		{
 			delete gameObject;
 		}
+
+		Resources::ClearAsyncLoad();
 	}
 
 	void Scene::Update()
