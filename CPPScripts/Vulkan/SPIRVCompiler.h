@@ -1,7 +1,7 @@
 #pragma once
 #include "../pubh.h"
-#include "../Vulkan/vulkan/vulkan.h"
-#include "../Vulkan/glslang/SPIRV/GlslangToSpv.h"
+#include <Vulkan/vulkan/vulkan.h>
+#include <Vulkan/glslang/SPIRV/GlslangToSpv.h>
 
 namespace ZXEngine
 {

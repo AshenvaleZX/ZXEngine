@@ -230,7 +230,7 @@ namespace ZXEngine
 				animator->mAvatarName = meshRenderer->mModelName + "Avatar";
 				animator->mRootBoneNode = modelData.pRootBoneNode;
 				animator->mAnimationController = modelData.pAnimationController;
-				// ÎªÁË·½±ã£¬ÕâÀïÖ±½ÓÈÃMeshRendererºÍAnimator»¥ÏàÒıÓÃ
+				// Îªï¿½Ë·ï¿½ï¿½ã£¬ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½ï¿½MeshRendererï¿½ï¿½Animatorï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				meshRenderer->mAnimator = animator;
 				animator->mMeshRenderer = meshRenderer;
 			}
@@ -310,11 +310,11 @@ namespace ZXEngine
 		boxCollider->mFrictionCombine = data["FrictionCombine"];
 		boxCollider->mBounceCombine = data["BounceCombine"];
 
-		boxCollider->mCollider->mHalfSize = Vector3(data["Size"][0] / 2.0f, data["Size"][1] / 2.0f, data["Size"][2] / 2.0f);
+		boxCollider->mCollider->mHalfSize = Vector3(static_cast<float>(data["Size"][0]) / 2.0f, static_cast<float>(data["Size"][1]) / 2.0f, static_cast<float>(data["Size"][2]) / 2.0f);
 
 		boxCollider->SynchronizeData();
 
-		// ÉèÖÃ¸ÕÌåµÄÅö×²ÌåºÍ¹ßĞÔÕÅÁ¿(Èç¹ûÏÈ½âÎöRigidBodyÔÙ½âÎöCollider¾Í»á´ÓÕâÀïÉèÖÃ)
+		// ï¿½ï¿½ï¿½Ã¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½Í¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½RigidBodyï¿½Ù½ï¿½ï¿½ï¿½Colliderï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 		auto rigidBody = GetComponent<ZRigidBody>();
 		if (rigidBody)
 		{
@@ -340,7 +340,7 @@ namespace ZXEngine
 
 		planeCollider->SynchronizeData();
 
-		// ÉèÖÃ¸ÕÌåµÄÅö×²ÌåºÍ¹ßĞÔÕÅÁ¿(Èç¹ûÏÈ½âÎöRigidBodyÔÙ½âÎöCollider¾Í»á´ÓÕâÀïÉèÖÃ)
+		// ï¿½ï¿½ï¿½Ã¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½Í¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½RigidBodyï¿½Ù½ï¿½ï¿½ï¿½Colliderï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 		auto rigidBody = GetComponent<ZRigidBody>();
 		if (rigidBody)
 		{
@@ -365,7 +365,7 @@ namespace ZXEngine
 
 		sphereCollider->SynchronizeData();
 
-		// ÉèÖÃ¸ÕÌåµÄÅö×²ÌåºÍ¹ßĞÔÕÅÁ¿(Èç¹ûÏÈ½âÎöRigidBodyÔÙ½âÎöCollider¾Í»á´ÓÕâÀïÉèÖÃ)
+		// ï¿½ï¿½ï¿½Ã¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½Í¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½RigidBodyï¿½Ù½ï¿½ï¿½ï¿½Colliderï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 		auto rigidBody = GetComponent<ZRigidBody>();
 		if (rigidBody)
 		{
@@ -381,7 +381,7 @@ namespace ZXEngine
 
 		rigidBody->mUseGravity = data["UseGravity"];
 
-		// Ìí¼ÓÖØÁ¦¼ÓËÙ¶È
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½
 		if (rigidBody->mUseGravity)
 		{
 			auto fgGravity = new PhysZ::FGGravity(Vector3(0.0f, -9.8f, 0.0f));
@@ -399,11 +399,11 @@ namespace ZXEngine
 		float angularDamping = data["AngularDamping"];
 		rigidBody->mRigidBody->SetAngularDamping(1.0f - angularDamping);
 
-		// ³õÊ¼»¯¸ÕÌåµÄÎ»ÖÃºÍĞı×ª
+		// ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ãºï¿½ï¿½ï¿½×ª
 		rigidBody->mRigidBody->SetPosition(GetComponent<Transform>()->GetPosition());
 		rigidBody->mRigidBody->SetRotation(GetComponent<Transform>()->GetRotation());
 
-		// ÉèÖÃ¸ÕÌåµÄÅö×²ÌåºÍ¹ßĞÔÕÅÁ¿(Èç¹ûÏÈ½âÎöColliderÔÙ½âÎöRigidBody¾Í»á´ÓÕâÀïÉèÖÃ)
+		// ï¿½ï¿½ï¿½Ã¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½Í¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½Colliderï¿½Ù½ï¿½ï¿½ï¿½RigidBodyï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 		if (mColliderType == PhysZ::ColliderType::Box)
 		{
 			auto boxCollider = GetComponent<BoxCollider>();
