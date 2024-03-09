@@ -67,8 +67,6 @@ namespace ZXEngine
 
 	void Scene::Update()
 	{
-		Resources::CheckAsyncLoad();
-
 		if (!mIsAwake)
 		{
 			for (auto gameObject : gameObjects)

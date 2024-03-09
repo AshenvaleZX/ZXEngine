@@ -13,6 +13,7 @@
 #include "../Material.h"
 #include "../StaticMesh.h"
 #include "../GeometryGenerator.h"
+#include "../Texture.h"
 
 namespace ZXEngine
 {
@@ -35,6 +36,12 @@ namespace ZXEngine
 		cubeMapPath.push_back(Resources::GetAssetFullPath("Textures/white.png", true));
 		cubeMapPath.push_back(Resources::GetAssetFullPath("Textures/white.png", true));
 		shadowCubeMap = new CubeMap(cubeMapPath);
+
+#ifdef ZX_API_OPENGL
+		loadingTexture = new Texture(Resources::GetAssetFullPath("Textures/loading_r.jpg", true).c_str());
+#else
+		loadingTexture = new Texture(Resources::GetAssetFullPath("Textures/loading.jpg", true).c_str());
+#endif
 
 		previewQuad = GeometryGenerator::CreateScreenQuad();
 		
@@ -121,6 +128,13 @@ namespace ZXEngine
 
 	void EditorAssetPreviewer::RenderMaterialPreview(AssetMaterialInfo* info)
 	{
+		if (info->material == nullptr)
+		{
+			isLoading = true;
+			return;
+		}
+		isLoading = false;
+
 		auto camera = cameraGO->GetComponent<Camera>();
 
 		Matrix4 mat_M = GetModelMatrix();
@@ -154,6 +168,8 @@ namespace ZXEngine
 
 	void EditorAssetPreviewer::RenderModelPreview(AssetModelInfo* info)
 	{
+		isLoading = false;
+
 		auto camera = cameraGO->GetComponent<Camera>();
 
 		Matrix4 mat_M = GetModelMatrix();
@@ -178,7 +194,12 @@ namespace ZXEngine
 		renderAPI->SetViewPort(ProjectSetting::inspectorWidth, ProjectSetting::inspectorWidth, ProjectSetting::srcWidth - ProjectSetting::inspectorWidth, 0);
 		renderAPI->SetRenderState(previewQuadRenderState);
 		previewQuadMaterial->Use();
-		previewQuadMaterial->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("AssetPreview")->ColorBuffer, 0, false, true);
+
+		if (isLoading)
+			previewQuadMaterial->SetTexture("_RenderTexture", loadingTexture->GetID(), 0, false, false);
+		else
+			previewQuadMaterial->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("AssetPreview")->ColorBuffer, 0, false, true);
+
 		renderAPI->Draw(previewQuad->VAO);
 		renderAPI->GenerateDrawCommand(drawQuadCommandID);
 		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight, ProjectSetting::hierarchyWidth, ProjectSetting::projectHeight);

@@ -39,6 +39,7 @@ namespace ZXEngine
 		std::mutex logMutex;
 		long long lastClickTime = 0;
 
+		void DeleteCurAssetInfo();
 		string GetTextFilePreview(string path);
 	};
 }

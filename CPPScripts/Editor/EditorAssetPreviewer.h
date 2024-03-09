@@ -7,6 +7,7 @@ namespace ZXEngine
 {
 	class Material;
 	class CubeMap;
+	class Texture;
 	class GameObject;
 	class StaticMesh;
 	class MeshRenderer;
@@ -26,6 +27,7 @@ namespace ZXEngine
 	private:
 		float yaw = 0.0f;
 		float pitch = 0.0f;
+		bool isLoading = false;
 		const float rotSensitivity = 0.01f;
 		float scale = 1.0f;
 		float minScale = 0.1f;
@@ -39,6 +41,7 @@ namespace ZXEngine
 		Material* previewQuadMaterial;
 		Material* previewModelMaterial;
 		MeshRenderer* materialSphere;
+		Texture* loadingTexture;
 		CubeMap* shadowCubeMap;
 		RenderStateSetting* renderState;
 		RenderStateSetting* previewQuadRenderState;

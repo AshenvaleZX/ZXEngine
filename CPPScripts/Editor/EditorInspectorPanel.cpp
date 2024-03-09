@@ -113,6 +113,17 @@ namespace ZXEngine
 
 	void EditorInspectorPanel::DrawMaterial(Material* material)
 	{
+		if (material == nullptr)
+		{
+			ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+			if (!ImGui::CollapsingHeader("Unknown (Material)"))
+				return;
+
+			ImGui::Text("Material is loading......");
+
+			return;
+		}
+
 		string suffix = material->type == MaterialType::Rasterization ? " (Material)" : " (Ray Tracing Material)";
 		string title = material->name + suffix;
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);

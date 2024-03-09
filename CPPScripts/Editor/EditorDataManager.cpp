@@ -74,29 +74,7 @@ namespace ZXEngine
 	void EditorDataManager::SetSelectedGO(GameObject* go)
 	{
 		selectedGO = go;
-
-		if (curAssetInfo != nullptr)
-		{
-			// delete上一个AssetInfo的时候需要先把指针映射成对应类型，才能正确调用析构函数，确保内存正确释放
-			if (selectedAsset->type == AssetType::Script)
-				delete static_cast<AssetScriptInfo*>(curAssetInfo);
-			else if (selectedAsset->type == AssetType::Shader ||
-				selectedAsset->type == AssetType::RayTracingShader)
-				delete static_cast<AssetShaderInfo*>(curAssetInfo);
-			else if (selectedAsset->type == AssetType::Texture)
-				delete static_cast<AssetTextureInfo*>(curAssetInfo);
-			else if (selectedAsset->type == AssetType::Material || 
-				selectedAsset->type == AssetType::RayTracingMaterial)
-				delete static_cast<AssetMaterialInfo*>(curAssetInfo);
-			else if (selectedAsset->type == AssetType::Model)
-				delete static_cast<AssetModelInfo*>(curAssetInfo);
-			else if (selectedAsset->type == AssetType::Audio)
-				delete static_cast<AssetAudioInfo*>(curAssetInfo);
-			else
-				delete curAssetInfo;
-			// delete后立刻重新赋值为nullptr，防止连续delete指针出现无法预期的行为导致直接崩溃
-			curAssetInfo = nullptr;
-		}
+		DeleteCurAssetInfo();
 		selectedAsset = nullptr;
 	}
 
@@ -123,28 +101,7 @@ namespace ZXEngine
 		}
 
 		selectedGO = nullptr;
-		if (curAssetInfo != nullptr)
-		{
-			// delete上一个AssetInfo的时候需要先把指针映射成对应类型，才能正确调用析构函数，确保内存正确释放
-			if (selectedAsset->type == AssetType::Script)
-				delete static_cast<AssetScriptInfo*>(curAssetInfo);
-			else if (selectedAsset->type == AssetType::Shader ||
-				selectedAsset->type == AssetType::RayTracingShader)
-				delete static_cast<AssetShaderInfo*>(curAssetInfo);
-			else if (selectedAsset->type == AssetType::Texture)
-				delete static_cast<AssetTextureInfo*>(curAssetInfo);
-			else if (selectedAsset->type == AssetType::Material || 
-				selectedAsset->type == AssetType::RayTracingMaterial)
-				delete static_cast<AssetMaterialInfo*>(curAssetInfo);
-			else if (selectedAsset->type == AssetType::Model)
-				delete static_cast<AssetModelInfo*>(curAssetInfo);
-			else if (selectedAsset->type == AssetType::Audio)
-				delete static_cast<AssetAudioInfo*>(curAssetInfo);
-			else
-				delete curAssetInfo;
-			// delete后立刻重新赋值为nullptr，防止连续delete指针出现无法预期的行为导致直接崩溃
-			curAssetInfo = nullptr;
-		}
+		DeleteCurAssetInfo();
 		selectedAsset = asset;
 
 		if (asset->type == AssetType::Script)
@@ -173,12 +130,15 @@ namespace ZXEngine
 		{
 			auto info = new AssetMaterialInfo();
 			info->name = asset->name;
-			string localPath = Resources::GetAssetLocalPath(asset->path);
-			MaterialStruct* matStruct = Resources::LoadMaterial(localPath);
-			info->material = new Material(matStruct);
-			delete matStruct;
 			curAssetInfo = info;
 			EditorGUIManager::GetInstance()->assetPreviewer->Reset();
+			string localPath = Resources::GetAssetLocalPath(asset->path);
+
+			Resources::AsyncLoadMaterial(localPath, [this](MaterialStruct* matStruct)
+			{
+				auto curInfo = static_cast<AssetMaterialInfo*>(this->curAssetInfo);
+				curInfo->material = new Material(matStruct);
+			}, false, true);
 		}
 		else if (asset->type == AssetType::Model)
 		{
@@ -204,6 +164,35 @@ namespace ZXEngine
 			info->audioClip = AudioEngine::GetInstance()->CreateAudioClip(asset->path);
 			info->lengthStr = Utils::MillisecondsToString(info->audioClip->GetLengthMS());
 			curAssetInfo = info;
+		}
+	}
+
+	void EditorDataManager::DeleteCurAssetInfo()
+	{
+		if (curAssetInfo != nullptr)
+		{
+			// delete上一个AssetInfo的时候需要先把指针映射成对应类型，才能正确调用析构函数，确保内存正确释放
+			if (selectedAsset->type == AssetType::Script)
+				delete static_cast<AssetScriptInfo*>(curAssetInfo);
+			else if (selectedAsset->type == AssetType::Shader ||
+				selectedAsset->type == AssetType::RayTracingShader)
+				delete static_cast<AssetShaderInfo*>(curAssetInfo);
+			else if (selectedAsset->type == AssetType::Texture)
+				delete static_cast<AssetTextureInfo*>(curAssetInfo);
+			else if (selectedAsset->type == AssetType::Material ||
+				selectedAsset->type == AssetType::RayTracingMaterial)
+				delete static_cast<AssetMaterialInfo*>(curAssetInfo);
+			else if (selectedAsset->type == AssetType::Model)
+				delete static_cast<AssetModelInfo*>(curAssetInfo);
+			else if (selectedAsset->type == AssetType::Audio)
+				delete static_cast<AssetAudioInfo*>(curAssetInfo);
+			else
+				delete curAssetInfo;
+			// delete后立刻重新赋值为nullptr，防止连续delete指针出现无法预期的行为导致直接崩溃
+			curAssetInfo = nullptr;
+#ifdef ZX_EDITOR
+			Resources::ClearEditorAsyncLoad();
+#endif
 		}
 	}
 

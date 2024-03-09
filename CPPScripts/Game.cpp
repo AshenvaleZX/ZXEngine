@@ -9,6 +9,7 @@
 #include "ProjectSetting.h"
 #include "Component/Animator.h"
 #include "Audio/AudioEngine.h"
+#include "Resources.h"
 
 #ifdef ZX_EDITOR
 #include "Editor/EditorGUIManager.h"
@@ -64,6 +65,8 @@ namespace ZXEngine
 	void Game::Update()
 	{
 		Time::Update();
+
+		Resources::CheckAsyncLoad();
 
 		InputManager::GetInstance()->Update();
 
