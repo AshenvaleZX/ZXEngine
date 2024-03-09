@@ -52,9 +52,9 @@ This engine has a built-in physics engine written by myself, which I called it P
 
 The engine is developed with C++, the GamePlay layer is developed with Lua, and the engine encapsulates part of the C++ interface to the Lua call of the GamePlay layer. The usage is similar to Unity's XLua, you can bind the Lua code to the GameObject through a GameLogic component, receive Start and Update calls from the engine on the mounted object, and access the GameObject object through self (see later for specific examples).
 
-项目目前还比较简单，不过我已经完成了引擎所需的基本的场景，预制体，材质系统，shader文件系统等等的开发。本引擎有一个类Unity的引擎编辑器页面。场景中的对象都是Unity式的 GameObject - Component 结构。
+项目目前还比较简单，不过我已经完成了引擎所需的基本的场景，预制体，材质系统，shader文件系统等等的开发。本引擎场景中的对象都是Unity式的 GameObject - Component 结构，也有一个类Unity的引擎编辑器页面。不过编辑功能还不完善，只有一部分 Component 能够被编辑，其它的主要是展示当前的运行时状态。
 
-The project is still relatively simple, but I have completed the development of the basic scenes, prefabs, materials system, shader file systems and so on that the engine need. This engine has a Unity-like engine editor. Objects in the scene are Unity-style GameObject - Component structures.
+The project is still relatively simple, but I have completed the development of the basic scenes, prefabs, materials system, shader file systems and so on that the engine need. The objects in the scene of this engine are all Unity-style GameObject - Component structures, and there is also a Unity-like engine editor. However, the editing function is not complete yet, only some Components can be edited, and the others just display the current runtime status.
 
 ## 引擎编辑器和更多演示 (Engine Editor And More Demonstration)
 
@@ -203,6 +203,8 @@ The interface for asynchronous loading is as follows, which can be called in the
 ```c++
 C++ Interface:
 static void ZXEngine::GameObject::AsyncCreate(const string& path)
+static void ZXEngine::Resources::AsyncLoadPrefab(const string& path, std::function<void(PrefabStruct*)> callback, bool isBuiltIn = false);
+static void ZXEngine::Resources::AsyncLoadMaterial(const string& path, std::function<void(MaterialStruct*)> callback, bool isBuiltIn = false, bool isEditor = false);
 ```
 
 ```lua
