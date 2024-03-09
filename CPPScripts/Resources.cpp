@@ -8,6 +8,12 @@ namespace ZXEngine
 	const string Resources::mBuiltInAssetsPath = "../../BuiltInAssets/";
 	vector<PrefabLoadHandle> Resources::mPrefabLoadHandles;
 	vector<PrefabLoadHandle> Resources::mDiscardedPrefabLoadHandles;
+	vector<MaterialLoadHandle> Resources::mMaterialLoadHandles;
+	vector<MaterialLoadHandle> Resources::mDiscardedMaterialLoadHandles;
+#ifdef ZX_EDITOR
+	vector<MaterialLoadHandle> Resources::mEditorMaterialLoadHandles;
+	vector<MaterialLoadHandle> Resources::mDiscardedEditorMaterialLoadHandles;
+#endif
 
 	void Resources::SetAssetsPath(const string& path)
 	{
@@ -377,7 +383,6 @@ namespace ZXEngine
 				i--;
 			}
 		}
-
 		for (size_t i = 0; i < mDiscardedPrefabLoadHandles.size(); i++)
 		{
 			if (mDiscardedPrefabLoadHandles[i].future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
@@ -386,6 +391,48 @@ namespace ZXEngine
 				i--;
 			}
 		}
+
+		for (size_t i = 0; i < mMaterialLoadHandles.size(); i++)
+		{
+			if (mMaterialLoadHandles[i].future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+			{
+				MaterialStruct* material = mMaterialLoadHandles[i].future.get();
+				mMaterialLoadHandles[i].callback(material);
+				delete material;
+				mMaterialLoadHandles.erase(mMaterialLoadHandles.begin() + i);
+				i--;
+			}
+		}
+		for (size_t i = 0; i < mDiscardedMaterialLoadHandles.size(); i++)
+		{
+			if (mDiscardedMaterialLoadHandles[i].future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+			{
+				mDiscardedMaterialLoadHandles.erase(mDiscardedMaterialLoadHandles.begin() + i);
+				i--;
+			}
+		}
+
+#ifdef ZX_EDITOR
+		for (size_t i = 0; i < mEditorMaterialLoadHandles.size(); i++)
+		{
+			if (mEditorMaterialLoadHandles[i].future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+			{
+				MaterialStruct* material = mEditorMaterialLoadHandles[i].future.get();
+				mEditorMaterialLoadHandles[i].callback(material);
+				delete material;
+				mEditorMaterialLoadHandles.erase(mEditorMaterialLoadHandles.begin() + i);
+				i--;
+			}
+		}
+		for (size_t i = 0; i < mDiscardedEditorMaterialLoadHandles.size(); i++)
+		{
+			if (mDiscardedEditorMaterialLoadHandles[i].future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+			{
+				mDiscardedEditorMaterialLoadHandles.erase(mDiscardedEditorMaterialLoadHandles.begin() + i);
+				i--;
+			}
+		}
+#endif
 	}
 
 	void Resources::ClearAsyncLoad()
@@ -395,7 +442,24 @@ namespace ZXEngine
 			mDiscardedPrefabLoadHandles.push_back(std::move(mPrefabLoadHandles[i]));
 		}
 		mPrefabLoadHandles.clear();
+
+		for (size_t i = 0; i < mMaterialLoadHandles.size(); i++)
+		{
+			mDiscardedMaterialLoadHandles.push_back(std::move(mMaterialLoadHandles[i]));
+		}
+		mMaterialLoadHandles.clear();
 	}
+
+#ifdef ZX_EDITOR
+	void Resources::ClearEditorAsyncLoad()
+	{
+		for (size_t i = 0; i < mEditorMaterialLoadHandles.size(); i++)
+		{
+			mDiscardedEditorMaterialLoadHandles.push_back(std::move(mEditorMaterialLoadHandles[i]));
+		}
+		mEditorMaterialLoadHandles.clear();
+	}
+#endif
 
 	void Resources::AsyncLoadPrefab(const string& path, std::function<void(PrefabStruct*)> callback, bool isBuiltIn)
 	{
@@ -414,5 +478,31 @@ namespace ZXEngine
 	{
 		PrefabStruct* prefab = LoadPrefab(path, isBuiltIn, true);
 		promise.set_value(prefab);
+	}
+
+	void Resources::AsyncLoadMaterial(const string& path, std::function<void(MaterialStruct*)> callback, bool isBuiltIn, bool isEditor)
+	{
+		std::promise<MaterialStruct*> promise;
+		std::future<MaterialStruct*> future = promise.get_future();
+		std::thread th(DoAsyncLoadMaterial, std::move(promise), path, isBuiltIn);
+		th.detach();
+
+		MaterialLoadHandle handle;
+		handle.future = std::move(future);
+		handle.callback = std::move(callback);
+#ifdef ZX_EDITOR
+		if (isEditor)
+			mEditorMaterialLoadHandles.push_back(std::move(handle));
+		else
+			mMaterialLoadHandles.push_back(std::move(handle));
+#else
+		mMaterialLoadHandles.push_back(std::move(handle));
+#endif
+	}
+
+	void Resources::DoAsyncLoadMaterial(std::promise<MaterialStruct*>&& promise, string path, bool isBuiltIn)
+	{
+		MaterialStruct* material = LoadMaterial(path, isBuiltIn);
+		promise.set_value(material);
 	}
 }
