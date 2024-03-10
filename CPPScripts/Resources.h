@@ -11,7 +11,7 @@ namespace ZXEngine
 		string path;
 		TextureFullData* data = nullptr;
 
-		~TextureStruct() { if (data) delete data; }
+		~TextureStruct();
 	};
 
 	struct CubeMapStruct
@@ -20,7 +20,7 @@ namespace ZXEngine
 		vector<string> paths;
 		CubeMapFullData* data = nullptr;
 
-		~CubeMapStruct() { if (data) delete data; }
+		~CubeMapStruct();
 	};
 
 	struct MaterialStruct
@@ -42,7 +42,7 @@ namespace ZXEngine
 
 		MaterialType type = MaterialType::Rasterization;
 
-		~MaterialStruct() { for (auto iter : textures) delete iter; }
+		~MaterialStruct();
 	};
 
 	struct PrefabStruct
@@ -56,7 +56,7 @@ namespace ZXEngine
 		ModelData modelData;
 		MaterialStruct* material = nullptr;
 
-		~PrefabStruct() { for (auto iter : children) delete iter; if (material) delete material; }
+		~PrefabStruct();
 	};
 
 	struct SceneStruct
@@ -66,7 +66,7 @@ namespace ZXEngine
 		RenderPipelineType renderPipelineType = RenderPipelineType::Rasterization;
 		RayTracingShaderPathGroup rtShaderPathGroup;
 
-		~SceneStruct() { for (auto iter : prefabs) delete iter; }
+		~SceneStruct();
 	};
 
 	struct PrefabLoadHandle

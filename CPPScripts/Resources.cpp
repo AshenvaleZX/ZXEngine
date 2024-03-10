@@ -15,6 +15,40 @@ namespace ZXEngine
 	vector<MaterialLoadHandle> Resources::mDiscardedEditorMaterialLoadHandles;
 #endif
 
+	TextureStruct::~TextureStruct()
+	{
+		if (data) delete data;
+	}
+
+	CubeMapStruct::~CubeMapStruct()
+	{
+		if (data) delete data;
+	}
+
+	MaterialStruct::~MaterialStruct()
+	{
+		for (auto iter : textures)
+			delete iter;
+
+		for (auto iter : cubeMaps)
+			delete iter;
+	}
+
+	PrefabStruct::~PrefabStruct()
+	{
+		if (material)
+			delete material;
+
+		for (auto iter : children)
+			delete iter;
+	}
+
+	SceneStruct::~SceneStruct()
+	{
+		for (auto iter : prefabs)
+			delete iter;
+	}
+
 	void Resources::SetAssetsPath(const string& path)
 	{
 		mAssetsPath = path;
@@ -387,6 +421,7 @@ namespace ZXEngine
 		{
 			if (mDiscardedPrefabLoadHandles[i].future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
 			{
+				delete mDiscardedPrefabLoadHandles[i].future.get();
 				mDiscardedPrefabLoadHandles.erase(mDiscardedPrefabLoadHandles.begin() + i);
 				i--;
 			}
@@ -407,6 +442,7 @@ namespace ZXEngine
 		{
 			if (mDiscardedMaterialLoadHandles[i].future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
 			{
+				delete mDiscardedMaterialLoadHandles[i].future.get();
 				mDiscardedMaterialLoadHandles.erase(mDiscardedMaterialLoadHandles.begin() + i);
 				i--;
 			}
@@ -428,6 +464,7 @@ namespace ZXEngine
 		{
 			if (mDiscardedEditorMaterialLoadHandles[i].future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
 			{
+				delete mDiscardedEditorMaterialLoadHandles[i].future.get();
 				mDiscardedEditorMaterialLoadHandles.erase(mDiscardedEditorMaterialLoadHandles.begin() + i);
 				i--;
 			}
