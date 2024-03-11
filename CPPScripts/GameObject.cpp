@@ -190,7 +190,7 @@ namespace ZXEngine
 		transform->SetLocalScale(Vector3(data["Scale"][0], data["Scale"][1], data["Scale"][2]));
 	}
 
-	void GameObject::ParseMeshRenderer(json data, const ModelData& modelData, MaterialStruct* material)
+	void GameObject::ParseMeshRenderer(json data, const ModelData* pModelData, MaterialStruct* material)
 	{
 		MeshRenderer* meshRenderer = AddComponent<MeshRenderer>();
 		string p = "";
@@ -218,19 +218,19 @@ namespace ZXEngine
 			p = Resources::JsonStrToString(data["Mesh"]);
 			meshRenderer->mModelName = Resources::GetAssetName(p);
 
-			for (auto mesh : modelData.pMeshes)
+			for (auto mesh : pModelData->pMeshes)
 			{
 				mesh->SetUp();
 			}
-			meshRenderer->SetMeshes(modelData.pMeshes);
+			meshRenderer->SetMeshes(pModelData->pMeshes);
 
-			if (modelData.pAnimationController)
+			if (pModelData->pAnimationController)
 			{
 				Animator* animator = AddComponent<Animator>();
 				animator->mAvatarName = meshRenderer->mModelName + "Avatar";
-				animator->mRootBoneNode = modelData.pRootBoneNode;
-				animator->mAnimationController = modelData.pAnimationController;
-				// ä¸ºäº†æ–¹ä¾¿ï¼Œè¿™é‡Œç›´æ¥è®©MeshRendererå’ŒAnimatoräº’ç›¸å¼•ç”¨
+				animator->mRootBoneNode = pModelData->pRootBoneNode;
+				animator->mAnimationController = pModelData->pAnimationController;
+				// ÎªÁË·½±ã£¬ÕâÀïÖ±½ÓÈÃMeshRendererºÍAnimator»¥ÏàÒıÓÃ
 				meshRenderer->mAnimator = animator;
 				animator->mMeshRenderer = meshRenderer;
 			}
@@ -314,7 +314,7 @@ namespace ZXEngine
 
 		boxCollider->SynchronizeData();
 
-		// è®¾ç½®åˆšä½“çš„ç¢°æ’ä½“å’Œæƒ¯æ€§å¼ é‡(å¦‚æœå…ˆè§£æRigidBodyå†è§£æColliderå°±ä¼šä»è¿™é‡Œè®¾ç½®)
+		// ÉèÖÃ¸ÕÌåµÄÅö×²ÌåºÍ¹ßĞÔÕÅÁ¿(Èç¹ûÏÈ½âÎöRigidBodyÔÙ½âÎöCollider¾Í»á´ÓÕâÀïÉèÖÃ)
 		auto rigidBody = GetComponent<ZRigidBody>();
 		if (rigidBody)
 		{
@@ -340,7 +340,7 @@ namespace ZXEngine
 
 		planeCollider->SynchronizeData();
 
-		// è®¾ç½®åˆšä½“çš„ç¢°æ’ä½“å’Œæƒ¯æ€§å¼ é‡(å¦‚æœå…ˆè§£æRigidBodyå†è§£æColliderå°±ä¼šä»è¿™é‡Œè®¾ç½®)
+		// ÉèÖÃ¸ÕÌåµÄÅö×²ÌåºÍ¹ßĞÔÕÅÁ¿(Èç¹ûÏÈ½âÎöRigidBodyÔÙ½âÎöCollider¾Í»á´ÓÕâÀïÉèÖÃ)
 		auto rigidBody = GetComponent<ZRigidBody>();
 		if (rigidBody)
 		{
@@ -365,7 +365,7 @@ namespace ZXEngine
 
 		sphereCollider->SynchronizeData();
 
-		// è®¾ç½®åˆšä½“çš„ç¢°æ’ä½“å’Œæƒ¯æ€§å¼ é‡(å¦‚æœå…ˆè§£æRigidBodyå†è§£æColliderå°±ä¼šä»è¿™é‡Œè®¾ç½®)
+		// ÉèÖÃ¸ÕÌåµÄÅö×²ÌåºÍ¹ßĞÔÕÅÁ¿(Èç¹ûÏÈ½âÎöRigidBodyÔÙ½âÎöCollider¾Í»á´ÓÕâÀïÉèÖÃ)
 		auto rigidBody = GetComponent<ZRigidBody>();
 		if (rigidBody)
 		{
@@ -381,7 +381,7 @@ namespace ZXEngine
 
 		rigidBody->mUseGravity = data["UseGravity"];
 
-		// æ·»åŠ é‡åŠ›åŠ é€Ÿåº¦
+		// Ìí¼ÓÖØÁ¦¼ÓËÙ¶È
 		if (rigidBody->mUseGravity)
 		{
 			auto fgGravity = new PhysZ::FGGravity(Vector3(0.0f, -9.8f, 0.0f));
@@ -399,11 +399,11 @@ namespace ZXEngine
 		float angularDamping = data["AngularDamping"];
 		rigidBody->mRigidBody->SetAngularDamping(1.0f - angularDamping);
 
-		// åˆå§‹åŒ–åˆšä½“çš„ä½ç½®å’Œæ—‹è½¬
+		// ³õÊ¼»¯¸ÕÌåµÄÎ»ÖÃºÍĞı×ª
 		rigidBody->mRigidBody->SetPosition(GetComponent<Transform>()->GetPosition());
 		rigidBody->mRigidBody->SetRotation(GetComponent<Transform>()->GetRotation());
 
-		// è®¾ç½®åˆšä½“çš„ç¢°æ’ä½“å’Œæƒ¯æ€§å¼ é‡(å¦‚æœå…ˆè§£æColliderå†è§£æRigidBodyå°±ä¼šä»è¿™é‡Œè®¾ç½®)
+		// ÉèÖÃ¸ÕÌåµÄÅö×²ÌåºÍ¹ßĞÔÕÅÁ¿(Èç¹ûÏÈ½âÎöColliderÔÙ½âÎöRigidBody¾Í»á´ÓÕâÀïÉèÖÃ)
 		if (mColliderType == PhysZ::ColliderType::Box)
 		{
 			auto boxCollider = GetComponent<BoxCollider>();

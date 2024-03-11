@@ -53,7 +53,7 @@ namespace ZXEngine
 		PrefabStruct* parent = nullptr;
 		vector<PrefabStruct*> children;
 
-		ModelData modelData;
+		ModelData* modelData = nullptr;
 		MaterialStruct* material = nullptr;
 
 		~PrefabStruct();

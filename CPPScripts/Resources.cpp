@@ -39,6 +39,9 @@ namespace ZXEngine
 		if (material)
 			delete material;
 
+		if (modelData)
+			delete modelData;
+
 		for (auto iter : children)
 			delete iter;
 	}

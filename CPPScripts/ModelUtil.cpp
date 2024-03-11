@@ -82,9 +82,9 @@ namespace ZXEngine
         return GeometryTypeName.at(type);
     }
 
-    ModelData ModelUtil::LoadModel(const string& path, bool loadFullAnim, bool async)
+    ModelData* ModelUtil::LoadModel(const string& path, bool loadFullAnim, bool async)
     {
-        ModelData modelData;
+        ModelData* pModelData = new ModelData();
 
         // 用ASSIMP加载模型文件
         Assimp::Importer importer;
@@ -95,32 +95,32 @@ namespace ZXEngine
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
             Debug::LogError("ASSIMP: %s", importer.GetErrorString());
-            return modelData;
+            return pModelData;
         }
 
         // 处理动画数据
         if (loadFullAnim)
-            modelData.pAnimationController = ProcessAnimation(scene);
+            pModelData->pAnimationController = ProcessAnimation(scene);
         else
-            LoadAnimBriefInfos(scene, modelData);
+            LoadAnimBriefInfos(scene, pModelData);
 
         // 处理模型和骨骼数据
-        if (modelData.pAnimationController)
+        if (pModelData->pAnimationController)
         {
-            modelData.pRootBoneNode = new BoneNode();
-            ProcessNode(scene->mRootNode, scene, modelData, modelData.pRootBoneNode, async);
+            pModelData->pRootBoneNode = new BoneNode();
+            ProcessNode(scene->mRootNode, scene, pModelData, pModelData->pRootBoneNode, async);
         }
         // 处理模型数据
         else
 		{
-			ProcessNode(scene->mRootNode, scene, modelData, async);
+			ProcessNode(scene->mRootNode, scene, pModelData, async);
 		}
 
-        modelData.isConstructed = true;
-        return modelData;
+        pModelData->isConstructed = true;
+        return pModelData;
     }
 
-    void ModelUtil::ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData& modelData, bool async)
+    void ModelUtil::ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData* pModelData, bool async)
     {
         // 处理Mesh数据
         for (unsigned int i = 0; i < pNode->mNumMeshes; i++)
@@ -128,17 +128,17 @@ namespace ZXEngine
             // aiNode仅包含索引来获取aiScene中的实际对象
             // aiScene包含所有数据，aiNode只是为了让数据组织起来(比如记录节点之间的关系)
             aiMesh* mesh = pScene->mMeshes[pNode->mMeshes[i]];
-            modelData.pMeshes.push_back(ProcessMesh(mesh, async));
+            pModelData->pMeshes.push_back(ProcessMesh(mesh, async));
         }
 
         // 递归处理子节点
         for (unsigned int i = 0; i < pNode->mNumChildren; i++)
         {
-            ProcessNode(pNode->mChildren[i], pScene, modelData, async);
+            ProcessNode(pNode->mChildren[i], pScene, pModelData, async);
         }
     }
 
-    void ModelUtil::ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData& modelData, BoneNode* pBoneNode, bool async)
+    void ModelUtil::ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData* pModelData, BoneNode* pBoneNode, bool async)
     {
         // 处理Mesh数据
         for (unsigned int i = 0; i < pNode->mNumMeshes; i++)
@@ -146,7 +146,7 @@ namespace ZXEngine
             // aiNode仅包含索引来获取aiScene中的实际对象
             // aiScene包含所有数据，aiNode只是为了让数据组织起来(比如记录节点之间的关系)
             aiMesh* mesh = pScene->mMeshes[pNode->mMeshes[i]];
-            modelData.pMeshes.push_back(ProcessMesh(mesh, async));
+            pModelData->pMeshes.push_back(ProcessMesh(mesh, async));
         }
 
         // 加载骨骼数据
@@ -157,7 +157,7 @@ namespace ZXEngine
         for (unsigned int i = 0; i < pNode->mNumChildren; i++)
         {
             pBoneNode->children.push_back(new BoneNode());
-            ProcessNode(pNode->mChildren[i], pScene, modelData, pBoneNode->children.back(), async);
+            ProcessNode(pNode->mChildren[i], pScene, pModelData, pBoneNode->children.back(), async);
         }
     }
 
@@ -341,12 +341,12 @@ namespace ZXEngine
         }
     }
 
-    void ModelUtil::LoadAnimBriefInfos(const aiScene* pScene, ModelData& modelData)
+    void ModelUtil::LoadAnimBriefInfos(const aiScene* pScene, ModelData* pModelData)
     {
         if (!pScene->HasAnimations())
             return;
 
-        CountNode(pScene->mRootNode, modelData.boneNum);
+        CountNode(pScene->mRootNode, pModelData->boneNum);
 
         for (unsigned int i = 0; i < pScene->mNumAnimations; i++)
         {
@@ -356,7 +356,7 @@ namespace ZXEngine
             briefInfo.name = pAnimation->mName.C_Str();
             briefInfo.duration = static_cast<float>(pAnimation->mDuration / pAnimation->mTicksPerSecond);
 
-            modelData.animBriefInfos.push_back(std::move(briefInfo));
+            pModelData->animBriefInfos.push_back(std::move(briefInfo));
         }
     }
 

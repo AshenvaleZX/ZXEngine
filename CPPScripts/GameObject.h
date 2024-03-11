@@ -63,7 +63,7 @@ namespace ZXEngine
 		vector<std::function<void()>> mConstructionCallBacks;
 
 		void ParseTransform(json data);
-		void ParseMeshRenderer(json data, const ModelData& modelData, MaterialStruct* material);
+		void ParseMeshRenderer(json data, const ModelData* pModelData, MaterialStruct* material);
 		void ParseCamera(json data);
 		void ParseLight(json data);
 		void ParseGameLogic(json data);

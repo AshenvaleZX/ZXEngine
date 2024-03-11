@@ -146,11 +146,12 @@ namespace ZXEngine
 			info->name = asset->name;
 			info->format = asset->extension;
 
-			ModelData modelData = ModelUtil::LoadModel(asset->path, false);
+			ModelData* pModelData = ModelUtil::LoadModel(asset->path, false);
 			info->meshRenderer = new MeshRenderer();
-			info->meshRenderer->SetMeshes(modelData.pMeshes);
-			info->boneNum = modelData.boneNum;
-			info->animBriefInfos = std::move(modelData.animBriefInfos);
+			info->meshRenderer->SetMeshes(pModelData->pMeshes);
+			info->boneNum = pModelData->boneNum;
+			info->animBriefInfos = std::move(pModelData->animBriefInfos);
+			delete pModelData;
 
 			curAssetInfo = info;
 			float size = std::max({ info->meshRenderer->mAABBSizeX, info->meshRenderer->mAABBSizeY, info->meshRenderer->mAABBSizeZ });
