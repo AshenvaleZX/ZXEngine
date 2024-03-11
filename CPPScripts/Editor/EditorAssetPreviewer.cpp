@@ -168,6 +168,11 @@ namespace ZXEngine
 
 	void EditorAssetPreviewer::RenderModelPreview(AssetModelInfo* info)
 	{
+		if (info->meshRenderer == nullptr)
+		{
+			isLoading = true;
+			return;
+		}
 		isLoading = false;
 
 		auto camera = cameraGO->GetComponent<Camera>();

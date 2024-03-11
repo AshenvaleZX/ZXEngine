@@ -503,6 +503,25 @@ namespace ZXEngine
 
 	void EditorInspectorPanel::DrawModel(AssetModelInfo* info)
 	{
+		if (info->meshRenderer == nullptr)
+		{
+			ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+			if (!ImGui::CollapsingHeader("Model"))
+				return;
+
+			ImGui::Text("Name:");
+			ImGui::SameLine(120);
+			ImGui::Text(info->name.c_str());
+
+			ImGui::Text("Format:");
+			ImGui::SameLine(120);
+			ImGui::Text(info->format.c_str());
+
+			ImGui::Text("More information is loading......");
+
+			return;
+		}
+
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 		if (!ImGui::CollapsingHeader("Model"))
 			return;

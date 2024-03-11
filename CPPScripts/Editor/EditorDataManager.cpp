@@ -7,6 +7,7 @@
 #include "../Component/MeshRenderer.h"
 #include "../SceneManager.h"
 #include "../ModelUtil.h"
+#include "../ZMesh.h"
 #include "../Audio/ZAudio.h"
 
 namespace ZXEngine
@@ -145,17 +146,25 @@ namespace ZXEngine
 			auto info = new AssetModelInfo();
 			info->name = asset->name;
 			info->format = asset->extension;
-
-			ModelData* pModelData = ModelUtil::LoadModel(asset->path, false);
-			info->meshRenderer = new MeshRenderer();
-			info->meshRenderer->SetMeshes(pModelData->pMeshes);
-			info->boneNum = pModelData->boneNum;
-			info->animBriefInfos = std::move(pModelData->animBriefInfos);
-			delete pModelData;
-
 			curAssetInfo = info;
-			float size = std::max({ info->meshRenderer->mAABBSizeX, info->meshRenderer->mAABBSizeY, info->meshRenderer->mAABBSizeZ });
-			EditorGUIManager::GetInstance()->assetPreviewer->Reset(size);
+
+			Resources::AsyncLoadModelData(asset->path, [this](ModelData* modelData)
+			{
+				auto curInfo = static_cast<AssetModelInfo*>(this->curAssetInfo);
+				curInfo->meshRenderer = new MeshRenderer();
+				
+				for (auto mesh : modelData->pMeshes)
+				{
+					mesh->SetUp();
+				}
+				curInfo->meshRenderer->SetMeshes(modelData->pMeshes);
+				
+				curInfo->boneNum = modelData->boneNum;
+				curInfo->animBriefInfos = std::move(modelData->animBriefInfos);
+
+				float size = std::max({ curInfo->meshRenderer->mAABBSizeX, curInfo->meshRenderer->mAABBSizeY, curInfo->meshRenderer->mAABBSizeZ });
+				EditorGUIManager::GetInstance()->assetPreviewer->Reset(size);
+			}, false, true);
 		}
 		else if (asset->type == AssetType::Audio)
 		{
