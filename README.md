@@ -16,9 +16,9 @@ Screenshot display (more display later in the introduction):
 
 ## 目录(Contents)
 
-- [引擎简介 (Engine Introduction)](#引擎简介-engine-introduction)
+- [引擎简介(Engine Introduction)](#引擎简介engine-introduction)
   
-- [引擎编辑器和更多演示 (Engine Editor And More Demonstration)](#引擎编辑器和更多演示-engine-editor-and-more-demonstration)
+- [引擎编辑器和更多演示(Engine Editor And More Demonstration)](#引擎编辑器和更多演示engine-editor-and-more-demonstration)
   
 - [PhysZ物理引擎简介(PhysZ Physics Engine Introduction)](#physz物理引擎简介physz-physics-engine-introduction)
   
@@ -30,13 +30,13 @@ Screenshot display (more display later in the introduction):
   
 - [多线程(Multithreading)](#多线程multithreading)
   
-- [引擎文件格式介绍 (Engine File Format Introduction)](#引擎文件格式介绍-engine-file-format-introduction)
+- [引擎文件格式介绍(Engine File Format Introduction)](#引擎文件格式介绍engine-file-format-introduction)
   
 - [GamePlay层的Lua代码示例(Lua code example for GamePlay layer)](#gameplay层的lua代码示例lua-code-example-for-gameplay-layer)
   
 - [构建(Build)](#构建build)
   
-- [注意事项 (Precautions)](#注意事项-precautions)
+- [注意事项(Precautions)](#注意事项precautions)
 
 ## 引擎简介 (Engine Introduction)
 
@@ -202,9 +202,10 @@ The interface for asynchronous loading is as follows, which can be called in the
 
 ```c++
 C++ Interface:
-static void ZXEngine::GameObject::AsyncCreate(const string& path)
+static void ZXEngine::GameObject::AsyncCreate(const string& path);
 static void ZXEngine::Resources::AsyncLoadPrefab(const string& path, std::function<void(PrefabStruct*)> callback, bool isBuiltIn = false);
 static void ZXEngine::Resources::AsyncLoadMaterial(const string& path, std::function<void(MaterialStruct*)> callback, bool isBuiltIn = false, bool isEditor = false);
+static void ZXEngine::Resources::AsyncLoadModelData(const string& path, std::function<void(ModelData*)> callback, bool isBuiltIn = false, bool isEditor = false);
 ```
 
 ```lua
