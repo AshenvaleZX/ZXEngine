@@ -21,6 +21,15 @@
 // https://www.youtube.com/watch?v=Qj_tK_mdRcA
 
 
+Setting 
+{
+    Blend SrcAlpha OneMinusSrcAlpha
+    BlendOp Add
+    Cull Back
+    ZTest Less
+    ZWrite On
+}
+
 Vertex
 {
     Input

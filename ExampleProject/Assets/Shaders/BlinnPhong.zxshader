@@ -1,3 +1,12 @@
+Setting 
+{
+    Blend SrcAlpha OneMinusSrcAlpha
+    BlendOp Add
+    Cull Back
+    ZTest Less
+    ZWrite On
+}
+
 Vertex
 {
     Input
