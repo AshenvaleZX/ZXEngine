@@ -10,6 +10,8 @@
 #include "../ZMesh.h"
 #include "../Audio/ZAudio.h"
 
+#define ZX_EDITOR_ASYNC_LOAD
+
 namespace ZXEngine
 {
 	bool EditorDataManager::isGameStart = false;
@@ -132,14 +134,21 @@ namespace ZXEngine
 			auto info = new AssetMaterialInfo();
 			info->name = asset->name;
 			curAssetInfo = info;
-			EditorGUIManager::GetInstance()->assetPreviewer->Reset();
 			string localPath = Resources::GetAssetLocalPath(asset->path);
 
+#ifdef ZX_EDITOR_ASYNC_LOAD
 			Resources::AsyncLoadMaterial(localPath, [this](MaterialStruct* matStruct)
 			{
 				auto curInfo = static_cast<AssetMaterialInfo*>(this->curAssetInfo);
 				curInfo->material = new Material(matStruct);
-			}, false, true);
+				EditorGUIManager::GetInstance()->assetPreviewer->Reset();
+		}, false, true);
+#else
+			MaterialStruct* matStruct = Resources::LoadMaterial(localPath);
+			info->material = new Material(matStruct);
+			delete matStruct;
+			EditorGUIManager::GetInstance()->assetPreviewer->Reset();
+#endif
 		}
 		else if (asset->type == AssetType::Model)
 		{
@@ -148,6 +157,7 @@ namespace ZXEngine
 			info->format = asset->extension;
 			curAssetInfo = info;
 
+#ifdef ZX_EDITOR_ASYNC_LOAD
 			Resources::AsyncLoadModelData(asset->path, [this](ModelData* modelData)
 			{
 				auto curInfo = static_cast<AssetModelInfo*>(this->curAssetInfo);
@@ -165,6 +175,17 @@ namespace ZXEngine
 				float size = std::max({ curInfo->meshRenderer->mAABBSizeX, curInfo->meshRenderer->mAABBSizeY, curInfo->meshRenderer->mAABBSizeZ });
 				EditorGUIManager::GetInstance()->assetPreviewer->Reset(size);
 			}, false, true);
+#else
+			ModelData* pModelData = ModelUtil::LoadModel(asset->path, false);
+			info->meshRenderer = new MeshRenderer();
+			info->meshRenderer->SetMeshes(pModelData->pMeshes);
+			info->boneNum = pModelData->boneNum;
+			info->animBriefInfos = std::move(pModelData->animBriefInfos);
+			delete pModelData;
+
+			float size = std::max({ info->meshRenderer->mAABBSizeX, info->meshRenderer->mAABBSizeY, info->meshRenderer->mAABBSizeZ });
+			EditorGUIManager::GetInstance()->assetPreviewer->Reset(size);
+#endif
 		}
 		else if (asset->type == AssetType::Audio)
 		{
