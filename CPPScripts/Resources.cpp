@@ -10,9 +10,13 @@ namespace ZXEngine
 	vector<PrefabLoadHandle> Resources::mDiscardedPrefabLoadHandles;
 	vector<MaterialLoadHandle> Resources::mMaterialLoadHandles;
 	vector<MaterialLoadHandle> Resources::mDiscardedMaterialLoadHandles;
+	vector<ModelDataLoadHandle> Resources::mModelDataLoadHandles;
+	vector<ModelDataLoadHandle> Resources::mDiscardedModelDataLoadHandles;
 #ifdef ZX_EDITOR
 	vector<MaterialLoadHandle> Resources::mEditorMaterialLoadHandles;
 	vector<MaterialLoadHandle> Resources::mDiscardedEditorMaterialLoadHandles;
+	vector<ModelDataLoadHandle> Resources::mEditorModelDataLoadHandles;
+	vector<ModelDataLoadHandle> Resources::mDiscardedEditorModelDataLoadHandles;
 #endif
 
 	TextureStruct::~TextureStruct()
@@ -451,6 +455,27 @@ namespace ZXEngine
 			}
 		}
 
+		for (size_t i = 0; i < mModelDataLoadHandles.size(); i++)
+		{
+			if (mModelDataLoadHandles[i].future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+			{
+				ModelData* modelData = mModelDataLoadHandles[i].future.get();
+				mModelDataLoadHandles[i].callback(modelData);
+				delete modelData;
+				mModelDataLoadHandles.erase(mModelDataLoadHandles.begin() + i);
+				i--;
+			}
+		}
+		for (size_t i = 0; i < mDiscardedModelDataLoadHandles.size(); i++)
+		{
+			if (mDiscardedModelDataLoadHandles[i].future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+			{
+				delete mDiscardedModelDataLoadHandles[i].future.get();
+				mDiscardedModelDataLoadHandles.erase(mDiscardedModelDataLoadHandles.begin() + i);
+				i--;
+			}
+		}
+
 #ifdef ZX_EDITOR
 		for (size_t i = 0; i < mEditorMaterialLoadHandles.size(); i++)
 		{
@@ -472,6 +497,27 @@ namespace ZXEngine
 				i--;
 			}
 		}
+
+		for (size_t i = 0; i < mEditorModelDataLoadHandles.size(); i++)
+		{
+			if (mEditorModelDataLoadHandles[i].future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+			{
+				ModelData* modelData = mEditorModelDataLoadHandles[i].future.get();
+				mEditorModelDataLoadHandles[i].callback(modelData);
+				delete modelData;
+				mEditorModelDataLoadHandles.erase(mEditorModelDataLoadHandles.begin() + i);
+				i--;
+			}
+		}
+		for (size_t i = 0; i < mDiscardedEditorModelDataLoadHandles.size(); i++)
+		{
+			if (mDiscardedEditorModelDataLoadHandles[i].future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+			{
+				delete mDiscardedEditorModelDataLoadHandles[i].future.get();
+				mDiscardedEditorModelDataLoadHandles.erase(mDiscardedEditorModelDataLoadHandles.begin() + i);
+				i--;
+			}
+		}
 #endif
 	}
 
@@ -488,6 +534,12 @@ namespace ZXEngine
 			mDiscardedMaterialLoadHandles.push_back(std::move(mMaterialLoadHandles[i]));
 		}
 		mMaterialLoadHandles.clear();
+
+		for (size_t i = 0; i < mModelDataLoadHandles.size(); i++)
+		{
+			mDiscardedModelDataLoadHandles.push_back(std::move(mModelDataLoadHandles[i]));
+		}
+		mModelDataLoadHandles.clear();
 	}
 
 #ifdef ZX_EDITOR
@@ -498,6 +550,12 @@ namespace ZXEngine
 			mDiscardedEditorMaterialLoadHandles.push_back(std::move(mEditorMaterialLoadHandles[i]));
 		}
 		mEditorMaterialLoadHandles.clear();
+
+		for (size_t i = 0; i < mEditorModelDataLoadHandles.size(); i++)
+		{
+			mDiscardedEditorModelDataLoadHandles.push_back(std::move(mEditorModelDataLoadHandles[i]));
+		}
+		mEditorModelDataLoadHandles.clear();
 	}
 #endif
 
@@ -544,5 +602,31 @@ namespace ZXEngine
 	{
 		MaterialStruct* material = LoadMaterial(path, isBuiltIn);
 		promise.set_value(material);
+	}
+
+	void Resources::AsyncLoadModelData(const string& path, std::function<void(ModelData*)> callback, bool isBuiltIn, bool isEditor)
+	{
+		std::promise<ModelData*> promise;
+		std::future<ModelData*> future = promise.get_future();
+		std::thread th(DoAsyncLoadModelData, std::move(promise), path, isBuiltIn);
+		th.detach();
+
+		ModelDataLoadHandle handle;
+		handle.future = std::move(future);
+		handle.callback = std::move(callback);
+#ifdef ZX_EDITOR
+		if (isEditor)
+			mEditorModelDataLoadHandles.push_back(std::move(handle));
+		else
+			mModelDataLoadHandles.push_back(std::move(handle));
+#else
+		mModelDataLoadHandles.push_back(std::move(handle));
+#endif
+	}
+
+	void Resources::DoAsyncLoadModelData(std::promise<ModelData*>&& promise, string path, bool isBuiltIn)
+	{
+		ModelData* modelData = ModelUtil::LoadModel(path, isBuiltIn, true);
+		promise.set_value(modelData);
 	}
 }

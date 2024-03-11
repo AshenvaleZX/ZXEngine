@@ -81,6 +81,12 @@ namespace ZXEngine
 		std::function<void(MaterialStruct*)> callback;
 	};
 
+	struct ModelDataLoadHandle
+	{
+		std::future<ModelData*> future;
+		std::function<void(ModelData*)> callback;
+	};
+
 	class Resources
 	{
 	public:
@@ -127,6 +133,7 @@ namespace ZXEngine
 		static void ClearAsyncLoad();
 		static void AsyncLoadPrefab(const string& path, std::function<void(PrefabStruct*)> callback, bool isBuiltIn = false);
 		static void AsyncLoadMaterial(const string& path, std::function<void(MaterialStruct*)> callback, bool isBuiltIn = false, bool isEditor = false);
+		static void AsyncLoadModelData(const string& path, std::function<void(ModelData*)> callback, bool isBuiltIn = false, bool isEditor = false);
 #ifdef ZX_EDITOR
 		static void ClearEditorAsyncLoad();
 #endif
@@ -136,12 +143,17 @@ namespace ZXEngine
 		static vector<PrefabLoadHandle> mDiscardedPrefabLoadHandles;
 		static vector<MaterialLoadHandle> mMaterialLoadHandles;
 		static vector<MaterialLoadHandle> mDiscardedMaterialLoadHandles;
+		static vector<ModelDataLoadHandle> mModelDataLoadHandles;
+		static vector<ModelDataLoadHandle> mDiscardedModelDataLoadHandles;
 #ifdef ZX_EDITOR
 		static vector<MaterialLoadHandle> mEditorMaterialLoadHandles;
 		static vector<MaterialLoadHandle> mDiscardedEditorMaterialLoadHandles;
+		static vector<ModelDataLoadHandle> mEditorModelDataLoadHandles;
+		static vector<ModelDataLoadHandle> mDiscardedEditorModelDataLoadHandles;
 #endif
 
 		static void DoAsyncLoadPrefab(std::promise<PrefabStruct*>&& prms, string path, bool isBuiltIn);
 		static void DoAsyncLoadMaterial(std::promise<MaterialStruct*>&& prms, string path, bool isBuiltIn);
+		static void DoAsyncLoadModelData(std::promise<ModelData*>&& prms, string path, bool isBuiltIn);
 	};
 }
