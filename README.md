@@ -8,9 +8,9 @@
 
 This is a game engine project developed by myself. The main purpose of creating this project is to learn and practice game engine technology for myself, but it would be better if this project can help you.
 
-截图展示(介绍后面有更多展示):
+引擎基本外观如下图，具体内容几句话写不完，请看图示后面的目录。
 
-Screenshot display (more display later in the introduction):
+The appearance of the engine is as shown below. For detailed information, please see the table of contents behind the picture.
 
 ![](Documents/Images/EngineShow0.jpg)
 
@@ -20,27 +20,27 @@ Screenshot display (more display later in the introduction):
   
 - [引擎编辑器和更多演示 (Engine Editor And More Demonstration)](#引擎编辑器和更多演示-engine-editor-and-more-demonstration)
   
-- [PhysZ物理引擎简介(PhysZ Physics Engine Introduction)](#physz物理引擎简介physz-physics-engine-introduction)
+- [PhysZ物理引擎简介 (PhysZ Physics Engine Introduction)](#physz物理引擎简介-physz-physics-engine-introduction)
   
-- [ZXShader和材质系统(ZXShader And Material System)](#zxshader和材质系统zxshader-and-material-system)
+- [ZXShader和材质系统 (ZXShader And Material System)](#zxshader和材质系统-zxshader-and-material-system)
   
-- [骨骼蒙皮动画系统(Skeletal Animation System)](#骨骼蒙皮动画系统skeletal-animation-system)
+- [骨骼蒙皮动画系统 (Skeletal Animation System)](#骨骼蒙皮动画系统-skeletal-animation-system)
   
-- [音频系统(Audio System)](#音频系统audio-system)
+- [GamePlay层的Lua系统 (Lua System of GamePlay Layer)](#gameplay层的lua系统-lua-system-of-gameplay-layer)
   
-- [多线程(Multithreading)](#多线程multithreading)
+- [音频系统 (Audio System)](#音频系统-audio-system)
+  
+- [多线程 (Multithreading)](#多线程-multithreading)
   
 - [引擎文件格式介绍 (Engine File Format Introduction)](#引擎文件格式介绍-engine-file-format-introduction)
   
-- [GamePlay层的Lua代码示例(Lua code example for GamePlay layer)](#gameplay层的lua代码示例lua-code-example-for-gameplay-layer)
-  
-- [构建(Build)](#构建build)
+- [构建 (Build)](#构建-build)
   
 - [注意事项 (Precautions)](#注意事项-precautions)
 
 ## 引擎简介 (Engine Introduction)
 
-本引擎目前同时支持Vulkan，DirectX 12和OpenGL，使用自创的zxshader语言来编写shader，支持前面三种图形API，可一次编写3种环境运行。同时也支持基于Vulkan和DirectX12的光线追踪渲染管线。
+本引擎目前同时支持Vulkan，DirectX 12和OpenGL，使用自创的zxshader语言来编写shader，支持前面三种图形API，可一次编写3种环境运行。本引擎同时也支持基于Vulkan和DirectX12的光线追踪渲染管线。
 
 This engine currently supports Vulkan, DirectX 12 and OpenGL. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs. This engine also supports ray tracing rendering pipeline based on Vulkan and DirectX12.
 
@@ -48,13 +48,13 @@ This engine currently supports Vulkan, DirectX 12 and OpenGL. The engine uses th
 
 This engine has a built-in physics engine written by myself, which I called it PhysZ (It is the learning result after reading some books and other people’s projects), supports rigid body mechanics simulation and cloth simulation. And I also developed a simple skeletal animation system, particle system, etc. Images of these systems are shown later in this document.
 
-引擎本身用C++开发，GamePlay层使用Lua开发，引擎层封装部分C++接口给GamePlay层的Lua调用。使用方式类似Unity的XLua，通过一个GameLogic组件把Lua代码绑定到GameObject上，接收所挂载对象上来自引擎的Start和Update调用，并通过self访问GameObject对象(具体示例看后面)。
+引擎本身用C++开发，GamePlay层使用Lua语言，引擎层封装部分C++接口给GamePlay层的Lua调用。使用方式类似Unity的XLua，通过一个GameLogic组件把Lua代码绑定到GameObject上，接收所挂载对象上来自引擎的Start和Update调用，并通过self访问GameObject对象(具体示例看后面)。
 
-The engine is developed with C++, the GamePlay layer is developed with Lua, and the engine encapsulates part of the C++ interface to the Lua call of the GamePlay layer. The usage is similar to Unity's XLua, you can bind the Lua code to the GameObject through a GameLogic component, receive Start and Update calls from the engine on the mounted object, and access the GameObject object through self (see later for specific examples).
+The engine is developed with C++, the GamePlay layer uses Lua language, and the engine encapsulates part of the C++ interface to the Lua call of the GamePlay layer. The usage is similar to Unity's XLua, you can bind the Lua code to the GameObject through a GameLogic component, receive Start and Update calls from the engine on the mounted object, and access the GameObject object through self (see later for specific examples).
 
-项目目前还比较简单，不过我已经完成了引擎所需的基本的场景，预制体，材质系统，shader文件系统等等的开发。本引擎场景中的对象都是Unity式的 GameObject - Component 结构，也有一个类Unity的引擎编辑器页面。不过编辑功能还不完善，只有一部分 Component 能够被编辑，其它的主要是展示当前的运行时状态。
+项目目前已经完成了引擎所需的基本的场景，预制体，材质系统，shader文件系统等等的开发。引擎场景中的对象都是Unity式的 GameObject - Component 结构，也有一个类Unity的引擎编辑器页面。不过编辑功能还不完善，只有一部分 Component 能够被编辑，其它的主要是展示当前的运行时状态。
 
-The project is still relatively simple, but I have completed the development of the basic scenes, prefabs, materials system, shader file systems and so on that the engine need. The objects in the scene of this engine are all Unity-style GameObject - Component structures, and there is also a Unity-like engine editor. However, the editing function is not complete yet, only some Components can be edited, and the others just display the current runtime status.
+The project has now completed the development of the basic scenes, prefabs, materials system, shader file systems and so on that the engine need. The objects in the scene of this engine are all Unity-style GameObject - Component structures, and there is also a Unity-like engine editor. However, the editing function is not complete yet, only some Components can be edited, and the others just display the current runtime status.
 
 ## 引擎编辑器和更多演示 (Engine Editor And More Demonstration)
 
@@ -98,7 +98,7 @@ The following is the code preview on the Inspector after clicking zxshader and L
 
 ![](Documents/Images/EngineShow6.jpg)
 
-## PhysZ物理引擎简介(PhysZ Physics Engine Introduction)
+## PhysZ物理引擎简介 (PhysZ Physics Engine Introduction)
 
 先展示一下PhysZ引擎对刚体力学和布料的模拟效果(GIF演示，截屏大小和帧率都有压缩):
 
@@ -132,7 +132,7 @@ PhysZ引擎主要是我在学习了Ian Millington的《Game Physics Engine Devel
 
 The PhysZ engine is the result of me studying Ian Millington's "Game Physics Engine Development" and Gabor Szauer's "Game Physics Cookbook", plus some of my own thinking and practice. If you are also interested in physics engines, I hope this engine can be helpful to you.
 
-## ZXShader和材质系统(ZXShader And Material System)
+## ZXShader和材质系统 (ZXShader And Material System)
 
 ZXShader是专门给ZXEngine用的一套Shader系统，因为ZXEngine同时支持Vulkan/DirectX12/OpenGL，所以也需要一个统一的Shader语言才能支撑后面的材质系统。ZXShader目前暂时只支持光栅渲染管线，光追渲染管线的Shader是在VK和DX下独立写的。ZXShader语言本身并不复杂，对GLSL，HLSL或者Unity ShaderLab比较熟悉的人应该都能很快看懂，代码示例在ExampleProject\Assets\Shaders中。
 
@@ -150,7 +150,7 @@ This is after selecting the material in the Asset, adjusting the material parame
 
 ![](Documents/Images/Material2.gif)
 
-## 骨骼蒙皮动画系统(Skeletal Animation System)
+## 骨骼蒙皮动画系统 (Skeletal Animation System)
 
 切换到AnimDemo场景，点击运行按钮后，可以看到骨骼蒙皮动画的展示:
 
@@ -166,7 +166,92 @@ The animation system of this engine supports animation blending, so in addition 
 
 The code to play the animation belongs to the GamePlay rather than the engine, so it‘s written in the Lua code and bound to the GameObject through the GameLogic component.
 
-## 音频系统(Audio System)
+## GamePlay层的Lua系统 (Lua System of GamePlay Layer)
+
+本引擎的GamePlay层使用Lua语言，引擎将需要提供给GamePlay层的C++接口都Wrap到了Lua，开发方式有点类似于Unity中的XLua。不过目前Wrap到Lua的接口还不是特别多，以后逐步完善。
+
+The GamePlay layer of this engine uses Lua language. The engine wraps all the C++ interfaces that need to be provided to the GamePlay layer into Lua. The development way is similar to XLua in Unity. However, there are not many interfaces that have been wrapped to Lua at present, and they will be gradually added in the future.
+
+使用方式是直接创建一个Lua代码，然后用GameLogic组件把Lua代码挂载到一个GameObject对象上，然后这个Lua代码就可以接收来自引擎的Awake，Start，Update和FixedUpdate等接口的调用了。也可以通过self来访问自己所挂载的GameObject对象，获取Component，调用引擎接口等等。
+
+The way to use lua in ZXEngine is to create a Lua code, and then use the GameLogic component to load the Lua code to a GameObject. Then the Lua code can receive calls from the engine's Awake, Start, Update and FixedUpdate. You can also use self to access the GameObject you bound, obtain components, call the engine interface, etc.
+
+以控制GameObject旋转移动举例，写一个ObjectMove.lua然后挂到一个GameObject上：
+
+Take controlling the rotation and movement of GameObject as an example. Write an ObjectMove.lua and bind it to a GameObject:
+
+![](Documents/Images/GameLogic.png)
+
+然后Lua代码大致如下：
+
+Then the Lua code is as follows:
+
+```lua
+local ObjectMove = NewGameLogic()
+
+ObjectMove.radius = 20
+ObjectMove.angle = 0
+ObjectMove.rot = 0
+
+function ObjectMove:Start()
+    self.trans = self.gameObject:GetComponent("Transform")
+end
+
+function ObjectMove:Update()
+    self.angle = self.angle + 2 * Time.GetDeltaTime()
+    local x = math.sin(self.angle) * self.radius
+    local z = math.cos(self.angle) * self.radius
+    self.trans:SetPosition(x, 0, z)
+
+    self.rot = self.rot + 50 * Time.GetDeltaTime()
+    if self.rot > 360 then
+        self.rot = self.rot - 360
+    end
+    self.trans:SetEulerAngles(0, 0, self.rot)
+end
+
+return ObjectMove
+```
+
+如果是要调用物理引擎相关的接口，和在Unity里一样，需要把代码写到FixedUpdate里面，否则物理效果会有异常。代码示例：
+
+If you want to call the interface related to the physics engine, just like in Unity, you need to write the code in FixedUpdate, otherwise the physical effect will be wrong. Code example:
+
+```lua
+local PhysControl = NewGameLogic()
+
+PhysControl.force = { x = 0, y = 100, z = 0 }
+PhysControl.velocity = { x = 10, y = 0, z = 0 }
+
+function PhysControl:Start()
+    -- Find some gameobject in the scene and control it.
+    self.rigidBody = GameObject.Find("SomeObj/SubObj"):GetComponent("RigidBody")
+end
+
+function PhysControl:FixedUpdate()
+    self.rigidBody:AddForce(self.force)
+    self.rigidBody:SetVelocity(self.velocity)
+end
+
+return PhysControl
+```
+
+如果要接收输入事件，比如写一个Lua脚本挂到相机上控制镜头移动，那么可以注册来自引擎的输入事件。比如注册按住WSAD的回调函数：
+
+If you want to receive input events, such as writing a Lua script to control camera movement, you can register input events from the engine. For example, register the callback function for pressing WSAD:
+
+```lua
+EngineEvent:AddEventHandler(EngineEventType.KEY_W_PRESS, MoveForwardCallBack)
+EngineEvent:AddEventHandler(EngineEventType.KEY_S_PRESS, MoveBackCallBack)
+EngineEvent:AddEventHandler(EngineEventType.KEY_A_PRESS, MoveLeftCallBack)
+EngineEvent:AddEventHandler(EngineEventType.KEY_D_PRESS, MoveRightCallBack)
+```
+
+ZXEngine的Lua系统接口就不一一列举了，可以到示例工程里细看。
+
+I won’t list ZXEngine’s Lua system interfaces one by one. You can go to the example project to take a look.
+
+## 音频系统 (Audio System)
 
 本引擎的音频系统类似Unity，主要依靠AudioListener和AudioSource这两个组件。
 
@@ -190,7 +275,7 @@ AudioListener同样也是用于3D音效的，如果你不需要3D音效的话场
 
 Most of the systems and modules of this engine are written by myself, but audio processing is a very professional field like graphics rendering and physics engine, involving audio coding, time domain and frequency domain transformation and other related professional knowledge. I don’t know enough about audio-related professional knowledge, so the core part of the audio system of this engine, that is, the audio decoding and playback functions, uses the third-party library irrKlang.
 
-## 多线程(Multithreading)
+## 多线程 (Multithreading)
 
 目前引擎中实现了多线程的部分有两个，异步加载资源和着色器预编译。其实我还想搞多线程渲染，也在实际尝试搞，但确实有点困难，需要大改引擎框架，所以还没搞好，先鸽着。
 
@@ -261,46 +346,7 @@ This is the configuration file for the game project created by ZXEngine, you can
 
 Models, textures, fonts, etc. are common file formats.
 
-## GamePlay层的Lua代码示例(Lua code example for GamePlay layer)
-
-以控制GameObject旋转移动举例，创建一个Lua代码，用GameLogic组件挂在到一个GameObject对象上：
-
-Take controlling the rotation and movement of GameObject as an example, create a Lua code, and use GameLogic component on a GameObject object:
-
-![](Documents/Images/GameLogic.png)
-
-然后Lua代码大致如下：
-
-Then the Lua code is roughly as follows:
-
-```lua
-local ObjectMove = NewGameLogic()
-
-ObjectMove.radius = 20
-ObjectMove.angle = 0
-ObjectMove.rot = 0
-
-function ObjectMove:Start()
-    self.trans = self.gameObject:GetComponent("Transform")
-end
-
-function ObjectMove:Update()
-    self.angle = self.angle + 2 * Time.GetDeltaTime()
-    local x = math.sin(self.angle) * self.radius
-    local z = math.cos(self.angle) * self.radius
-    self.trans:SetPosition(x, 0, z)
-
-    self.rot = self.rot + 50 * Time.GetDeltaTime()
-    if self.rot > 360 then
-        self.rot = self.rot - 360
-    end
-    self.trans:SetEulerAngles(0, 0, self.rot)
-end
-
-return ObjectMove
-```
-
-## 构建(Build)
+## 构建 (Build)
 
 本项目使用Visual Studio 2022构建，暂时不支持跨平台。VS项目文件已经放到ZXEngine文件夹下了，直接打开.sln构建即可。同时也提供了CMakeLists，不过在非WIndows环境下暂时还无法正确构建。
 
