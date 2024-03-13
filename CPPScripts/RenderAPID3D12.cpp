@@ -3714,8 +3714,12 @@ namespace ZXEngine
 			mPresentBuffers[i].Reset();
 
 		// 重新设置Present Buffer大小
-		ThrowIfFailed(mSwapChain->ResizeBuffers(
-			mPresentBufferCount, ProjectSetting::srcWidth, ProjectSetting::srcHeight,
+		ThrowIfFailed(mSwapChain->ResizeBuffers(mPresentBufferCount,
+#ifdef ZX_EDITOR
+			ProjectSetting::srcWidth, ProjectSetting::srcHeight,
+#else
+			GlobalData::srcWidth, GlobalData::srcHeight,
+#endif
 			mPresentBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
 
 		// 重新创建Present Buffer
