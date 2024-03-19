@@ -114,8 +114,13 @@ namespace ZXEngine
 			// 恢复栈大小(Pop掉这段代码在栈上产生的数据)
 			lua_settop(L, stack_size);
 
-			if (func != "Awake" && func != "Start" && func != "Update" && func != "FixedUpdate")
+			if (std::strcmp(func, "Awake") != 0 &&
+				std::strcmp(func, "Start") != 0 &&
+				std::strcmp(func, "Update") != 0 &&
+				std::strcmp(func, "FixedUpdate") != 0)
+			{
 				Debug::LogWarning("GameLogic trying to call a lua function that doesn't exist: " + (string)func);
+			}
 
 			return;
 		}
