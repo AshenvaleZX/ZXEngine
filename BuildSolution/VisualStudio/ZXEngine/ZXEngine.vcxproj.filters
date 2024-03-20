@@ -72,1050 +72,1050 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\CPPScripts\GameObject.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\GameObject.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Scene.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Scene.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\SceneManager.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\SceneManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Game.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Game.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Entry.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Entry.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\StaticMesh.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\StaticMesh.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\RenderEngine.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\RenderEngine.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Texture.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Texture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Material.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Material.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\ZShader.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\ZShader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\RenderAPIOpenGL.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\RenderAPIOpenGL.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\RenderAPI.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\RenderAPI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\RenderQueue.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\RenderQueue.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\RenderQueueManager.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\RenderQueueManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Resources.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Resources.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\EventManager.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\EventManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Utils.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Utils.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Time.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Time.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Math.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Math.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\CubeMap.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\CubeMap.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\RenderPassForwardRendering.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\RenderPassForwardRendering.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\RenderPassManager.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\RenderPassManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\RenderPassRayTracing.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\RenderPassRayTracing.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\RenderPassShadowGeneration.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\RenderPassShadowGeneration.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\LuaManager.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\LuaManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\GameLogicManager.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\GameLogicManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Debug.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Debug.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\FBOManager.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\FBOManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\GlobalData.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\GlobalData.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\RenderPassAfterEffectRendering.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\RenderPassAfterEffectRendering.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\RenderPassUIRendering.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\RenderPassUIRendering.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\TextCharactersManager.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\TextCharactersManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\DynamicMesh.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\DynamicMesh.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\ParticleSystemManager.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\ParticleSystemManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Math\Vector2.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Math\Vector2.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Math\Vector3.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Math\Vector3.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Math\Vector4.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Math\Vector4.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Math\Matrix3.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Math\Matrix3.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Math\Matrix4.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Math\Matrix4.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Math\Quaternion.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Math\Quaternion.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\ProjectSetting.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\ProjectSetting.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Editor\EditorGUIManager.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorGUIManager.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Editor\EditorHierarchyPanel.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorHierarchyPanel.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Editor\EditorProjectPanel.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorProjectPanel.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Editor\EditorInspectorPanel.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorInspectorPanel.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Editor\EditorMainBarPanel.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorMainBarPanel.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Editor\EditorDataManager.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorDataManager.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Editor\EditorAssetPreviewer.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorAssetPreviewer.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Editor\EditorEnumStruct.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorEnumStruct.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Editor\EditorInputManager.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorInputManager.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Editor\EditorConsolePanel.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorConsolePanel.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\ZMesh.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\ZMesh.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\RenderAPIVulkan.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\RenderAPIVulkan.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Vulkan\SPIRVCompiler.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Vulkan\SPIRVCompiler.cpp">
       <Filter>Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\ShaderParser.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\ShaderParser.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\RenderEngineProperties.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\RenderEngineProperties.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\MaterialData.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\MaterialData.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Editor\ImGuiTextureManagerOpenGL.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Editor\ImGuiTextureManagerOpenGL.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Editor\ImGuiTextureManagerVulkan.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Editor\ImGuiTextureManagerVulkan.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Editor\ImGuiTextureManager.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Editor\ImGuiTextureManager.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\RenderAPID3D12.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\RenderAPID3D12.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Window\WindowManager.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Window\WindowManager.cpp">
       <Filter>Window</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Window\WindowManagerGLFW.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Window\WindowManagerGLFW.cpp">
       <Filter>Window</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Window\WindowManagerWindows.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Window\WindowManagerWindows.cpp">
       <Filter>Window</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Input\InputManager.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Input\InputManager.cpp">
       <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Input\InputManagerGLFW.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Input\InputManagerGLFW.cpp">
       <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Input\InputManagerWindows.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Input\InputManagerWindows.cpp">
       <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\DirectX12\ZXD3D12DescriptorManager.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\DirectX12\ZXD3D12DescriptorManager.cpp">
       <Filter>DirectX12</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\DirectX12\ZXD3D12DescriptorAllocator.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\DirectX12\ZXD3D12DescriptorAllocator.cpp">
       <Filter>DirectX12</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\DirectX12\ZXD3D12Util.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\DirectX12\ZXD3D12Util.cpp">
       <Filter>DirectX12</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Editor\EditorGUIManagerOpenGL.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorGUIManagerOpenGL.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Editor\EditorGUIManagerVulkan.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorGUIManagerVulkan.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Editor\EditorGUIManagerDirectX12.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorGUIManagerDirectX12.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Editor\ImGuiTextureManagerD3D12.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Editor\ImGuiTextureManagerD3D12.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\GeometryGenerator.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\GeometryGenerator.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\GeometryGenerator.h">
+    <ClCompile Include="..\..\..\CPPScripts\GeometryGenerator.h">
       <Filter>头文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\PhysZ\PointMass.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\PhysZ\PointMass.cpp">
       <Filter>PhysZ</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\PhysZ\RigidBody.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\PhysZ\RigidBody.cpp">
       <Filter>PhysZ</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\PhysZ\PScene.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\PhysZ\PScene.cpp">
       <Filter>PhysZ</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Vendor\Src\d3dx12_property_format_table.cpp">
+    <ClCompile Include="..\..\..\Vendor\Src\d3dx12_property_format_table.cpp">
       <Filter>External</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Vendor\Src\glad.c">
+    <ClCompile Include="..\..\..\Vendor\Src\glad.c">
       <Filter>External</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Vendor\Src\volk.c">
+    <ClCompile Include="..\..\..\Vendor\Src\volk.c">
       <Filter>External</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\PhysZ\Force\FGGravity.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\PhysZ\Force\FGGravity.cpp">
       <Filter>PhysZ\Force</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\PhysZ\Force\FGSpring.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\PhysZ\Force\FGSpring.cpp">
       <Filter>PhysZ\Force</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lapi.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lapi.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lauxlib.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lauxlib.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lbaselib.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lbaselib.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lcode.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lcode.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lcorolib.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lcorolib.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lctype.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lctype.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\ldblib.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\ldblib.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\ldebug.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\ldebug.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\ldo.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\ldo.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\ldump.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\ldump.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lfunc.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lfunc.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lgc.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lgc.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\linit.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\linit.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\liolib.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\liolib.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\llex.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\llex.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lmathlib.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lmathlib.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lmem.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lmem.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\loadlib.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\loadlib.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lobject.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lobject.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lopcodes.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lopcodes.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\loslib.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\loslib.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lparser.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lparser.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lstate.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lstate.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lstring.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lstring.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lstrlib.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lstrlib.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\ltable.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\ltable.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\ltablib.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\ltablib.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\ltm.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\ltm.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lua.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lua.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\luac.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\luac.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lundump.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lundump.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lutf8lib.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lutf8lib.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lvm.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lvm.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\Lua\lzio.c">
+    <ClCompile Include="..\..\..\CPPScripts\External\Lua\lzio.c">
       <Filter>External\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\ImGui\imgui.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\External\ImGui\imgui.cpp">
       <Filter>External\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\ImGui\imgui_draw.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\External\ImGui\imgui_draw.cpp">
       <Filter>External\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\ImGui\imgui_impl_dx12.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\External\ImGui\imgui_impl_dx12.cpp">
       <Filter>External\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\ImGui\imgui_impl_glfw.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\External\ImGui\imgui_impl_glfw.cpp">
       <Filter>External\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\ImGui\imgui_impl_opengl3.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\External\ImGui\imgui_impl_opengl3.cpp">
       <Filter>External\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\ImGui\imgui_impl_vulkan.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\External\ImGui\imgui_impl_vulkan.cpp">
       <Filter>External\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\ImGui\imgui_impl_win32.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\External\ImGui\imgui_impl_win32.cpp">
       <Filter>External\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\ImGui\imgui_tables.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\External\ImGui\imgui_tables.cpp">
       <Filter>External\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\External\ImGui\imgui_widgets.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\External\ImGui\imgui_widgets.cpp">
       <Filter>External\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\Component.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\Component.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\GameLogic.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\GameLogic.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\Light.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\Light.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\MeshRenderer.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\MeshRenderer.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\ParticleSystem.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\ParticleSystem.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\Transform.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\Transform.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\UITextRenderer.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\UITextRenderer.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\UITextureRenderer.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\UITextureRenderer.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\ZCamera.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\ZCamera.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\PhysZ\BoundingVolume\BoundingSphere.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\PhysZ\BoundingVolume\BoundingSphere.cpp">
       <Filter>PhysZ\BoundingVolume</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\PhysZ\Contact.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\PhysZ\Contact.cpp">
       <Filter>PhysZ</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\PhysZ\CollisionData.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\PhysZ\CollisionData.cpp">
       <Filter>PhysZ</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\PhysZ\CollisionPrimitive.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\PhysZ\CollisionPrimitive.cpp">
       <Filter>PhysZ</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\PhysZ\CollisionDetector.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\PhysZ\CollisionDetector.cpp">
       <Filter>PhysZ</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\PhysZ\IntersectionDetector.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\PhysZ\IntersectionDetector.cpp">
       <Filter>PhysZ</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\PhysZ\ContactResolver.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\PhysZ\ContactResolver.cpp">
       <Filter>PhysZ</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\PhysZ\BVHNode.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\PhysZ\BVHNode.cpp">
       <Filter>PhysZ</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\ModelUtil.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\ModelUtil.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Animation\AnimationController.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Animation\AnimationController.cpp">
       <Filter>Animation</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Animation\Animation.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Animation\Animation.cpp">
       <Filter>Animation</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Animation\NodeAnimation.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Animation\NodeAnimation.cpp">
       <Filter>Animation</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\Animator.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\Animator.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Editor\EditorDialogBoxManager.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorDialogBoxManager.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\Physics\BoxCollider.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\Physics\BoxCollider.cpp">
       <Filter>Component\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\Physics\Collider.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\Physics\Collider.cpp">
       <Filter>Component\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\Physics\PlaneCollider.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\Physics\PlaneCollider.cpp">
       <Filter>Component\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\Physics\SphereCollider.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\Physics\SphereCollider.cpp">
       <Filter>Component\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\Physics\ZRigidBody.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\Physics\ZRigidBody.cpp">
       <Filter>Component\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\Physics\SpringJoint.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\Physics\SpringJoint.cpp">
       <Filter>Component\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\Physics\Cloth.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\Physics\Cloth.cpp">
       <Filter>Component\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Audio\AudioEngine.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Audio\AudioEngine.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Audio\AudioClip.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Audio\AudioClip.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Audio\AudioStream.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Audio\AudioStream.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\AudioSource.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\AudioSource.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\AudioListener.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\AudioListener.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\PhysZ\Joint\DistanceJoint.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\PhysZ\Joint\DistanceJoint.cpp">
       <Filter>PhysZ\Joint</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\PhysZ\Joint\Joint.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\PhysZ\Joint\Joint.cpp">
       <Filter>PhysZ\Joint</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\Component\Physics\ZDistanceJoint.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Component\Physics\ZDistanceJoint.cpp">
       <Filter>Component\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\CPPScripts\PublicStruct.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\PublicStruct.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\CPPScripts\GameObject.h">
+    <ClInclude Include="..\..\..\CPPScripts\GameObject.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\SceneManager.h">
+    <ClInclude Include="..\..\..\CPPScripts\SceneManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Scene.h">
+    <ClInclude Include="..\..\..\CPPScripts\Scene.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\pubh.h">
+    <ClInclude Include="..\..\..\CPPScripts\pubh.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Game.h">
+    <ClInclude Include="..\..\..\CPPScripts\Game.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Debug.h">
+    <ClInclude Include="..\..\..\CPPScripts\Debug.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\StaticMesh.h">
+    <ClInclude Include="..\..\..\CPPScripts\StaticMesh.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\RenderEngine.h">
+    <ClInclude Include="..\..\..\CPPScripts\RenderEngine.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Texture.h">
+    <ClInclude Include="..\..\..\CPPScripts\Texture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\ZShader.h">
+    <ClInclude Include="..\..\..\CPPScripts\ZShader.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Material.h">
+    <ClInclude Include="..\..\..\CPPScripts\Material.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\RenderAPI.h">
+    <ClInclude Include="..\..\..\CPPScripts\RenderAPI.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\RenderAPIOpenGL.h">
+    <ClInclude Include="..\..\..\CPPScripts\RenderAPIOpenGL.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\RenderQueue.h">
+    <ClInclude Include="..\..\..\CPPScripts\RenderQueue.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\RenderQueueManager.h">
+    <ClInclude Include="..\..\..\CPPScripts\RenderQueueManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PublicEnum.h">
+    <ClInclude Include="..\..\..\CPPScripts\PublicEnum.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Resources.h">
+    <ClInclude Include="..\..\..\CPPScripts\Resources.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\EventManager.h">
+    <ClInclude Include="..\..\..\CPPScripts\EventManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Utils.h">
+    <ClInclude Include="..\..\..\CPPScripts\Utils.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Time.h">
+    <ClInclude Include="..\..\..\CPPScripts\Time.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PublicStruct.h">
+    <ClInclude Include="..\..\..\CPPScripts\PublicStruct.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Math.h">
+    <ClInclude Include="..\..\..\CPPScripts\Math.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\CubeMap.h">
+    <ClInclude Include="..\..\..\CPPScripts\CubeMap.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\RenderPass.h">
+    <ClInclude Include="..\..\..\CPPScripts\RenderPass.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\RenderPassForwardRendering.h">
+    <ClInclude Include="..\..\..\CPPScripts\RenderPassForwardRendering.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\RenderPassManager.h">
+    <ClInclude Include="..\..\..\CPPScripts\RenderPassManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\RenderPassRayTracing.h">
+    <ClInclude Include="..\..\..\CPPScripts\RenderPassRayTracing.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\RenderPassShadowGeneration.h">
+    <ClInclude Include="..\..\..\CPPScripts\RenderPassShadowGeneration.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Debug.h">
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Debug.h">
       <Filter>LuaWrap</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\LuaWrap\LuaWrap.h">
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\LuaWrap.h">
       <Filter>LuaWrap</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\LuaManager.h">
+    <ClInclude Include="..\..\..\CPPScripts\LuaManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Resources.h">
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Resources.h">
       <Filter>LuaWrap</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\GameLogicManager.h">
+    <ClInclude Include="..\..\..\CPPScripts\GameLogicManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Transform.h">
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Transform.h">
       <Filter>LuaWrap</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Time.h">
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Time.h">
       <Filter>LuaWrap</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\FBOManager.h">
+    <ClInclude Include="..\..\..\CPPScripts\FBOManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\FrameBufferObject.h">
+    <ClInclude Include="..\..\..\CPPScripts\FrameBufferObject.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\GlobalData.h">
+    <ClInclude Include="..\..\..\CPPScripts\GlobalData.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\RenderPassAfterEffectRendering.h">
+    <ClInclude Include="..\..\..\CPPScripts\RenderPassAfterEffectRendering.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\RenderPassUIRendering.h">
+    <ClInclude Include="..\..\..\CPPScripts\RenderPassUIRendering.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\TextCharactersManager.h">
+    <ClInclude Include="..\..\..\CPPScripts\TextCharactersManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\DynamicMesh.h">
+    <ClInclude Include="..\..\..\CPPScripts\DynamicMesh.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_GameObject.h">
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_GameObject.h">
       <Filter>LuaWrap</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_UITextRenderer.h">
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_UITextRenderer.h">
       <Filter>LuaWrap</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\ParticleSystemManager.h">
+    <ClInclude Include="..\..\..\CPPScripts\ParticleSystemManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Math\Vector2.h">
+    <ClInclude Include="..\..\..\CPPScripts\Math\Vector2.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Math\Vector3.h">
+    <ClInclude Include="..\..\..\CPPScripts\Math\Vector3.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Math\Vector4.h">
+    <ClInclude Include="..\..\..\CPPScripts\Math\Vector4.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Math\Matrix3.h">
+    <ClInclude Include="..\..\..\CPPScripts\Math\Matrix3.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Math\Matrix4.h">
+    <ClInclude Include="..\..\..\CPPScripts\Math\Matrix4.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Math\Quaternion.h">
+    <ClInclude Include="..\..\..\CPPScripts\Math\Quaternion.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\ProjectSetting.h">
+    <ClInclude Include="..\..\..\CPPScripts\ProjectSetting.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_InputManager.h">
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_InputManager.h">
       <Filter>LuaWrap</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\EditorGUIManager.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorGUIManager.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\EditorPanel.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorPanel.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\EditorHierarchyPanel.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorHierarchyPanel.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\EditorProjectPanel.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorProjectPanel.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\EditorInspectorPanel.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorInspectorPanel.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\EditorMainBarPanel.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorMainBarPanel.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\EditorDataManager.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorDataManager.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\EditorAssetPreviewer.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorAssetPreviewer.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\EditorEnumStruct.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorEnumStruct.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\EditorInputManager.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorInputManager.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\EditorConsolePanel.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorConsolePanel.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\RenderStateSetting.h">
+    <ClInclude Include="..\..\..\CPPScripts\RenderStateSetting.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\ZMesh.h">
+    <ClInclude Include="..\..\..\CPPScripts\ZMesh.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\RenderAPIVulkan.h">
+    <ClInclude Include="..\..\..\CPPScripts\RenderAPIVulkan.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Vulkan\SPIRVCompiler.h">
+    <ClInclude Include="..\..\..\CPPScripts\Vulkan\SPIRVCompiler.h">
       <Filter>Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\ShaderParser.h">
+    <ClInclude Include="..\..\..\CPPScripts\ShaderParser.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\RenderEngineProperties.h">
+    <ClInclude Include="..\..\..\CPPScripts\RenderEngineProperties.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\OpenGLEnumStruct.h">
+    <ClInclude Include="..\..\..\CPPScripts\OpenGLEnumStruct.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Vulkan\VulkanEnumStruct.h">
+    <ClInclude Include="..\..\..\CPPScripts\Vulkan\VulkanEnumStruct.h">
       <Filter>Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\MaterialData.h">
+    <ClInclude Include="..\..\..\CPPScripts\MaterialData.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\ImGuiTextureManager.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\ImGuiTextureManager.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\ImGuiTextureManagerOpenGL.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\ImGuiTextureManagerOpenGL.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\ImGuiTextureManagerVulkan.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\ImGuiTextureManagerVulkan.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\RenderAPID3D12.h">
+    <ClInclude Include="..\..\..\CPPScripts\RenderAPID3D12.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Window\WindowManager.h">
+    <ClInclude Include="..\..\..\CPPScripts\Window\WindowManager.h">
       <Filter>Window</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Window\WindowManagerGLFW.h">
+    <ClInclude Include="..\..\..\CPPScripts\Window\WindowManagerGLFW.h">
       <Filter>Window</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Window\WindowManagerWindows.h">
+    <ClInclude Include="..\..\..\CPPScripts\Window\WindowManagerWindows.h">
       <Filter>Window</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Input\InputManager.h">
+    <ClInclude Include="..\..\..\CPPScripts\Input\InputManager.h">
       <Filter>Input</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Input\InputManagerGLFW.h">
+    <ClInclude Include="..\..\..\CPPScripts\Input\InputManagerGLFW.h">
       <Filter>Input</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Input\InputManagerWindows.h">
+    <ClInclude Include="..\..\..\CPPScripts\Input\InputManagerWindows.h">
       <Filter>Input</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\DirectX12\ZXD3D12DescriptorManager.h">
+    <ClInclude Include="..\..\..\CPPScripts\DirectX12\ZXD3D12DescriptorManager.h">
       <Filter>DirectX12</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\DirectX12\ZXD3D12DescriptorAllocator.h">
+    <ClInclude Include="..\..\..\CPPScripts\DirectX12\ZXD3D12DescriptorAllocator.h">
       <Filter>DirectX12</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\DirectX12\D3D12EnumStruct.h">
+    <ClInclude Include="..\..\..\CPPScripts\DirectX12\D3D12EnumStruct.h">
       <Filter>DirectX12</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\DirectX12\ZXD3D12Util.h">
+    <ClInclude Include="..\..\..\CPPScripts\DirectX12\ZXD3D12Util.h">
       <Filter>DirectX12</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\EditorGUIManagerOpenGL.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorGUIManagerOpenGL.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\EditorGUIManagerVulkan.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorGUIManagerVulkan.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\EditorGUIManagerDirectX12.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorGUIManagerDirectX12.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\ImGuiTextureManagerD3D12.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\ImGuiTextureManagerD3D12.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Concurrent\LockFreeQueue.h">
+    <ClInclude Include="..\..\..\CPPScripts\Concurrent\LockFreeQueue.h">
       <Filter>Concurrent</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Concurrent\Queue.h">
+    <ClInclude Include="..\..\..\CPPScripts\Concurrent\Queue.h">
       <Filter>Concurrent</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\PointMass.h">
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\PointMass.h">
       <Filter>PhysZ</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\RigidBody.h">
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\RigidBody.h">
       <Filter>PhysZ</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\PScene.h">
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\PScene.h">
       <Filter>PhysZ</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\Force\FGGravity.h">
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\Force\FGGravity.h">
       <Filter>PhysZ\Force</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\Force\FGSpring.h">
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\Force\FGSpring.h">
       <Filter>PhysZ\Force</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\Force\ForceGenerator.h">
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\Force\ForceGenerator.h">
       <Filter>PhysZ\Force</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lapi.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lapi.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lauxlib.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lauxlib.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lcode.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lcode.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lctype.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lctype.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\ldebug.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\ldebug.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\ldo.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\ldo.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lfunc.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lfunc.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lgc.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lgc.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\ljumptab.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\ljumptab.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\llex.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\llex.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\llimits.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\llimits.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lmem.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lmem.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lobject.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lobject.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lopcodes.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lopcodes.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lopnames.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lopnames.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lparser.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lparser.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lprefix.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lprefix.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lstate.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lstate.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lstring.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lstring.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\ltable.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\ltable.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\ltm.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\ltm.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lua.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lua.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lua.hpp">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lua.hpp">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\luaconf.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\luaconf.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lualib.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lualib.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lundump.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lundump.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lvm.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lvm.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\Lua\lzio.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\Lua\lzio.h">
       <Filter>External\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\ImGui\imconfig.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\ImGui\imconfig.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\ImGui\imgui.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\ImGui\imgui.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\ImGui\imgui_impl_dx12.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\ImGui\imgui_impl_dx12.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\ImGui\imgui_impl_glfw.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\ImGui\imgui_impl_glfw.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\ImGui\imgui_impl_opengl3.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\ImGui\imgui_impl_opengl3.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\ImGui\imgui_impl_opengl3_loader.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\ImGui\imgui_impl_opengl3_loader.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\ImGui\imgui_impl_vulkan.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\ImGui\imgui_impl_vulkan.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\ImGui\imgui_impl_win32.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\ImGui\imgui_impl_win32.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\ImGui\imgui_internal.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\ImGui\imgui_internal.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\ImGui\imstb_rectpack.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\ImGui\imstb_rectpack.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\ImGui\imstb_textedit.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\ImGui\imstb_textedit.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\External\ImGui\imstb_truetype.h">
+    <ClInclude Include="..\..\..\CPPScripts\External\ImGui\imstb_truetype.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\Component.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\Component.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\GameLogic.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\GameLogic.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\Light.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\Light.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\MeshRenderer.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\MeshRenderer.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\ParticleSystem.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\ParticleSystem.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\Transform.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\Transform.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\UITextRenderer.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\UITextRenderer.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\UITextureRenderer.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\UITextureRenderer.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\ZCamera.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\ZCamera.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\BoundingVolume\BoundingSphere.h">
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\BoundingVolume\BoundingSphere.h">
       <Filter>PhysZ\BoundingVolume</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\PhysZEnumStruct.h">
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\PhysZEnumStruct.h">
       <Filter>PhysZ</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\BVHNode.h">
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\BVHNode.h">
       <Filter>PhysZ</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\Contact.h">
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\Contact.h">
       <Filter>PhysZ</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\CollisionData.h">
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\CollisionData.h">
       <Filter>PhysZ</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\CollisionPrimitive.h">
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\CollisionPrimitive.h">
       <Filter>PhysZ</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\CollisionDetector.h">
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\CollisionDetector.h">
       <Filter>PhysZ</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\IntersectionDetector.h">
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\IntersectionDetector.h">
       <Filter>PhysZ</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\ContactResolver.h">
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\ContactResolver.h">
       <Filter>PhysZ</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\PhysZ.h">
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\PhysZ.h">
       <Filter>PhysZ</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\ModelUtil.h">
+    <ClInclude Include="..\..\..\CPPScripts\ModelUtil.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Animation\AnimationController.h">
+    <ClInclude Include="..\..\..\CPPScripts\Animation\AnimationController.h">
       <Filter>Animation</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Animation\Animation.h">
+    <ClInclude Include="..\..\..\CPPScripts\Animation\Animation.h">
       <Filter>Animation</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Animation\NodeAnimation.h">
+    <ClInclude Include="..\..\..\CPPScripts\Animation\NodeAnimation.h">
       <Filter>Animation</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\Animator.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\Animator.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Animator.h">
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Animator.h">
       <Filter>LuaWrap</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Editor\EditorDialogBoxManager.h">
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorDialogBoxManager.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\Physics\BoxCollider.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\Physics\BoxCollider.h">
       <Filter>Component\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\Physics\Collider.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\Physics\Collider.h">
       <Filter>Component\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\Physics\PlaneCollider.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\Physics\PlaneCollider.h">
       <Filter>Component\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\Physics\SphereCollider.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\Physics\SphereCollider.h">
       <Filter>Component\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\Physics\ZRigidBody.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\Physics\ZRigidBody.h">
       <Filter>Component\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\Physics\SpringJoint.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\Physics\SpringJoint.h">
       <Filter>Component\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\Physics\Cloth.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\Physics\Cloth.h">
       <Filter>Component\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Audio\AudioEngine.h">
+    <ClInclude Include="..\..\..\CPPScripts\Audio\AudioEngine.h">
       <Filter>Audio</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Audio\AudioClip.h">
+    <ClInclude Include="..\..\..\CPPScripts\Audio\AudioClip.h">
       <Filter>Audio</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Audio\AudioStream.h">
+    <ClInclude Include="..\..\..\CPPScripts\Audio\AudioStream.h">
       <Filter>Audio</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Audio\ZAudio.h">
+    <ClInclude Include="..\..\..\CPPScripts\Audio\ZAudio.h">
       <Filter>Audio</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\AudioSource.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\AudioSource.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\AudioListener.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\AudioListener.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\Joint\Joint.h">
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\Joint\Joint.h">
       <Filter>PhysZ\Joint</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\PhysZ\Joint\DistanceJoint.h">
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\Joint\DistanceJoint.h">
       <Filter>PhysZ\Joint</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\Component\Physics\ZDistanceJoint.h">
+    <ClInclude Include="..\..\..\CPPScripts\Component\Physics\ZDistanceJoint.h">
       <Filter>Component\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CPPScripts\LuaWrap\Lua_Rigidbody.h">
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Rigidbody.h">
       <Filter>LuaWrap</Filter>
     </ClInclude>
   </ItemGroup>
