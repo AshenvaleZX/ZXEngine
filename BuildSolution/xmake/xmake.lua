@@ -1,12 +1,12 @@
 set_xmakever("2.8.7")
 add_rules("mode.release", "mode.debug")
 if is_mode("debug") then
-    set_targetdir("bin/debug")
+    set_targetdir("debug")
 else
-    set_targetdir("bin/release")
+    set_targetdir("release")
 end
 
-includes("xmake/xmake_func.lua")
+includes("helper/xmake_func.lua")
 
 target("vulkan-sdk")
 set_kind("phony")
@@ -41,18 +41,18 @@ target_end()
 
 target("zxengine")
 set_kind("binary")
-add_files("CPPScripts/**.cpp", "CPPScripts/**.c", "Vendor/Src/**.c")
-add_includedirs("Vendor/Include")
+add_files("../../CPPScripts/**.cpp", "../../CPPScripts/**.c", "../../Vendor/Src/**.c")
+add_includedirs("../../Vendor/Include")
 add_rules("basic_settings", "check-winsdk")
 add_deps("vulkan-sdk")
-add_linkdirs(path.join(os.projectdir(), "Vendor/Libs"))
+add_linkdirs(path.join(os.projectdir(), "../../Vendor/Libs"))
 add_links("assimp-vc143-mt", "freetype", "glfw3", "irrKlang", "opengl32", "Shell32")
-set_pcxxheader("CPPScripts/pubh.h")
+set_pcxxheader("../../CPPScripts/pubh.h")
 add_defines("UNICODE")
 -- copy dll
 after_build(function(target)
-    local bin_dir = path.join(os.projectdir(), "bin", get_config("mode"))
-    local src_dir = path.join(os.projectdir(), "ZXEngine/Build")
+    local bin_dir = path.join(os.projectdir(), get_config("mode"))
+    local src_dir = path.join(os.projectdir(), "../../Vendor/DyLibs")
     os.cp(path.join(src_dir, "*.dll"), bin_dir)
 end)
 target_end()
