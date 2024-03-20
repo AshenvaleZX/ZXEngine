@@ -16,7 +16,7 @@ ZXEngine::Game* ZXEngine::Game::mInstance;
 
 int main(int argc, char* argv[])
 {
-	string path = "../../ExampleProject";
+	string path = "../../../ExampleProject";
 	if (argc > 1) path = argv[1];
 
 	ZXEngine::Game::mInstance = new ZXEngine::Game();

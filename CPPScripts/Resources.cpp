@@ -5,7 +5,7 @@
 namespace ZXEngine
 {
 	string Resources::mAssetsPath;
-	const string Resources::mBuiltInAssetsPath = "../../BuiltInAssets/";
+	const string Resources::mBuiltInAssetsPath = "../../../BuiltInAssets/";
 	vector<PrefabLoadHandle> Resources::mPrefabLoadHandles;
 	vector<PrefabLoadHandle> Resources::mDiscardedPrefabLoadHandles;
 	vector<MaterialLoadHandle> Resources::mMaterialLoadHandles;
