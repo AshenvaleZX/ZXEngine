@@ -26,9 +26,9 @@ namespace ZXEngine
 		void SetListener(GameObject* listener);
 		void RemoveListener(GameObject* listener);
 
-		AudioClip* CreateAudioClip(const string& path);
+		AudioClip* CreateAudioClip(const string& path, bool isFullPath = false);
 		AudioClip* CreateAudioClip(AudioStream* stream);
-		AudioStream* CreateAudioStream(const string& path);
+		AudioStream* CreateAudioStream(const string& path, bool isFullPath = false);
 
 	private:
 		GameObject* mListener = nullptr;

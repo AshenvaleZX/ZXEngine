@@ -84,9 +84,9 @@ namespace ZXEngine
 		}
 	}
 
-	AudioClip* AudioEngine::CreateAudioClip(const string& path)
+	AudioClip* AudioEngine::CreateAudioClip(const string& path, bool isFullPath)
 	{
-		AudioStream* stream = CreateAudioStream(path);
+		AudioStream* stream = CreateAudioStream(path, isFullPath);
 		return new AudioClip(stream);
 	}
 
@@ -95,16 +95,18 @@ namespace ZXEngine
 		return new AudioClip(stream);
 	}
 
-	AudioStream* AudioEngine::CreateAudioStream(const string& path)
+	AudioStream* AudioEngine::CreateAudioStream(const string& path, bool isFullPath)
 	{
-		auto iter = mAudioStreams.find(path);
+		string fullPath = isFullPath ? path : Resources::GetAssetFullPath(path);
+
+		auto iter = mAudioStreams.find(fullPath);
 		if (iter != mAudioStreams.end())
 		{
 			return iter->second;
 		}
 
-		AudioStream* stream = new AudioStream(path);
-		mAudioStreams[path] = stream;
+		AudioStream* stream = new AudioStream(fullPath);
+		mAudioStreams[fullPath] = stream;
 
 		return stream;
 	}

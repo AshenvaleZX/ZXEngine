@@ -6,7 +6,7 @@ namespace ZXEngine
 {
 	AudioStream::AudioStream(const string& path)
 	{
-		mSoundSource = AudioEngine::GetInstance()->mEngine->addSoundSourceFromFile(Resources::GetAssetFullPath(path).c_str());
+		mSoundSource = AudioEngine::GetInstance()->mEngine->addSoundSourceFromFile(path.c_str());
 		mLenthMS = mSoundSource->getPlayLength();
 		mLength = static_cast<float>(mLenthMS) / 1000.0f;
 	}

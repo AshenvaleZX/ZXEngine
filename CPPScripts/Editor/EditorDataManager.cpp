@@ -203,7 +203,7 @@ namespace ZXEngine
 			auto info = new AssetAudioInfo();
 			info->name = asset->name + asset->extension;
 			info->sizeStr = Utils::DataSizeToString(asset->size);
-			info->audioClip = AudioEngine::GetInstance()->CreateAudioClip(asset->path);
+			info->audioClip = AudioEngine::GetInstance()->CreateAudioClip(asset->path, true);
 			info->lengthStr = Utils::MillisecondsToString(info->audioClip->GetLengthMS());
 			curAssetInfo = info;
 		}
