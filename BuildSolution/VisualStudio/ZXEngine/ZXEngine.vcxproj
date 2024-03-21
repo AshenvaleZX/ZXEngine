@@ -82,11 +82,11 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>..\..\..\Vendor\Include\Vulkan;..\..\..\Vendor\Include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\Vendor\Libs;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Build\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)Build\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IncludePath>..\..\..\Vendor\Include\Vulkan;..\..\..\Vendor\Include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\Vendor\Libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
