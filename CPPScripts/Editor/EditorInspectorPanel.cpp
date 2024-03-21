@@ -18,12 +18,6 @@
 #include "../MaterialData.h"
 #include "../Audio/AudioClip.h"
 
-// 防止windows.h里的宏定义max和min影响到其它库里的相同字段
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-
 namespace ZXEngine
 {
 	void EditorInspectorPanel::DrawPanel()
@@ -365,8 +359,7 @@ namespace ZXEngine
 		if (ImGui::Button(component->luaName.c_str()))
 		{
 			string path = Utils::ConvertPathToWindowsFormat(component->luaFullPath);
-			std::wstring wsStr = std::wstring(path.begin(), path.end());
-			ShellExecute(NULL, NULL, wsStr.c_str(), NULL, NULL, SW_SHOW);
+			system(("start " + path).c_str());
 		}
 	}
 
