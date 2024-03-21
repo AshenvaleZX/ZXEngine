@@ -15,24 +15,36 @@ on_load(function(target)
     if not vk_path then
         vk_path = os.getenv("VK_SDK_PATH")
     end
-    if is_plat("linux", "macosx") then
-        target:add("linkdirs", path.join(vk_path, "lib"), {
-            public = true
-        })
-        target:add("links", "vulkan", {
-            public = true
-        })
-        target:add("includedirs", path.join(vk_path, "include"), {
-            public = true
-        })
+    if vk_path then
+        if is_plat("linux", "macosx") then
+            target:add("linkdirs", path.join(vk_path, "lib"), {
+                public = true
+            })
+            target:add("links", "vulkan", {
+                public = true
+            })
+            target:add("includedirs", path.join(vk_path, "include"), {
+                public = true
+            })
+        else
+            target:add("linkdirs", path.join(vk_path, "Lib"), {
+                public = true
+            })
+            target:add("links", "vulkan-1", {
+                public = true
+            })
+            target:add("includedirs", path.join(vk_path, "Include"), {
+                public = true
+            })
+        end
     else
-        target:add("linkdirs", path.join(vk_path, "Lib"), {
+        target:add("linkdirs", path.join(os.projectdir(), "../../Vendor/Libs"), {
             public = true
         })
         target:add("links", "vulkan-1", {
             public = true
         })
-        target:add("includedirs", path.join(vk_path, "Include"), {
+        target:add("includedirs", path.join(os.projectdir(), "../../Vendor/Include/Vulkan"), {
             public = true
         })
     end
