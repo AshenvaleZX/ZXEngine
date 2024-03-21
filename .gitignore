@@ -1,6 +1,3 @@
-# 编译生成的引擎程序
-ZXEngine/Build/*.exe
-
 # Visual Studio Code
 *.code-workspace
 
@@ -18,7 +15,7 @@ ZXEngine/Build/*.exe
 log.txt
 
 # ImGui
-ZXEngine/ZXEngine/imgui.ini
+imgui.ini
 
 
 ## Ignore Visual Studio temporary files, build results, and
