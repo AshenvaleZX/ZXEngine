@@ -93,9 +93,20 @@ namespace ZXEngine
 			// 如果间隔时间小于300ms，则认为是双击
 			if (dt < 300000)
 			{
-				if (asset->type == AssetType::Scene)
+
+				switch (asset->type)
 				{
+				case AssetType::Scene:
 					SceneManager::GetInstance()->LoadScene(Resources::GetAssetLocalPath(asset->path));
+					break;
+				case AssetType::Texture:
+				case AssetType::Model:
+				case AssetType::Script:
+				case AssetType::Audio:
+					system(("start " + asset->path).c_str());
+					break;
+				default:
+					break;
 				}
 			}
 
