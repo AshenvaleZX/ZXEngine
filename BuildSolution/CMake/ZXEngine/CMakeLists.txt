@@ -1,5 +1,8 @@
 set(PROJECT_NAME ZXEngine)
 
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
+
 ################################################################################
 # Source groups
 ################################################################################
@@ -334,7 +337,7 @@ set(Window
 )
 source_group("Window" FILES ${Window})
 
-set(
+set(ZXHeader
     "../../../CPPScripts/CubeMap.h"
     "../../../CPPScripts/Debug.h"
     "../../../CPPScripts/DynamicMesh.h"
@@ -385,9 +388,9 @@ set(
     "../../../CPPScripts/ZMesh.h"
     "../../../CPPScripts/ZShader.h"
 )
-source_group("头文件" FILES ${})
+source_group("ZXHeader" FILES ${ZXHeader})
 
-set(
+set(ZXSource
     "../../../CPPScripts/CubeMap.cpp"
     "../../../CPPScripts/Debug.cpp"
     "../../../CPPScripts/DynamicMesh.cpp"
@@ -433,7 +436,7 @@ set(
     "../../../CPPScripts/ZMesh.cpp"
     "../../../CPPScripts/ZShader.cpp"
 )
-source_group("源文件" FILES ${})
+source_group("ZXSource" FILES ${ZXSource})
 
 set(ALL_FILES
     ${Animation}
@@ -455,8 +458,8 @@ set(ALL_FILES
     ${PhysZ__Joint}
     ${Vulkan}
     ${Window}
-    ${}
-    ${}
+    ${ZXHeader}
+    ${ZXSource}
 )
 
 ################################################################################
@@ -475,8 +478,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     set_target_properties(${PROJECT_NAME} PROPERTIES
-        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}/Build/"
-        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/Build/"
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}/$<CONFIG>/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/$<CONFIG>/"
     )
 endif()
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
@@ -575,6 +578,14 @@ if(MSVC)
         )
     endif()
 endif()
+
+target_include_directories(${PROJECT_NAME} PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../Vendor/Include/Vulkan
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../Vendor/Include
+)
+target_link_directories(${PROJECT_NAME} PRIVATE 
+    ${PROJECT_SOURCE_DIR}/../../../Vendor/Libs
+)
 
 ################################################################################
 # Post build events
