@@ -348,9 +348,24 @@ Models, textures, fonts, etc. are common file formats.
 
 ## 构建 (Build)
 
-本项目使用Visual Studio 2022构建，暂时不支持跨平台。VS项目文件已经放到ZXEngine文件夹下了，直接打开.sln构建即可。同时也提供了CMakeLists，不过在非WIndows环境下暂时还无法正确构建。
+本项目提供了三种构建方式，放在了BuildSolution下面，分别是Visual Studio 2022，xmake和CMake。喜欢用VS的直接用VS 2022打开BuildSolution\VisualStudio\ZXEngine.sln构建即可。如果不想用VS，可以使用xmake，使用方式如下：
 
-This project is built using Visual Studio 2022 and does not support cross-platform for now. The VS project file has been placed in the ZXEngine folder, and you can directly open the .sln file to build. CMakeLists is also provided, but it cannot be built correctly in non-WIndows environments yet.
+This project provides three building methods, which are placed under BuildSolution, including Visual Studio 2022, xmake and CMake. If you like to use VS, just use VS 2022 to open BuildSolution\VisualStudio\ZXEngine.sln to build. If you don’t want to use VS, you can use xmake as follows:
+
+```shell
+cd BuildSolution\xmake
+xmake
+xmake run zxengine
+```
+
+最后是CMake，不过不是很推荐使用。因为CMake写起来比较麻烦，我是在工具生成的基础上再手动调整一下写出来的，所以不保证各种环境和使用方式下都没问题。更推荐xmake，要简单好用一些。
+
+Finally, there is CMake, but it is not recommended. Because I'm not very familiar with writing CMake, I use a tool to generate the CMake file, and then manually modified it, so I cannot guarantee that there will be no problem in various environments and usage methods. I recommend xmake, which is simpler and easier to use.
+
+```shell
+cd BuildSolution\CMake
+cmake CMakeLists.txt
+```
 
 由于我公司的开发环境以及我自己的电脑都是Windows，所以目前本项目仅支持Windows系统。跨平台的想法我是有的，但是我的精力有限。这只是我用空闲时间开发的项目，还有不少我想做的东西没做，所以短期内还不会做跨平台支持，感谢大家的理解。
 
