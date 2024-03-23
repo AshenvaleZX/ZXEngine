@@ -243,7 +243,7 @@ namespace ZXEngine
 		fileIcons[(int)AssetType::Material]           = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/material.png", true));
 		fileIcons[(int)AssetType::RayTracingMaterial] = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/material.png", true));
 		fileIcons[(int)AssetType::Prefab]             = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/prefab.png",   true));
-		fileIcons[(int)AssetType::Script]             = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/script.png",   true));
+		fileIcons[(int)AssetType::Script]             = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/lua.png",      true));
 		fileIcons[(int)AssetType::Shader]             = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/shader.png",   true));
 		fileIcons[(int)AssetType::Texture]            = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/texture.png",  true));
 		fileIcons[(int)AssetType::Scene]              = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/scene.png",    true));
