@@ -64,7 +64,7 @@ namespace ZXEngine
     // 自定义的Debug回调函数，VKAPI_ATTR和VKAPI_CALL确保了正确的函数签名，从而被Vulkan调用
     static VKAPI_ATTR VkBool32 VKAPI_CALL VkDebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
     {
-        std::cerr << "My debug call back: " << pCallbackData->pMessage << std::endl;
+        std::cerr << pCallbackData->pMessage << std::endl;
 
         // 如果是Error，立刻中断
         if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) 
@@ -123,11 +123,10 @@ namespace ZXEngine
     void RenderAPIVulkan::EndFrame()
     {
         VkSwapchainKHR swapChains[] = { swapChain };
-        VkSemaphore waitSemaphores[] = { presentImageAvailableSemaphores[currentFrame] };
         VkPresentInfoKHR presentInfo = {};
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-        presentInfo.pWaitSemaphores = waitSemaphores;
-        presentInfo.waitSemaphoreCount = 1;
+        presentInfo.pWaitSemaphores = curWaitSemaphores.data();
+        presentInfo.waitSemaphoreCount = static_cast<uint32_t>(curWaitSemaphores.size());
         presentInfo.pSwapchains = swapChains;
         presentInfo.swapchainCount = 1;
         presentInfo.pImageIndices = &curPresentImageIdx;
@@ -141,6 +140,7 @@ namespace ZXEngine
         else if (result != VK_SUCCESS)
             throw std::runtime_error("failed to present swap chain image!");
 
+        curWaitSemaphores.clear();
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 
@@ -1182,13 +1182,21 @@ namespace ZXEngine
 
         vector<VkPipelineStageFlags> waitStages = {};
         waitStages.resize(curWaitSemaphores.size(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
+        vector<VkSemaphore> waitSemaphores = curWaitSemaphores;
+        // AfterEffect是第一个直接写入PresentBuffer的，所以需要等PresentBuffer可用
+        if (curFBOIdx == presentFBOIdx && curDrawCommandObj->commandType == CommandType::AfterEffectRendering)
+        {
+            waitStages.push_back(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+            waitSemaphores.push_back(presentImageAvailableSemaphores[currentFrame]);
+        }
+
         VkSubmitInfo submitInfo = {};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.pCommandBuffers = &commandBuffer;
         submitInfo.commandBufferCount = 1;
-        submitInfo.pWaitSemaphores = curWaitSemaphores.data();
+        submitInfo.pWaitSemaphores = waitSemaphores.data();
         submitInfo.pWaitDstStageMask = waitStages.data();
-        submitInfo.waitSemaphoreCount = static_cast<uint32_t>(curWaitSemaphores.size());
+        submitInfo.waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size());
         submitInfo.pSignalSemaphores = curDrawCommand.signalSemaphores.data();
         submitInfo.signalSemaphoreCount = static_cast<uint32_t>(curDrawCommand.signalSemaphores.size());
 

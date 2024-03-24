@@ -18,6 +18,7 @@ static VkRenderPass g_RenderPass = VK_NULL_HANDLE;
 static VkCommandPool g_CommandPool = VK_NULL_HANDLE;
 static vector<VkCommandBuffer> g_CommandBuffers;
 static vector<VkFramebuffer> g_FrameBuffers;
+static vector<VkSemaphore> g_RenderFinishSemaphores;
 
 static void check_vk_result(VkResult err)
 {
@@ -216,6 +217,19 @@ namespace ZXEngine
 				throw std::runtime_error("failed to allocate command buffers!");
 		}
 
+		// 渲染完成的VkSemaphore
+		{
+			g_RenderFinishSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+
+			for (size_t i = 0; i < g_RenderFinishSemaphores.size(); i++)
+			{
+				VkSemaphoreCreateInfo semaphoreInfo = {};
+				semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+				if (vkCreateSemaphore(renderAPI->device, &semaphoreInfo, nullptr, &g_RenderFinishSemaphores[i]) != VK_SUCCESS)
+					throw std::runtime_error("failed to create synchronization objects for a frame!");
+			}
+		}
+
 		// 在调用ImGui_ImplVulkan_Init初始化基于Vulkan的ImGui之前，先调用这个接口，给ImGui一个可以加载Vulkan函数的函数
 		// 其实本来可以不需要这一步的，因为ImGui的绘制只会用到Vulkan的Core函数，而Vulkan的Core函数不需要我们手动加载
 		// 但是如果我们要使用Vulkan光追，就要启用相关扩展，而Vulkan扩展的函数虽然在vulkan.h的头文件里，但是这些函数并没有直接加载好
@@ -284,14 +298,14 @@ namespace ZXEngine
 		submitInfo.pWaitSemaphores = renderAPI->curWaitSemaphores.data();
 		submitInfo.pWaitDstStageMask = waitStages.data();
 		submitInfo.waitSemaphoreCount = static_cast<uint32_t>(renderAPI->curWaitSemaphores.size());
-		// 这是固定在最后提交的，所以没有要等这个Command的地方，也不用激发信号量
-		submitInfo.signalSemaphoreCount = 0;
+		submitInfo.pSignalSemaphores = &g_RenderFinishSemaphores[renderAPI->currentFrame];
+		submitInfo.signalSemaphoreCount = 1;
 
 		VkFence fence = renderAPI->inFlightFences[renderAPI->currentFrame];
 		if (vkQueueSubmit(renderAPI->graphicsQueue, 1, &submitInfo, fence) != VK_SUCCESS)
 			throw std::runtime_error("failed to submit draw command buffer!");
 
-		renderAPI->curWaitSemaphores.clear();
+		renderAPI->curWaitSemaphores = { g_RenderFinishSemaphores[renderAPI->currentFrame] };
 	}
 
 	void EditorGUIManagerVulkan::RecreateFrameBuffers()
