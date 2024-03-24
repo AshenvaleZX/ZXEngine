@@ -50,7 +50,7 @@ namespace ZXEngine
 		string outputFinalPath = path.parent_path().string() + "\\" + path.stem().string() + ".spv";
 		string stage = Utils::GetFileExtension(path.stem().string());
 
-		string command = "..\\..\\Tools\\glslangValidator.exe -V " + Utils::ConvertPathToWindowsFormat(filePath) + 
+		string command = "..\\..\\..\\Tools\\glslangValidator.exe -V " + Utils::ConvertPathToWindowsFormat(filePath) + 
 			" --target-env spirv1.6 -S " + stage + " -o " + Utils::ConvertPathToWindowsFormat(outputFinalPath);
 
 		std::system(command.c_str());
@@ -96,7 +96,7 @@ namespace ZXEngine
 		}
 
 		// 用Vulkan工具生成SPIR-V文件
-		string command = "..\\..\\Tools\\glslangValidator.exe -V " + Utils::ConvertPathToWindowsFormat(writeTempPath) + " -o " + Utils::ConvertPathToWindowsFormat(outputFinalPath);
+		string command = "..\\..\\..\\Tools\\glslangValidator.exe -V " + Utils::ConvertPathToWindowsFormat(writeTempPath) + " -o " + Utils::ConvertPathToWindowsFormat(outputFinalPath);
 		std::system(command.c_str());
 		// 删除临时文件
 		if (!ProjectSetting::preserveIntermediateShader)

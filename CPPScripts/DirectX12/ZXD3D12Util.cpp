@@ -25,15 +25,15 @@ namespace ZXEngine
 
 		// 用微软的工具预编译hlsl代码
 		// VS
-		string command = "..\\..\\Tools\\fxc.exe /T vs_5_1 /E VS /Fo " + Utils::ConvertPathToWindowsFormat(outputPath + ".vert.fxc") + " " + Utils::ConvertPathToWindowsFormat(hlslPath);
+		string command = "..\\..\\..\\Tools\\fxc.exe /T vs_5_1 /E VS /Fo " + Utils::ConvertPathToWindowsFormat(outputPath + ".vert.fxc") + " " + Utils::ConvertPathToWindowsFormat(hlslPath);
 		std::system(command.c_str());
 		// PS
-		command = "..\\..\\Tools\\fxc.exe /T ps_5_1 /E PS /Fo " + Utils::ConvertPathToWindowsFormat(outputPath + ".frag.fxc") + " " + Utils::ConvertPathToWindowsFormat(hlslPath);
+		command = "..\\..\\..\\Tools\\fxc.exe /T ps_5_1 /E PS /Fo " + Utils::ConvertPathToWindowsFormat(outputPath + ".frag.fxc") + " " + Utils::ConvertPathToWindowsFormat(hlslPath);
 		std::system(command.c_str());
 		// GS
 		if (stageFlags & ZX_SHADER_STAGE_GEOMETRY_BIT)
 		{
-			command = "..\\..\\Tools\\fxc.exe /T gs_5_1 /E GS /Fo " + Utils::ConvertPathToWindowsFormat(outputPath + ".geom.fxc") + " " + Utils::ConvertPathToWindowsFormat(hlslPath);
+			command = "..\\..\\..\\Tools\\fxc.exe /T gs_5_1 /E GS /Fo " + Utils::ConvertPathToWindowsFormat(outputPath + ".geom.fxc") + " " + Utils::ConvertPathToWindowsFormat(hlslPath);
 			std::system(command.c_str());
 		}
 
