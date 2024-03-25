@@ -3287,6 +3287,8 @@ namespace ZXEngine
         deviceVulkan12Features.runtimeDescriptorArray = VK_TRUE;
         deviceVulkan12Features.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
         deviceVulkan12Features.hostQueryReset = VK_TRUE;
+        // 支持创建光追ShaderModule时，Shader里的顶点和索引等Buffer的数据结构不对齐16字节
+        deviceVulkan12Features.scalarBlockLayout = VK_TRUE;
         shaderClockFeature.pNext = &deviceVulkan12Features;
         deviceVulkan12Features.pNext = nullptr;
 
