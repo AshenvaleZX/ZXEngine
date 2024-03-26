@@ -11,43 +11,54 @@ includes("helper/xmake_func.lua")
 target("vulkan-sdk")
 set_kind("phony")
 on_load(function(target)
-    local vk_path = os.getenv("VULKAN_SDK")
-    if not vk_path then
-        vk_path = os.getenv("VK_SDK_PATH")
-    end
-    if vk_path then
-        if is_plat("linux", "macosx") then
-            target:add("linkdirs", path.join(vk_path, "lib"), {
-                public = true
-            })
-            target:add("links", "vulkan", {
-                public = true
-            })
-            target:add("includedirs", path.join(vk_path, "include"), {
-                public = true
-            })
-        else
-            target:add("linkdirs", path.join(vk_path, "Lib"), {
-                public = true
-            })
-            target:add("links", "vulkan-1", {
-                public = true
-            })
-            target:add("includedirs", path.join(vk_path, "Include"), {
-                public = true
-            })
-        end
-    else
-        target:add("linkdirs", path.join(os.projectdir(), "../../Vendor/Libs"), {
-            public = true
-        })
-        target:add("links", "vulkan-1", {
-            public = true
-        })
-        target:add("includedirs", path.join(os.projectdir(), "../../Vendor/Include/Vulkan"), {
-            public = true
-        })
-    end
+    -- 使用工程自带的Vulkan SDK
+    target:add("linkdirs", path.join(os.projectdir(), "../../Vendor/Libs"), {
+        public = true
+    })
+    target:add("links", "vulkan-1", {
+        public = true
+    })
+    target:add("includedirs", path.join(os.projectdir(), "../../Vendor/Include/Vulkan"), {
+        public = true
+    })
+    -- 使用系统环境的Vulkan SDK，暂时弃用，因为可能会有版本不一致的问题导致编译失败
+    -- local vk_path = os.getenv("VULKAN_SDK")
+    -- if not vk_path then
+    --     vk_path = os.getenv("VK_SDK_PATH")
+    -- end
+    -- if vk_path then
+    --     if is_plat("linux", "macosx") then
+    --         target:add("linkdirs", path.join(vk_path, "lib"), {
+    --             public = true
+    --         })
+    --         target:add("links", "vulkan", {
+    --             public = true
+    --         })
+    --         target:add("includedirs", path.join(vk_path, "include"), {
+    --             public = true
+    --         })
+    --     else
+    --         target:add("linkdirs", path.join(vk_path, "Lib"), {
+    --             public = true
+    --         })
+    --         target:add("links", "vulkan-1", {
+    --             public = true
+    --         })
+    --         target:add("includedirs", path.join(vk_path, "Include"), {
+    --             public = true
+    --         })
+    --     end
+    -- else
+    --     target:add("linkdirs", path.join(os.projectdir(), "../../Vendor/Libs"), {
+    --         public = true
+    --     })
+    --     target:add("links", "vulkan-1", {
+    --         public = true
+    --     })
+    --     target:add("includedirs", path.join(os.projectdir(), "../../Vendor/Include/Vulkan"), {
+    --         public = true
+    --     })
+    -- end
 end)
 target_end()
 
