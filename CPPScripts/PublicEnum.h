@@ -229,6 +229,7 @@ namespace ZXEngine
 		ENGINE_DEPTH_CUBE_MAP,
 		ENGINE_FAR_PLANE,
 		ENGINE_MODEL_INV,
+		ENGINE_TIME,
 	};
 
 	enum class InputButton

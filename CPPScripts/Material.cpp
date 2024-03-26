@@ -5,6 +5,7 @@
 #include "GlobalData.h"
 #include "MaterialData.h"
 #include "RenderEngineProperties.h"
+#include "Time.h"
 
 namespace ZXEngine
 {
@@ -107,6 +108,8 @@ namespace ZXEngine
 			SetScalar(name, GlobalData::shadowCubeMapFarPlane);
 		else if (type == ShaderPropertyType::ENGINE_MODEL_INV)
 			SetMatrix(name, engineProperties->matM_Inv);
+		else if (type == ShaderPropertyType::ENGINE_TIME)
+			SetVector(name, Vector2(Time::curTime, Time::deltaTime));
 		else if (type == ShaderPropertyType::ENGINE_DEPTH_MAP)
 		{
 			SetTexture(name, engineProperties->shadowMap, textureIdx, false, engineProperties->isShadowMapBuffer);
