@@ -137,6 +137,8 @@ namespace ZXEngine
 				SetVector(iter.first, iter.second);
 			for (auto& iter : data->vec4Datas)
 				SetVector(iter.first, iter.second);
+			for (auto& iter : data->colorDatas)
+				SetVector(iter.first, iter.second);
 
 			data->isDirty = false;
 		}
@@ -235,10 +237,11 @@ namespace ZXEngine
 	void Material::CopyMaterialStructToMaterialData(MaterialStruct* matStruct, MaterialData* data)
 	{
 		data->floatDatas = matStruct->floatDatas;
-		data->uintDatas = matStruct->uintDatas;
-		data->vec2Datas = matStruct->vec2Datas;
-		data->vec3Datas = matStruct->vec3Datas;
-		data->vec4Datas = matStruct->vec4Datas;
+		data->uintDatas  = matStruct->uintDatas;
+		data->vec2Datas  = matStruct->vec2Datas;
+		data->vec3Datas  = matStruct->vec3Datas;
+		data->vec4Datas  = matStruct->vec4Datas;
+		data->colorDatas = matStruct->colorDatas;
 
 		for (auto textureStruct : matStruct->textures)
 		{

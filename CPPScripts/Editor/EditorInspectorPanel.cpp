@@ -216,6 +216,22 @@ namespace ZXEngine
 		}
 		ImGui::PopItemWidth();
 
+		for (auto& iter : material->data->colorDatas)
+		{
+			Vector4 value = iter.second;
+			ImVec4 color = ImVec4(value.x, value.y, value.z, value.w);
+			ImGui::Text(iter.first.c_str());
+			ImGui::SameLine(120); ImGui::ColorEdit4(("##color" + to_string(idx)).c_str(), (float*)&color);
+			idx++;
+
+			Vector4 newValue = Vector4(color.x, color.y, color.z, color.w);
+			if (newValue != iter.second)
+			{
+				material->data->isDirty = true;
+				material->data->colorDatas[iter.first] = newValue;
+			}
+		}
+
 		auto ImTextureMgr = ImGuiTextureManager::GetInstance();
 		for (auto& iter : material->data->textures)
 		{

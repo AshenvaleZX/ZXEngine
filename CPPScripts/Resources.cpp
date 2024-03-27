@@ -337,6 +337,13 @@ namespace ZXEngine
 			matStruct->vec4Datas[vec4["UniformName"]] = value;
 		}
 
+		for (size_t i = 0; i < data["Color"].size(); i++)
+		{
+			const json& color = data["Color"][i];
+			Vector4 value = Vector4(color["Value"][0], color["Value"][1], color["Value"][2], color["Value"][3]);
+			matStruct->colorDatas[color["UniformName"]] = value;
+		}
+
 		for (size_t i = 0; i < data["Textures"].size(); i++)
 		{
 			const json& texture = data["Textures"][i];

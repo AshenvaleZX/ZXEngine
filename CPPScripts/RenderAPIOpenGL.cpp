@@ -484,6 +484,8 @@ namespace ZXEngine
 			SetShaderScalar(material, property.first, property.second, true);
 		for (auto& property : material->data->uintDatas)
 			SetShaderScalar(material, property.first, property.second, true);
+		for (auto& property : material->data->colorDatas)
+			SetShaderVector(material, property.first, property.second, true);
 
 		material->data->initialized = true;
 	}

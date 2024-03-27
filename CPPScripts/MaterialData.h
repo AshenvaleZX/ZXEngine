@@ -16,6 +16,7 @@ namespace ZXEngine
 		map<string, Vector2> vec2Datas;
 		map<string, Vector3> vec3Datas;
 		map<string, Vector4> vec4Datas;
+		map<string, Vector4> colorDatas;
 		vector<pair<string, Texture*>> textures;
 
 		// 光追材质的数据信息
