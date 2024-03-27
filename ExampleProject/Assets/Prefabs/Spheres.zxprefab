@@ -19,12 +19,12 @@
                     "Type": "Transform",
                     "Position": [0, 0, 0],
                     "Rotation": [0, 0, 0],
-                    "Scale": [2, 2, 2]
+                    "Scale": [4, 4, 4]
                 },
                 {
                     "Type": "MeshRenderer",
                     "Geometry": 1,
-                    "Material": "Materials/BlinnPhong.zxmat",
+                    "Material": "Materials/LightWave.zxmat",
                     "CastShadow": true,
                     "ReceiveShadow": false
                 }

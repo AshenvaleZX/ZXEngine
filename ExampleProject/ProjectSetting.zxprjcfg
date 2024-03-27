@@ -2,7 +2,7 @@
     "WindowSize": [1280, 720],
     "DefaultScene": "Scenes/MyWorld.zxscene",
     "DynamicBatch": false,
-    "PreserveIntermediateShader": true,
+    "PreserveIntermediateShader": false,
     "EnableGraphicsDebug": false,
     "LogToFile": false,
     "StablePhysics": true
