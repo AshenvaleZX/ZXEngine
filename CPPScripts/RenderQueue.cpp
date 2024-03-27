@@ -31,16 +31,33 @@ namespace ZXEngine
 		batches.clear();
 	}
 
-	void RenderQueue::Sort(Camera* camera)
+	void RenderQueue::Sort(Camera* camera, RenderSortType type)
 	{
-		sort(renderers.begin(), renderers.end(), [camera](MeshRenderer* a, MeshRenderer* b)->bool {
-			auto aPos = a->gameObject->GetComponent<Transform>()->GetPosition();
-			auto bPos = b->gameObject->GetComponent<Transform>()->GetPosition();
-			auto cPos = camera->gameObject->GetComponent<Transform>()->GetPosition();
-			auto aDis = Math::Distance(aPos, cPos);
-			auto bDis = Math::Distance(bPos, cPos);
-			return aDis < bDis;
-		});
+		switch (type)
+		{
+		case RenderSortType::FrontToBack:
+			sort(renderers.begin(), renderers.end(), [camera](MeshRenderer* a, MeshRenderer* b)->bool {
+				auto aPos = a->gameObject->GetComponent<Transform>()->GetPosition();
+				auto bPos = b->gameObject->GetComponent<Transform>()->GetPosition();
+				auto cPos = camera->gameObject->GetComponent<Transform>()->GetPosition();
+				auto aDis = Math::Distance(aPos, cPos);
+				auto bDis = Math::Distance(bPos, cPos);
+				return aDis < bDis;
+			});
+			break;
+		case RenderSortType::BackToFront:
+			sort(renderers.begin(), renderers.end(), [camera](MeshRenderer* a, MeshRenderer* b)->bool {
+				auto aPos = a->gameObject->GetComponent<Transform>()->GetPosition();
+				auto bPos = b->gameObject->GetComponent<Transform>()->GetPosition();
+				auto cPos = camera->gameObject->GetComponent<Transform>()->GetPosition();
+				auto aDis = Math::Distance(aPos, cPos);
+				auto bDis = Math::Distance(bPos, cPos);
+				return aDis > bDis;
+			});
+			break;
+		default:
+			break;
+		}
 	}
 
 	void RenderQueue::Batch()

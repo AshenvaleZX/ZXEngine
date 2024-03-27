@@ -61,14 +61,14 @@ namespace ZXEngine
 		// 渲染不透明队列
 		renderAPI->SetRenderState(opaqueRenderState);
 		auto opaqueQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Opaque);
-		opaqueQueue->Sort(camera);
+		opaqueQueue->Sort(camera, RenderSortType::FrontToBack);
 		opaqueQueue->Batch();
 		RenderBatches(opaqueQueue->GetBatches());
 
 		// 渲染半透明队列
 		renderAPI->SetRenderState(transparentRenderState);
 		auto transparentQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Transparent);
-		transparentQueue->Sort(camera);
+		transparentQueue->Sort(camera, RenderSortType::BackToFront);
 		transparentQueue->Batch();
 		RenderBatches(transparentQueue->GetBatches());
 

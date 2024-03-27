@@ -6,6 +6,13 @@
 
 namespace ZXEngine
 {
+	enum class RenderSortType
+	{
+		None,
+		FrontToBack,
+		BackToFront,
+	};
+
 	class Camera;
 	class StaticMesh;
 	class MeshRenderer;
@@ -21,7 +28,7 @@ namespace ZXEngine
 		RendererList GetRenderers();
 		BatchMap GetBatches();
 		void Clear();
-		void Sort(Camera* camera);
+		void Sort(Camera* camera, RenderSortType type = RenderSortType::None);
 		void Batch();
 
 	private:
