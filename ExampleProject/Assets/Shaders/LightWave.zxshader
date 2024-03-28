@@ -5,6 +5,7 @@ Setting
     Cull Back
     ZTest Less
     ZWrite Off
+    RenderQueue Transparent
 }
 
 Vertex

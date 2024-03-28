@@ -28,6 +28,7 @@ Setting
     Cull Back
     ZTest Less
     ZWrite On
+    RenderQueue Opaque
 }
 
 Vertex
