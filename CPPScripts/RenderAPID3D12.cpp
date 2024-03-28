@@ -1165,13 +1165,15 @@ namespace ZXEngine
 		// 创建根签名
 		ComPtr<ID3D12RootSignature> rootSignature;
 		{
+			// 声明放到外面，避免作用域问题
+			CD3DX12_DESCRIPTOR_RANGE descriptorRange = {};
+
 			vector<CD3DX12_ROOT_PARAMETER> rootParameters = {};
 			if (textureNum > 0)
 			{
 				rootParameters.resize(2);
 				rootParameters[0].InitAsConstantBufferView(0);
-
-				CD3DX12_DESCRIPTOR_RANGE descriptorRange = {};
+				
 				descriptorRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, textureNum, 0, 0);
 				rootParameters[1].InitAsDescriptorTable(1, &descriptorRange, D3D12_SHADER_VISIBILITY_ALL);
 			}

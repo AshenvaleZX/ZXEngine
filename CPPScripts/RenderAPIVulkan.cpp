@@ -1120,21 +1120,27 @@ namespace ZXEngine
         renderPassInfo.renderArea.offset = { viewPortInfo.xOffset, viewPortInfo.yOffset };
         // 一般来说大小(extend)是和framebuffer的attachment一致的，如果小了会浪费，大了超出去的部分是一些未定义数值
         renderPassInfo.renderArea.extent = { viewPortInfo.width, viewPortInfo.height };
+
+        vector<VkClearValue> clearValues;
         if (curFBO->renderPassType == RenderPassType::Normal)
         {
             auto& clearInfo = curFBO->clearInfo;
-            array<VkClearValue, 2> clearValues = {};
+
+            clearValues.resize(2);
             clearValues[0].color = { { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a } };
             clearValues[1].depthStencil = { clearInfo.depth, clearInfo.stencil };
+
             renderPassInfo.pClearValues = clearValues.data();
             renderPassInfo.clearValueCount = 2;
         }
         else if (curFBO->renderPassType == RenderPassType::ShadowMap || curFBO->renderPassType == RenderPassType::ShadowCubeMap)
         {
             auto& clearInfo = curFBO->clearInfo;
-            VkClearValue clearValue = {};
-            clearValue.depthStencil.depth = clearInfo.depth;
-            renderPassInfo.pClearValues = &clearValue;
+
+            clearValues.resize(1);
+            clearValues[0].depthStencil.depth = clearInfo.depth;
+
+            renderPassInfo.pClearValues = clearValues.data();
             renderPassInfo.clearValueCount = 1;
         }
         else
