@@ -678,12 +678,14 @@ namespace ZXEngine
         {
             vector<VkWriteDescriptorSet> writeDescriptorSets;
 
+            // BufferInfo的声明写到外面，否则会有变量作用域问题
+            VkDescriptorBufferInfo vertBufferInfo = {};
             if (!vulkanMaterialData->vertUniformBuffers.empty())
             {
-                VkDescriptorBufferInfo bufferInfo = {};
-                bufferInfo.buffer = vulkanMaterialData->vertUniformBuffers[i].buffer.buffer;
-                bufferInfo.offset = 0;
-                bufferInfo.range = vulkanMaterialData->vertUniformBuffers[i].size;
+                vertBufferInfo.buffer = vulkanMaterialData->vertUniformBuffers[i].buffer.buffer;
+                vertBufferInfo.offset = 0;
+                vertBufferInfo.range = vulkanMaterialData->vertUniformBuffers[i].size;
+
                 VkWriteDescriptorSet writeDescriptorSet = {};
                 writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
                 writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -691,15 +693,17 @@ namespace ZXEngine
                 writeDescriptorSet.dstBinding = vulkanMaterialData->vertUniformBuffers[i].binding;
                 writeDescriptorSet.dstArrayElement = 0;
                 writeDescriptorSet.descriptorCount = 1;
-                writeDescriptorSet.pBufferInfo = &bufferInfo;
+                writeDescriptorSet.pBufferInfo = &vertBufferInfo;
                 writeDescriptorSets.push_back(writeDescriptorSet);
             }
+
+            VkDescriptorBufferInfo geomBufferInfo = {};
             if (!vulkanMaterialData->geomUniformBuffers.empty())
             {
-                VkDescriptorBufferInfo bufferInfo = {};
-                bufferInfo.buffer = vulkanMaterialData->geomUniformBuffers[i].buffer.buffer;
-                bufferInfo.offset = 0;
-                bufferInfo.range = vulkanMaterialData->geomUniformBuffers[i].size;
+                geomBufferInfo.buffer = vulkanMaterialData->geomUniformBuffers[i].buffer.buffer;
+                geomBufferInfo.offset = 0;
+                geomBufferInfo.range = vulkanMaterialData->geomUniformBuffers[i].size;
+
                 VkWriteDescriptorSet writeDescriptorSet = {};
                 writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
                 writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -707,15 +711,17 @@ namespace ZXEngine
                 writeDescriptorSet.dstBinding = vulkanMaterialData->geomUniformBuffers[i].binding;
                 writeDescriptorSet.dstArrayElement = 0;
                 writeDescriptorSet.descriptorCount = 1;
-                writeDescriptorSet.pBufferInfo = &bufferInfo;
+                writeDescriptorSet.pBufferInfo = &geomBufferInfo;
                 writeDescriptorSets.push_back(writeDescriptorSet);
             }
+
+            VkDescriptorBufferInfo fragBufferInfo = {};
             if (!vulkanMaterialData->fragUniformBuffers.empty())
             {
-                VkDescriptorBufferInfo bufferInfo = {};
-                bufferInfo.buffer = vulkanMaterialData->fragUniformBuffers[i].buffer.buffer;
-                bufferInfo.offset = 0;
-                bufferInfo.range = vulkanMaterialData->fragUniformBuffers[i].size;
+                fragBufferInfo.buffer = vulkanMaterialData->fragUniformBuffers[i].buffer.buffer;
+                fragBufferInfo.offset = 0;
+                fragBufferInfo.range = vulkanMaterialData->fragUniformBuffers[i].size;
+
                 VkWriteDescriptorSet writeDescriptorSet = {};
                 writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
                 writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -723,7 +729,7 @@ namespace ZXEngine
                 writeDescriptorSet.dstBinding = vulkanMaterialData->fragUniformBuffers[i].binding;
                 writeDescriptorSet.dstArrayElement = 0;
                 writeDescriptorSet.descriptorCount = 1;
-                writeDescriptorSet.pBufferInfo = &bufferInfo;
+                writeDescriptorSet.pBufferInfo = &fragBufferInfo;
                 writeDescriptorSets.push_back(writeDescriptorSet);
             }
 
