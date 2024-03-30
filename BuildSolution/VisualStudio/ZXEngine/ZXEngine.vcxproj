@@ -170,6 +170,9 @@
     <PostBuildEvent>
       <Command>xcopy /y /d "$(ProjectDir)..\..\..\Vendor\DyLibs\*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\CPPScripts\Animation\Animation.cpp" />
