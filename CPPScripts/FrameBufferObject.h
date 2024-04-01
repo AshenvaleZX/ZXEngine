@@ -10,6 +10,9 @@ namespace ZXEngine
 		uint32_t ID = 0;
 		uint32_t ColorBuffer = UINT32_MAX;
 		uint32_t DepthBuffer = UINT32_MAX;
+		uint32_t PositionBuffer = UINT32_MAX; // GBuffer
+		uint32_t NormalBuffer   = UINT32_MAX; // GBuffer
+
 		bool isFollowWindow = false;
 		ClearInfo clearInfo = {};
 		FrameBufferType type;

@@ -141,6 +141,8 @@ namespace ZXEngine
     {
         uint32_t colorBufferIdx = UINT32_MAX;
         uint32_t depthBufferIdx = UINT32_MAX;
+        uint32_t positionBufferIdx = UINT32_MAX; // GBuffer
+        uint32_t normalBufferIdx   = UINT32_MAX; // GBuffer
         FrameBufferType bufferType = FrameBufferType::Normal;
         ClearInfo clearInfo = {};
         bool inUse = false;

@@ -46,6 +46,7 @@ namespace ZXEngine
         Color,
         ShadowMap,
         ShadowCubeMap,
+        GBuffer,
         MAX,
     };
 
@@ -54,7 +55,7 @@ namespace ZXEngine
         uint32_t present = UINT32_MAX;
         uint32_t graphics = UINT32_MAX;
 
-        bool isComplete() { return present != UINT32_MAX && graphics != UINT32_MAX; }
+        bool isComplete() const { return present != UINT32_MAX && graphics != UINT32_MAX; }
     };
 
     // 交换链的三大类属性设置
@@ -103,6 +104,8 @@ namespace ZXEngine
         vector<VkFramebuffer> frameBuffers;
         uint32_t colorAttachmentIdx = UINT32_MAX;
         uint32_t depthAttachmentIdx = UINT32_MAX;
+        uint32_t positionAttachmentIdx = UINT32_MAX; // GBuffer
+        uint32_t normalAttachmentIdx   = UINT32_MAX; // GBuffer
         FrameBufferType bufferType = FrameBufferType::Normal;
         RenderPassType renderPassType = RenderPassType::Normal;
         ClearInfo clearInfo = {};

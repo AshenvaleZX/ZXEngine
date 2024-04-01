@@ -1018,6 +1018,94 @@ namespace ZXEngine
 
             vulkanFBO->inUse = true;
         }
+        else if (type == FrameBufferType::GBuffer)
+        {
+            FBO->ID = GetNextFBOIndex();
+            FBO->ColorBuffer = GetNextAttachmentBufferIndex();
+            auto colorAttachmentBuffer = GetAttachmentBufferByIndex(FBO->ColorBuffer);
+            colorAttachmentBuffer->inUse = true;
+            FBO->DepthBuffer = GetNextAttachmentBufferIndex();
+            auto depthAttachmentBuffer = GetAttachmentBufferByIndex(FBO->DepthBuffer);
+            depthAttachmentBuffer->inUse = true;
+            FBO->PositionBuffer = GetNextAttachmentBufferIndex();
+            auto positionAttachmentBuffer = GetAttachmentBufferByIndex(FBO->PositionBuffer);
+            positionAttachmentBuffer->inUse = true;
+            FBO->NormalBuffer = GetNextAttachmentBufferIndex();
+            auto normalAttachmentBuffer = GetAttachmentBufferByIndex(FBO->NormalBuffer);
+            normalAttachmentBuffer->inUse = true;
+
+            auto vulkanFBO = GetFBOByIndex(FBO->ID);
+            vulkanFBO->colorAttachmentIdx = FBO->ColorBuffer;
+            vulkanFBO->depthAttachmentIdx = FBO->DepthBuffer;
+            vulkanFBO->positionAttachmentIdx = FBO->PositionBuffer;
+            vulkanFBO->normalAttachmentIdx = FBO->NormalBuffer;
+            vulkanFBO->bufferType = FrameBufferType::GBuffer;
+            vulkanFBO->renderPassType = RenderPassType::GBuffer;
+            vulkanFBO->clearInfo = clearInfo;
+
+            for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+            {
+                VulkanImage posImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R32G32B32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
+                    VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+                TransitionImageLayout(posImage.image,
+                    VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                    VK_IMAGE_ASPECT_COLOR_BIT,
+                    VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
+                    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
+                VkImageView posImageView = CreateImageView(posImage.image, VK_FORMAT_R32G32B32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkSampler posSampler = CreateSampler(1);
+                positionAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(posImage, posImageView, posSampler);
+
+                VulkanImage normalImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R32G32B32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
+                    VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+                TransitionImageLayout(normalImage.image,
+                    VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                    VK_IMAGE_ASPECT_COLOR_BIT,
+                    VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
+                    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
+                VkImageView normalImageView = CreateImageView(normalImage.image, VK_FORMAT_R32G32B32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkSampler normalSampler = CreateSampler(1);
+                normalAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(normalImage, normalImageView, normalSampler);
+
+                VulkanImage colorImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
+                    VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+                TransitionImageLayout(colorImage.image,
+                    VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                    VK_IMAGE_ASPECT_COLOR_BIT,
+                    VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
+                    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
+                VkImageView colorImageView = CreateImageView(colorImage.image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkSampler colorSampler = CreateSampler(1);
+                colorAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(colorImage, colorImageView, colorSampler);
+
+                VulkanImage depthImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D16_UNORM, VK_IMAGE_TILING_OPTIMAL,
+                    VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+                TransitionImageLayout(depthImage.image,
+                    VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                    VK_IMAGE_ASPECT_DEPTH_BIT,
+                    VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
+                    VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
+                VkImageView depthImageView = CreateImageView(depthImage.image, VK_FORMAT_D16_UNORM, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkSampler depthSampler = CreateSampler(1);
+                depthAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(depthImage, depthImageView, depthSampler);
+
+                array<VkImageView, 4> attachments = { posImageView, normalImageView, colorImageView, depthImageView };
+
+                VkFramebufferCreateInfo framebufferInfo{};
+                framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+                framebufferInfo.renderPass = GetRenderPass(RenderPassType::GBuffer);
+                framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+                framebufferInfo.pAttachments = attachments.data();
+                framebufferInfo.width = width;
+                framebufferInfo.height = height;
+                framebufferInfo.layers = 1;
+
+                if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &vulkanFBO->frameBuffers[i]) != VK_SUCCESS)
+                    throw std::runtime_error("failed to create framebuffer!");
+            }
+
+            vulkanFBO->inUse = true;
+        }
         else if (type == FrameBufferType::RayTracing)
         {
             FBO->ID = GetNextFBOIndex();
@@ -4262,6 +4350,7 @@ namespace ZXEngine
         allVulkanRenderPass[(size_t)RenderPassType::Color]         = CreateRenderPass(RenderPassType::Color);
         allVulkanRenderPass[(size_t)RenderPassType::ShadowMap]     = CreateRenderPass(RenderPassType::ShadowMap);
         allVulkanRenderPass[(size_t)RenderPassType::ShadowCubeMap] = CreateRenderPass(RenderPassType::ShadowCubeMap);
+        allVulkanRenderPass[(size_t)RenderPassType::GBuffer]       = CreateRenderPass(RenderPassType::GBuffer);
     }
 
     VkRenderPass RenderAPIVulkan::CreateRenderPass(RenderPassType type)
@@ -4494,6 +4583,100 @@ namespace ZXEngine
 
             if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
                 throw std::runtime_error("failed to create render pass!");
+        }
+        else if (type == RenderPassType::GBuffer)
+        {
+            VkAttachmentDescription positionAttachment = {};
+            positionAttachment.format = VK_FORMAT_R32G32B32_SFLOAT;
+            positionAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+            positionAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            positionAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+            positionAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            positionAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            positionAttachment.initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            positionAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            
+            VkAttachmentDescription normalAttachment = {};
+			normalAttachment.format = VK_FORMAT_R32G32B32_SFLOAT;
+			normalAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+			normalAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+			normalAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+			normalAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			normalAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			normalAttachment.initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			normalAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+            VkAttachmentDescription colorAttachment = {};
+            colorAttachment.format = defaultImageFormat;
+            colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+            colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            colorAttachment.initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            colorAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+			VkAttachmentDescription depthAttachment = {};
+			depthAttachment.format = VK_FORMAT_D32_SFLOAT;
+			depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+			depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+			depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+			depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			depthAttachment.initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			depthAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+			VkAttachmentReference positionAttachmentRef = {};
+			positionAttachmentRef.attachment = 0;
+			positionAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+			VkAttachmentReference normalAttachmentRef = {};
+			normalAttachmentRef.attachment = 1;
+			normalAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+			VkAttachmentReference colorAttachmentRef = {};
+			colorAttachmentRef.attachment = 2;
+			colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+			VkAttachmentReference depthAttachmentRef = {};
+			depthAttachmentRef.attachment = 3;
+			depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+            array<VkAttachmentReference, 3> attachmentRefs = { positionAttachmentRef, normalAttachmentRef, colorAttachmentRef };
+			VkSubpassDescription subpassInfo = {};
+			subpassInfo.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+			subpassInfo.pColorAttachments = attachmentRefs.data();
+			subpassInfo.colorAttachmentCount = static_cast<uint32_t>(attachmentRefs.size());
+			subpassInfo.pDepthStencilAttachment = &depthAttachmentRef;
+
+			VkSubpassDependency beginDependency = {};
+			beginDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+			beginDependency.dstSubpass = 0;
+			beginDependency.srcStageMask = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
+			beginDependency.srcAccessMask = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+			beginDependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+			beginDependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+			VkSubpassDependency endDependency = {};
+			endDependency.srcSubpass = 0;
+			endDependency.dstSubpass = VK_SUBPASS_EXTERNAL;
+			endDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+			endDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+			endDependency.dstStageMask = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
+			endDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+			array<VkSubpassDependency, 2> dependencies = { beginDependency, endDependency };
+
+			array<VkAttachmentDescription, 4> attachments = { positionAttachment, normalAttachment, colorAttachment, depthAttachment };
+			VkRenderPassCreateInfo renderPassInfo{};
+			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+            renderPassInfo.pAttachments = attachments.data();
+            renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+            renderPassInfo.pSubpasses = &subpassInfo;
+            renderPassInfo.subpassCount = 1;
+            renderPassInfo.pDependencies = dependencies.data();
+            renderPassInfo.dependencyCount = static_cast<uint32_t>(dependencies.size());
+
+            if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
+				throw std::runtime_error("failed to create render pass!");
         }
         else
         {

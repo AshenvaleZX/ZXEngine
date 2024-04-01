@@ -100,6 +100,7 @@ namespace ZXEngine
 		Color,
 		ShadowMap,
 		ShadowCubeMap,
+		GBuffer,
 		RayTracing,
 	};
 

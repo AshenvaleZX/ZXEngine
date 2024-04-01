@@ -552,6 +552,7 @@ namespace ZXEngine
 		{
 			unsigned int FBO_ID;
 			glGenFramebuffers(1, &FBO_ID);
+
 			// 创建ColorBuffer
 			unsigned int colorBuffer;
 			glGenTextures(1, &colorBuffer);
@@ -559,20 +560,25 @@ namespace ZXEngine
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 			// 创建DepthBuffer
 			// (用的Renderbuffer而不是Texture，Renderbuffer一般用于不读取，只写入或者复制的buffer，所以深度缓冲区更适合用Renderbuffer)
 			unsigned int depthBuffer;
 			glGenRenderbuffers(1, &depthBuffer);
 			glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+
 			// 把ColorBuffer和DepthBuffer绑定到FBO上
 			glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
 			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 				Debug::LogError("Framebuffer Normal not complete!");
+
 			// 恢复默认状态
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 			// 对FBO对象赋值
 			FBO->ID = FBO_ID;
 			FBO->ColorBuffer = colorBuffer;
@@ -582,6 +588,7 @@ namespace ZXEngine
 		{
 			unsigned int FBO_ID;
 			glGenFramebuffers(1, &FBO_ID);
+
 			// 创建高精度(浮点)ColorBuffer
 			unsigned int colorBuffer;
 			glGenTextures(1, &colorBuffer);
@@ -589,20 +596,25 @@ namespace ZXEngine
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 			// 创建DepthBuffer
 			// (用的Renderbuffer而不是Texture，Renderbuffer一般用于不读取，只写入或者复制的buffer，所以深度缓冲区更适合用Renderbuffer)
 			unsigned int depthBuffer;
 			glGenRenderbuffers(1, &depthBuffer);
 			glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+
 			// 把ColorBuffer和DepthBuffer绑定到FBO上
 			glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
 			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 				Debug::LogError("Framebuffer HigthPrecision not complete!");
+
 			// 恢复默认状态
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 			// 对FBO对象赋值
 			FBO->ID = FBO_ID;
 			FBO->ColorBuffer = colorBuffer;
@@ -612,6 +624,7 @@ namespace ZXEngine
 		{
 			unsigned int FBO_ID;
 			glGenFramebuffers(1, &FBO_ID);
+
 			// 创建ColorBuffer
 			unsigned int colorBuffer;
 			glGenTextures(1, &colorBuffer);
@@ -619,13 +632,17 @@ namespace ZXEngine
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 			// 把ColorBuffer绑定到FBO上
 			glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
+
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 				Debug::LogError("Framebuffer Color not complete!");
+
 			// 恢复默认状态
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 			// 对FBO对象赋值
 			FBO->ID = FBO_ID;
 			FBO->ColorBuffer = colorBuffer;
@@ -635,6 +652,7 @@ namespace ZXEngine
 		{
 			unsigned int FBO_ID;
 			glGenFramebuffers(1, &FBO_ID);
+
 			// 创建深度Map
 			unsigned int depthMap;
 			glGenTextures(1, &depthMap);
@@ -646,16 +664,21 @@ namespace ZXEngine
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 			float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 			glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
 			// 把深度Map绑定到FBO
 			glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+
 			// 明确告诉OpenGL这个FBO不会渲染到Color Buffer
 			glDrawBuffer(GL_NONE);
 			glReadBuffer(GL_NONE);
+
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 				Debug::LogError("Framebuffer ShadowMap not complete!");
+
 			// 恢复默认状态
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 			// 对FBO对象赋值
 			FBO->ID = FBO_ID;
 			FBO->ColorBuffer = UINT32_MAX;
@@ -665,6 +688,7 @@ namespace ZXEngine
 		{
 			unsigned int FBO_ID;
 			glGenFramebuffers(1, &FBO_ID);
+
 			// 创建深度CubeMap
 			unsigned int depthCubeMap;
 			glGenTextures(1, &depthCubeMap);
@@ -676,20 +700,84 @@ namespace ZXEngine
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
 			// 把深度CubeMap绑定到FBO
 			glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
 			glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubeMap, 0);
+
 			// 明确告诉OpenGL这个FBO不会渲染到Color Buffer
 			glDrawBuffer(GL_NONE);
 			glReadBuffer(GL_NONE);
+
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 				Debug::LogError("Framebuffer ShadowCubeMap not complete!");
+
 			// 恢复默认状态
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 			// 对FBO对象赋值
 			FBO->ID = FBO_ID;
 			FBO->ColorBuffer = UINT32_MAX;
 			FBO->DepthBuffer = depthCubeMap;
+		}
+		else if (type == FrameBufferType::GBuffer)
+		{
+			unsigned int FBO_ID;
+			glGenFramebuffers(1, &FBO_ID);
+
+			// 创建Position Buffer
+			unsigned int posBuffer;
+			glGenTextures(1, &posBuffer);
+			glBindTexture(GL_TEXTURE_2D, posBuffer);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			// 创建Normal Buffer
+			unsigned int normalBuffer;
+			glGenTextures(1, &normalBuffer);
+			glBindTexture(GL_TEXTURE_2D, normalBuffer);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			// 创建Color Buffer
+			unsigned int colorBuffer;
+			glGenTextures(1, &colorBuffer);
+			glBindTexture(GL_TEXTURE_2D, colorBuffer);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			// 创建Depth Buffer
+			unsigned int depthBuffer;
+			glGenRenderbuffers(1, &depthBuffer);
+			glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+
+			// 绑定到FBO上
+			glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, posBuffer, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalBuffer, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, colorBuffer, 0);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+
+			// 3个Render Target
+			unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+			glDrawBuffers(3, attachments);
+
+			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+				Debug::LogError("Framebuffer GBuffer not complete!");
+
+			// 恢复默认状态
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+			// 对FBO对象赋值
+			FBO->ID = FBO_ID;
+			FBO->ColorBuffer = colorBuffer;
+			FBO->DepthBuffer = depthBuffer;
+			FBO->PositionBuffer = posBuffer;
+			FBO->NormalBuffer = normalBuffer;
 		}
 		else if (type == FrameBufferType::RayTracing)
 		{

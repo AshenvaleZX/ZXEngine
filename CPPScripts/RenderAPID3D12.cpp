@@ -661,6 +661,225 @@ namespace ZXEngine
 
 			D3D12FBO->inUse = true;
 		}
+		else if (type == FrameBufferType::GBuffer)
+		{
+			FBO->ID = GetNextFBOIndex();
+			FBO->ColorBuffer = GetNextRenderBufferIndex();
+			auto colorBuffer = GetRenderBufferByIndex(FBO->ColorBuffer);
+			colorBuffer->inUse = true;
+			FBO->DepthBuffer = GetNextRenderBufferIndex();
+			auto depthBuffer = GetRenderBufferByIndex(FBO->DepthBuffer);
+			depthBuffer->inUse = true;
+			FBO->PositionBuffer = GetNextRenderBufferIndex();
+			auto positionBuffer = GetRenderBufferByIndex(FBO->PositionBuffer);
+			positionBuffer->inUse = true;
+			FBO->NormalBuffer = GetNextRenderBufferIndex();
+			auto normalBuffer = GetRenderBufferByIndex(FBO->NormalBuffer);
+			normalBuffer->inUse = true;
+
+			auto D3D12FBO = GetFBOByIndex(FBO->ID);
+			D3D12FBO->colorBufferIdx = FBO->ColorBuffer;
+			D3D12FBO->depthBufferIdx = FBO->DepthBuffer;
+			D3D12FBO->positionBufferIdx = FBO->PositionBuffer;
+			D3D12FBO->normalBufferIdx = FBO->NormalBuffer;
+			D3D12FBO->bufferType = FrameBufferType::GBuffer;
+			D3D12FBO->clearInfo = clearInfo;
+
+			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				// Position Buffer
+				CD3DX12_HEAP_PROPERTIES posBufferProps(D3D12_HEAP_TYPE_DEFAULT);
+
+				D3D12_RESOURCE_DESC posBufferDesc = {};
+				posBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+				posBufferDesc.Alignment = 0;
+				posBufferDesc.Width = width;
+				posBufferDesc.Height = height;
+				posBufferDesc.DepthOrArraySize = 1;
+				posBufferDesc.MipLevels = 1;
+				posBufferDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				posBufferDesc.SampleDesc.Count = 1;
+				posBufferDesc.SampleDesc.Quality = 0;
+				posBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+				posBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+				
+				D3D12_CLEAR_VALUE optPosClear = {};
+				optPosClear.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				optPosClear.Color[0] = clearInfo.color.r;
+				optPosClear.Color[1] = clearInfo.color.g;
+				optPosClear.Color[2] = clearInfo.color.b;
+				optPosClear.Color[3] = clearInfo.color.a;
+
+				ComPtr<ID3D12Resource> posBufferResource;
+				ThrowIfFailed(mD3D12Device->CreateCommittedResource(
+					&posBufferProps,
+					D3D12_HEAP_FLAG_NONE,
+					&posBufferDesc,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					&optPosClear,
+					IID_PPV_ARGS(&posBufferResource)
+				));
+
+				D3D12_SHADER_RESOURCE_VIEW_DESC posSrvDesc = {};
+				posSrvDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				posSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+				posSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+				posSrvDesc.Texture2D.MipLevels = 1;
+				posSrvDesc.Texture2D.MostDetailedMip = 0;
+				posSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+				D3D12_RENDER_TARGET_VIEW_DESC posRtvDesc = {};
+				posRtvDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				posRtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+				posRtvDesc.Texture2D.MipSlice = 0;
+
+				positionBuffer->renderBuffers[i] = CreateZXD3D12Texture(posBufferResource, posSrvDesc, posRtvDesc);
+
+				// Normal Buffer
+				CD3DX12_HEAP_PROPERTIES normalBufferProps(D3D12_HEAP_TYPE_DEFAULT);
+
+				D3D12_RESOURCE_DESC normalBufferDesc = {};
+				normalBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+				normalBufferDesc.Alignment = 0;
+				normalBufferDesc.Width = width;
+				normalBufferDesc.Height = height;
+				normalBufferDesc.DepthOrArraySize = 1;
+				normalBufferDesc.MipLevels = 1;
+				normalBufferDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				normalBufferDesc.SampleDesc.Count = 1;
+				normalBufferDesc.SampleDesc.Quality = 0;
+				normalBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+				normalBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+				D3D12_CLEAR_VALUE optNormalClear = {};
+				optNormalClear.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				optNormalClear.Color[0] = clearInfo.color.r;
+				optNormalClear.Color[1] = clearInfo.color.g;
+				optNormalClear.Color[2] = clearInfo.color.b;
+				optNormalClear.Color[3] = clearInfo.color.a;
+
+				ComPtr<ID3D12Resource> normalBufferResource;
+				ThrowIfFailed(mD3D12Device->CreateCommittedResource(
+					&normalBufferProps,
+					D3D12_HEAP_FLAG_NONE,
+					&normalBufferDesc,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					&optNormalClear,
+					IID_PPV_ARGS(&normalBufferResource)
+				));
+
+				D3D12_SHADER_RESOURCE_VIEW_DESC normalSrvDesc = {};
+				normalSrvDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				normalSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+				normalSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+				normalSrvDesc.Texture2D.MipLevels = 1;
+				normalSrvDesc.Texture2D.MostDetailedMip = 0;
+				normalSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+				D3D12_RENDER_TARGET_VIEW_DESC normalRtvDesc = {};
+				normalRtvDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				normalRtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+				normalRtvDesc.Texture2D.MipSlice = 0;
+
+				normalBuffer->renderBuffers[i] = CreateZXD3D12Texture(normalBufferResource, normalSrvDesc, normalRtvDesc);
+
+				// 创建Color Buffer
+				CD3DX12_HEAP_PROPERTIES colorBufferProps(D3D12_HEAP_TYPE_DEFAULT);
+
+				D3D12_RESOURCE_DESC colorBufferDesc = {};
+				colorBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+				colorBufferDesc.Alignment = 0;
+				colorBufferDesc.Width = width;
+				colorBufferDesc.Height = height;
+				colorBufferDesc.DepthOrArraySize = 1;
+				colorBufferDesc.MipLevels = 1;
+				colorBufferDesc.Format = mDefaultImageFormat;
+				colorBufferDesc.SampleDesc.Count = 1;
+				colorBufferDesc.SampleDesc.Quality = 0;
+				colorBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+				colorBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+				D3D12_CLEAR_VALUE optColorClear = {};
+				optColorClear.Format = mDefaultImageFormat;
+				optColorClear.Color[0] = clearInfo.color.r;
+				optColorClear.Color[1] = clearInfo.color.g;
+				optColorClear.Color[2] = clearInfo.color.b;
+				optColorClear.Color[3] = clearInfo.color.a;
+
+				ComPtr<ID3D12Resource> colorBufferResource;
+				ThrowIfFailed(mD3D12Device->CreateCommittedResource(
+					&colorBufferProps,
+					D3D12_HEAP_FLAG_NONE,
+					&colorBufferDesc,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					&optColorClear,
+					IID_PPV_ARGS(&colorBufferResource)
+				));
+
+				D3D12_SHADER_RESOURCE_VIEW_DESC colorSrvDesc = {};
+				colorSrvDesc.Format = mDefaultImageFormat;
+				colorSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+				colorSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+				colorSrvDesc.Texture2D.MipLevels = 1;
+				colorSrvDesc.Texture2D.MostDetailedMip = 0;
+				colorSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+				D3D12_RENDER_TARGET_VIEW_DESC colorRtvDesc = {};
+				colorRtvDesc.Format = mDefaultImageFormat;
+				colorRtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+				colorRtvDesc.Texture2D.MipSlice = 0;
+
+				colorBuffer->renderBuffers[i] = CreateZXD3D12Texture(colorBufferResource, colorSrvDesc, colorRtvDesc);
+
+				// 创建Depth Buffer
+				CD3DX12_HEAP_PROPERTIES depthBufferProps(D3D12_HEAP_TYPE_DEFAULT);
+
+				D3D12_RESOURCE_DESC depthBufferDesc = {};
+				depthBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+				depthBufferDesc.Alignment = 0;
+				depthBufferDesc.Width = width;
+				depthBufferDesc.Height = height;
+				depthBufferDesc.DepthOrArraySize = 1;
+				depthBufferDesc.MipLevels = 1;
+				depthBufferDesc.Format = DXGI_FORMAT_D16_UNORM;
+				depthBufferDesc.SampleDesc.Count = 1;
+				depthBufferDesc.SampleDesc.Quality = 0;
+				depthBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+				depthBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+				D3D12_CLEAR_VALUE optDepthClear = {};
+				optDepthClear.Format = DXGI_FORMAT_D16_UNORM;
+				optDepthClear.DepthStencil.Depth = clearInfo.depth;
+				optDepthClear.DepthStencil.Stencil = clearInfo.stencil;
+
+				ComPtr<ID3D12Resource> depthBufferResource;
+				ThrowIfFailed(mD3D12Device->CreateCommittedResource(
+					&depthBufferProps,
+					D3D12_HEAP_FLAG_NONE,
+					&depthBufferDesc,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					&optDepthClear,
+					IID_PPV_ARGS(&depthBufferResource)
+				));
+
+				D3D12_SHADER_RESOURCE_VIEW_DESC depthSrvDesc = {};
+				depthSrvDesc.Format = DXGI_FORMAT_R16_UNORM;
+				depthSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+				depthSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+				depthSrvDesc.Texture2D.MipLevels = 1;
+				depthSrvDesc.Texture2D.MostDetailedMip = 0;
+				depthSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+				D3D12_DEPTH_STENCIL_VIEW_DESC depthDsvDesc = {};
+				depthDsvDesc.Format = DXGI_FORMAT_D16_UNORM;
+				depthDsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+				depthDsvDesc.Texture2D.MipSlice = 0;
+
+				depthBuffer->renderBuffers[i] = CreateZXD3D12Texture(depthBufferResource, depthSrvDesc, depthDsvDesc);
+			}
+
+			D3D12FBO->inUse = true;
+		}
 		else if (type == FrameBufferType::RayTracing)
 		{
 			FBO->ID = GetNextFBOIndex();
@@ -1449,6 +1668,8 @@ namespace ZXEngine
 		auto curFBO = GetFBOByIndex(mCurFBOIdx);
 		ZXD3D12Texture* colorBuffer = nullptr;
 		ZXD3D12Texture* depthBuffer = nullptr;
+		ZXD3D12Texture* positionBuffer = nullptr;
+		ZXD3D12Texture* normalBuffer = nullptr;
 
 		if (curFBO->bufferType == FrameBufferType::Normal)
 		{
@@ -1502,6 +1723,41 @@ namespace ZXEngine
 			drawCommandList->OMSetRenderTargets(0, nullptr, false, &dsv);
 
 			auto& clearInfo = curFBO->clearInfo;
+			drawCommandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, clearInfo.depth, 0, 0, nullptr);
+		}
+		else if (curFBO->bufferType == FrameBufferType::GBuffer)
+		{
+			positionBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->positionBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+			normalBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->normalBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+			colorBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->colorBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+			depthBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->depthBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+
+			auto positionBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(positionBuffer->texture.Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+			drawCommandList->ResourceBarrier(1, &positionBufferTransition);
+			auto normalBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(normalBuffer->texture.Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+			drawCommandList->ResourceBarrier(1, &normalBufferTransition);
+			auto colorBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(colorBuffer->texture.Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+			drawCommandList->ResourceBarrier(1, &colorBufferTransition);
+			auto depthBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(depthBuffer->texture.Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+			drawCommandList->ResourceBarrier(1, &depthBufferTransition);
+
+			auto pos_rtv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(positionBuffer->handleRTV);
+			auto normal_rtv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(normalBuffer->handleRTV);
+			auto color_rtv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(colorBuffer->handleRTV);
+			array<D3D12_CPU_DESCRIPTOR_HANDLE, 3> rtvs = { pos_rtv, normal_rtv, color_rtv };
+
+			auto dsv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(depthBuffer->handleDSV);
+			drawCommandList->OMSetRenderTargets(3, rtvs.data(), false, &dsv);
+
+			auto& clearInfo = curFBO->clearInfo;
+			const float clearColor[] = { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a };
+			drawCommandList->ClearRenderTargetView(pos_rtv, clearColor, 0, nullptr);
+			drawCommandList->ClearRenderTargetView(normal_rtv, clearColor, 0, nullptr);
+			drawCommandList->ClearRenderTargetView(color_rtv, clearColor, 0, nullptr);
 			drawCommandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, clearInfo.depth, 0, 0, nullptr);
 		}
 		else if (curFBO->bufferType == FrameBufferType::Present)
@@ -1613,6 +1869,33 @@ namespace ZXEngine
 		}
 		else if (curFBO->bufferType == FrameBufferType::ShadowMap || curFBO->bufferType == FrameBufferType::ShadowCubeMap)
 		{
+			if (depthBuffer != nullptr)
+			{
+				auto depthBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(depthBuffer->texture.Get(),
+					D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
+				drawCommandList->ResourceBarrier(1, &depthBufferTransition);
+			}
+		}
+		else if (curFBO->bufferType == FrameBufferType::GBuffer)
+		{
+			if (positionBuffer != nullptr)
+			{
+				auto positionBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(positionBuffer->texture.Get(),
+					D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+				drawCommandList->ResourceBarrier(1, &positionBufferTransition);
+			}
+			if (normalBuffer != nullptr)
+			{
+				auto normalBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(normalBuffer->texture.Get(),
+					D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+				drawCommandList->ResourceBarrier(1, &normalBufferTransition);
+			}
+			if (colorBuffer != nullptr)
+			{
+				auto colorBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(colorBuffer->texture.Get(),
+					D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+				drawCommandList->ResourceBarrier(1, &colorBufferTransition);
+			}
 			if (depthBuffer != nullptr)
 			{
 				auto depthBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(depthBuffer->texture.Get(),
