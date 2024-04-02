@@ -316,6 +316,7 @@
     <ClCompile Include="..\..\..\CPPScripts\RenderEngine.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\RenderEngineProperties.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\RenderPassAfterEffectRendering.cpp" />
+    <ClCompile Include="..\..\..\CPPScripts\RenderPassDeferredRendering.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\RenderPassForwardRendering.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\RenderPassGBufferGeneration.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\RenderPassManager.cpp" />
@@ -502,6 +503,7 @@
     <ClInclude Include="..\..\..\CPPScripts\RenderEngineProperties.h" />
     <ClInclude Include="..\..\..\CPPScripts\RenderPass.h" />
     <ClInclude Include="..\..\..\CPPScripts\RenderPassAfterEffectRendering.h" />
+    <ClInclude Include="..\..\..\CPPScripts\RenderPassDeferredRendering.h" />
     <ClInclude Include="..\..\..\CPPScripts\RenderPassForwardRendering.h" />
     <ClInclude Include="..\..\..\CPPScripts\RenderPassGBufferGeneration.h" />
     <ClInclude Include="..\..\..\CPPScripts\RenderPassManager.h" />

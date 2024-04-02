@@ -52,6 +52,9 @@ namespace ZXEngine
 		{ "ENGINE_Depth_Map",   ShaderPropertyType::ENGINE_DEPTH_MAP   }, { "ENGINE_Depth_Cube_Map",  ShaderPropertyType::ENGINE_DEPTH_CUBE_MAP  },
 		{ "ENGINE_Far_Plane",   ShaderPropertyType::ENGINE_FAR_PLANE   }, { "ENGINE_Model_Inv",       ShaderPropertyType::ENGINE_MODEL_INV       },
 		{ "ENGINE_Light_Mat",   ShaderPropertyType::ENGINE_LIGHT_MAT   }, { "ENGINE_Time",            ShaderPropertyType::ENGINE_TIME            },
+
+		{ "ENGINE_G_Buffer_Position", ShaderPropertyType::SAMPLER_2D   }, { "ENGINE_G_Buffer_Normal", ShaderPropertyType::SAMPLER_2D             }, 
+		{ "ENGINE_G_Buffer_Albedo",   ShaderPropertyType::SAMPLER_2D   },
 	};
 
 	unordered_map<string, string> enginePropertiesTypeMap =
@@ -60,7 +63,9 @@ namespace ZXEngine
 		{ "ENGINE_Camera_Pos",     "vec3"        }, { "ENGINE_Light_Pos",       "vec3"  }, { "ENGINE_Light_Dir",  "vec3"      }, 
 		{ "ENGINE_Light_Color",    "vec3"        }, { "ENGINE_Light_Intensity", "float" }, { "ENGINE_Depth_Map",  "sampler2D" }, 
 		{ "ENGINE_Depth_Cube_Map", "samplerCube" }, { "ENGINE_Far_Plane",       "float" }, { "ENGINE_Model_Inv",  "mat4"      },
-		{ "ENGINE_Light_Mat",      "mat4"        }, { "ENGINE_Time",            "vec2"  },
+		{ "ENGINE_Light_Mat",      "mat4"        }, { "ENGINE_Time",            "vec2"  }, 
+		// G-Buffer
+		{ "ENGINE_G_Buffer_Position", "sampler2D" }, { "ENGINE_G_Buffer_Normal", "sampler2D" }, { "ENGINE_G_Buffer_Albedo", "sampler2D" },
 	};
 
 	unordered_map<ShaderPropertyType, string> propertyTypeToGLSLType =
