@@ -20,6 +20,7 @@ namespace ZXEngine
 
 		Material* mMatetrial = nullptr;
 		Material* mShadowCastMaterial = nullptr;
+		Material* mGBufferMaterial = nullptr;
 
 		Animator* mAnimator = nullptr;
 

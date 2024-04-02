@@ -109,6 +109,7 @@ namespace ZXEngine
 		NotCare,
 		ShadowGeneration,
 		ForwardRendering,
+		GBufferGeneration,
 		AfterEffectRendering,
 		UIRendering,
 		AssetPreviewer,

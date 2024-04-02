@@ -1171,7 +1171,8 @@ namespace ZXEngine
 
         if (commandType == CommandType::ShadowGeneration || commandType == CommandType::ForwardRendering ||
             commandType == CommandType::AfterEffectRendering || commandType == CommandType::UIRendering || 
-            commandType == CommandType::AssetPreviewer || commandType == CommandType::RayTracing)
+            commandType == CommandType::AssetPreviewer || commandType == CommandType::RayTracing ||
+            commandType == CommandType::GBufferGeneration)
         {
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {

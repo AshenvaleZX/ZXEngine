@@ -20,7 +20,11 @@ namespace ZXEngine
     MeshRenderer::~MeshRenderer()
     {
         delete mMatetrial;
-        delete mShadowCastMaterial;
+
+        if (mShadowCastMaterial)
+            delete mShadowCastMaterial;
+        if (mGBufferMaterial)
+			delete mGBufferMaterial;
 
         for (auto mesh : mMeshes)
             delete mesh;

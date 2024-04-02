@@ -570,6 +570,9 @@
     <ClCompile Include="..\..\..\CPPScripts\PublicStruct.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\RenderPassGBufferGeneration.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\CPPScripts\GameObject.h">
@@ -1117,6 +1120,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Rigidbody.h">
       <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\RenderPassGBufferGeneration.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
