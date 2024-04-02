@@ -20,15 +20,16 @@ namespace ZXEngine
 		vector<pair<string, Texture*>> textures;
 
 		// 光追材质的数据信息
-		uint32_t rtMaterialDataSize;
+		uint32_t rtMaterialDataSize = 0;
 		vector<ShaderProperty> rtMaterialProperties;
 
 		MaterialData(MaterialType type);
 		~MaterialData();
 
-		void Use();
-		uint32_t GetID();
-		uint32_t GetRTID();
+		void Use() const;
+		uint32_t GetID() const;
+		uint32_t GetRTID() const;
+		Texture* GetTexture(const string& name) const;
 
 	private:
 		uint32_t ID = 0;

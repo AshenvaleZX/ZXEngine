@@ -23,18 +23,28 @@ namespace ZXEngine
 			delete iter.second;
 	}
 
-	void MaterialData::Use()
+	void MaterialData::Use() const
 	{
 		RenderAPI::GetInstance()->UseMaterialData(ID);
 	}
 
-	uint32_t MaterialData::GetID()
+	uint32_t MaterialData::GetID() const
 	{
 		return ID;
 	}
 
-	uint32_t MaterialData::GetRTID()
+	uint32_t MaterialData::GetRTID() const
 	{
 		return rtID;
+	}
+
+	Texture* MaterialData::GetTexture(const string& name) const
+	{
+		for (auto& iter : textures)
+		{
+			if (iter.first == name)
+				return iter.second;
+		}
+		return nullptr;
 	}
 }
