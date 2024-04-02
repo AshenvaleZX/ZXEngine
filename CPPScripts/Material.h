@@ -14,7 +14,7 @@ namespace ZXEngine
 		uint32_t hitGroupIdx = 0;
 		Shader* shader = nullptr;
 		MaterialData* data = nullptr;
-		MaterialType type = MaterialType::Rasterization;
+		MaterialType type = MaterialType::Forward;
 
 		Material(MaterialStruct* matStruct);
 		// 注意: 此构造函数仅用于光栅化渲染管线材质
@@ -22,7 +22,7 @@ namespace ZXEngine
 		~Material();
 
 		void Use();
-		int GetRenderQueue();
+		int GetRenderQueue() const;
 
 		void SetEngineProperties();
 		void SetMaterialProperties();

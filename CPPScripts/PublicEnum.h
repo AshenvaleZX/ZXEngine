@@ -37,7 +37,8 @@ namespace ZXEngine
 
 	enum class MaterialType
 	{
-		Rasterization,
+		Forward,
+		Deferred,
 		RayTracing,
 	};
 

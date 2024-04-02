@@ -1,5 +1,5 @@
 {
-    "Type": "Material",
+    "Type": "Forward",
     "Shader": "Shaders/VCloudsShadow.zxshader",
     "Float":
     [

@@ -290,17 +290,23 @@ namespace ZXEngine
 		MaterialStruct* matStruct = new MaterialStruct;
 		matStruct->path = path;
 		matStruct->name = GetAssetName(path);
-		matStruct->type = GetAssetExtension(path) == "zxmat" ? MaterialType::Rasterization : MaterialType::RayTracing;
 
 		json data = Resources::GetAssetData(path, isBuiltIn);
 
-		if (matStruct->type == MaterialType::Rasterization)
+		if (data["Type"] == "Forward")
+			matStruct->type = MaterialType::Forward;
+		else if (data["Type"] == "Deferred")
+			matStruct->type = MaterialType::Deferred;
+		else if (data["Type"] == "RayTracing")
+			matStruct->type = MaterialType::RayTracing;
+
+		if (matStruct->type == MaterialType::Forward)
 		{
 			string p = Resources::JsonStrToString(data["Shader"]);
 			matStruct->shaderPath = Resources::GetAssetFullPath(p, isBuiltIn);
 			matStruct->shaderCode = Resources::LoadTextFile(matStruct->shaderPath);
 		}
-		else
+		else if (matStruct->type == MaterialType::RayTracing)
 		{
 			if (!data["HitGroup"].is_null())
 				matStruct->hitGroupIdx = data["HitGroup"];

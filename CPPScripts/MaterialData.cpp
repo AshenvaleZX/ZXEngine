@@ -7,7 +7,7 @@ namespace ZXEngine
 	MaterialData::MaterialData(MaterialType type)
 	{
 		this->type = type;
-		if (type == MaterialType::Rasterization)
+		if (type == MaterialType::Forward || type == MaterialType::Deferred)
 			ID = RenderAPI::GetInstance()->CreateMaterialData();
 		else if (type == MaterialType::RayTracing)
 			rtID = RenderAPI::GetInstance()->CreateRayTracingMaterialData();
@@ -15,7 +15,7 @@ namespace ZXEngine
 
 	MaterialData::~MaterialData()
 	{
-		if (type == MaterialType::Rasterization)
+		if (type == MaterialType::Forward || type == MaterialType::Deferred)
 			RenderAPI::GetInstance()->DeleteMaterialData(ID);
 		else if (type == MaterialType::RayTracing)
 			RenderAPI::GetInstance()->DeleteRayTracingMaterialData(rtID);

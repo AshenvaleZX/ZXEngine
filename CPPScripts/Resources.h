@@ -41,7 +41,7 @@ namespace ZXEngine
 		vector<TextureStruct*> textures;
 		vector<CubeMapStruct*> cubeMaps;
 
-		MaterialType type = MaterialType::Rasterization;
+		MaterialType type = MaterialType::Forward;
 
 		~MaterialStruct();
 	};

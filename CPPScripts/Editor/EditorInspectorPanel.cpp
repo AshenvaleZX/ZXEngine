@@ -118,13 +118,18 @@ namespace ZXEngine
 			return;
 		}
 
-		string suffix = material->type == MaterialType::Rasterization ? " (Material)" : " (Ray Tracing Material)";
+		string suffix = " (Material)";
+		if (material->type == MaterialType::Deferred)
+			suffix = " (Deferred Material)";
+		else if (material->type == MaterialType::RayTracing)
+			suffix = " (Ray Tracing Material)";
+
 		string title = material->name + suffix;
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 		if (!ImGui::CollapsingHeader(title.c_str()))
 			return;
 
-		if (material->type == MaterialType::Rasterization)
+		if (material->type == MaterialType::Forward)
 		{
 			ImGui::Text("Shader");
 			ImGui::SameLine(120);

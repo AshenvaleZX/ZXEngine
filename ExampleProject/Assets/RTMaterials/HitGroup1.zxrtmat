@@ -1,4 +1,4 @@
 {
-    "Type": "RTMaterial",
+    "Type": "RayTracing",
     "HitGroup": 1
 }

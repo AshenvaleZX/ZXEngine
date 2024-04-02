@@ -1,5 +1,5 @@
 {
-    "Type": "Material",
+    "Type": "Forward",
     "Shader": "Shaders/TerrainBlend2Layer.zxshader",
     "Float":
     [

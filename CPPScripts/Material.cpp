@@ -19,10 +19,14 @@ namespace ZXEngine
 
 		CopyMaterialStructToMaterialData(matStruct, data);
 
-		if (type == MaterialType::Rasterization)
+		if (type == MaterialType::Forward)
 		{
 			shader = new Shader(matStruct->shaderPath, matStruct->shaderCode, FrameBufferType::Normal);
 			renderQueue = (int)shader->reference->shaderInfo.stateSet.renderQueue;
+			RenderAPI::GetInstance()->SetUpMaterial(this);
+		}
+		else if (type == MaterialType::Deferred)
+		{
 			RenderAPI::GetInstance()->SetUpMaterial(this);
 		}
 		else if (type == MaterialType::RayTracing)
@@ -44,7 +48,7 @@ namespace ZXEngine
 		this->shader = shader;
 		renderQueue = (int)shader->reference->shaderInfo.stateSet.renderQueue;
 		// 通过这个构造函数初始化的材质，默认为光栅化渲染管线的材质
-		type = MaterialType::Rasterization;
+		type = MaterialType::Forward;
 		data = new MaterialData(type);
 		RenderAPI::GetInstance()->SetUpMaterial(this);
 	}
@@ -53,10 +57,13 @@ namespace ZXEngine
 	{
 		delete data;
 
-		if (isShareShader)
-			shader->reference->referenceCount--;
-		else
-			delete shader;
+		if (shader)
+		{
+			if (isShareShader)
+				shader->reference->referenceCount--;
+			else
+				delete shader;
+		}
 	}
 
 	void Material::Use()
@@ -65,7 +72,7 @@ namespace ZXEngine
 		shader->Use();
 	}
 
-	int Material::GetRenderQueue()
+	int Material::GetRenderQueue() const
 	{
 		return renderQueue;
 	}

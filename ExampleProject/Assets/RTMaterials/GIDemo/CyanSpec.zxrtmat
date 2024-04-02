@@ -1,5 +1,5 @@
 {
-    "Type": "RTMaterial",
+    "Type": "RayTracing",
     "HitGroup": 3,
     "Vector3": 
     [
