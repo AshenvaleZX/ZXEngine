@@ -33,7 +33,11 @@ namespace ZXEngine
 		RenderAPI::GetInstance()->SetRenderState(renderState);
 		// 整个后处理都在这个覆盖屏幕的四边形上渲染
 
-		string finalFBO = ProjectSetting::renderPipelineType == RenderPipelineType::Rasterization ? "Forward" : "RayTracing";
+		string finalFBO = "Forward";
+		if (ProjectSetting::renderPipelineType == RenderPipelineType::Deferred)
+			finalFBO = "Deferred";
+		else if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
+			finalFBO = "RayTracing";
 
 		if (camera->enableAfterEffects)
 		{

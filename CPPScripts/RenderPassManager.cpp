@@ -5,6 +5,8 @@
 #include "RenderPassAfterEffectRendering.h"
 #include "RenderPassUIRendering.h"
 #include "RenderPassRayTracing.h"
+#include "RenderPassGBufferGeneration.h"
+#include "RenderPassDeferredRendering.h"
 
 namespace ZXEngine
 {
@@ -14,6 +16,8 @@ namespace ZXEngine
 
 		allPasses[ZX_RENDER_PASS_SHADOW_GENERATION]      = new RenderPassShadowGeneration();
 		allPasses[ZX_RENDER_PASS_FORWARD_RENDERING]      = new RenderPassForwardRendering();
+		allPasses[ZX_RENDER_PASS_GBUFFER_GENERATION]     = new RenderPassGBufferGeneration();
+		allPasses[ZX_RENDER_PASS_DEFERRED_RENDERING]     = new RenderPassDeferredRendering();
 		allPasses[ZX_RENDER_PASS_RAY_TRACING]            = new RenderPassRayTracing();
 		allPasses[ZX_RENDER_PASS_AFTER_EFFECT_RENDERING] = new RenderPassAfterEffectRendering();
 		allPasses[ZX_RENDER_PASS_UI_RENDERING]           = new RenderPassUIRendering();
@@ -37,10 +41,17 @@ namespace ZXEngine
 	{
 		curPasses.clear();
 
-		if (ProjectSetting::renderPipelineType == RenderPipelineType::Rasterization)
+		if (ProjectSetting::renderPipelineType == RenderPipelineType::Forward)
 		{
 			curPasses.push_back(allPasses[ZX_RENDER_PASS_SHADOW_GENERATION]);
 			curPasses.push_back(allPasses[ZX_RENDER_PASS_FORWARD_RENDERING]);
+			curPasses.push_back(allPasses[ZX_RENDER_PASS_AFTER_EFFECT_RENDERING]);
+			curPasses.push_back(allPasses[ZX_RENDER_PASS_UI_RENDERING]);
+		}
+		else if (ProjectSetting::renderPipelineType == RenderPipelineType::Deferred)
+		{
+			curPasses.push_back(allPasses[ZX_RENDER_PASS_GBUFFER_GENERATION]);
+			curPasses.push_back(allPasses[ZX_RENDER_PASS_DEFERRED_RENDERING]);
 			curPasses.push_back(allPasses[ZX_RENDER_PASS_AFTER_EFFECT_RENDERING]);
 			curPasses.push_back(allPasses[ZX_RENDER_PASS_UI_RENDERING]);
 		}

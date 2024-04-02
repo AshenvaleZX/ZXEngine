@@ -1,5 +1,5 @@
 {
-    "RenderPipelineType": 1,
+    "RenderPipelineType": 2,
     "SkyBox": 
     {
         "Path": "Textures/stars/",

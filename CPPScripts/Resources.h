@@ -64,7 +64,7 @@ namespace ZXEngine
 	{
 		vector<string> skyBox;
 		vector<PrefabStruct*> prefabs;
-		RenderPipelineType renderPipelineType = RenderPipelineType::Rasterization;
+		RenderPipelineType renderPipelineType = RenderPipelineType::Forward;
 		RayTracingShaderPathGroup rtShaderPathGroup;
 
 		~SceneStruct();

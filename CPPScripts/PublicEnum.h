@@ -31,7 +31,8 @@ namespace ZXEngine
 
 	enum class RenderPipelineType
 	{
-		Rasterization,
+		Forward,
+		Deferred,
 		RayTracing,
 	};
 
