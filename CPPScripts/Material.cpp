@@ -27,7 +27,7 @@ namespace ZXEngine
 		}
 		else if (type == MaterialType::Deferred)
 		{
-			RenderAPI::GetInstance()->SetUpMaterial(this);
+			renderQueue = (int)RenderQueueType::Opaque;
 		}
 		else if (type == MaterialType::RayTracing)
 		{

@@ -112,6 +112,7 @@ namespace ZXEngine
 		ShadowGeneration,
 		ForwardRendering,
 		GBufferGeneration,
+		DeferredRendering,
 		AfterEffectRendering,
 		UIRendering,
 		AssetPreviewer,

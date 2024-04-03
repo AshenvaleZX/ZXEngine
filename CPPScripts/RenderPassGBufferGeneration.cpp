@@ -9,6 +9,7 @@
 #include "Material.h"
 #include "MaterialData.h"
 #include "Texture.h"
+#include "RenderEngineProperties.h"
 
 namespace ZXEngine
 {
@@ -28,6 +29,8 @@ namespace ZXEngine
 		FBOManager::GetInstance()->SwitchFBO("GBuffer");
 		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight);
 		renderAPI->ClearFrameBuffer();
+
+		RenderEngineProperties::GetInstance()->SetCameraProperties(camera);
 
 		// 延迟渲染仅支持不透明物体
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Opaque);

@@ -697,14 +697,14 @@ namespace ZXEngine
 				posBufferDesc.Height = height;
 				posBufferDesc.DepthOrArraySize = 1;
 				posBufferDesc.MipLevels = 1;
-				posBufferDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				posBufferDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 				posBufferDesc.SampleDesc.Count = 1;
 				posBufferDesc.SampleDesc.Quality = 0;
 				posBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 				posBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 				
 				D3D12_CLEAR_VALUE optPosClear = {};
-				optPosClear.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				optPosClear.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 				optPosClear.Color[0] = clearInfo.color.r;
 				optPosClear.Color[1] = clearInfo.color.g;
 				optPosClear.Color[2] = clearInfo.color.b;
@@ -721,7 +721,7 @@ namespace ZXEngine
 				));
 
 				D3D12_SHADER_RESOURCE_VIEW_DESC posSrvDesc = {};
-				posSrvDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				posSrvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 				posSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 				posSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 				posSrvDesc.Texture2D.MipLevels = 1;
@@ -729,7 +729,7 @@ namespace ZXEngine
 				posSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
 				D3D12_RENDER_TARGET_VIEW_DESC posRtvDesc = {};
-				posRtvDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				posRtvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 				posRtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 				posRtvDesc.Texture2D.MipSlice = 0;
 
@@ -745,14 +745,14 @@ namespace ZXEngine
 				normalBufferDesc.Height = height;
 				normalBufferDesc.DepthOrArraySize = 1;
 				normalBufferDesc.MipLevels = 1;
-				normalBufferDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				normalBufferDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 				normalBufferDesc.SampleDesc.Count = 1;
 				normalBufferDesc.SampleDesc.Quality = 0;
 				normalBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 				normalBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 
 				D3D12_CLEAR_VALUE optNormalClear = {};
-				optNormalClear.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				optNormalClear.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 				optNormalClear.Color[0] = clearInfo.color.r;
 				optNormalClear.Color[1] = clearInfo.color.g;
 				optNormalClear.Color[2] = clearInfo.color.b;
@@ -769,7 +769,7 @@ namespace ZXEngine
 				));
 
 				D3D12_SHADER_RESOURCE_VIEW_DESC normalSrvDesc = {};
-				normalSrvDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				normalSrvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 				normalSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 				normalSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 				normalSrvDesc.Texture2D.MipLevels = 1;
@@ -777,7 +777,7 @@ namespace ZXEngine
 				normalSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
 				D3D12_RENDER_TARGET_VIEW_DESC normalRtvDesc = {};
-				normalRtvDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				normalRtvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 				normalRtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 				normalRtvDesc.Texture2D.MipSlice = 0;
 
@@ -1493,11 +1493,21 @@ namespace ZXEngine
 		// Others
 		pipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 		pipelineStateDesc.SampleMask = UINT_MAX;
-		pipelineStateDesc.NumRenderTargets = 1;
-		pipelineStateDesc.RTVFormats[0] = mDefaultImageFormat;
 		pipelineStateDesc.SampleDesc.Count = 1;
 		pipelineStateDesc.SampleDesc.Quality = 0;
 		pipelineStateDesc.NodeMask = 0; // 给多GPU用的，暂时不用管
+		if (type == FrameBufferType::GBuffer)
+		{
+			pipelineStateDesc.NumRenderTargets = 3;
+			pipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			pipelineStateDesc.RTVFormats[1] = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			pipelineStateDesc.RTVFormats[2] = mDefaultImageFormat;
+		}
+		else
+		{
+			pipelineStateDesc.NumRenderTargets = 1;
+			pipelineStateDesc.RTVFormats[0] = mDefaultImageFormat;
+		}
 
 		// 如果不用DSV，格式需要设置为UNKNOWN
 		if (type == FrameBufferType::Present || type == FrameBufferType::Color)

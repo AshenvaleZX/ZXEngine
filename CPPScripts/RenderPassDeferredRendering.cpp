@@ -17,7 +17,7 @@ namespace ZXEngine
 {
 	RenderPassDeferredRendering::RenderPassDeferredRendering()
 	{
-		mDrawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::GBufferGeneration);
+		mDrawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::DeferredRendering);
 		mScreenQuad = GeometryGenerator::CreateScreenQuad();
 
 		mDeferredShader = new Shader(Resources::GetAssetFullPath("Shaders/DeferredRender.zxshader", true), FrameBufferType::Color);
@@ -25,7 +25,7 @@ namespace ZXEngine
 
 		ClearInfo clearInfo = {};
 		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT;
-		FBOManager::GetInstance()->CreateFBO("Deferred", FrameBufferType::GBuffer, clearInfo);
+		FBOManager::GetInstance()->CreateFBO("Deferred", FrameBufferType::Color, clearInfo);
 	}
 
 	void RenderPassDeferredRendering::Render(Camera* camera)
@@ -39,7 +39,7 @@ namespace ZXEngine
 
 		// Light
 		const auto& allLights = Light::GetAllLights();
-		mDeferredMaterial->SetScalar("_LightNum", static_cast<uint32_t>(allLights.size()));
+		mDeferredMaterial->SetScalar("_LightNum", static_cast<int32_t>(allLights.size()));
 
 		vector<Vector4> lightPos;
 		vector<Vector4> lightColor;

@@ -58,7 +58,7 @@ namespace ZXEngine
     {
         { FrameBufferType::Present,   RenderPassType::Present   }, { FrameBufferType::Normal,        RenderPassType::Normal       },
         { FrameBufferType::Color,     RenderPassType::Color     }, { FrameBufferType::ShadowCubeMap, RenderPassType::ShadowCubeMap},
-        { FrameBufferType::ShadowMap, RenderPassType::ShadowMap },
+        { FrameBufferType::ShadowMap, RenderPassType::ShadowMap }, { FrameBufferType::GBuffer,       RenderPassType::GBuffer      },
     };
 
     // 自定义的Debug回调函数，VKAPI_ATTR和VKAPI_CALL确保了正确的函数签名，从而被Vulkan调用
@@ -1045,25 +1045,25 @@ namespace ZXEngine
 
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
-                VulkanImage posImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R32G32B32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
+                VulkanImage posImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
                 TransitionImageLayout(posImage.image,
                     VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_COLOR_BIT,
                     VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
                     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
-                VkImageView posImageView = CreateImageView(posImage.image, VK_FORMAT_R32G32B32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkImageView posImageView = CreateImageView(posImage.image, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
                 VkSampler posSampler = CreateSampler(1);
                 positionAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(posImage, posImageView, posSampler);
 
-                VulkanImage normalImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R32G32B32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
+                VulkanImage normalImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
                 TransitionImageLayout(normalImage.image,
                     VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_COLOR_BIT,
                     VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
                     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
-                VkImageView normalImageView = CreateImageView(normalImage.image, VK_FORMAT_R32G32B32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkImageView normalImageView = CreateImageView(normalImage.image, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
                 VkSampler normalSampler = CreateSampler(1);
                 normalAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(normalImage, normalImageView, normalSampler);
 
@@ -1172,7 +1172,7 @@ namespace ZXEngine
         if (commandType == CommandType::ShadowGeneration || commandType == CommandType::ForwardRendering ||
             commandType == CommandType::AfterEffectRendering || commandType == CommandType::UIRendering || 
             commandType == CommandType::AssetPreviewer || commandType == CommandType::RayTracing ||
-            commandType == CommandType::GBufferGeneration)
+            commandType == CommandType::GBufferGeneration || commandType == CommandType::DeferredRendering)
         {
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
@@ -1237,6 +1237,19 @@ namespace ZXEngine
 
             renderPassInfo.pClearValues = clearValues.data();
             renderPassInfo.clearValueCount = 1;
+        }
+        else if (curFBO->renderPassType == RenderPassType::GBuffer)
+        {
+            auto& clearInfo = curFBO->clearInfo;
+
+			clearValues.resize(4);
+			clearValues[0].color = { { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a } };
+			clearValues[1].color = { { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a } };
+			clearValues[2].color = { { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a } };
+			clearValues[3].depthStencil = { clearInfo.depth, clearInfo.stencil };
+
+			renderPassInfo.pClearValues = clearValues.data();
+			renderPassInfo.clearValueCount = 4;
         }
         else
         {
@@ -4588,7 +4601,7 @@ namespace ZXEngine
         else if (type == RenderPassType::GBuffer)
         {
             VkAttachmentDescription positionAttachment = {};
-            positionAttachment.format = VK_FORMAT_R32G32B32_SFLOAT;
+            positionAttachment.format = VK_FORMAT_R32G32B32A32_SFLOAT;
             positionAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
             positionAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
             positionAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -4598,7 +4611,7 @@ namespace ZXEngine
             positionAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
             
             VkAttachmentDescription normalAttachment = {};
-			normalAttachment.format = VK_FORMAT_R32G32B32_SFLOAT;
+			normalAttachment.format = VK_FORMAT_R32G32B32A32_SFLOAT;
 			normalAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 			normalAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 			normalAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -4618,7 +4631,7 @@ namespace ZXEngine
             colorAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 			VkAttachmentDescription depthAttachment = {};
-			depthAttachment.format = VK_FORMAT_D32_SFLOAT;
+			depthAttachment.format = VK_FORMAT_D16_UNORM;
 			depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 			depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 			depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -4771,21 +4784,30 @@ namespace ZXEngine
         VkPipelineMultisampleStateCreateInfo multisampleInfo = GetPipelineMultisampleInfo(renderPassType == RenderPassType::Present ? msaaSamplesCount : VK_SAMPLE_COUNT_1_BIT);
 
         // Color Blend
-        VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-        colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-        colorBlendAttachment.blendEnable = VK_TRUE;
-        colorBlendAttachment.srcColorBlendFactor = vkBlendFactorMap[shaderInfo.stateSet.srcFactor];
-        colorBlendAttachment.dstColorBlendFactor = vkBlendFactorMap[shaderInfo.stateSet.dstFactor];
-        colorBlendAttachment.colorBlendOp = vkBlendOptionMap[shaderInfo.stateSet.blendOp];
-        colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-        colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-        colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+        vector<VkPipelineColorBlendAttachmentState> colorBlendStates;
+        size_t colorAttachmentCount = 1;
+        if (renderPassType == RenderPassType::GBuffer)
+			colorAttachmentCount = 3;
+
+        colorBlendStates.resize(colorAttachmentCount);
+        for (size_t i = 0; i < colorAttachmentCount; i++)
+        {
+            colorBlendStates[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+            colorBlendStates[i].blendEnable = VK_TRUE;
+            colorBlendStates[i].srcColorBlendFactor = vkBlendFactorMap[shaderInfo.stateSet.srcFactor];
+            colorBlendStates[i].dstColorBlendFactor = vkBlendFactorMap[shaderInfo.stateSet.dstFactor];
+            colorBlendStates[i].colorBlendOp = vkBlendOptionMap[shaderInfo.stateSet.blendOp];
+            colorBlendStates[i].srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+            colorBlendStates[i].dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+            colorBlendStates[i].alphaBlendOp = VK_BLEND_OP_ADD;
+		}
+
         VkPipelineColorBlendStateCreateInfo colorBlending{};
         colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
         colorBlending.logicOpEnable = VK_FALSE;
         colorBlending.logicOp = VK_LOGIC_OP_COPY;
-        colorBlending.pAttachments = &colorBlendAttachment;
-        colorBlending.attachmentCount = 1;
+        colorBlending.pAttachments = colorBlendStates.data();
+        colorBlending.attachmentCount = static_cast<uint32_t>(colorBlendStates.size());
 
         // 深度和模板配置
         VkPipelineDepthStencilStateCreateInfo depthStencilInfo = {};
