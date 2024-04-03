@@ -495,13 +495,16 @@ namespace ZXEngine
 		auto materialData = GetMaterialDataByIndex(id);
 
 		materialData->intList.clear();
+		materialData->uintList.clear();
 		materialData->boolList.clear();
 		materialData->floatList.clear();
 		materialData->vec2List.clear();
 		materialData->vec3List.clear();
 		materialData->vec4List.clear();
+		materialData->vec4ArrayList.clear();
 		materialData->mat3List.clear();
 		materialData->mat4List.clear();
+		materialData->mat4ArrayList.clear();
 		materialData->textures.clear();
 		materialData->cubeMaps.clear();
 

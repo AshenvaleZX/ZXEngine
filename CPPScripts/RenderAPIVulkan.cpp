@@ -3133,7 +3133,11 @@ namespace ZXEngine
     {
         auto vulkanMaterialData = GetMaterialDataByIndex(idx);
 
-        vkDestroyDescriptorPool(device, vulkanMaterialData->descriptorPool, VK_NULL_HANDLE);
+        if (vulkanMaterialData->descriptorPool != VK_NULL_HANDLE)
+        {
+            vkDestroyDescriptorPool(device, vulkanMaterialData->descriptorPool, VK_NULL_HANDLE);
+            vulkanMaterialData->descriptorPool = VK_NULL_HANDLE;
+        }
         vulkanMaterialData->descriptorSets.clear();
 
         for (auto& uniformBuffer : vulkanMaterialData->vertUniformBuffers)
