@@ -94,7 +94,8 @@ namespace ZXEngine
 				else if (curAsset->type == AssetType::Texture)
 					DrawTexture(static_cast<AssetTextureInfo*>(curAssetInfo));
 				else if (curAsset->type == AssetType::Material || 
-					curAsset->type == AssetType::RayTracingMaterial)
+					curAsset->type == AssetType::RayTracingMaterial ||
+					curAsset->type == AssetType::DeferredMaterial)
 					DrawMaterial(static_cast<AssetMaterialInfo*>(curAssetInfo));
 				else if (curAsset->type == AssetType::Model)
 					DrawModel(static_cast<AssetModelInfo*>(curAssetInfo));
@@ -138,7 +139,7 @@ namespace ZXEngine
 				Debug::Log("Click Shader");
 			}
 		}
-		else
+		else if (material->type == MaterialType::RayTracing)
 		{
 			ImGui::Text("Hit Group:");
 			ImGui::SameLine(120);

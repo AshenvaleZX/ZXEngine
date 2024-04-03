@@ -205,6 +205,7 @@ namespace ZXEngine
 	{
 		extTypeMap.insert(make_pair<string, AssetType>("",          AssetType::Folder            ));
 		extTypeMap.insert(make_pair<string, AssetType>(".zxmat",    AssetType::Material          ));
+		extTypeMap.insert(make_pair<string, AssetType>(".zxdrmat",  AssetType::DeferredMaterial  ));
 		extTypeMap.insert(make_pair<string, AssetType>(".zxrtmat",  AssetType::RayTracingMaterial));
 		extTypeMap.insert(make_pair<string, AssetType>(".zxprefab", AssetType::Prefab            ));
 		extTypeMap.insert(make_pair<string, AssetType>(".lua",      AssetType::Script            ));
@@ -241,6 +242,7 @@ namespace ZXEngine
 		fileIcons[(int)AssetType::Other]              = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/other.png",    true));
 		fileIcons[(int)AssetType::Folder]             = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/folder.png",   true));
 		fileIcons[(int)AssetType::Material]           = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/material.png", true));
+		fileIcons[(int)AssetType::DeferredMaterial]   = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/material.png", true));
 		fileIcons[(int)AssetType::RayTracingMaterial] = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/material.png", true));
 		fileIcons[(int)AssetType::Prefab]             = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/prefab.png",   true));
 		fileIcons[(int)AssetType::Script]             = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/lua.png",      true));

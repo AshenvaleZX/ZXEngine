@@ -9,6 +9,7 @@ namespace ZXEngine
 		Other,
 		Folder,
 		Material,
+		DeferredMaterial,
 		RayTracingMaterial,
 		Prefab,
 		Script,
