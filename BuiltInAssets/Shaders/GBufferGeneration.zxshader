@@ -2,7 +2,7 @@ Setting
 {
     Blend SrcAlpha OneMinusSrcAlpha
     BlendOp Add
-    Cull Front
+    Cull Back
     ZTest Less
     ZWrite On
 }
@@ -54,8 +54,8 @@ Fragment
 
     Output
     {
-        0 vec3 G_Position : SV_Target0
-        1 vec3 G_Normal   : SV_Target1
+        0 vec4 G_Position : SV_Target0
+        1 vec4 G_Normal   : SV_Target1
         2 vec4 G_Color    : SV_Target2
     }
     
@@ -70,10 +70,10 @@ Fragment
         void main()
         {
             vec3 albedo = texture(_AlbedoMap, TexCoords).rgb;
-            vec3 normal = texture(_NormalMap, TexCoords).rgb;
-            normal = normalize(normal * 2.0 - 1.0);
-            G_Position = WorldPos;
-            G_Normal = Normal;
+            vec3 wNormal = texture(_NormalMap, TexCoords).rgb;
+            wNormal = normalize(Normal);
+            G_Position = vec4(WorldPos, 1.0);
+            G_Normal = vec4(wNormal, 1.0);
             G_Color = vec4(albedo, 1.0);
         }
     }
