@@ -26,11 +26,13 @@ namespace ZXEngine
 	void RenderPassGBufferGeneration::Render(Camera* camera)
 	{
 		auto renderAPI = RenderAPI::GetInstance();
+		auto engineProperties = RenderEngineProperties::GetInstance();
+
 		FBOManager::GetInstance()->SwitchFBO("GBuffer");
 		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight);
 		renderAPI->ClearFrameBuffer();
 
-		RenderEngineProperties::GetInstance()->SetCameraProperties(camera);
+		engineProperties->SetCameraProperties(camera);
 
 		// 延迟渲染仅支持不透明物体
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Opaque);
@@ -50,6 +52,8 @@ namespace ZXEngine
 				if (normalMap)
 					renderer->mGBufferMaterial->SetTexture("_NormalMap", normalMap->GetID(), 1);
 			}
+
+			engineProperties->SetRendererProperties(renderer);
 
 			renderer->mGBufferMaterial->SetEngineProperties();
 
