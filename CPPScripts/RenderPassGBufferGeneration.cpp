@@ -10,6 +10,7 @@
 #include "MaterialData.h"
 #include "Texture.h"
 #include "RenderEngineProperties.h"
+#include "RenderStateSetting.h"
 
 namespace ZXEngine
 {
@@ -17,6 +18,8 @@ namespace ZXEngine
 	{
 		mGBufferShader = new Shader(Resources::GetAssetFullPath("Shaders/GBufferGeneration.zxshader", true), FrameBufferType::GBuffer);
 		mDrawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::GBufferGeneration);
+
+		gBufferRenderState = new RenderStateSetting();
 
 		ClearInfo clearInfo = {};
 		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT;
@@ -33,6 +36,8 @@ namespace ZXEngine
 		renderAPI->ClearFrameBuffer();
 
 		engineProperties->SetCameraProperties(camera);
+
+		renderAPI->SetRenderState(gBufferRenderState);
 
 		// 延迟渲染仅支持不透明物体
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Deferred);
