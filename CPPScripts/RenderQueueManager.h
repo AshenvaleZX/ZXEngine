@@ -8,11 +8,12 @@ namespace ZXEngine
 	class RenderQueueManager
 	{
 	public:
-		RenderQueueManager() {};
-		~RenderQueueManager() {};
-
 		static void Creat();
 		static RenderQueueManager* GetInstance();
+
+	public:
+		RenderQueueManager();
+		~RenderQueueManager();
 
 		void AddGameObject(GameObject* gameObject);
 		RenderQueue* GetRenderQueue(int queue);
@@ -22,7 +23,7 @@ namespace ZXEngine
 
 	private:
 		static RenderQueueManager* mInstance;
-		map<int, RenderQueue*> renderQueues = { {(int)RenderQueueType::Opaque, new RenderQueue()}, {(int)RenderQueueType::Transparent, new RenderQueue()} };
+		unordered_map<int, RenderQueue*> renderQueues;
 		list<GameObject*> uiGameObjectList;
 
 		void AddRenderer(MeshRenderer* meshRenderer);

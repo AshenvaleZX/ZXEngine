@@ -35,7 +35,7 @@ namespace ZXEngine
 		engineProperties->SetCameraProperties(camera);
 
 		// 延迟渲染仅支持不透明物体
-		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Opaque);
+		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Deferred);
 		renderQueue->Sort(camera, RenderSortType::FrontToBack);
 
 		for (auto renderer : renderQueue->GetRenderers())

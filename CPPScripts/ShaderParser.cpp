@@ -110,7 +110,8 @@ namespace ZXEngine
 
 	unordered_map<string, RenderQueueType> renderQueueMap =
 	{
-		{ "Opaque", RenderQueueType::Opaque }, { "Transparent", RenderQueueType::Transparent },
+		{ "Opaque",   RenderQueueType::Opaque   }, { "Transparent", RenderQueueType::Transparent },
+		{ "Deferred", RenderQueueType::Deferred }
 	};
 
 	ShaderInfo ShaderParser::GetShaderInfo(const string& code, GraphicsAPI api)

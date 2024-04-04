@@ -57,8 +57,9 @@ namespace ZXEngine
 	};
 
 	enum class RenderQueueType
-	{ 
-		Opaque = 1000, 
+	{
+		Deferred    = 500,
+		Opaque      = 1000, 
 		Transparent = 2000 
 	};
 

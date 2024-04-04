@@ -17,9 +17,27 @@ namespace ZXEngine
 		return mInstance;
 	}
 
+	RenderQueueManager::RenderQueueManager()
+	{
+		renderQueues =
+		{
+			{ (int)RenderQueueType::Deferred,    new RenderQueue() },
+			{ (int)RenderQueueType::Opaque,      new RenderQueue() },
+			{ (int)RenderQueueType::Transparent, new RenderQueue() },
+		};
+	}
+
+	RenderQueueManager::~RenderQueueManager()
+	{
+		for (auto& iter : renderQueues)
+		{
+			delete iter.second;
+		}
+	}
+
 	RenderQueue* RenderQueueManager::GetRenderQueue(int queue)
 	{
-		map<int, RenderQueue*>::iterator iter = renderQueues.find(queue);
+		auto iter = renderQueues.find(queue);
 		if (iter != renderQueues.end()) {
 			return iter->second;
 		}
