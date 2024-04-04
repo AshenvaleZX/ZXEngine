@@ -250,6 +250,27 @@ namespace ZXEngine
 				ImGui::SameLine(120); ImGui::Image(ImTextureMgr->GetImTextureIDByEngineID(id), ImVec2(50.0f, 50.0f));
 			}
 		}
+
+		if (material->type != MaterialType::RayTracing)
+		{
+			ImGui::Text("RenderQueue");
+			auto renderQueueType = material->GetRenderQueueType();
+			if (renderQueueType == RenderQueueType::Deferred)
+			{
+				ImGui::SameLine(120);
+				ImGui::Text("Deferred");
+			}
+			else if (renderQueueType == RenderQueueType::Opaque)
+			{
+				ImGui::SameLine(120);
+				ImGui::Text("Opaque");
+			}
+			else if (renderQueueType == RenderQueueType::Transparent)
+			{
+				ImGui::SameLine(120);
+				ImGui::Text("Transparent");
+			}
+		}
 	}
 
 	void EditorInspectorPanel::DrawTransform(Transform* component)

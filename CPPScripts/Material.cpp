@@ -23,17 +23,20 @@ namespace ZXEngine
 		{
 			shader = new Shader(matStruct->shaderPath, matStruct->shaderCode, FrameBufferType::Normal);
 			renderQueue = (int)shader->reference->shaderInfo.stateSet.renderQueue;
+			renderQueueType = shader->reference->shaderInfo.stateSet.renderQueue;
 			RenderAPI::GetInstance()->SetUpMaterial(this);
 		}
 		else if (type == MaterialType::Deferred)
 		{
 			renderQueue = (int)RenderQueueType::Deferred;
+			renderQueueType = RenderQueueType::Deferred;
 		}
 		else if (type == MaterialType::RayTracing)
 		{
 			hitGroupIdx = matStruct->hitGroupIdx;
 			// 光追管线暂时不需要区分队列，用一个默认的Opaque队列
 			renderQueue = (int)RenderQueueType::Opaque;
+			renderQueueType = RenderQueueType::Opaque;
 			RenderAPI::GetInstance()->SetUpRayTracingMaterialData(this);
 		}
 	}
@@ -75,6 +78,11 @@ namespace ZXEngine
 	int Material::GetRenderQueue() const
 	{
 		return renderQueue;
+	}
+
+	RenderQueueType Material::GetRenderQueueType() const
+	{
+		return renderQueueType;
 	}
 
 	void Material::SetEngineProperties()

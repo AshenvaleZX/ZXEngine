@@ -23,6 +23,7 @@ namespace ZXEngine
 
 		void Use();
 		int GetRenderQueue() const;
+		RenderQueueType GetRenderQueueType() const;
 
 		void SetEngineProperties();
 		void SetMaterialProperties();
@@ -50,6 +51,7 @@ namespace ZXEngine
 		bool isShareShader;
 		uint32_t textureIdx = 0;
 		int renderQueue = 0;
+		RenderQueueType renderQueueType = RenderQueueType::Opaque;
 
 		void SetEngineProperty(const string& name, ShaderPropertyType type);
 		void SetMaterialProperty(const string& name, ShaderPropertyType type);
