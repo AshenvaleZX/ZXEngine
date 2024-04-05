@@ -328,7 +328,7 @@ namespace ZXEngine
 		uint32_t mCurMaterialDataIdx = 0;
 		vector<ZXD3D12DrawIndex> mDrawIndexes;
 
-		uint32_t GetCurFrameBufferIndex();
+		uint32_t GetCurFrameBufferIndex() const;
 
 		void DoWindowSizeChange();
 

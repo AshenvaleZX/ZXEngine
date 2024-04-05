@@ -10,6 +10,14 @@ namespace ZXEngine
 		ZX_CLEAR_FRAME_BUFFER_STENCIL_BIT = 0x00000004,
 	} FrameBufferClearFlagBit;
 
+	typedef uint32_t FrameBufferPieceFlags;
+	typedef enum FrameBufferPieceBit {
+		ZX_FRAME_BUFFER_PIECE_COLOR    = 0x00000001,
+		ZX_FRAME_BUFFER_PIECE_DEPTH    = 0x00000002,
+		ZX_FRAME_BUFFER_PIECE_POSITION = 0x00000004,
+		ZX_FRAME_BUFFER_PIECE_NORMAL   = 0x00000008,
+	} FrameBufferPieceBit;
+
 	typedef uint32_t ShaderStageFlags;
 	typedef enum ShaderStageFlagBit {
 		ZX_SHADER_STAGE_VERTEX_BIT       = 0x00000001,
@@ -104,6 +112,7 @@ namespace ZXEngine
 		ShadowMap,
 		ShadowCubeMap,
 		GBuffer,
+		Deferred,
 		RayTracing,
 	};
 

@@ -186,7 +186,7 @@ namespace ZXEngine
         // ----------------------------------------建立Vulkan对象的辅助函数----------------------------------------
 
         bool CheckValidationLayerSupport();
-        vector<const char*> GetRequiredExtensions();
+        vector<const char*> GetRequiredExtensions() const;
         // 创建调试用的VkDebugUtilsMessenger
         VkResult CreateDebugUtilsMessengerEXT(const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
         // 销毁VkDebugUtilsMessenger
@@ -398,7 +398,7 @@ namespace ZXEngine
         vector<VulkanDrawIndex> drawIndexes;
         vector<VkSemaphore> curWaitSemaphores;
 
-        uint32_t GetCurFrameBufferIndex();
+        uint32_t GetCurFrameBufferIndex() const;
         uint32_t GetMipMapLevels(int width, int height);
         VkTransformMatrixKHR GetVkTransformMatrix(const Matrix4& mat);
         void InitImmediateCommand();

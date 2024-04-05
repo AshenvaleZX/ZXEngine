@@ -59,6 +59,7 @@ namespace ZXEngine
         { FrameBufferType::Present,   RenderPassType::Present   }, { FrameBufferType::Normal,        RenderPassType::Normal       },
         { FrameBufferType::Color,     RenderPassType::Color     }, { FrameBufferType::ShadowCubeMap, RenderPassType::ShadowCubeMap},
         { FrameBufferType::ShadowMap, RenderPassType::ShadowMap }, { FrameBufferType::GBuffer,       RenderPassType::GBuffer      },
+        { FrameBufferType::Deferred,  RenderPassType::Deferred  },
     };
 
     // 自定义的Debug回调函数，VKAPI_ATTR和VKAPI_CALL确保了正确的函数签名，从而被Vulkan调用
@@ -994,7 +995,10 @@ namespace ZXEngine
         width = width == 0 ? GlobalData::srcWidth : width;
         height = height == 0 ? GlobalData::srcHeight : height;
 
-        if (type == FrameBufferType::Normal)
+        FBO->width = width;
+        FBO->height = height;
+
+        if (type == FrameBufferType::Normal || type == FrameBufferType::Deferred)
         {
             FBO->ID = GetNextFBOIndex();
             FBO->ColorBuffer = GetNextAttachmentBufferIndex();
@@ -1007,8 +1011,8 @@ namespace ZXEngine
             auto vulkanFBO = GetFBOByIndex(FBO->ID);
             vulkanFBO->colorAttachmentIdx = FBO->ColorBuffer;
             vulkanFBO->depthAttachmentIdx = FBO->DepthBuffer;
-            vulkanFBO->bufferType = FrameBufferType::Normal;
-            vulkanFBO->renderPassType = RenderPassType::Normal;
+            vulkanFBO->bufferType = type;
+            vulkanFBO->renderPassType = vkFrameBufferTypeToRenderPassTypeMap[type];
             vulkanFBO->clearInfo = clearInfo;
 
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
@@ -1026,8 +1030,12 @@ namespace ZXEngine
                 VkSampler colorSampler = CreateSampler(1);
                 colorAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(colorImage, colorImageView, colorSampler);
 
+                VkImageUsageFlags depthUsage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+                if (type == FrameBufferType::Deferred)
+                    depthUsage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+
                 VulkanImage depthImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D16_UNORM, VK_IMAGE_TILING_OPTIMAL,
-                    VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+                    depthUsage, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
                 TransitionImageLayout(depthImage.image,
                     VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_DEPTH_BIT,
@@ -1248,7 +1256,7 @@ namespace ZXEngine
                 colorAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(colorImage, colorImageView, colorSampler);
 
                 VulkanImage depthImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D16_UNORM, VK_IMAGE_TILING_OPTIMAL,
-                    VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+                    VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
                 TransitionImageLayout(depthImage.image,
                     VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_DEPTH_BIT,
@@ -1341,7 +1349,8 @@ namespace ZXEngine
         if (commandType == CommandType::ShadowGeneration || commandType == CommandType::ForwardRendering ||
             commandType == CommandType::AfterEffectRendering || commandType == CommandType::UIRendering || 
             commandType == CommandType::AssetPreviewer || commandType == CommandType::RayTracing ||
-            commandType == CommandType::GBufferGeneration || commandType == CommandType::DeferredRendering)
+            commandType == CommandType::GBufferGeneration || commandType == CommandType::DeferredRendering ||
+            commandType == CommandType::NotCare)
         {
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
@@ -3849,7 +3858,7 @@ namespace ZXEngine
         return true;
     }
 
-    vector<const char*> RenderAPIVulkan::GetRequiredExtensions()
+    vector<const char*> RenderAPIVulkan::GetRequiredExtensions() const
     {
         // Vulakn对于平台特性是零API支持的(至少暂时这样)，这意味着需要一个扩展才能与不同平台的窗体系统进行交互
         // GLFW有一个方便的内置函数，返回它有关的扩展信息
@@ -4538,6 +4547,7 @@ namespace ZXEngine
         allVulkanRenderPass[(size_t)RenderPassType::ShadowMap]     = CreateRenderPass(RenderPassType::ShadowMap);
         allVulkanRenderPass[(size_t)RenderPassType::ShadowCubeMap] = CreateRenderPass(RenderPassType::ShadowCubeMap);
         allVulkanRenderPass[(size_t)RenderPassType::GBuffer]       = CreateRenderPass(RenderPassType::GBuffer);
+        allVulkanRenderPass[(size_t)RenderPassType::Deferred]      = CreateRenderPass(RenderPassType::Deferred);
     }
 
     VkRenderPass RenderAPIVulkan::CreateRenderPass(RenderPassType type)
@@ -4601,12 +4611,15 @@ namespace ZXEngine
             if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
                 throw std::runtime_error("failed to create render pass!");
         }
-        else if (type == RenderPassType::Normal)
+        else if (type == RenderPassType::Normal || type == RenderPassType::Deferred)
         {
             VkAttachmentDescription colorAttachment = {};
             colorAttachment.format = defaultImageFormat;
             colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            if (type == RenderPassType::Normal)
+                colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            else
+                colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             // 上面那个设置是用于color和depth的，stencil的单独一个
             colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -4618,7 +4631,10 @@ namespace ZXEngine
             VkAttachmentDescription depthAttachment = {};
             depthAttachment.format = VK_FORMAT_D16_UNORM;
             depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-            depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            if (type == RenderPassType::Normal)
+                depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            else
+                depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -5550,7 +5566,7 @@ namespace ZXEngine
     }
 
 
-    uint32_t RenderAPIVulkan::GetCurFrameBufferIndex()
+    uint32_t RenderAPIVulkan::GetCurFrameBufferIndex() const
     {
         if (curFBOIdx == presentFBOIdx)
             return curPresentImageIdx;

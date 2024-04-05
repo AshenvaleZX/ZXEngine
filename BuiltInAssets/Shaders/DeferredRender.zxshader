@@ -4,7 +4,7 @@ Setting
     BlendOp Add
     Cull Back
     ZTest Less
-    ZWrite On
+    ZWrite Off
     RenderQueue Deferred
 }
 

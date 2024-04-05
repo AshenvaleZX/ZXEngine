@@ -47,6 +47,7 @@ namespace ZXEngine
         ShadowMap,
         ShadowCubeMap,
         GBuffer,
+        Deferred,
         MAX,
     };
 

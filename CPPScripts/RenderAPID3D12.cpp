@@ -419,7 +419,10 @@ namespace ZXEngine
 		width = width == 0 ? GlobalData::srcWidth : width;
 		height = height == 0 ? GlobalData::srcHeight : height;
 
-		if (type == FrameBufferType::Normal)
+		FBO->width = width;
+		FBO->height = height;
+
+		if (type == FrameBufferType::Normal || type == FrameBufferType::Deferred)
 		{
 			FBO->ID = GetNextFBOIndex();
 			FBO->ColorBuffer = GetNextRenderBufferIndex();
@@ -432,7 +435,7 @@ namespace ZXEngine
 			auto D3D12FBO = GetFBOByIndex(FBO->ID);
 			D3D12FBO->colorBufferIdx = FBO->ColorBuffer;
 			D3D12FBO->depthBufferIdx = FBO->DepthBuffer;
-			D3D12FBO->bufferType = FrameBufferType::Normal;
+			D3D12FBO->bufferType = type;
 			D3D12FBO->clearInfo = clearInfo;
 
 			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
@@ -1839,6 +1842,27 @@ namespace ZXEngine
 			drawCommandList->ClearRenderTargetView(color_rtv, clearColor, 0, nullptr);
 			drawCommandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, clearInfo.depth, 0, 0, nullptr);
 		}
+		else if (curFBO->bufferType == FrameBufferType::Deferred)
+		{
+			colorBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->colorBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+			depthBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->depthBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+
+			auto colorBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(colorBuffer->texture.Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+			drawCommandList->ResourceBarrier(1, &colorBufferTransition);
+			auto depthBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(depthBuffer->texture.Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+			drawCommandList->ResourceBarrier(1, &depthBufferTransition);
+
+			auto rtv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(colorBuffer->handleRTV);
+			auto dsv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(depthBuffer->handleDSV);
+			drawCommandList->OMSetRenderTargets(1, &rtv, false, &dsv);
+
+			// Deferred Buffer的深度缓存来自G-Buffer，不清理
+			auto& clearInfo = curFBO->clearInfo;
+			const float clearColor[] = { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a };
+			drawCommandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+		}
 		else if (curFBO->bufferType == FrameBufferType::Present)
 		{
 			colorBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->colorBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
@@ -1922,7 +1946,7 @@ namespace ZXEngine
 		}
 
 		// 把状态切回去
-		if (curFBO->bufferType == FrameBufferType::Normal)
+		if (curFBO->bufferType == FrameBufferType::Normal || curFBO->bufferType == FrameBufferType::Deferred)
 		{
 			if (colorBuffer != nullptr)
 			{
@@ -4051,7 +4075,7 @@ namespace ZXEngine
 	}
 
 
-	uint32_t RenderAPID3D12::GetCurFrameBufferIndex()
+	uint32_t RenderAPID3D12::GetCurFrameBufferIndex() const
 	{
 		if (mCurFBOIdx == mPresentFBOIdx)
 			return mCurPresentIdx;

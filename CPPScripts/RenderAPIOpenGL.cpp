@@ -568,7 +568,10 @@ namespace ZXEngine
 		width = width == 0 ? GlobalData::srcWidth : width;
 		height = height == 0 ? GlobalData::srcHeight : height;
 
-		if (type == FrameBufferType::Normal)
+		FBO->width = width;
+		FBO->height = height;
+
+		if (type == FrameBufferType::Normal || type == FrameBufferType::Deferred)
 		{
 			unsigned int FBO_ID;
 			glGenFramebuffers(1, &FBO_ID);
