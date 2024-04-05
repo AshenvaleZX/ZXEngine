@@ -248,6 +248,175 @@ namespace ZXEngine
         //*/
     }
 
+    void RenderAPIVulkan::BlitFrameBuffer(uint32_t cmd, const string& src, const string& dst, FrameBufferPieceFlags flags)
+    {
+        auto curDrawCommandObj = GetDrawCommandByIndex(cmd);
+        auto& curDrawCommand = curDrawCommandObj->drawCommands[currentFrame];
+        auto commandBuffer = curDrawCommand.commandBuffer;
+
+        vkResetCommandBuffer(commandBuffer, 0);
+
+        VkCommandBufferBeginInfo beginInfo = {};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = 0;
+        beginInfo.pInheritanceInfo = VK_NULL_HANDLE;
+        if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
+            throw std::runtime_error("failed to begin recording command buffer!");
+
+        auto sFBO = FBOManager::GetInstance()->GetFBO(src);
+        auto dFBO = FBOManager::GetInstance()->GetFBO(dst);
+
+        if (flags & ZX_FRAME_BUFFER_PIECE_COLOR)
+        {
+            auto sColorBuffer = GetAttachmentBufferByIndex(sFBO->ColorBuffer);
+            auto dColorBuffer = GetAttachmentBufferByIndex(dFBO->ColorBuffer);
+
+            auto sColorTexture = GetTextureByIndex(sColorBuffer->attachmentBuffers[currentFrame]);
+            auto dColorTexture = GetTextureByIndex(dColorBuffer->attachmentBuffers[currentFrame]);
+
+            TransitionImageLayout(commandBuffer, sColorTexture->image.image,
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                VK_IMAGE_ASPECT_COLOR_BIT,
+                // 需要等渲染输出完成
+                VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                // 才可以开始Transfer的读取
+                VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT
+            );
+
+            TransitionImageLayout(commandBuffer, dColorTexture->image.image,
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                VK_IMAGE_ASPECT_COLOR_BIT,
+                // 需要等???，我也不知道应该等什么
+                VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                // 才能开始Transfer的写入
+                VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT
+            );
+
+            VkImageCopy imageCopy = {};
+            imageCopy.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            imageCopy.srcSubresource.mipLevel = 0;
+            imageCopy.srcSubresource.baseArrayLayer = 0;
+            imageCopy.srcSubresource.layerCount = 1;
+            imageCopy.srcOffset = { 0,0,0 };
+            imageCopy.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            imageCopy.dstSubresource.mipLevel = 0;
+            imageCopy.dstSubresource.baseArrayLayer = 0;
+            imageCopy.dstSubresource.layerCount = 1;
+            imageCopy.dstOffset = { 0,0,0 };
+            imageCopy.extent = { sFBO->width, sFBO->height, 1 };
+
+            vkCmdCopyImage(commandBuffer, 
+                sColorTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                dColorTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                1, &imageCopy
+            );
+
+            TransitionImageLayout(commandBuffer, sColorTexture->image.image,
+                VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                VK_IMAGE_ASPECT_COLOR_BIT,
+                // 需要等Transfer的读取完成
+                VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT,
+                // 才可以被Shader读取
+                VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT
+            );
+
+            TransitionImageLayout(commandBuffer, dColorTexture->image.image,
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                VK_IMAGE_ASPECT_COLOR_BIT,
+                // 需要等Transfer的写入完成
+                VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT,
+                // 才可以被Shader读取
+                VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT
+            );
+        }
+
+        if (flags & ZX_FRAME_BUFFER_PIECE_DEPTH)
+        {
+            auto sDepthBuffer = GetAttachmentBufferByIndex(sFBO->DepthBuffer);
+            auto dDepthBuffer = GetAttachmentBufferByIndex(dFBO->DepthBuffer);
+
+            auto sDepthTexture = GetTextureByIndex(sDepthBuffer->attachmentBuffers[currentFrame]);
+            auto dDepthTexture = GetTextureByIndex(dDepthBuffer->attachmentBuffers[currentFrame]);
+
+            TransitionImageLayout(commandBuffer, sDepthTexture->image.image,
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                VK_IMAGE_ASPECT_DEPTH_BIT,
+                // 需要等渲染输出完成
+                VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                // 才可以开始Transfer的读取
+                VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT
+            );
+
+            TransitionImageLayout(commandBuffer, dDepthTexture->image.image,
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                VK_IMAGE_ASPECT_DEPTH_BIT,
+                // 需要等???，我也不知道应该等什么
+                VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                // 才能开始Transfer的写入
+                VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT
+            );
+
+            VkImageCopy imageCopy = {};
+            imageCopy.srcSubresource.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+            imageCopy.srcSubresource.mipLevel = 0;
+            imageCopy.srcSubresource.baseArrayLayer = 0;
+            imageCopy.srcSubresource.layerCount = 1;
+            imageCopy.srcOffset = { 0,0,0 };
+            imageCopy.dstSubresource.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+            imageCopy.dstSubresource.mipLevel = 0;
+            imageCopy.dstSubresource.baseArrayLayer = 0;
+            imageCopy.dstSubresource.layerCount = 1;
+            imageCopy.dstOffset = { 0,0,0 };
+            imageCopy.extent = { sFBO->width, sFBO->height, 1 };
+
+            vkCmdCopyImage(commandBuffer,
+                sDepthTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                dDepthTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                1, &imageCopy
+            );
+
+            TransitionImageLayout(commandBuffer, sDepthTexture->image.image,
+                VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                VK_IMAGE_ASPECT_DEPTH_BIT,
+                // 需要等Transfer的读取完成
+                VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT,
+                // 才可以被Shader读取
+                VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT
+            );
+
+            TransitionImageLayout(commandBuffer, dDepthTexture->image.image,
+                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                VK_IMAGE_ASPECT_DEPTH_BIT,
+                // 需要等Transfer的写入完成
+                VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT,
+                // 才可以被Shader读取
+                VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT
+            );
+        }
+
+        if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
+            throw std::runtime_error("failed to record command buffer!");
+
+        vector<VkPipelineStageFlags> waitStages = {};
+        waitStages.resize(curWaitSemaphores.size(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
+        vector<VkSemaphore> waitSemaphores = curWaitSemaphores;
+
+        VkSubmitInfo submitInfo = {};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.pCommandBuffers = &commandBuffer;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pWaitSemaphores = waitSemaphores.data();
+        submitInfo.pWaitDstStageMask = waitStages.data();
+        submitInfo.waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size());
+        submitInfo.pSignalSemaphores = curDrawCommand.signalSemaphores.data();
+        submitInfo.signalSemaphoreCount = static_cast<uint32_t>(curDrawCommand.signalSemaphores.size());
+
+        if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
+            throw std::runtime_error("failed to submit draw command buffer!");
+
+        curWaitSemaphores = curDrawCommand.signalSemaphores;
+    }
+
     unsigned int RenderAPIVulkan::LoadTexture(const char* path, int& width, int& height)
     {
         int nrComponents;

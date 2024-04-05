@@ -187,6 +187,23 @@ namespace ZXEngine
 		CheckError();
 	}
 
+	void RenderAPIOpenGL::BlitFrameBuffer(uint32_t cmd, const string& src, const string& dst, FrameBufferPieceFlags flags)
+	{
+		auto sFBO = FBOManager::GetInstance()->GetFBO(src);
+		auto dFBO = FBOManager::GetInstance()->GetFBO(dst);
+
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, sFBO->ID);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dFBO->ID);
+
+		if (flags & ZX_FRAME_BUFFER_PIECE_COLOR)
+			glBlitFramebuffer(0, 0, sFBO->width, sFBO->height, 0, 0, dFBO->width, dFBO->height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		if (flags & ZX_FRAME_BUFFER_PIECE_DEPTH)
+			glBlitFramebuffer(0, 0, sFBO->width, sFBO->height, 0, 0, dFBO->width, dFBO->height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+
+		// 切回原来的FBO
+		glBindFramebuffer(GL_FRAMEBUFFER, curFBOID);
+	}
+
 	void RenderAPIOpenGL::CheckError()
 	{
 		if (ProjectSetting::enableGraphicsDebug)

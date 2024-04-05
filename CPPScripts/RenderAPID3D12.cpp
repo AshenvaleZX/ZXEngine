@@ -335,6 +335,75 @@ namespace ZXEngine
 		// D3D12不需要实现这个接口
 	}
 
+	void RenderAPID3D12::BlitFrameBuffer(uint32_t cmd, const string& src, const string& dst, FrameBufferPieceFlags flags)
+	{
+		auto drawCommand = GetDrawCommandByIndex(cmd);
+		auto& allocator = drawCommand->allocators[mCurrentFrame];
+		auto& drawCommandList = drawCommand->commandLists[mCurrentFrame];
+
+		// 重置Command List
+		ThrowIfFailed(allocator->Reset());
+		ThrowIfFailed(drawCommandList->Reset(allocator.Get(), nullptr));
+
+		auto sFBO = FBOManager::GetInstance()->GetFBO(src);
+		auto dFBO = FBOManager::GetInstance()->GetFBO(dst);
+
+		if (flags & ZX_FRAME_BUFFER_PIECE_COLOR)
+		{
+			auto sColorBuffer = GetRenderBufferByIndex(sFBO->ColorBuffer);
+			auto dColorBuffer = GetRenderBufferByIndex(dFBO->ColorBuffer);
+
+			auto sColorTexture = GetTextureByIndex(sColorBuffer->renderBuffers[mCurrentFrame]);
+			auto dColorTexture = GetTextureByIndex(dColorBuffer->renderBuffers[mCurrentFrame]);
+
+			auto sColorTextureTransition = CD3DX12_RESOURCE_BARRIER::Transition(sColorTexture->texture.Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_SOURCE);
+			drawCommandList->ResourceBarrier(1, &sColorTextureTransition);
+			auto dColorTextureTransition = CD3DX12_RESOURCE_BARRIER::Transition(dColorTexture->texture.Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST);
+			drawCommandList->ResourceBarrier(1, &dColorTextureTransition);
+
+			drawCommandList->CopyResource(dColorTexture->texture.Get(), sColorTexture->texture.Get());
+
+			auto sColorTextureTransitionBack = CD3DX12_RESOURCE_BARRIER::Transition(sColorTexture->texture.Get(),
+				D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_GENERIC_READ);
+			drawCommandList->ResourceBarrier(1, &sColorTextureTransitionBack);
+			auto dColorTextureTransitionBack = CD3DX12_RESOURCE_BARRIER::Transition(dColorTexture->texture.Get(),
+				D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
+			drawCommandList->ResourceBarrier(1, &dColorTextureTransitionBack);
+		}
+
+		if (flags & ZX_FRAME_BUFFER_PIECE_DEPTH)
+		{
+			auto sDepthBuffer = GetRenderBufferByIndex(sFBO->DepthBuffer);
+			auto dDepthBuffer = GetRenderBufferByIndex(dFBO->DepthBuffer);
+
+			auto sDepthTexture = GetTextureByIndex(sDepthBuffer->renderBuffers[mCurrentFrame]);
+			auto dDepthTexture = GetTextureByIndex(dDepthBuffer->renderBuffers[mCurrentFrame]);
+			
+			auto sDepthTextureTransition = CD3DX12_RESOURCE_BARRIER::Transition(sDepthTexture->texture.Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_SOURCE);
+			drawCommandList->ResourceBarrier(1, &sDepthTextureTransition);
+			auto dDepthTextureTransition = CD3DX12_RESOURCE_BARRIER::Transition(dDepthTexture->texture.Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST);
+			drawCommandList->ResourceBarrier(1, &dDepthTextureTransition);
+
+			drawCommandList->CopyResource(dDepthTexture->texture.Get(), sDepthTexture->texture.Get());
+
+			auto sDepthTextureTransitionBack = CD3DX12_RESOURCE_BARRIER::Transition(sDepthTexture->texture.Get(),
+				D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_GENERIC_READ);
+			drawCommandList->ResourceBarrier(1, &sDepthTextureTransitionBack);
+			auto dDepthTextureTransitionBack = CD3DX12_RESOURCE_BARRIER::Transition(dDepthTexture->texture.Get(),
+				D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
+			drawCommandList->ResourceBarrier(1, &dDepthTextureTransitionBack);
+		}
+
+		// 结束并提交Command List
+		ThrowIfFailed(drawCommandList->Close());
+		ID3D12CommandList* cmdsLists[] = { drawCommandList.Get() };
+		mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+	}
+
 	FrameBufferObject* RenderAPID3D12::CreateFrameBufferObject(FrameBufferType type, unsigned int width, unsigned int height)
 	{
 		ClearInfo clearInfo = {};

@@ -35,6 +35,7 @@ namespace ZXEngine
 		// FrameBuffer
 		virtual void SwitchFrameBuffer(uint32_t id) = 0;
 		virtual void ClearFrameBuffer() = 0;
+		virtual void BlitFrameBuffer(uint32_t cmd, const string& src, const string& dst, FrameBufferPieceFlags flags) = 0;
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0) = 0;
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, const ClearInfo& clearInfo, unsigned int width = 0, unsigned int height = 0) = 0;
 		virtual void DeleteFrameBufferObject(FrameBufferObject* FBO) = 0;
