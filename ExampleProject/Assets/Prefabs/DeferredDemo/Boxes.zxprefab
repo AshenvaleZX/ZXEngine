@@ -1,0 +1,91 @@
+{
+    "Name": "Boxes",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 0, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [1, 1, 1]
+        }
+    ],
+    "GameObjects":
+    [
+        {
+            "Name": "Box1",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [12, -8, -8],
+                    "Rotation": [0, 20, 0],
+                    "Scale": [4, 4, 4]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/Deferred/White.zxdrmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "Box2",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [12, -8, 4],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [4, 4, 4]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/Deferred/White.zxdrmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "Box3",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [-8, -8, 6],
+                    "Rotation": [0, 60, 0],
+                    "Scale": [4, 4, 4]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/Deferred/White.zxdrmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "Box4",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [-16, -8, -8],
+                    "Rotation": [0, 30, 0],
+                    "Scale": [4, 4, 4]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/Deferred/White.zxdrmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                }
+            ]
+        }
+    ]
+}

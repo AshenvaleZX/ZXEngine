@@ -1,0 +1,72 @@
+{
+    "Name": "Spheres",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 0, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [1, 1, 1]
+        }
+    ],
+    "GameObjects":
+    [
+        {
+            "Name": "Sphere1",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, -8, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [4, 4, 4]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/Deferred/White.zxdrmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "Sphere2",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [-8, -8, -9],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [4, 4, 4]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/Deferred/White.zxdrmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "Sphere3",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [7, -8, 16],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [4, 4, 4]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/Deferred/White.zxdrmat",
+                    "CastShadow": true,
+                    "ReceiveShadow": false
+                }
+            ]
+        }
+    ]
+}

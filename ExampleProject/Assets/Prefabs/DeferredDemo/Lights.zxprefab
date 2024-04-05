@@ -1,0 +1,529 @@
+{
+    "Name": "Lights",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 0, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [1, 1, 1]
+        }
+    ],
+    "GameObjects":
+    [
+        {
+            "Name": "Sun1",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [10, 8, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/PureColor/White.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "Light",
+                    "Color": [1, 1, 1],
+                    "Intensity": 1,
+                    "LightType": 2
+                }
+            ]
+        },
+        {
+            "Name": "Sun2",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [-10, 8, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/PureColor/White.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "Light",
+                    "Color": [1, 1, 1],
+                    "Intensity": 1,
+                    "LightType": 2
+                }
+            ]
+        },
+        {
+            "Name": "Light1",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [-8, -9, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/PureColor/Red.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "Light",
+                    "Color": [1, 0, 0],
+                    "Intensity": 1,
+                    "LightType": 2
+                },
+                {
+                    "Type": "GameLogic",
+                    "Lua": "Scripts/RandomMove.lua"
+                }
+            ]
+        },
+        {
+            "Name": "Light2",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [8, -9, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/PureColor/Green.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "Light",
+                    "Color": [0, 1, 0],
+                    "Intensity": 1,
+                    "LightType": 2
+                },
+                {
+                    "Type": "GameLogic",
+                    "Lua": "Scripts/RandomMove.lua"
+                }
+            ]
+        },
+        {
+            "Name": "Light3",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, -9, -8],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/PureColor/Blue.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "Light",
+                    "Color": [0, 0, 1],
+                    "Intensity": 1,
+                    "LightType": 2
+                },
+                {
+                    "Type": "GameLogic",
+                    "Lua": "Scripts/RandomMove.lua"
+                }
+            ]
+        },
+        {
+            "Name": "Light4",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, -9, 8],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/PureColor/Aqua.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "Light",
+                    "Color": [0, 1, 1],
+                    "Intensity": 1,
+                    "LightType": 2
+                },
+                {
+                    "Type": "GameLogic",
+                    "Lua": "Scripts/RandomMove.lua"
+                }
+            ]
+        },
+        {
+            "Name": "Light5",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [12, -9, 12],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/PureColor/Magenta.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "Light",
+                    "Color": [1, 0, 1],
+                    "Intensity": 1,
+                    "LightType": 2
+                },
+                {
+                    "Type": "GameLogic",
+                    "Lua": "Scripts/RandomMove.lua"
+                }
+            ]
+        },
+        {
+            "Name": "Light6",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [12, -9, -12],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/PureColor/Yellow.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "Light",
+                    "Color": [1, 1, 0],
+                    "Intensity": 1,
+                    "LightType": 2
+                },
+                {
+                    "Type": "GameLogic",
+                    "Lua": "Scripts/RandomMove.lua"
+                }
+            ]
+        },
+        {
+            "Name": "Light7",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [-12, -9, 12],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/PureColor/Azure.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "Light",
+                    "Color": [0, 0.5, 1],
+                    "Intensity": 1,
+                    "LightType": 2
+                },
+                {
+                    "Type": "GameLogic",
+                    "Lua": "Scripts/RandomMove.lua"
+                }
+            ]
+        },
+        {
+            "Name": "Light8",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [-12, -9, -12],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/PureColor/Guppie.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "Light",
+                    "Color": [0, 1, 0.5],
+                    "Intensity": 1,
+                    "LightType": 2
+                },
+                {
+                    "Type": "GameLogic",
+                    "Lua": "Scripts/RandomMove.lua"
+                }
+            ]
+        },
+        {
+            "Name": "Light9",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [16, -9, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/PureColor/Violet.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "Light",
+                    "Color": [0.5, 0, 1],
+                    "Intensity": 1,
+                    "LightType": 2
+                },
+                {
+                    "Type": "GameLogic",
+                    "Lua": "Scripts/RandomMove.lua"
+                }
+            ]
+        },
+        {
+            "Name": "Light10",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [-16, -9, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/PureColor/Pink.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "Light",
+                    "Color": [1, 0, 0.5],
+                    "Intensity": 1,
+                    "LightType": 2
+                },
+                {
+                    "Type": "GameLogic",
+                    "Lua": "Scripts/RandomMove.lua"
+                }
+            ]
+        },
+        {
+            "Name": "Light11",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, -9, 16],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/PureColor/Radium.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "Light",
+                    "Color": [0.5, 1, 0],
+                    "Intensity": 1,
+                    "LightType": 2
+                },
+                {
+                    "Type": "GameLogic",
+                    "Lua": "Scripts/RandomMove.lua"
+                }
+            ]
+        },
+        {
+            "Name": "Light12",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, -9, -16],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/PureColor/Orange.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "Light",
+                    "Color": [1, 0.5, 0],
+                    "Intensity": 1,
+                    "LightType": 2
+                },
+                {
+                    "Type": "GameLogic",
+                    "Lua": "Scripts/RandomMove.lua"
+                }
+            ]
+        },
+        {
+            "Name": "Light13",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [20, -9, 20],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/PureColor/Teal.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "Light",
+                    "Color": [0, 0.5, 0.5],
+                    "Intensity": 1,
+                    "LightType": 2
+                },
+                {
+                    "Type": "GameLogic",
+                    "Lua": "Scripts/RandomMove.lua"
+                }
+            ]
+        },
+        {
+            "Name": "Light14",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [20, -9, -20],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/PureColor/Purple.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "Light",
+                    "Color": [0.5, 0, 0.5],
+                    "Intensity": 1,
+                    "LightType": 2
+                },
+                {
+                    "Type": "GameLogic",
+                    "Lua": "Scripts/RandomMove.lua"
+                }
+            ]
+        },
+        {
+            "Name": "Light15",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [-20, -9, 20],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/PureColor/Olive.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "Light",
+                    "Color": [0.5, 0.5, 0],
+                    "Intensity": 1,
+                    "LightType": 2
+                },
+                {
+                    "Type": "GameLogic",
+                    "Lua": "Scripts/RandomMove.lua"
+                }
+            ]
+        },
+        {
+            "Name": "Light16",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [-20, -9, -20],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 1,
+                    "Material": "Materials/PureColor/Lemon.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                },
+                {
+                    "Type": "Light",
+                    "Color": [1, 1, 0.5],
+                    "Intensity": 1,
+                    "LightType": 2
+                },
+                {
+                    "Type": "GameLogic",
+                    "Lua": "Scripts/RandomMove.lua"
+                }
+            ]
+        }
+    ]
+}

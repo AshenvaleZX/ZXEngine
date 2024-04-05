@@ -1,0 +1,14 @@
+{
+    "Type": "Deferred",
+    "Textures":
+    [
+        {
+            "UniformName": "_AlbedoMap",
+            "Path": "Textures/white.png"
+        },
+        {
+            "UniformName": "_NormalMap",
+            "Path": "Textures/normal.png"
+        }
+    ]
+}

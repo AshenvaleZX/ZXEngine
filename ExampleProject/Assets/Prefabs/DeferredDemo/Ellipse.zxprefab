@@ -1,0 +1,19 @@
+{
+    "Name": "Ellipse",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 0, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [3, 5, 3]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Geometry": 1,
+            "Material": "Materials/LightWave.zxmat",
+            "CastShadow": true,
+            "ReceiveShadow": false
+        }
+    ]
+}

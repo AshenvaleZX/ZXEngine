@@ -1,0 +1,23 @@
+{
+    "RenderPipelineType": 1,
+    "SkyBox": 
+    {
+        "Path": "Textures/stars/",
+        "Right": "right.png",
+        "Left": "left.png",
+        "Up": "up.png",
+        "Down": "down.png",
+        "Front": "front.png",
+        "Back": "back.png"
+    },
+    "GameObjects": 
+    [
+        "Prefabs/DeferredDemo/Plane.zxprefab",
+        "Prefabs/DeferredDemo/Boxes.zxprefab",
+        "Prefabs/DeferredDemo/Spheres.zxprefab",
+        "Prefabs/DeferredDemo/Ellipse.zxprefab",
+        "Prefabs/DeferredDemo/Lights.zxprefab",
+        "Prefabs/MainCamera.zxprefab",
+        "Prefabs/UI/FPSText.zxprefab"
+    ]
+}
