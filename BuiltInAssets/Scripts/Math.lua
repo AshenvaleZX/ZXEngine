@@ -52,6 +52,20 @@ function Math.CrossVec3(v1, v2)
     return { x = v1.y * v2.z - v1.z * v2.y, y = v1.z * v2.x - v1.x * v2.z, z = v1.x * v2.y - v1.y * v2.x }
 end
 
+function Math.MagnitudeVec2(v)
+    return math.sqrt(v.x * v.x + v.y * v.y)
+end
+
+function Math.NormalizeVec2(v)
+    local mag = Math.MagnitudeVec2(v)
+    return { x = v.x / mag, y = v.y / mag }
+end
+
 function Math.MagnitudeVec3(v)
     return math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z)
+end
+
+function Math.NormalizeVec3(v)
+    local mag = Math.MagnitudeVec3(v)
+    return { x = v.x / mag, y = v.y / mag, z = v.z / mag }
 end
