@@ -29,6 +29,7 @@ namespace ZXEngine
 		RenderStateSetting* skyBoxRenderState;
 
 		RenderStateSetting* opaqueRenderState;
+		RenderStateSetting* transparentRenderState;
 		RenderStateSetting* deferredRenderState;
 
 		void RenderSkyBox(Camera* camera);

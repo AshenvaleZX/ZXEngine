@@ -36,6 +36,10 @@ namespace ZXEngine
 		mDeferredMaterial = new Material(mDeferredShader);
 
 		opaqueRenderState = new RenderStateSetting();
+
+		transparentRenderState = new RenderStateSetting();
+		transparentRenderState->depthWrite = false;
+
 		deferredRenderState = new RenderStateSetting();
 		deferredRenderState->depthWrite = false;
 
@@ -84,12 +88,18 @@ namespace ZXEngine
 		renderAPI->SetRenderState(deferredRenderState);
 		renderAPI->Draw(mScreenQuad->VAO);
 
-		// 正向渲染
+		// 再接正向渲染绘制
 		renderAPI->SetRenderState(opaqueRenderState);
 		auto opaqueQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Opaque);
 		opaqueQueue->Sort(camera, RenderSortType::FrontToBack);
 		opaqueQueue->Batch();
 		RenderBatches(opaqueQueue->GetBatches());
+
+		renderAPI->SetRenderState(transparentRenderState);
+		auto transparentQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Transparent);
+		transparentQueue->Sort(camera, RenderSortType::BackToFront);
+		transparentQueue->Batch();
+		RenderBatches(transparentQueue->GetBatches());
 
 		renderAPI->GenerateDrawCommand(mDrawCommandID);
 
