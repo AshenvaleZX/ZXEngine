@@ -17,25 +17,27 @@ The appearance of the engine is as shown below. For detailed information, please
 ## 目录(Contents)
 
 - [引擎简介 (Engine Introduction)](#引擎简介-engine-introduction)
-  
+
 - [引擎编辑器和更多演示 (Engine Editor And More Demonstration)](#引擎编辑器和更多演示-engine-editor-and-more-demonstration)
-  
+
+- [多套内置渲染管线 (Multiple Built-in Rendering Pipelines)](#多套内置渲染管线-multiple-built-in-rendering-pipelines)
+
 - [PhysZ物理引擎简介 (PhysZ Physics Engine Introduction)](#physz物理引擎简介-physz-physics-engine-introduction)
-  
+
 - [ZXShader和材质系统 (ZXShader And Material System)](#zxshader和材质系统-zxshader-and-material-system)
-  
+
 - [骨骼蒙皮动画系统 (Skeletal Animation System)](#骨骼蒙皮动画系统-skeletal-animation-system)
-  
+
 - [GamePlay层的Lua系统 (Lua System of GamePlay Layer)](#gameplay层的lua系统-lua-system-of-gameplay-layer)
-  
+
 - [音频系统 (Audio System)](#音频系统-audio-system)
-  
+
 - [多线程 (Multithreading)](#多线程-multithreading)
-  
+
 - [引擎文件格式介绍 (Engine File Format Introduction)](#引擎文件格式介绍-engine-file-format-introduction)
-  
+
 - [构建 (Build)](#构建-build)
-  
+
 - [注意事项 (Precautions)](#注意事项-precautions)
 
 ## 引擎简介 (Engine Introduction)
@@ -97,6 +99,22 @@ The following is the code preview on the Inspector after clicking zxshader and L
 ![](Documents/Images/EngineShow5.jpg)
 
 ![](Documents/Images/EngineShow6.jpg)
+
+## 多套内置渲染管线 (Multiple Built-in Rendering Pipelines)
+
+本引擎有3套内置渲染管线，分别是正向渲染管线，延迟渲染管线和光线追踪渲染管线。其中前两种属于光栅化渲染。
+
+ZXEngine has three built-in rendering pipelines, which are forward rendering pipeline, deferred rendering pipeline and ray tracing rendering pipeline. The first two of these belong to the rasterization rendering.
+
+引擎的场景文件中保存了渲染管线信息，在切换场景的时候引擎会直接无缝切换渲染管线。所以想运行哪套渲染管线，直接在引擎编辑器中双击对应的场景文件切换即可。
+
+The rendering pipeline information is saved in the scene file of the engine, and the engine seamlessly switches the rendering pipeline directly when switching scenes. So if you want to run which rendering pipeline, just double-click the corresponding scene file in the engine editor to switch.
+
+使用正向渲染管线和光追渲染管线的场景已经在前面演示过了，这里再补充一个延迟渲染管线的演示场景：
+
+Scenes using forward rendering pipeline and ray tracing rendering pipeline have been demonstrated previously. Here is a demonstration scene of deferred rendering pipeline:
+
+![](Documents/Images/EngineShow7.jpg)
 
 ## PhysZ物理引擎简介 (PhysZ Physics Engine Introduction)
 
@@ -358,7 +376,7 @@ xmake
 xmake run zxengine
 ```
 
-最后是CMake，不过不是很推荐使用。因为CMake写起来比较麻烦，我是在工具生成的基础上再手动调整一下写出来的，所以不保证各种环境和使用方式下都没问题。更推荐xmake，要简单好用一些。
+最后是CMake，不过不是很推荐使用。因为CMake写起来比较麻烦，我对它的编写并不是很熟，我是在工具生成的基础上再手动调整一下写出来的，所以不保证各种环境和使用方式下都没问题。更推荐xmake，要简单好用一些。
 
 Finally, there is CMake, but it is not recommended. Because I'm not very familiar with writing CMake, I use a tool to generate the CMake file, and then manually modified it, so I cannot guarantee that there will be no problem in various environments and usage methods. I recommend xmake, which is simpler and easier to use.
 
@@ -366,6 +384,10 @@ Finally, there is CMake, but it is not recommended. Because I'm not very familia
 cd BuildSolution\CMake
 cmake CMakeLists.txt
 ```
+
+对于DirectX 12版本的ZXEngine，推荐直接用Visual Studio来编译。因为你如果用Clang或者GCC来编译的话，可能没法支持一些Windows特性(也可能支持但是我不知道怎么搞)，出现奇怪的问题。比如“高DPI识别”，如果没有这个会导致在设置了Windows系统缩放的时候，应用程序分辨率异常，出现显示模糊的问题。
+
+For the DirectX 12 version of ZXEngine, it is recommended to compile with Visual Studio. Because if you use Clang or GCC to compile, some Windows features may not be supported (it may be supported but I don't know how), and strange problems may occur. For example, "DPI Awareness", without this, will cause the application resolution to be abnormal and the display to be blurry when Windows system scaling is set.
 
 由于我公司的开发环境以及我自己的电脑都是Windows，所以目前本项目仅支持Windows系统。跨平台的想法我是有的，但是我的精力有限。这只是我用空闲时间开发的项目，还有不少我想做的东西没做，所以短期内还不会做跨平台支持，感谢大家的理解。
 
