@@ -13,6 +13,9 @@
 #include "Component/Transform.h"
 #include "StaticMesh.h"
 #include "RenderStateSetting.h"
+#include "Component/ZCamera.h"
+#include "SceneManager.h"
+#include "CubeMap.h"
 
 namespace ZXEngine
 {
@@ -21,6 +24,13 @@ namespace ZXEngine
 		mBlitCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::NotCare);
 		mDrawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::DeferredRendering);
 		mScreenQuad = GeometryGenerator::CreateScreenQuad();
+
+		skyBox = GeometryGenerator::CreateSimpleInwardBox();
+		skyBoxMaterial = new Material(new Shader(Resources::GetAssetFullPath("Shaders/SkyBox.zxshader", true), FrameBufferType::Normal));
+
+		skyBoxRenderState = new RenderStateSetting();
+		skyBoxRenderState->depthTest = false;
+		skyBoxRenderState->depthWrite = false;
 
 		mDeferredShader = new Shader(Resources::GetAssetFullPath("Shaders/DeferredRender.zxshader", true), FrameBufferType::Deferred);
 		mDeferredMaterial = new Material(mDeferredShader);
@@ -40,6 +50,13 @@ namespace ZXEngine
 		FBOManager::GetInstance()->SwitchFBO("Deferred");
 		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight);
 		renderAPI->ClearFrameBuffer();
+
+		// 复制 Depth Buffer
+		renderAPI->BlitFrameBuffer(mBlitCommandID, "GBuffer", "Deferred", ZX_FRAME_BUFFER_PIECE_DEPTH);
+
+		// 渲染天空盒
+		renderAPI->SetRenderState(skyBoxRenderState);
+		RenderSkyBox(camera);
 
 		mDeferredMaterial->Use();
 
@@ -66,9 +83,6 @@ namespace ZXEngine
 		// 延迟渲染绘制
 		renderAPI->SetRenderState(deferredRenderState);
 		renderAPI->Draw(mScreenQuad->VAO);
-
-		// 复制 Depth Buffer
-		renderAPI->BlitFrameBuffer(mBlitCommandID, "GBuffer", "Deferred", ZX_FRAME_BUFFER_PIECE_DEPTH);
 
 		// 正向渲染
 		renderAPI->SetRenderState(opaqueRenderState);
@@ -105,5 +119,19 @@ namespace ZXEngine
 				renderer->Draw();
 			}
 		}
+	}
+
+	void RenderPassDeferredRendering::RenderSkyBox(Camera* camera)
+	{
+		// 先转3x3再回4x4，把相机位移信息去除
+		Matrix4 mat_V = Matrix4(Matrix3(camera->GetViewMatrix()));
+		Matrix4 mat_P = camera->GetProjectionMatrix();
+
+		skyBoxMaterial->Use();
+		skyBoxMaterial->SetMatrix("ENGINE_View", mat_V);
+		skyBoxMaterial->SetMatrix("ENGINE_Projection", mat_P);
+		skyBoxMaterial->SetCubeMap("_Skybox", SceneManager::GetInstance()->GetCurScene()->skyBox->GetID(), 0);
+
+		RenderAPI::GetInstance()->Draw(skyBox->VAO);
 	}
 }

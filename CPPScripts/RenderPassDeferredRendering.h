@@ -24,9 +24,14 @@ namespace ZXEngine
 		Shader* mDeferredShader;
 		Material* mDeferredMaterial;
 
+		StaticMesh* skyBox;
+		Material* skyBoxMaterial;
+		RenderStateSetting* skyBoxRenderState;
+
 		RenderStateSetting* opaqueRenderState;
 		RenderStateSetting* deferredRenderState;
 
+		void RenderSkyBox(Camera* camera);
 		void RenderBatches(const map<uint32_t, vector<MeshRenderer*>>& batchs);
 	};
 }

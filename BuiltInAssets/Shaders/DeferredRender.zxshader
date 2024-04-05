@@ -58,27 +58,36 @@ Fragment
     {
         void main()
         {
-            vec3 albedo = texture(ENGINE_G_Buffer_Albedo, TexCoords).rgb;
             vec3 normal = texture(ENGINE_G_Buffer_Normal, TexCoords).rgb;
-            vec3 position = texture(ENGINE_G_Buffer_Position, TexCoords).rgb;
+            float nLength = length(normal);
 
-            vec3 lighting = albedo * 0.1;
-
-            for(int i = 0; i < _LightNum; i++)
+            if (nLength < 0.1)
             {
-                vec3 lightDir = _LightPositions[i].xyz - position;
-                float dis = length(lightDir);
-
-                vec3 nDir = normalize(lightDir);
-                float diff = max(dot(normal, nDir), 0.0);
-                vec3 diffuse = _LightColors[i].rgb * diff;
-
-                float attenuation = 1.0 / (1.0 + 0.007 * dis + 0.018 * dis * dis);
-                
-                lighting += diffuse * attenuation;
+                FragColor = vec4(0, 0, 0, 0);
             }
+            else
+            {
+                vec3 albedo = texture(ENGINE_G_Buffer_Albedo, TexCoords).rgb;
+                vec3 position = texture(ENGINE_G_Buffer_Position, TexCoords).rgb;
 
-            FragColor = vec4(albedo * lighting, 1.0);
+                vec3 lighting = albedo * 0.1;
+
+                for (int i = 0; i < _LightNum; i++)
+                {
+                    vec3 lightDir = _LightPositions[i].xyz - position;
+                    float dis = length(lightDir);
+
+                    vec3 nDir = normalize(lightDir);
+                    float diff = max(dot(normal, nDir), 0.0);
+                    vec3 diffuse = _LightColors[i].rgb * diff;
+
+                    float attenuation = 1.0 / (1.0 + 0.007 * dis + 0.018 * dis * dis);
+                    
+                    lighting += diffuse * attenuation;
+                }
+
+                FragColor = vec4(albedo * lighting, 1.0);
+            }
         }
     }
 }
