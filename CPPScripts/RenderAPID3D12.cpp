@@ -498,14 +498,14 @@ namespace ZXEngine
 				depthBufferDesc.Height = height;
 				depthBufferDesc.DepthOrArraySize = 1;
 				depthBufferDesc.MipLevels = 1;
-				depthBufferDesc.Format = DXGI_FORMAT_D16_UNORM;
+				depthBufferDesc.Format = DXGI_FORMAT_D32_FLOAT;
 				depthBufferDesc.SampleDesc.Count = 1;
 				depthBufferDesc.SampleDesc.Quality = 0;
 				depthBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 				depthBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
 				D3D12_CLEAR_VALUE optDepthClear = {};
-				optDepthClear.Format = DXGI_FORMAT_D16_UNORM;
+				optDepthClear.Format = DXGI_FORMAT_D32_FLOAT;
 				optDepthClear.DepthStencil.Depth = clearInfo.depth;
 				optDepthClear.DepthStencil.Stencil = clearInfo.stencil;
 
@@ -520,7 +520,7 @@ namespace ZXEngine
 				));
 
 				D3D12_SHADER_RESOURCE_VIEW_DESC depthSrvDesc = {};
-				depthSrvDesc.Format = DXGI_FORMAT_R16_UNORM;
+				depthSrvDesc.Format = DXGI_FORMAT_R32_FLOAT;
 				depthSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 				depthSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 				depthSrvDesc.Texture2D.MipLevels = 1;
@@ -528,7 +528,7 @@ namespace ZXEngine
 				depthSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
 				D3D12_DEPTH_STENCIL_VIEW_DESC depthDsvDesc = {};
-				depthDsvDesc.Format = DXGI_FORMAT_D16_UNORM;
+				depthDsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
 				depthDsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 				depthDsvDesc.Texture2D.MipSlice = 0;
 
@@ -628,14 +628,14 @@ namespace ZXEngine
 				depthBufferDesc.Height = height;
 				depthBufferDesc.DepthOrArraySize = 1;
 				depthBufferDesc.MipLevels = 1;
-				depthBufferDesc.Format = DXGI_FORMAT_D16_UNORM;
+				depthBufferDesc.Format = DXGI_FORMAT_D32_FLOAT;
 				depthBufferDesc.SampleDesc.Count = 1;
 				depthBufferDesc.SampleDesc.Quality = 0;
 				depthBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 				depthBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
 				D3D12_CLEAR_VALUE optDepthClear = {};
-				optDepthClear.Format = DXGI_FORMAT_D16_UNORM;
+				optDepthClear.Format = DXGI_FORMAT_D32_FLOAT;
 				optDepthClear.DepthStencil.Depth = clearInfo.depth;
 				optDepthClear.DepthStencil.Stencil = clearInfo.stencil;
 
@@ -650,7 +650,7 @@ namespace ZXEngine
 				));
 
 				D3D12_SHADER_RESOURCE_VIEW_DESC depthSrvDesc = {};
-				depthSrvDesc.Format = DXGI_FORMAT_R16_UNORM;
+				depthSrvDesc.Format = DXGI_FORMAT_R32_FLOAT;
 				depthSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 				depthSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 				depthSrvDesc.Texture2D.MipLevels = 1;
@@ -658,7 +658,7 @@ namespace ZXEngine
 				depthSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
 				D3D12_DEPTH_STENCIL_VIEW_DESC depthDsvDesc = {};
-				depthDsvDesc.Format = DXGI_FORMAT_D16_UNORM;
+				depthDsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
 				depthDsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 				depthDsvDesc.Texture2D.MipSlice = 0;
 
@@ -692,14 +692,14 @@ namespace ZXEngine
 				depthBufferDesc.Height = height;
 				depthBufferDesc.DepthOrArraySize = 6;
 				depthBufferDesc.MipLevels = 1;
-				depthBufferDesc.Format = DXGI_FORMAT_D16_UNORM;
+				depthBufferDesc.Format = DXGI_FORMAT_D32_FLOAT;
 				depthBufferDesc.SampleDesc.Count = 1;
 				depthBufferDesc.SampleDesc.Quality = 0;
 				depthBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 				depthBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
 				D3D12_CLEAR_VALUE optDepthClear = {};
-				optDepthClear.Format = DXGI_FORMAT_D16_UNORM;
+				optDepthClear.Format = DXGI_FORMAT_D32_FLOAT;
 				optDepthClear.DepthStencil.Depth = clearInfo.depth;
 				optDepthClear.DepthStencil.Stencil = clearInfo.stencil;
 
@@ -714,7 +714,7 @@ namespace ZXEngine
 				));
 
 				D3D12_SHADER_RESOURCE_VIEW_DESC depthSrvDesc = {};
-				depthSrvDesc.Format = DXGI_FORMAT_R16_UNORM;
+				depthSrvDesc.Format = DXGI_FORMAT_R32_FLOAT;
 				depthSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
 				depthSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 				depthSrvDesc.Texture2D.MipLevels = 1;
@@ -722,7 +722,7 @@ namespace ZXEngine
 				depthSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
 				D3D12_DEPTH_STENCIL_VIEW_DESC depthDsvDesc = {};
-				depthDsvDesc.Format = DXGI_FORMAT_D16_UNORM;
+				depthDsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
 				depthDsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DARRAY;
 				depthDsvDesc.Texture2DArray.MipSlice = 0;
 				depthDsvDesc.Texture2DArray.ArraySize = 6;
@@ -913,14 +913,14 @@ namespace ZXEngine
 				depthBufferDesc.Height = height;
 				depthBufferDesc.DepthOrArraySize = 1;
 				depthBufferDesc.MipLevels = 1;
-				depthBufferDesc.Format = DXGI_FORMAT_D16_UNORM;
+				depthBufferDesc.Format = DXGI_FORMAT_D32_FLOAT;
 				depthBufferDesc.SampleDesc.Count = 1;
 				depthBufferDesc.SampleDesc.Quality = 0;
 				depthBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 				depthBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
 				D3D12_CLEAR_VALUE optDepthClear = {};
-				optDepthClear.Format = DXGI_FORMAT_D16_UNORM;
+				optDepthClear.Format = DXGI_FORMAT_D32_FLOAT;
 				optDepthClear.DepthStencil.Depth = clearInfo.depth;
 				optDepthClear.DepthStencil.Stencil = clearInfo.stencil;
 
@@ -935,7 +935,7 @@ namespace ZXEngine
 				));
 
 				D3D12_SHADER_RESOURCE_VIEW_DESC depthSrvDesc = {};
-				depthSrvDesc.Format = DXGI_FORMAT_R16_UNORM;
+				depthSrvDesc.Format = DXGI_FORMAT_R32_FLOAT;
 				depthSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 				depthSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 				depthSrvDesc.Texture2D.MipLevels = 1;
@@ -943,7 +943,7 @@ namespace ZXEngine
 				depthSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
 				D3D12_DEPTH_STENCIL_VIEW_DESC depthDsvDesc = {};
-				depthDsvDesc.Format = DXGI_FORMAT_D16_UNORM;
+				depthDsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
 				depthDsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 				depthDsvDesc.Texture2D.MipSlice = 0;
 
@@ -1585,7 +1585,7 @@ namespace ZXEngine
 		if (type == FrameBufferType::Present || type == FrameBufferType::Color)
 			pipelineStateDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
 		else
-			pipelineStateDesc.DSVFormat = DXGI_FORMAT_D16_UNORM;
+			pipelineStateDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 
 		// 创建D3D12管线
 		ComPtr<ID3D12PipelineState> PSO;
