@@ -826,11 +826,18 @@ namespace ZXEngine
 
 		if (FBO->DepthBuffer != UINT32_MAX)
 		{
-			if (FBO->type == FrameBufferType::Normal || FBO->type == FrameBufferType::HigthPrecision)
+			if (FBO->type == FrameBufferType::Normal || FBO->type == FrameBufferType::HigthPrecision ||
+				FBO->type == FrameBufferType::GBuffer || FBO->type == FrameBufferType::Deferred)
 				glDeleteRenderbuffers(1, &FBO->DepthBuffer);
 			else
 				glDeleteTextures(1, &FBO->DepthBuffer);
 		}
+
+		if (FBO->PositionBuffer != UINT32_MAX)
+			glDeleteTextures(1, &FBO->PositionBuffer);
+
+		if (FBO->NormalBuffer != UINT32_MAX)
+			glDeleteTextures(1, &FBO->NormalBuffer);
 
 		glDeleteFramebuffers(1, &FBO->ID);
 		CheckError();

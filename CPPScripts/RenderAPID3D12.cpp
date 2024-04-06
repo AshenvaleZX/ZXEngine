@@ -3352,6 +3352,16 @@ namespace ZXEngine
 			DestroyRenderBufferByIndex(FBO->depthBufferIdx);
 			FBO->depthBufferIdx = UINT32_MAX;
 		}
+		if (FBO->positionBufferIdx != UINT32_MAX)
+		{
+			DestroyRenderBufferByIndex(FBO->positionBufferIdx);
+			FBO->positionBufferIdx = UINT32_MAX;
+		}
+		if (FBO->normalBufferIdx != UINT32_MAX)
+		{
+			DestroyRenderBufferByIndex(FBO->normalBufferIdx);
+			FBO->normalBufferIdx = UINT32_MAX;
+		}
 
 		FBO->bufferType = FrameBufferType::Normal;
 		FBO->clearInfo = {};

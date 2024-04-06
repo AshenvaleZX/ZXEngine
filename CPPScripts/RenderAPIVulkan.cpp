@@ -3147,6 +3147,16 @@ namespace ZXEngine
 			DestroyAttachmentBufferByIndex(vulkanFBO->depthAttachmentIdx);
 			vulkanFBO->depthAttachmentIdx = UINT32_MAX;
 		}
+        if (vulkanFBO->positionAttachmentIdx != UINT32_MAX)
+        {
+            DestroyAttachmentBufferByIndex(vulkanFBO->positionAttachmentIdx);
+            vulkanFBO->positionAttachmentIdx = UINT32_MAX;
+        }
+        if (vulkanFBO->normalAttachmentIdx != UINT32_MAX)
+        {
+            DestroyAttachmentBufferByIndex(vulkanFBO->normalAttachmentIdx);
+            vulkanFBO->normalAttachmentIdx = UINT32_MAX;
+        }
 
         vulkanFBO->bufferType = FrameBufferType::Normal;
         vulkanFBO->renderPassType = RenderPassType::Normal;
