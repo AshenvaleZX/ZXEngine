@@ -8,9 +8,12 @@
 #include "../Resources.h"
 #include "../ParticleSystemManager.h"
 #include "../Vulkan/SPIRVCompiler.h"
-#include "../DirectX12/ZXD3D12Util.h"
 #include "../Component/Animator.h"
 #include "../Audio/AudioEngine.h"
+
+#ifdef _WIN64
+#include "../DirectX12/ZXD3D12Util.h"
+#endif
 
 namespace ZXEngine
 {
@@ -73,6 +76,7 @@ namespace ZXEngine
 						t.detach();
 					}
 
+#ifdef _WIN64
 					if (ImGui::MenuItem("Compile All Shader for DirectX12"))
 					{
 						std::thread t([]
@@ -94,6 +98,7 @@ namespace ZXEngine
 						});
 						t.detach();
 					}
+#endif
 
 					ImGui::EndMenu();
 				}

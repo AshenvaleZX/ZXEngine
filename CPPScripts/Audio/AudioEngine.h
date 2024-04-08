@@ -5,6 +5,9 @@
 namespace ZXEngine
 {
 	class GameObject;
+	class AudioClip;
+	class AudioStream;
+	class AudioSource;
 	class AudioEngine 
 	{
 		friend class AudioClip;
