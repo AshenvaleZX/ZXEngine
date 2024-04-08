@@ -340,11 +340,11 @@ This is ZXEngine's own shader language file, but currently zxshader only support
 
 These two extension correspond to the ray tracing Shader code files of Vulkan and DirectX12 respectively. For now, there is no engine-specific ray tracing shader language like ZXShader in the rasterization pipeline.
 
-### *.zxmat  *.zxrtmat
+### *.zxmat  *.zxdrmat  *.zxrtmat
 
-分别是光栅化渲染管线和光线追踪渲染管线的材质文件。
+分别是普通光栅化渲染管线(正向渲染)，延迟渲染管线和光线追踪渲染管线的材质文件。
 
-They are the material files of the rasterization rendering pipeline and the ray tracing rendering pipeline respectively.
+They are the material files of the general rasterization rendering pipeline(forward rendering), deferred rendering pipeline and the ray tracing rendering pipeline respectively.
 
 ### *.zxprefab
 
