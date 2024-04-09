@@ -4,6 +4,16 @@
 
 namespace ZXEngine
 {
+#ifdef __APPLE__
+	const string ProjectSetting::OpenGLVersion = "410";
+	const int ProjectSetting::OpenGLVersionMajor = 4;
+	const int ProjectSetting::OpenGLVersionMinor = 1;
+#else
+	const string ProjectSetting::OpenGLVersion = "460";
+	const int ProjectSetting::OpenGLVersionMajor = 4;
+	const int ProjectSetting::OpenGLVersionMinor = 6;
+#endif
+
 	unsigned int ProjectSetting::srcWidth;
 	unsigned int ProjectSetting::srcHeight;
 	string ProjectSetting::defaultScene;

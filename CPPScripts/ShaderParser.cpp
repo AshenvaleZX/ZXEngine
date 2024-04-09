@@ -1,6 +1,7 @@
 #include "ShaderParser.h"
 #include "Resources.h"
 #include "MaterialData.h"
+#include "ProjectSetting.h"
 
 namespace ZXEngine
 {
@@ -287,7 +288,7 @@ namespace ZXEngine
 
 		string preprocessedCode = PreprocessMacroDefine(originCode, "ZX_API_OPENGL");
 
-		string glCode = "#version 460 core\n\n";
+		string glCode = "#version " + ProjectSetting::OpenGLVersion + " core\n\n";
 
 		string gsInOutBlock = GetCodeBlock(preprocessedCode, "GSInOut");
 		if (!gsInOutBlock.empty())

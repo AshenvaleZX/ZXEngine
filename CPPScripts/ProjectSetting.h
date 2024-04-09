@@ -6,6 +6,9 @@ namespace ZXEngine
 	class ProjectSetting
 	{
 	public:
+		static const string OpenGLVersion;
+		static const int OpenGLVersionMajor;
+		static const int OpenGLVersionMinor;
 		static unsigned int srcWidth;
 		static unsigned int srcHeight;
 		static string defaultScene;
