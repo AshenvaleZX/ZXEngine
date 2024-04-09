@@ -6,7 +6,7 @@
 #ifdef _WIN64
 #include "irrKlangImpl/AudioEngine_irrKlang.h"
 #else
-#include "irrKlangImpl/AudioEngine_Default.h"
+#include "DefaultImpl/AudioEngine_Default.h"
 #endif
 
 namespace ZXEngine
