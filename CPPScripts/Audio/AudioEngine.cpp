@@ -5,6 +5,8 @@
 
 #ifdef _WIN64
 #include "irrKlangImpl/AudioEngine_irrKlang.h"
+#else
+#include "irrKlangImpl/AudioEngine_Default.h"
 #endif
 
 namespace ZXEngine
@@ -17,6 +19,8 @@ namespace ZXEngine
 		{
 #ifdef _WIN64
 			mInstance = new AudioEngine_irrKlang();
+#else
+			mInstance = new AudioEngine_Default();
 #endif
 		}
 	}

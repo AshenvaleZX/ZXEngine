@@ -25,6 +25,14 @@ set(Audio
 )
 source_group("Audio" FILES ${Audio})
 
+set(Audio__DefaultImpl
+    "../../../CPPScripts/Audio/DefaultImpl/AudioClip_Default.h"
+    "../../../CPPScripts/Audio/DefaultImpl/AudioEngine_Default.cpp"
+    "../../../CPPScripts/Audio/DefaultImpl/AudioEngine_Default.h"
+    "../../../CPPScripts/Audio/DefaultImpl/AudioStream_Default.h"
+)
+source_group("Audio\\DefaultImpl" FILES ${Audio__DefaultImpl})
+
 set(Audio__irrKlangImpl
     "../../../CPPScripts/Audio/irrKlangImpl/AudioClip_irrKlang.cpp"
     "../../../CPPScripts/Audio/irrKlangImpl/AudioClip_irrKlang.h"

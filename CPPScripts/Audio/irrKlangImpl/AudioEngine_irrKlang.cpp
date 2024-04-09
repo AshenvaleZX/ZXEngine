@@ -1,7 +1,7 @@
 #include "AudioEngine_irrKlang.h"
 #include "AudioStream_irrKlang.h"
 #include "AudioClip_irrKlang.h"
-#include "../../GameObject.h"
+#include "../../Resources.h"
 
 namespace ZXEngine
 {
