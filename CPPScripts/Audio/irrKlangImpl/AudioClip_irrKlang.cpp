@@ -1,18 +1,18 @@
-#include "AudioClip.h"
-#include "AudioEngine.h"
-#include "AudioStream.h"
-#include "../Resources.h"
+#include "AudioClip_irrKlang.h"
+#include "AudioEngine_irrKlang.h"
+#include "AudioStream_irrKlang.h"
+#include "../../Resources.h"
 
 namespace ZXEngine
 {
-	AudioClip::AudioClip(AudioStream* stream)
+	AudioClip_irrKlang::AudioClip_irrKlang(AudioStream_irrKlang* stream)
 	{
 		mAudioStream = stream;
-		mAudioEngine = AudioEngine::GetInstance();
+		mAudioEngine = AudioEngine_irrKlang::GetInstance();
 		mAudioEngine->mAudioClips.push_back(this);
 	}
 
-	AudioClip::~AudioClip()
+	AudioClip_irrKlang::~AudioClip_irrKlang()
 	{
 		if (mSound != nullptr)
 		{
@@ -22,7 +22,7 @@ namespace ZXEngine
 		mAudioEngine->mAudioClips.erase(std::remove(mAudioEngine->mAudioClips.begin(), mAudioEngine->mAudioClips.end(), this), mAudioEngine->mAudioClips.end());
 	}
 
-	void AudioClip::Play2D(bool loop)
+	void AudioClip_irrKlang::Play2D(bool loop)
 	{
 		if (mSound != nullptr)
 		{
@@ -34,7 +34,7 @@ namespace ZXEngine
 		mIs3D = false;
 	}
 
-	void AudioClip::Play3D(const Vector3& position, bool loop)
+	void AudioClip_irrKlang::Play3D(const Vector3& position, bool loop)
 	{
 		if (mSound != nullptr)
 		{
@@ -48,17 +48,17 @@ namespace ZXEngine
 		mIs3D = true;
 	}
 
-	void AudioClip::Stop()
+	void AudioClip_irrKlang::Stop()
 	{
 		if (mSound == nullptr || mSound->isFinished())
 			return;
-		
+
 		mSound->stop();
 		mSound->drop();
 		mSound = nullptr;
 	}
 
-	void AudioClip::SetPause(bool pause)
+	void AudioClip_irrKlang::SetPause(bool pause)
 	{
 		if (mSound == nullptr || mSound->isFinished())
 			return;
@@ -66,7 +66,7 @@ namespace ZXEngine
 		mSound->setIsPaused(pause);
 	}
 
-	void AudioClip::SetLoop(bool loop)
+	void AudioClip_irrKlang::SetLoop(bool loop)
 	{
 		if (mSound == nullptr || mSound->isFinished())
 			return;
@@ -74,7 +74,7 @@ namespace ZXEngine
 		mSound->setIsLooped(loop);
 	}
 
-	void AudioClip::SetVolume(float volume)
+	void AudioClip_irrKlang::SetVolume(float volume)
 	{
 		mVolume = volume;
 
@@ -84,7 +84,7 @@ namespace ZXEngine
 		mSound->setVolume(volume);
 	}
 
-	void AudioClip::SetPosition(const Vector3& position)
+	void AudioClip_irrKlang::SetPosition(const Vector3& position)
 	{
 		if (mSound == nullptr || mSound->isFinished())
 			return;
@@ -92,22 +92,22 @@ namespace ZXEngine
 		mSound->setPosition(irrklang::vec3df(position.x, position.y, position.z));
 	}
 
-	bool AudioClip::GetIs3D()
+	bool AudioClip_irrKlang::GetIs3D() const
 	{
 		return mIs3D;
 	}
 
-	float AudioClip::GetLength()
+	float AudioClip_irrKlang::GetLength() const
 	{
 		return mAudioStream->mLength;
 	}
 
-	uint32_t AudioClip::GetLengthMS()
+	uint32_t AudioClip_irrKlang::GetLengthMS() const
 	{
 		return mAudioStream->mLenthMS;
 	}
 
-	void AudioClip::SetMinDistance(float distance)
+	void AudioClip_irrKlang::SetMinDistance(float distance)
 	{
 		mMinDistance = distance;
 
@@ -115,12 +115,12 @@ namespace ZXEngine
 			mSound->setMinDistance(distance);
 	}
 
-	float AudioClip::GetMinDistance()
+	float AudioClip_irrKlang::GetMinDistance() const
 	{
 		return mMinDistance;
 	}
 
-	void AudioClip::SetMaxDistance(float distance)
+	void AudioClip_irrKlang::SetMaxDistance(float distance)
 	{
 		mMaxDistance = distance;
 
@@ -128,7 +128,7 @@ namespace ZXEngine
 			mSound->setMaxDistance(distance);
 	}
 
-	float AudioClip::GetMaxDistance()
+	float AudioClip_irrKlang::GetMaxDistance() const
 	{
 		return mMaxDistance;
 	}

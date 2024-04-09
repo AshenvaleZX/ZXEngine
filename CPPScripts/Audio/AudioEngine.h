@@ -1,6 +1,5 @@
 #pragma once
 #include "../pubh.h"
-#include <irrKlang/irrKlang.h>
 
 namespace ZXEngine
 {
@@ -10,8 +9,6 @@ namespace ZXEngine
 	class AudioSource;
 	class AudioEngine 
 	{
-		friend class AudioClip;
-		friend class AudioStream;
 		friend class AudioSource;
 	public:
 		static void Create();
@@ -21,23 +18,21 @@ namespace ZXEngine
 		static AudioEngine* mInstance;
 
 	public:
-		AudioEngine();
-		~AudioEngine();
+		AudioEngine() {};
+		~AudioEngine() {};
 
 		void Update();
 		void SetAllPause(bool pause);
 		void SetListener(GameObject* listener);
 		void RemoveListener(GameObject* listener);
 
-		AudioClip* CreateAudioClip(const string& path, bool isFullPath = false);
-		AudioClip* CreateAudioClip(AudioStream* stream);
-		AudioStream* CreateAudioStream(const string& path, bool isFullPath = false);
+		virtual AudioClip* CreateAudioClip(const string& path, bool isFullPath = false) = 0;
+		virtual AudioClip* CreateAudioClip(AudioStream* stream) = 0;
+		virtual AudioStream* CreateAudioStream(const string& path, bool isFullPath = false) = 0;
 
-	private:
+	protected:
 		GameObject* mListener = nullptr;
-		irrklang::ISoundEngine* mEngine;
 		vector<AudioClip*> mAudioClips;
 		vector<AudioSource*> mAudioSources;
-		unordered_map<string, AudioStream*> mAudioStreams;
 	};
 }

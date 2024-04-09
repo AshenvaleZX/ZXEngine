@@ -3,6 +3,10 @@
 #include "AudioClip.h"
 #include "../GameObject.h"
 
+#ifdef _WIN64
+#include "irrKlangImpl/AudioEngine_irrKlang.h"
+#endif
+
 namespace ZXEngine
 {
 	AudioEngine* AudioEngine::mInstance = nullptr;
@@ -11,31 +15,15 @@ namespace ZXEngine
 	{
 		if (mInstance == nullptr)
 		{
-			mInstance = new AudioEngine();
+#ifdef _WIN64
+			mInstance = new AudioEngine_irrKlang();
+#endif
 		}
 	}
 
 	AudioEngine* AudioEngine::GetInstance()
 	{
 		return mInstance;
-	}
-
-	AudioEngine::AudioEngine()
-	{
-		mEngine = irrklang::createIrrKlangDevice();
-
-		if (!mEngine)
-		{
-			Debug::LogError("Could not startup the audio engine.");
-		}
-	}
-
-	AudioEngine::~AudioEngine()
-	{
-		for (auto& iter : mAudioStreams)
-			delete iter.second;
-
-		mEngine->drop();
 	}
 
 	void AudioEngine::Update()
@@ -82,32 +70,5 @@ namespace ZXEngine
 		{
 			mListener = nullptr;
 		}
-	}
-
-	AudioClip* AudioEngine::CreateAudioClip(const string& path, bool isFullPath)
-	{
-		AudioStream* stream = CreateAudioStream(path, isFullPath);
-		return new AudioClip(stream);
-	}
-
-	AudioClip* AudioEngine::CreateAudioClip(AudioStream* stream)
-	{
-		return new AudioClip(stream);
-	}
-
-	AudioStream* AudioEngine::CreateAudioStream(const string& path, bool isFullPath)
-	{
-		string fullPath = isFullPath ? path : Resources::GetAssetFullPath(path);
-
-		auto iter = mAudioStreams.find(fullPath);
-		if (iter != mAudioStreams.end())
-		{
-			return iter->second;
-		}
-
-		AudioStream* stream = new AudioStream(fullPath);
-		mAudioStreams[fullPath] = stream;
-
-		return stream;
 	}
 }

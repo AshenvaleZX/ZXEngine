@@ -178,9 +178,10 @@
     <ClCompile Include="..\..\..\CPPScripts\Animation\Animation.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Animation\AnimationController.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Animation\NodeAnimation.cpp" />
-    <ClCompile Include="..\..\..\CPPScripts\Audio\AudioClip.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Audio\AudioEngine.cpp" />
-    <ClCompile Include="..\..\..\CPPScripts\Audio\AudioStream.cpp" />
+    <ClCompile Include="..\..\..\CPPScripts\Audio\irrKlangImpl\AudioClip_irrKlang.cpp" />
+    <ClCompile Include="..\..\..\CPPScripts\Audio\irrKlangImpl\AudioEngine_irrKlang.cpp" />
+    <ClCompile Include="..\..\..\CPPScripts\Audio\irrKlangImpl\AudioStream_irrKlang.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Component\Animator.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Component\AudioListener.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Component\AudioSource.cpp" />
@@ -351,6 +352,9 @@
     <ClInclude Include="..\..\..\CPPScripts\Audio\AudioClip.h" />
     <ClInclude Include="..\..\..\CPPScripts\Audio\AudioEngine.h" />
     <ClInclude Include="..\..\..\CPPScripts\Audio\AudioStream.h" />
+    <ClInclude Include="..\..\..\CPPScripts\Audio\irrKlangImpl\AudioClip_irrKlang.h" />
+    <ClInclude Include="..\..\..\CPPScripts\Audio\irrKlangImpl\AudioEngine_irrKlang.h" />
+    <ClInclude Include="..\..\..\CPPScripts\Audio\irrKlangImpl\AudioStream_irrKlang.h" />
     <ClInclude Include="..\..\..\CPPScripts\Audio\ZAudio.h" />
     <ClInclude Include="..\..\..\CPPScripts\Component\Animator.h" />
     <ClInclude Include="..\..\..\CPPScripts\Component\AudioListener.h" />

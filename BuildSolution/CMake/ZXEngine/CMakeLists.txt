@@ -17,15 +17,23 @@ set(Animation
 source_group("Animation" FILES ${Animation})
 
 set(Audio
-    "../../../CPPScripts/Audio/AudioClip.cpp"
     "../../../CPPScripts/Audio/AudioClip.h"
     "../../../CPPScripts/Audio/AudioEngine.cpp"
     "../../../CPPScripts/Audio/AudioEngine.h"
-    "../../../CPPScripts/Audio/AudioStream.cpp"
     "../../../CPPScripts/Audio/AudioStream.h"
     "../../../CPPScripts/Audio/ZAudio.h"
 )
 source_group("Audio" FILES ${Audio})
+
+set(Audio__irrKlangImpl
+    "../../../CPPScripts/Audio/irrKlangImpl/AudioClip_irrKlang.cpp"
+    "../../../CPPScripts/Audio/irrKlangImpl/AudioClip_irrKlang.h"
+    "../../../CPPScripts/Audio/irrKlangImpl/AudioEngine_irrKlang.cpp"
+    "../../../CPPScripts/Audio/irrKlangImpl/AudioEngine_irrKlang.h"
+    "../../../CPPScripts/Audio/irrKlangImpl/AudioStream_irrKlang.cpp"
+    "../../../CPPScripts/Audio/irrKlangImpl/AudioStream_irrKlang.h"
+)
+source_group("Audio\\irrKlangImpl" FILES ${Audio__irrKlangImpl})
 
 set(Component
     "../../../CPPScripts/Component/Animator.cpp"
