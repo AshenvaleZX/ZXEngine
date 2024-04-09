@@ -14,7 +14,7 @@ namespace ZXEngine
 				CompileShader(entry.path().string());
 			else if (extension == ".vkr")
 				GenerateSPIRVFile(entry.path());
-			else if (extension == "")
+			else if (entry.is_directory())
 				CompileAllShader(entry.path().string());
 		}
 	}
