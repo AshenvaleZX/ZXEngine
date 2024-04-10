@@ -75,6 +75,7 @@ if is_plat("macosx") then
     remove_files("../../CPPScripts/External/ImGui/imgui_impl_win32.cpp")
     remove_files("../../CPPScripts/Editor/EditorGUIManagerDirectX12.cpp")
     remove_files("../../CPPScripts/Editor/ImGuiTextureManagerD3D12.cpp")
+    remove_files("../../CPPScripts/Audio/irrKlangImpl/**.cpp")
 end
 
 add_includedirs("../../Vendor/Include")
