@@ -604,7 +604,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../../Vendor/Include
 )
 target_link_directories(${PROJECT_NAME} PRIVATE 
-    ${PROJECT_SOURCE_DIR}/../../../Vendor/Libs
+    ${PROJECT_SOURCE_DIR}/../../../Vendor/Library/Windows/Static
 )
 
 ################################################################################
@@ -615,16 +615,16 @@ if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
         TARGET ${PROJECT_NAME}
         POST_BUILD
         COMMANDS
-        COMMAND   $<CONFIG:Debug> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\DyLibs\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
-        COMMAND $<CONFIG:Release> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\DyLibs\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
+        COMMAND   $<CONFIG:Debug> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\Library\\Windows\\Dynamic\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
+        COMMAND $<CONFIG:Release> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\Library\\Windows\\Dynamic\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x86")
     add_custom_command_if(
         TARGET ${PROJECT_NAME}
         POST_BUILD
         COMMANDS
-        COMMAND   $<CONFIG:Debug> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\DyLibs\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
-        COMMAND $<CONFIG:Release> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\DyLibs\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
+        COMMAND   $<CONFIG:Debug> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\Library\\Windows\\Dynamic\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
+        COMMAND $<CONFIG:Release> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\Library\\Windows\\Dynamic\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
     )
 endif()
 

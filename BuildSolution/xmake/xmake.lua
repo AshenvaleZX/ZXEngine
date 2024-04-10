@@ -16,7 +16,7 @@ on_load(function(target)
         -- target:add("linkdirs", path.join(os.projectdir(), "../../Vendor/Library/MacOS"), { public = true })
         -- target:add("links", "vulkan.1.3.250", { public = true })
     else
-        target:add("linkdirs", path.join(os.projectdir(), "../../Vendor/Libs"), { public = true })
+        target:add("linkdirs", path.join(os.projectdir(), "../../Vendor/Library/Windows/Static"), { public = true })
         target:add("links", "vulkan-1", { public = true })
     end
     target:add("includedirs", path.join(os.projectdir(), "../../Vendor/Include/Vulkan"), { public = true })
@@ -91,7 +91,7 @@ if is_plat("macosx") then
         add_rpathdirs(path.join(os.projectdir(), "release"))
     end
 else
-    add_linkdirs(path.join(os.projectdir(), "../../Vendor/Libs"))
+    add_linkdirs(path.join(os.projectdir(), "../../Vendor/Library/Windows/Static"))
     add_links("assimp-vc143-mt", "freetype", "glfw3", "irrKlang", "opengl32", "Shell32")
 end
 
@@ -104,7 +104,7 @@ after_build(function(target)
         local src_dir = path.join(os.projectdir(), "../../Vendor/Library/MacOS")
         os.cp(path.join(src_dir, "*.dylib"), bin_dir)
     else
-        local src_dir = path.join(os.projectdir(), "../../Vendor/DyLibs")
+        local src_dir = path.join(os.projectdir(), "../../Vendor/Library/Windows/Dynamic")
         os.cp(path.join(src_dir, "*.dll"), bin_dir)
     end
 end)
