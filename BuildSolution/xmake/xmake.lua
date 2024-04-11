@@ -13,8 +13,8 @@ set_kind("phony")
 on_load(function(target)
     -- 使用工程自带的Vulkan SDK
     if is_plat("macosx") then
-        -- target:add("linkdirs", path.join(os.projectdir(), "../../Vendor/Library/MacOS"), { public = true })
-        -- target:add("links", "vulkan.1.3.250", { public = true })
+        target:add("linkdirs", path.join(os.projectdir(), "../../Vendor/Library/MacOS"), { public = true })
+        target:add("links", "vulkan.1.3.280", "MoltenVK", { public = true })
     else
         target:add("linkdirs", path.join(os.projectdir(), "../../Vendor/Library/Windows/Static"), { public = true })
         target:add("links", "vulkan-1", { public = true })
