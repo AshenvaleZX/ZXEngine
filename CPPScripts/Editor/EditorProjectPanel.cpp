@@ -166,6 +166,13 @@ namespace ZXEngine
 	{
 		for (const auto& entry : filesystem::directory_iterator(node->path))
 		{
+#ifdef __APPLE__
+			string filename = entry.path().filename().string();
+			// 跳过MacOS的.DS_Store(烦人的文件，不知道苹果搞这玩意干嘛)，filesystem处理这个文件会异常
+			if (filename.compare(".DS_Store") == 0)
+				continue;
+#endif
+
 			string extension = entry.path().filename().extension().string();
 			// 如果是忽略的文件类型，就跳过
 			if (ignoreExtensions.find(extension) != ignoreExtensions.end())
