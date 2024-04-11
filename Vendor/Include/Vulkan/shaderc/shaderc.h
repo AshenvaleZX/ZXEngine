@@ -189,6 +189,25 @@ typedef enum {
   shaderc_limit_max_cull_distances,
   shaderc_limit_max_combined_clip_and_cull_distances,
   shaderc_limit_max_samples,
+  shaderc_limit_max_mesh_output_vertices_nv,
+  shaderc_limit_max_mesh_output_primitives_nv,
+  shaderc_limit_max_mesh_work_group_size_x_nv,
+  shaderc_limit_max_mesh_work_group_size_y_nv,
+  shaderc_limit_max_mesh_work_group_size_z_nv,
+  shaderc_limit_max_task_work_group_size_x_nv,
+  shaderc_limit_max_task_work_group_size_y_nv,
+  shaderc_limit_max_task_work_group_size_z_nv,
+  shaderc_limit_max_mesh_view_count_nv,
+  shaderc_limit_max_mesh_output_vertices_ext,
+  shaderc_limit_max_mesh_output_primitives_ext,
+  shaderc_limit_max_mesh_work_group_size_x_ext,
+  shaderc_limit_max_mesh_work_group_size_y_ext,
+  shaderc_limit_max_mesh_work_group_size_z_ext,
+  shaderc_limit_max_task_work_group_size_x_ext,
+  shaderc_limit_max_task_work_group_size_y_ext,
+  shaderc_limit_max_task_work_group_size_z_ext,
+  shaderc_limit_max_mesh_view_count_ext,
+  shaderc_limit_max_dual_source_draw_buffers_ext,
 } shaderc_limit;
 
 // Uniform resource kinds.
@@ -439,6 +458,11 @@ SHADERC_EXPORT void shaderc_compile_options_set_binding_base_for_stage(
     shaderc_compile_options_t options, shaderc_shader_kind shader_kind,
     shaderc_uniform_kind kind, uint32_t base);
 
+// Sets whether the compiler should preserve all bindings, even when those
+// bindings are not used.
+SHADERC_EXPORT void shaderc_compile_options_set_preserve_bindings(
+    shaderc_compile_options_t options, bool preserve_bindings);
+
 // Sets whether the compiler should automatically assign locations to
 // uniform variables that don't have explicit locations in the shader source.
 SHADERC_EXPORT void shaderc_compile_options_set_auto_map_locations(
@@ -463,6 +487,12 @@ SHADERC_EXPORT void shaderc_compile_options_set_hlsl_functionality1(
 
 // Sets whether 16-bit types are supported in HLSL or not.
 SHADERC_EXPORT void shaderc_compile_options_set_hlsl_16bit_types(
+    shaderc_compile_options_t options, bool enable);
+
+// Enables or disables relaxed Vulkan rules.
+//
+// This allows most OpenGL shaders to compile under Vulkan semantics.
+SHADERC_EXPORT void shaderc_compile_options_set_vulkan_rules_relaxed(
     shaderc_compile_options_t options, bool enable);
 
 // Sets whether the compiler should invert position.Y output in vertex shader.
