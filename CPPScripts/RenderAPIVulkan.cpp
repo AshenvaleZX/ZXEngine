@@ -3457,15 +3457,18 @@ namespace ZXEngine
         // 这个数据可以不填，好像这个数据可以让开发驱动的硬件厂商，比如Nvidia什么的识别一下，给一些引擎或者游戏走后门做特殊处理什么的
         VkApplicationInfo appInfo = {};
         appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-        appInfo.pApplicationName = "ZXEngineApplication";
-        appInfo.applicationVersion = VK_API_VERSION_1_3;
         appInfo.pEngineName = "ZXEngine";
-        appInfo.engineVersion = VK_API_VERSION_1_3;
-        appInfo.apiVersion = VK_API_VERSION_1_3;
+        appInfo.engineVersion = 0;
+        appInfo.pApplicationName = "ZXEngineApplication";
+        appInfo.applicationVersion = 0;
+        appInfo.apiVersion = ZX_VK_API_VERSION;
 
         VkInstanceCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         createInfo.pApplicationInfo = &appInfo;
+#ifdef __APPLE__
+        createInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+#endif
 
         // 获取与不同平台的窗体系统进行交互的扩展信息
         auto extensions = GetRequiredExtensions();
@@ -3558,35 +3561,6 @@ namespace ZXEngine
             queueCreateInfos.push_back(queueCreateInfo);
         }
 
-        // 明确设备要使用的功能特性
-        VkPhysicalDeviceFeatures2 deviceFeatures = {};
-        deviceFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-        // 启用对各向异性采样的支持
-        deviceFeatures.features.samplerAnisotropy = VK_TRUE;
-        deviceFeatures.features.geometryShader = VK_TRUE;
-        deviceFeatures.features.sampleRateShading = VK_TRUE;
-        deviceFeatures.features.shaderInt64 = VK_TRUE;
-
-        // 添加光追管线需要的扩展和特性
-        // 对应扩展: VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME
-        VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationFeature = {};
-        accelerationFeature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
-        accelerationFeature.accelerationStructure = VK_TRUE;
-        deviceFeatures.pNext = &accelerationFeature;
-        // 对应扩展: VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME
-        VkPhysicalDeviceRayTracingPipelineFeaturesKHR rtPipelineFeature = {};
-        rtPipelineFeature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
-        rtPipelineFeature.rayTracingPipeline = VK_TRUE;
-        accelerationFeature.pNext = &rtPipelineFeature;
-
-        // 添加Shader计时器需要的扩展(光追Shader要用)
-        // 对应扩展: VK_KHR_SHADER_CLOCK_EXTENSION_NAME
-        VkPhysicalDeviceShaderClockFeaturesKHR shaderClockFeature = {};
-        shaderClockFeature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CLOCK_FEATURES_KHR;
-        shaderClockFeature.shaderDeviceClock = VK_TRUE;
-        shaderClockFeature.shaderSubgroupClock = VK_TRUE;
-        rtPipelineFeature.pNext = &shaderClockFeature;
-
         // 添加Vulkan 1.2的特性
         VkPhysicalDeviceVulkan12Features deviceVulkan12Features = {};
         deviceVulkan12Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
@@ -3597,8 +3571,42 @@ namespace ZXEngine
         deviceVulkan12Features.hostQueryReset = VK_TRUE;
         // 支持创建光追ShaderModule时，Shader里的顶点和索引等Buffer的数据结构不对齐16字节
         deviceVulkan12Features.scalarBlockLayout = VK_TRUE;
-        shaderClockFeature.pNext = &deviceVulkan12Features;
         deviceVulkan12Features.pNext = nullptr;
+        
+        // 添加Shader计时器需要的扩展(光追Shader要用)
+        // 对应扩展: VK_KHR_SHADER_CLOCK_EXTENSION_NAME
+        VkPhysicalDeviceShaderClockFeaturesKHR shaderClockFeature = {};
+        shaderClockFeature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CLOCK_FEATURES_KHR;
+        shaderClockFeature.shaderDeviceClock = VK_TRUE;
+        shaderClockFeature.shaderSubgroupClock = VK_TRUE;
+        shaderClockFeature.pNext = &deviceVulkan12Features;
+
+        // 对应扩展: VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME
+        VkPhysicalDeviceRayTracingPipelineFeaturesKHR rtPipelineFeature = {};
+        rtPipelineFeature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
+        rtPipelineFeature.rayTracingPipeline = VK_TRUE;
+        rtPipelineFeature.pNext = &shaderClockFeature;
+
+        // 添加光追管线需要的扩展和特性
+        // 对应扩展: VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME
+        VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationFeature = {};
+        accelerationFeature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
+        accelerationFeature.accelerationStructure = VK_TRUE;
+        accelerationFeature.pNext = &rtPipelineFeature;
+
+        // 明确设备要使用的功能特性
+        VkPhysicalDeviceFeatures2 deviceFeatures = {};
+        deviceFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+        // 启用对各向异性采样的支持
+        deviceFeatures.features.samplerAnisotropy = VK_TRUE;
+        deviceFeatures.features.sampleRateShading = VK_TRUE;
+        deviceFeatures.features.shaderInt64 = VK_TRUE;
+#ifndef __APPLE__
+        deviceFeatures.features.geometryShader = VK_TRUE;
+        deviceFeatures.pNext = &accelerationFeature;
+#else
+        deviceFeatures.pNext = &deviceVulkan12Features;
+#endif
 
         // 创建逻辑设备的信息
         VkDeviceCreateInfo createInfo = {};
@@ -3649,7 +3657,7 @@ namespace ZXEngine
         vmaVkFunctions.vkGetDeviceProcAddr = vkGetDeviceProcAddr;
 
         VmaAllocatorCreateInfo vmaInfo = {};
-        vmaInfo.vulkanApiVersion = VK_HEADER_VERSION_COMPLETE;
+        vmaInfo.vulkanApiVersion = ZX_VK_API_VERSION;
         vmaInfo.instance = vkInstance;
         vmaInfo.physicalDevice = physicalDevice;
         vmaInfo.device = device;
@@ -3886,6 +3894,10 @@ namespace ZXEngine
         if (validationLayersEnabled)
             extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
+#ifdef __APPLE__
+        extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+#endif
+
         return extensions;
     }
 
@@ -3914,16 +3926,22 @@ namespace ZXEngine
         // 获得name, type以及Vulkan版本等基本的设备属性
         VkPhysicalDeviceProperties deviceProperties;
         vkGetPhysicalDeviceProperties(device, &deviceProperties);
+
+#ifndef __APPLE__
         // 需要独显
         if (deviceProperties.deviceType != VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
             return false;
+#endif
 
         // 查询对纹理压缩，64位浮点数和多视图渲染(VR非常有用)等可选功能的支持
         VkPhysicalDeviceFeatures deviceFeatures;
         vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+
+#ifndef __APPLE__
         // 需要支持几何着色器
         if (!deviceFeatures.geometryShader)
             return false;
+#endif
 
         // 需要支持各项异性采样
         if (!deviceFeatures.samplerAnisotropy)

@@ -9,10 +9,19 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 // AMD写的Vulkan内存分配器
-#include "vk_mem_alloc.h"
+#include <vk_mem_alloc.h>
+#ifdef __APPLE__
+#include <vulkan/vulkan_beta.h>
+#endif
 #include "../PublicStruct.h"
 
 #define ShaderModuleSet map<VkShaderStageFlagBits, VkShaderModule>
+
+#ifdef __APPLE__
+#define ZX_VK_API_VERSION VK_API_VERSION_1_2
+#else
+#define ZX_VK_API_VERSION VK_API_VERSION_1_3
+#endif
 
 namespace ZXEngine
 {
@@ -31,12 +40,16 @@ namespace ZXEngine
     {
         // 交换链扩展名，这个的支持也就代表了是否支持将图像绘制到显示器上(不是所有GPU都可以拿来绘图)
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+#ifdef __APPLE__
+        VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME,
+#else
         // 光追扩展
         VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME,
         VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
         VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
         // Shader计时器扩展
         VK_KHR_SHADER_CLOCK_EXTENSION_NAME
+#endif
     };
 
     enum class RenderPassType
