@@ -3601,8 +3601,8 @@ namespace ZXEngine
         deviceFeatures.features.samplerAnisotropy = VK_TRUE;
         deviceFeatures.features.sampleRateShading = VK_TRUE;
         deviceFeatures.features.shaderInt64 = VK_TRUE;
+        deviceFeatures.features.geometryShader = ProjectSetting::isSupportGeometryShader ? VK_TRUE : VK_FALSE;
 #ifndef __APPLE__
-        deviceFeatures.features.geometryShader = VK_TRUE;
         deviceFeatures.pNext = &accelerationFeature;
 #else
         deviceFeatures.pNext = &deviceVulkan12Features;
@@ -3937,12 +3937,6 @@ namespace ZXEngine
         VkPhysicalDeviceFeatures deviceFeatures;
         vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
-#ifndef __APPLE__
-        // 需要支持几何着色器
-        if (!deviceFeatures.geometryShader)
-            return false;
-#endif
-
         // 需要支持各项异性采样
         if (!deviceFeatures.samplerAnisotropy)
             return false;
@@ -3962,6 +3956,10 @@ namespace ZXEngine
         bool swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
         if (!swapChainAdequate)
             return false;
+
+        // 走到这里已经确认使用这个物理设备了，所以可以把这个物理设备的一些信息保存下来
+        if (deviceFeatures.geometryShader == VK_FALSE)
+			ProjectSetting::isSupportGeometryShader = false;
 
         // 如果有很多显卡，可以通过给各种硬件特性一个权重，然后优先选择最合适的
         return true;

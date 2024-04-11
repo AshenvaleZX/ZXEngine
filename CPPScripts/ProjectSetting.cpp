@@ -14,11 +14,13 @@ namespace ZXEngine
 	const int ProjectSetting::OpenGLVersionMinor = 6;
 #endif
 
+	bool ProjectSetting::isSupportGeometryShader = true;
+	RenderPipelineType ProjectSetting::renderPipelineType;
+
 	unsigned int ProjectSetting::srcWidth;
 	unsigned int ProjectSetting::srcHeight;
 	string ProjectSetting::defaultScene;
 	string ProjectSetting::projectPath;
-	RenderPipelineType ProjectSetting::renderPipelineType;
 	bool ProjectSetting::enableDynamicBatch;
 	bool ProjectSetting::preserveIntermediateShader;
 	bool ProjectSetting::enableGraphicsDebug;

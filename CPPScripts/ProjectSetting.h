@@ -9,11 +9,15 @@ namespace ZXEngine
 		static const string OpenGLVersion;
 		static const int OpenGLVersionMajor;
 		static const int OpenGLVersionMinor;
+
+		static bool isSupportGeometryShader;
+		static RenderPipelineType renderPipelineType;
+
+		// ProjectSetting.zxprjcfg
 		static unsigned int srcWidth;
 		static unsigned int srcHeight;
 		static string defaultScene;
 		static string projectPath;
-		static RenderPipelineType renderPipelineType;
 		static bool enableDynamicBatch;
 		static bool preserveIntermediateShader;
 		static bool enableGraphicsDebug;

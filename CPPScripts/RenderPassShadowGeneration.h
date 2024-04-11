@@ -19,11 +19,11 @@ namespace ZXEngine
 		uint32_t drawCommandID = 0;
 		Matrix4 shadowProj;
 		vector<Matrix4> shadowTransforms;
-		Shader* shadowMapShader;
-		Shader* animShadowMapShader;
-		Shader* shadowCubeMapShader;
-		Shader* animShadowCubeMapShader;
-		RenderStateSetting* renderState;
+		Shader* shadowMapShader = nullptr;
+		Shader* animShadowMapShader = nullptr;
+		Shader* shadowCubeMapShader = nullptr;
+		Shader* animShadowCubeMapShader = nullptr;
+		RenderStateSetting* renderState = nullptr;
 
 		void RenderShadowMap(Light* light);
 		void RenderShadowCubeMap(Light* light);
