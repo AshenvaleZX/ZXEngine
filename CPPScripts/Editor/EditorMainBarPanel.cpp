@@ -76,9 +76,9 @@ namespace ZXEngine
 						t.detach();
 					}
 
-#ifdef _WIN64
 					if (ImGui::MenuItem("Compile All Shader for DirectX12"))
 					{
+#ifdef _WIN64
 						std::thread t([]
 						{
 							ZXD3D12Util::CompileAllShader(Resources::GetAssetsPath());
@@ -86,10 +86,14 @@ namespace ZXEngine
 							Debug::Log("The compilation of all shaders is complete.");
 						});
 						t.detach();
+#else
+						EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "This feature is only available on Windows.");
+#endif
 					}
 
 					if (ImGui::MenuItem("Generate HLSL for DirectX12"))
 					{
+#ifdef _WIN64
 						std::thread t([]
 						{
 							ZXD3D12Util::TranslateAllShaderToHLSL(Resources::GetAssetsPath());
@@ -97,8 +101,10 @@ namespace ZXEngine
 							Debug::Log("The translation of all shaders is complete.");
 						});
 						t.detach();
-					}
+#else
+						EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "This feature is only available on Windows.");
 #endif
+					}
 
 					ImGui::EndMenu();
 				}
