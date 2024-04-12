@@ -190,6 +190,14 @@ namespace ZXEngine
 		if (!data["RenderPipelineType"].is_null())
 			scene->renderPipelineType = data["RenderPipelineType"];
 
+#ifdef ZX_API_OPENGL
+		if (scene->renderPipelineType == RenderPipelineType::RayTracing)
+			return scene;
+#else
+		if (scene->renderPipelineType == RenderPipelineType::RayTracing && !ProjectSetting::isSupportRayTracing)
+			return scene;
+#endif
+
 		// 临时切换一下渲染管线类型，加载完prefab后再切回来
 		auto curPipelineType = ProjectSetting::renderPipelineType;
 		ProjectSetting::renderPipelineType = scene->renderPipelineType;
