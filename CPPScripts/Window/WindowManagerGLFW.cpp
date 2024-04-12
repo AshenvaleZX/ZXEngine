@@ -26,7 +26,11 @@ namespace ZXEngine
 #endif
 
 #ifdef ZX_API_VULKAN
+#ifdef __APPLE__
+		windowName = "ZXEngine <Vulkan 1.2>";
+#else
 		windowName = "ZXEngine <Vulkan 1.3>";
+#endif
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 #endif
 
