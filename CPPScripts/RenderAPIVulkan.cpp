@@ -23,6 +23,8 @@
 
 namespace ZXEngine
 {
+    bool ZXVK_IsSupportPortabilitySubset = false;
+
     map<BlendFactor, VkBlendFactor> vkBlendFactorMap =
     {
         { BlendFactor::ZERO,           VK_BLEND_FACTOR_ZERO           }, { BlendFactor::ONE,                      VK_BLEND_FACTOR_ONE                      },
@@ -3616,6 +3618,14 @@ namespace ZXEngine
         createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 
         // 添加VkDevice级别的扩展和特性
+        vector<const char*> deviceExtensions(ZXVK_Extension_Base.begin(), ZXVK_Extension_Base.end());
+
+        if (ZXVK_IsSupportPortabilitySubset)
+            deviceExtensions.push_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
+
+        if (ProjectSetting::isSupportRayTracing)
+            deviceExtensions.insert(deviceExtensions.end(), ZXVK_Extension_RayTracing.begin(), ZXVK_Extension_RayTracing.end());
+
         createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
         createInfo.ppEnabledExtensionNames = deviceExtensions.data();
         // Vulkan 1.1之后，用这种pNext方式添加特性，而不是pEnabledFeatures
@@ -3946,15 +3956,15 @@ namespace ZXEngine
         if (!indices.isComplete())
             return false;
 
-        // 检查是否支持所需要的扩展
-        if (!CheckDeviceExtensionSupport(device))
-            return false;
-
         // 检查交换链是否完整
         SwapChainSupportDetails swapChainSupport = GetSwapChainSupportDetails(device);
         // 至少支持一个图像格式和一个Present模式
         bool swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
         if (!swapChainAdequate)
+            return false;
+
+        // 检查是否支持所需要的扩展，同时记录所支持的扩展情况，需要作为检查的最后一步
+        if (!CheckDeviceExtensionSupport(device))
             return false;
 
         // 走到这里已经确认使用这个物理设备了，所以可以把这个物理设备的一些信息保存下来
@@ -4016,13 +4026,31 @@ namespace ZXEngine
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
 
         // 把我们自定义的deviceExtensions转换成set数据结构(为了避免后面2层for循环的erase，同时也不改动原数据)
-        set<string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+        set<string> baseExtensions(ZXVK_Extension_Base.begin(), ZXVK_Extension_Base.end());
+        set<string> rayTracingExtensions(ZXVK_Extension_RayTracing.begin(), ZXVK_Extension_RayTracing.end());
+
+        bool isSupportPortabilitySubset = false;
         // 遍历物理设备所支持的扩展，逐个从我们需要的扩展集合中删除
         for (const auto& extension : availableExtensions)
-            requiredExtensions.erase(extension.extensionName);
+        {
+            baseExtensions.erase(extension.extensionName);
+            rayTracingExtensions.erase(extension.extensionName);
 
-        // 如果全部删除完了，说明我们所需要的扩展都是支持的，否则说明还有一些我们需要的扩展不被支持
-        return requiredExtensions.empty();
+            if (strcmp(extension.extensionName, VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME) == 0)
+				isSupportPortabilitySubset = true;
+        }
+
+        // 如果全部删除完了，说明我们所需要的基本扩展都是支持的
+        if (baseExtensions.empty())
+        {
+            ZXVK_IsSupportPortabilitySubset = isSupportPortabilitySubset;
+            ProjectSetting::isSupportRayTracing = rayTracingExtensions.empty();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     SwapChainSupportDetails RenderAPIVulkan::GetSwapChainSupportDetails(VkPhysicalDevice device)

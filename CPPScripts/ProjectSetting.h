@@ -10,6 +10,7 @@ namespace ZXEngine
 		static const int OpenGLVersionMajor;
 		static const int OpenGLVersionMinor;
 
+		static bool isSupportRayTracing;
 		static bool isSupportGeometryShader;
 		static RenderPipelineType renderPipelineType;
 

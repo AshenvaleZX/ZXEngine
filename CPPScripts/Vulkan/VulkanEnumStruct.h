@@ -10,9 +10,7 @@
 #include <GLFW/glfw3.h>
 // AMD写的Vulkan内存分配器
 #include <vk_mem_alloc.h>
-#ifdef __APPLE__
 #include <vulkan/vulkan_beta.h>
-#endif
 #include "../PublicStruct.h"
 
 #define ShaderModuleSet map<VkShaderStageFlagBits, VkShaderModule>
@@ -28,6 +26,10 @@ namespace ZXEngine
     // 在GPU渲染画面的时候，CPU可以处理的帧数
     const uint32_t MAX_FRAMES_IN_FLIGHT = 1;
 
+    // 如果设备支持 VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME ，则必须启用此扩展(比如Mac)
+    // https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_portability_subset.html
+    extern bool ZXVK_IsSupportPortabilitySubset;
+
     // 需要的验证层
     const vector<const char*> validationLayers =
     {
@@ -35,22 +37,23 @@ namespace ZXEngine
         "VK_LAYER_KHRONOS_validation"
     };
 
-    // 需要用到的扩展
-    const vector<const char*> deviceExtensions =
+    // 必须满足的扩展
+    const array<const char*, 1> ZXVK_Extension_Base =
     {
-        // 交换链扩展名，这个的支持也就代表了是否支持将图像绘制到显示器上(不是所有GPU都可以拿来绘图)
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-#ifdef __APPLE__
-        VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME,
-#else
+        // 交换链扩展，代表了是否支持将图像绘制到显示器上(不是所有GPU都可以拿来绘图)
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+	};
+
+    // 光追需要的扩展
+    const array<const char*, 4> ZXVK_Extension_RayTracing =
+    {
         // 光追扩展
         VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME,
-        VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
-        VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
+		VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
+		VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
         // Shader计时器扩展
         VK_KHR_SHADER_CLOCK_EXTENSION_NAME
-#endif
-    };
+	};
 
     enum class RenderPassType
     {

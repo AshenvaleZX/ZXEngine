@@ -14,6 +14,7 @@ namespace ZXEngine
 	const int ProjectSetting::OpenGLVersionMinor = 6;
 #endif
 
+	bool ProjectSetting::isSupportRayTracing = true;
 	bool ProjectSetting::isSupportGeometryShader = true;
 	RenderPipelineType ProjectSetting::renderPipelineType;
 
