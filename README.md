@@ -3,6 +3,8 @@
 ![Vulkan](Documents/Badges/Vulkan-Supported.svg)
 ![DirectX 12](Documents/Badges/DirectX_12-Supported.svg)
 ![OpenGL](Documents/Badges/OpenGL-Supported.svg)
+![Windows](Documents/Badges/Windows-Supported-blue.svg)
+![Mac OS](Documents/Badges/Mac_OS-Supported-blue.svg)
 
 这是我自己开发的游戏引擎项目，创建这个项目的主要目的是为了我自己学习和实践游戏引擎技术，不过也希望这个项目能对你有所帮助。
 
@@ -36,15 +38,15 @@ The appearance of the engine is as shown below. For detailed information, please
 
 - [引擎文件格式介绍 (Engine File Format Introduction)](#引擎文件格式介绍-engine-file-format-introduction)
 
-- [构建 (Build)](#构建-build)
+- [构建与跨平台 (Build And Cross-Platform)](#构建与跨平台-build-and-cross-platform)
 
 - [注意事项 (Precautions)](#注意事项-precautions)
 
 ## 引擎简介 (Engine Introduction)
 
-本引擎目前同时支持Vulkan，DirectX 12和OpenGL，使用自创的zxshader语言来编写shader，支持前面三种图形API，可一次编写3种环境运行。本引擎同时也支持基于Vulkan和DirectX12的光线追踪渲染管线。
+本引擎目前同时支持Vulkan，DirectX 12和OpenGL，支持Windows和Mac OS。使用自创的zxshader语言来编写shader，支持前面三种图形API，可一次编写3种环境运行。本引擎同时也支持基于Vulkan和DirectX12的光线追踪渲染管线。
 
-This engine currently supports Vulkan, DirectX 12 and OpenGL. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs. This engine also supports ray tracing rendering pipeline based on Vulkan and DirectX12.
+This engine currently supports Vulkan, DirectX 12 and OpenGL, supports Windows and Mac OS. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs. This engine also supports ray tracing rendering pipeline based on Vulkan and DirectX12.
 
 本引擎内置了我写的物理引擎PhysZ(看了一些书和别人的项目之后的学习成果，详见后文)，支持基本的刚体力学模拟和布料模拟。同时我也开发了简单的骨骼蒙皮动画系统，粒子系统等。文档后面会有这些系统的图片展示。
 
@@ -289,9 +291,9 @@ AudioListener同样也是用于3D音效的，如果你不需要3D音效的话场
 
 ![](Documents/Images/Audio2.png)
 
-本引擎的绝大部分系统和模块都是我自己编写的，但是音频处理是一个和图形渲染，物理引擎一样很专业的领域，涉及音频编码和时域频域变换等相关专业知识。而我对音频相关的专业知识了解还不够，所以很惭愧，目前本引擎音频系统中的核心部分，即音频解码和播放功能使用了irrKlang这个第三方库。
+本引擎的绝大部分系统和模块都是我自己编写的，但是音频处理是一个和图形渲染，物理引擎一样很专业的领域，涉及音频编码和时域频域变换等相关专业知识。而我对音频相关的专业知识了解还不够，所以目前本引擎音频系统中的核心部分，即音频解码和播放功能使用了irrKlang这个第三方库。由于irrKlang没有对Apple Silicon做支持，所以在MacOS上的音频系统目前是一个空的实现。
 
-Most of the systems and modules of this engine are written by myself, but audio processing is a very professional field like graphics rendering and physics engine, involving audio coding, time domain and frequency domain transformation and other related professional knowledge. I don’t know enough about audio-related professional knowledge, so the core part of the audio system of this engine, that is, the audio decoding and playback functions, uses the third-party library irrKlang.
+Most of the systems and modules of this engine are written by myself, but audio processing is a very professional field like graphics rendering and physics engine, involving audio coding, time domain and frequency domain transformation and other related professional knowledge. I don’t know enough about audio-related professional knowledge, so the core part of the audio system of this engine, that is, the audio decoding and playback functions, uses the third-party library irrKlang. Since irrKlang does not support Apple Silicon, the audio system on MacOS is currently an empty implementation.
 
 ## 多线程 (Multithreading)
 
@@ -364,11 +366,17 @@ This is the configuration file for the game project created by ZXEngine, you can
 
 Models, textures, fonts, etc. are common file formats.
 
-## 构建 (Build)
+## 构建与跨平台 (Build And Cross-Platform)
 
-本项目提供了三种构建方式，放在了BuildSolution下面，分别是Visual Studio 2022，xmake和CMake。喜欢用VS的直接用VS 2022打开BuildSolution\VisualStudio\ZXEngine.sln构建即可。如果不想用VS，可以使用xmake，使用方式如下：
+本项目支持Windows和Mac OS，在Windows平台支持Vulkan，DirectX 12和OpenGL，在Mac OS平台支持Vulkan和OpenGL。目前有三种构建工具，分别是Visual Studio 2022，xmake和CMake，放到了BuildSolution文件夹中。
 
-This project provides three building methods, which are placed under BuildSolution, including Visual Studio 2022, xmake and CMake. If you like to use VS, just use VS 2022 to open BuildSolution\VisualStudio\ZXEngine.sln to build. If you don’t want to use VS, you can use xmake as follows:
+This project supports Windows and Mac OS. It supports Vulkan, DirectX 12 and OpenGL on the Windows platform, and Vulkan and OpenGL on the Mac OS platform. There are currently three building methods, which are Visual Studio 2022, xmake and CMake, and they placed in the BuildSolution folder.
+
+### Windows
+
+在Windows平台下三种构建工具都可以使用。喜欢用VS的直接用VS 2022打开BuildSolution\VisualStudio\ZXEngine.sln构建即可。如果不想用VS，可以使用xmake，使用方式如下：
+
+All three build tools can work on the Windows platform. If you like to use VS, just use VS 2022 to open BuildSolution\VisualStudio\ZXEngine.sln to build. If you don’t want to use VS, you can use xmake as follows:
 
 ```shell
 cd BuildSolution\xmake
@@ -376,9 +384,9 @@ xmake
 xmake run zxengine
 ```
 
-最后是CMake，不过不是很推荐使用。因为CMake写起来比较麻烦，我对它的编写并不是很熟，我是在工具生成的基础上再手动调整一下写出来的，所以不保证各种环境和使用方式下都没问题。更推荐xmake，要简单好用一些。
+然后是CMake，不过不是很推荐使用。因为CMake写起来比较麻烦，我对它的编写并不是很熟，我是在工具生成的基础上再手动调整一下写出来的，所以不保证各种环境和使用方式下都没问题。更推荐xmake，要简单好用一些。
 
-Finally, there is CMake, but it is not recommended. Because I'm not very familiar with writing CMake, I use a tool to generate the CMake file, and then manually modified it, so I cannot guarantee that there will be no problem in various environments and usage methods. I recommend xmake, which is simpler and easier to use.
+And there is CMake, but it is not recommended. Because I'm not very familiar with writing CMake, I use a tool to generate the CMake file, and then manually modified it, so I cannot guarantee that there will be no problem in various environments and usage methods. I recommend xmake, which is simpler and easier to use.
 
 ```shell
 cd BuildSolution\CMake
@@ -389,9 +397,25 @@ cmake CMakeLists.txt
 
 For the DirectX 12 version of ZXEngine, it is recommended to compile with Visual Studio. Because if you use Clang or GCC to compile, some Windows features may not be supported (it may be supported but I don't know how), and strange problems may occur. For example, "DPI Awareness", without this, will cause the application resolution to be abnormal and the display to be blurry when Windows system scaling is set.
 
-由于我公司的开发环境以及我自己的电脑都是Windows，所以目前本项目仅支持Windows系统。跨平台的想法我是有的，但是我的精力有限。这只是我用空闲时间开发的项目，还有不少我想做的东西没做，所以短期内还不会做跨平台支持，感谢大家的理解。
+### Mac OS
 
-Since the development environment of the company I work for and my own computer are both Windows, this project currently only supports Windows systems. I have the idea of cross-platform, but my energy is limited. This is just a project I developed in my free time. There are a lot of things I want to do but haven't done yet, so I will not provide cross-platform support in the short term. I appreciate your understanding.
+本项目在Mac OS平台提供的构建工具为xmake，使用方式和在Windows平台一样：
+
+This project is built with xmake on the Mac OS platform. The shell commands are the same as on the Windows platform:
+
+```shell
+cd BuildSolution\xmake
+xmake
+xmake run zxengine
+```
+
+在Mac OS下运行时，如果有引擎编辑器和画面显示错位的问题，多半是由分辨率过低导致的。因为Mac Book的屏幕较小，所以即使屏幕的硬件分辨率很高，但是为了文本和图标不会太小，Mac OS的默认分辨率设置还是可能会比较低。比如我这台13寸的Mac系统默认分辨率为1440x900，显示就会异常。推荐运行时分辨率设置在1920x1080以上。
+
+When running on Mac OS, if there is a display misalignment between the engine editor and the rendering scene, it is most likely caused by a low resolution. Because the Mac Book's screen is small, even if the screen's hardware resolution is high, the default resolution setting of Mac OS may still be relatively low so that text and icons are not too small. For example, the default resolution setting of my 13-inch Mac is 1440x900, and the display will be abnormal. It is recommended to set the resolution to above 1920x1080 when running ZXEngine with editor.
+
+还有一个问题是Mac的芯片可能不支持Vulkan的几何着色器，比如我这台M1芯片的Mac就不支持。我也不知道为什么用OpenGL都支持，但是用Vulkan就不支持。由于本引擎的Shadow Cube Map是使用几何着色器渲染的，所以在不支持几何着色器的设备上运行时，在使用点光源的场景中阴影系统会失效。
+
+Another problem is that the Apple Silicon may not support Vulkan's geometry shader. For example, my M1 Mac does not support it. I don't know why it is supported with OpenGL but not supported with Vulkan. Since the shadow cube map of this engine is rendered using a geometry shader, when running on a device that does not support geometry shader, the shadow system will not work in a scene using point light.
 
 ## 注意事项 (Precautions)
 
