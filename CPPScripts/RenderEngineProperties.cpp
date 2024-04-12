@@ -6,6 +6,7 @@
 #include "Component/ZCamera.h"
 #include "Component/Transform.h"
 #include "Component/MeshRenderer.h"
+#include "ProjectSetting.h"
 
 namespace ZXEngine
 {
@@ -93,7 +94,11 @@ namespace ZXEngine
 
 	void RenderEngineProperties::SetShadowCubeMap(uint32_t id, bool isBuffer)
 	{
-		shadowCubeMap = id;
-		isShadowCubeMapBuffer = isBuffer;
+		// 支持Geometry Shader才会实际渲染ShadowCubeMap
+		if (ProjectSetting::isSupportGeometryShader)
+		{
+			shadowCubeMap = id;
+			isShadowCubeMapBuffer = isBuffer;
+		}
 	}
 }

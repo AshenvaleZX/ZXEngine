@@ -4,11 +4,24 @@
 
 namespace ZXEngine
 {
+#ifdef __APPLE__
+	const string ProjectSetting::OpenGLVersion = "410";
+	const int ProjectSetting::OpenGLVersionMajor = 4;
+	const int ProjectSetting::OpenGLVersionMinor = 1;
+#else
+	const string ProjectSetting::OpenGLVersion = "460";
+	const int ProjectSetting::OpenGLVersionMajor = 4;
+	const int ProjectSetting::OpenGLVersionMinor = 6;
+#endif
+
+	bool ProjectSetting::isSupportRayTracing = true;
+	bool ProjectSetting::isSupportGeometryShader = true;
+	RenderPipelineType ProjectSetting::renderPipelineType;
+
 	unsigned int ProjectSetting::srcWidth;
 	unsigned int ProjectSetting::srcHeight;
 	string ProjectSetting::defaultScene;
 	string ProjectSetting::projectPath;
-	RenderPipelineType ProjectSetting::renderPipelineType;
 	bool ProjectSetting::enableDynamicBatch;
 	bool ProjectSetting::preserveIntermediateShader;
 	bool ProjectSetting::enableGraphicsDebug;

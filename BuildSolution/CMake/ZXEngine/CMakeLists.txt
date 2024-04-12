@@ -17,15 +17,31 @@ set(Animation
 source_group("Animation" FILES ${Animation})
 
 set(Audio
-    "../../../CPPScripts/Audio/AudioClip.cpp"
     "../../../CPPScripts/Audio/AudioClip.h"
     "../../../CPPScripts/Audio/AudioEngine.cpp"
     "../../../CPPScripts/Audio/AudioEngine.h"
-    "../../../CPPScripts/Audio/AudioStream.cpp"
     "../../../CPPScripts/Audio/AudioStream.h"
     "../../../CPPScripts/Audio/ZAudio.h"
 )
 source_group("Audio" FILES ${Audio})
+
+set(Audio__DefaultImpl
+    "../../../CPPScripts/Audio/DefaultImpl/AudioClip_Default.h"
+    "../../../CPPScripts/Audio/DefaultImpl/AudioEngine_Default.cpp"
+    "../../../CPPScripts/Audio/DefaultImpl/AudioEngine_Default.h"
+    "../../../CPPScripts/Audio/DefaultImpl/AudioStream_Default.h"
+)
+source_group("Audio\\DefaultImpl" FILES ${Audio__DefaultImpl})
+
+set(Audio__irrKlangImpl
+    "../../../CPPScripts/Audio/irrKlangImpl/AudioClip_irrKlang.cpp"
+    "../../../CPPScripts/Audio/irrKlangImpl/AudioClip_irrKlang.h"
+    "../../../CPPScripts/Audio/irrKlangImpl/AudioEngine_irrKlang.cpp"
+    "../../../CPPScripts/Audio/irrKlangImpl/AudioEngine_irrKlang.h"
+    "../../../CPPScripts/Audio/irrKlangImpl/AudioStream_irrKlang.cpp"
+    "../../../CPPScripts/Audio/irrKlangImpl/AudioStream_irrKlang.h"
+)
+source_group("Audio\\irrKlangImpl" FILES ${Audio__irrKlangImpl})
 
 set(Component
     "../../../CPPScripts/Component/Animator.cpp"
@@ -588,7 +604,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../../Vendor/Include
 )
 target_link_directories(${PROJECT_NAME} PRIVATE 
-    ${PROJECT_SOURCE_DIR}/../../../Vendor/Libs
+    ${PROJECT_SOURCE_DIR}/../../../Vendor/Library/Windows/Static
 )
 
 ################################################################################
@@ -599,16 +615,16 @@ if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
         TARGET ${PROJECT_NAME}
         POST_BUILD
         COMMANDS
-        COMMAND   $<CONFIG:Debug> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\DyLibs\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
-        COMMAND $<CONFIG:Release> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\DyLibs\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
+        COMMAND   $<CONFIG:Debug> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\Library\\Windows\\Dynamic\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
+        COMMAND $<CONFIG:Release> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\Library\\Windows\\Dynamic\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x86")
     add_custom_command_if(
         TARGET ${PROJECT_NAME}
         POST_BUILD
         COMMANDS
-        COMMAND   $<CONFIG:Debug> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\DyLibs\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
-        COMMAND $<CONFIG:Release> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\DyLibs\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
+        COMMAND   $<CONFIG:Debug> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\Library\\Windows\\Dynamic\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
+        COMMAND $<CONFIG:Release> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\Library\\Windows\\Dynamic\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
     )
 endif()
 

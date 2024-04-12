@@ -70,6 +70,12 @@
     <Filter Include="PhysZ\Joint">
       <UniqueIdentifier>{8faf5e11-43e5-40c7-98e5-23705826ebfe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Audio\irrKlangImpl">
+      <UniqueIdentifier>{dc703f24-3d94-4bc6-9815-735e02f4f297}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Audio\DefaultImpl">
+      <UniqueIdentifier>{08d41ccb-41e2-421d-b805-60061b6c8ec6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\CPPScripts\GameObject.cpp">
@@ -546,12 +552,6 @@
     <ClCompile Include="..\..\..\CPPScripts\Audio\AudioEngine.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\CPPScripts\Audio\AudioClip.cpp">
-      <Filter>Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\CPPScripts\Audio\AudioStream.cpp">
-      <Filter>Audio</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\CPPScripts\Component\AudioSource.cpp">
       <Filter>Component</Filter>
     </ClCompile>
@@ -575,6 +575,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\CPPScripts\RenderPassDeferredRendering.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\Audio\irrKlangImpl\AudioClip_irrKlang.cpp">
+      <Filter>Audio\irrKlangImpl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\Audio\irrKlangImpl\AudioEngine_irrKlang.cpp">
+      <Filter>Audio\irrKlangImpl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\Audio\irrKlangImpl\AudioStream_irrKlang.cpp">
+      <Filter>Audio\irrKlangImpl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\Audio\DefaultImpl\AudioEngine_Default.cpp">
+      <Filter>Audio\DefaultImpl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1129,6 +1141,24 @@
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\RenderPassDeferredRendering.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Audio\irrKlangImpl\AudioClip_irrKlang.h">
+      <Filter>Audio\irrKlangImpl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Audio\irrKlangImpl\AudioEngine_irrKlang.h">
+      <Filter>Audio\irrKlangImpl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Audio\irrKlangImpl\AudioStream_irrKlang.h">
+      <Filter>Audio\irrKlangImpl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Audio\DefaultImpl\AudioStream_Default.h">
+      <Filter>Audio\DefaultImpl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Audio\DefaultImpl\AudioEngine_Default.h">
+      <Filter>Audio\DefaultImpl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Audio\DefaultImpl\AudioClip_Default.h">
+      <Filter>Audio\DefaultImpl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,6 +6,7 @@
 #include "EditorConsolePanel.h"
 #include "EditorAssetPreviewer.h"
 #include "EditorDialogBoxManager.h"
+#include "../ProjectSetting.h"
 #include "../Window/WindowManager.h"
 #include "../External/ImGui/imgui_impl_glfw.h"
 #include "../External/ImGui/imgui_impl_opengl3.h"
@@ -18,7 +19,8 @@ namespace ZXEngine
 		ImGui::CreateContext();
 		ImGui::StyleColorsLight();
 
-		const char* glsl_version = "#version 460";
+		string version_str = "#version " + ProjectSetting::OpenGLVersion;
+		const char* glsl_version = version_str.c_str();
 		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), true);
 		ImGui_ImplOpenGL3_Init(glsl_version);
 	}

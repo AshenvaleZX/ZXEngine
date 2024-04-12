@@ -103,7 +103,11 @@ namespace ZXEngine
 				case AssetType::Model:
 				case AssetType::Script:
 				case AssetType::Audio:
+#ifdef _WIN64
 					system(("start " + asset->path).c_str());
+#elif __APPLE__
+					system(("open " + asset->path).c_str());
+#endif
 					break;
 				default:
 					break;

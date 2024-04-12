@@ -12,6 +12,7 @@
 #include "Material.h"
 #include "MaterialData.h"
 #include "RenderEngineProperties.h"
+#include "ProjectSetting.h"
 
 namespace ZXEngine
 {
@@ -24,8 +25,13 @@ namespace ZXEngine
 #endif
 		shadowMapShader = new Shader(Resources::GetAssetFullPath("Shaders/DirectionalShadowDepth.zxshader", true), FrameBufferType::ShadowMap);
 		animShadowMapShader = new Shader(Resources::GetAssetFullPath("Shaders/DirectionalShadowDepthAnim.zxshader", true), FrameBufferType::ShadowMap);
-		shadowCubeMapShader = new Shader(Resources::GetAssetFullPath("Shaders/PointShadowDepth.zxshader", true), FrameBufferType::ShadowCubeMap);
-		animShadowCubeMapShader = new Shader(Resources::GetAssetFullPath("Shaders/PointShadowDepthAnim.zxshader", true), FrameBufferType::ShadowCubeMap);
+
+		if (ProjectSetting::isSupportGeometryShader)
+		{
+			shadowCubeMapShader = new Shader(Resources::GetAssetFullPath("Shaders/PointShadowDepth.zxshader", true), FrameBufferType::ShadowCubeMap);
+			animShadowCubeMapShader = new Shader(Resources::GetAssetFullPath("Shaders/PointShadowDepthAnim.zxshader", true), FrameBufferType::ShadowCubeMap);
+		}
+
 		renderState = new RenderStateSetting();
 		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ShadowGeneration);
 
@@ -100,6 +106,9 @@ namespace ZXEngine
 
 	void RenderPassShadowGeneration::RenderShadowCubeMap(Light* light)
 	{
+		if (!ProjectSetting::isSupportGeometryShader)
+			return;
+
 		auto renderAPI = RenderAPI::GetInstance();
 		// ÇÐ»»µ½shadow FBO
 		FBOManager::GetInstance()->SwitchFBO("ShadowCubeMap");

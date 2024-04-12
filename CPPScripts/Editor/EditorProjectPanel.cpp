@@ -46,7 +46,7 @@ namespace ZXEngine
 			ImVec4 textColor = style.Colors[ImGuiCol_Text];
 			ImVec4 selectTextColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 			// 当前路径节点，如果当前节点不是文件夹，就用当前节点的父节点
-			auto curPathNode = curNode->extension == "" ? curNode : curNode->parent;
+			auto curPathNode = curNode->type == AssetType::Folder ? curNode : curNode->parent;
 
 			// 绘制路径条
 			ImGui::PushStyleColor(ImGuiCol_Button, style.Colors[ImGuiCol_WindowBg]);
@@ -108,7 +108,7 @@ namespace ZXEngine
 				{
 					selected = i;
 					SetCurNode(node);
-					if (node->extension == "")
+					if (node->type == AssetType::Folder)
 					{
 						// 切换路径的时候刷新选中状态
 						selected = -1;
@@ -166,6 +166,13 @@ namespace ZXEngine
 	{
 		for (const auto& entry : filesystem::directory_iterator(node->path))
 		{
+#ifdef __APPLE__
+			string filename = entry.path().filename().string();
+			// 跳过MacOS的.DS_Store(烦人的文件，不知道苹果搞这玩意干嘛)，filesystem处理这个文件会异常
+			if (filename.compare(".DS_Store") == 0)
+				continue;
+#endif
+
 			string extension = entry.path().filename().extension().string();
 			// 如果是忽略的文件类型，就跳过
 			if (ignoreExtensions.find(extension) != ignoreExtensions.end())
@@ -174,12 +181,19 @@ namespace ZXEngine
 			EditorAssetNode* child = new EditorAssetNode();
 			child->parent = node;
 			child->path = entry.path().string();
-			child->name = entry.path().filename().string();
+			child->name = entry.path().stem().string();
 			child->extension = extension;
-			child->size = static_cast<uint32_t>(entry.file_size());
-			child->type = GetAssetType(child->extension);
-			// 把文件扩展(后缀名)截取掉
-			child->name = child->name.substr(0, child->name.length() - child->extension.length());
+
+			if (entry.is_directory())
+			{
+				child->size = 0;
+				child->type = AssetType::Folder;
+			}
+			else
+			{
+				child->size = static_cast<uint32_t>(entry.file_size());
+				child->type = GetAssetType(child->extension);
+			}
 			node->children.push_back(child);
 
 			// 排序
@@ -187,16 +201,16 @@ namespace ZXEngine
 				[](EditorAssetNode* a, EditorAssetNode* b) 
 				{ 
 					// 文件夹排在前面
-					if (a->extension == "" && b->extension != "")
+					if (a->type == AssetType::Folder && b->type != AssetType::Folder)
 						return true;
-					if (a->extension != "" && b->extension == "")
+					if (a->type != AssetType::Folder && b->type == AssetType::Folder)
 						return false;
 					// 按名字排序
 					return a->name < b->name;
 				}
 			);
 
-			if (child->extension == "")
+			if (child->type == AssetType::Folder)
 				GetChildren(child);
 		}
 	}

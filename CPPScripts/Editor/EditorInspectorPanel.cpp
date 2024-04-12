@@ -401,8 +401,11 @@ namespace ZXEngine
 		ImGui::SameLine();
 		if (ImGui::Button(component->luaName.c_str()))
 		{
-			string path = Utils::ConvertPathToWindowsFormat(component->luaFullPath);
-			system(("start " + path).c_str());
+#ifdef _WIN64
+			system(("start " + component->luaFullPath).c_str());
+#elif __APPLE__
+			system(("open " + component->luaFullPath).c_str());
+#endif
 		}
 	}
 

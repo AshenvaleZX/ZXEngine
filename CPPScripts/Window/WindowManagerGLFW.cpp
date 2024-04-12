@@ -16,21 +16,30 @@ namespace ZXEngine
 		string windowName = "ZXEngine";
 
 #ifdef ZX_API_OPENGL
-		windowName = "ZXEngine <OpenGL 4.6>";
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+		windowName = "ZXEngine <OpenGL " + 
+			to_string(ProjectSetting::OpenGLVersionMajor) +"." + 
+			to_string(ProjectSetting::OpenGLVersionMinor) + ">";
+
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, ProjectSetting::OpenGLVersionMajor);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, ProjectSetting::OpenGLVersionMinor);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #endif
 
 #ifdef ZX_API_VULKAN
+#ifdef __APPLE__
+		windowName = "ZXEngine <Vulkan 1.2>";
+#else
 		windowName = "ZXEngine <Vulkan 1.3>";
+#endif
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 #endif
 
 		mWindow = glfwCreateWindow(ProjectSetting::srcWidth, ProjectSetting::srcHeight, windowName.c_str(), NULL, NULL);
 		if (mWindow == NULL)
 		{
-			Debug::LogError("Failed to create GLFW window");
+			const char* description;
+			int code = glfwGetError(&description);
+			Debug::LogError("Failed to create GLFW window, error code: %s\nDescription: %s", code, description);
 			glfwTerminate();
 			return;
 		}

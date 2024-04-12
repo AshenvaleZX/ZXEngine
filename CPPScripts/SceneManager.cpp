@@ -41,16 +41,25 @@ namespace ZXEngine
 	{
 		auto sceneStruct = Resources::LoadScene(path);
 
-#if defined(ZX_API_OPENGL)
 		if (sceneStruct->renderPipelineType == RenderPipelineType::RayTracing)
 		{
+#ifdef ZX_API_OPENGL
 #ifdef ZX_EDITOR
-			EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "OpenGL do not support ray tracing scene.");
+			EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "OpenGL do not support ray tracing.");
 #endif
 			delete sceneStruct;
 			return;
-		}
+#else
+			if (!ProjectSetting::isSupportRayTracing)
+			{
+#ifdef ZX_EDITOR
+				EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "Current GPU do not support ray tracing.");
 #endif
+				delete sceneStruct;
+				return;
+			}
+#endif
+		}
 
 		// 目前多场景同时管理还有问题，主要体现在GameLogic和Light等组件上，会记录到一个全局列表里
 		// 然后在遍历这种组件的时候，会遍历到不属于当前场景的对象，比如调用到不属于当前场景的Lua脚本

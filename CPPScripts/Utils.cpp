@@ -201,25 +201,25 @@ namespace ZXEngine
 
         std::string unit;
         uint64_t stepSize;
-        if (dataSize < 1024Ui64 * 1024Ui64)
+        if (dataSize < 1024ULL * 1024ULL)
         {
             unit = "KB";
-            stepSize = 1024Ui64;
+            stepSize = 1024ULL;
         }
-        else if (dataSize < 1024Ui64 * 1024Ui64 * 1024Ui64)
+        else if (dataSize < 1024ULL * 1024ULL * 1024ULL)
         {
 			unit = "MB";
-			stepSize = 1024Ui64 * 1024Ui64;
+			stepSize = 1024ULL * 1024ULL;
         }
-        else if (dataSize < 1024Ui64 * 1024Ui64 * 1024Ui64 * 1024Ui64)
+        else if (dataSize < 1024ULL * 1024ULL * 1024ULL * 1024ULL)
         {
             unit = "GB";
-            stepSize = 1024Ui64 * 1024Ui64 * 1024Ui64;
+            stepSize = 1024ULL * 1024ULL * 1024ULL;
         }
         else
         {
 			unit = "TB";
-			stepSize = 1024Ui64 * 1024Ui64 * 1024Ui64 * 1024Ui64;
+			stepSize = 1024ULL * 1024ULL * 1024ULL * 1024ULL;
 		}
 
         double percentage = static_cast<double>(dataSize % stepSize) / stepSize * 100;

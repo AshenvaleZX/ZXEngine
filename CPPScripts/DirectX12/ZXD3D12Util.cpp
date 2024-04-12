@@ -12,7 +12,7 @@ namespace ZXEngine
 			string extension = entry.path().filename().extension().string();
 			if (extension == ".zxshader")
 				CompileShader(entry.path().string());
-			else if (extension == "")
+			else if (entry.is_directory())
 				CompileAllShader(entry.path().string());
 		}
 	}
@@ -50,7 +50,7 @@ namespace ZXEngine
 			string extension = entry.path().filename().extension().string();
 			if (extension == ".zxshader")
 				TranslateShaderToHLSL(entry.path().string());
-			else if (extension == "")
+			else if (entry.is_directory())
 				TranslateAllShaderToHLSL(entry.path().string());
 		}
 	}
