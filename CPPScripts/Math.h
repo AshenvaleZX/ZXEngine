@@ -111,6 +111,9 @@ namespace ZXEngine
 		static constexpr T AlignUpPOT(T num, T alignment);
 		template<class T>
 		static constexpr T AlignDownPOT(T num, T alignment);
+
+	private:
+		static Matrix4 InverseTest(const Matrix4& mat);
 	};
 
 	float Math::Deg2Rad(float degree)

@@ -417,6 +417,62 @@ namespace ZXEngine
 			inv30 * oneOverDeterminant, inv31 * oneOverDeterminant, inv32 * oneOverDeterminant, inv33 * oneOverDeterminant);
 	}
 
+	Matrix4 Math::InverseTest(const Matrix4& mat)
+	{
+		// 参考GLM库做的伴随矩阵法优化，但是实测好像是负优化
+		float c00 = mat.m22 * mat.m33 - mat.m23 * mat.m32;
+		float c02 = mat.m21 * mat.m33 - mat.m23 * mat.m31;
+		float c03 = mat.m21 * mat.m32 - mat.m22 * mat.m31;
+
+		float c04 = mat.m12 * mat.m33 - mat.m13 * mat.m32;
+		float c06 = mat.m11 * mat.m33 - mat.m13 * mat.m31;
+		float c07 = mat.m11 * mat.m32 - mat.m12 * mat.m31;
+
+		float c08 = mat.m12 * mat.m23 - mat.m13 * mat.m22;
+		float c10 = mat.m11 * mat.m23 - mat.m13 * mat.m21;
+		float c11 = mat.m11 * mat.m22 - mat.m12 * mat.m21;
+
+		float c12 = mat.m02 * mat.m33 - mat.m03 * mat.m32;
+		float c14 = mat.m01 * mat.m33 - mat.m03 * mat.m31;
+		float c15 = mat.m01 * mat.m32 - mat.m02 * mat.m31;
+
+		float c16 = mat.m02 * mat.m23 - mat.m03 * mat.m22;
+		float c18 = mat.m01 * mat.m23 - mat.m03 * mat.m21;
+		float c19 = mat.m01 * mat.m22 - mat.m02 * mat.m21;
+
+		float c20 = mat.m02 * mat.m13 - mat.m03 * mat.m12;
+		float c22 = mat.m01 * mat.m13 - mat.m03 * mat.m11;
+		float c23 = mat.m01 * mat.m12 - mat.m02 * mat.m11;
+
+		Vector4 fac0 = Vector4(c00, c00, c02, c03);
+		Vector4 fac1 = Vector4(c04, c04, c06, c07);
+		Vector4 fac2 = Vector4(c08, c08, c10, c11);
+		Vector4 fac3 = Vector4(c12, c12, c14, c15);
+		Vector4 fac4 = Vector4(c16, c16, c18, c19);
+		Vector4 fac5 = Vector4(c20, c20, c22, c23);
+
+		Vector4 vec0 = Vector4(mat.m01, mat.m00, mat.m00, mat.m00);
+		Vector4 vec1 = Vector4(mat.m11, mat.m10, mat.m10, mat.m10);
+		Vector4 vec2 = Vector4(mat.m21, mat.m20, mat.m20, mat.m20);
+		Vector4 vec3 = Vector4(mat.m31, mat.m30, mat.m30, mat.m30);
+
+		Vector4 inv0 = vec1 * fac0 - vec2 * fac1 + vec3 * fac2;
+		Vector4 inv1 = vec0 * fac0 - vec2 * fac3 + vec3 * fac4;
+		Vector4 inv2 = vec0 * fac1 - vec1 * fac3 + vec3 * fac5;
+		Vector4 inv3 = vec0 * fac2 - vec1 * fac4 + vec2 * fac5;
+
+		Matrix4 inv = Matrix4(
+			 inv0.x, -inv1.x,  inv2.x, -inv3.x,
+			-inv0.y,  inv1.y, -inv2.y,  inv3.y,
+			 inv0.z, -inv1.z,  inv2.z, -inv3.z,
+			-inv0.w,  inv1.w, -inv2.w,  inv3.w
+		);
+
+		float oneOverDeterminant = 1.0f / (mat.m00 * inv.m00 + mat.m01 * inv.m10 + mat.m02 * inv.m20 + mat.m03 * inv.m30);
+
+		return inv * oneOverDeterminant;
+	}
+
 	Matrix3 Math::Transpose(const Matrix3& mat)
 	{
 		return Matrix3(
