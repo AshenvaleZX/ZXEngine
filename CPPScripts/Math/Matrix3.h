@@ -13,6 +13,7 @@ namespace ZXEngine
 		Matrix3(float n);
 		Matrix3(const Matrix3& mat3);
 		Matrix3(const Matrix4& mat4);
+		Matrix3(const Vector3& v1, const Vector3& v2, const Vector3& v3);
 		Matrix3(
 			float m00, float m01, float m02,
 			float m10, float m11, float m12,

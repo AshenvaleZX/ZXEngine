@@ -38,6 +38,14 @@ namespace ZXEngine
 		m30 = mat4.m30; m31 = mat4.m31; m32 = mat4.m32; m33 = mat4.m33;
 	}
 
+	Matrix4::Matrix4(const Vector4& v0, const Vector4& v1, const Vector4& v2, const Vector4& v3)
+	{
+		m00 = v0.x; m01 = v0.y; m02 = v0.z; m03 = v0.w;
+		m10 = v1.x; m11 = v1.y; m12 = v1.z; m13 = v1.w;
+		m20 = v2.x; m21 = v2.y; m22 = v2.z; m23 = v2.w;
+		m30 = v3.x; m31 = v3.y; m32 = v3.z; m33 = v3.w;
+	}
+
 	Matrix4::Matrix4(
 		float m00, float m01, float m02, float m03,
 		float m10, float m11, float m12, float m13,

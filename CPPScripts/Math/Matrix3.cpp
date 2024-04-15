@@ -34,6 +34,13 @@ namespace ZXEngine
 		m20 = mat4.m20; m21 = mat4.m21; m22 = mat4.m22;
 	}
 
+	Matrix3::Matrix3(const Vector3& v1, const Vector3& v2, const Vector3& v3)
+	{
+		m00 = v1.x; m01 = v1.y; m02 = v1.z;
+		m10 = v2.x; m11 = v2.y; m12 = v2.z;
+		m20 = v3.x; m21 = v3.y; m22 = v3.z;
+	}
+
 	Matrix3::Matrix3(
 		float m00, float m01, float m02,
 		float m10, float m11, float m12,
