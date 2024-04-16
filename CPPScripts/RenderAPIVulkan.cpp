@@ -295,24 +295,50 @@ namespace ZXEngine
                 VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT
             );
 
-            VkImageCopy imageCopy = {};
-            imageCopy.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-            imageCopy.srcSubresource.mipLevel = 0;
-            imageCopy.srcSubresource.baseArrayLayer = 0;
-            imageCopy.srcSubresource.layerCount = 1;
-            imageCopy.srcOffset = { 0,0,0 };
-            imageCopy.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-            imageCopy.dstSubresource.mipLevel = 0;
-            imageCopy.dstSubresource.baseArrayLayer = 0;
-            imageCopy.dstSubresource.layerCount = 1;
-            imageCopy.dstOffset = { 0,0,0 };
-            imageCopy.extent = { sFBO->width, sFBO->height, 1 };
+            if (sFBO->width == dFBO->width && sFBO->height == dFBO->height)
+            {
+                VkImageCopy imageCopy = {};
+                imageCopy.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                imageCopy.srcSubresource.mipLevel = 0;
+                imageCopy.srcSubresource.baseArrayLayer = 0;
+                imageCopy.srcSubresource.layerCount = 1;
+                imageCopy.srcOffset = { 0, 0, 0 };
+                imageCopy.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                imageCopy.dstSubresource.mipLevel = 0;
+                imageCopy.dstSubresource.baseArrayLayer = 0;
+                imageCopy.dstSubresource.layerCount = 1;
+                imageCopy.dstOffset = { 0, 0, 0 };
+                imageCopy.extent = { sFBO->width, sFBO->height, 1 };
 
-            vkCmdCopyImage(commandBuffer, 
-                sColorTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                dColorTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                1, &imageCopy
-            );
+                vkCmdCopyImage(commandBuffer,
+                    sColorTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                    dColorTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                    1, &imageCopy
+                );
+            }
+            else
+            {
+				VkImageBlit imageBlit = {};
+				imageBlit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+				imageBlit.srcSubresource.mipLevel = 0;
+				imageBlit.srcSubresource.baseArrayLayer = 0;
+				imageBlit.srcSubresource.layerCount = 1;
+				imageBlit.srcOffsets[0] = { 0, 0, 0 };
+				imageBlit.srcOffsets[1] = { static_cast<int32_t>(sFBO->width), static_cast<int32_t>(sFBO->height), 1 };
+				imageBlit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+				imageBlit.dstSubresource.mipLevel = 0;
+				imageBlit.dstSubresource.baseArrayLayer = 0;
+				imageBlit.dstSubresource.layerCount = 1;
+				imageBlit.dstOffsets[0] = { 0, 0, 0 };
+				imageBlit.dstOffsets[1] = { static_cast<int32_t>(dFBO->width), static_cast<int32_t>(dFBO->height), 1 };
+
+				vkCmdBlitImage(commandBuffer,
+                    sColorTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                    dColorTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                    1, &imageBlit,
+                    VK_FILTER_LINEAR
+                );
+            }
 
             TransitionImageLayout(commandBuffer, sColorTexture->image.image,
                 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
@@ -359,24 +385,50 @@ namespace ZXEngine
                 VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT
             );
 
-            VkImageCopy imageCopy = {};
-            imageCopy.srcSubresource.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-            imageCopy.srcSubresource.mipLevel = 0;
-            imageCopy.srcSubresource.baseArrayLayer = 0;
-            imageCopy.srcSubresource.layerCount = 1;
-            imageCopy.srcOffset = { 0,0,0 };
-            imageCopy.dstSubresource.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-            imageCopy.dstSubresource.mipLevel = 0;
-            imageCopy.dstSubresource.baseArrayLayer = 0;
-            imageCopy.dstSubresource.layerCount = 1;
-            imageCopy.dstOffset = { 0,0,0 };
-            imageCopy.extent = { sFBO->width, sFBO->height, 1 };
+            if (sFBO->width == dFBO->width && sFBO->height == dFBO->height)
+            {
+                VkImageCopy imageCopy = {};
+                imageCopy.srcSubresource.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+                imageCopy.srcSubresource.mipLevel = 0;
+                imageCopy.srcSubresource.baseArrayLayer = 0;
+                imageCopy.srcSubresource.layerCount = 1;
+                imageCopy.srcOffset = { 0, 0, 0 };
+                imageCopy.dstSubresource.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+                imageCopy.dstSubresource.mipLevel = 0;
+                imageCopy.dstSubresource.baseArrayLayer = 0;
+                imageCopy.dstSubresource.layerCount = 1;
+                imageCopy.dstOffset = { 0, 0, 0 };
+                imageCopy.extent = { sFBO->width, sFBO->height, 1 };
 
-            vkCmdCopyImage(commandBuffer,
-                sDepthTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                dDepthTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                1, &imageCopy
-            );
+                vkCmdCopyImage(commandBuffer,
+                    sDepthTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                    dDepthTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                    1, &imageCopy
+                );
+            }
+			else
+			{
+				VkImageBlit imageBlit = {};
+				imageBlit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+				imageBlit.srcSubresource.mipLevel = 0;
+				imageBlit.srcSubresource.baseArrayLayer = 0;
+				imageBlit.srcSubresource.layerCount = 1;
+				imageBlit.srcOffsets[0] = { 0, 0, 0 };
+				imageBlit.srcOffsets[1] = { static_cast<int32_t>(sFBO->width), static_cast<int32_t>(sFBO->height), 1 };
+				imageBlit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+				imageBlit.dstSubresource.mipLevel = 0;
+				imageBlit.dstSubresource.baseArrayLayer = 0;
+				imageBlit.dstSubresource.layerCount = 1;
+				imageBlit.dstOffsets[0] = { 0, 0, 0 };
+				imageBlit.dstOffsets[1] = { static_cast<int32_t>(dFBO->width), static_cast<int32_t>(dFBO->height), 1 };
+
+				vkCmdBlitImage(commandBuffer,
+                    sDepthTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                    dDepthTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                    1, &imageBlit,
+                    VK_FILTER_NEAREST
+                );
+			}
 
             TransitionImageLayout(commandBuffer, sDepthTexture->image.image,
                 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
