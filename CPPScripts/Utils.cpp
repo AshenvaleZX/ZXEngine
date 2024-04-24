@@ -1,4 +1,12 @@
 #include "Utils.h"
+#include <filesystem>
+
+#ifdef _WIN64
+#include <Windows.h>
+#elif __APPLE__
+#include <mach-o/dyld.h>
+#include <limits.h>
+#endif
 
 namespace ZXEngine
 {
@@ -231,5 +239,26 @@ namespace ZXEngine
             return std::to_string(dataSize / stepSize) + ".0" + std::to_string(percentage_u32) + unit;
         else
             return std::to_string(dataSize / stepSize) + "." + std::to_string(percentage_u32) + unit;
+	}
+
+    std::string Utils::GetCurrentExecutableFilePath()
+    {
+		char buffer[MAX_PATH];
+
+#ifdef _WIN64
+        GetModuleFileNameA(NULL, buffer, MAX_PATH);
+#elif __APPLE__
+        uint32_t size = sizeof(buffer);
+        if (_NSGetExecutablePath(buffer, &size) != 0)
+            return "";
+#else
+            return "";
+#endif
+
+        std::filesystem::path path(buffer);
+        if (std::filesystem::is_directory(path))
+			return path.string();
+		else
+			return path.parent_path().string();
 	}
 }

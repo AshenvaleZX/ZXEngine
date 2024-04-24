@@ -39,6 +39,8 @@ namespace ZXEngine
 		static std::string MillisecondsToString(uint32_t milliseconds);
 		// 数据大小(Byte)转换为字符串
 		static std::string DataSizeToString(uint64_t size);
+		// 获取当前可执行文件(ZXEngine)路径
+		static std::string GetCurrentExecutableFilePath();
 	};
 
 	std::string Utils::StringToLower(const std::string& str)
