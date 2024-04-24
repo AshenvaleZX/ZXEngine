@@ -90,11 +90,6 @@ namespace ZXEngine
 
 	class Resources
 	{
-	public:
-		// 内置资产路径
-		static const string mBuiltInAssetsPath;
-		
-
 		// -------- 同步接口 --------
 	public:
 		static void SetAssetsPath(const string& path);

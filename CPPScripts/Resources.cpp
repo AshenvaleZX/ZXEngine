@@ -5,7 +5,6 @@
 namespace ZXEngine
 {
 	string Resources::mAssetsPath;
-	const string Resources::mBuiltInAssetsPath = "../../../BuiltInAssets/";
 	vector<PrefabLoadHandle> Resources::mPrefabLoadHandles;
 	vector<PrefabLoadHandle> Resources::mDiscardedPrefabLoadHandles;
 	vector<MaterialLoadHandle> Resources::mMaterialLoadHandles;
@@ -69,7 +68,7 @@ namespace ZXEngine
 	string Resources::GetAssetFullPath(const string& path, bool isBuiltIn)
 	{
 		if (isBuiltIn)
-			return mBuiltInAssetsPath + path;
+			return ProjectSetting::mBuiltInAssetsPath + path;
 		else
 			return mAssetsPath + path;
 	}

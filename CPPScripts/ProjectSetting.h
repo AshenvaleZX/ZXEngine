@@ -14,6 +14,8 @@ namespace ZXEngine
 		static bool isSupportGeometryShader;
 		static RenderPipelineType renderPipelineType;
 
+		static string mBuiltInAssetsPath;
+
 		// ProjectSetting.zxprjcfg
 		static unsigned int srcWidth;
 		static unsigned int srcHeight;

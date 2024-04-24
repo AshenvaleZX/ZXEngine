@@ -18,6 +18,8 @@ namespace ZXEngine
 	bool ProjectSetting::isSupportGeometryShader = true;
 	RenderPipelineType ProjectSetting::renderPipelineType;
 
+	string ProjectSetting::mBuiltInAssetsPath;
+
 	unsigned int ProjectSetting::srcWidth;
 	unsigned int ProjectSetting::srcHeight;
 	string ProjectSetting::defaultScene;
@@ -44,6 +46,12 @@ namespace ZXEngine
 	{
 		projectPath = path;
 		Resources::SetAssetsPath(path + "/Assets/");
+
+		string curExePath = Utils::GetCurrentExecutableFilePath();
+		if (curExePath.empty())
+			mBuiltInAssetsPath = "../../../BuiltInAssets/";
+		else
+			mBuiltInAssetsPath = curExePath + "/../../../BuiltInAssets/";
 
 		json data = Resources::LoadJson(path + "/ProjectSetting.zxprjcfg");
 

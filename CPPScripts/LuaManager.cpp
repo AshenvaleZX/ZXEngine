@@ -1,5 +1,6 @@
 #include "LuaManager.h"
 #include "Resources.h"
+#include "ProjectSetting.h"
 #include "LuaWrap/LuaWrap.h"
 
 namespace ZXEngine
@@ -95,7 +96,7 @@ namespace ZXEngine
 		lua_getfield(L, -1, "path");         /* 获取package.path */
 		const char* cur_path = lua_tostring(L, -1);
 		string new_path(cur_path);
-		new_path += ";" + Resources::mBuiltInAssetsPath + "/Scripts/?.lua";
+		new_path += ";" + ProjectSetting::mBuiltInAssetsPath + "/Scripts/?.lua";
 		lua_pop(L, 1);                       /* 弹出原来的package.path */
 		lua_pushstring(L, new_path.c_str()); /* 压入新的package.path */
 		lua_setfield(L, -2, "path");         /* 对package.path赋值 */
