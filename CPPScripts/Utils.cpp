@@ -243,11 +243,11 @@ namespace ZXEngine
 
     std::string Utils::GetCurrentExecutableFilePath()
     {
-		char buffer[MAX_PATH];
-
 #ifdef _WIN64
+        char buffer[MAX_PATH];
         GetModuleFileNameA(NULL, buffer, MAX_PATH);
 #elif __APPLE__
+        char buffer[PATH_MAX];
         uint32_t size = sizeof(buffer);
         if (_NSGetExecutablePath(buffer, &size) != 0)
             return "";
