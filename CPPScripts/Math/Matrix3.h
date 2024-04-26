@@ -3,6 +3,8 @@
 
 namespace ZXEngine
 {
+	class Vector3;
+	class Matrix4;
 	class Matrix3
 	{
 		friend class Math;
