@@ -8,7 +8,7 @@
 
 这是我自己开发的游戏引擎项目，创建这个项目的主要目的是为了我自己学习和实践游戏引擎技术，不过也希望这个项目能对你有所帮助。
 
-This is a game engine project developed by myself. The main purpose of creating this project is to learn and practice game engine technology for myself, but it would be better if this project can help you.
+This is a game engine project. The main purpose that I created this project is to learn and practice game engine technology. And I hope this project will be helpful to you.
 
 引擎基本外观如下图，具体内容几句话写不完，请看图示后面的目录。
 
