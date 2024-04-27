@@ -10,11 +10,16 @@
 #include "Component/ZCamera.h"
 #include "GeometryGenerator.h"
 
+const string ExtractBrightArea = "ExtractBrightArea";
+const string GaussianBlur = "GaussianBlur";
+const string BloomBlend = "BloomBlend";
+const string CopyTexture = "CopyTexture";
+
 namespace ZXEngine
 {
 	RenderPassAfterEffectRendering::RenderPassAfterEffectRendering()
 	{
-		//InitGaussianBlur();
+		// InitGaussianBlur();
 		InitKawaseBlur();
 		InitExtractBrightArea();
 		InitBloomBlend(true);
@@ -60,7 +65,7 @@ namespace ZXEngine
 		}
 	}
 
-	void RenderPassAfterEffectRendering::CreateCommand(string name)
+	void RenderPassAfterEffectRendering::CreateCommand(const string& name)
 	{
 		if (aeCommands.count(name) > 0)
 		{
@@ -82,7 +87,7 @@ namespace ZXEngine
 		}
 	}
 
-	void RenderPassAfterEffectRendering::CreateMaterial(string name, string path, FrameBufferType type, bool isBuiltIn)
+	void RenderPassAfterEffectRendering::CreateMaterial(const string& name, const string& path, FrameBufferType type, bool isBuiltIn)
 	{
 		if (aeMaterials.count(name) > 0)
 		{
@@ -92,7 +97,7 @@ namespace ZXEngine
 		aeMaterials.insert(pair<string, Material*>(name, new Material(new Shader(Resources::GetAssetFullPath(path, isBuiltIn), type))));
 	}
 
-	Material* RenderPassAfterEffectRendering::GetMaterial(string name)
+	Material* RenderPassAfterEffectRendering::GetMaterial(const string& name)
 	{
 		map<string, Material*>::iterator iter = aeMaterials.find(name);
 		if (iter != aeMaterials.end())
@@ -109,7 +114,7 @@ namespace ZXEngine
 			FBOManager::GetInstance()->CreateFBO(ExtractBrightArea, FrameBufferType::Color);
 	}
 
-	string RenderPassAfterEffectRendering::BlitExtractBrightArea(string sourceFBO, bool isFinal)
+	string RenderPassAfterEffectRendering::BlitExtractBrightArea(const string& sourceFBO, bool isFinal)
 	{
 		FBOManager::GetInstance()->SwitchFBO(isFinal ? ScreenBuffer : ExtractBrightArea);
 		auto material = GetMaterial(ExtractBrightArea);
@@ -132,7 +137,7 @@ namespace ZXEngine
 
 	// blurTimes 反复模糊次数，次数越多越模糊，但是这个很影响性能，别开太高
 	// texOffset 采样偏移距离，1代表偏移1像素，越大越模糊，这个不影响性能，但是太大了效果会不正常
-	string RenderPassAfterEffectRendering::BlitGaussianBlur(string sourceFBO, int blurTimes, float texOffset, bool isFinal)
+	string RenderPassAfterEffectRendering::BlitGaussianBlur(const string& sourceFBO, int blurTimes, float texOffset, bool isFinal)
 	{
 		bool isHorizontal = true;
 		string pingpongBuffer[2] = { "GaussianBlurHorizontal", "GaussianBlurVertical" };
@@ -163,7 +168,7 @@ namespace ZXEngine
 		FBOManager::GetInstance()->CreateFBO("KawaseBlur1", FrameBufferType::Color);
 	}
 
-	string RenderPassAfterEffectRendering::BlitKawaseBlur(string sourceFBO, int blurTimes, float texOffset, bool isFinal)
+	string RenderPassAfterEffectRendering::BlitKawaseBlur(const string& sourceFBO, int blurTimes, float texOffset, bool isFinal)
 	{
 		bool isSwitch = true;
 		string pingpongBuffer[2] = { "KawaseBlur0", "KawaseBlur1" };
@@ -194,7 +199,7 @@ namespace ZXEngine
 			FBOManager::GetInstance()->CreateFBO(BloomBlend, FrameBufferType::Color);
 	}
 
-	string RenderPassAfterEffectRendering::BlitBloomBlend(string originFBO, string blurFBO, bool isFinal)
+	string RenderPassAfterEffectRendering::BlitBloomBlend(const string& originFBO, const string& blurFBO, bool isFinal)
 	{
 		FBOManager::GetInstance()->SwitchFBO(isFinal ? ScreenBuffer : BloomBlend);
 		auto material = GetMaterial(BloomBlend);
@@ -212,7 +217,7 @@ namespace ZXEngine
 		CreateMaterial(CopyTexture, "Shaders/RenderTexture.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color, true);
 	}
 
-	string RenderPassAfterEffectRendering::BlitCopy(string targetFBO, string sourceFBO, bool isFinal)
+	string RenderPassAfterEffectRendering::BlitCopy(const string& targetFBO, const string& sourceFBO, bool isFinal)
 	{
 		FBOManager::GetInstance()->SwitchFBO(targetFBO);
 		auto material = GetMaterial(CopyTexture);

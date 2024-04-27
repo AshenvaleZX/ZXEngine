@@ -2,11 +2,6 @@
 #include "RenderPass.h"
 #include "PublicStruct.h"
 
-#define ExtractBrightArea "ExtractBrightArea"
-#define GaussianBlur "GaussianBlur"
-#define BloomBlend "BloomBlend"
-#define CopyTexture "CopyTexture"
-
 namespace ZXEngine
 {
 	class Material;
@@ -27,25 +22,25 @@ namespace ZXEngine
 		map<string, Material*> aeMaterials;
 		RenderStateSetting* renderState;
 
-		void CreateCommand(string name);
+		void CreateCommand(const string& name);
 		uint32_t GetCommand(const string& name);
-		void CreateMaterial(string name, string path, FrameBufferType type, bool isBuiltIn = false);
-		Material* GetMaterial(string name);
+		void CreateMaterial(const string& name, const string& path, FrameBufferType type, bool isBuiltIn = false);
+		Material* GetMaterial(const string& name);
 
 		// 提取画面高亮部分
 		void InitExtractBrightArea(bool isFinal = false);
-		string BlitExtractBrightArea(string sourceFBO, bool isFinal = false);
+		string BlitExtractBrightArea(const string& sourceFBO, bool isFinal = false);
 		// 高斯模糊
 		void InitGaussianBlur(bool isFinal = false);
-		string BlitGaussianBlur(string sourceFBO, int blurTimes, float texOffset, bool isFinal = false);
+		string BlitGaussianBlur(const string& sourceFBO, int blurTimes, float texOffset, bool isFinal = false);
 		// Kawase模糊，性能比高斯好
 		void InitKawaseBlur(bool isFinal = false);
-		string BlitKawaseBlur(string sourceFBO, int blurTimes, float texOffset, bool isFinal = false);
+		string BlitKawaseBlur(const string& sourceFBO, int blurTimes, float texOffset, bool isFinal = false);
 		// Bloom
 		void InitBloomBlend(bool isFinal = false);
-		string BlitBloomBlend(string originFBO, string blurFBO, bool isFinal = false);
+		string BlitBloomBlend(const string& originFBO, const string& blurFBO, bool isFinal = false);
 		// 简单的图像复制
 		void InitCopy(bool isFinal = false);
-		string BlitCopy(string targetFBO, string sourceFBO, bool isFinal = false);
+		string BlitCopy(const string& targetFBO, const string& sourceFBO, bool isFinal = false);
 	};
 }
