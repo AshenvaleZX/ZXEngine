@@ -87,14 +87,14 @@ namespace ZXEngine
 		}
 	}
 
-	void RenderPassAfterEffectRendering::CreateMaterial(const string& name, const string& path, FrameBufferType type, bool isBuiltIn)
+	void RenderPassAfterEffectRendering::CreateMaterial(const string& name, const string& path, FrameBufferType type)
 	{
 		if (aeMaterials.count(name) > 0)
 		{
 			Debug::LogError("Try to add an existing shader");
 			return;
 		}
-		aeMaterials.insert(pair<string, Material*>(name, new Material(new Shader(Resources::GetAssetFullPath(path, isBuiltIn), type))));
+		aeMaterials.insert(pair<string, Material*>(name, new Material(new Shader(Resources::GetAssetFullPath(path, true), type))));
 	}
 
 	Material* RenderPassAfterEffectRendering::GetMaterial(const string& name)
@@ -109,7 +109,7 @@ namespace ZXEngine
 	void RenderPassAfterEffectRendering::InitExtractBrightArea(bool isFinal)
 	{
 		CreateCommand(ExtractBrightArea);
-		CreateMaterial(ExtractBrightArea, "Shaders/ExtractBrightArea.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
+		CreateMaterial(ExtractBrightArea, "Shaders/PostProcess/ExtractBrightArea.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
 		if (!isFinal)
 			FBOManager::GetInstance()->CreateFBO(ExtractBrightArea, FrameBufferType::Color);
 	}
@@ -128,7 +128,7 @@ namespace ZXEngine
 
 	void RenderPassAfterEffectRendering::InitGaussianBlur(bool isFinal)
 	{
-		CreateMaterial(GaussianBlur, "Shaders/GaussianBlur.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
+		CreateMaterial(GaussianBlur, "Shaders/PostProcess/GaussianBlur.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
 		CreateCommand("GaussianBlurVertical");
 		CreateCommand("GaussianBlurHorizontal");
 		FBOManager::GetInstance()->CreateFBO("GaussianBlurVertical", FrameBufferType::Color);
@@ -160,8 +160,8 @@ namespace ZXEngine
 
 	void RenderPassAfterEffectRendering::InitKawaseBlur(bool isFinal)
 	{
-		CreateMaterial("KawaseBlur0", "Shaders/KawaseBlur.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
-		CreateMaterial("KawaseBlur1", "Shaders/KawaseBlur.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
+		CreateMaterial("KawaseBlur0", "Shaders/PostProcess/KawaseBlur.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
+		CreateMaterial("KawaseBlur1", "Shaders/PostProcess/KawaseBlur.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
 		CreateCommand("KawaseBlur0");
 		CreateCommand("KawaseBlur1");
 		FBOManager::GetInstance()->CreateFBO("KawaseBlur0", FrameBufferType::Color);
@@ -194,7 +194,7 @@ namespace ZXEngine
 	void RenderPassAfterEffectRendering::InitBloomBlend(bool isFinal)
 	{
 		CreateCommand(BloomBlend);
-		CreateMaterial(BloomBlend, "Shaders/BloomBlend.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
+		CreateMaterial(BloomBlend, "Shaders/PostProcess/BloomBlend.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
 		if (!isFinal)
 			FBOManager::GetInstance()->CreateFBO(BloomBlend, FrameBufferType::Color);
 	}
@@ -214,7 +214,7 @@ namespace ZXEngine
 	void RenderPassAfterEffectRendering::InitCopy(bool isFinal)
 	{
 		CreateCommand(CopyTexture);
-		CreateMaterial(CopyTexture, "Shaders/RenderTexture.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color, true);
+		CreateMaterial(CopyTexture, "Shaders/RenderTexture.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
 	}
 
 	string RenderPassAfterEffectRendering::BlitCopy(const string& targetFBO, const string& sourceFBO, bool isFinal)

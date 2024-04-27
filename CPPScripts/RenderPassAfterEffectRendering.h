@@ -24,7 +24,7 @@ namespace ZXEngine
 
 		void CreateCommand(const string& name);
 		uint32_t GetCommand(const string& name);
-		void CreateMaterial(const string& name, const string& path, FrameBufferType type, bool isBuiltIn = false);
+		void CreateMaterial(const string& name, const string& path, FrameBufferType type);
 		Material* GetMaterial(const string& name);
 
 		// 提取画面高亮部分
