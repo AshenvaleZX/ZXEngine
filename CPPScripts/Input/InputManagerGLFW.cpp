@@ -41,7 +41,11 @@ namespace ZXEngine
 
 	void InputManagerGLFW::UpdateMouseScroll(double xoffset, double yoffset)
 	{
-		// Debug::Log("xoffset " + to_string(xoffset) + " yoffset " + to_string(yoffset));
+#ifdef ZX_EDITOR
+		if (EditorInputManager::GetInstance()->CheckCurMousePos() != EditorAreaType::Game)
+			return;
+#endif
+		EventManager::GetInstance()->FireEvent((int)EventType::UPDATE_MOUSE_SCROLL, to_string(yoffset));
 	}
 
 	bool InputManagerGLFW::IsShowCursor()

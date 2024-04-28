@@ -32,7 +32,11 @@ namespace ZXEngine
 
 	void InputManagerWindows::UpdateMouseScroll(double xoffset, double yoffset)
 	{
-
+#ifdef ZX_EDITOR
+		if (EditorInputManager::GetInstance()->CheckCurMousePos() != EditorAreaType::Game)
+			return;
+#endif
+		EventManager::GetInstance()->FireEvent((int)EventType::UPDATE_MOUSE_SCROLL, to_string(yoffset));
 	}
 
 	void InputManagerWindows::UpdateKeyInput()

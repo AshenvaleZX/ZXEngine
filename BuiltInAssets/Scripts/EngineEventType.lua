@@ -6,6 +6,7 @@ EngineEventType_NumToStr =
 {
     "GAME_START",
     "UPDATE_MOUSE_POS",
+    "UPDATE_MOUSE_SCROLL",
 
     "MOUSE_BUTTON_1_PRESS",
     "MOUSE_BUTTON_1_DOWN",
