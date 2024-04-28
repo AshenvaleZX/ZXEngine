@@ -41,7 +41,7 @@ namespace ZXEngine
         }
 
         // find path to font
-        string fontPath = Resources::GetAssetFullPath("Fonts/arial.ttf");
+        string fontPath = Resources::GetAssetFullPath("Fonts/arial.ttf", true);
         if (fontPath.empty())
         {
             Debug::LogError("ERROR::FREETYPE: Failed to load font_name");
