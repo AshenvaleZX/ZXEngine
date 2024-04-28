@@ -9,6 +9,26 @@ extern "C"
 #include "../External/Lua/lauxlib.h"
 }
 
+static int GameObject_Create(lua_State* L)
+{
+	string path = lua_tostring(L, -1);
+	ZXEngine::GameObject* go = ZXEngine::GameObject::Create(path);
+
+	if (go == nullptr)
+	{
+		lua_pushnil(L);
+		return 1;
+	}
+
+	size_t nbytes = sizeof(ZXEngine::GameObject);
+	ZXEngine::GameObject** t = (ZXEngine::GameObject**)lua_newuserdata(L, nbytes);
+	*t = go;
+	luaL_getmetatable(L, "ZXEngine.GameObject");
+	lua_setmetatable(L, -2);
+
+	return 1;
+}
+
 static int GameObject_AsyncCreate(lua_State* L)
 {
 	string path = lua_tostring(L, -1);
@@ -82,6 +102,7 @@ static int GameObject_GetComponent(lua_State* L)
 
 static const luaL_Reg GameObject_Funcs[] = 
 {
+	{ "Create",      GameObject_Create      },
 	{ "AsyncCreate", GameObject_AsyncCreate },
 	{ "Find",        GameObject_Find        },
 	{ NULL, NULL }

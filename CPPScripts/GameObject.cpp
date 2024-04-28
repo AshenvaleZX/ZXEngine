@@ -6,6 +6,17 @@
 
 namespace ZXEngine
 {
+	GameObject* GameObject::Create(const string& path)
+	{
+		auto prefab = Resources::LoadPrefab(path);
+		auto gameObject = new GameObject(prefab);
+		delete prefab;
+
+		SceneManager::GetInstance()->GetCurScene()->AddGameObject(gameObject);
+		
+		return gameObject;
+	}
+
 	void GameObject::AsyncCreate(const string& path)
 	{
 		Resources::AsyncLoadPrefab(path, [](PrefabStruct* prefab)

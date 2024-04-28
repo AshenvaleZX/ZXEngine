@@ -28,6 +28,7 @@ namespace ZXEngine
 	{
 		friend class EditorInspectorPanel;
 	public:
+		static GameObject* Create(const string& path);
 		static void AsyncCreate(const string& path);
 		static GameObject* Find(const string& path);
 
