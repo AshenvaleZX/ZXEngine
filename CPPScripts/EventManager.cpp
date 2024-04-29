@@ -28,9 +28,9 @@ namespace ZXEngine
     {
     }
 
-    void EventManager::FireEvent(int id, string args)
+    void EventManager::FireEvent(int id, const string& args)
     {
-        map<int, std::function<void(string)>>::iterator iter = callBackMap.find(id);
+        auto iter = callBackMap.find(id);
         if (iter != callBackMap.end()) 
         {
             iter->second(args);

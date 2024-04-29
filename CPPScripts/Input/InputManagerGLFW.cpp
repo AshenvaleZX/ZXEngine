@@ -2,6 +2,7 @@
 #include "../EventManager.h"
 #include "../Editor/EditorInputManager.h"
 #include "../Window/WindowManager.h"
+#include "../ProjectSetting.h"
 #include <GLFW/glfw3.h>
 
 // 因为GLFW的函数接口问题，没办法传递成员函数，所以这里用普通函数包了一层
@@ -34,18 +35,25 @@ namespace ZXEngine
 		UpdateKeyInput();
 	}
 
-	void InputManagerGLFW::UpdateMousePos(double xpos, double ypos)
+	void InputManagerGLFW::UpdateMousePos(float xPos, float yPos)
 	{
-		EventManager::GetInstance()->FireEvent((int)EventType::UPDATE_MOUSE_POS, to_string(xpos) + "|" + to_string(ypos));
+#ifdef ZX_EDITOR
+		mMouseX = xPos - ProjectSetting::hierarchyWidth;
+		mMouseY = yPos - ProjectSetting::mainBarHeight;
+#else
+		mMouseX = xPos;
+		mMouseY = yPos;
+#endif
+		EventManager::GetInstance()->FireEvent((int)EventType::UPDATE_MOUSE_POS, to_string(mMouseX) + "|" + to_string(mMouseY));
 	}
 
-	void InputManagerGLFW::UpdateMouseScroll(double xoffset, double yoffset)
+	void InputManagerGLFW::UpdateMouseScroll(float xOffset, float yOffset)
 	{
 #ifdef ZX_EDITOR
 		if (EditorInputManager::GetInstance()->CheckCurMousePos() != EditorAreaType::Game)
 			return;
 #endif
-		EventManager::GetInstance()->FireEvent((int)EventType::UPDATE_MOUSE_SCROLL, to_string(yoffset));
+		EventManager::GetInstance()->FireEvent((int)EventType::UPDATE_MOUSE_SCROLL, to_string(yOffset));
 	}
 
 	bool InputManagerGLFW::IsShowCursor()
@@ -66,8 +74,8 @@ namespace ZXEngine
 	void InputManagerGLFW::UpdateKeyInput()
 	{
 		// 鼠标按键
-		CheckMouse(GLFW_MOUSE_BUTTON_1, InputButton::MOUSE_BUTTON_1, EventType::MOUSE_BUTTON_1_PRESS);
-		CheckMouse(GLFW_MOUSE_BUTTON_2, InputButton::MOUSE_BUTTON_2, EventType::MOUSE_BUTTON_2_PRESS);
+		CheckMouseKey(GLFW_MOUSE_BUTTON_1, InputButton::MOUSE_BUTTON_1, EventType::MOUSE_BUTTON_1_PRESS);
+		CheckMouseKey(GLFW_MOUSE_BUTTON_2, InputButton::MOUSE_BUTTON_2, EventType::MOUSE_BUTTON_2_PRESS);
 
 		// 从0到9
 		for (int i = 0; i < 10; i++)
@@ -109,17 +117,19 @@ namespace ZXEngine
 		mButtonState[(int)button] = state;
 	}
 
-	void InputManagerGLFW::CheckMouse(int id, InputButton button, EventType e)
+	void InputManagerGLFW::CheckMouseKey(int id, InputButton button, EventType e)
 	{
 		GLFWwindow* window = static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow());
 		int state = glfwGetMouseButton(window, id);
 
+		string pos = to_string(mMouseX) + "|" + to_string(mMouseY);
+
 		if (state == GLFW_PRESS && mButtonState[(int)button] == GLFW_PRESS)
-			EventManager::GetInstance()->FireEvent((int)e, ""); // Press
+			EventManager::GetInstance()->FireEvent((int)e, pos); // Press
 		else if (state == GLFW_PRESS && mButtonState[(int)button] == GLFW_RELEASE)
-			EventManager::GetInstance()->FireEvent((int)e + 1, ""); // Down
+			EventManager::GetInstance()->FireEvent((int)e + 1, pos); // Down
 		else if (state == GLFW_RELEASE && mButtonState[(int)button] == GLFW_PRESS)
-			EventManager::GetInstance()->FireEvent((int)e + 2, ""); // Up
+			EventManager::GetInstance()->FireEvent((int)e + 2, pos); // Up
 
 		mButtonState[(int)button] = state;
 	}
@@ -136,12 +146,12 @@ namespace ZXEngine
 
 void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
 {
-	ZXEngine::InputManager::GetInstance()->UpdateMousePos(xpos, ypos);
+	ZXEngine::InputManager::GetInstance()->UpdateMousePos(static_cast<float>(xpos), static_cast<float>(ypos));
 }
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	ZXEngine::InputManager::GetInstance()->UpdateMouseScroll(xoffset, yoffset);
+	ZXEngine::InputManager::GetInstance()->UpdateMouseScroll(static_cast<float>(xoffset), static_cast<float>(yoffset));
 #ifdef ZX_EDITOR
-	ZXEngine::EditorInputManager::GetInstance()->UpdateMouseScroll((float)xoffset, (float)yoffset);
+	ZXEngine::EditorInputManager::GetInstance()->UpdateMouseScroll(static_cast<float>(xoffset), static_cast<float>(yoffset));
 #endif
 }

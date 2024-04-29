@@ -172,10 +172,10 @@ namespace ZXEngine
 
 	void WindowManagerWindows::OnMouseScroll(short delta)
 	{
-		double deltaValue = static_cast<double>(delta) / 120.0;
-		InputManager::GetInstance()->UpdateMouseScroll(0, deltaValue);
+		float deltaValue = static_cast<float>(delta) / 120.0f;
+		InputManager::GetInstance()->UpdateMouseScroll(0.0f, deltaValue);
 #ifdef ZX_EDITOR
-		EditorInputManager::GetInstance()->UpdateMouseScroll(0, static_cast<float>(deltaValue));
+		EditorInputManager::GetInstance()->UpdateMouseScroll(0.0f, deltaValue);
 #endif
 	}
 }

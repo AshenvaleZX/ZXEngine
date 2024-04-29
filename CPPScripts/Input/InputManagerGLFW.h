@@ -10,8 +10,8 @@ namespace ZXEngine
 		~InputManagerGLFW() {};
 
 		virtual void Update();
-		virtual void UpdateMousePos(double xpos, double ypos);
-		virtual void UpdateMouseScroll(double xoffset, double yoffset);
+		virtual void UpdateMousePos(float xPos, float yPos);
+		virtual void UpdateMouseScroll(float xOffset, float yOffset);
 		virtual bool IsShowCursor();
 
 		// To lua
@@ -24,7 +24,7 @@ namespace ZXEngine
 		void PollEvents();
 		void UpdateKeyInput();
 		void CheckKey(int id, InputButton button, EventType e);
-		void CheckMouse(int id, InputButton button, EventType e);
+		void CheckMouseKey(int id, InputButton button, EventType e);
 		void RegisterMouse();
 		void InitButtonRecord();
 	};

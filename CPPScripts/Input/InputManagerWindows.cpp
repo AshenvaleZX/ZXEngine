@@ -1,6 +1,8 @@
 #include "InputManagerWindows.h"
 #include "../EventManager.h"
 #include "../Editor/EditorInputManager.h"
+#include "../Window/WindowManager.h"
+#include "../ProjectSetting.h"
 
 // 防止windows.h里的宏定义max和min影响到其它库里的相同字段
 #ifndef NOMINMAX
@@ -25,25 +27,32 @@ namespace ZXEngine
 		UpdateKeyInput();
 	}
 
-	void InputManagerWindows::UpdateMousePos(double xpos, double ypos)
+	void InputManagerWindows::UpdateMousePos(float xPos, float yPos)
 	{
-		EventManager::GetInstance()->FireEvent((int)EventType::UPDATE_MOUSE_POS, to_string(xpos) + "|" + to_string(ypos));
+#ifdef ZX_EDITOR
+		mMouseX = xPos - ProjectSetting::hierarchyWidth;
+		mMouseY = yPos - ProjectSetting::mainBarHeight;
+#else
+		mMouseX = xPos;
+		mMouseY = yPos;
+#endif
+		EventManager::GetInstance()->FireEvent((int)EventType::UPDATE_MOUSE_POS, to_string(mMouseX) + "|" + to_string(mMouseY));
 	}
 
-	void InputManagerWindows::UpdateMouseScroll(double xoffset, double yoffset)
+	void InputManagerWindows::UpdateMouseScroll(float xOffset, float yOffset)
 	{
 #ifdef ZX_EDITOR
 		if (EditorInputManager::GetInstance()->CheckCurMousePos() != EditorAreaType::Game)
 			return;
 #endif
-		EventManager::GetInstance()->FireEvent((int)EventType::UPDATE_MOUSE_SCROLL, to_string(yoffset));
+		EventManager::GetInstance()->FireEvent((int)EventType::UPDATE_MOUSE_SCROLL, to_string(yOffset));
 	}
 
 	void InputManagerWindows::UpdateKeyInput()
 	{
 		// 鼠标左右键
-		CheckKey(VK_LBUTTON, InputButton::MOUSE_BUTTON_1, EventType::MOUSE_BUTTON_1_PRESS);
-		CheckKey(VK_RBUTTON, InputButton::MOUSE_BUTTON_2, EventType::MOUSE_BUTTON_2_PRESS);
+		CheckMouseKey(VK_LBUTTON, InputButton::MOUSE_BUTTON_1, EventType::MOUSE_BUTTON_1_PRESS);
+		CheckMouseKey(VK_RBUTTON, InputButton::MOUSE_BUTTON_2, EventType::MOUSE_BUTTON_2_PRESS);
 
 		// 从0到9
 		for (int i = 0; i < 10; i++)
@@ -68,12 +77,30 @@ namespace ZXEngine
 	void InputManagerWindows::CheckKey(int id, InputButton button, EventType e)
 	{
 		SHORT state = GetAsyncKeyState(id);
+
 		if ((state & 0x8000) && mButtonState[(int)button] == 1)
 			EventManager::GetInstance()->FireEvent((int)e, ""); // Press
 		else if ((state & 0x8000) && mButtonState[(int)button] == 0)
 			EventManager::GetInstance()->FireEvent((int)e + 1, ""); // Down
 		else if (!(state & 0x8000) && mButtonState[(int)button] == 1)
 			EventManager::GetInstance()->FireEvent((int)e + 2, ""); // Up
+
+		mButtonState[(int)button] = (state & 0x8000) ? 1 : 0;
+	}
+
+	void InputManagerWindows::CheckMouseKey(int id, InputButton button, EventType e)
+	{
+		SHORT state = GetAsyncKeyState(id);
+
+		string pos = to_string(mMouseX) + "|" + to_string(mMouseY);
+
+		if ((state & 0x8000) && mButtonState[(int)button] == 1)
+			EventManager::GetInstance()->FireEvent((int)e, pos); // Press
+		else if ((state & 0x8000) && mButtonState[(int)button] == 0)
+			EventManager::GetInstance()->FireEvent((int)e + 1, pos); // Down
+		else if (!(state & 0x8000) && mButtonState[(int)button] == 1)
+			EventManager::GetInstance()->FireEvent((int)e + 2, pos); // Up
+
 		mButtonState[(int)button] = (state & 0x8000) ? 1 : 0;
 	}
 
@@ -81,7 +108,8 @@ namespace ZXEngine
 	{
 		POINT point;
 		GetCursorPos(&point);
-		UpdateMousePos(static_cast<double>(point.x), static_cast<double>(point.y));
+		ScreenToClient(static_cast<HWND>(WindowManager::GetInstance()->GetWindow()), &point);
+		UpdateMousePos(static_cast<float>(point.x), static_cast<float>(point.y));
 	}
 
 	bool InputManagerWindows::IsShowCursor()

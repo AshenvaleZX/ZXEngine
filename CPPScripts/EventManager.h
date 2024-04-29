@@ -6,7 +6,7 @@ namespace ZXEngine
     class EventManager
     {
     public:
-        map<int, std::function<void(string)>> callBackMap;
+        unordered_map<int, std::function<void(string)>> callBackMap;
 
         static void Create();
         static EventManager* GetInstance();
@@ -14,7 +14,7 @@ namespace ZXEngine
         void AddEventHandler(int id, std::function<void(string)> callBack);
         void RemoveEventHandler();
         void ClearEventHandler();
-        void FireEvent(int id, string args);
+        void FireEvent(int id, const string& args);
 
     private:
         static EventManager* mInstance;

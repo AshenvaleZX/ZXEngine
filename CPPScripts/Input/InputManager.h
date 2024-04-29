@@ -14,11 +14,15 @@ namespace ZXEngine
 
 	public:
 		virtual void Update() = 0;
-		virtual void UpdateMousePos(double xpos, double ypos) = 0;
-		virtual void UpdateMouseScroll(double xoffset, double yoffset) = 0;
+		virtual void UpdateMousePos(float xPos, float yPos) = 0;
+		virtual void UpdateMouseScroll(float xOffset, float yOffset) = 0;
 		virtual bool IsShowCursor() = 0;
 
 		// To lua
 		virtual void ShowCursor(bool show) = 0;
+
+	protected:
+		float mMouseX = 0.0f;
+		float mMouseY = 0.0f;
 	};
 }
