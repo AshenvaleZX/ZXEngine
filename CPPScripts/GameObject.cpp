@@ -67,7 +67,49 @@ namespace ZXEngine
 		mIsAwake = true;
 	}
 
-	GameObject* GameObject::FindChildren(const string& path)
+	void GameObject::AddChild(GameObject* child)
+	{
+		Vector3 pos = child->GetComponent<Transform>()->GetPosition();
+
+		if (child->parent)
+			child->parent->RemoveChild(child, false);
+		else
+			SceneManager::GetInstance()->GetCurScene()->RemoveGameObject(child);
+
+		child->parent = this;
+		child->GetComponent<Transform>()->SetPosition(pos);
+
+		children.push_back(child);
+	}
+
+	void GameObject::RemoveChild(GameObject* child, bool toRoot)
+	{
+		auto iter = std::find(children.begin(), children.end(), child);
+		if (iter != children.end())
+		{
+			if (toRoot)
+			{
+				Vector3 pos = child->GetComponent<Transform>()->GetPosition();
+
+				(*iter)->parent = nullptr;
+				(*iter)->GetComponent<Transform>()->SetPosition(pos);
+
+				SceneManager::GetInstance()->GetCurScene()->AddGameObject(*iter);
+			}
+			else
+			{
+				(*iter)->parent = nullptr;
+			}
+			children.erase(iter);
+		}
+	}
+
+	void GameObject::SetParent(GameObject* parent)
+	{
+		parent->AddChild(this);
+	}
+
+	GameObject* GameObject::FindChildren(const string& path) const
 	{
 		auto paths = Utils::StringSplit(path, '/');
 		int recursion = 0;

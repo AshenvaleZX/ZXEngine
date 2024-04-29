@@ -102,7 +102,20 @@ namespace ZXEngine
 
 	void Scene::AddGameObject(GameObject* gameObject)
 	{
-		gameObjects.push_back(gameObject);
+		auto iter = std::find(gameObjects.begin(), gameObjects.end(), gameObject);
+		if (iter == gameObjects.end())
+		{
+			gameObjects.push_back(gameObject);
+		}
+	}
+
+	void Scene::RemoveGameObject(GameObject* gameObject)
+	{
+		auto iter = std::find(gameObjects.begin(), gameObjects.end(), gameObject);
+		if (iter != gameObjects.end())
+		{
+			gameObjects.erase(iter);
+		}
 	}
 
 	void Scene::UpdatePhysics()

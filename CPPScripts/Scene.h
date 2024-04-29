@@ -26,7 +26,10 @@ namespace ZXEngine
 
 		void Update();
 		void Render();
+		// 添加到场景根节点
 		void AddGameObject(GameObject* gameObject);
+		// 从场景根节点移除
+		void RemoveGameObject(GameObject* gameObject);
 
 	private:
 		bool mIsAwake = false;

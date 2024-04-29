@@ -55,6 +55,36 @@ static int GameObject_Find(lua_State* L)
 	return 1;
 }
 
+static int GameObject_AddChild(lua_State* L)
+{
+	ZXEngine::GameObject** self = (ZXEngine::GameObject**)luaL_checkudata(L, -2, "ZXEngine.GameObject");
+	ZXEngine::GameObject** child = (ZXEngine::GameObject**)luaL_checkudata(L, -1, "ZXEngine.GameObject");
+
+	(*self)->AddChild(*child);
+
+	return 0;
+}
+
+static int GameObject_RemoveChild(lua_State* L)
+{
+	ZXEngine::GameObject** self = (ZXEngine::GameObject**)luaL_checkudata(L, -2, "ZXEngine.GameObject");
+	ZXEngine::GameObject** child = (ZXEngine::GameObject**)luaL_checkudata(L, -1, "ZXEngine.GameObject");
+
+	(*self)->RemoveChild(*child);
+
+	return 0;
+}
+
+static int GameObject_SetParent(lua_State* L)
+{
+	ZXEngine::GameObject** self = (ZXEngine::GameObject**)luaL_checkudata(L, -2, "ZXEngine.GameObject");
+	ZXEngine::GameObject** parent = (ZXEngine::GameObject**)luaL_checkudata(L, -1, "ZXEngine.GameObject");
+
+	(*self)->SetParent(*parent);
+
+	return 0;
+}
+
 static int GameObject_GetComponent(lua_State* L)
 {
 	ZXEngine::GameObject** data = (ZXEngine::GameObject**)luaL_checkudata(L, -2, "ZXEngine.GameObject");
@@ -110,6 +140,9 @@ static const luaL_Reg GameObject_Funcs[] =
 
 static const luaL_Reg GameObject_Funcs_Meta[] = 
 {
+	{ "AddChild",     GameObject_AddChild     },
+	{ "RemoveChild",  GameObject_RemoveChild  },
+	{ "SetParent",    GameObject_SetParent    },
 	{ "GetComponent", GameObject_GetComponent },
 	{ NULL, NULL }
 };

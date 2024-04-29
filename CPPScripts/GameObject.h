@@ -54,7 +54,10 @@ namespace ZXEngine
 		template<class T>
 		inline T* AddComponent();
 
-		GameObject* FindChildren(const string& path);
+		void AddChild(GameObject* child);
+		void RemoveChild(GameObject* child, bool toRoot = true);
+		void SetParent(GameObject* parent);
+		GameObject* FindChildren(const string& path) const;
 		void AddComponent(ComponentType type, Component* component);
 		void EndConstruction();
 
