@@ -12,6 +12,7 @@ namespace ZXEngine
 		static bool IsUnique(ComponentType type);
 
 	public:
+		bool mEnabled = true;
 		GameObject* gameObject = nullptr;
 
 		Component() {};

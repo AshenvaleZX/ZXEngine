@@ -316,6 +316,9 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("MeshRenderer"))
 			return;
 
+		ImGui::Text("Enabled		  ");
+		ImGui::SameLine(); ImGui::Checkbox("##enabled", &component->mEnabled);
+
 		ImGui::Text("Mesh             ");
 		ImGui::SameLine(); 
 		if (ImGui::Button(component->mModelName.c_str()))

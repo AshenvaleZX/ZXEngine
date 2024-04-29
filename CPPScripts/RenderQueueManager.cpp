@@ -55,9 +55,9 @@ namespace ZXEngine
 		else
 		{
 			MeshRenderer* meshRenderer = gameObject->GetComponent<MeshRenderer>();
-			if (meshRenderer != nullptr)
+			if (meshRenderer != nullptr && meshRenderer->mEnabled)
 			{
-				AddRenderer(gameObject->GetComponent<MeshRenderer>());
+				AddRenderer(meshRenderer);
 			}
 		}
 
