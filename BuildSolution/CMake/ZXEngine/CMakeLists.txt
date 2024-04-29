@@ -308,6 +308,8 @@ set(PhysZ
     "../../../CPPScripts/PhysZ/PointMass.h"
     "../../../CPPScripts/PhysZ/PScene.cpp"
     "../../../CPPScripts/PhysZ/PScene.h"
+    "../../../CPPScripts/PhysZ/Ray.cpp"
+    "../../../CPPScripts/PhysZ/Ray.h"
     "../../../CPPScripts/PhysZ/RigidBody.cpp"
     "../../../CPPScripts/PhysZ/RigidBody.h"
 )

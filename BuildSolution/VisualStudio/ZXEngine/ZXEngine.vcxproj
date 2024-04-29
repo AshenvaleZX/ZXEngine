@@ -308,6 +308,7 @@
     <ClCompile Include="..\..\..\CPPScripts\PhysZ\Joint\Joint.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\PhysZ\PointMass.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\PhysZ\PScene.cpp" />
+    <ClCompile Include="..\..\..\CPPScripts\PhysZ\Ray.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\PhysZ\RigidBody.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\ProjectSetting.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\PublicStruct.cpp" />
@@ -498,6 +499,7 @@
     <ClInclude Include="..\..\..\CPPScripts\PhysZ\PhysZEnumStruct.h" />
     <ClInclude Include="..\..\..\CPPScripts\PhysZ\PointMass.h" />
     <ClInclude Include="..\..\..\CPPScripts\PhysZ\PScene.h" />
+    <ClInclude Include="..\..\..\CPPScripts\PhysZ\Ray.h" />
     <ClInclude Include="..\..\..\CPPScripts\PhysZ\RigidBody.h" />
     <ClInclude Include="..\..\..\CPPScripts\ProjectSetting.h" />
     <ClInclude Include="..\..\..\CPPScripts\pubh.h" />
