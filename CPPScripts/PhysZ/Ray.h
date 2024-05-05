@@ -14,6 +14,8 @@ namespace ZXEngine
 			Ray() = default;
 			Ray(const Vector3& origin, const Vector3& direction);
 
+			string ToString() const;
+
 			Vector3 GetPoint(float distance) const;
 		};
 	}
