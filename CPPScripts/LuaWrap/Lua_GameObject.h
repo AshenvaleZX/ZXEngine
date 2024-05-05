@@ -122,6 +122,14 @@ static int GameObject_GetComponent(lua_State* L)
 		luaL_getmetatable(L, "ZXEngine.RigidBody");
 		lua_setmetatable(L, -2);
 	}
+	else if (type == "Camera")
+	{
+		size_t nbytes = sizeof(ZXEngine::Camera);
+		ZXEngine::Camera** t = (ZXEngine::Camera**)lua_newuserdata(L, nbytes);
+		*t = (*data)->GetComponent<ZXEngine::Camera>();
+		luaL_getmetatable(L, "ZXEngine.Camera");
+		lua_setmetatable(L, -2);
+	}
 	else
 	{ 
 		ZXEngine::Debug::LogError("Not find lua wrap component: " + type);

@@ -1166,5 +1166,8 @@
     <ClInclude Include="..\..\..\CPPScripts\PhysZ\Ray.h">
       <Filter>PhysZ</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Camera.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

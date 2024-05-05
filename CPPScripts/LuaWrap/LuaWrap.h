@@ -8,6 +8,7 @@
 #include "Lua_InputManager.h"
 #include "Lua_Animator.h"
 #include "Lua_Rigidbody.h"
+#include "Lua_Camera.h"
 
 static const luaL_Reg myLibs[] = 
 {
@@ -20,6 +21,7 @@ static const luaL_Reg myLibs[] =
     { "InputManager",   luaopen_InputManager   },
     { "Animator",       luaopen_Animator       },
     { "Rigidbody",      luaopen_RigidBody      },
+    { "Camera",         luaopen_Camera         },
     { NULL, NULL }
 };
 
