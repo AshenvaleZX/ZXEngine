@@ -1,6 +1,7 @@
 #pragma once
 #include "../pubh.h"
 #include "Component.h"
+#include "../PhysZ/Ray.h"
 
 namespace ZXEngine
 {
@@ -34,5 +35,7 @@ namespace ZXEngine
 
         Matrix4 GetProjectionMatrix();
         Matrix4 GetProjectionMatrixInverse();
+
+        PhysZ::Ray ScreenPointToRay(const Vector2& point);
 	};
 }

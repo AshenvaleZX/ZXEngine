@@ -62,4 +62,23 @@ namespace ZXEngine
 		Matrix4 projection = GetProjectionMatrix();
 		return Math::Inverse(projection);
 	}
+
+	PhysZ::Ray Camera::ScreenPointToRay(const Vector2& point)
+	{
+		Vector4 pos 
+		{ 
+			point.x / static_cast<float>(GlobalData::srcWidth) * 2.0f - 1.0f,
+			point.y / static_cast<float>(GlobalData::srcHeight) * 2.0f - 1.0f,
+			-1.0f, 1.0f
+		};
+
+		pos = GetProjectionMatrixInverse() * pos;
+		pos = pos / pos.w;
+		pos = GetViewMatrixInverse() * pos;
+
+		Vector3 dir = pos - GetTransform()->GetPosition();
+		dir.Normalize();
+
+		return PhysZ::Ray(pos, dir);
+	}
 }
