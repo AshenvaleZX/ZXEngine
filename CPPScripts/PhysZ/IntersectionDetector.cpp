@@ -5,6 +5,24 @@ namespace ZXEngine
 {
 	namespace PhysZ
 	{
+		bool IntersectionDetector::Detect(const Ray& ray, const CollisionBox& box)
+		{
+			// Todo
+			return false;
+		}
+
+		bool IntersectionDetector::Detect(const Ray& ray, const CollisionPlane& plane)
+		{
+			// Todo
+			return false;
+		}
+
+		bool IntersectionDetector::Detect(const Ray& ray, const CollisionSphere& sphere)
+		{
+			// Todo
+			return false;
+		}
+
 		bool IntersectionDetector::Detect(const CollisionBox& box1, const CollisionBox& box2)
 		{
 			Vector3 centerLine = box1.mTransform.GetColumn(3) - box2.mTransform.GetColumn(3);

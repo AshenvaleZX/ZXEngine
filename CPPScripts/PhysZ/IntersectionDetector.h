@@ -5,12 +5,16 @@ namespace ZXEngine
 {
 	namespace PhysZ
 	{
+		class Ray;
 		class CollisionBox;
 		class CollisionPlane;
 		class CollisionSphere;
 		class IntersectionDetector
 		{
 		public:
+			static bool Detect(const Ray& ray, const CollisionBox& box);
+			static bool Detect(const Ray& ray, const CollisionPlane& plane);
+			static bool Detect(const Ray& ray, const CollisionSphere& sphere);
 			static bool Detect(const CollisionBox& box1, const CollisionBox& box2);
 			static bool Detect(const CollisionSphere& sphere1, const CollisionSphere& sphere2);
 			static bool Detect(const CollisionBox& box, const CollisionPlane& plane);
