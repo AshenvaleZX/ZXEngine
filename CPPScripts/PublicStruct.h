@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <map>
+#include <unordered_map>
 #include "Math.h"
 #include "PublicEnum.h"
 #include "Debug.h"
@@ -167,5 +169,19 @@ namespace ZXEngine
 		vector<string> rGenPaths;
 		vector<string> rMissPaths;
 		vector<RayTracingHitGroupPath> rHitGroupPaths;
+	};
+
+	static const std::multimap<ComponentType, ComponentType> ComponentChildLUT
+	{
+		{ ComponentType::Collider, ComponentType::BoxCollider    },
+		{ ComponentType::Collider, ComponentType::PlaneCollider  },
+		{ ComponentType::Collider, ComponentType::SphereCollider },
+	};
+
+	static const std::unordered_map<ComponentType, ComponentType> ComponentParentLUT
+	{
+		{ ComponentType::BoxCollider,    ComponentType::Collider },
+		{ ComponentType::PlaneCollider,  ComponentType::Collider },
+		{ ComponentType::SphereCollider, ComponentType::Collider },
 	};
 }

@@ -89,13 +89,27 @@ namespace ZXEngine
 	inline T* GameObject::GetComponent()
 	{
 		ComponentType type = T::GetType();
+
 		auto iter = components.find(type);
-		if (iter != components.end()) {
-			return static_cast<T*> (iter->second);
+		if (iter != components.end())
+		{
+			return static_cast<T*>(iter->second);
 		}
-		else {
-			return static_cast<T*> (nullptr);
+
+		if (ComponentChildLUT.count(type) != 0)
+		{
+			auto range = ComponentChildLUT.equal_range(type);
+			for (auto& iter1 = range.first; iter1 != range.second; ++iter1)
+			{
+				auto iter2 = components.find(iter1->second);
+				if (iter2 != components.end())
+				{
+					return static_cast<T*>(iter2->second);
+				}
+			}
 		}
+
+		return static_cast<T*>(nullptr);
 	}
 
 	template<class T>
