@@ -10,6 +10,7 @@
 #include "Lua_Rigidbody.h"
 #include "Lua_Camera.h"
 #include "Lua_Ray.h"
+#include "Lua_Collider.h"
 
 static const luaL_Reg myLibs[] = 
 {
@@ -24,6 +25,7 @@ static const luaL_Reg myLibs[] =
     { "Rigidbody",      luaopen_RigidBody      },
     { "Camera",         luaopen_Camera         },
     { "Ray",            luaopen_Ray            },
+    { "Collider",       luaopen_Collider       },
     { NULL, NULL }
 };
 

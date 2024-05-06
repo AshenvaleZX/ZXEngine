@@ -1172,5 +1172,8 @@
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Ray.h">
       <Filter>LuaWrap</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Collider.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
