@@ -17,5 +17,6 @@ namespace ZXEngine
 
 		virtual ComponentType GetInsType();
 		virtual void SynchronizeData() = 0;
+		virtual bool IntersectRay(const PhysZ::Ray& ray) = 0;
 	};
 }

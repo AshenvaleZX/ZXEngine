@@ -29,4 +29,9 @@ namespace ZXEngine
 		mCollider->mFrictionCombine = mFrictionCombine;
 		mCollider->mBounceCombine = mBounceCombine;
 	}
+
+	bool PlaneCollider::IntersectRay(const PhysZ::Ray& ray)
+	{
+		return PhysZ::IntersectionDetector::Detect(ray, *mCollider);
+	}
 }
