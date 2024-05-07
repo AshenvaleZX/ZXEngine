@@ -1,5 +1,6 @@
 #include "IntersectionDetector.h"
 #include "CollisionPrimitive.h"
+#include "Ray.h"
 
 namespace ZXEngine
 {
@@ -7,20 +8,96 @@ namespace ZXEngine
 	{
 		bool IntersectionDetector::Detect(const Ray& ray, const CollisionBox& box)
 		{
-			// Todo
-			return false;
+			// 将射线转换到Box的局部空间
+			Matrix4 transform = Math::Inverse(box.mTransform);
+			Ray localRay = Ray(transform * ray.mOrigin.ToPosVec4(), transform * ray.mDirection.ToDirVec4());
+
+			// 射线距离的最小最大值
+			float tMin = 0.0f;
+			float tMax = FLT_MAX;
+
+			// 射线方向的倒数
+			Vector3 inverseDirection = Vector3(1.0f / localRay.mDirection.x, 1.0f / localRay.mDirection.y, 1.0f / localRay.mDirection.z);
+
+			// Box的最小最大值
+			Vector3 bMin = -box.mHalfSize;
+			Vector3 bMax =  box.mHalfSize;
+
+			for (int i = 0; i < 3; i++)
+			{
+				if (fabsf(localRay.mDirection[i]) < 0.0001f)
+				{
+					// 与Box的某个面平行，且起点不在Box内，则不相交
+					if (localRay.mOrigin[i] < bMin[i] || localRay.mOrigin[i] > bMax[i])
+					{
+						return false;
+					}
+				}
+				else
+				{
+					// pBox - pRayOrigin = t * pRayDirection
+					float t1 = (bMin[i] - localRay.mOrigin[i]) * inverseDirection[i];
+					float t2 = (bMax[i] - localRay.mOrigin[i]) * inverseDirection[i];
+
+					if (t1 > t2)
+					{
+						float temp = t1;
+						t1 = t2;
+						t2 = temp;
+					}
+
+					tMin = t1 > tMin ? t1 : tMin;
+					tMax = t2 < tMax ? t2 : tMax;
+
+					if (tMin > tMax)
+					{
+						return false;
+					}
+				}
+			}
+
+			return true;
 		}
 
 		bool IntersectionDetector::Detect(const Ray& ray, const CollisionPlane& plane)
 		{
-			// Todo
-			return false;
+			return Math::Dot(ray.mDirection, plane.mNormal) < 0.0f;
 		}
 
 		bool IntersectionDetector::Detect(const Ray& ray, const CollisionSphere& sphere)
 		{
-			// Todo
-			return false;
+			Vector3 m = ray.mOrigin - sphere.mTransform.GetColumn(3);
+			float b = Math::Dot(m, ray.mDirection);
+			float c = Math::Dot(m, m) - sphere.mRadius * sphere.mRadius;
+
+			// 射线起点在球外且方向与到球心相反
+			if (c > 0.0f && b > 0.0f)
+			{
+				return false;
+			}
+
+			// R(t) = ray.mOrigin + t * ray.mDirection
+			// (x - Sphere.x)^2 + (y - Sphere.y)^2 + (z - Sphere.z)^2 = r^2
+			// (ray.mOrigin + t * ray.mDirection - Sphere)^2 = r^2
+			// (t * ray.mDirection + ray.mOrigin - Sphere)^2 = r^2
+			// (t * ray.mDirection + m)^2 = r^2
+			// t^2 * ray.mDirection^2 + 2 * t * ray.mDirection * m + m^2 = r^2
+			// (ray.mDirection^2) * t^2 + (2 * b) * t + c = 0
+			// ray.mDirection^2 = 1
+			// t^2 + (2 * b) * t + c = 0
+
+			// y = ax^2 + bx + c
+			// 一元二次方程判别式: b^2 - 4ac
+			// (2 * b)^2 - 4 * c
+			// b^2 - c
+
+			float discr = b * b - c;
+			if (discr < 0.0f)
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		bool IntersectionDetector::Detect(const CollisionBox& box1, const CollisionBox& box2)
