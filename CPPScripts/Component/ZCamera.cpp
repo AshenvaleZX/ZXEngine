@@ -68,7 +68,11 @@ namespace ZXEngine
 		Vector4 pos 
 		{ 
 			point.x / static_cast<float>(GlobalData::srcWidth) * 2.0f - 1.0f,
+#ifdef ZX_API_VULKAN
 			point.y / static_cast<float>(GlobalData::srcHeight) * 2.0f - 1.0f,
+#else
+			-(point.y / static_cast<float>(GlobalData::srcHeight) * 2.0f - 1.0f),
+#endif
 			-1.0f, 1.0f
 		};
 
