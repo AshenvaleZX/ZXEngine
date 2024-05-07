@@ -13,6 +13,8 @@ namespace ZXEngine
 		delete prefab;
 
 		SceneManager::GetInstance()->GetCurScene()->AddGameObject(gameObject);
+
+		gameObject->Awake();
 		
 		return gameObject;
 	}
@@ -23,6 +25,7 @@ namespace ZXEngine
 		{
 			auto gameObject = new GameObject(prefab);
 			SceneManager::GetInstance()->GetCurScene()->AddGameObject(gameObject);
+			gameObject->Awake();
 		});
 	}
 
