@@ -264,6 +264,8 @@ set(LuaWrap
     "../../../CPPScripts/LuaWrap/Lua_Debug.h"
     "../../../CPPScripts/LuaWrap/Lua_GameObject.h"
     "../../../CPPScripts/LuaWrap/Lua_InputManager.h"
+    "../../../CPPScripts/LuaWrap/Lua_Material.h"
+    "../../../CPPScripts/LuaWrap/Lua_MeshRenderer.h"
     "../../../CPPScripts/LuaWrap/Lua_Ray.h"
     "../../../CPPScripts/LuaWrap/Lua_Resources.h"
     "../../../CPPScripts/LuaWrap/Lua_Rigidbody.h"

@@ -1175,5 +1175,11 @@
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Collider.h">
       <Filter>LuaWrap</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Material.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_MeshRenderer.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

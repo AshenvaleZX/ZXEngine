@@ -466,6 +466,8 @@
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_GameObject.h" />
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\LuaWrap.h" />
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_InputManager.h" />
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Material.h" />
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_MeshRenderer.h" />
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Ray.h" />
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Rigidbody.h" />
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Time.h" />

@@ -138,6 +138,14 @@ static int GameObject_GetComponent(lua_State* L)
 		luaL_getmetatable(L, "ZXEngine.Collider");
 		lua_setmetatable(L, -2);
 	}
+	else if (type == "MeshRenderer")
+	{
+		size_t nbytes = sizeof(ZXEngine::MeshRenderer);
+		ZXEngine::MeshRenderer** t = (ZXEngine::MeshRenderer**)lua_newuserdata(L, nbytes);
+		*t = (*data)->GetComponent<ZXEngine::MeshRenderer>();
+		luaL_getmetatable(L, "ZXEngine.MeshRenderer");
+		lua_setmetatable(L, -2);
+	}
 	else
 	{ 
 		ZXEngine::Debug::LogError("Not find lua wrap component: " + type);

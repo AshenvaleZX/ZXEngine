@@ -11,6 +11,8 @@
 #include "Lua_Camera.h"
 #include "Lua_Ray.h"
 #include "Lua_Collider.h"
+#include "Lua_MeshRenderer.h"
+#include "Lua_Material.h"
 
 static const luaL_Reg myLibs[] = 
 {
@@ -26,6 +28,8 @@ static const luaL_Reg myLibs[] =
     { "Camera",         luaopen_Camera         },
     { "Ray",            luaopen_Ray            },
     { "Collider",       luaopen_Collider       },
+    { "MeshRenderer",   luaopen_MeshRenderer   },
+    { "Material",       luaopen_Material       },
     { NULL, NULL }
 };
 
