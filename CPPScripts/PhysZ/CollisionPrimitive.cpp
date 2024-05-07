@@ -13,6 +13,11 @@ namespace ZXEngine
 			}
 		}
 
+		void CollisionPrimitive::SynchronizeTransform(const Matrix4& transform)
+		{
+			mTransform = transform;
+		}
+
 		ColliderType CollisionBox::GetType() const
 		{
 			return ColliderType::Box;

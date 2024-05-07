@@ -59,5 +59,7 @@ namespace ZXEngine
 		Vector3 localPosition = Vector3();
 		Quaternion localRotation = Quaternion();
 		Vector3 localScale = Vector3(1.0f);
+
+		void UpdateColliderTransform();
 	};
 }

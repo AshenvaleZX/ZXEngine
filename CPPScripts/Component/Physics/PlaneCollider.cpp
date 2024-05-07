@@ -30,6 +30,11 @@ namespace ZXEngine
 		mCollider->mBounceCombine = mBounceCombine;
 	}
 
+	void PlaneCollider::SynchronizeTransform(const Matrix4& transform)
+	{
+		mCollider->SynchronizeTransform(transform);
+	}
+
 	bool PlaneCollider::IntersectRay(const PhysZ::Ray& ray)
 	{
 		return PhysZ::IntersectionDetector::Detect(ray, *mCollider);

@@ -27,6 +27,8 @@ namespace ZXEngine
 
 			virtual ~CollisionPrimitive();
 
+			void SynchronizeTransform(const Matrix4& transform);
+
 			// 获取碰撞体类型
 			virtual ColliderType GetType() const = 0;
 			// 生成对应形状的均质惯性张量

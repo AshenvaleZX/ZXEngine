@@ -95,6 +95,7 @@ namespace ZXEngine
 	void Transform::SetLocalScale(const Vector3& scale)
 	{
 		localScale = scale;
+		UpdateColliderTransform();
 	}
 
 	void Transform::SetLocalScale(float x, float y, float z)
@@ -105,6 +106,7 @@ namespace ZXEngine
 	void Transform::SetLocalPosition(const Vector3& position)
 	{
 		localPosition = position;
+		UpdateColliderTransform();
 	}
 
 	void Transform::SetLocalPosition(float x, float y, float z)
@@ -115,6 +117,7 @@ namespace ZXEngine
 	void Transform::SetLocalEulerAngles(const Vector3& eulerAngles)
 	{
 		localRotation.SetEulerAngles(eulerAngles);
+		UpdateColliderTransform();
 	}
 
 	void Transform::SetLocalEulerAngles(float x, float y, float z)
@@ -125,6 +128,7 @@ namespace ZXEngine
 	void Transform::SetLocalRotation(const Quaternion& rotation)
 	{
 		localRotation = rotation;
+		UpdateColliderTransform();
 	}
 
 	Matrix3 Transform::GetScale() const
@@ -175,6 +179,8 @@ namespace ZXEngine
 			Vector3 offset = parent->GetRotationAndScaleMatrix() * localPosition;
 			localPosition = Math::Inverse(parent->GetRotationAndScaleMatrix()) * (offset + position - wPosition);
 		}
+
+		UpdateColliderTransform();
 	}
 
 	void Transform::SetPosition(float x, float y, float z)
@@ -198,6 +204,8 @@ namespace ZXEngine
 			localRotation = rotation;
 		else
 			localRotation = gameObject->parent->GetComponent<Transform>()->GetRotation().GetInverse() * rotation;
+
+		UpdateColliderTransform();
 	}
 
 	Vector3 Transform::GetUp() const
@@ -219,5 +227,14 @@ namespace ZXEngine
 		Quaternion rotation = GetRotation();
 		Vector4 forward = rotation.ToMatrix() * Vector4(0, 0, 1, 0);
 		return Vector3(forward.x, forward.y, forward.z);
+	}
+
+	void Transform::UpdateColliderTransform()
+	{
+		auto collider = gameObject->GetComponent<Collider>();
+		if (collider != nullptr)
+		{
+			collider->SynchronizeTransform(GetModelMatrix());
+		}
 	}
 }
