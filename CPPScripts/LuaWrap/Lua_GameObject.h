@@ -146,6 +146,16 @@ static int GameObject_GetComponent(lua_State* L)
 	return 1;
 }
 
+static int GameObject_SetName(lua_State* L)
+{
+	ZXEngine::GameObject** self = (ZXEngine::GameObject**)luaL_checkudata(L, -2, "ZXEngine.GameObject");
+	string name = lua_tostring(L, -1);
+
+	(*self)->name = name;
+
+	return 0;
+}
+
 static const luaL_Reg GameObject_Funcs[] = 
 {
 	{ "Create",      GameObject_Create      },
@@ -160,6 +170,7 @@ static const luaL_Reg GameObject_Funcs_Meta[] =
 	{ "RemoveChild",  GameObject_RemoveChild  },
 	{ "SetParent",    GameObject_SetParent    },
 	{ "GetComponent", GameObject_GetComponent },
+	{ "SetName",      GameObject_SetName      },
 	{ NULL, NULL }
 };
 
