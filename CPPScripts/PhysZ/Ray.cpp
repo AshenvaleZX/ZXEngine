@@ -5,8 +5,8 @@ namespace ZXEngine
 	namespace PhysZ
 	{
 		Ray::Ray(const Vector3& origin, const Vector3& direction) :
-			mOrigin(origin), 
-			mDirection(direction) 
+			mOrigin(origin),
+			mDirection(direction.GetNormalized())
 		{}
 
 		string Ray::ToString() const
