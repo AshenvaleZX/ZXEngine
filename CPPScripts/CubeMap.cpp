@@ -2,7 +2,7 @@
 
 namespace ZXEngine
 {
-	CubeMap::CubeMap(vector<string> path)
+	CubeMap::CubeMap(const vector<string>& path)
 	{
 		ID = RenderAPI::GetInstance()->LoadCubeMap(path);
 	}

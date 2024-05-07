@@ -18,6 +18,16 @@ namespace ZXEngine
 	vector<ModelDataLoadHandle> Resources::mDiscardedEditorModelDataLoadHandles;
 #endif
 
+	static const vector<string> mBuiltInSkyBoxPath = 
+	{ 
+		"Textures/BrightSky/right.png",
+		"Textures/BrightSky/left.png",
+		"Textures/BrightSky/up.png",
+		"Textures/BrightSky/down.png",
+		"Textures/BrightSky/front.png",
+		"Textures/BrightSky/back.png"
+	};
+
 	TextureStruct::~TextureStruct()
 	{
 		if (data) delete data;
@@ -184,7 +194,15 @@ namespace ZXEngine
 		json data = Resources::GetAssetData(path);
 		SceneStruct* scene = new SceneStruct;
 
-		scene->skyBox = Resources::LoadCubeMap(data["SkyBox"]);
+		if (data["SkyBox"].is_null())
+		{
+			for (size_t i = 0; i < 6; i++)
+				scene->skyBox.push_back(Resources::GetAssetFullPath(mBuiltInSkyBoxPath[i], true));
+		}
+		else
+		{
+			scene->skyBox = Resources::LoadCubeMap(data["SkyBox"]);
+		}
 
 		if (!data["RenderPipelineType"].is_null())
 			scene->renderPipelineType = data["RenderPipelineType"];

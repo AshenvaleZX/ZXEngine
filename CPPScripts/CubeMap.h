@@ -6,7 +6,7 @@ namespace ZXEngine
 	class CubeMap
 	{
 	public:
-		CubeMap(vector<string> path);
+		CubeMap(const vector<string>& path);
 		~CubeMap();
 
 		unsigned int GetID();
