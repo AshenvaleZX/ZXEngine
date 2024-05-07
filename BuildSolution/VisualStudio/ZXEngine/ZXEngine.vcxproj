@@ -463,6 +463,7 @@
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Animator.h" />
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Camera.h" />
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Collider.h" />
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_GameLogic.h" />
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_GameObject.h" />
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\LuaWrap.h" />
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_InputManager.h" />

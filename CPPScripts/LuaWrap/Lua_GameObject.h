@@ -146,6 +146,14 @@ static int GameObject_GetComponent(lua_State* L)
 		luaL_getmetatable(L, "ZXEngine.MeshRenderer");
 		lua_setmetatable(L, -2);
 	}
+	else if (type == "GameLogic")
+	{
+		size_t nbytes = sizeof(ZXEngine::GameLogic);
+		ZXEngine::GameLogic** t = (ZXEngine::GameLogic**)lua_newuserdata(L, nbytes);
+		*t = (*data)->GetComponent<ZXEngine::GameLogic>();
+		luaL_getmetatable(L, "ZXEngine.GameLogic");
+		lua_setmetatable(L, -2);
+	}
 	else
 	{ 
 		ZXEngine::Debug::LogError("Not find lua wrap component: " + type);

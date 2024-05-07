@@ -262,6 +262,7 @@ set(LuaWrap
     "../../../CPPScripts/LuaWrap/Lua_Camera.h"
     "../../../CPPScripts/LuaWrap/Lua_Collider.h"
     "../../../CPPScripts/LuaWrap/Lua_Debug.h"
+    "../../../CPPScripts/LuaWrap/Lua_GameLogic.h"
     "../../../CPPScripts/LuaWrap/Lua_GameObject.h"
     "../../../CPPScripts/LuaWrap/Lua_InputManager.h"
     "../../../CPPScripts/LuaWrap/Lua_Material.h"

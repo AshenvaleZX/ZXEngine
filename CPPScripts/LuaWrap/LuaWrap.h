@@ -13,6 +13,7 @@
 #include "Lua_Collider.h"
 #include "Lua_MeshRenderer.h"
 #include "Lua_Material.h"
+#include "Lua_GameLogic.h"
 
 static const luaL_Reg myLibs[] = 
 {
@@ -30,6 +31,7 @@ static const luaL_Reg myLibs[] =
     { "Collider",       luaopen_Collider       },
     { "MeshRenderer",   luaopen_MeshRenderer   },
     { "Material",       luaopen_Material       },
+    { "GameLogic",      luaopen_GameLogic      },
     { NULL, NULL }
 };
 
