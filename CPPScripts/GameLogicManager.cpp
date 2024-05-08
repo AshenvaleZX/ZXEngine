@@ -17,9 +17,10 @@ namespace ZXEngine
 
 	void GameLogicManager::Update()
 	{
-		for (auto gameLogic : allGameLogic)
+		// 逆序遍历，因为遍历过程中可能会删除元素
+		for (int i = static_cast<int>(allGameLogic.size()) - 1; i >= 0; i--)
 		{
-			gameLogic->Update();
+			allGameLogic[i]->Update();
 		}
 	}
 
@@ -38,7 +39,9 @@ namespace ZXEngine
 
 	void GameLogicManager::RemoveGameLogic(GameLogic* gameLogic)
 	{
-		auto l = std::find(allGameLogic.begin(), allGameLogic.end(), gameLogic);
-		allGameLogic.erase(l);
+		auto iter = std::find(allGameLogic.begin(), allGameLogic.end(), gameLogic);
+		
+		if (iter != allGameLogic.end())
+			allGameLogic.erase(iter);
 	}
 }

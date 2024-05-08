@@ -20,7 +20,6 @@ namespace ZXEngine
 
 	private:
 		static GameLogicManager* mInstance;
-		list<GameLogic*> allGameLogic;
-
+		vector<GameLogic*> allGameLogic;
 	};
 }

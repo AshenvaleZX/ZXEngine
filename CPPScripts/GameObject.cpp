@@ -174,6 +174,11 @@ namespace ZXEngine
 
 	GameObject::~GameObject()
 	{
+		if (parent)
+			parent->RemoveChild(this, false);
+		else
+			SceneManager::GetInstance()->GetCurScene()->RemoveGameObject(this);
+
 		for (auto& iter : components)
 		{
 			if (iter.first == ComponentType::Transform)
@@ -216,8 +221,8 @@ namespace ZXEngine
 				Debug::LogError("Try delete undefined component type: %s", static_cast<int>(iter.first));
 		}
 
-		for (auto child : children)
-			delete child;
+		for (int i = static_cast<int>(children.size()) - 1; i >= 0; i--)
+			delete children[i];
 	}
 
 	void GameObject::AddComponent(ComponentType type, Component* component)
