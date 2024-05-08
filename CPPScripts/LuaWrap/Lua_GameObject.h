@@ -172,6 +172,34 @@ static int GameObject_SetName(lua_State* L)
 	return 0;
 }
 
+static int GameObject_FindChild(lua_State* L)
+{
+	ZXEngine::GameObject** self = (ZXEngine::GameObject**)luaL_checkudata(L, -2, "ZXEngine.GameObject");
+	string path = lua_tostring(L, -1);
+
+	ZXEngine::GameObject* go = (*self)->FindChildren(path);
+	if (go == nullptr)
+	{
+		lua_pushnil(L);
+		return 1;
+	}
+
+	size_t nbytes = sizeof(ZXEngine::GameObject);
+	ZXEngine::GameObject** t = (ZXEngine::GameObject**)lua_newuserdata(L, nbytes);
+	*t = go;
+	luaL_getmetatable(L, "ZXEngine.GameObject");
+	lua_setmetatable(L, -2);
+
+	return 1;
+}
+
+static int GameObject_Destroy(lua_State* L)
+{
+	ZXEngine::GameObject** self = (ZXEngine::GameObject**)luaL_checkudata(L, -1, "ZXEngine.GameObject");
+	delete (*self);
+	return 0;
+}
+
 static const luaL_Reg GameObject_Funcs[] = 
 {
 	{ "Create",      GameObject_Create      },
@@ -187,6 +215,8 @@ static const luaL_Reg GameObject_Funcs_Meta[] =
 	{ "SetParent",    GameObject_SetParent    },
 	{ "GetComponent", GameObject_GetComponent },
 	{ "SetName",      GameObject_SetName      },
+	{ "FindChild",    GameObject_FindChild    },
+	{ "Destroy",      GameObject_Destroy      },
 	{ NULL, NULL }
 };
 
