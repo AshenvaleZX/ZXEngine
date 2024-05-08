@@ -57,9 +57,9 @@ namespace ZXEngine
 	{
 		delete skyBox;
 
-		for (auto gameObject : gameObjects)
+		for (int i = static_cast<int>(gameObjects.size()) - 1; i >= 0; i--)
 		{
-			delete gameObject;
+			delete gameObjects[i];
 		}
 
 		Resources::ClearAsyncLoad();
