@@ -19,6 +19,7 @@ namespace ZXEngine
 		Model,
 		RayTracingShader,
 		Audio,
+		Text,
 		Count,
 	};
 

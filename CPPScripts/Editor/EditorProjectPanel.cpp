@@ -239,6 +239,8 @@ namespace ZXEngine
 
 		extTypeMap.insert(make_pair<string, AssetType>(".wav",      AssetType::Audio             ));
 		extTypeMap.insert(make_pair<string, AssetType>(".ogg",      AssetType::Audio             ));
+
+		extTypeMap.insert(make_pair<string, AssetType>(".txt",      AssetType::Text              ));
 	}
 
 	AssetType EditorProjectPanel::GetAssetType(const string& extension)
@@ -266,5 +268,6 @@ namespace ZXEngine
 		fileIcons[(int)AssetType::Model]              = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/model.png",    true));
 		fileIcons[(int)AssetType::RayTracingShader]   = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/raytrace.png", true));
 		fileIcons[(int)AssetType::Audio]              = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/audio.png",    true));
+		fileIcons[(int)AssetType::Text]               = ImTextureMgr->LoadTexture(Resources::GetAssetFullPath("Textures/icons/text.png",     true));
 	}
 }

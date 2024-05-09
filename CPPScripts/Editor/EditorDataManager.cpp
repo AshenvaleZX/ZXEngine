@@ -103,6 +103,7 @@ namespace ZXEngine
 				case AssetType::Model:
 				case AssetType::Script:
 				case AssetType::Audio:
+				case AssetType::Text:
 #ifdef _WIN64
 					system(("start " + asset->path).c_str());
 #elif __APPLE__
@@ -122,7 +123,7 @@ namespace ZXEngine
 		DeleteCurAssetInfo();
 		selectedAsset = asset;
 
-		if (asset->type == AssetType::Script)
+		if (asset->type == AssetType::Script || asset->type == AssetType::Text)
 		{
 			auto info = new AssetScriptInfo();
 			info->name = asset->name;
@@ -218,7 +219,8 @@ namespace ZXEngine
 		if (curAssetInfo != nullptr)
 		{
 			// delete上一个AssetInfo的时候需要先把指针映射成对应类型，才能正确调用析构函数，确保内存正确释放
-			if (selectedAsset->type == AssetType::Script)
+			if (selectedAsset->type == AssetType::Script ||
+				selectedAsset->type == AssetType::Text)
 				delete static_cast<AssetScriptInfo*>(curAssetInfo);
 			else if (selectedAsset->type == AssetType::Shader ||
 				selectedAsset->type == AssetType::RayTracingShader)
@@ -226,7 +228,8 @@ namespace ZXEngine
 			else if (selectedAsset->type == AssetType::Texture)
 				delete static_cast<AssetTextureInfo*>(curAssetInfo);
 			else if (selectedAsset->type == AssetType::Material ||
-				selectedAsset->type == AssetType::RayTracingMaterial)
+				selectedAsset->type == AssetType::RayTracingMaterial ||
+				selectedAsset->type == AssetType::DeferredMaterial)
 				delete static_cast<AssetMaterialInfo*>(curAssetInfo);
 			else if (selectedAsset->type == AssetType::Model)
 				delete static_cast<AssetModelInfo*>(curAssetInfo);
