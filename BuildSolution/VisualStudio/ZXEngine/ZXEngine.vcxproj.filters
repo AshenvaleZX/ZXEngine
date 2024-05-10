@@ -1184,5 +1184,8 @@
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_GameLogic.h">
       <Filter>LuaWrap</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_GlobalData.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -15,6 +15,8 @@
 #include "Lua_Material.h"
 #include "Lua_GameLogic.h"
 
+#include "Lua_GlobalData.h"
+
 static const luaL_Reg myLibs[] = 
 {
     { "Debug",          luaopen_Debug          },
@@ -44,4 +46,6 @@ LUALIB_API void luaL_openMyLibs(lua_State* L)
         // remove lib
         lua_pop(L, 1);
     }
+
+    luaopen_GlobalData(L);
 }
