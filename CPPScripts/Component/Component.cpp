@@ -20,7 +20,7 @@ namespace ZXEngine
 
 	bool Component::IsActive() const
 	{
-		return mEnabled && gameObject->mActive;
+		return mEnabled && gameObject->IsActive();
 	}
 
 	Transform* Component::GetTransform() const

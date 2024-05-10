@@ -70,6 +70,18 @@ namespace ZXEngine
 		mIsAwake = true;
 	}
 
+	bool GameObject::IsActive() const
+	{
+		return mActive;
+	}
+
+	void GameObject::SetActive(bool active)
+	{
+		mActive = active;
+		for (auto child : children)
+			child->SetActive(active);
+	}
+
 	void GameObject::AddChild(GameObject* child)
 	{
 		Vector3 pos = child->GetComponent<Transform>()->GetPosition();

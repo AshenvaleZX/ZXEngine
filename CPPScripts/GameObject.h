@@ -39,7 +39,6 @@ namespace ZXEngine
 	public:
 		string name;
 		uint32_t layer = 0;
-		bool mActive = true;
 		GameObject* parent = nullptr;
 		vector<GameObject*> children;
 		PhysZ::ColliderType mColliderType = PhysZ::ColliderType::None;
@@ -55,6 +54,8 @@ namespace ZXEngine
 		template<class T>
 		inline T* AddComponent();
 
+		bool IsActive() const;
+		void SetActive(bool active);
 		void AddChild(GameObject* child);
 		void RemoveChild(GameObject* child, bool toRoot = true);
 		void SetParent(GameObject* parent);
@@ -63,6 +64,7 @@ namespace ZXEngine
 		void EndConstruction();
 
 	private:
+		bool mActive = true;
 		bool mIsAwake = false;
 		multimap<ComponentType, Component*> components = {};
 		vector<std::function<void()>> mConstructionCallBacks;

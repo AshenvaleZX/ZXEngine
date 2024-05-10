@@ -60,7 +60,7 @@ static int GameObject_SetActive(lua_State* L)
 	ZXEngine::GameObject** self = (ZXEngine::GameObject**)luaL_checkudata(L, -2, "ZXEngine.GameObject");
 	bool active = lua_toboolean(L, -1);
 
-	(*self)->mActive = active;
+	(*self)->SetActive(active);
 
 	return 0;
 }

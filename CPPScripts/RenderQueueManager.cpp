@@ -50,7 +50,7 @@ namespace ZXEngine
 	{
 		if (gameObject->layer == (int)GameObjectLayer::UI)
 		{
-			if (gameObject->mActive)
+			if (gameObject->IsActive())
 			{
 				AddUIGameObject(gameObject);
 			}
