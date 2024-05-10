@@ -10,6 +10,56 @@ extern "C"
 #include "../External/Lua/lauxlib.h"
 }
 
+static int Camera_WorldToScreenPoint(lua_State* L)
+{
+	ZXEngine::Vector2 screenPos;
+
+	int argc = lua_gettop(L);
+	if (argc == 2)
+	{
+		ZXEngine::Camera** camera = (ZXEngine::Camera**)luaL_checkudata(L, -2, "ZXEngine.Camera");
+
+		lua_getfield(L, -1, "x");
+		float x = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "y");
+		float y = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "z");
+		float z = (float)luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+
+		ZXEngine::Vector3 pos = { x, y, z };
+
+		screenPos = (*camera)->WorldToScreenPoint(pos);
+	}
+	else if (argc == 4)
+	{
+		ZXEngine::Camera** camera = (ZXEngine::Camera**)luaL_checkudata(L, -4, "ZXEngine.Camera");
+
+		float x = (float)luaL_checknumber(L, -3);
+		float y = (float)luaL_checknumber(L, -2);
+		float z = (float)luaL_checknumber(L, -1);
+
+		ZXEngine::Vector3 pos = { x, y, z };
+
+		screenPos = (*camera)->WorldToScreenPoint(pos);
+	}
+	else
+	{
+		luaL_error(L, "Wrong number of arguments in 'WorldToScreenPoint' function!");
+		return 0;
+	}
+
+	lua_newtable(L);
+	lua_pushnumber(L, screenPos.x);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, screenPos.y);
+	lua_setfield(L, -2, "y");
+
+	return 1;
+}
+
 static int Camera_ScreenPointToRay(lua_State* L)
 {
 	ZXEngine::Camera** camera = (ZXEngine::Camera**)luaL_checkudata(L, -2, "ZXEngine.Camera");
@@ -43,7 +93,8 @@ static const luaL_Reg Camera_Funcs[] =
 
 static const luaL_Reg Camera_Funcs_Meta[] =
 {
-	{ "ScreenPointToRay",   Camera_ScreenPointToRay },
+	{ "WorldToScreenPoint", Camera_WorldToScreenPoint },
+	{ "ScreenPointToRay",   Camera_ScreenPointToRay   },
 	{ NULL, NULL }
 };
 

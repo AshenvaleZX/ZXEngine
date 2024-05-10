@@ -30,12 +30,13 @@ namespace ZXEngine
 
         virtual ComponentType GetInsType();
 
-        Matrix4 GetViewMatrix();
-        Matrix4 GetViewMatrixInverse();
+        Matrix4 GetViewMatrix() const;
+        Matrix4 GetViewMatrixInverse() const;
 
-        Matrix4 GetProjectionMatrix();
-        Matrix4 GetProjectionMatrixInverse();
+        Matrix4 GetProjectionMatrix() const;
+        Matrix4 GetProjectionMatrixInverse() const;
 
-        PhysZ::Ray ScreenPointToRay(const Vector2& point);
+        Vector2 WorldToScreenPoint(const Vector3& point) const;
+        PhysZ::Ray ScreenPointToRay(const Vector2& point) const;
 	};
 }
