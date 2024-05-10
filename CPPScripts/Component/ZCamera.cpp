@@ -71,7 +71,11 @@ namespace ZXEngine
 		Debug::Log("Pos: %s", pos);
 		return Vector2(
 			(pos.x + 1.0f) * 0.5f * static_cast<float>(GlobalData::srcWidth),
+#ifdef ZX_API_VULKAN
+			(pos.y + 1.0f) * 0.5f * static_cast<float>(GlobalData::srcHeight)
+#else
 			(1.0f - pos.y) * 0.5f * static_cast<float>(GlobalData::srcHeight)
+#endif
 		);
 	}
 
