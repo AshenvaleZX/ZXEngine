@@ -79,6 +79,9 @@ namespace ZXEngine
 
 	void GameLogic::Update()
 	{
+		if (!IsActive())
+			return;
+
 		if (firstCall)
 		{
 			Start();
@@ -90,6 +93,9 @@ namespace ZXEngine
 
 	void GameLogic::FixedUpdate()
 	{
+		if (!IsActive())
+			return;
+
 		CallLuaFunction("FixedUpdate");
 	}
 

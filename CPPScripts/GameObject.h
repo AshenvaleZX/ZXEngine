@@ -39,6 +39,7 @@ namespace ZXEngine
 	public:
 		string name;
 		uint32_t layer = 0;
+		bool mActive = true;
 		GameObject* parent = nullptr;
 		vector<GameObject*> children;
 		PhysZ::ColliderType mColliderType = PhysZ::ColliderType::None;

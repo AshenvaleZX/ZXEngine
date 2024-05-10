@@ -24,12 +24,12 @@ namespace ZXEngine
 		{
 			// 绘制UI图片
 			auto uiTextureRenderer = uiGameObject->GetComponent<UITextureRenderer>();
-			if (uiTextureRenderer != nullptr)
+			if (uiTextureRenderer != nullptr && uiTextureRenderer->IsActive())
 				uiTextureRenderer->Render();
 
 			// 绘制UI文本
 			auto uiTextRenderer = uiGameObject->GetComponent<UITextRenderer>();
-			if (uiTextRenderer != nullptr)
+			if (uiTextRenderer != nullptr && uiTextRenderer->IsActive())
 				uiTextRenderer->Render();
 		}
 

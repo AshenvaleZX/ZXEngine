@@ -18,6 +18,11 @@ namespace ZXEngine
 		mIsAwake = true; 
 	};
 
+	bool Component::IsActive() const
+	{
+		return mEnabled && gameObject->mActive;
+	}
+
 	Transform* Component::GetTransform()
 	{
 		return gameObject->GetComponent<Transform>();

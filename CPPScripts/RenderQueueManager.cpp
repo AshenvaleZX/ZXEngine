@@ -50,12 +50,15 @@ namespace ZXEngine
 	{
 		if (gameObject->layer == (int)GameObjectLayer::UI)
 		{
-			AddUIGameObject(gameObject);
+			if (gameObject->mActive)
+			{
+				AddUIGameObject(gameObject);
+			}
 		}
 		else
 		{
 			MeshRenderer* meshRenderer = gameObject->GetComponent<MeshRenderer>();
-			if (meshRenderer != nullptr && meshRenderer->mEnabled)
+			if (meshRenderer != nullptr && meshRenderer->IsActive())
 			{
 				AddRenderer(meshRenderer);
 			}
