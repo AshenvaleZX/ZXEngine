@@ -51,7 +51,7 @@ namespace ZXEngine
 		void Awake();
 
 		template<class T> 
-		inline T* GetComponent();
+		inline T* GetComponent() const;
 		template<class T>
 		inline T* AddComponent();
 
@@ -87,7 +87,7 @@ namespace ZXEngine
 	};
 
 	template<class T>
-	inline T* GameObject::GetComponent()
+	inline T* GameObject::GetComponent() const
 	{
 		ComponentType type = T::GetType();
 

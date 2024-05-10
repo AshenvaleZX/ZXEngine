@@ -23,7 +23,7 @@ namespace ZXEngine
 		return mEnabled && gameObject->mActive;
 	}
 
-	Transform* Component::GetTransform()
+	Transform* Component::GetTransform() const
 	{
 		return gameObject->GetComponent<Transform>();
 	}

@@ -22,7 +22,7 @@ namespace ZXEngine
 		virtual ComponentType GetInsType() = 0;
 
 		bool IsActive() const;
-		Transform* GetTransform();
+		Transform* GetTransform() const;
 
 	protected:
 		bool mIsAwake = false;
