@@ -9,6 +9,16 @@ extern "C"
 #include "../External/Lua/lauxlib.h"
 }
 
+static int MeshRenderer_SetEnable(lua_State* L)
+{
+	ZXEngine::MeshRenderer** self = (ZXEngine::MeshRenderer**)luaL_checkudata(L, -1, "ZXEngine.MeshRenderer");
+
+	bool enable = lua_toboolean(L, -2);
+	(*self)->mEnabled = enable;
+
+	return 0;
+}
+
 static int MeshRenderer_GetMaterial(lua_State* L)
 {
 	ZXEngine::MeshRenderer** self = (ZXEngine::MeshRenderer**)luaL_checkudata(L, -1, "ZXEngine.MeshRenderer");
@@ -30,6 +40,7 @@ static const luaL_Reg MeshRenderer_Funcs[] =
 
 static const luaL_Reg MeshRenderer_Funcs_Meta[] =
 {
+	{ "SetEnable",   MeshRenderer_SetEnable   },
 	{ "GetMaterial", MeshRenderer_GetMaterial },
 	{ NULL, NULL }
 };

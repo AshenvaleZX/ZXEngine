@@ -55,6 +55,16 @@ static int GameObject_Find(lua_State* L)
 	return 1;
 }
 
+static int GameObject_SetActive(lua_State* L)
+{
+	ZXEngine::GameObject** self = (ZXEngine::GameObject**)luaL_checkudata(L, -2, "ZXEngine.GameObject");
+	bool active = lua_toboolean(L, -1);
+
+	(*self)->mActive = active;
+
+	return 0;
+}
+
 static int GameObject_AddChild(lua_State* L)
 {
 	ZXEngine::GameObject** self = (ZXEngine::GameObject**)luaL_checkudata(L, -2, "ZXEngine.GameObject");
@@ -210,6 +220,7 @@ static const luaL_Reg GameObject_Funcs[] =
 
 static const luaL_Reg GameObject_Funcs_Meta[] = 
 {
+	{ "SetActive",    GameObject_SetActive    },
 	{ "AddChild",     GameObject_AddChild     },
 	{ "RemoveChild",  GameObject_RemoveChild  },
 	{ "SetParent",    GameObject_SetParent    },
