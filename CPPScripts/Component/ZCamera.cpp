@@ -68,7 +68,6 @@ namespace ZXEngine
 		Vector4 pos = GetProjectionMatrix() * GetViewMatrix() * point.ToPosVec4();
 		pos = pos / pos.w;
 
-		Debug::Log("Pos: %s", pos);
 		return Vector2(
 			(pos.x + 1.0f) * 0.5f * static_cast<float>(GlobalData::srcWidth),
 #ifdef ZX_API_VULKAN
