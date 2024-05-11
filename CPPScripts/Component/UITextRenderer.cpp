@@ -35,10 +35,15 @@ namespace ZXEngine
             GenerateRenderData();
         }
 
+        Matrix4 mat_M = GetTransform()->GetModelMatrix();
+        Matrix4 mat_P = Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
+
         auto renderAPI = RenderAPI::GetInstance();
         for (size_t i = 0; i < length; i++)
         {
             textMaterials[i]->Use();
+            textMaterials[i]->SetMatrix("ENGINE_Model", mat_M, true);
+            textMaterials[i]->SetMatrix("ENGINE_Projection", mat_P, true);
             renderAPI->Draw(textMeshes[i]->VAO);
         }
     }
@@ -52,8 +57,6 @@ namespace ZXEngine
     void UITextRenderer::GenerateRenderData()
     {
         float tmpX = 0, tmpY = 0;
-        Matrix4 mat_M = GetTransform()->GetModelMatrix();
-        Matrix4 mat_P = Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
 
         auto characterMgr = TextCharactersManager::GetInstance();
 
@@ -111,8 +114,6 @@ namespace ZXEngine
             charMaterial->Use();
             charMaterial->SetVector("_TextColor", color, true);
             charMaterial->SetTexture("_Text", ch.TextureID, 0, true);
-            charMaterial->SetMatrix("ENGINE_Model", mat_M, true);
-            charMaterial->SetMatrix("ENGINE_Projection", mat_P, true);
             textMaterials.push_back(charMaterial);
 
             // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
