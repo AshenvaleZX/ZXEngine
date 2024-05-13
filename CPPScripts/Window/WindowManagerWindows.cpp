@@ -47,7 +47,7 @@ namespace ZXEngine
 
 	void WindowManagerWindows::CloseWindow(string args)
 	{
-		
+		PostQuitMessage(0);
 	}
 
 	bool WindowManagerWindows::WindowShouldClose()
