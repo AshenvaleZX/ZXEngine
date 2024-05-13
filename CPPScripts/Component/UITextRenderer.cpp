@@ -54,18 +54,66 @@ namespace ZXEngine
         this->text = text;
     }
 
+    void UITextRenderer::SetHorizonAlignment(TextHorizonAlignment align)
+    {
+		dirty = true;
+		hAlign = align;
+	}
+
+    TextHorizonAlignment UITextRenderer::GetHorizonAlignment() const
+    {
+		return hAlign;
+	}
+
+    void UITextRenderer::SetVerticalAlignment(TextVerticalAlignment align)
+    {
+        dirty = true;
+        vAlign = align;
+    }
+
+    TextVerticalAlignment UITextRenderer::GetVerticalAlignment() const
+    {
+		return vAlign;
+	}
+
     void UITextRenderer::GenerateRenderData()
     {
-        float tmpX = 0, tmpY = 0;
-
         auto characterMgr = TextCharactersManager::GetInstance();
 
-        length = 0;
-        // 遍历字符串的每个字符
+        mTextWidth = 0.0f;
+        mTextHeight = 0.0f;
         string::const_iterator c;
         for (c = text.begin(); c != text.end(); c++)
         {
-            Character ch = characterMgr->Characters[*c];
+            const Character& ch = characterMgr->Characters[*c];
+            mTextWidth += (ch.Advance >> 6) * size;
+            mTextHeight = Math::Max(mTextHeight, ch.Size[1] * size);
+        }
+
+        float tmpX = 0.0f;
+        if (hAlign == TextHorizonAlignment::Center)
+        {
+			tmpX = -mTextWidth / 2.0f;
+		}
+        else if (hAlign == TextHorizonAlignment::Right)
+        {
+			tmpX = -mTextWidth;
+		}
+
+        float tmpY = 0.0f;
+        if (vAlign == TextVerticalAlignment::Center)
+        {
+            tmpY = -mTextHeight / 2.0f;
+        }
+        else if (vAlign == TextVerticalAlignment::Bottom)
+        {
+			tmpY = -mTextHeight;
+		}
+
+        length = 0;
+        for (c = text.begin(); c != text.end(); c++)
+        {
+            const Character& ch = characterMgr->Characters[*c];
 
             // 如果遇到空格等无实际图像的字符，直接后移一段距离空出来，不做实际渲染
             if (ch.TextureID == UINT32_MAX)

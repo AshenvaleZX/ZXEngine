@@ -5,13 +5,15 @@
     [
         {
             "Type": "Transform",
-            "Position": [-620, 320, 0],
+            "Position": [-620, 330, 0],
             "Rotation": [0, 0, 0],
             "Scale": [1, 1, 1]
         },
         {
             "Type": "UITextRenderer",
-            "Text": "ZX Test FPS",
+            "Text": "FPS: 0",
+            "HorizonAlignment": 0,
+            "VerticalAlignment": 1,
             "Color": [1, 1, 1, 1],
             "Size": 0.5
         },

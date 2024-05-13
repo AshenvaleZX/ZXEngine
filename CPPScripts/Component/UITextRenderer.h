@@ -4,6 +4,20 @@
 
 namespace ZXEngine
 {
+	enum class TextHorizonAlignment
+	{
+		Left,
+		Center,
+		Right
+	};
+
+	enum class TextVerticalAlignment
+	{
+		Top,
+		Center,
+		Bottom
+	};
+
 	// 固定的字形Mesh顶点采样纹理UV
 	const Vector2 GlyphCoords[4] = { Vector2(0, 1), Vector2(0, 0), Vector2(1, 1), Vector2(1, 0) };
 	// 固定的字形Mesh三角形顶点数组
@@ -23,7 +37,9 @@ namespace ZXEngine
 
 	public:
 		Vector4 color;
-		float size = 1;
+		float size = 1.0f;
+		float mTextWidth = 0.0f;
+		float mTextHeight = 0.0f;
 
 		UITextRenderer();
 		~UITextRenderer() {};
@@ -32,6 +48,10 @@ namespace ZXEngine
 
 		void Render();
 		void SetContent(const string& text);
+		void SetHorizonAlignment(TextHorizonAlignment align);
+		TextHorizonAlignment GetHorizonAlignment() const;
+		void SetVerticalAlignment(TextVerticalAlignment align);
+		TextVerticalAlignment GetVerticalAlignment() const;
 
 	private:
 		// 当前渲染的文本
@@ -40,6 +60,10 @@ namespace ZXEngine
 		vector<DynamicMesh*> textMeshes;
 		// 实际分配了渲染资源的字符数量(不包括空格等无实际图像字符)
 		size_t length = 0;
+
+		TextHorizonAlignment hAlign = TextHorizonAlignment::Center;
+		TextVerticalAlignment vAlign = TextVerticalAlignment::Center;
+		
 		// 文本是否发生了变化
 		bool dirty = false;
 

@@ -420,16 +420,53 @@ namespace ZXEngine
 			return;
 
 		char* text = (char*)component->text.c_str();
-		ImGui::Text("Text  ");
+		ImGui::Text("Text               ");
 		ImGui::SameLine(); ImGui::InputTextMultiline("##text", text, 256);
+		component->SetContent(text);
 
 		float size = component->size;
-		ImGui::Text("Size  ");
+		ImGui::Text("Size               ");
 		ImGui::SameLine(); ImGui::DragFloat("##Size", &size, 0.1f, 0.0f, FLT_MAX);
+
+		TextHorizonAlignment hAlign = component->GetHorizonAlignment();
+		static const char* hAlignItems[] = { "Left", "Center", "Right" };
+		int hAlignItemCurrentIdx = (int)hAlign;
+		const char* hAlignComboPreviewValue = hAlignItems[hAlignItemCurrentIdx];
+		ImGui::Text("Horizon Alignment  ");
+		ImGui::SameLine();
+		if (ImGui::BeginCombo("##HorizonAlignment", hAlignComboPreviewValue, 0))
+		{
+			for (int i = 0; i < IM_ARRAYSIZE(hAlignItems); i++)
+			{
+				const bool is_selected = (hAlignItemCurrentIdx == i);
+				if (ImGui::Selectable(hAlignItems[i], is_selected))
+					hAlignItemCurrentIdx = i;
+			}
+			ImGui::EndCombo();
+		}
+		component->SetHorizonAlignment((TextHorizonAlignment)hAlignItemCurrentIdx);
+
+		TextVerticalAlignment vAlign = component->GetVerticalAlignment();
+		static const char* vAlignItems[] = { "Top", "Center", "Bottom" };
+		int vAlignItemCurrentIdx = (int)vAlign;
+		const char* vAlignComboPreviewValue = vAlignItems[vAlignItemCurrentIdx];
+		ImGui::Text("Vertical Alignment ");
+		ImGui::SameLine();
+		if (ImGui::BeginCombo("##VerticalAlignment", vAlignComboPreviewValue, 0))
+		{
+			for (int i = 0; i < IM_ARRAYSIZE(vAlignItems); i++)
+			{
+				const bool is_selected = (vAlignItemCurrentIdx == i);
+				if (ImGui::Selectable(vAlignItems[i], is_selected))
+					vAlignItemCurrentIdx = i;
+			}
+			ImGui::EndCombo();
+		}
+		component->SetVerticalAlignment((TextVerticalAlignment)vAlignItemCurrentIdx);
 
 		Vector3 textColor = component->color;
 		ImVec4 color = ImVec4(textColor.r, textColor.g, textColor.b, 1.0f);
-		ImGui::Text("Color ");
+		ImGui::Text("Color              ");
 		ImGui::SameLine(); ImGui::ColorEdit3("##color", (float*)&color);
 	}
 

@@ -5,13 +5,15 @@
     [
         {
             "Type": "Transform",
-            "Position": [-75, 320, 0],
+            "Position": [0, 330, 0],
             "Rotation": [0, 0, 0],
             "Scale": [1, 1, 1]
         },
         {
             "Type": "UITextRenderer",
             "Text": "Demo Project",
+            "HorizonAlignment": 1,
+            "VerticalAlignment": 1,
             "Color": [0.2, 1, 0.2, 1],
             "Size": 0.5
         }

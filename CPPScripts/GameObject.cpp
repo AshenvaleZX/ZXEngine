@@ -348,6 +348,8 @@ namespace ZXEngine
 
 		uiTextRenderer->size = data["Size"];
 		uiTextRenderer->SetContent(data["Text"]);
+		uiTextRenderer->SetHorizonAlignment(data["HorizonAlignment"]);
+		uiTextRenderer->SetVerticalAlignment(data["VerticalAlignment"]);
 		uiTextRenderer->color = Vector4(data["Color"][0], data["Color"][1], data["Color"][2], data["Color"][3]);
 	}
 
