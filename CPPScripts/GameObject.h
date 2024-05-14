@@ -7,6 +7,7 @@
 #include "Component/ZCamera.h"
 #include "Component/Light.h"
 #include "Component/GameLogic.h"
+#include "Component/UIButton.h"
 #include "Component/UITextRenderer.h"
 #include "Component/UITextureRenderer.h"
 #include "Component/ParticleSystem.h"
@@ -74,6 +75,7 @@ namespace ZXEngine
 		void ParseCamera(json data);
 		void ParseLight(json data);
 		void ParseGameLogic(json data);
+		void ParseUIButton(json data);
 		void ParseUITextRenderer(json data);
 		void ParseUITextureRenderer(json data);
 		void ParseParticleSystem(json data);

@@ -200,6 +200,7 @@
     <ClCompile Include="..\..\..\CPPScripts\Component\Physics\ZDistanceJoint.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Component\Physics\ZRigidBody.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Component\Transform.cpp" />
+    <ClCompile Include="..\..\..\CPPScripts\Component\UIButton.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Component\UITextRenderer.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Component\UITextureRenderer.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Component\ZCamera.cpp" />
@@ -378,6 +379,7 @@
     <ClInclude Include="..\..\..\CPPScripts\Component\Physics\ZDistanceJoint.h" />
     <ClInclude Include="..\..\..\CPPScripts\Component\Physics\ZRigidBody.h" />
     <ClInclude Include="..\..\..\CPPScripts\Component\Transform.h" />
+    <ClInclude Include="..\..\..\CPPScripts\Component\UIButton.h" />
     <ClInclude Include="..\..\..\CPPScripts\Component\UITextRenderer.h" />
     <ClInclude Include="..\..\..\CPPScripts\Component\UITextureRenderer.h" />
     <ClInclude Include="..\..\..\CPPScripts\Component\ZCamera.h" />
@@ -476,6 +478,7 @@
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Transform.h" />
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Debug.h" />
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Resources.h" />
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_UIButton.h" />
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_UITextRenderer.h" />
     <ClInclude Include="..\..\..\CPPScripts\Material.h" />
     <ClInclude Include="..\..\..\CPPScripts\MaterialData.h" />

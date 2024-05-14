@@ -149,6 +149,8 @@ namespace ZXEngine
 				ParseLight(component);
 			else if (component["Type"] == "GameLogic")
 				ParseGameLogic(component);
+			else if (component["Type"] == "UIButton")
+				ParseUIButton(component);
 			else if (component["Type"] == "UITextRenderer")
 				ParseUITextRenderer(component);
 			else if (component["Type"] == "UITextureRenderer")
@@ -203,6 +205,8 @@ namespace ZXEngine
 				delete static_cast<Light*>(iter.second);
 			else if (iter.first == ComponentType::GameLogic)
 				delete static_cast<GameLogic*>(iter.second);
+			else if (iter.first == ComponentType::UIButton)
+				delete static_cast<UIButton*>(iter.second);
 			else if (iter.first == ComponentType::UITextRenderer)
 				delete static_cast<UITextRenderer*>(iter.second);
 			else if (iter.first == ComponentType::UITextureRenderer)
@@ -340,6 +344,14 @@ namespace ZXEngine
 		string p = Resources::JsonStrToString(data["Lua"]);
 		gameLogic->luaName = Resources::GetAssetName(p);
 		gameLogic->luaFullPath = Resources::GetAssetFullPath(p);
+	}
+
+	void GameObject::ParseUIButton(json data)
+	{
+		UIButton* uiButton = AddComponent<UIButton>();
+
+		uiButton->mWidth = data["Width"];
+		uiButton->mHeight = data["Height"];
 	}
 
 	void GameObject::ParseUITextRenderer(json data)

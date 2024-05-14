@@ -157,6 +157,7 @@ namespace ZXEngine
 		DistanceJoint,
 		Cloth,
 		AudioSource,
+		UIButton,
 	};
 
 	enum class FaceCullOption

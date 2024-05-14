@@ -14,6 +14,7 @@
 #include "Lua_MeshRenderer.h"
 #include "Lua_Material.h"
 #include "Lua_GameLogic.h"
+#include "Lua_UIButton.h"
 
 #include "Lua_GlobalData.h"
 
@@ -34,6 +35,7 @@ static const luaL_Reg myLibs[] =
     { "MeshRenderer",   luaopen_MeshRenderer   },
     { "Material",       luaopen_Material       },
     { "GameLogic",      luaopen_GameLogic      },
+    { "UIButton",       luaopen_UIButton       },
     { NULL, NULL }
 };
 

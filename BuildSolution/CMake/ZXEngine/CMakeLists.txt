@@ -62,6 +62,8 @@ set(Component
     "../../../CPPScripts/Component/ParticleSystem.h"
     "../../../CPPScripts/Component/Transform.cpp"
     "../../../CPPScripts/Component/Transform.h"
+    "../../../CPPScripts/Component/UIButton.cpp"
+    "../../../CPPScripts/Component/UIButton.h"
     "../../../CPPScripts/Component/UITextRenderer.cpp"
     "../../../CPPScripts/Component/UITextRenderer.h"
     "../../../CPPScripts/Component/UITextureRenderer.cpp"
@@ -273,6 +275,7 @@ set(LuaWrap
     "../../../CPPScripts/LuaWrap/Lua_Rigidbody.h"
     "../../../CPPScripts/LuaWrap/Lua_Time.h"
     "../../../CPPScripts/LuaWrap/Lua_Transform.h"
+    "../../../CPPScripts/LuaWrap/Lua_UIButton.h"
     "../../../CPPScripts/LuaWrap/Lua_UITextRenderer.h"
     "../../../CPPScripts/LuaWrap/LuaWrap.h"
 )

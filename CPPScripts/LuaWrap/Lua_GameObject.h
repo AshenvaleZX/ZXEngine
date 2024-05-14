@@ -164,6 +164,14 @@ static int GameObject_GetComponent(lua_State* L)
 		luaL_getmetatable(L, "ZXEngine.GameLogic");
 		lua_setmetatable(L, -2);
 	}
+	else if (type == "UIButton")
+	{
+		size_t nbytes = sizeof(ZXEngine::UIButton);
+		ZXEngine::UIButton** t = (ZXEngine::UIButton**)lua_newuserdata(L, nbytes);
+		*t = (*data)->GetComponent<ZXEngine::UIButton>();
+		luaL_getmetatable(L, "ZXEngine.UIButton");
+		lua_setmetatable(L, -2);
+	}
 	else
 	{ 
 		ZXEngine::Debug::LogError("Not find lua wrap component: " + type);

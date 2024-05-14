@@ -591,6 +591,9 @@
     <ClCompile Include="..\..\..\CPPScripts\PhysZ\Ray.cpp">
       <Filter>PhysZ</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\Component\UIButton.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\CPPScripts\GameObject.h">
@@ -1185,6 +1188,12 @@
       <Filter>LuaWrap</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_GlobalData.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Component\UIButton.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_UIButton.h">
       <Filter>LuaWrap</Filter>
     </ClInclude>
   </ItemGroup>
