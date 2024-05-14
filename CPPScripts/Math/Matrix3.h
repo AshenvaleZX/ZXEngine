@@ -27,6 +27,7 @@ namespace ZXEngine
 		Matrix3(const Vector3& axis, float angle);
 
 		float GetDeterminant() const;
+		float Get(uint32_t row, uint32_t col) const;
 		Vector3 GetRow(uint32_t index) const;
 		Vector3 GetColumn(uint32_t index) const;
 
@@ -51,11 +52,18 @@ namespace ZXEngine
 		friend Matrix3 operator* (float n, const Matrix3& mat);
 
 	private:
-		// 第一行
-		float m00; float m01; float m02;
-		// 第二行
-		float m10; float m11; float m12;
-		// 第三行
-		float m20; float m21; float m22;
+		union
+		{
+			float m[3][3];
+			struct
+			{
+				// 第一行
+				float m00; float m01; float m02;
+				// 第二行
+				float m10; float m11; float m12;
+				// 第三行
+				float m20; float m21; float m22;
+			};
+		};
 	};
 }

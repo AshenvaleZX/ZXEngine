@@ -81,6 +81,11 @@ namespace ZXEngine
 			(m02 * m11 * m20) - (m00 * m12 * m21) - (m01 * m10 * m22);
 	}
 
+	float Matrix3::Get(uint32_t row, uint32_t col) const
+	{
+		return m[row][col];
+	}
+
 	Vector3 Matrix3::GetRow(uint32_t index) const
 	{
 		switch (index)

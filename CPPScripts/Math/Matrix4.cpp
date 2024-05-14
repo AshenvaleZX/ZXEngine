@@ -68,6 +68,11 @@ namespace ZXEngine
 		return m00 * a00 + m01 * a01 + m02 * a02 + m03 * a03;
 	}
 
+	float Matrix4::Get(uint32_t row, uint32_t col) const
+	{
+		return m[row][col];
+	}
+
 	Vector4 Matrix4::GetRow(uint32_t index) const
 	{
 		switch (index)

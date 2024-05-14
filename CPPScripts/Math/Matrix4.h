@@ -23,6 +23,7 @@ namespace ZXEngine
 		);
 
 		float GetDeterminant() const;
+		float Get(uint32_t row, uint32_t col) const;
 		Vector4 GetRow(uint32_t index) const;
 		Vector4 GetColumn(uint32_t index) const;
 
@@ -47,13 +48,20 @@ namespace ZXEngine
 		friend Matrix4 operator* (float n, const Matrix4& mat);
 
 	private:
-		// 第一行
-		float m00; float m01; float m02; float m03;
-		// 第二行
-		float m10; float m11; float m12; float m13;
-		// 第三行
-		float m20; float m21; float m22; float m23;
-		// 第四行
-		float m30; float m31; float m32; float m33;
+		union
+		{
+			float m[4][4];
+			struct
+			{
+				// 第一行
+				float m00; float m01; float m02; float m03;
+				// 第二行
+				float m10; float m11; float m12; float m13;
+				// 第三行
+				float m20; float m21; float m22; float m23;
+				// 第四行
+				float m30; float m31; float m32; float m33;
+			};
+		};
 	};
 }
