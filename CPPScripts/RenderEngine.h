@@ -17,7 +17,7 @@ namespace ZXEngine
 		RenderEngine();
 		~RenderEngine() {};
 
-		void CloseWindow(string args);
+		void CloseWindow(const string& args);
 		int WindowShouldClose();
 
 		// »æÖÆ

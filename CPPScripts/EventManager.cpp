@@ -15,26 +15,68 @@ namespace ZXEngine
         return mInstance;
     }
 
-    void EventManager::AddEventHandler(int id, std::function<void(string)> callBack)
+    void EventManager::FireEvent(int id, const string& args)
     {
-        callBackMap.insert(pair<int, std::function<void(string)>>(id, callBack));
+        auto iter = mCallBackMap.find(id);
+        if (iter != mCallBackMap.end())
+        {
+            for (auto iter2 = iter->second.begin(); iter2 != iter->second.end(); ++iter2)
+            {
+				iter2->second(args);
+			}
+        }
+        LuaManager::GetInstance()->CallFunction("EngineEvent", "FireEvent", (to_string(id) + "," + args).c_str());
     }
 
-    void EventManager::RemoveEventHandler()
+    uint32_t EventManager::AddEventHandler(int id, std::function<void(const string&)> callBack)
     {
+        uint32_t key;
+        if (mFreeKeys.empty())
+        {
+			key = mNextKey++;
+		}
+        else
+        {
+			key = mFreeKeys.front();
+			mFreeKeys.pop();
+		}
+
+        mCallBackMap[id][key] = callBack;
+
+        return key;
+    }
+
+    void EventManager::RemoveEventHandler(int id, uint32_t key)
+    {
+        auto iter = mCallBackMap.find(id);
+        if (iter != mCallBackMap.end())
+        {
+			auto iter2 = iter->second.find(key);
+            if (iter2 != iter->second.end())
+            {
+				iter->second.erase(iter2);
+				mFreeKeys.push(key);
+			}
+		}
     }
 
     void EventManager::ClearEventHandler()
     {
+        mNextKey = 0;
+		mCallBackMap.clear();
+		mFreeKeys = std::queue<uint32_t>();
     }
 
-    void EventManager::FireEvent(int id, const string& args)
+    void EventManager::ClearEventHandler(int id)
     {
-        auto iter = callBackMap.find(id);
-        if (iter != callBackMap.end()) 
+        auto iter = mCallBackMap.find(id);
+        if (iter != mCallBackMap.end())
         {
-            iter->second(args);
+            for (auto iter2 = iter->second.begin(); iter2 != iter->second.end(); ++iter2)
+            {
+				mFreeKeys.push(iter2->first);
+			}
+            mCallBackMap.erase(iter);
         }
-        LuaManager::GetInstance()->CallFunction("EngineEvent", "FireEvent", (to_string(id) + "," + args).c_str());
     }
 }
