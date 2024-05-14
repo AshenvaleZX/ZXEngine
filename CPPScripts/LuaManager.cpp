@@ -115,6 +115,32 @@ namespace ZXEngine
 		InitLuaState();
 	}
 
+	void LuaManager::Unref(int ref)
+	{
+		luaL_unref(L, LUA_REGISTRYINDEX, ref);
+	}
+
+	void LuaManager::CallFunction(int table, int func)
+	{
+		// 函数入栈
+		lua_rawgeti(L, LUA_REGISTRYINDEX, func);
+		// table入栈
+		lua_rawgeti(L, LUA_REGISTRYINDEX, table);
+
+		if (lua_isfunction(L, -2))
+		{
+			// 调用函数，1参数，0返回值
+			if (lua_pcall(L, 1, 0, 0) != LUA_OK)
+			{
+				Debug::LogError(lua_tostring(L, -1));
+			}
+		}
+		else
+		{
+			Debug::LogWarning("Called invalid function: " + (string)lua_tostring(L, -2));
+		}
+	}
+
 	void LuaManager::CallFunction(const char* table, const char* func, const char* msg, bool self)
 	{
 		// 记录当前栈大小
