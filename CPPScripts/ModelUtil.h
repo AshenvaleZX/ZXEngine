@@ -18,7 +18,7 @@ namespace ZXEngine
 		// 使用ASSIMP加载模型文件
 		static ModelData* LoadModel(const string& path, bool loadFullAnim = true, bool async = false);
 		// 算法生成几何体模型
-		static Mesh* GenerateGeometry(GeometryType type);
+		static shared_ptr<Mesh> GenerateGeometry(GeometryType type);
 
 		static string GetGeometryTypeName(GeometryType type);
 
@@ -26,7 +26,7 @@ namespace ZXEngine
 		// Processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
 		static void ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData* pModelData, bool async = false);
 		static void ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData* pModelData, BoneNode* pBoneNode, bool async = false);
-		static StaticMesh* ProcessMesh(const aiMesh* mesh, bool async = false);
+		static shared_ptr<StaticMesh> ProcessMesh(const aiMesh* mesh, bool async = false);
 		static AnimationController* ProcessAnimation(const aiScene* pScene);
 		static void CountNode(const aiNode* pNode, uint32_t& count);
 		static void LoadAnimBriefInfos(const aiScene* pScene, ModelData* pModelData);

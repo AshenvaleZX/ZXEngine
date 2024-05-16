@@ -16,7 +16,7 @@ namespace ZXEngine
 		{ GeometryType::DynamicPlane, "DynamicPlane" }
     };
 
-    Mesh* ModelUtil::GenerateGeometry(GeometryType type)
+    shared_ptr<Mesh> ModelUtil::GenerateGeometry(GeometryType type)
     {
         Mesh* mesh = nullptr;
 
@@ -74,7 +74,7 @@ namespace ZXEngine
             Debug::LogError("Try to generate invalid geometry type!");
         }
 
-        return mesh;
+        return shared_ptr<Mesh>(mesh);
     }
 
     string ModelUtil::GetGeometryTypeName(GeometryType type)
@@ -161,7 +161,7 @@ namespace ZXEngine
         }
     }
 
-    StaticMesh* ModelUtil::ProcessMesh(const aiMesh* mesh, bool async)
+    shared_ptr<StaticMesh> ModelUtil::ProcessMesh(const aiMesh* mesh, bool async)
     {
         // data to fill
         vector<Vertex> vertices;
@@ -272,7 +272,7 @@ namespace ZXEngine
         newMesh->mAABBSizeY = newMesh->mExtremeVertices[2].Position.y - newMesh->mExtremeVertices[3].Position.y;
         newMesh->mAABBSizeZ = newMesh->mExtremeVertices[4].Position.z - newMesh->mExtremeVertices[5].Position.z;
 
-		return newMesh;
+        return shared_ptr<StaticMesh>(newMesh);
     }
 
     AnimationController* ModelUtil::ProcessAnimation(const aiScene* pScene)

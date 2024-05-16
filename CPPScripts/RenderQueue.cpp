@@ -118,7 +118,7 @@ namespace ZXEngine
 		{
 			auto mat_M = renderer->GetTransform()->GetModelMatrix();
 			auto mat_M_IT = Math::Transpose(Math::Inverse(mat_M));
-			for (auto mesh : renderer->mMeshes)
+			for (auto& mesh : renderer->mMeshes)
 			{
 				for (auto& vertex : mesh->mVertices)
 				{
@@ -144,7 +144,7 @@ namespace ZXEngine
 		newMeshRenderer->mReceiveShadow = batchRenderers[0]->mReceiveShadow;
 		// 之前可能有数据，先清掉
 		newMeshRenderer->mMeshes.clear();
-		newMeshRenderer->mMeshes.push_back(newMesh);
+		newMeshRenderer->mMeshes.push_back(shared_ptr<StaticMesh>(newMesh));
 
 		return newMeshRenderer;
 	}

@@ -29,7 +29,7 @@ namespace ZXEngine
 		// 更新所有骨骼节点列表里的动画(手动传入Tick)
 		void Update(float tick);
 		// 将当前这一帧的骨骼变换矩阵更新到所有Mesh里(仅适用于单个动画播放)
-		void UpdateMeshes(const BoneNode* pBoneNode, const vector<Mesh*>& pMeshes);
+		void UpdateMeshes(const BoneNode* pBoneNode, const vector<shared_ptr<Mesh>>& pMeshes);
 		void AddNodeAnimation(NodeAnimation* nodeAnimation);
 		bool GetCurFrameByNode(const string& nodeName, KeyFrame& keyFrame);
 

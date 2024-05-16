@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <memory>
 #include <map>
 #include <unordered_map>
 #include "Math.h"
@@ -12,6 +13,7 @@
 
 using std::string;
 using std::vector;
+using std::shared_ptr;
 
 namespace ZXEngine
 {
@@ -67,7 +69,7 @@ namespace ZXEngine
 	class AnimationController;
 	struct ModelData
 	{
-		vector<Mesh*> pMeshes;
+		vector<shared_ptr<Mesh>> pMeshes;
 		uint32_t boneNum = 0;
 		BoneNode* pRootBoneNode = nullptr;
 		AnimationController* pAnimationController = nullptr;

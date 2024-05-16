@@ -26,7 +26,7 @@ namespace ZXEngine
 
 		size_t mVerticesNum = 0;
 		size_t mTrianglesNum = 0;
-		vector<Mesh*> mMeshes;
+		vector<shared_ptr<Mesh>> mMeshes;
 
 		// 在xyz方向上最远的点，0-5分别对应+x, -x, +y, -y, +z, -z
 		array<Vertex, 6> mExtremeVertices;
@@ -44,7 +44,7 @@ namespace ZXEngine
 
 		void Draw();
 		void GenerateModel(GeometryType type);
-		void SetMeshes(const vector<Mesh*>& meshes);
+		void SetMeshes(const vector<shared_ptr<Mesh>>& meshes);
 		void UpdateBoneTransformsForRender();
 		void UpdateBoneTransformsForShadow();
 

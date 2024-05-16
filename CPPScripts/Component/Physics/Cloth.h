@@ -23,7 +23,7 @@ namespace ZXEngine
 		void Init();
 
 	private:
-		DynamicMesh* mDynamicMesh = nullptr;
+		shared_ptr<DynamicMesh> mDynamicMesh = nullptr;
 		vector<pair<PhysZ::RigidBody*, PhysZ::CollisionBox*>> mParticles;
 
 		void AddInternalSpring(uint32_t idx1, uint32_t idx2, float constant);

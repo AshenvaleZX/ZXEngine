@@ -25,9 +25,6 @@ namespace ZXEngine
             delete mShadowCastMaterial;
         if (mGBufferMaterial)
 			delete mGBufferMaterial;
-
-        for (auto mesh : mMeshes)
-            delete mesh;
     }
 
     ComponentType MeshRenderer::GetInsType()
@@ -37,7 +34,7 @@ namespace ZXEngine
 
     void MeshRenderer::Draw()
     {
-        for (auto mesh : mMeshes)
+        for (auto& mesh : mMeshes)
         {
             RenderAPI::GetInstance()->Draw(mesh->VAO);
         }
@@ -50,7 +47,7 @@ namespace ZXEngine
         UpdateInternalData();
     }
 
-    void MeshRenderer::SetMeshes(const vector<Mesh*>& meshes)
+    void MeshRenderer::SetMeshes(const vector<shared_ptr<Mesh>>& meshes)
     {
 		mMeshes = meshes;
 		UpdateInternalData();
@@ -60,7 +57,7 @@ namespace ZXEngine
     {
         if (mAnimator)
         {
-            for (auto mesh : mMeshes)
+            for (auto& mesh : mMeshes)
                 mMatetrial->SetMatrix("_BoneMatrices", mesh->mBonesFinalTransform.data(), static_cast<uint32_t>(mesh->mBonesFinalTransform.size()));
         }
     }
@@ -69,14 +66,14 @@ namespace ZXEngine
     {
         if (mAnimator)
         {
-            for (auto mesh : mMeshes)
+            for (auto& mesh : mMeshes)
                 mShadowCastMaterial->SetMatrix("_BoneMatrices", mesh->mBonesFinalTransform.data(), static_cast<uint32_t>(mesh->mBonesFinalTransform.size()));
         }
     }
 
     void MeshRenderer::UpdateInternalData()
     {
-        for (auto mesh : mMeshes)
+        for (auto& mesh : mMeshes)
 		{
             mVerticesNum += mesh->mVertices.size();
             mTrianglesNum += mesh->mIndices.size() / 3;

@@ -14,7 +14,7 @@ namespace ZXEngine
 		}
 	}
 
-	void AnimationController::Update(const BoneNode* pBoneNode, const vector<Mesh*>& pMeshes)
+	void AnimationController::Update(const BoneNode* pBoneNode, const vector<shared_ptr<Mesh>>& pMeshes)
 	{
 		if (mIsBlending)
 		{
@@ -135,7 +135,7 @@ namespace ZXEngine
 		}
 	}
 
-	void AnimationController::UpdateBlendAnimation(const BoneNode* pBoneNode, const vector<Mesh*>& pMeshes, const Matrix4& parentTransform)
+	void AnimationController::UpdateBlendAnimation(const BoneNode* pBoneNode, const vector<shared_ptr<Mesh>>& pMeshes, const Matrix4& parentTransform)
 	{
 		string nodeName = pBoneNode->name;
 
@@ -167,7 +167,7 @@ namespace ZXEngine
 
 		Matrix4 globalTransform = parentTransform * nodeTransform;
 
-		for (auto pMesh : pMeshes)
+		for (auto& pMesh : pMeshes)
 		{
 			if (pMesh->mBoneNameToIndexMap.find(nodeName) != pMesh->mBoneNameToIndexMap.end())
 			{

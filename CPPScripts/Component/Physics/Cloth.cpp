@@ -16,7 +16,7 @@ namespace ZXEngine
 
 	void Cloth::Init()
 	{
-		mDynamicMesh = static_cast<DynamicMesh*>(gameObject->GetComponent<MeshRenderer>()->mMeshes[0]);
+		mDynamicMesh = std::dynamic_pointer_cast<DynamicMesh>(gameObject->GetComponent<MeshRenderer>()->mMeshes[0]);
 
 		float mass = mMass / mDynamicMesh->mVertices.size();
 		Vector3 wPos = gameObject->GetComponent<Transform>()->GetPosition();

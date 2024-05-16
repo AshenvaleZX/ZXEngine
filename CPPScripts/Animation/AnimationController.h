@@ -11,7 +11,7 @@ namespace ZXEngine
 	public:
 		~AnimationController();
 
-		void Update(const BoneNode* pBoneNode, const vector<Mesh*>& pMeshes);
+		void Update(const BoneNode* pBoneNode, const vector<shared_ptr<Mesh>>& pMeshes);
 		void Add(Animation* anim);
 		void Play(const string& name);
 		void Switch(const string& name, float time = 1.0f);
@@ -30,6 +30,6 @@ namespace ZXEngine
 		Animation* mTargetAnimation = nullptr;
 		unordered_map<string, Animation*> mAnimations;
 
-		void UpdateBlendAnimation(const BoneNode* pBoneNode, const vector<Mesh*>& pMeshes, const Matrix4& parentTransform);
+		void UpdateBlendAnimation(const BoneNode* pBoneNode, const vector<shared_ptr<Mesh>>& pMeshes, const Matrix4& parentTransform);
 	};
 }

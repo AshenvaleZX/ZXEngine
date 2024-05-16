@@ -73,7 +73,7 @@ namespace ZXEngine
 		UpdateNodeAnimations();
 	}
 
-	void Animation::UpdateMeshes(const BoneNode* pBoneNode, const vector<Mesh*>& pMeshes)
+	void Animation::UpdateMeshes(const BoneNode* pBoneNode, const vector<shared_ptr<Mesh>>& pMeshes)
 	{
 		UpdateBoneTransforms(pBoneNode, Matrix4());
 
