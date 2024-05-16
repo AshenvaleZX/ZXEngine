@@ -38,6 +38,8 @@ The appearance of the engine is as shown below. For detailed information, please
 
 - [引擎文件格式介绍 (Engine File Format Introduction)](#引擎文件格式介绍-engine-file-format-introduction)
 
+- [实际游戏项目演示 (Actual Game Project Demonstration)](#实际游戏项目演示-actual-game-project-demonstration)
+
 - [构建与跨平台 (Build And Cross-Platform)](#构建与跨平台-build-and-cross-platform)
 
 - [注意事项 (Precautions)](#注意事项-precautions)
@@ -188,9 +190,9 @@ The code to play the animation belongs to the GamePlay rather than the engine, s
 
 ## GamePlay层的Lua系统 (Lua System of GamePlay Layer)
 
-本引擎的GamePlay层使用Lua语言，引擎将需要提供给GamePlay层的C++接口都Wrap到了Lua，开发方式有点类似于Unity中的XLua。不过目前Wrap到Lua的接口还不是特别多，以后逐步完善。
+本引擎的GamePlay层使用Lua语言，引擎将需要提供给GamePlay层的C++接口都Wrap到了Lua，开发方式有点类似于Unity中的XLua。不过目前Wrap到Lua的接口还不是特别多，以后逐步完善。这里只简单演示一下Lua脚本系统和引擎的Lua接口，更多更详细的演示请看后面的实际游戏项目演示。
 
-The GamePlay layer of this engine uses Lua language. The engine wraps all the C++ interfaces that need to be provided to the GamePlay layer into Lua. The development way is similar to XLua in Unity. However, there are not many interfaces that have been wrapped to Lua at present, and they will be gradually added in the future.
+The GamePlay layer of this engine uses Lua language. The engine wraps all the C++ interfaces that need to be provided to the GamePlay layer into Lua. The development way is similar to XLua in Unity. However, there are not many interfaces that have been wrapped to Lua at present, and they will be gradually added in the future. Here we only briefly demonstrate the Lua scripting system and the Lua interface of the engine. For more detailed demonstrations, please see the actual game project demonstration in the following document.
 
 使用方式是直接创建一个Lua代码，然后用GameLogic组件把Lua代码挂载到一个GameObject对象上，然后这个Lua代码就可以接收来自引擎的Awake，Start，Update和FixedUpdate等接口的调用了。也可以通过self来访问自己所挂载的GameObject对象，获取Component，调用引擎接口等等。
 
@@ -365,6 +367,20 @@ This is the configuration file for the game project created by ZXEngine, you can
 模型，纹理贴图，字体等就是常见的通用文件格式。
 
 Models, textures, fonts, etc. are common file formats.
+
+## 实际游戏项目演示 (Actual Game Project Demonstration)
+
+为了更好的演示引擎，也为了让引擎更加完善和可用，我专门创建了另一个仓库：
+
+In order to demonstrate the engine better and make the engine more complete and usable, I created another repository:
+
+[ZXEngine-Demo-Projects](https://github.com/AshenvaleZX/ZXEngine-Demo-Projects)
+
+这个仓库里面放了一些用ZXEngine开发的实际游戏Demo项目，更好的展示了如何使用ZXEngine提供的接口进行实际开发。目前有一个SLG Demo：
+
+This repository contains some actual game demo projects developed with ZXEngine, demonstrate how to use the interface provided by ZXEngine for actual development. Currently there is an SLG Demo:
+
+![](https://github.com/AshenvaleZX/ZXEngine-Demo-Projects/blob/main/Documents/SLGDemo.jpg)
 
 ## 构建与跨平台 (Build And Cross-Platform)
 
