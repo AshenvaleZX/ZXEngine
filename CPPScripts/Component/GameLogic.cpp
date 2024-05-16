@@ -17,6 +17,7 @@ namespace ZXEngine
 
 	GameLogic::~GameLogic()
 	{
+		CallLuaFunction("OnDestroy");
 		GameLogicManager::GetInstance()->RemoveGameLogic(this);
 	}
 
@@ -123,7 +124,8 @@ namespace ZXEngine
 			if (std::strcmp(func, "Awake") != 0 &&
 				std::strcmp(func, "Start") != 0 &&
 				std::strcmp(func, "Update") != 0 &&
-				std::strcmp(func, "FixedUpdate") != 0)
+				std::strcmp(func, "FixedUpdate") != 0 &&
+				std::strcmp(func, "OnDestroy") != 0)
 			{
 				Debug::LogWarning("GameLogic trying to call a lua function that doesn't exist: " + (string)func);
 			}
