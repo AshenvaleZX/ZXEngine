@@ -30,6 +30,7 @@ namespace ZXEngine
 		friend class EditorInspectorPanel;
 	public:
 		static GameObject* Create(const string& path);
+		static GameObject* CreateInstance(const PrefabStruct* prefab);
 		static void AsyncCreate(const string& path);
 		static GameObject* Find(const string& path);
 
@@ -45,7 +46,7 @@ namespace ZXEngine
 		PhysZ::ColliderType mColliderType = PhysZ::ColliderType::None;
 
 		GameObject() {};
-		GameObject(PrefabStruct* prefab, GameObject* parent = nullptr);
+		GameObject(const PrefabStruct* prefab, GameObject* parent = nullptr);
 		~GameObject();
 
 		void Awake();

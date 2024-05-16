@@ -19,6 +19,14 @@ namespace ZXEngine
 		return gameObject;
 	}
 
+	GameObject* GameObject::CreateInstance(const PrefabStruct* prefab)
+	{
+		auto gameObject = new GameObject(prefab);
+		SceneManager::GetInstance()->GetCurScene()->AddGameObject(gameObject);
+		gameObject->Awake();
+		return gameObject;
+	}
+
 	void GameObject::AsyncCreate(const string& path)
 	{
 		Resources::AsyncLoadPrefab(path, [](PrefabStruct* prefab)
@@ -131,7 +139,7 @@ namespace ZXEngine
 		return GameObject::Find(children, paths, recursion);
 	}
 
-	GameObject::GameObject(PrefabStruct* prefab, GameObject* parent)
+	GameObject::GameObject(const PrefabStruct* prefab, GameObject* parent)
 	{
 		name = prefab->name;
 		layer = prefab->layer;
@@ -295,7 +303,7 @@ namespace ZXEngine
 			p = Resources::JsonStrToString(data["Mesh"]);
 			meshRenderer->mModelName = Resources::GetAssetName(p);
 
-			for (auto mesh : pModelData->pMeshes)
+			for (auto& mesh : pModelData->pMeshes)
 			{
 				mesh->SetUp();
 			}
