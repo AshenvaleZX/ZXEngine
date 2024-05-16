@@ -17,7 +17,9 @@ namespace ZXEngine
 
 	GameLogic::~GameLogic()
 	{
-		CallLuaFunction("OnDestroy");
+		if (mIsAwake)
+			CallLuaFunction("OnDestroy");
+
 		GameLogicManager::GetInstance()->RemoveGameLogic(this);
 	}
 
