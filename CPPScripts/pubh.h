@@ -41,6 +41,7 @@ using std::list;
 using std::array;
 using std::map;
 using std::set;
+using std::queue;
 using std::deque;
 using std::multimap;
 using std::unordered_map;

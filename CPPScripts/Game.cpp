@@ -10,6 +10,7 @@
 #include "Component/Animator.h"
 #include "Audio/AudioEngine.h"
 #include "Resources.h"
+#include "Concurrent/JobSystem.h"
 
 #ifdef ZX_EDITOR
 #include "Editor/EditorGUIManager.h"
@@ -36,6 +37,7 @@ namespace ZXEngine
 		}
 
 		EventManager::Create();
+		JobSystem::Create();
 		AudioEngine::Create();
 		RenderEngine::Create();
 		InputManager::Create();
@@ -60,6 +62,8 @@ namespace ZXEngine
 			Debug::Update();
 #endif
 		}
+
+		JobSystem::Destroy();
 	}
 
 	void Game::Update()

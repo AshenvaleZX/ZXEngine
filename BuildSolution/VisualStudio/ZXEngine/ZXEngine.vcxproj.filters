@@ -594,6 +594,12 @@
     <ClCompile Include="..\..\..\CPPScripts\Component\UIButton.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\Concurrent\JobSystem.cpp">
+      <Filter>Concurrent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\Concurrent\Job.cpp">
+      <Filter>Concurrent</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\CPPScripts\GameObject.h">
@@ -1195,6 +1201,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_UIButton.h">
       <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Concurrent\JobSystem.h">
+      <Filter>Concurrent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Concurrent\Job.h">
+      <Filter>Concurrent</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

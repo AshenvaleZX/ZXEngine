@@ -94,6 +94,10 @@ set(Component__Physics
 source_group("Component\\Physics" FILES ${Component__Physics})
 
 set(Concurrent
+    "../../../CPPScripts/Concurrent/Job.cpp"
+    "../../../CPPScripts/Concurrent/Job.h"
+    "../../../CPPScripts/Concurrent/JobSystem.cpp"
+    "../../../CPPScripts/Concurrent/JobSystem.h"
     "../../../CPPScripts/Concurrent/LockFreeQueue.h"
     "../../../CPPScripts/Concurrent/Queue.h"
 )
