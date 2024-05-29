@@ -34,7 +34,7 @@ The appearance of the engine is as shown below. For detailed information, please
 
 - [音频系统 (Audio System)](#音频系统-audio-system)
 
-- [多线程 (Multithreading)](#多线程-multithreading)
+- [多线程与JobSystem (Multithreading And JobSystem)](#多线程与jobsystem-multithreading-and-jobsystem)
 
 - [引擎文件格式介绍 (Engine File Format Introduction)](#引擎文件格式介绍-engine-file-format-introduction)
 
@@ -50,9 +50,9 @@ The appearance of the engine is as shown below. For detailed information, please
 
 This engine currently supports Vulkan, DirectX 12 and OpenGL, supports Windows and Mac OS. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs. This engine also supports ray tracing rendering pipeline based on Vulkan and DirectX12.
 
-本引擎内置了我写的物理引擎PhysZ(看了一些书和别人的项目之后的学习成果，详见后文)，支持基本的刚体力学模拟和布料模拟。同时我也开发了简单的骨骼蒙皮动画系统，粒子系统等。文档后面会有这些系统的图片展示。
+本引擎内置了我写的物理引擎PhysZ(看了一些书和别人的项目之后的学习成果，详见后文)，支持基本的刚体力学模拟和布料模拟。同时我也开发了简单的骨骼蒙皮动画系统，粒子系统，JobSystem等。文档后面会有这些系统的图片展示。
 
-This engine has a built-in physics engine written by myself, which I called it PhysZ (It is the learning result after reading some books and other people’s projects), supports rigid body mechanics simulation and cloth simulation. And I also developed a simple skeletal animation system, particle system, etc. Images of these systems are shown later in this document.
+This engine has a built-in physics engine written by myself, which I called it PhysZ (It is the learning result after reading some books and other people’s projects), supports rigid body mechanics simulation and cloth simulation. And I also developed a simple skeletal animation system, particle system, JobSystem, etc. Images of these systems are shown later in this document.
 
 引擎本身用C++开发，GamePlay层使用Lua语言，引擎层封装部分C++接口给GamePlay层的Lua调用。使用方式类似Unity的XLua，通过一个GameLogic组件把Lua代码绑定到GameObject上，接收所挂载对象上来自引擎的Start和Update调用，并通过self访问GameObject对象(具体示例看后面)。
 
@@ -184,6 +184,10 @@ Switch to the AnimDemo scene and click Play button to see the skeletal animation
 
 The animation system of this engine supports animation blending, so in addition to the individual animation playback, you can also see the smooth transition between the two animations when the character enters the running state from the walking state.
 
+这个动画系统也使用了引擎内置的JobSystem来优化性能。
+
+This animation system also uses the engine's built-in JobSystem to optimize performance.
+
 这里动画的播放代码属于业务逻辑模块而不是引擎，所以是写在Lua代码中的，通过GameLogic组件绑定到对应的GameObject上。
 
 The code to play the animation belongs to the GamePlay rather than the engine, so it‘s written in the Lua code and bound to the GameObject through the GameLogic component.
@@ -297,11 +301,11 @@ AudioListener同样也是用于3D音效的，如果你不需要3D音效的话场
 
 Most of the systems and modules of this engine are written by myself, but audio processing is a very professional field like graphics rendering and physics engine, involving audio coding, time domain and frequency domain transformation and other related professional knowledge. I don’t know enough about audio-related professional knowledge, so the core part of the audio system of this engine, that is, the audio decoding and playback functions, uses the third-party library irrKlang. Since irrKlang does not support Apple Silicon, the audio system on MacOS is currently an empty implementation.
 
-## 多线程 (Multithreading)
+## 多线程与JobSystem (Multithreading And JobSystem)
 
-目前引擎中实现了多线程的部分有两个，异步加载资源和着色器预编译。其实我还想搞多线程渲染，也在实际尝试搞，但确实有点困难，需要大改引擎框架，所以还没搞好，先鸽着。
+目前引擎中有三个多线程模块，异步加载资源，着色器预编译和一个简易的JobSystem。其实我还想搞多线程渲染，也在实际尝试搞，但确实有点困难，需要大改引擎框架，所以还没搞好，先鸽着。
 
-Currently, there are two parts of the engine that implement multi-threading, asynchronous loading and shader pre-compilation. In fact, I also want to do multi-threaded rendering, and I‘m actually trying to do it, but it's indeed difficult and requires a lot of modifications to the engine framework, so I haven't done it yet.
+Currently, there are three multi-threaded modules in the engine: asynchronous resource loading, shader precompilation and a simple JobSystem. In fact, I also want to do multi-threaded rendering, and I‘m actually trying to do it, but it's indeed difficult and requires a lot of modifications to the engine framework, so I haven't done it yet.
 
 资源异步加载的接口如下，直接在主线程(也是逻辑线程)中调用即可：
 
@@ -323,6 +327,50 @@ GameObject.AsyncCreate(path)
 然后是着色器预编译，在引擎编辑器顶部的菜单栏点击Asset/Compile All Shader for Vulkan或者Compile All Shader for DirectX12，就会开启一个线程去编译Shader。
 
 As for shader pre-compilation, click "Asset/Compile All Shader for Vulkan" or "Compile All Shader for DirectX12" in the menu bar at the top of the engine editor, and a thread will be created to compile the shaders.
+
+### JobSystem
+
+最后是JobSystem，使用方式类似Unity的JobSystem。自己创建一个类继承Job，然后覆写Execute接口。
+
+Next is JobSystem, which is used in a similar way to Unity's JobSystem. Create a class that inherits Job and override the Execute function.
+
+```c++
+class ExampleJob : public Job
+{
+public:
+	int num;
+	
+	void Execute() override
+	{
+        for (int i = 0; i < 100000; i++)
+        {
+            num++;
+        }
+	};
+};
+```
+
+使用的时候new一个Job，然后调用Schedule让Job自动进入到JobSystem被调度和执行，返回一个JobHandle。然后在需要同步数据的地方调用JobHandle的Accomplish接口即可。
+
+When using it, create a new Job and call Schedule to automatically schedule and execute the Job in the JobSystem, returning a JobHandle. Then call the Accomplish of JobHandle where you need to synchronize data.
+
+```c++
+ExampleJob* job = new ExampleJob();
+job->num = 0;
+
+JobHandle handle = job->Schedule();
+
+// Do something else
+......
+
+handle.Accomplish();
+
+std::cout << "Res: " << job->num << std::endl;
+```
+
+具体例子可以参考引擎中的骨骼蒙皮动画模块。
+
+For specific examples, please refer to the skeletal animation system in this engine.
 
 ## 引擎文件格式介绍 (Engine File Format Introduction)
 
