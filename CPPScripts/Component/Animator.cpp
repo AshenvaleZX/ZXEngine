@@ -2,6 +2,8 @@
 #include "MeshRenderer.h"
 #include "../Animation/AnimationController.h"
 
+#define ENABLE_ASYNC_ANIMATION
+
 namespace ZXEngine
 {
 	ComponentType Animator::GetType()
@@ -13,8 +15,26 @@ namespace ZXEngine
 
 	void Animator::Update()
 	{
+#ifdef ENABLE_ASYNC_ANIMATION
+		AsyncUpdate();
+#else
+		SyncUpdate();
+#endif
+	}
+
+	void Animator::SyncUpdate()
+	{
 		for (auto pAnimator : mAnimators)
-			pAnimator->UpdateMeshes();
+			pAnimator->UpdateMeshes(false);
+	}
+
+	void Animator::AsyncUpdate()
+	{
+		for (auto pAnimator : mAnimators)
+			pAnimator->UpdateMeshes(true);
+
+		for (auto pAnimator : mAnimators)
+			pAnimator->AccomplishUpdate();
 	}
 
 	ComponentType Animator::GetInsType()
@@ -48,8 +68,13 @@ namespace ZXEngine
 		mAnimationController->Switch(name, time);
 	}
 
-	void Animator::UpdateMeshes()
+	void Animator::UpdateMeshes(bool async)
 	{
-		mAnimationController->Update(mRootBoneNode, mMeshRenderer->mMeshes);
+		mAnimationController->Update(mRootBoneNode, mMeshRenderer->mMeshes, async);
+	}
+
+	void Animator::AccomplishUpdate()
+	{
+		mAnimationController->AccomplishUpdate(mMeshRenderer->mMeshes);
 	}
 }

@@ -43,12 +43,12 @@ namespace ZXEngine
 		return mIsPlaying;
 	}
 
-	void Animation::Update()
+	void Animation::Update(float deltaTime)
 	{
 		if (!mIsPlaying)
 			return;
 
-		mCurTick += Time::deltaTime * mSpeed * mTicksPerSecond;
+		mCurTick += deltaTime * mSpeed * mTicksPerSecond;
 
 		if (mCurTick >= mFullTick)
 		{
@@ -67,7 +67,7 @@ namespace ZXEngine
 		UpdateNodeAnimations();
 	}
 
-	void Animation::Update(float tick)
+	void Animation::ForceUpdate(float tick)
 	{
 		mCurTick = tick;
 		UpdateNodeAnimations();
@@ -86,6 +86,27 @@ namespace ZXEngine
 					uint32_t index = pMesh->mBoneNameToIndexMap[iter.first];
 					// 此处的矩阵是给Shader用的，需要转置为列主序
 					pMesh->mBonesFinalTransform[index] = Math::Transpose(iter.second * pMesh->mBonesOffset[index]);
+				}
+			}
+		}
+	}
+
+	void Animation::UpdateFinalTransforms(const BoneNode* pBoneNode,
+		const vector<vector<Matrix4>>& bonesOffsets,
+		const vector<unordered_map<string, uint32_t>>& boneNameToIndexMaps,
+		vector<vector<Matrix4>>& bonesFinalTransforms)
+	{
+		UpdateBoneTransforms(pBoneNode, Matrix4());
+
+		for (size_t i = 0; i < bonesOffsets.size(); i++)
+		{
+			for (auto& iter : mBoneTransforms)
+			{
+				if (boneNameToIndexMaps[i].find(iter.first) != boneNameToIndexMaps[i].end())
+				{
+					uint32_t index = boneNameToIndexMaps[i].at(iter.first);
+					// 此处的矩阵是给Shader用的，需要转置为列主序
+					bonesFinalTransforms[i][index] = Math::Transpose(iter.second * bonesOffsets[i][index]);
 				}
 			}
 		}

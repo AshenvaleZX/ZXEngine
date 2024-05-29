@@ -15,6 +15,9 @@ namespace ZXEngine
 
 	private:
 		static vector<Animator*> mAnimators;
+		
+		static void SyncUpdate();
+		static void AsyncUpdate();
 
 	public:
 		string mAvatarName;
@@ -32,6 +35,9 @@ namespace ZXEngine
 
 		void Play(const string& name);
 		void Switch(const string& name, float time = 1.0f);
-		void UpdateMeshes();
+
+	private:
+		void UpdateMeshes(bool async);
+		void AccomplishUpdate();
 	};
 }
