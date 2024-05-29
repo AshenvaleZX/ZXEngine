@@ -338,15 +338,15 @@ Next is JobSystem, which is used in a similar way to Unity's JobSystem. Create a
 class ExampleJob : public Job
 {
 public:
-	int num;
-	
-	void Execute() override
-	{
+    int num;
+    
+    void Execute() override
+    {
         for (int i = 0; i < 100000; i++)
         {
             num++;
         }
-	};
+    };
 };
 ```
 
