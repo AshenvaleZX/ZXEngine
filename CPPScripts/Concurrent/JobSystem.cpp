@@ -49,7 +49,10 @@ namespace ZXEngine
 					{
 						std::unique_lock<std::mutex> lock(this->mJobMutex);
 
-						this->mJobCondition.wait(lock, [this] { return this->mTerminate || !this->mJobs.empty(); });
+						this->mJobCondition.wait(lock, [this] 
+						{
+							return this->mTerminate || !this->mJobs.empty();
+						});
 
 						if (this->mTerminate && this->mJobs.empty())
 							return;
@@ -70,10 +73,7 @@ namespace ZXEngine
 
 	JobSystem::~JobSystem()
 	{
-		{
-			std::unique_lock<std::mutex> lock(mJobMutex);
-			mTerminate = true;
-		}
+		mTerminate = true;
 
 		mJobCondition.notify_all();
 
