@@ -22,6 +22,7 @@ namespace ZXEngine
 			Animation* mAnimation = nullptr;
 		};
 
+		Data mData;
 		ThreadSafeData<Data> mSafeData;
 
 		void Execute() override;
@@ -44,10 +45,11 @@ namespace ZXEngine
 			Animation* mTargetAnimation = nullptr;
 		};
 
+		Data mData;
 		ThreadSafeData<Data> mSafeData;
 
 		void Execute() override;
-		void UpdateBlendTransforms(const BoneNode* pBoneNode, Data& data, const Matrix4& parentTransform);
+		void UpdateBlendTransforms(const BoneNode* pBoneNode, const Matrix4& parentTransform);
 	};
 
 	class Mesh;

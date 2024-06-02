@@ -8,29 +8,27 @@ namespace ZXEngine
 {
 	void AnimationUpdateJob::Execute()
 	{
-		Data data;
-		mSafeData.Dump(data);
+		mSafeData.Dump(mData);
 
-		data.mAnimation->Update(data.mDeltaTime);
-		data.mAnimation->UpdateFinalTransforms(data.mBoneNode, data.mBonesOffsets, data.mBoneNameToIndexMaps, data.mBonesFinalTransforms);
+		mData.mAnimation->Update(mData.mDeltaTime);
+		mData.mAnimation->UpdateFinalTransforms(mData.mBoneNode, mData.mBonesOffsets, mData.mBoneNameToIndexMaps, mData.mBonesFinalTransforms);
 
-		mSafeData.Move(data);
+		mSafeData.Move(mData);
 	}
 
 	void AnimationBlendUpdateJob::Execute()
 	{
-		Data data;
-		mSafeData.Dump(data);
+		mSafeData.Dump(mData);
 
-		data.mCurAnimation->ForceUpdate(data.mCurAnimTick);
-		data.mTargetAnimation->ForceUpdate(data.mTargetAnimTick);
+		mData.mCurAnimation->ForceUpdate(mData.mCurAnimTick);
+		mData.mTargetAnimation->ForceUpdate(mData.mTargetAnimTick);
 
-		UpdateBlendTransforms(data.mBoneNode, data, Matrix4());
+		UpdateBlendTransforms(mData.mBoneNode, Matrix4());
 
-		mSafeData.Move(data);
+		mSafeData.Move(mData);
 	}
 
-	void AnimationBlendUpdateJob::UpdateBlendTransforms(const BoneNode* pBoneNode, Data& data, const Matrix4& parentTransform)
+	void AnimationBlendUpdateJob::UpdateBlendTransforms(const BoneNode* pBoneNode, const Matrix4& parentTransform)
 	{
 		string nodeName = pBoneNode->name;
 
@@ -39,18 +37,18 @@ namespace ZXEngine
 		KeyFrame curKeyFrame;
 		KeyFrame targetKeyFrame;
 
-		bool getCurFrame = data.mCurAnimation->GetCurFrameByNode(nodeName, curKeyFrame);
-		bool getTargetFrame = data.mTargetAnimation->GetCurFrameByNode(nodeName, targetKeyFrame);
+		bool getCurFrame = mData.mCurAnimation->GetCurFrameByNode(nodeName, curKeyFrame);
+		bool getTargetFrame = mData.mTargetAnimation->GetCurFrameByNode(nodeName, targetKeyFrame);
 
 		if (getCurFrame && getTargetFrame)
 		{
-			Vector3 scale = Math::Lerp(curKeyFrame.mScale, targetKeyFrame.mScale, data.mBlendFactor);
+			Vector3 scale = Math::Lerp(curKeyFrame.mScale, targetKeyFrame.mScale, mData.mBlendFactor);
 			Matrix4 scaleMatrix = Math::ScaleMatrix(scale);
 
-			Vector3 position = Math::Lerp(curKeyFrame.mPosition, targetKeyFrame.mPosition, data.mBlendFactor);
+			Vector3 position = Math::Lerp(curKeyFrame.mPosition, targetKeyFrame.mPosition, mData.mBlendFactor);
 			Matrix4 translationMatrix = Math::TranslationMatrix(position);
 
-			Quaternion rotation = Math::Slerp(curKeyFrame.mRotation, targetKeyFrame.mRotation, data.mBlendFactor);
+			Quaternion rotation = Math::Slerp(curKeyFrame.mRotation, targetKeyFrame.mRotation, mData.mBlendFactor);
 			Matrix4 rotationMatrix = rotation.ToMatrix();
 
 			nodeTransform = translationMatrix * rotationMatrix * scaleMatrix;
@@ -62,19 +60,19 @@ namespace ZXEngine
 
 		Matrix4 globalTransform = parentTransform * nodeTransform;
 
-		for (size_t i = 0; i < data.mBonesOffsets.size(); i++)
+		for (size_t i = 0; i < mData.mBonesOffsets.size(); i++)
 		{
-			if (data.mBoneNameToIndexMaps[i].find(nodeName) != data.mBoneNameToIndexMaps[i].end())
+			if (mData.mBoneNameToIndexMaps[i].find(nodeName) != mData.mBoneNameToIndexMaps[i].end())
 			{
-				uint32_t index = data.mBoneNameToIndexMaps[i][nodeName];
+				uint32_t index = mData.mBoneNameToIndexMaps[i][nodeName];
 				// 此处的矩阵是给Shader用的，需要转置为列主序
-				data.mBonesFinalTransforms[i][index] = Math::Transpose(globalTransform * data.mBonesOffsets[i][index]);
+				mData.mBonesFinalTransforms[i][index] = Math::Transpose(globalTransform * mData.mBonesOffsets[i][index]);
 			}
 		}
 
 		for (auto& iter : pBoneNode->children)
 		{
-			UpdateBlendTransforms(iter, data, globalTransform);
+			UpdateBlendTransforms(iter, globalTransform);
 		}
 	}
 
@@ -130,26 +128,24 @@ namespace ZXEngine
 
 				if (async)
 				{
-					AnimationBlendUpdateJob::Data data;
+					mBlendUpdateJob.mData.mBoneNode = pBoneNode;
+					mBlendUpdateJob.mData.mCurAnimation = mCurAnimation;
+					mBlendUpdateJob.mData.mTargetAnimation = mTargetAnimation;
+					mBlendUpdateJob.mData.mBlendFactor = mBlendFactor;
+					mBlendUpdateJob.mData.mCurAnimTick = curAnimTicks;
+					mBlendUpdateJob.mData.mTargetAnimTick = targetAnimTicks;
 
-					data.mBoneNode = pBoneNode;
-					data.mCurAnimation = mCurAnimation;
-					data.mTargetAnimation = mTargetAnimation;
-					data.mBlendFactor = mBlendFactor;
-					data.mCurAnimTick = curAnimTicks;
-					data.mTargetAnimTick = targetAnimTicks;
-
-					data.mBonesOffsets.clear();
-					data.mBoneNameToIndexMaps.clear();
-					data.mBonesFinalTransforms.clear();
+					mBlendUpdateJob.mData.mBonesOffsets.clear();
+					mBlendUpdateJob.mData.mBoneNameToIndexMaps.clear();
+					mBlendUpdateJob.mData.mBonesFinalTransforms.clear();
 					for (auto& pMesh : pMeshes)
 					{
-						data.mBonesOffsets.push_back(pMesh->mBonesOffset);
-						data.mBoneNameToIndexMaps.push_back(pMesh->mBoneNameToIndexMap);
-						data.mBonesFinalTransforms.push_back(pMesh->mBonesFinalTransform);
+						mBlendUpdateJob.mData.mBonesOffsets.push_back(pMesh->mBonesOffset);
+						mBlendUpdateJob.mData.mBoneNameToIndexMaps.push_back(pMesh->mBoneNameToIndexMap);
+						mBlendUpdateJob.mData.mBonesFinalTransforms.push_back(pMesh->mBonesFinalTransform);
 					}
 
-					mBlendUpdateJob.mSafeData.Move(data);
+					mBlendUpdateJob.mSafeData.Move(mBlendUpdateJob.mData);
 
 					mBlendUpdateHandle = mBlendUpdateJob.Schedule();
 				}
@@ -166,23 +162,21 @@ namespace ZXEngine
 		{
 			if (async)
 			{
-				AnimationUpdateJob::Data data;
+				mUpdateJob.mData.mBoneNode = pBoneNode;
+				mUpdateJob.mData.mAnimation = mCurAnimation;
+				mUpdateJob.mData.mDeltaTime = Time::deltaTime;
 
-				data.mBoneNode = pBoneNode;
-				data.mAnimation = mCurAnimation;
-				data.mDeltaTime = Time::deltaTime;
-
-				data.mBonesOffsets.clear();
-				data.mBoneNameToIndexMaps.clear();
-				data.mBonesFinalTransforms.clear();
+				mUpdateJob.mData.mBonesOffsets.clear();
+				mUpdateJob.mData.mBoneNameToIndexMaps.clear();
+				mUpdateJob.mData.mBonesFinalTransforms.clear();
 				for (auto& pMesh : pMeshes)
 				{
-					data.mBonesOffsets.push_back(pMesh->mBonesOffset);
-					data.mBoneNameToIndexMaps.push_back(pMesh->mBoneNameToIndexMap);
-					data.mBonesFinalTransforms.push_back(pMesh->mBonesFinalTransform);
+					mUpdateJob.mData.mBonesOffsets.push_back(pMesh->mBonesOffset);
+					mUpdateJob.mData.mBoneNameToIndexMaps.push_back(pMesh->mBoneNameToIndexMap);
+					mUpdateJob.mData.mBonesFinalTransforms.push_back(pMesh->mBonesFinalTransform);
 				}
 
-				mUpdateJob.mSafeData.Move(data);
+				mUpdateJob.mSafeData.Move(mUpdateJob.mData);
 
 				mUpdateHandle = mUpdateJob.Schedule();
 			}
@@ -201,12 +195,11 @@ namespace ZXEngine
 			mUpdateHandle->Accomplish();
 			mUpdateHandle.reset();
 
-			AnimationUpdateJob::Data data;
-			mUpdateJob.mSafeData.Dump(data);
+			mUpdateJob.mSafeData.Dump(mUpdateJob.mData);
 
 			for (size_t i = 0; i < pMeshes.size(); i++)
 			{
-				pMeshes[i]->mBonesFinalTransform = std::move(data.mBonesFinalTransforms[i]);
+				pMeshes[i]->mBonesFinalTransform = std::move(mUpdateJob.mData.mBonesFinalTransforms[i]);
 			}
 		}
 		else if (mBlendUpdateHandle.has_value())
@@ -214,12 +207,11 @@ namespace ZXEngine
 			mBlendUpdateHandle->Accomplish();
 			mBlendUpdateHandle.reset();
 
-			AnimationBlendUpdateJob::Data data;
-			mBlendUpdateJob.mSafeData.Dump(data);
+			mBlendUpdateJob.mSafeData.Dump(mBlendUpdateJob.mData);
 
 			for (size_t i = 0; i < pMeshes.size(); i++)
 			{
-				pMeshes[i]->mBonesFinalTransform = std::move(data.mBonesFinalTransforms[i]);
+				pMeshes[i]->mBonesFinalTransform = std::move(mBlendUpdateJob.mData.mBonesFinalTransforms[i]);
 			}
 		}
 	}
