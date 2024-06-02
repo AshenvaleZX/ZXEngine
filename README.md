@@ -372,6 +372,10 @@ std::cout << "Res: " << job->num << std::endl;
 
 If you need to use JobSystem to process some complex data, it's better to use it with the engine's ThreadSafeData in order to keep the data thread-safe. For specific examples, please refer to the skeletal animation system in this engine.
 
+由于引擎的GamePlay层使用的语言为Lua，而Lua解释器并不支持多线程解释执行代码，所以这套JobSystem目前只能在引擎内部使用，并未暴露给GamePlay层。
+
+Because the language of the GamePlay layer of the engine is Lua, and the Lua interpreter does not support multi-threaded interpretation of the Lua code, the JobSystem can only be used in the C++ engine at present, and is not exposed to the GamePlay layer.
+
 ## 引擎文件格式介绍 (Engine File Format Introduction)
 
 ### *.zxscene
