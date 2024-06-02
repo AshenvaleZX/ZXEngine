@@ -338,7 +338,7 @@ Next is JobSystem, which is used in a similar way to Unity's JobSystem. Create a
 class ExampleJob : public Job
 {
 public:
-    int num;
+    std::atomic_int num;
     
     void Execute() override
     {
@@ -356,7 +356,7 @@ When using it, create a new Job and call Schedule to automatically schedule and 
 
 ```c++
 ExampleJob* job = new ExampleJob();
-job->num = 0;
+job->num = 123;
 
 JobHandle handle = job->Schedule();
 
@@ -368,9 +368,9 @@ handle.Accomplish();
 std::cout << "Res: " << job->num << std::endl;
 ```
 
-具体例子可以参考引擎中的骨骼蒙皮动画模块。
+如果需要使用JobSystem处理一些复杂数据，那么为了保证数据的线程安全，最好配合引擎的ThreadSafeData使用。具体例子可以参考引擎中的骨骼蒙皮动画模块。
 
-For specific examples, please refer to the skeletal animation system in this engine.
+If you need to use JobSystem to process some complex data, it's better to use it with the engine's ThreadSafeData in order to keep the data thread-safe. For specific examples, please refer to the skeletal animation system in this engine.
 
 ## 引擎文件格式介绍 (Engine File Format Introduction)
 
