@@ -1,6 +1,7 @@
 #pragma once
 #include "../pubh.h"
 #include "../Concurrent/Job.h"
+#include "../Concurrent/ThreadSafeData.h"
 
 namespace ZXEngine
 {
@@ -10,13 +11,18 @@ namespace ZXEngine
 	class AnimationUpdateJob : public Job
 	{
 	public:
-		const BoneNode* mBoneNode = nullptr;
-		vector<vector<Matrix4>> mBonesOffsets;
-		vector<vector<Matrix4>> mBonesFinalTransforms;
-		vector<unordered_map<string, uint32_t>> mBoneNameToIndexMaps;
+		struct Data
+		{
+			const BoneNode* mBoneNode = nullptr;
+			vector<vector<Matrix4>> mBonesOffsets;
+			vector<vector<Matrix4>> mBonesFinalTransforms;
+			vector<unordered_map<string, uint32_t>> mBoneNameToIndexMaps;
 
-		float mDeltaTime = 0.0f;
-		Animation* mAnimation = nullptr;
+			float mDeltaTime = 0.0f;
+			Animation* mAnimation = nullptr;
+		};
+
+		ThreadSafeData<Data> mSafeData;
 
 		void Execute() override;
 	};
@@ -24,19 +30,24 @@ namespace ZXEngine
 	class AnimationBlendUpdateJob : public Job
 	{
 	public:
-		const BoneNode* mBoneNode = nullptr;
-		vector<vector<Matrix4>> mBonesOffsets;
-		vector<vector<Matrix4>> mBonesFinalTransforms;
-		vector<unordered_map<string, uint32_t>> mBoneNameToIndexMaps;
+		struct Data
+		{
+			const BoneNode* mBoneNode = nullptr;
+			vector<vector<Matrix4>> mBonesOffsets;
+			vector<vector<Matrix4>> mBonesFinalTransforms;
+			vector<unordered_map<string, uint32_t>> mBoneNameToIndexMaps;
 
-		float mBlendFactor = 0.0f;
-		float mCurAnimTick = 0.0f;
-		float mTargetAnimTick = 0.0f;
-		Animation* mCurAnimation = nullptr;
-		Animation* mTargetAnimation = nullptr;
+			float mBlendFactor = 0.0f;
+			float mCurAnimTick = 0.0f;
+			float mTargetAnimTick = 0.0f;
+			Animation* mCurAnimation = nullptr;
+			Animation* mTargetAnimation = nullptr;
+		};
+
+		ThreadSafeData<Data> mSafeData;
 
 		void Execute() override;
-		void UpdateBlendTransforms(const BoneNode* pBoneNode, const Matrix4& parentTransform);
+		void UpdateBlendTransforms(const BoneNode* pBoneNode, Data& data, const Matrix4& parentTransform);
 	};
 
 	class Mesh;
