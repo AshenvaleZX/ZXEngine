@@ -389,6 +389,7 @@
     <ClInclude Include="..\..\..\CPPScripts\Concurrent\JobSystem.h" />
     <ClInclude Include="..\..\..\CPPScripts\Concurrent\LockFreeQueue.h" />
     <ClInclude Include="..\..\..\CPPScripts\Concurrent\Queue.h" />
+    <ClInclude Include="..\..\..\CPPScripts\Concurrent\ThreadSafeData.h" />
     <ClInclude Include="..\..\..\CPPScripts\CubeMap.h" />
     <ClInclude Include="..\..\..\CPPScripts\Debug.h" />
     <ClInclude Include="..\..\..\CPPScripts\DirectX12\D3D12EnumStruct.h" />

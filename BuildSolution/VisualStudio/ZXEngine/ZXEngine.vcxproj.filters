@@ -1208,5 +1208,8 @@
     <ClInclude Include="..\..\..\CPPScripts\Concurrent\Job.h">
       <Filter>Concurrent</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Concurrent\ThreadSafeData.h">
+      <Filter>Concurrent</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

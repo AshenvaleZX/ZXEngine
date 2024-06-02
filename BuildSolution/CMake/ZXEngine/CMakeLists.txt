@@ -100,6 +100,7 @@ set(Concurrent
     "../../../CPPScripts/Concurrent/JobSystem.h"
     "../../../CPPScripts/Concurrent/LockFreeQueue.h"
     "../../../CPPScripts/Concurrent/Queue.h"
+    "../../../CPPScripts/Concurrent/ThreadSafeData.h"
 )
 source_group("Concurrent" FILES ${Concurrent})
 
