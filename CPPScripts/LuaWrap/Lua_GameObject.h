@@ -231,6 +231,16 @@ static int GameObject_FindChild(lua_State* L)
 	return 1;
 }
 
+static int GameObject_IdenticalTo(lua_State* L)
+{
+	ZXEngine::GameObject** self = (ZXEngine::GameObject**)luaL_checkudata(L, -2, "ZXEngine.GameObject");
+	ZXEngine::GameObject** other = (ZXEngine::GameObject**)luaL_checkudata(L, -1, "ZXEngine.GameObject");
+
+	lua_pushboolean(L, *self == *other);
+
+	return 1;
+}
+
 static int GameObject_Destroy(lua_State* L)
 {
 	ZXEngine::GameObject** self = (ZXEngine::GameObject**)luaL_checkudata(L, -1, "ZXEngine.GameObject");
@@ -256,6 +266,7 @@ static const luaL_Reg GameObject_Funcs_Meta[] =
 	{ "GetComponent", GameObject_GetComponent },
 	{ "SetName",      GameObject_SetName      },
 	{ "FindChild",    GameObject_FindChild    },
+	{ "IdenticalTo",  GameObject_IdenticalTo  },
 	{ "Destroy",      GameObject_Destroy      },
 	{ NULL, NULL }
 };
