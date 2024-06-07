@@ -3,7 +3,7 @@ EngineEvent = {}
 EngineEvent.events = {}
 
 -- 注册C++引擎事件
-function EngineEvent:AddEventHandler(id, handler, table)
+function EngineEvent:AddEventHandler(id, handler, table, ...)
     if not id or type(id) ~= "number" then
         LogError("EngineEvent parameter in addlistener function has to be number, %s not right.", type(id))
         return
@@ -15,7 +15,8 @@ function EngineEvent:AddEventHandler(id, handler, table)
     if not self.events[id] then
         self.events[id] = {}
     end
-    self.events[id][handler] = {table = table}
+    local args = {...}
+    self.events[id][handler] = { table = table, args = args }
 end
 
 -- 接收并广播从C++引擎传过来的事件（这个函数不应该在Lua代码里调用）
@@ -27,9 +28,9 @@ function EngineEvent:FireEvent(arg)
     if self.events[id] then
         for handler, data in pairs(self.events[id])do
             if data.table then
-                handler(data.table, msg)
+                handler(data.table, msg, table.unpack(data.args))
             else
-                handler(msg)
+                handler(msg, table.unpack(data.args))
             end
         end
     end
