@@ -386,13 +386,17 @@ namespace ZXEngine
 		// Color
 		Vector3 lightColor = component->color;
 		ImVec4 color = ImVec4(lightColor.r, lightColor.g, lightColor.b, 1.0f);
-		ImGui::Text("Color     ");
+		ImGui::Text("Color        ");
 		ImGui::SameLine(); ImGui::ColorEdit3("##color", (float*)&color);
 
 		// Intensity
 		float intensity = component->intensity;
-		ImGui::Text("Intensity ");
+		ImGui::Text("Intensity    ");
 		ImGui::SameLine(); ImGui::DragFloat("##Intensity", &intensity, 0.01f, 0.0f, FLT_MAX);
+
+		// Shadow Range
+		ImGui::Text("Shadow Range ");
+		ImGui::SameLine(); ImGui::DragFloat("##ShadowRange", &component->mDirectionalLightSpaceSize, 0.01f, 1.0f, 100.0f);
 	}
 
 	void EditorInspectorPanel::DrawGameLogic(GameLogic* component)

@@ -343,6 +343,9 @@ namespace ZXEngine
 		light->color = Vector3(data["Color"][0], data["Color"][1], data["Color"][2]);
 		light->intensity = data["Intensity"];
 		light->type = data["LightType"];
+
+		if (!data["ShadowRange"].is_null())
+			light->mDirectionalLightSpaceSize = data["ShadowRange"];
 	}
 
 	void GameObject::ParseGameLogic(json data)

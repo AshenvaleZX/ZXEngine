@@ -17,6 +17,7 @@ namespace ZXEngine
 		Vector3 color;
 		float intensity = 0.0f;
 		LightType type = LightType::None;
+		float mDirectionalLightSpaceSize = 20.0f;
 
 		Light();
 		~Light();
@@ -26,8 +27,5 @@ namespace ZXEngine
 		// 获取将顶点从世界空间转换到光源空间的矩阵
 		Matrix4 GetLightMatrix();
 		Matrix4 GetProjectionMatrix();
-
-	private:
-		float mDirectionalLightSpaceSize = 20.0f;
 	};
 }
