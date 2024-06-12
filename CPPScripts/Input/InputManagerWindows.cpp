@@ -20,11 +20,14 @@ namespace ZXEngine
 	void InputManagerWindows::Update()
 	{
 #ifdef ZX_EDITOR
-		if (!EditorInputManager::GetInstance()->IsProcessGameInput())
-			return;
-#endif
+		if (EditorInputManager::GetInstance()->IsProcessGameMouseInput())
+			CheckMouse();
+
+		UpdateKeyInput();
+#else
 		CheckMouse();
 		UpdateKeyInput();
+#endif
 	}
 
 	void InputManagerWindows::UpdateMousePos(float xPos, float yPos)
@@ -51,8 +54,16 @@ namespace ZXEngine
 	void InputManagerWindows::UpdateKeyInput()
 	{
 		// Êó±ê×óÓÒ¼ü
+#ifdef ZX_EDITOR
+		if (EditorInputManager::GetInstance()->IsProcessGameMouseInput())
+		{
+			CheckMouseKey(VK_LBUTTON, InputButton::MOUSE_BUTTON_1, EventType::MOUSE_BUTTON_1_PRESS);
+			CheckMouseKey(VK_RBUTTON, InputButton::MOUSE_BUTTON_2, EventType::MOUSE_BUTTON_2_PRESS);
+		}
+#else
 		CheckMouseKey(VK_LBUTTON, InputButton::MOUSE_BUTTON_1, EventType::MOUSE_BUTTON_1_PRESS);
 		CheckMouseKey(VK_RBUTTON, InputButton::MOUSE_BUTTON_2, EventType::MOUSE_BUTTON_2_PRESS);
+#endif
 
 		// ´Ó0µ½9
 		for (int i = 0; i < 10; i++)

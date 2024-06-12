@@ -28,10 +28,6 @@ namespace ZXEngine
 	void InputManagerGLFW::Update()
 	{
 		PollEvents();
-#ifdef ZX_EDITOR
-		if (!EditorInputManager::GetInstance()->IsProcessGameInput())
-			return;
-#endif
 		UpdateKeyInput();
 	}
 
@@ -74,8 +70,16 @@ namespace ZXEngine
 	void InputManagerGLFW::UpdateKeyInput()
 	{
 		// 鼠标按键
+#ifdef ZX_EDITOR
+		if (EditorInputManager::GetInstance()->IsProcessGameMouseInput())
+		{
+			CheckMouseKey(GLFW_MOUSE_BUTTON_1, InputButton::MOUSE_BUTTON_1, EventType::MOUSE_BUTTON_1_PRESS);
+			CheckMouseKey(GLFW_MOUSE_BUTTON_2, InputButton::MOUSE_BUTTON_2, EventType::MOUSE_BUTTON_2_PRESS);
+		}
+#else
 		CheckMouseKey(GLFW_MOUSE_BUTTON_1, InputButton::MOUSE_BUTTON_1, EventType::MOUSE_BUTTON_1_PRESS);
 		CheckMouseKey(GLFW_MOUSE_BUTTON_2, InputButton::MOUSE_BUTTON_2, EventType::MOUSE_BUTTON_2_PRESS);
+#endif
 
 		// 从0到9
 		for (int i = 0; i < 10; i++)

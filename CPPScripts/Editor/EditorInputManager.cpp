@@ -25,7 +25,7 @@ namespace ZXEngine
 
 	void EditorInputManager::Update()
 	{
-		if (IsProcessGameInput())
+		if (IsProcessGameMouseInput())
 			return;
 
 
@@ -66,7 +66,18 @@ namespace ZXEngine
 
 	bool EditorInputManager::IsProcessGameInput()
 	{
-		// 如果当前未处于编辑器拖拽状态，并且鼠标被游戏捕获或者当前位置在游戏画面区域内，则需要处理游戏输入
+		return IsProcessGameKeyInput() || IsProcessGameMouseInput();
+	}
+
+	bool EditorInputManager::IsProcessGameKeyInput()
+	{
+		// 游戏内的键盘输入默认都要处理
+		return true;
+	}
+
+	bool EditorInputManager::IsProcessGameMouseInput()
+	{
+		// 如果当前未处于编辑器拖拽状态，并且鼠标被游戏捕获或者当前位置在游戏画面区域内，则需要处理游戏的鼠标输入
 		return !isDragging && (!InputManager::GetInstance()->IsShowCursor() || CheckCurMousePos() == EditorAreaType::Game);
 	}
 

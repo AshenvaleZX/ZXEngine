@@ -22,6 +22,8 @@ namespace ZXEngine
 		EditorAreaType CheckCurMousePos();
 		// 当前是否处理游戏输入
 		bool IsProcessGameInput();
+		bool IsProcessGameKeyInput();
+		bool IsProcessGameMouseInput();
 		void UpdateMouseScroll(float xOffset, float yOffset);
 
 	private:
