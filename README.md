@@ -262,6 +262,29 @@ end
 return PhysControl
 ```
 
+如果要在运行时创建GameObject，可以直接通过如下接口读取Prefab并创建：
+
+If you want to create a GameObject at runtime, you can read the Prefab and create it through the following interface:
+
+```lua
+local newGO = GameObject.Create("Path/To/Example.zxprefab")
+```
+
+不过如果你需要为一个Prefab创建多个实例，最好通过如下方式先加载Prefab，然后再实例化多个，避免重复的IO开销：
+
+However, if you need to create multiple instances of a prefab, it is better to load the prefab first and then instantiate multiple instances to avoid repeated IO cost:
+
+```lua
+local prefab = Resources.LoadPrefab("Path/To/Example.zxprefab")
+
+local allGO = {}
+
+for i=1, 100 do
+    local newGO = GameObject.CreateInstance(prefab)
+    table.insert(allGO, newGO)
+end
+```
+
 如果要接收输入事件，比如写一个Lua脚本挂到相机上控制镜头移动，那么可以注册来自引擎的输入事件。比如注册按住WSAD的回调函数：
 
 If you want to receive input events, such as writing a Lua script to control camera movement, you can register input events from the engine. For example, register the callback function for pressing WSAD:
@@ -428,11 +451,17 @@ In order to demonstrate the engine better and make the engine more complete and 
 
 [ZXEngine-Demo-Projects](https://github.com/AshenvaleZX/ZXEngine-Demo-Projects)
 
-这个仓库里面放了一些用ZXEngine开发的实际游戏Demo项目，更好的展示了如何使用ZXEngine提供的接口进行实际开发。目前有一个SLG Demo：
+这个仓库里面放了一些用ZXEngine开发的实际游戏Demo项目，更好的展示了如何使用ZXEngine提供的接口进行实际开发。目前有两个Demo：
 
-This repository contains some actual game demo projects developed with ZXEngine, demonstrate how to use the interface provided by ZXEngine for actual development. Currently there is an SLG Demo:
+This repository contains some actual game demo projects developed with ZXEngine, demonstrate how to use the interface provided by ZXEngine for actual development. There are currently two demos:
+
+SLG Demo:
 
 ![](https://github.com/AshenvaleZX/ZXEngine-Demo-Projects/blob/main/Documents/SLGDemo.jpg)
+
+Medieval Theme Tank War Demo:
+
+![](https://github.com/AshenvaleZX/ZXEngine-Demo-Projects/blob/main/Documents/TankWarDemo.jpg)
 
 ## 构建与跨平台 (Build And Cross-Platform)
 
