@@ -43,6 +43,11 @@ set(Audio__irrKlangImpl
 )
 source_group("Audio\\irrKlangImpl" FILES ${Audio__irrKlangImpl})
 
+set(Common
+    "../../../CPPScripts/Common/SparseNaturalSet.h"
+)
+source_group("Common" FILES ${Common})
+
 set(Component
     "../../../CPPScripts/Component/Animator.cpp"
     "../../../CPPScripts/Component/Animator.h"
@@ -478,6 +483,7 @@ source_group("ZXSource" FILES ${ZXSource})
 set(ALL_FILES
     ${Animation}
     ${Audio}
+    ${Common}
     ${Component}
     ${Component__Physics}
     ${Concurrent}

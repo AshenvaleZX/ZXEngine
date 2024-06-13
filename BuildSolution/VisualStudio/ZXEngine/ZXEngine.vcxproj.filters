@@ -76,6 +76,9 @@
     <Filter Include="Audio\DefaultImpl">
       <UniqueIdentifier>{08d41ccb-41e2-421d-b805-60061b6c8ec6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{c4e97d96-1eff-4454-9f27-384a81c51660}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\CPPScripts\GameObject.cpp">
@@ -1210,6 +1213,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\Concurrent\ThreadSafeData.h">
       <Filter>Concurrent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Common\SparseNaturalSet.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
