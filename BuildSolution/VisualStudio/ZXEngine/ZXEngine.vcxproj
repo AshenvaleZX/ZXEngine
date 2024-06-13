@@ -212,6 +212,7 @@
     <ClCompile Include="..\..\..\CPPScripts\DirectX12\ZXD3D12DescriptorManager.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\DirectX12\ZXD3D12Util.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\DynamicMesh.cpp" />
+    <ClCompile Include="..\..\..\CPPScripts\ECS\World.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Editor\EditorDataManager.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Editor\EditorEnumStruct.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Editor\EditorGUIManager.cpp" />
@@ -398,6 +399,8 @@
     <ClInclude Include="..\..\..\CPPScripts\DirectX12\ZXD3D12DescriptorManager.h" />
     <ClInclude Include="..\..\..\CPPScripts\DirectX12\ZXD3D12Util.h" />
     <ClInclude Include="..\..\..\CPPScripts\DynamicMesh.h" />
+    <ClInclude Include="..\..\..\CPPScripts\ECS\ECSUtils.h" />
+    <ClInclude Include="..\..\..\CPPScripts\ECS\World.h" />
     <ClInclude Include="..\..\..\CPPScripts\Editor\EditorDataManager.h" />
     <ClInclude Include="..\..\..\CPPScripts\Editor\EditorEnumStruct.h" />
     <ClInclude Include="..\..\..\CPPScripts\Editor\EditorGUIManager.h" />
