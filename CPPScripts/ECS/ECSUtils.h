@@ -6,7 +6,7 @@ namespace ZXEngine
 	namespace ECS
 	{
 		using Entity = uint32_t;
-		using ComponentID_T = uint32_t;
+		using ComponentTypeID_T = uint32_t;
 
 		template<typename T, typename = std::enable_if<std::is_integral_v<T>>>
 		class IDGenerator
@@ -23,18 +23,18 @@ namespace ZXEngine
 
 		using EntityGenerator = IDGenerator<Entity>;
 
-		class ComponentIDAllocator
+		class ComponentTypeIDAllocator
 		{
 		public:
 			template<typename T>
-			ComponentID_T Get()
+			static ComponentTypeID_T Get()
 			{
-				static ComponentID_T id = ID++;
+				static ComponentTypeID_T id = ID++;
 				return id;
 			}
 
 		private:
-			inline static ComponentID_T ID = 0;
+			inline static ComponentTypeID_T ID = 0;
 		};
 	}
 }

@@ -609,6 +609,9 @@
     <ClCompile Include="..\..\..\CPPScripts\ECS\World.cpp">
       <Filter>ECS</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\ECS\Command.cpp">
+      <Filter>ECS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\CPPScripts\GameObject.h">
@@ -1224,6 +1227,9 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\ECS\World.h">
+      <Filter>ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\ECS\Command.h">
       <Filter>ECS</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\ECS\ECSUtils.h">

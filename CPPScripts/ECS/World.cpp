@@ -4,6 +4,11 @@ namespace ZXEngine
 {
 	namespace ECS
 	{
+		World::ComponentPool::ComponentPool()
+		{
+			Debug::LogError("Invalid ECS component pool creation!");
+		}
+
 		World::ComponentPool::ComponentPool(CreateFunction create, DestroyFunction destroy) :
 			CreateComponent(create),
 			DestroyComponent(destroy)

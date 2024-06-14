@@ -120,6 +120,15 @@ set(DirectX12
 )
 source_group("DirectX12" FILES ${DirectX12})
 
+set(ECS
+    "../../../CPPScripts/ECS/Command.cpp"
+    "../../../CPPScripts/ECS/Command.h"
+    "../../../CPPScripts/ECS/ECSUtils.h"
+    "../../../CPPScripts/ECS/World.cpp"
+    "../../../CPPScripts/ECS/World.h"
+)
+source_group("ECS" FILES ${ECS})
+
 set(Editor
     "../../../CPPScripts/Editor/EditorAssetPreviewer.cpp"
     "../../../CPPScripts/Editor/EditorAssetPreviewer.h"
@@ -488,6 +497,7 @@ set(ALL_FILES
     ${Component__Physics}
     ${Concurrent}
     ${DirectX12}
+    ${ECS}
     ${Editor}
     ${External}
     ${External__ImGui}
