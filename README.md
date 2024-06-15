@@ -30,6 +30,8 @@ The appearance of the engine is as shown below. For detailed information, please
 
 - [骨骼蒙皮动画系统 (Skeletal Animation System)](#骨骼蒙皮动画系统-skeletal-animation-system)
 
+- [游戏UI系统 (Game UI System)](#游戏ui系统-game-ui-system)
+
 - [GamePlay层的Lua系统 (Lua System of GamePlay Layer)](#gameplay层的lua系统-lua-system-of-gameplay-layer)
 
 - [音频系统 (Audio System)](#音频系统-audio-system)
@@ -191,6 +193,45 @@ This animation system also uses the engine's built-in JobSystem to optimize perf
 这里动画的播放代码属于业务逻辑模块而不是引擎，所以是写在Lua代码中的，通过GameLogic组件绑定到对应的GameObject上。
 
 The code to play the animation belongs to the GamePlay rather than the engine, so it‘s written in the Lua code and bound to the GameObject through the GameLogic component.
+
+## 游戏UI系统 (Game UI System)
+
+本引擎提供了一个简单的游戏UI系统，一个示例如下(更多演示请看后面的实际游戏项目演示)：
+
+This engine provides a simple game UI system, an example is shown below (see the actual game project demo below for more examples) :
+
+![](Documents/Images/GameUI0.png)
+
+目前有三个基本的UI组件，分别是UITextRenderer，UITextureRenderer和UIButton。
+
+There are currently three basic UI components, UITextRenderer, UITextureRenderer, and UIButton.
+
+### UITextRenderer:
+
+![](Documents/Images/GameUI1.png)
+
+Text是UI文本内容，可以直接通过引擎编辑器实时修改。后面的参数为字体大小，文本对齐方式和文本颜色。
+
+Text is UI text content that can be modified in real time through the engine editor. The following parameters are the font size, text alignment, and text color.
+
+### UITextureRenderer and UIButton:
+
+![](Documents/Images/GameUI2.png)
+
+目前这两个组件在引擎编辑器中仅展示自身相关信息，不提供编辑功能。其中UIButton可以在Lua代码中注册点击后的回调函数，方式如下：
+
+At present, these two components only display information about themselves in the engine editor, and do not provide editing functions. And UIButton can register a click callback function in Lua code, as follows:
+
+```lua
+function UILogicExample:Start()
+    local btnYesGO = self.gameObject:FindChild("Panel/BtnYes")
+    btnYesGO:GetComponent("UIButton"):SetClickCallBack(self.OnBtnClickCallBack, ...)
+end
+
+function UILogicExample:OnBtnClickCallBack()
+    Log("The yes button is clicked.")
+end
+```
 
 ## GamePlay层的Lua系统 (Lua System of GamePlay Layer)
 
@@ -455,11 +496,11 @@ In order to demonstrate the engine better and make the engine more complete and 
 
 This repository contains some actual game demo projects developed with ZXEngine, demonstrate how to use the interface provided by ZXEngine for actual development. There are currently two demos:
 
-SLG Demo:
+### SLG Demo:
 
 ![](https://github.com/AshenvaleZX/ZXEngine-Demo-Projects/blob/main/Documents/SLGDemo.jpg)
 
-Medieval Theme Tank War Demo:
+### Medieval Theme Tank War Demo:
 
 ![](https://github.com/AshenvaleZX/ZXEngine-Demo-Projects/blob/main/Documents/TankWarDemo.jpg)
 
