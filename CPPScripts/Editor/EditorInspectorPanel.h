@@ -12,6 +12,7 @@ namespace ZXEngine
 	class GameLogic;
 	class UITextRenderer;
 	class UITextureRenderer;
+	class UIButton;
 	class ParticleSystem;
 	class BoxCollider;
 	class PlaneCollider;
@@ -41,6 +42,7 @@ namespace ZXEngine
 		void DrawGameLogic(GameLogic* component);
 		void DrawUITextRenderer(UITextRenderer* component);
 		void DrawUITextureRenderer(UITextureRenderer* component);
+		void DrawUIButton(UIButton* component);
 		void DrawParticleSystem(ParticleSystem* component);
 		void DrawBoxCollider(BoxCollider* component);
 		void DrawPlaneCollider(PlaneCollider* component);

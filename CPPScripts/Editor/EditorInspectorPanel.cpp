@@ -50,6 +50,8 @@ namespace ZXEngine
 						DrawUITextRenderer(static_cast<UITextRenderer*>(iter.second));
 					else if (type == ComponentType::UITextureRenderer)
 						DrawUITextureRenderer(static_cast<UITextureRenderer*>(iter.second));
+					else if (type == ComponentType::UIButton)
+						DrawUIButton(static_cast<UIButton*>(iter.second));
 					else if (type == ComponentType::ParticleSystem)
 						DrawParticleSystem(static_cast<ParticleSystem*>(iter.second));
 					else if (type == ComponentType::BoxCollider)
@@ -493,6 +495,17 @@ namespace ZXEngine
 			ImTextureMgr->CreateFromEngineID(id);
 		ImGui::Text("Image    ");
 		ImGui::SameLine(); ImGui::Image(ImTextureMgr->GetImTextureIDByEngineID(id), ImVec2(50.0f, 50.0f));
+	}
+
+	void EditorInspectorPanel::DrawUIButton(UIButton* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("UIButton"))
+			return;
+
+		string size = to_string(component->mWidth) + "x" + to_string(component->mHeight);
+		ImGui::Text("Size     ");
+		ImGui::SameLine(); ImGui::Text(size.c_str());
 	}
 
 	void EditorInspectorPanel::DrawParticleSystem(ParticleSystem* component)
