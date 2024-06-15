@@ -38,9 +38,9 @@ namespace ZXEngine
 		shadowCubeMap = new CubeMap(cubeMapPath);
 
 #ifdef ZX_API_OPENGL
-		loadingTexture = new Texture(Resources::GetAssetFullPath("Textures/loading_r.jpg", true).c_str());
+		loadingTexture = new Texture(Resources::GetAssetFullPath("Textures/loading_r.jpg", true));
 #else
-		loadingTexture = new Texture(Resources::GetAssetFullPath("Textures/loading.jpg", true).c_str());
+		loadingTexture = new Texture(Resources::GetAssetFullPath("Textures/loading.jpg", true));
 #endif
 
 		previewQuad = GeometryGenerator::CreateScreenQuad();

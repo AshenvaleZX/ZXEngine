@@ -142,7 +142,7 @@ namespace ZXEngine
 			auto info = new AssetTextureInfo();
 			info->name = asset->name;
 			info->format = asset->extension;
-			info->texture = new Texture(asset->path.c_str());
+			info->texture = new Texture(asset->path);
 			curAssetInfo = info;
 		}
 		else if (asset->type == AssetType::Material || asset->type == AssetType::RayTracingMaterial || asset->type == AssetType::DeferredMaterial)

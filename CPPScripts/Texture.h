@@ -7,11 +7,12 @@ namespace ZXEngine
 	class Texture
 	{
 	public:
-		int width;
-		int height;
+		int width = 0;
+		int height = 0;
+		string path;
 		TextureType type;
 
-		Texture(const char* path);
+		Texture(const string& path);
 		Texture(const vector<string>& faces);
 		Texture(TextureFullData* data);
 		Texture(CubeMapFullData* data);

@@ -24,7 +24,7 @@ namespace ZXEngine
 
 	RenderEngineProperties::RenderEngineProperties()
 	{
-		emptyShadowMap = new Texture(Resources::GetAssetFullPath("Textures/white.png", true).c_str());
+		emptyShadowMap = new Texture(Resources::GetAssetFullPath("Textures/white.png", true));
 		SetEmptyShadowMap();
 
 		vector<string> cubeMapPath;

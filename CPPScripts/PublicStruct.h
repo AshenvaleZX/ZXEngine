@@ -51,6 +51,7 @@ namespace ZXEngine
 		int height = 0;
 		int numChannel = 0;
 		unsigned char* data = nullptr;
+		string path;
 
 		~TextureFullData();
 	};

@@ -480,11 +480,18 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("UITextureRenderer"))
 			return;
 
+		ImGui::Text("Path     ");
+		ImGui::SameLine(); ImGui::Text(component->texture->path.c_str());
+
+		string size = to_string(component->texture->width) + "x" + to_string(component->texture->height);
+		ImGui::Text("Size     ");
+		ImGui::SameLine(); ImGui::Text(size.c_str());
+
 		auto ImTextureMgr = ImGuiTextureManager::GetInstance();
 		uint32_t id = component->texture->GetID();
 		if (!ImTextureMgr->CheckExistenceByEngineID(id))
 			ImTextureMgr->CreateFromEngineID(id);
-		ImGui::Text("Image  ");
+		ImGui::Text("Image    ");
 		ImGui::SameLine(); ImGui::Image(ImTextureMgr->GetImTextureIDByEngineID(id), ImVec2(50.0f, 50.0f));
 	}
 

@@ -3,10 +3,11 @@
 
 namespace ZXEngine
 {
-	Texture::Texture(const char* path)
+	Texture::Texture(const string& path)
 	{
 		type = TextureType::ZX_2D;
-		ID = RenderAPI::GetInstance()->LoadTexture(path, width, height);
+		this->path = path;
+		ID = RenderAPI::GetInstance()->LoadTexture(path.c_str(), width, height);
 	}
 
 	Texture::Texture(const vector<string>& faces)
@@ -18,6 +19,8 @@ namespace ZXEngine
 	Texture::Texture(TextureFullData* data)
 	{
 		type = TextureType::ZX_2D;
+		width = data->width;
+		height = data->height;
 		ID = RenderAPI::GetInstance()->CreateTexture(data);
 	}
 

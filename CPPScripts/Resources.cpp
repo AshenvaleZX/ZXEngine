@@ -417,6 +417,8 @@ namespace ZXEngine
 	TextureFullData* Resources::LoadTextureFullData(const string& path, bool isBuiltIn)
 	{
 		TextureFullData* textureFullData = new TextureFullData();
+
+		textureFullData->path = path;
 #ifdef ZX_API_OPENGL
 		textureFullData->data = stbi_load(path.c_str(), &textureFullData->width, &textureFullData->height, &textureFullData->numChannel, 0);
 #else
