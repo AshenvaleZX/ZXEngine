@@ -210,9 +210,22 @@ There are currently three basic UI components, UITextRenderer, UITextureRenderer
 
 ![](Documents/Images/GameUI1.png)
 
-Text是UI文本内容，可以直接通过引擎编辑器实时修改。后面的参数为字体大小，文本对齐方式和文本颜色。
+Text是UI文本内容，后面的参数为字体大小，文本对齐方式和文本颜色。文本内容可以提前设置好保存在Prefab中，也可以在运行时直接通过引擎编辑器实时修改，或者在代码中动态设置，代码示例如下：
 
-Text is UI text content that can be modified in real time through the engine editor. The following parameters are the font size, text alignment, and text color.
+Text is the UI text content, followed by the font size, text alignment, and text color. Text content can be pre-set and saved in prefab, modified in real time through the engine editor at run time, or dynamically set in code, as shown in the following code example:
+
+```lua
+function ShowFPS:Start()
+    // Get UI text component
+    self.FPSTextCom = self.gameObject:GetComponent("UITextRenderer")
+end
+
+function ShowFPS:Update()
+    local curFPS = CalculateFPS()
+    // Set the content
+    self.FPSTextCom:SetText("FPS: " .. curFPS)
+end
+```
 
 ### UITextureRenderer and UIButton:
 
