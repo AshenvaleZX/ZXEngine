@@ -216,13 +216,13 @@ Text is the UI text content, followed by the font size, text alignment, and text
 
 ```lua
 function ShowFPS:Start()
-    // Get UI text component
+    -- Get UI text component
     self.FPSTextCom = self.gameObject:GetComponent("UITextRenderer")
 end
 
 function ShowFPS:Update()
     local curFPS = CalculateFPS()
-    // Set the content
+    -- Set the content
     self.FPSTextCom:SetText("FPS: " .. curFPS)
 end
 ```
