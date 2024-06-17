@@ -7,6 +7,7 @@ namespace ZXEngine
 	{
 		using Entity = uint32_t;
 		using ComponentTypeID_T = uint32_t;
+		using ComponentContainer = unordered_map<ComponentTypeID_T, void*>;
 
 		template<typename T, typename = std::enable_if<std::is_integral_v<T>>>
 		class IDGenerator
@@ -23,18 +24,19 @@ namespace ZXEngine
 
 		using EntityGenerator = IDGenerator<Entity>;
 
-		class ComponentTypeIDAllocator
+		template<typename Type>
+		class TypeIDAllocator
 		{
 		public:
 			template<typename T>
-			static ComponentTypeID_T Get()
+			static uint32_t Get()
 			{
-				static ComponentTypeID_T id = ID++;
+				static uint32_t id = ID++;
 				return id;
 			}
 
 		private:
-			inline static ComponentTypeID_T ID = 0;
+			inline static uint32_t ID = 0;
 		};
 	}
 }

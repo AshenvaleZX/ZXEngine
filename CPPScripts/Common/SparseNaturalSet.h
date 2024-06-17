@@ -29,6 +29,11 @@ namespace ZXEngine
 			mDense.pop_back();
 		}
 
+		void CopyTo(vector<T>& vec) const
+		{
+			vec = mDense;
+		}
+
 		bool Contain(T value) const
 		{
 			size_t page = GetPage(value);

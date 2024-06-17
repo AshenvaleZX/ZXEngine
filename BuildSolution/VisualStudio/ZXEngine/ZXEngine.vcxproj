@@ -402,6 +402,7 @@
     <ClInclude Include="..\..\..\CPPScripts\DynamicMesh.h" />
     <ClInclude Include="..\..\..\CPPScripts\ECS\Command.h" />
     <ClInclude Include="..\..\..\CPPScripts\ECS\ECSUtils.h" />
+    <ClInclude Include="..\..\..\CPPScripts\ECS\Queryer.h" />
     <ClInclude Include="..\..\..\CPPScripts\ECS\World.h" />
     <ClInclude Include="..\..\..\CPPScripts\Editor\EditorDataManager.h" />
     <ClInclude Include="..\..\..\CPPScripts\Editor\EditorEnumStruct.h" />

@@ -10,8 +10,11 @@ namespace ZXEngine
 		class World final
 		{
 			friend class Command;
+			friend class Queryer;
 		public:
-			using ComponentContainer = unordered_map<ComponentTypeID_T, void*>;
+			World() = default;
+			World(const World&) = delete;
+			World& operator=(const World&) = delete;
 
 		private:
 			struct ComponentPool
@@ -47,6 +50,22 @@ namespace ZXEngine
 			unordered_map<Entity, ComponentContainer> mEntities;
 			// 所有的Component数据，按ComponentTypeID归类
 			unordered_map<ComponentTypeID_T, ComponentData> mComponents;
+
+			struct Singleton
+			{
+				void* mInstance = nullptr;
+
+				using DestroyFunction = void(*)(void*);
+
+				DestroyFunction Destroy = nullptr;
+
+				Singleton() = default;
+				Singleton(DestroyFunction destroy) : Destroy(destroy) {}
+
+				~Singleton() { Destroy(mInstance); }
+			};
+
+			unordered_map<uint32_t, Singleton> mSingletons;
 		};
 	}
 }

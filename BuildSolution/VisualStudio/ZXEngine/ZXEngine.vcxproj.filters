@@ -1235,5 +1235,8 @@
     <ClInclude Include="..\..\..\CPPScripts\ECS\ECSUtils.h">
       <Filter>ECS</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\ECS\Queryer.h">
+      <Filter>ECS</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
