@@ -7,6 +7,12 @@ namespace ZXEngine
 {
 	namespace ECS
 	{
+		class Command;
+		class Queryer;
+
+		using StartSystem = void(*)(Command);
+		using UpdateSystem = void(*)(Command, Queryer);
+
 		class World final
 		{
 			friend class Command;
@@ -16,7 +22,16 @@ namespace ZXEngine
 			World(const World&) = delete;
 			World& operator=(const World&) = delete;
 
+			void Start();
+			void Update();
+
+			void AddStartSystem(StartSystem system);
+			void AddUpdateSystem(UpdateSystem system);
+
 		private:
+			vector<StartSystem> mStartSystems;
+			vector<UpdateSystem> mUpdateSystems;
+
 			struct ComponentPool
 			{
 				vector<void*> mInstances;

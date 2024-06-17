@@ -1,4 +1,6 @@
 #include "World.h"
+#include "Command.h"
+#include "Queryer.h"
 
 namespace ZXEngine
 {
@@ -37,6 +39,32 @@ namespace ZXEngine
 				std::swap(*it, mInstances.back());
 				mInstances.pop_back();
 			}
+		}
+
+		void World::Start()
+		{
+			for (auto& system : mStartSystems)
+			{
+				system(Command{*this});
+			}
+		}
+
+		void World::Update()
+		{
+			for (auto& system : mUpdateSystems)
+			{
+				system(Command{*this}, Queryer{*this});
+			}
+		}
+
+		void World::AddStartSystem(StartSystem system)
+		{
+			mStartSystems.push_back(system);
+		}
+
+		void World::AddUpdateSystem(UpdateSystem system)
+		{
+			mUpdateSystems.push_back(system);
 		}
 	}
 }
