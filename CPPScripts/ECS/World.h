@@ -10,8 +10,8 @@ namespace ZXEngine
 		class Command;
 		class Queryer;
 
-		using StartSystem = void(*)(Command);
-		using UpdateSystem = void(*)(Command, Queryer);
+		using StartSystem = void(*)(Command&);
+		using UpdateSystem = void(*)(Command&, Queryer&);
 
 		class World final
 		{

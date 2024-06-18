@@ -43,17 +43,36 @@ namespace ZXEngine
 
 		void World::Start()
 		{
+			vector<Command> commands;
+
 			for (auto& system : mStartSystems)
 			{
-				system(Command{*this});
+				Command command{*this};
+				system(command);
+				commands.push_back(command);
+			}
+
+			for (auto& command : commands)
+			{
+				command.Execute();
 			}
 		}
 
 		void World::Update()
 		{
+			vector<Command> commands;
+
 			for (auto& system : mUpdateSystems)
 			{
-				system(Command{*this}, Queryer{*this});
+				Command command{*this};
+				Queryer queryer{*this};
+				system(command, queryer);
+				commands.push_back(command);
+			}
+
+			for (auto& command : commands)
+			{
+				command.Execute();
 			}
 		}
 

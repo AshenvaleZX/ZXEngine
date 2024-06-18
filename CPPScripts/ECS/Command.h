@@ -12,15 +12,27 @@ namespace ZXEngine
 			Command() = delete;
 			Command(World& world) : mWorld(world) {}
 
+			void Execute();
+
 			template<typename... ComponentTypes>
-			Command& Spawn(ComponentTypes&&... components)
+			Command& SpawnEntity(ComponentTypes&&... components)
 			{
 				Entity entity = EntityGenerator::Gen();
-				DoSpawn(entity, std::forward<ComponentTypes>(components)...);
+				DoSpawnEntity(entity, std::forward<ComponentTypes>(components)...);
 				return *this;
 			}
 
-			Command& Destroy(Entity entity);
+			template<typename... ComponentTypes>
+			Command& SpawnEntityD(ComponentTypes&&... components)
+			{
+				EntitySpawner entitySpawner;
+				entitySpawner.entity = EntityGenerator::Gen();
+				DoSpawnEntityD(entitySpawner.entity, entitySpawner.componentSpawners, std::forward<ComponentTypes>(components)...);
+				return *this;
+			}
+
+			Command& DestroyEntity(Entity entity);
+			Command& DestroyEntityD(Entity entity);
 
 			template<typename T>
 			Command& SpawnSingleton(T&& singleton)
@@ -48,14 +60,17 @@ namespace ZXEngine
 			{
 				auto singletonID = TypeIDAllocator<World::Singleton>::Get<T>();
 
-				if (auto iter = mWorld.mSingletons.find(singletonID); iter != mWorld.mSingletons.end())
-				{
-					mWorld.mSingletons.erase(iter);
-				}
-				else
-				{
-					Debug::LogError("Try to destroy a non-existing singleton.");
-				}
+				DoDestroySingleton(singletonID);
+
+				return *this;
+			}
+			
+			template<typename T>
+			Command& DestroySingletonD()
+			{
+				auto singletonID = TypeIDAllocator<World::Singleton>::Get<T>();
+
+				mSingletonsToDestroy.push_back(singletonID);
 
 				return *this;
 			}
@@ -63,8 +78,29 @@ namespace ZXEngine
 		private:
 			World& mWorld;
 
+			vector<Entity> mEntitiesToDestroy;
+			vector<uint32_t> mSingletonsToDestroy;
+
+			using AssignFunction = std::function<void(void*)>;
+
+			struct ComponentSpawner
+			{
+				ComponentTypeID_T ID = 0;
+				AssignFunction Assign = nullptr;
+				World::ComponentPool::CreateFunction Create = nullptr;
+				World::ComponentPool::DestroyFunction Destroy = nullptr;
+			};
+
+			struct EntitySpawner
+			{
+				Entity entity;
+				vector<ComponentSpawner> componentSpawners;
+			};
+
+			vector<EntitySpawner> mEntitiesToSpawn;
+
 			template<typename T, typename... Components>
-			void DoSpawn(Entity entity, T&& component, Components&&... components)
+			void DoSpawnEntity(Entity entity, T&& component, Components&&... components)
 			{
 				auto componentID = TypeIDAllocator<World::ComponentPool>::Get<T>();
 
@@ -82,14 +118,49 @@ namespace ZXEngine
 				*(static_cast<T*>(newComponent)) = std::forward<T>(component);
 				componentData.mEntitySet.Add(entity);
 
-				auto iter = mWorld.mEntities.emplace(entity);
+				auto iter = mWorld.mEntities.emplace(entity, ComponentContainer{});
 				iter.first->second[componentID] = newComponent;
 
 				if constexpr (sizeof...(components) > 0)
 				{
-					DoSpawn<Components...>(entity, std::forward<Components>(components)...);
+					DoSpawnEntity<Components...>(entity, std::forward<Components>(components)...);
 				}
 			}
+
+			template<typename T, typename... Components>
+			void DoSpawnEntityD(Entity entity, vector<ComponentSpawner>& spawners, T&& component, Components&&... components)
+			{
+				ComponentSpawner spawner;
+				spawner.ID = TypeIDAllocator<World::ComponentPool>::Get<T>();
+
+				// 这里如果component是以左值传入的，会产生复制开销，所以在调用时尽可能的使用右值传入
+				spawner.Assign = [capturedComponent = std::forward<T>(component)](void* ptr)mutable->void
+				{
+					*(static_cast<T*>(ptr)) = std::move(capturedComponent);
+				};
+
+				spawner.Create = [](void)->void*
+				{
+					return new T();
+				};
+
+				spawner.Destroy = [](void* ptr)->void
+				{
+					delete static_cast<T*>(ptr);
+				};
+
+				spawners.push_back(spawner);
+
+				if constexpr (sizeof...(components) > 0)
+				{
+					DoSpawnEntityD<Components...>(entity, spawners, std::forward<Components>(components)...);
+				}
+			}
+
+			void RealDoSpawnEntityD();
+			void* SpawnComponentForEntity(Entity entity, const ComponentSpawner& spawner);
+
+			void DoDestroySingleton(uint32_t id);
 		};
 	}
 }
