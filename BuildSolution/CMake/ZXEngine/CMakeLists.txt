@@ -124,6 +124,7 @@ set(ECS
     "../../../CPPScripts/ECS/Command.cpp"
     "../../../CPPScripts/ECS/Command.h"
     "../../../CPPScripts/ECS/ECSUtils.h"
+    "../../../CPPScripts/ECS/Event.h"
     "../../../CPPScripts/ECS/Queryer.h"
     "../../../CPPScripts/ECS/World.cpp"
     "../../../CPPScripts/ECS/World.h"

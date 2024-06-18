@@ -66,9 +66,12 @@ namespace ZXEngine
 			{
 				Command command{*this};
 				Queryer queryer{*this};
-				system(command, queryer);
+				system(command, queryer, mEvent);
 				commands.push_back(command);
 			}
+
+			mEvent.RemoveAllEvents();
+			mEvent.AddAllEvents();
 
 			for (auto& command : commands)
 			{

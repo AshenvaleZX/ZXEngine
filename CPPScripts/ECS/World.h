@@ -2,6 +2,7 @@
 #include "../pubh.h"
 #include "../Common/SparseNaturalSet.h"
 #include "ECSUtils.h"
+#include "Event.h"
 
 namespace ZXEngine
 {
@@ -11,7 +12,7 @@ namespace ZXEngine
 		class Queryer;
 
 		using StartSystem = void(*)(Command&);
-		using UpdateSystem = void(*)(Command&, Queryer&);
+		using UpdateSystem = void(*)(Command&, Queryer&, Event&);
 
 		class World final
 		{
@@ -29,6 +30,7 @@ namespace ZXEngine
 			void AddUpdateSystem(UpdateSystem system);
 
 		private:
+			Event mEvent;
 			vector<StartSystem> mStartSystems;
 			vector<UpdateSystem> mUpdateSystems;
 
