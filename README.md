@@ -10,9 +10,9 @@
 
 This is a game engine project. The main purpose that I created this project is to learn and practice game engine technology. And I hope this project will be helpful to you.
 
-引擎基本外观如下图，具体内容几句话写不完，请看图示后面的目录。
+本项目以游戏引擎为目标，而并非只关注图形渲染（不过图形渲染也是一个重要模块）。引擎基本外观如下图，具体内容请看图示后面的目录。
 
-The appearance of the engine is as shown below. For detailed information, please see the table of contents behind the picture.
+This project aims at a game engine, not just graphics and rendering (although this is also an important contents). The appearance of the engine is shown in the figure below. For specific content, please see the table of contents behind the figure.
 
 ![](Documents/Images/EngineShow0.jpg)
 
