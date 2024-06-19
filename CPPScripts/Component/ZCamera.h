@@ -11,6 +11,7 @@ namespace ZXEngine
 	{
     public:
         static ComponentType GetType();
+        static Camera* GetMainCamera();
         static vector<Camera*> GetAllCameras();
 
     private:
