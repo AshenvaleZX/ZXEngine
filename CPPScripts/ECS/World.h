@@ -19,9 +19,21 @@ namespace ZXEngine
 			friend class Command;
 			friend class Queryer;
 		public:
+			static void Create();
+			static World* GetInstance();
+			static World& GetReference();
+
+		private:
+			static World* mInstance;
+
+		public:
 			World() = default;
+
 			World(const World&) = delete;
 			World& operator=(const World&) = delete;
+
+			World(World&&) = default;
+			World& operator=(World&&) = default;
 
 			void Start();
 			void Update();

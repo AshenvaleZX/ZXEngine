@@ -11,6 +11,7 @@
 #include "Audio/AudioEngine.h"
 #include "Resources.h"
 #include "Concurrent/JobSystem.h"
+#include "ECS/ECS.h"
 
 #ifdef ZX_EDITOR
 #include "Editor/EditorGUIManager.h"
@@ -36,6 +37,7 @@ namespace ZXEngine
 			std::cout << "ZXEngine launch project: " << path << std::endl;
 		}
 
+		ECS::World::Create();
 		EventManager::Create();
 		JobSystem::Create();
 		AudioEngine::Create();

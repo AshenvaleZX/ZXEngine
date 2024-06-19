@@ -123,6 +123,7 @@ source_group("DirectX12" FILES ${DirectX12})
 set(ECS
     "../../../CPPScripts/ECS/Command.cpp"
     "../../../CPPScripts/ECS/Command.h"
+    "../../../CPPScripts/ECS/ECS.h"
     "../../../CPPScripts/ECS/ECSUtils.h"
     "../../../CPPScripts/ECS/Event.h"
     "../../../CPPScripts/ECS/Queryer.h"

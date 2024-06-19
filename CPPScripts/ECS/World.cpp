@@ -6,6 +6,23 @@ namespace ZXEngine
 {
 	namespace ECS
 	{
+		World* World::mInstance = nullptr;
+
+		void World::Create()
+		{
+			mInstance = new World();
+		}
+
+		World* World::GetInstance()
+		{
+			return mInstance;
+		}
+
+		World& World::GetReference()
+		{
+			return *mInstance;
+		}
+
 		World::ComponentPool::ComponentPool()
 		{
 			Debug::LogError("Invalid ECS component pool creation!");

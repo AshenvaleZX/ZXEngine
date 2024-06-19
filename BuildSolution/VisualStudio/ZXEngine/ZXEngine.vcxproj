@@ -401,6 +401,7 @@
     <ClInclude Include="..\..\..\CPPScripts\DirectX12\ZXD3D12Util.h" />
     <ClInclude Include="..\..\..\CPPScripts\DynamicMesh.h" />
     <ClInclude Include="..\..\..\CPPScripts\ECS\Command.h" />
+    <ClInclude Include="..\..\..\CPPScripts\ECS\ECS.h" />
     <ClInclude Include="..\..\..\CPPScripts\ECS\ECSUtils.h" />
     <ClInclude Include="..\..\..\CPPScripts\ECS\Event.h" />
     <ClInclude Include="..\..\..\CPPScripts\ECS\Queryer.h" />
