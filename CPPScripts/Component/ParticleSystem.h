@@ -24,13 +24,13 @@ namespace ZXEngine
 
 	public:
 		// 粒子总数
-		unsigned int particleNum = 0;
+		uint32_t mParticleNum = 0;
 		// 粒子生命周期
-		float lifeTime = 0;
+		float mLifeTime = 0;
 		// 粒子移动方向和速度
-		Vector3 velocity;
+		Vector3 mVelocity;
 		// 粒子生成位置偏移量
-		Vector3 offset;
+		Vector3 mOffset;
 
 		ParticleSystem();
 		~ParticleSystem();
@@ -44,15 +44,15 @@ namespace ZXEngine
 		void GenerateParticles();
 
 	private:
-		vector<Particle*> particles;
-		unsigned int textureID = 0;
-		unsigned int lastUsedIndex = 0;
-		float lastGenTime = 0;
-		Vector3 lastPos;
+		vector<Particle> mParticles;
+		uint32_t mTextureID = 0;
+		uint32_t mLastUsedIndex = 0;
+		float mLastGenTime = 0;
+		Vector3 mLastPos;
 		// 所挂载的GO当前移动方向
-		Vector3 moveDir;
+		Vector3 mMoveDir;
 
-		unsigned int GetUnusedParticleIndex();
-		void RespawnParticle(Particle* particle);
+		uint32_t GetUnusedParticleIndex();
+		void RespawnParticle(Particle& particle) const;
 	};
 }
