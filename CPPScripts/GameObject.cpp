@@ -394,7 +394,7 @@ namespace ZXEngine
 		particleSystem->mLifeTime = data["LifeTime"];
 		particleSystem->mVelocity = Vector3(data["Velocity"][0], data["Velocity"][1], data["Velocity"][2]);
 		particleSystem->mOffset = Vector3(data["StartOffset"][0], data["StartOffset"][1], data["StartOffset"][2]);
-		particleSystem->GenerateParticles();
+		particleSystem->InternalGeneration();
 	}
 
 	void GameObject::ParseBoxCollider(json data)
