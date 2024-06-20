@@ -27,6 +27,8 @@ namespace ZXEngine
 		Vector4 GetRow(uint32_t index) const;
 		Vector4 GetColumn(uint32_t index) const;
 
+		void Transpose();
+
 		void ToRowMajorArray(float* array) const;
 		void ToColumnMajorArray(float* array) const;
 

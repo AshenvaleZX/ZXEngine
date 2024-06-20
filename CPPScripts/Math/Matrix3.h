@@ -31,6 +31,8 @@ namespace ZXEngine
 		Vector3 GetRow(uint32_t index) const;
 		Vector3 GetColumn(uint32_t index) const;
 
+		void Transpose();
+
 		void ToRowMajorArray(float* array) const;
 		void ToColumnMajorArray(float* array) const;
 
