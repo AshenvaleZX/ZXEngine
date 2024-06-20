@@ -9,7 +9,7 @@
 #include "Debug.h"
 
 // 顶点最多关联4个骨骼
-#define MAX_NUM_BONES_PER_VERTEX 4
+constexpr size_t MAX_NUM_BONES_PER_VERTEX = 4;
 
 using std::string;
 using std::vector;
@@ -128,6 +128,7 @@ namespace ZXEngine
 		LightType lightType   = LightType::None;
 		ShadowType shadowType = ShadowType::None;
 		ShaderStateSet stateSet;
+		uint32_t instanceSize = 0; // 以Vector4为单位
 		ShaderStageFlags stages = 0;
 		ShaderPropertiesInfo vertProperties;
 		ShaderPropertiesInfo geomProperties;

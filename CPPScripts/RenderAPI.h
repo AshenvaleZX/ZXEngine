@@ -32,13 +32,20 @@ namespace ZXEngine
 		virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0) = 0;
 		virtual void WaitForRenderFinish() = 0;
 
-		// FrameBuffer
+		// Frame Buffer
 		virtual void SwitchFrameBuffer(uint32_t id) = 0;
 		virtual void ClearFrameBuffer() = 0;
 		virtual void BlitFrameBuffer(uint32_t cmd, const string& src, const string& dst, FrameBufferPieceFlags flags) = 0;
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0) = 0;
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, const ClearInfo& clearInfo, unsigned int width = 0, unsigned int height = 0) = 0;
 		virtual void DeleteFrameBufferObject(FrameBufferObject* FBO) = 0;
+
+		// Instance Buffer
+		virtual uint32_t CreateStaticInstanceBuffer(uint32_t size, uint32_t num, const void* data) = 0;
+		virtual uint32_t CreateDynamicInstanceBuffer(uint32_t size, uint32_t num) = 0;
+		virtual void UpdateDynamicInstanceBuffer(uint32_t id, uint32_t size, uint32_t num, const void* data) = 0;
+		virtual void SetUpInstanceBufferAttribute(uint32_t VAO, uint32_t instanceBuffer, uint32_t size, uint32_t offset = 6) = 0;
+		virtual void DeleteInstanceBuffer(uint32_t id) = 0;
 
 		// Œ∆¿Ì
 		virtual unsigned int LoadTexture(const char* path, int& width, int& height) = 0;
@@ -62,6 +69,7 @@ namespace ZXEngine
 		// Draw
 		virtual uint32_t AllocateDrawCommand(CommandType commandType) = 0;
 		virtual void Draw(uint32_t VAO) = 0;
+		virtual void DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer) = 0;
 		virtual void GenerateDrawCommand(uint32_t id) = 0;
 
 		// Mesh
