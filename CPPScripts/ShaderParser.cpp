@@ -146,6 +146,8 @@ namespace ZXEngine
 		string vertCode, geomCode, fragCode;
 		ParseShaderCode(code, vertCode, geomCode, fragCode);
 
+		info.instanceSize = GetInstanceSize(vertCode);
+
 		info.stages = ZX_SHADER_STAGE_VERTEX_BIT | ZX_SHADER_STAGE_FRAGMENT_BIT;
 		if (!geomCode.empty())
 			info.stages |= ZX_SHADER_STAGE_GEOMETRY_BIT;
@@ -308,6 +310,16 @@ namespace ZXEngine
 
 		string inputBlock = GetCodeBlock(preprocessedCode, "Input");
 		auto lines = Utils::StringSplit(inputBlock, '\n');
+		for (auto& line : lines)
+		{
+			auto words = Utils::ExtractWords(line);
+			if (words.size() >= 5 && words[0] != "//")
+				glCode += "layout (location = " + words[0] + ") in " + words[1] + " " + words[2] + ";\n";
+		}
+		glCode += "\n";
+
+		string instanceInputBlock = GetCodeBlock(preprocessedCode, "InstanceInput");
+		lines = Utils::StringSplit(instanceInputBlock, '\n');
 		for (auto& line : lines)
 		{
 			auto words = Utils::ExtractWords(line);
@@ -1101,6 +1113,37 @@ namespace ZXEngine
 		}
 
 		return stateSet;
+	}
+
+	uint32_t ShaderParser::GetInstanceSize(const string& code)
+	{
+		uint32_t instanceSize = 0;
+
+		string settingBlock = GetCodeBlock(code, "InstanceInput");
+		if (settingBlock.empty())
+			return instanceSize;
+
+		auto lines = Utils::StringSplit(settingBlock, '\n');
+
+		for (auto& line : lines)
+		{
+			auto words = Utils::ExtractWords(line);
+
+			if (words.size() < 2)
+			{
+				continue;
+			}
+			else if (words[1] == "vec4")
+			{
+				instanceSize++;
+			}
+			else if (words[1] == "mat4")
+			{
+				instanceSize += 4;
+			}
+		}
+
+		return instanceSize;
 	}
 
 	string ShaderParser::GetCodeBlock(const string& code, const string& blockName)
