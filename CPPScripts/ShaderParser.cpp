@@ -625,6 +625,24 @@ namespace ZXEngine
 		}
 		dxCode += "};\n\n";
 
+		vector<string> instanceInputVariables;
+		if (shaderInfo.instanceInfo.size > 0)
+		{
+			dxCode += "struct InstanceInput\n{\n";
+			string instanceInputBlock = GetCodeBlock(vertCode, "InstanceInput");
+			lines = Utils::StringSplit(instanceInputBlock, '\n');
+			for (auto& line : lines)
+			{
+				auto words = Utils::ExtractWords(line);
+				if (words.size() >= 5 && words[0] != "//")
+				{
+					dxCode += "    " + words[1] + " " + words[2] + " " + words[3] + " " + words[4] + ";\n";
+					instanceInputVariables.push_back(words[2]);
+				}
+			}
+			dxCode += "};\n\n";
+		}
+
 		// 顶点着色器输出结构体
 		dxCode += "struct VertexOutput\n{\n";
 		string vertOutputBlock = GetCodeBlock(vertCode, "Output");
@@ -811,7 +829,14 @@ namespace ZXEngine
 			Utils::ReplaceAllWord(vertMainBlock, varName, "input." + varName);
 		for (auto& varName : vertOutputVariables)
 			Utils::ReplaceAllWord(vertMainBlock, varName, "output." + varName);
-		dxCode += "VertexOutput VS(VertexInput input)\n";
+		for (auto& name : instanceInputVariables)
+			Utils::ReplaceAllWord(vertMainBlock, name, "instanceInput." + name);
+
+		if (shaderInfo.instanceInfo.size > 0)
+			dxCode += "VertexOutput VS(VertexInput input, InstanceInput instanceInput)\n";
+		else
+			dxCode += "VertexOutput VS(VertexInput input)\n";
+
 		dxCode += "{\n";
 		dxCode += "    VertexOutput output;\n";
 		dxCode += vertMainBlock;
