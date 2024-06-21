@@ -468,6 +468,16 @@ namespace ZXEngine
 		}
 		vkCode += "\n";
 
+		string instanceInputBlock = GetCodeBlock(preprocessedCode, "InstanceInput");
+		lines = Utils::StringSplit(instanceInputBlock, '\n');
+		for (auto& line : lines)
+		{
+			auto words = Utils::ExtractWords(line);
+			if (words.size() >= 5 && words[0] != "//")
+				vkCode += "layout (location = " + words[0] + ") in " + words[1] + " " + words[2] + ";\n";
+		}
+		vkCode += "\n";
+
 		string outputBlock = GetCodeBlock(preprocessedCode, "Output");
 		lines = Utils::StringSplit(outputBlock, '\n');
 		for (auto& line : lines)
