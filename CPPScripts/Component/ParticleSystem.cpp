@@ -156,7 +156,7 @@ namespace ZXEngine
 		mMaterial->Use();
 		mMaterial->SetTexture("_Sprite", mTextureID, 0, true);
 
-		mInstanceDataSize = ParticleSystemManager::GetInstance()->shader->reference->shaderInfo.instanceSize;
+		mInstanceDataSize = ParticleSystemManager::GetInstance()->shader->reference->shaderInfo.instanceInfo.size;
 
 		RenderAPI::GetInstance()->GenerateParticleMesh(mVAO);
 		

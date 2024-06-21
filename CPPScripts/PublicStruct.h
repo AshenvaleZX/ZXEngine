@@ -122,14 +122,21 @@ namespace ZXEngine
 		vector<ShaderProperty> textureProperties;
 	};
 
+	using ShaderSemanticType = std::pair<ShaderPropertyType, string>;
+	struct ShaderInstanceInfo
+	{
+		uint32_t size = 0; // 以Vector4为单位
+		vector<ShaderSemanticType> attributes;
+	};
+
 	// Shader类中记录信息的结构体
 	struct ShaderInfo
 	{
 		LightType lightType   = LightType::None;
 		ShadowType shadowType = ShadowType::None;
 		ShaderStateSet stateSet;
-		uint32_t instanceSize = 0; // 以Vector4为单位
 		ShaderStageFlags stages = 0;
+		ShaderInstanceInfo instanceInfo;
 		ShaderPropertiesInfo vertProperties;
 		ShaderPropertiesInfo geomProperties;
 		ShaderPropertiesInfo fragProperties;

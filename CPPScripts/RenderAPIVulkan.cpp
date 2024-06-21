@@ -5093,7 +5093,7 @@ namespace ZXEngine
         vertexInputBindingDescriptions.push_back(bindingDescription);
 
         vector<VkVertexInputAttributeDescription> attributeDescriptions = {};
-        attributeDescriptions.resize(static_cast<size_t>(6 + shaderInfo.instanceSize));
+        attributeDescriptions.resize(static_cast<size_t>(6 + shaderInfo.instanceInfo.size));
 
         attributeDescriptions[0].binding = 0;
         attributeDescriptions[0].location = 0;
@@ -5121,14 +5121,14 @@ namespace ZXEngine
         attributeDescriptions[5].offset = offsetof(Vertex, BoneIDs);
 
         // GPU Instance
-        if (shaderInfo.instanceSize > 0)
+        if (shaderInfo.instanceInfo.size > 0)
         {
             VkVertexInputBindingDescription instanceBindingDescription = {};
             instanceBindingDescription.binding = 1;
-            instanceBindingDescription.stride = shaderInfo.instanceSize * sizeof(Vector4);
+            instanceBindingDescription.stride = shaderInfo.instanceInfo.size * sizeof(Vector4);
             instanceBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
 
-            for (uint32_t i = 0; i < shaderInfo.instanceSize; i++)
+            for (uint32_t i = 0; i < shaderInfo.instanceInfo.size; i++)
             {
                 attributeDescriptions[6 + static_cast<size_t>(i)].binding = 1;
                 attributeDescriptions[6 + static_cast<size_t>(i)].location = 6 + i;
