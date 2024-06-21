@@ -35,11 +35,11 @@ namespace ZXEngine
         virtual void DeleteFrameBufferObject(FrameBufferObject* FBO);
 
         // Instance Buffer
-        virtual uint32_t CreateStaticInstanceBuffer(uint32_t size, uint32_t num, const void* data) { return 0; };
-        virtual uint32_t CreateDynamicInstanceBuffer(uint32_t size, uint32_t num) { return 0; };
-        virtual void UpdateDynamicInstanceBuffer(uint32_t id, uint32_t size, uint32_t num, const void* data) {};
-        virtual void SetUpInstanceBufferAttribute(uint32_t VAO, uint32_t instanceBuffer, uint32_t size, uint32_t offset = 6) {};
-        virtual void DeleteInstanceBuffer(uint32_t id) {};
+        virtual uint32_t CreateStaticInstanceBuffer(uint32_t size, uint32_t num, const void* data);
+        virtual uint32_t CreateDynamicInstanceBuffer(uint32_t size, uint32_t num);
+        virtual void UpdateDynamicInstanceBuffer(uint32_t id, uint32_t size, uint32_t num, const void* data);
+        virtual void SetUpInstanceBufferAttribute(uint32_t VAO, uint32_t instanceBuffer, uint32_t size, uint32_t offset = 6);
+        virtual void DeleteInstanceBuffer(uint32_t id);
 
         // Œ∆¿Ì
         virtual unsigned int LoadTexture(const char* path, int& width, int& height);
@@ -63,7 +63,7 @@ namespace ZXEngine
         // Draw
         virtual uint32_t AllocateDrawCommand(CommandType commandType);
         virtual void Draw(uint32_t VAO);
-        virtual void DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer) {};
+        virtual void DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer);
         virtual void GenerateDrawCommand(uint32_t id);
 
         // Mesh
@@ -234,32 +234,44 @@ namespace ZXEngine
         vector<VulkanTexture*> VulkanTextureArray;
         vector<VulkanPipeline*> VulkanPipelineArray;
         vector<VulkanMaterialData*> VulkanMaterialDataArray;
+        vector<VulkanBuffer*> VulkanInstanceBufferArray;
         vector<VulkanDrawCommand*> VulkanDrawCommandArray;
 
         vector<VkRenderPass> allVulkanRenderPass;
-        map<uint32_t, uint32_t> meshsToDelete;
-        map<uint32_t, uint32_t> texturesToDelete;
-        map<uint32_t, uint32_t> materialDatasToDelete;
-        map<uint32_t, uint32_t> pipelinesToDelete;
+        unordered_map<uint32_t, uint32_t> meshsToDelete;
+        unordered_map<uint32_t, uint32_t> texturesToDelete;
+        unordered_map<uint32_t, uint32_t> materialDatasToDelete;
+        unordered_map<uint32_t, uint32_t> pipelinesToDelete;
+        unordered_map<uint32_t, uint32_t> instanceBuffersToDelete;
 
         uint32_t GetNextVAOIndex();
         VulkanVAO* GetVAOByIndex(uint32_t idx);
         void DestroyVAOByIndex(uint32_t idx);
+
         uint32_t GetNextFBOIndex();
         VulkanFBO* GetFBOByIndex(uint32_t idx);
         void DestroyFBOByIndex(uint32_t idx);
+
         uint32_t GetNextAttachmentBufferIndex();
         VulkanAttachmentBuffer* GetAttachmentBufferByIndex(uint32_t idx);
         void DestroyAttachmentBufferByIndex(uint32_t idx);
+
         uint32_t GetNextTextureIndex();
         VulkanTexture* GetTextureByIndex(uint32_t idx);
         void DestroyTextureByIndex(uint32_t idx);
+
         uint32_t GetNextPipelineIndex();
         VulkanPipeline* GetPipelineByIndex(uint32_t idx);
         void DestroyPipelineByIndex(uint32_t idx);
+
         uint32_t GetNextMaterialDataIndex();
         VulkanMaterialData* GetMaterialDataByIndex(uint32_t idx);
         void DestroyMaterialDataByIndex(uint32_t idx);
+
+        uint32_t GetNextInstanceBufferIndex();
+        VulkanBuffer* GetInstanceBufferByIndex(uint32_t idx);
+        void DestroyInstanceBufferByIndex(uint32_t idx);
+
         uint32_t GetNextDrawCommandIndex();
         VulkanDrawCommand* GetDrawCommandByIndex(uint32_t idx);
 
@@ -267,6 +279,9 @@ namespace ZXEngine
         vector<void*> GetShaderPropertyAddressAllBuffer(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
 
         VulkanBuffer CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool cpuAddress = false, bool gpuAddress = false);
+        void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, VulkanBuffer& newBuffer, bool cpuAddress = false, bool gpuAddress = false);
+        VulkanBuffer CreateGPUBuffer(VkDeviceSize size, VkBufferUsageFlags usage, const void* data);
+        void CreateGPUBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer& buffer, VmaAllocation& allocation, const void* data);
         void DestroyBuffer(VulkanBuffer buffer);
 
         UniformBuffer CreateUniformBuffer(const vector<ShaderProperty>& properties);
@@ -403,7 +418,7 @@ namespace ZXEngine
         VkCommandBuffer immediateExeCmd;
         ViewPortInfo viewPortInfo;
 
-        vector<VulkanDrawIndex> drawIndexes;
+        vector<VulkanDrawRecord> drawRecords;
         vector<VkSemaphore> curWaitSemaphores;
 
         uint32_t GetCurFrameBufferIndex() const;
