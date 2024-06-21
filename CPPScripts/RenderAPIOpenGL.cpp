@@ -899,39 +899,21 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::GenerateParticleMesh(unsigned int& VAO)
 	{
-		VAO = GetNextVAOIndex();
-		auto meshBuffer = GetVAOByIndex(VAO);
-		meshBuffer->indexed = false;
-		meshBuffer->size = 6;
-
-		float particleQuad[] = {
-			// pos        // tex coord
-			-0.5f,  0.5f, 0.0f, 1.0f,
-			 0.5f, -0.5f, 1.0f, 0.0f,
-			-0.5f, -0.5f, 0.0f, 0.0f,
-
-			-0.5f,  0.5f, 0.0f, 1.0f,
-			 0.5f,  0.5f, 1.0f, 1.0f,
-			 0.5f, -0.5f, 1.0f, 0.0f
+		vector<Vertex> vertices =
+		{
+			{.Position = {  0.5f,  0.5f, 0.0f }, .TexCoords = { 1.0f, 0.0f } },
+			{.Position = {  0.5f, -0.5f, 0.0f }, .TexCoords = { 1.0f, 1.0f } },
+			{.Position = { -0.5f,  0.5f, 0.0f }, .TexCoords = { 0.0f, 0.0f } },
+			{.Position = { -0.5f, -0.5f, 0.0f }, .TexCoords = { 0.0f, 1.0f } },
 		};
-		glGenVertexArrays(1, &meshBuffer->VAO);
-		glGenBuffers(1, &meshBuffer->VBO);
-		glBindVertexArray(meshBuffer->VAO);
 
-		// Fill mesh buffer
-		glBindBuffer(GL_ARRAY_BUFFER, meshBuffer->VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(particleQuad), particleQuad, GL_STATIC_DRAW);
+		vector<uint32_t> indices =
+		{
+			2, 1, 3,
+			2, 0, 1,
+		};
 
-		// Set mesh attributes
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-
-		glBindVertexArray(0);
-
-		meshBuffer->inUse = true;
-		CheckError();
+		SetUpStaticMesh(VAO, vertices, indices);
 	}
 
 	uint32_t RenderAPIOpenGL::AllocateDrawCommand(CommandType commandType)

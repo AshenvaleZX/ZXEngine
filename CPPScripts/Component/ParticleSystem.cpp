@@ -162,7 +162,7 @@ namespace ZXEngine
 		
 		mInstanceBuffer = RenderAPI::GetInstance()->CreateDynamicInstanceBuffer(mInstanceDataSize, mParticleNum);
 		
-		RenderAPI::GetInstance()->SetUpInstanceBufferAttribute(mVAO, mInstanceBuffer, mInstanceDataSize, 2);
+		RenderAPI::GetInstance()->SetUpInstanceBufferAttribute(mVAO, mInstanceBuffer, mInstanceDataSize);
 	}
 
 	uint32_t ParticleSystem::GetUnusedParticleIndex()

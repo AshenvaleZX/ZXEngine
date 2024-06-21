@@ -15,8 +15,8 @@ Vertex
 
     InstanceInput
     {
-        2 mat4 iModel     : MATRIX
-        6 vec4 iColor     : COLOR
+        6  mat4 iModel    : MATRIX
+        10 vec4 iColor    : COLOR
     }
 
     Output
