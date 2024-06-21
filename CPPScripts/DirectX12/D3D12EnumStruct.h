@@ -54,11 +54,13 @@ namespace ZXEngine
         ZX_D3D12_RT_ROOT_PARAMETER_NUM
 	};
 
-    struct ZXD3D12DrawIndex
+    struct ZXD3D12DrawRecord
     {
         uint32_t VAO = 0;
         uint32_t pipelineID = 0;
         uint32_t materialDataID = 0;
+        uint32_t instanceNum = 0;
+        uint32_t instanceBuffer = UINT32_MAX;
     };
 
     struct ZXD3D12DrawCommand
@@ -114,6 +116,13 @@ namespace ZXEngine
     struct ZXD3D12ASGroup
     {
         vector<ZXD3D12AccelerationStructure> asGroup;
+        bool inUse = false;
+    };
+
+    struct ZXD3D12InstanceBuffer
+    {
+        ZXD3D12Buffer buffer;
+        D3D12_VERTEX_BUFFER_VIEW view = {};
         bool inUse = false;
     };
 

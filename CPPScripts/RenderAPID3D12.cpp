@@ -1019,6 +1019,62 @@ namespace ZXEngine
 		DestroyFBOByIndex(FBO->ID);
 	}
 
+	uint32_t RenderAPID3D12::CreateStaticInstanceBuffer(uint32_t size, uint32_t num, const void* data)
+	{
+		uint32_t idx = GetNextInstanceBufferIndex();
+		auto instanceBuffer = GetInstanceBufferByIndex(idx);
+		instanceBuffer->inUse = true;
+
+		UINT64 stride = static_cast<UINT64>(size) * sizeof(Vector4);
+		UINT64 bufferSize = static_cast<UINT64>(num) * stride;
+
+		instanceBuffer->buffer = CreateBuffer(bufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_HEAP_TYPE_DEFAULT, false, true, data);
+
+		instanceBuffer->view.SizeInBytes = static_cast<UINT>(bufferSize);
+		instanceBuffer->view.StrideInBytes = static_cast<UINT>(stride);
+		instanceBuffer->view.BufferLocation = instanceBuffer->buffer.gpuAddress;
+
+		return idx;
+	}
+
+	uint32_t RenderAPID3D12::CreateDynamicInstanceBuffer(uint32_t size, uint32_t num)
+	{
+		uint32_t idx = GetNextInstanceBufferIndex();
+		auto instanceBuffer = GetInstanceBufferByIndex(idx);
+		instanceBuffer->inUse = true;
+
+		UINT64 stride = static_cast<UINT64>(size) * sizeof(Vector4);
+		UINT64 bufferSize = static_cast<UINT64>(num) * stride;
+
+		instanceBuffer->buffer = CreateBuffer(bufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_HEAP_TYPE_UPLOAD, true, true);
+		
+		instanceBuffer->view.SizeInBytes = static_cast<UINT>(bufferSize);
+		instanceBuffer->view.StrideInBytes = static_cast<UINT>(stride);
+		instanceBuffer->view.BufferLocation = instanceBuffer->buffer.gpuAddress;
+
+		return idx;
+	}
+
+	void RenderAPID3D12::UpdateDynamicInstanceBuffer(uint32_t id, uint32_t size, uint32_t num, const void* data)
+	{
+		auto instanceBuffer = GetInstanceBufferByIndex(id);
+
+		UINT64 bufferSize = static_cast<UINT64>(static_cast<size_t>(num * size) * sizeof(Vector4));
+
+		memcpy(instanceBuffer->buffer.cpuAddress, data, bufferSize);
+	}
+
+	void RenderAPID3D12::SetUpInstanceBufferAttribute(uint32_t VAO, uint32_t instanceBuffer, uint32_t size, uint32_t offset)
+	{
+		// D3D12不需要实现这个接口
+		return;
+	}
+
+	void RenderAPID3D12::DeleteInstanceBuffer(uint32_t id)
+	{
+		mInstanceBuffersToDelete.insert(pair(id, DX_MAX_FRAMES_IN_FLIGHT));
+	}
+
 	unsigned int RenderAPID3D12::LoadTexture(const char* path, int& width, int& height)
 	{
 		int nrComponents;
@@ -1499,7 +1555,7 @@ namespace ZXEngine
 			pipelineStateDesc.PS = { reinterpret_cast<BYTE*>(fragCode->GetBufferPointer()), fragCode->GetBufferSize() };
 
 		// Input Layout
-		D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
+		vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs =
 		{
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, offsetof(Vertex, Position),  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0, offsetof(Vertex, TexCoords), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -1508,7 +1564,29 @@ namespace ZXEngine
 			{ "WEIGHT",   0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offsetof(Vertex, Weights),   D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 			{ "BONEID",   0, DXGI_FORMAT_R32G32B32A32_UINT,  0, offsetof(Vertex, BoneIDs),   D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 		};
-		pipelineStateDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
+
+		if (shaderInfo.instanceInfo.size > 0)
+		{
+			UINT offset = 0;
+			for (auto& iter : shaderInfo.instanceInfo.attributes)
+			{
+				if (iter.first == ShaderPropertyType::VEC4)
+				{
+					inputElementDescs.emplace_back(iter.second.c_str(), 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, offset, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1);
+					offset += 16;
+				}
+				else if (iter.first == ShaderPropertyType::MAT4)
+				{
+					for (UINT i = 0; i < 4; ++i)
+					{
+						inputElementDescs.emplace_back(iter.second.c_str(), i, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, offset, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1);
+						offset += 16;
+					}
+				}
+			}
+		}
+
+		pipelineStateDesc.InputLayout = { inputElementDescs.data(), static_cast<UINT>(inputElementDescs.size()) };
 
 		// Blend Config
 		D3D12_BLEND_DESC blendDesc = {};
@@ -1734,7 +1812,12 @@ namespace ZXEngine
 
 	void RenderAPID3D12::Draw(uint32_t VAO)
 	{
-		mDrawIndexes.push_back({ .VAO = VAO, .pipelineID = mCurPipeLineIdx, .materialDataID = mCurMaterialDataIdx });
+		mDrawRecords.emplace_back(VAO, mCurPipeLineIdx, mCurMaterialDataIdx);
+	}
+
+	void RenderAPID3D12::DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer)
+	{
+		mDrawRecords.emplace_back(VAO, mCurPipeLineIdx, mCurMaterialDataIdx, instanceNum, instanceBuffer);
 	}
 
 	void RenderAPID3D12::GenerateDrawCommand(uint32_t id)
@@ -1904,7 +1987,7 @@ namespace ZXEngine
 		// 偏移到当前位置
 		dynamicDescriptorHandle.Offset(mDynamicDescriptorOffsets[mCurrentFrame], mCbvSrvUavDescriptorSize);
 
-		for (auto& iter : mDrawIndexes)
+		for (auto& iter : mDrawRecords)
 		{
 			auto VAO = GetVAOByIndex(iter.VAO);
 			auto pipeline = GetPipelineByIndex(iter.pipelineID);
@@ -1940,9 +2023,19 @@ namespace ZXEngine
 				drawCommandList->SetGraphicsRootDescriptorTable(1, dynamicGPUHandle);
 			}
 
+			vector<D3D12_VERTEX_BUFFER_VIEW> vertexBufferViews = { VAO->vertexBufferView };
+			if (iter.instanceBuffer != UINT32_MAX)
+			{
+				vertexBufferViews.push_back(GetInstanceBufferByIndex(iter.instanceBuffer)->view);
+			}
+
 			drawCommandList->IASetIndexBuffer(&VAO->indexBufferView);
-			drawCommandList->IASetVertexBuffers(0, 1, &VAO->vertexBufferView);
-			drawCommandList->DrawIndexedInstanced(VAO->indexCount, 1, 0, 0, 0);
+			drawCommandList->IASetVertexBuffers(0, static_cast<UINT>(vertexBufferViews.size()), vertexBufferViews.data());
+
+			if (iter.instanceBuffer == UINT32_MAX)
+				drawCommandList->DrawIndexedInstanced(VAO->indexCount, 1, 0, 0, 0);
+			else
+				drawCommandList->DrawIndexedInstanced(VAO->indexCount, iter.instanceNum, 0, 0, 0);
 		}
 
 		// 把状态切回去
@@ -2021,7 +2114,7 @@ namespace ZXEngine
 		ID3D12CommandList* cmdsLists[] = { drawCommandList.Get() };
 		mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
-		mDrawIndexes.clear();
+		mDrawRecords.clear();
 
 #ifndef ZX_EDITOR
 		if (drawCommand->commandType == CommandType::UIRendering)
@@ -2038,14 +2131,14 @@ namespace ZXEngine
 
 		// 创建Vertex Buffer
 		UINT vertexBufferSize = static_cast<UINT>(sizeof(Vertex) * vertices.size());
-		meshBuffer->vertexBuffer = CreateBuffer(vertexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, D3D12_HEAP_TYPE_DEFAULT, false, true, vertices.data());
+		meshBuffer->vertexBuffer = CreateBuffer(vertexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_DEFAULT, false, true, vertices.data());
 		meshBuffer->vertexBufferView.SizeInBytes = vertexBufferSize;
 		meshBuffer->vertexBufferView.StrideInBytes = sizeof(Vertex);
 		meshBuffer->vertexBufferView.BufferLocation = meshBuffer->vertexBuffer.gpuAddress;
 
 		// 创建Index Buffer
 		UINT indexBufferSize = static_cast<UINT>(sizeof(uint32_t) * indices.size());
-		meshBuffer->indexBuffer = CreateBuffer(indexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, D3D12_HEAP_TYPE_DEFAULT, false, true, indices.data());
+		meshBuffer->indexBuffer = CreateBuffer(indexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_DEFAULT, false, true, indices.data());
 		meshBuffer->indexBufferView.Format = DXGI_FORMAT_R32_UINT;
 		meshBuffer->indexBufferView.SizeInBytes = indexBufferSize;
 		meshBuffer->indexBufferView.BufferLocation = meshBuffer->indexBuffer.gpuAddress;
@@ -3522,6 +3615,35 @@ namespace ZXEngine
 		materialData->inUse = false;
 	}
 
+	uint32_t RenderAPID3D12::GetNextInstanceBufferIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mInstanceBufferArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mInstanceBufferArray[i]->inUse)
+				return i;
+		}
+
+		mInstanceBufferArray.push_back(new ZXD3D12InstanceBuffer());
+
+		return length;
+	}
+
+	ZXD3D12InstanceBuffer* RenderAPID3D12::GetInstanceBufferByIndex(uint32_t idx)
+	{
+		return mInstanceBufferArray[idx];
+	}
+
+	void RenderAPID3D12::DestroyInstanceBufferByIndex(uint32_t idx)
+	{
+		auto instanceBuffer = mInstanceBufferArray[idx];
+
+		DestroyBuffer(instanceBuffer->buffer);
+
+		instanceBuffer->inUse = false;
+	}
+
 	uint32_t RenderAPID3D12::GetNextDrawCommandIndex()
 	{
 		uint32_t length = static_cast<uint32_t>(mDrawCommandArray.size());
@@ -3619,6 +3741,21 @@ namespace ZXEngine
 			DestroyPipelineByIndex(id);
 			mShadersToDelete.erase(id);
 		}
+
+		// Instance Buffer
+		deleteList.clear();
+		for (auto& iter : mInstanceBuffersToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroyInstanceBufferByIndex(id);
+			mInstanceBuffersToDelete.erase(id);
+		}
 	}
 
 	uint32_t RenderAPID3D12::CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_RENDER_TARGET_VIEW_DESC& rtvDesc)
@@ -3698,7 +3835,7 @@ namespace ZXEngine
 			&bufferProps,
 			D3D12_HEAP_FLAG_NONE,
 			&bufferDesc,
-			initState,
+			data == nullptr ? initState : D3D12_RESOURCE_STATE_COMMON,
 			nullptr,
 			IID_PPV_ARGS(buffer.buffer.GetAddressOf()))
 		);
@@ -3743,7 +3880,7 @@ namespace ZXEngine
 				CD3DX12_RESOURCE_BARRIER barrier2 = CD3DX12_RESOURCE_BARRIER::Transition(
 					buffer.buffer.Get(),
 					D3D12_RESOURCE_STATE_COPY_DEST,
-					D3D12_RESOURCE_STATE_GENERIC_READ);
+					initState);
 				cmdList->ResourceBarrier(1, &barrier2);
 			});
 		}

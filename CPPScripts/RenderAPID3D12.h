@@ -34,11 +34,11 @@ namespace ZXEngine
 		virtual void DeleteFrameBufferObject(FrameBufferObject* FBO);
 
 		// Instance Buffer
-		virtual uint32_t CreateStaticInstanceBuffer(uint32_t size, uint32_t num, const void* data) { return 0; };
-		virtual uint32_t CreateDynamicInstanceBuffer(uint32_t size, uint32_t num) { return 0; };
-		virtual void UpdateDynamicInstanceBuffer(uint32_t id, uint32_t size, uint32_t num, const void* data) {};
-		virtual void SetUpInstanceBufferAttribute(uint32_t VAO, uint32_t instanceBuffer, uint32_t size, uint32_t offset = 6) {};
-		virtual void DeleteInstanceBuffer(uint32_t id) {};
+		virtual uint32_t CreateStaticInstanceBuffer(uint32_t size, uint32_t num, const void* data);
+		virtual uint32_t CreateDynamicInstanceBuffer(uint32_t size, uint32_t num);
+		virtual void UpdateDynamicInstanceBuffer(uint32_t id, uint32_t size, uint32_t num, const void* data);
+		virtual void SetUpInstanceBufferAttribute(uint32_t VAO, uint32_t instanceBuffer, uint32_t size, uint32_t offset = 6);
+		virtual void DeleteInstanceBuffer(uint32_t id);
 
 		// Œ∆¿Ì
 		virtual unsigned int LoadTexture(const char* path, int& width, int& height);
@@ -62,7 +62,7 @@ namespace ZXEngine
 		// Draw
 		virtual uint32_t AllocateDrawCommand(CommandType commandType);
 		virtual void Draw(uint32_t VAO);
-		virtual void DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer) {};
+		virtual void DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer);
 		virtual void GenerateDrawCommand(uint32_t id);
 
 		// Mesh
@@ -178,31 +178,43 @@ namespace ZXEngine
 		vector<ZXD3D12Texture*> mTextureArray;
 		vector<ZXD3D12Pipeline*> mPipelineArray;
 		vector<ZXD3D12MaterialData*> mMaterialDataArray;
+		vector<ZXD3D12InstanceBuffer*> mInstanceBufferArray;
 		vector<ZXD3D12DrawCommand*> mDrawCommandArray;
 
-		map<uint32_t, uint32_t> mMeshsToDelete;
-		map<uint32_t, uint32_t> mTexturesToDelete;
-		map<uint32_t, uint32_t> mMaterialDatasToDelete;
-		map<uint32_t, uint32_t> mShadersToDelete;
+		unordered_map<uint32_t, uint32_t> mMeshsToDelete;
+		unordered_map<uint32_t, uint32_t> mTexturesToDelete;
+		unordered_map<uint32_t, uint32_t> mMaterialDatasToDelete;
+		unordered_map<uint32_t, uint32_t> mShadersToDelete;
+		unordered_map<uint32_t, uint32_t> mInstanceBuffersToDelete;
 
 		uint32_t GetNextVAOIndex();
 		ZXD3D12VAO* GetVAOByIndex(uint32_t idx);
 		void DestroyVAOByIndex(uint32_t idx);
+
 		uint32_t GetNextFBOIndex();
 		ZXD3D12FBO* GetFBOByIndex(uint32_t idx);
 		void DestroyFBOByIndex(uint32_t idx);
+
 		uint32_t GetNextRenderBufferIndex();
 		ZXD3D12RenderBuffer* GetRenderBufferByIndex(uint32_t idx);
 		void DestroyRenderBufferByIndex(uint32_t idx);
+
 		uint32_t GetNextTextureIndex();
 		ZXD3D12Texture* GetTextureByIndex(uint32_t idx);
 		void DestroyTextureByIndex(uint32_t idx);
+
 		uint32_t GetNextPipelineIndex();
 		ZXD3D12Pipeline* GetPipelineByIndex(uint32_t idx);
 		void DestroyPipelineByIndex(uint32_t idx);
+
 		uint32_t GetNextMaterialDataIndex();
 		ZXD3D12MaterialData* GetMaterialDataByIndex(uint32_t idx);
 		void DestroyMaterialDataByIndex(uint32_t idx);
+
+		uint32_t GetNextInstanceBufferIndex();
+		ZXD3D12InstanceBuffer* GetInstanceBufferByIndex(uint32_t idx);
+		void DestroyInstanceBufferByIndex(uint32_t idx);
+
 		uint32_t GetNextDrawCommandIndex();
 		ZXD3D12DrawCommand* GetDrawCommandByIndex(uint32_t idx);
 
@@ -212,6 +224,7 @@ namespace ZXEngine
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc);
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_RENDER_TARGET_VIEW_DESC& rtvDesc);
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_DEPTH_STENCIL_VIEW_DESC& dsvDesc);
+		
 		ZXD3D12Buffer CreateBuffer(UINT64 size, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initState, D3D12_HEAP_TYPE heapType, bool cpuAddress = false, bool gpuAddress = false, const void* data = nullptr);
 		void DestroyBuffer(ZXD3D12Buffer& buffer);
 
@@ -334,7 +347,7 @@ namespace ZXEngine
 		uint32_t mCurFBOIdx = 0;
 		uint32_t mCurPipeLineIdx = 0;
 		uint32_t mCurMaterialDataIdx = 0;
-		vector<ZXD3D12DrawIndex> mDrawIndexes;
+		vector<ZXD3D12DrawRecord> mDrawRecords;
 
 		uint32_t GetCurFrameBufferIndex() const;
 
