@@ -94,48 +94,15 @@ namespace ZXEngine
 		Matrix4 mat_V = camera->GetViewMatrix();
 		Matrix4 mat_P = camera->GetProjectionMatrix();
 
-		bool caculateAngle = true;
-		float hypotenuse = 0;
-		float angle = 0;
-		uint32_t activeNum = 0;
-		for (auto& particle : mParticles)
-		{
-			if (particle.life > 0)
-			{
-				if (caculateAngle)
-				{
-					hypotenuse = static_cast<float>(sqrt(pow(camPos.x - particle.position.x, 2) + pow(camPos.z - particle.position.z, 2)));
-					if (camPos.z > particle.position.x)
-					{
-						angle = asin((camPos.x - particle.position.x) / hypotenuse);
-					}
-					else
-					{
-						angle = asin((particle.position.x - camPos.x) / hypotenuse);
-					}
-					caculateAngle = false;
-				}
-
-				Matrix4 model = Math::Translate(Matrix4(1), particle.position);
-				Matrix4 rotate = Math::Rotate(Matrix4(1), angle, Vector3(0.0f, 1.0f, 0.0f));
-				Matrix4 scale = Math::Scale(Matrix4(1), Vector3(2.0f));
-				Matrix4 mat_M = model * rotate * scale;
-				mat_M.Transpose();
-
-				mInstanceData[activeNum].model = std::move(mat_M);
-				mInstanceData[activeNum].color = particle.color;
-
-				activeNum++;
-			}
-		}
+		UpdateInstanceData(camPos);
 
 		mMaterial->Use();
 		mMaterial->SetMatrix("ENGINE_View", mat_V);
 		mMaterial->SetMatrix("ENGINE_Projection", mat_P);
 
-		RenderAPI::GetInstance()->UpdateDynamicInstanceBuffer(mInstanceBuffer, mInstanceDataSize, activeNum, mInstanceData.data());
+		RenderAPI::GetInstance()->UpdateDynamicInstanceBuffer(mInstanceBuffer, mInstanceDataSize, mInstanceActiveNum, mInstanceData.data());
 
-		RenderAPI::GetInstance()->DrawInstanced(mVAO, activeNum, mInstanceBuffer);
+		RenderAPI::GetInstance()->DrawInstanced(mVAO, mInstanceActiveNum, mInstanceBuffer);
 	}
 
 	void ParticleSystem::SetTexture(const char* path)
@@ -163,6 +130,45 @@ namespace ZXEngine
 		mInstanceBuffer = RenderAPI::GetInstance()->CreateDynamicInstanceBuffer(mInstanceDataSize, mParticleNum);
 		
 		RenderAPI::GetInstance()->SetUpInstanceBufferAttribute(mVAO, mInstanceBuffer, mInstanceDataSize);
+	}
+
+	void ParticleSystem::UpdateInstanceData(const Vector3& camPos)
+	{
+		bool caculateAngle = true;
+		float hypotenuse = 0;
+		float angle = 0;
+		mInstanceActiveNum = 0;
+
+		for (auto& particle : mParticles)
+		{
+			if (particle.life > 0)
+			{
+				if (caculateAngle)
+				{
+					hypotenuse = static_cast<float>(sqrt(pow(camPos.x - particle.position.x, 2) + pow(camPos.z - particle.position.z, 2)));
+					if (camPos.z > particle.position.x)
+					{
+						angle = asin((camPos.x - particle.position.x) / hypotenuse);
+					}
+					else
+					{
+						angle = asin((particle.position.x - camPos.x) / hypotenuse);
+					}
+					caculateAngle = false;
+				}
+
+				Matrix4 model = Math::Translate(Matrix4(1), particle.position);
+				Matrix4 rotate = Math::Rotate(Matrix4(1), angle, Vector3(0.0f, 1.0f, 0.0f));
+				Matrix4 scale = Math::Scale(Matrix4(1), Vector3(2.0f));
+				Matrix4 mat_M = model * rotate * scale;
+				mat_M.Transpose();
+
+				mInstanceData[mInstanceActiveNum].model = std::move(mat_M);
+				mInstanceData[mInstanceActiveNum].color = particle.color;
+
+				mInstanceActiveNum++;
+			}
+		}
 	}
 
 	uint32_t ParticleSystem::GetUnusedParticleIndex()

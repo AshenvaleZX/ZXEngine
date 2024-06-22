@@ -49,13 +49,15 @@ namespace ZXEngine
 
 	private:
 		vector<Particle> mParticles;
+		
 		vector<InstanceData> mInstanceData;
+		uint32_t mInstanceBuffer = UINT32_MAX;
+		uint32_t mInstanceDataSize = 0; // 以Vector4为单位
+		uint32_t mInstanceActiveNum = 0;
 
 		uint32_t mVAO = UINT32_MAX;
 		uint32_t mTextureID = UINT32_MAX;
 		uint32_t mLastUsedIndex = 0;
-		uint32_t mInstanceBuffer = UINT32_MAX;
-		uint32_t mInstanceDataSize = 0; // 以Vector4为单位
 		Material* mMaterial = nullptr;
 
 		float mLastGenTime = 0;
@@ -63,6 +65,7 @@ namespace ZXEngine
 		// 所挂载的GO当前移动方向
 		Vector3 mMoveDir;
 
+		void UpdateInstanceData(const Vector3& camPos);
 		uint32_t GetUnusedParticleIndex();
 		void RespawnParticle(Particle& particle) const;
 	};
