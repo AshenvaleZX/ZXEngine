@@ -9,7 +9,7 @@
 #include "Debug.h"
 
 // 顶点最多关联4个骨骼
-#define MAX_NUM_BONES_PER_VERTEX 4
+constexpr size_t MAX_NUM_BONES_PER_VERTEX = 4;
 
 using std::string;
 using std::vector;
@@ -122,6 +122,13 @@ namespace ZXEngine
 		vector<ShaderProperty> textureProperties;
 	};
 
+	using ShaderSemanticType = std::pair<ShaderPropertyType, string>;
+	struct ShaderInstanceInfo
+	{
+		uint32_t size = 0; // 以Vector4为单位
+		vector<ShaderSemanticType> attributes;
+	};
+
 	// Shader类中记录信息的结构体
 	struct ShaderInfo
 	{
@@ -129,6 +136,7 @@ namespace ZXEngine
 		ShadowType shadowType = ShadowType::None;
 		ShaderStateSet stateSet;
 		ShaderStageFlags stages = 0;
+		ShaderInstanceInfo instanceInfo;
 		ShaderPropertiesInfo vertProperties;
 		ShaderPropertiesInfo geomProperties;
 		ShaderPropertiesInfo fragProperties;

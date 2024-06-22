@@ -13,6 +13,12 @@ Vertex
         1 vec2 aTexCoords : TEXCOORD
     }
 
+    InstanceInput
+    {
+        6  mat4 iModel    : MATRIX
+        10 vec4 iColor    : COLOR
+    }
+
     Output
     {
         0 vec2 TexCoords     : TEXCOORD0
@@ -21,10 +27,8 @@ Vertex
 
     Properties
     {
-        using ENGINE_Model
         using ENGINE_View
         using ENGINE_Projection
-        vec4 _Color
     }
 
     Program
@@ -32,8 +36,8 @@ Vertex
         void main()
         {
             TexCoords = aTexCoords;
-            ParticleColor = _Color;
-            ZX_Position = mul(ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 0.0, 1.0));
+            ParticleColor = iColor;
+            ZX_Position = mul(ENGINE_Projection * ENGINE_View * iModel * vec4(aPos, 0.0, 1.0));
         }
     }
 }

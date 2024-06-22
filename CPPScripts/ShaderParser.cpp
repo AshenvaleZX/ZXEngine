@@ -146,6 +146,8 @@ namespace ZXEngine
 		string vertCode, geomCode, fragCode;
 		ParseShaderCode(code, vertCode, geomCode, fragCode);
 
+		GetInstanceInfo(vertCode, info.instanceInfo);
+
 		info.stages = ZX_SHADER_STAGE_VERTEX_BIT | ZX_SHADER_STAGE_FRAGMENT_BIT;
 		if (!geomCode.empty())
 			info.stages |= ZX_SHADER_STAGE_GEOMETRY_BIT;
@@ -316,6 +318,16 @@ namespace ZXEngine
 		}
 		glCode += "\n";
 
+		string instanceInputBlock = GetCodeBlock(preprocessedCode, "InstanceInput");
+		lines = Utils::StringSplit(instanceInputBlock, '\n');
+		for (auto& line : lines)
+		{
+			auto words = Utils::ExtractWords(line);
+			if (words.size() >= 5 && words[0] != "//")
+				glCode += "layout (location = " + words[0] + ") in " + words[1] + " " + words[2] + ";\n";
+		}
+		glCode += "\n";
+
 		string outputBlock = GetCodeBlock(preprocessedCode, "Output");
 		lines = Utils::StringSplit(outputBlock, '\n');
 		for (auto& line : lines)
@@ -448,6 +460,16 @@ namespace ZXEngine
 
 		string inputBlock = GetCodeBlock(preprocessedCode, "Input");
 		auto lines = Utils::StringSplit(inputBlock, '\n');
+		for (auto& line : lines)
+		{
+			auto words = Utils::ExtractWords(line);
+			if (words.size() >= 5 && words[0] != "//")
+				vkCode += "layout (location = " + words[0] + ") in " + words[1] + " " + words[2] + ";\n";
+		}
+		vkCode += "\n";
+
+		string instanceInputBlock = GetCodeBlock(preprocessedCode, "InstanceInput");
+		lines = Utils::StringSplit(instanceInputBlock, '\n');
 		for (auto& line : lines)
 		{
 			auto words = Utils::ExtractWords(line);
@@ -602,6 +624,24 @@ namespace ZXEngine
 			}
 		}
 		dxCode += "};\n\n";
+
+		vector<string> instanceInputVariables;
+		if (shaderInfo.instanceInfo.size > 0)
+		{
+			dxCode += "struct InstanceInput\n{\n";
+			string instanceInputBlock = GetCodeBlock(vertCode, "InstanceInput");
+			lines = Utils::StringSplit(instanceInputBlock, '\n');
+			for (auto& line : lines)
+			{
+				auto words = Utils::ExtractWords(line);
+				if (words.size() >= 5 && words[0] != "//")
+				{
+					dxCode += "    " + words[1] + " " + words[2] + " " + words[3] + " " + words[4] + ";\n";
+					instanceInputVariables.push_back(words[2]);
+				}
+			}
+			dxCode += "};\n\n";
+		}
 
 		// 顶点着色器输出结构体
 		dxCode += "struct VertexOutput\n{\n";
@@ -789,7 +829,14 @@ namespace ZXEngine
 			Utils::ReplaceAllWord(vertMainBlock, varName, "input." + varName);
 		for (auto& varName : vertOutputVariables)
 			Utils::ReplaceAllWord(vertMainBlock, varName, "output." + varName);
-		dxCode += "VertexOutput VS(VertexInput input)\n";
+		for (auto& name : instanceInputVariables)
+			Utils::ReplaceAllWord(vertMainBlock, name, "instanceInput." + name);
+
+		if (shaderInfo.instanceInfo.size > 0)
+			dxCode += "VertexOutput VS(VertexInput input, InstanceInput instanceInput)\n";
+		else
+			dxCode += "VertexOutput VS(VertexInput input)\n";
+
 		dxCode += "{\n";
 		dxCode += "    VertexOutput output;\n";
 		dxCode += vertMainBlock;
@@ -1101,6 +1148,37 @@ namespace ZXEngine
 		}
 
 		return stateSet;
+	}
+
+	void ShaderParser::GetInstanceInfo(const string& code, ShaderInstanceInfo& info)
+	{
+		string settingBlock = GetCodeBlock(code, "InstanceInput");
+		if (settingBlock.empty())
+			return;
+
+		auto lines = Utils::StringSplit(settingBlock, '\n');
+
+		for (auto& line : lines)
+		{
+			auto words = Utils::ExtractWords(line);
+
+			if (words.size() < 5)
+			{
+				continue;
+			}
+			else if (words[1] == "vec4")
+			{
+				info.size++;
+				info.attributes.emplace_back(ShaderPropertyType::VEC4, words[4]);
+			}
+			else if (words[1] == "mat4")
+			{
+				info.size += 4;
+				info.attributes.emplace_back(ShaderPropertyType::MAT4, words[4]);
+			}
+		}
+
+		return;
 	}
 
 	string ShaderParser::GetCodeBlock(const string& code, const string& blockName)

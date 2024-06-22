@@ -109,6 +109,16 @@ namespace ZXEngine
 		}
 	}
 
+	void Matrix4::Transpose()
+	{
+		std::swap(m01, m10);
+		std::swap(m02, m20);
+		std::swap(m03, m30);
+		std::swap(m12, m21);
+		std::swap(m13, m31);
+		std::swap(m23, m32);
+	}
+
 	void Matrix4::ToRowMajorArray(float* array) const
 	{
 		array[0]  = m00; array[1]  = m01; array[2]  = m02; array[3]  = m03;

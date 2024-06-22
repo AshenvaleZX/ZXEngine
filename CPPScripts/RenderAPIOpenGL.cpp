@@ -843,38 +843,77 @@ namespace ZXEngine
 		CheckError();
 	}
 
+	uint32_t RenderAPIOpenGL::CreateStaticInstanceBuffer(uint32_t size, uint32_t num, const void* data)
+	{
+		GLuint buffer;
+		GLsizeiptr bufferSize = static_cast<GLsizeiptr>(num * size * static_cast<uint32_t>(sizeof(Vector4)));
+
+		glGenBuffers(1, &buffer);
+		glBindBuffer(GL_ARRAY_BUFFER, buffer);
+		glBufferData(GL_ARRAY_BUFFER, bufferSize, data, GL_STATIC_DRAW);
+
+		return static_cast<uint32_t>(buffer);
+	};
+
+	uint32_t RenderAPIOpenGL::CreateDynamicInstanceBuffer(uint32_t size, uint32_t num)
+	{
+		GLuint buffer;
+		GLsizeiptr bufferSize = static_cast<GLsizeiptr>(num * size * static_cast<uint32_t>(sizeof(Vector4)));
+
+		glGenBuffers(1, &buffer);
+		glBindBuffer(GL_ARRAY_BUFFER, buffer);
+		glBufferData(GL_ARRAY_BUFFER, bufferSize, NULL, GL_DYNAMIC_DRAW);
+
+		return static_cast<uint32_t>(buffer);
+	};
+
+	void RenderAPIOpenGL::UpdateDynamicInstanceBuffer(uint32_t id, uint32_t size, uint32_t num, const void* data)
+	{
+		GLsizeiptr bufferSize = static_cast<GLsizeiptr>(num * size * static_cast<uint32_t>(sizeof(Vector4)));
+
+		glBindBuffer(GL_ARRAY_BUFFER, id);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, bufferSize, data);
+	};
+
+	void RenderAPIOpenGL::SetUpInstanceBufferAttribute(uint32_t VAO, uint32_t instanceBuffer, uint32_t size, uint32_t offset)
+	{
+		auto meshBuffer = GetVAOByIndex(VAO);
+
+		glBindVertexArray(meshBuffer->VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, instanceBuffer);
+
+		for (uint32_t i = 0; i < size; i++)
+		{
+			glEnableVertexAttribArray(offset + i);
+			glVertexAttribPointer(offset + i, 4, GL_FLOAT, GL_FALSE, size * sizeof(Vector4), (void*)(sizeof(Vector4) * i));
+			glVertexAttribDivisor(offset + i, 1);
+		}
+
+		glBindVertexArray(0);
+	};
+
+	void RenderAPIOpenGL::DeleteInstanceBuffer(uint32_t id)
+	{
+		glDeleteBuffers(1, &id);
+	};
+
 	void RenderAPIOpenGL::GenerateParticleMesh(unsigned int& VAO)
 	{
-		VAO = GetNextVAOIndex();
-		auto meshBuffer = GetVAOByIndex(VAO);
-		meshBuffer->indexed = false;
-		meshBuffer->size = 6;
-
-		float particleQuad[] = {
-			// pos        // tex coord
-			-0.5f,  0.5f, 0.0f, 1.0f,
-			 0.5f, -0.5f, 1.0f, 0.0f,
-			-0.5f, -0.5f, 0.0f, 0.0f,
-
-			-0.5f,  0.5f, 0.0f, 1.0f,
-			 0.5f,  0.5f, 1.0f, 1.0f,
-			 0.5f, -0.5f, 1.0f, 0.0f
+		vector<Vertex> vertices =
+		{
+			{.Position = {  0.5f,  0.5f, 0.0f }, .TexCoords = { 1.0f, 0.0f } },
+			{.Position = {  0.5f, -0.5f, 0.0f }, .TexCoords = { 1.0f, 1.0f } },
+			{.Position = { -0.5f,  0.5f, 0.0f }, .TexCoords = { 0.0f, 0.0f } },
+			{.Position = { -0.5f, -0.5f, 0.0f }, .TexCoords = { 0.0f, 1.0f } },
 		};
-		glGenVertexArrays(1, &meshBuffer->VAO);
-		glGenBuffers(1, &meshBuffer->VBO);
-		glBindVertexArray(meshBuffer->VAO);
-		// Fill mesh buffer
-		glBindBuffer(GL_ARRAY_BUFFER, meshBuffer->VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(particleQuad), particleQuad, GL_STATIC_DRAW);
-		// Set mesh attributes
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-		glBindVertexArray(0);
 
-		meshBuffer->inUse = true;
-		CheckError();
+		vector<uint32_t> indices =
+		{
+			2, 1, 3,
+			2, 0, 1,
+		};
+
+		SetUpStaticMesh(VAO, vertices, indices);
 	}
 
 	uint32_t RenderAPIOpenGL::AllocateDrawCommand(CommandType commandType)
@@ -905,6 +944,31 @@ namespace ZXEngine
 		Debug::drawCallCount++;
 #endif
 	}
+
+	void RenderAPIOpenGL::DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer)
+	{
+		UpdateRenderState();
+		UpdateMaterialData();
+
+		auto meshBuffer = GetVAOByIndex(VAO);
+
+		glBindVertexArray(meshBuffer->VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, instanceBuffer);
+
+		if (meshBuffer->indexed)
+			glDrawElementsInstanced(GL_TRIANGLES, meshBuffer->size, GL_UNSIGNED_INT, 0, instanceNum);
+		else
+			glDrawArraysInstanced(GL_TRIANGLES, 0, meshBuffer->size, instanceNum);
+
+		// 绘制完重置一下(不重置也行，不过及时重置避免出问题)
+		glBindVertexArray(0);
+
+		CheckError();
+#ifdef ZX_DEBUG
+		Debug::drawCallCount++;
+#endif
+	};
 
 	void RenderAPIOpenGL::GenerateDrawCommand(uint32_t id)
 	{

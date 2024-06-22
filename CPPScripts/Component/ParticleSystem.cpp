@@ -23,13 +23,17 @@ namespace ZXEngine
 	{
 		ParticleSystemManager::GetInstance()->RemoveParticleSystem(this);
 
-		for (auto& particle : mParticles)
-		{
-			delete particle.material;
-		}
+		if (mVAO != UINT32_MAX)
+			RenderAPI::GetInstance()->DeleteMesh(mVAO);
 
-		if (mTextureID != 0)
+		if (mTextureID != UINT32_MAX)
 			RenderAPI::GetInstance()->DeleteTexture(mTextureID);
+
+		if (mInstanceBuffer != UINT32_MAX)
+			RenderAPI::GetInstance()->DeleteInstanceBuffer(mInstanceBuffer);
+
+		if (mMaterial != nullptr)
+			delete mMaterial;
 	}
 
 	ComponentType ParticleSystem::GetInsType()
@@ -90,9 +94,51 @@ namespace ZXEngine
 		Matrix4 mat_V = camera->GetViewMatrix();
 		Matrix4 mat_P = camera->GetProjectionMatrix();
 
+		UpdateInstanceData(camPos);
+
+		mMaterial->Use();
+		mMaterial->SetMatrix("ENGINE_View", mat_V);
+		mMaterial->SetMatrix("ENGINE_Projection", mat_P);
+
+		RenderAPI::GetInstance()->UpdateDynamicInstanceBuffer(mInstanceBuffer, mInstanceDataSize, mInstanceActiveNum, mInstanceData.data());
+
+		RenderAPI::GetInstance()->DrawInstanced(mVAO, mInstanceActiveNum, mInstanceBuffer);
+	}
+
+	void ParticleSystem::SetTexture(const char* path)
+	{
+		if (mTextureID != UINT32_MAX)
+			RenderAPI::GetInstance()->DeleteTexture(mTextureID);
+
+		int width, height;
+		mTextureID = RenderAPI::GetInstance()->LoadTexture(path, width, height);
+	}
+
+	void ParticleSystem::InternalGeneration()
+	{
+		mParticles.resize(mParticleNum);
+		mInstanceData.resize(mParticleNum);
+
+		mMaterial = new Material(ParticleSystemManager::GetInstance()->shader);
+		mMaterial->Use();
+		mMaterial->SetTexture("_Sprite", mTextureID, 0, true);
+
+		mInstanceDataSize = ParticleSystemManager::GetInstance()->shader->reference->shaderInfo.instanceInfo.size;
+
+		RenderAPI::GetInstance()->GenerateParticleMesh(mVAO);
+		
+		mInstanceBuffer = RenderAPI::GetInstance()->CreateDynamicInstanceBuffer(mInstanceDataSize, mParticleNum);
+		
+		RenderAPI::GetInstance()->SetUpInstanceBufferAttribute(mVAO, mInstanceBuffer, mInstanceDataSize);
+	}
+
+	void ParticleSystem::UpdateInstanceData(const Vector3& camPos)
+	{
 		bool caculateAngle = true;
 		float hypotenuse = 0;
 		float angle = 0;
+		mInstanceActiveNum = 0;
+
 		for (auto& particle : mParticles)
 		{
 			if (particle.life > 0)
@@ -115,40 +161,13 @@ namespace ZXEngine
 				Matrix4 rotate = Math::Rotate(Matrix4(1), angle, Vector3(0.0f, 1.0f, 0.0f));
 				Matrix4 scale = Math::Scale(Matrix4(1), Vector3(2.0f));
 				Matrix4 mat_M = model * rotate * scale;
+				mat_M.Transpose();
 
-				particle.material->Use();
-				particle.material->SetMatrix("ENGINE_Model", mat_M);
-				particle.material->SetMatrix("ENGINE_View", mat_V);
-				particle.material->SetMatrix("ENGINE_Projection", mat_P);
-				particle.material->SetVector("_Color", particle.color);
+				mInstanceData[mInstanceActiveNum].model = std::move(mat_M);
+				mInstanceData[mInstanceActiveNum].color = particle.color;
 
-				RenderAPI::GetInstance()->Draw(particle.VAO);
+				mInstanceActiveNum++;
 			}
-		}
-	}
-
-	void ParticleSystem::SetTexture(const char* path)
-	{
-		if (mTextureID != 0)
-			RenderAPI::GetInstance()->DeleteTexture(mTextureID);
-
-		int width, height;
-		mTextureID = RenderAPI::GetInstance()->LoadTexture(path, width, height);
-	}
-
-	void ParticleSystem::GenerateParticles()
-	{
-		mParticles.reserve(mParticleNum);
-
-		for (uint32_t i = 0; i < mParticleNum; ++i)
-		{
-			Particle particle;
-			RenderAPI::GetInstance()->GenerateParticleMesh(particle.VAO);
-			particle.material = new Material(ParticleSystemManager::GetInstance()->shader);
-			particle.material->Use();
-			particle.material->SetTexture("_Sprite", mTextureID, 0, true);
-
-			mParticles.push_back(std::move(particle));
 		}
 	}
 

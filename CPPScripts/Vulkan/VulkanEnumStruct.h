@@ -92,6 +92,7 @@ namespace ZXEngine
         VmaAllocation allocation = VK_NULL_HANDLE;
         void* mappedAddress = nullptr;
         VkDeviceAddress deviceAddress = 0;
+        bool inUse = false;
     };
 
     struct UniformBuffer
@@ -135,11 +136,13 @@ namespace ZXEngine
         bool inUse = false;
     };
 
-    struct VulkanDrawIndex
+    struct VulkanDrawRecord
     {
         uint32_t VAO = 0;
         uint32_t pipelineID = 0;
         uint32_t materialDataID = 0;
+        uint32_t instanceNum = 0;
+        uint32_t instanceBuffer = UINT32_MAX;
     };
 
     // For build Vulkan Acceleration Structure Instance

@@ -118,6 +118,13 @@ namespace ZXEngine
 		}
 	}
 
+	void Matrix3::Transpose()
+	{
+		std::swap(m01, m10);
+		std::swap(m02, m20);
+		std::swap(m12, m21);
+	}
+
 	void Matrix3::ToRowMajorArray(float* array) const
 	{
 		array[0] = m00; array[1] = m01; array[2] = m02;

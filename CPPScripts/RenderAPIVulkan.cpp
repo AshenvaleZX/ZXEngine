@@ -472,6 +472,52 @@ namespace ZXEngine
         curWaitSemaphores = curDrawCommand.signalSemaphores;
     }
 
+    uint32_t RenderAPIVulkan::CreateStaticInstanceBuffer(uint32_t size, uint32_t num, const void* data)
+    {
+        uint32_t idx = GetNextInstanceBufferIndex();
+        auto instanceBuffer = GetInstanceBufferByIndex(idx);
+        instanceBuffer->inUse = true;
+
+        VkDeviceSize bufferSize = static_cast<VkDeviceSize>(static_cast<size_t>(num * size) * sizeof(Vector4));
+
+        CreateGPUBuffer(bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, instanceBuffer->buffer, instanceBuffer->allocation, data);
+
+        return idx;
+    };
+
+    uint32_t RenderAPIVulkan::CreateDynamicInstanceBuffer(uint32_t size, uint32_t num)
+    {
+        uint32_t idx = GetNextInstanceBufferIndex();
+        auto instanceBuffer = GetInstanceBufferByIndex(idx);
+        instanceBuffer->inUse = true;
+
+        VkDeviceSize bufferSize = static_cast<VkDeviceSize>(static_cast<size_t>(num * size) * sizeof(Vector4));
+
+        CreateBuffer(bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, *instanceBuffer, true);
+
+        return idx;
+    };
+
+    void RenderAPIVulkan::UpdateDynamicInstanceBuffer(uint32_t id, uint32_t size, uint32_t num, const void* data)
+    {
+        auto instanceBuffer = GetInstanceBufferByIndex(id);
+
+        size_t bufferSize = static_cast<size_t>(num * size) * sizeof(Vector4);
+
+		memcpy(instanceBuffer->mappedAddress, data, bufferSize);
+    };
+
+    void RenderAPIVulkan::SetUpInstanceBufferAttribute(uint32_t VAO, uint32_t instanceBuffer, uint32_t size, uint32_t offset)
+    {
+        // Vulkan不需要实现这个接口
+        return;
+    };
+
+    void RenderAPIVulkan::DeleteInstanceBuffer(uint32_t id)
+    {
+        instanceBuffersToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT));
+    };
+
     unsigned int RenderAPIVulkan::LoadTexture(const char* path, int& width, int& height)
     {
         int nrComponents;
@@ -1420,7 +1466,12 @@ namespace ZXEngine
 
     void RenderAPIVulkan::Draw(uint32_t VAO)
     {
-        drawIndexes.push_back({ .VAO = VAO, .pipelineID = curPipeLineIdx, .materialDataID = curMaterialDataIdx });
+        drawRecords.emplace_back(VAO, curPipeLineIdx, curMaterialDataIdx);
+    }
+
+    void RenderAPIVulkan::DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer)
+    {
+        drawRecords.emplace_back(VAO, curPipeLineIdx, curMaterialDataIdx, instanceNum, instanceBuffer);
     }
 
     void RenderAPIVulkan::GenerateDrawCommand(uint32_t id)
@@ -1504,7 +1555,7 @@ namespace ZXEngine
         scissor.extent = { viewPortInfo.width, viewPortInfo.height };
         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-        for (auto& iter : drawIndexes)
+        for (auto& iter : drawRecords)
         {
             auto vulkanVAO = GetVAOByIndex(iter.VAO);
             auto pipeline = GetPipelineByIndex(iter.pipelineID);
@@ -1520,7 +1571,17 @@ namespace ZXEngine
 
             vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout, 0, 1, &materialData->descriptorSets[currentFrame], 0, VK_NULL_HANDLE);
 
-            vkCmdDrawIndexed(commandBuffer, vulkanVAO->indexCount, 1, 0, 0, 0);
+            if (iter.instanceBuffer != UINT32_MAX)
+            {
+                VkBuffer instanceBuffers[] = { GetInstanceBufferByIndex(iter.instanceBuffer)->buffer };
+                vkCmdBindVertexBuffers(commandBuffer, 1, 1, instanceBuffers, offsets);
+            
+                vkCmdDrawIndexed(commandBuffer, vulkanVAO->indexCount, iter.instanceNum, 0, 0, 0);
+            }
+            else
+            {
+                vkCmdDrawIndexed(commandBuffer, vulkanVAO->indexCount, 1, 0, 0, 0);
+            }
         }
 
         vkCmdEndRenderPass(commandBuffer);
@@ -1561,7 +1622,7 @@ namespace ZXEngine
         // 当前这个命令激发的信号量就是下个命令需要等待的
         curWaitSemaphores = curDrawCommand.signalSemaphores;
 
-        drawIndexes.clear();
+        drawRecords.clear();
     }
 
     void RenderAPIVulkan::DeleteMesh(unsigned int VAO)
@@ -1578,43 +1639,13 @@ namespace ZXEngine
 
         // ----------------------------------------------- Vertex Buffer -----------------------------------------------
         VkDeviceSize vertexBufferSize = sizeof(Vertex) * vertices.size();
-
-        // 建立StagingBuffer
-        VkBufferCreateInfo vertexStagingBufferInfo = {};
-        vertexStagingBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-        vertexStagingBufferInfo.size = vertexBufferSize;
-        vertexStagingBufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-        vertexStagingBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-        VmaAllocationCreateInfo vertexStagingAllocInfo = {};
-        vertexStagingAllocInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
-        vertexStagingAllocInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
-
-        VkBuffer vertexStagingBuffer;
-        VmaAllocation vertexStagingBufferAlloc;
-        vmaCreateBuffer(vmaAllocator, &vertexStagingBufferInfo, &vertexStagingAllocInfo, &vertexStagingBuffer, &vertexStagingBufferAlloc, nullptr);
-
-        // 拷贝数据到StagingBuffer
-        void* vertexData;
-        vmaMapMemory(vmaAllocator, vertexStagingBufferAlloc, &vertexData);
-        memcpy(vertexData, vertices.data(), vertices.size() * sizeof(Vertex));
-        vmaUnmapMemory(vmaAllocator, vertexStagingBufferAlloc);
-
+        
         // 建立VertexBuffer
         VkBufferUsageFlags vertexBufferUsage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
         if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
             vertexBufferUsage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
         
-        VkBufferCreateInfo vertexBufferInfo = {};
-        vertexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-        vertexBufferInfo.size = vertexBufferSize;
-        vertexBufferInfo.usage = vertexBufferUsage;
-        vertexBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE; // 只有一个队列簇使用
-
-        VmaAllocationCreateInfo vertexBufferAllocInfo = {};
-        vertexBufferAllocInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
-
-        vmaCreateBuffer(vmaAllocator, &vertexBufferInfo, &vertexBufferAllocInfo, &meshBuffer->vertexBuffer, &meshBuffer->vertexBufferAlloc, nullptr);
+        CreateGPUBuffer(vertexBufferSize, vertexBufferUsage, meshBuffer->vertexBuffer, meshBuffer->vertexBufferAlloc, vertices.data());
 
         // 如果是光追渲染管线，需要获取VertexBuffer的GPU地址
         if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
@@ -1625,58 +1656,15 @@ namespace ZXEngine
             meshBuffer->vertexBufferDeviceAddress = vkGetBufferDeviceAddress(device, &addressInfo);
         }
 
-        // 从StagingBuffer拷贝到VertexBuffer
-        ImmediatelyExecute([=](VkCommandBuffer cmd)
-        {
-            VkBufferCopy copy = {};
-            copy.dstOffset = 0;
-            copy.srcOffset = 0;
-            copy.size = vertexBufferSize;
-            vkCmdCopyBuffer(cmd, vertexStagingBuffer, meshBuffer->vertexBuffer, 1, &copy);
-        });
-
-        // 销毁StagingBuffer
-        vmaDestroyBuffer(vmaAllocator, vertexStagingBuffer, vertexStagingBufferAlloc);
-
         // ----------------------------------------------- Index Buffer -----------------------------------------------
         VkDeviceSize indexBufferSize = sizeof(uint32_t) * indices.size();
-
-        // 建立StagingBuffer
-        VkBufferCreateInfo indexStagingBufferInfo = {};
-        indexStagingBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-        indexStagingBufferInfo.size = indexBufferSize;
-        indexStagingBufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-        indexStagingBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-        VmaAllocationCreateInfo indexStagingAllocInfo = {};
-        indexStagingAllocInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
-        indexStagingAllocInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
-
-        VkBuffer indexStagingBuffer;
-        VmaAllocation indexStagingBufferAlloc;
-        vmaCreateBuffer(vmaAllocator, &indexStagingBufferInfo, &indexStagingAllocInfo, &indexStagingBuffer, &indexStagingBufferAlloc, nullptr);
-
-        // 拷贝数据到StagingBuffer
-        void* indexData;
-        vmaMapMemory(vmaAllocator, indexStagingBufferAlloc, &indexData);
-        memcpy(indexData, indices.data(), indices.size() * sizeof(uint32_t));
-        vmaUnmapMemory(vmaAllocator, indexStagingBufferAlloc);
 
         // 建立IndexBuffer
         VkBufferUsageFlags indexBufferUsage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
         if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
             indexBufferUsage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 
-        VkBufferCreateInfo indexBufferInfo = {};
-        indexBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-        indexBufferInfo.size = indexBufferSize;
-        indexBufferInfo.usage = indexBufferUsage;
-        indexBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE; // 只有一个队列簇使用
-
-        VmaAllocationCreateInfo indexBufferAllocInfo = {};
-        indexBufferAllocInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
-
-        vmaCreateBuffer(vmaAllocator, &indexBufferInfo, &indexBufferAllocInfo, &meshBuffer->indexBuffer, &meshBuffer->indexBufferAlloc, nullptr);
+        CreateGPUBuffer(indexBufferSize, indexBufferUsage, meshBuffer->indexBuffer, meshBuffer->indexBufferAlloc, indices.data());
 
         // 如果是光追渲染管线，需要获取IndexBuffer的GPU地址
         if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
@@ -1686,19 +1674,6 @@ namespace ZXEngine
             addressInfo.buffer = meshBuffer->indexBuffer;
             meshBuffer->indexBufferDeviceAddress = vkGetBufferDeviceAddress(device, &addressInfo);
         }
-
-        // 从StagingBuffer拷贝到IndexBuffer
-        ImmediatelyExecute([=](VkCommandBuffer cmd)
-        {
-            VkBufferCopy copy = {};
-            copy.dstOffset = 0;
-            copy.srcOffset = 0;
-            copy.size = indexBufferSize;
-            vkCmdCopyBuffer(cmd, indexStagingBuffer, meshBuffer->indexBuffer, 1, &copy);
-        });
-
-        // 销毁StagingBuffer
-        vmaDestroyBuffer(vmaAllocator, indexStagingBuffer, indexStagingBufferAlloc);
 
         // 如果是光追管线，还要创建一个BLAS( Bottom Level Acceleration Structure )
         if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
@@ -3396,6 +3371,35 @@ namespace ZXEngine
         vulkanMaterialData->inUse = false;
     }
 
+    uint32_t RenderAPIVulkan::GetNextInstanceBufferIndex()
+    {
+        uint32_t length = static_cast<uint32_t>(VulkanInstanceBufferArray.size());
+
+        for (uint32_t i = 0; i < length; i++)
+        {
+            if (!VulkanInstanceBufferArray[i]->inUse)
+                return i;
+        }
+
+        VulkanInstanceBufferArray.push_back(new VulkanBuffer());
+
+        return length;
+    }
+
+    VulkanBuffer* RenderAPIVulkan::GetInstanceBufferByIndex(uint32_t idx)
+    {
+        return VulkanInstanceBufferArray[idx];
+    }
+
+    void RenderAPIVulkan::DestroyInstanceBufferByIndex(uint32_t idx)
+    {
+        auto instanceBuffer = VulkanInstanceBufferArray[idx];
+
+        DestroyBuffer(*instanceBuffer);
+
+        instanceBuffer->inUse = false;
+    }
+
     void* RenderAPIVulkan::GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx)
     {
         auto vulkanMaterialData = GetMaterialDataByIndex(materialDataID);
@@ -4285,6 +4289,13 @@ namespace ZXEngine
 
     VulkanBuffer RenderAPIVulkan::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool cpuAddress, bool gpuAddress)
     {
+        VulkanBuffer newBuffer;
+        CreateBuffer(size, usage, memoryUsage, newBuffer, cpuAddress, gpuAddress);
+        return newBuffer;
+    }
+
+    void RenderAPIVulkan::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, VulkanBuffer& newBuffer, bool cpuAddress, bool gpuAddress)
+    {
         if (gpuAddress)
             usage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
 
@@ -4298,21 +4309,73 @@ namespace ZXEngine
         if (cpuAddress)
             allocationInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
 
-        VulkanBuffer newBuffer;
         vmaCreateBuffer(vmaAllocator, &bufferInfo, &allocationInfo, &newBuffer.buffer, &newBuffer.allocation, nullptr);
 
         if (cpuAddress)
-			vmaMapMemory(vmaAllocator, newBuffer.allocation, &newBuffer.mappedAddress);
+            vmaMapMemory(vmaAllocator, newBuffer.allocation, &newBuffer.mappedAddress);
 
         if (gpuAddress)
         {
-			VkBufferDeviceAddressInfoKHR deviceAddressInfo = {};
+            VkBufferDeviceAddressInfoKHR deviceAddressInfo = {};
             deviceAddressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
             deviceAddressInfo.buffer = newBuffer.buffer;
-			newBuffer.deviceAddress = vkGetBufferDeviceAddress(device, &deviceAddressInfo);
-		}
+            newBuffer.deviceAddress = vkGetBufferDeviceAddress(device, &deviceAddressInfo);
+        }
+    }
 
-        return newBuffer;
+    VulkanBuffer RenderAPIVulkan::CreateGPUBuffer(VkDeviceSize size, VkBufferUsageFlags usage, const void* data)
+    {
+        VulkanBuffer vBuffer;
+        CreateGPUBuffer(size, usage, vBuffer.buffer, vBuffer.allocation, data);
+        return vBuffer;
+    }
+
+    void RenderAPIVulkan::CreateGPUBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer& buffer, VmaAllocation& allocation, const void* data)
+    {
+        // 建立StagingBuffer
+        VkBufferCreateInfo stagingBufferInfo = {};
+        stagingBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        stagingBufferInfo.size = size;
+        stagingBufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+        stagingBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+        VmaAllocationCreateInfo stagingAllocInfo = {};
+        stagingAllocInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
+        stagingAllocInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+
+        VkBuffer stagingBuffer;
+        VmaAllocation stagingBufferAlloc;
+        vmaCreateBuffer(vmaAllocator, &stagingBufferInfo, &stagingAllocInfo, &stagingBuffer, &stagingBufferAlloc, nullptr);
+
+        // 拷贝数据到StagingBuffer
+        void* pData;
+        vmaMapMemory(vmaAllocator, stagingBufferAlloc, &pData);
+        memcpy(pData, data, size);
+        vmaUnmapMemory(vmaAllocator, stagingBufferAlloc);
+
+        VkBufferCreateInfo bufferInfo = {};
+        bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        bufferInfo.size = size;
+        bufferInfo.usage = usage;
+        bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE; // 只有一个队列簇使用
+
+        VmaAllocationCreateInfo bufferAllocInfo = {};
+        bufferAllocInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+
+        vmaCreateBuffer(vmaAllocator, &bufferInfo, &bufferAllocInfo, &buffer, &allocation, nullptr);
+
+        // 从StagingBuffer拷贝到VertexBuffer
+        ImmediatelyExecute([=](VkCommandBuffer cmd)
+        {
+            VkBufferCopy copy = {};
+            copy.dstOffset = 0;
+            copy.srcOffset = 0;
+            copy.size = size;
+            vkCmdCopyBuffer(cmd, stagingBuffer, buffer, 1, &copy);
+        });
+
+        // 销毁StagingBuffer
+        vmaDestroyBuffer(vmaAllocator, stagingBuffer, stagingBufferAlloc);
     }
 
     void RenderAPIVulkan::DestroyBuffer(VulkanBuffer buffer)
@@ -5020,11 +5083,18 @@ namespace ZXEngine
         }
 
         // 设置顶点输入格式
+        vector<VkVertexInputBindingDescription> vertexInputBindingDescriptions;
+
+        // 常规顶点数据
         VkVertexInputBindingDescription bindingDescription = {};
         bindingDescription.binding = 0;
         bindingDescription.stride = sizeof(Vertex);
         bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-        array<VkVertexInputAttributeDescription, 6> attributeDescriptions = {};
+        vertexInputBindingDescriptions.push_back(bindingDescription);
+
+        vector<VkVertexInputAttributeDescription> attributeDescriptions = {};
+        attributeDescriptions.resize(static_cast<size_t>(6 + shaderInfo.instanceInfo.size));
+
         attributeDescriptions[0].binding = 0;
         attributeDescriptions[0].location = 0;
         attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
@@ -5049,10 +5119,30 @@ namespace ZXEngine
         attributeDescriptions[5].location = 5;
         attributeDescriptions[5].format = VK_FORMAT_R32G32B32A32_UINT;
         attributeDescriptions[5].offset = offsetof(Vertex, BoneIDs);
+
+        // GPU Instance
+        if (shaderInfo.instanceInfo.size > 0)
+        {
+            VkVertexInputBindingDescription instanceBindingDescription = {};
+            instanceBindingDescription.binding = 1;
+            instanceBindingDescription.stride = shaderInfo.instanceInfo.size * sizeof(Vector4);
+            instanceBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
+
+            for (uint32_t i = 0; i < shaderInfo.instanceInfo.size; i++)
+            {
+                attributeDescriptions[6 + static_cast<size_t>(i)].binding = 1;
+                attributeDescriptions[6 + static_cast<size_t>(i)].location = 6 + i;
+                attributeDescriptions[6 + static_cast<size_t>(i)].format = VK_FORMAT_R32G32B32A32_SFLOAT;
+                attributeDescriptions[6 + static_cast<size_t>(i)].offset = i * sizeof(Vector4);
+            }
+
+            vertexInputBindingDescriptions.push_back(std::move(instanceBindingDescription));
+        }
+
         VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-        vertexInputInfo.vertexBindingDescriptionCount = 1;
+        vertexInputInfo.pVertexBindingDescriptions = vertexInputBindingDescriptions.data();
+        vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(vertexInputBindingDescriptions.size());
         vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
         vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
 
@@ -5351,6 +5441,21 @@ namespace ZXEngine
             DestroyPipelineByIndex(id);
             pipelinesToDelete.erase(id);
         }
+
+        // Instance Buffer
+        deleteList.clear();
+        for (auto& iter : instanceBuffersToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+        for (auto id : deleteList)
+        {
+			DestroyInstanceBufferByIndex(id);
+			instanceBuffersToDelete.erase(id);
+		}
     }
 
 
