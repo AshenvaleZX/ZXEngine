@@ -319,17 +319,14 @@ namespace ZXEngine
 	Matrix4 Math::Translate(const Matrix4& oriMat, const Vector3& v)
 	{
 		Matrix4 resMat(oriMat);
-		resMat.m03 = oriMat.m03 + v.x;
-		resMat.m13 = oriMat.m13 + v.y;
-		resMat.m23 = oriMat.m23 + v.z;
+		resMat.Translate(v);
 		return resMat;
 	}
 
 	Matrix4 Math::Rotate(const Matrix4& oriMat, float angle, const Vector3& axis)
 	{
-		float a = angle;
-		float c = cos(a);
-		float s = sin(a);
+		float c = cos(angle);
+		float s = sin(angle);
 
 		Vector3 temp((1 - c) * axis);
 
@@ -352,17 +349,7 @@ namespace ZXEngine
 	Matrix4 Math::Scale(const Matrix4& oriMat, const Vector3& scale)
 	{
 		Matrix4 resMat(oriMat);
-		resMat.m00 *= scale.x;
-		resMat.m10 *= scale.x;
-		resMat.m20 *= scale.x;
-
-		resMat.m01 *= scale.y;
-		resMat.m11 *= scale.y;
-		resMat.m21 *= scale.y;
-
-		resMat.m02 *= scale.z;
-		resMat.m12 *= scale.z;
-		resMat.m22 *= scale.z;
+		resMat.Scale(scale);
 		return resMat;
 	}
 

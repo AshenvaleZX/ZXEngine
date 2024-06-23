@@ -119,6 +119,33 @@ namespace ZXEngine
 		std::swap(m23, m32);
 	}
 
+	void Matrix4::Translate(const Vector3& v)
+	{
+		m03 += v.x;
+		m13 += v.y;
+		m23 += v.z;
+	}
+
+	void Matrix4::Rotate(float angle, const Vector3& axis)
+	{
+		*this = Math::Rotate(*this, angle, axis);
+	}
+
+	void Matrix4::Scale(const Vector3& scale)
+	{
+		m00 *= scale.x;
+		m10 *= scale.x;
+		m20 *= scale.x;
+
+		m01 *= scale.y;
+		m11 *= scale.y;
+		m21 *= scale.y;
+
+		m02 *= scale.z;
+		m12 *= scale.z;
+		m22 *= scale.z;
+	}
+
 	void Matrix4::ToRowMajorArray(float* array) const
 	{
 		array[0]  = m00; array[1]  = m01; array[2]  = m02; array[3]  = m03;

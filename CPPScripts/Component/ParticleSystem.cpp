@@ -157,13 +157,13 @@ namespace ZXEngine
 					caculateAngle = false;
 				}
 
-				Matrix4 model = Math::Translate(Matrix4(1), particle.position);
-				Matrix4 rotate = Math::Rotate(Matrix4(1), angle, Vector3(0.0f, 1.0f, 0.0f));
-				Matrix4 scale = Math::Scale(Matrix4(1), Vector3(2.0f));
-				Matrix4 mat_M = model * rotate * scale;
-				mat_M.Transpose();
-
-				mInstanceData[mInstanceActiveNum].model = std::move(mat_M);
+				Matrix4 model;
+				model.Scale(Vector3(2.0f));
+				model.Rotate(angle, Vector3(0.0f, 1.0f, 0.0f));
+				model.Translate(particle.position);
+				model.Transpose();
+				
+				mInstanceData[mInstanceActiveNum].model = std::move(model);
 				mInstanceData[mInstanceActiveNum].color = particle.color;
 
 				mInstanceActiveNum++;
