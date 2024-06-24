@@ -6,15 +6,12 @@ namespace ZXEngine
 	class Game
 	{
 	public:
-		static Game* mInstance;
-
-		Game() {};
-		~Game() {};
-
-		void Launch(const string& path);
+		static bool Launch(const string& path);
+		static void Run();
+		static void Shutdown();
 
 	private:
-		void Update();
-		void Render();
+		static void Update();
+		static void Render();
 	};
 }

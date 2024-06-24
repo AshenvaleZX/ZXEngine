@@ -12,15 +12,16 @@
 
 #include "Game.h"
 
-ZXEngine::Game* ZXEngine::Game::mInstance;
-
 int main(int argc, char* argv[])
 {
 	string path = "../../../ExampleProject";
 	if (argc > 1) path = argv[1];
 
-	ZXEngine::Game::mInstance = new ZXEngine::Game();
-	ZXEngine::Game::mInstance->Launch(path);
+	if (ZXEngine::Game::Launch(path))
+	{
+		ZXEngine::Game::Run();
+		ZXEngine::Game::Shutdown();
+	}
 
 	return 0;
 }

@@ -21,7 +21,7 @@
 
 namespace ZXEngine
 {
-	void Game::Launch(const string& path)
+	bool Game::Launch(const string& path)
 	{
 #ifdef ZX_EDITOR
 		EditorDataManager::Create();
@@ -30,7 +30,7 @@ namespace ZXEngine
 		if (!ProjectSetting::InitSetting(path))
 		{
 			std::cerr << "Invalid project path: " << path << std::endl;
-			return;
+			return false;
 		}
 		else
 		{
@@ -51,6 +51,11 @@ namespace ZXEngine
 		EditorInputManager::Create();
 #endif
 
+		return true;
+	}
+
+	void Game::Run()
+	{
 		while (!RenderEngine::GetInstance()->WindowShouldClose())
 		{
 			// Âß¼­
@@ -64,7 +69,10 @@ namespace ZXEngine
 			Debug::Update();
 #endif
 		}
+	}
 
+	void Game::Shutdown()
+	{
 		JobSystem::Destroy();
 	}
 
