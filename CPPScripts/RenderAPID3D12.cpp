@@ -1812,12 +1812,12 @@ namespace ZXEngine
 
 	void RenderAPID3D12::Draw(uint32_t VAO)
 	{
-		mDrawRecords.emplace_back(VAO, mCurPipeLineIdx, mCurMaterialDataIdx, 0, UINT32_MAX);
+		mDrawRecords.emplace_back(ZXD3D12DrawRecord{ VAO, mCurPipeLineIdx, mCurMaterialDataIdx, 0, UINT32_MAX });
 	}
 
 	void RenderAPID3D12::DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer)
 	{
-		mDrawRecords.emplace_back(VAO, mCurPipeLineIdx, mCurMaterialDataIdx, instanceNum, instanceBuffer);
+		mDrawRecords.emplace_back(ZXD3D12DrawRecord{ VAO, mCurPipeLineIdx, mCurMaterialDataIdx, instanceNum, instanceBuffer });
 	}
 
 	void RenderAPID3D12::GenerateDrawCommand(uint32_t id)
