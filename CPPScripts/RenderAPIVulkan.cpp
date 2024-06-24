@@ -1466,7 +1466,7 @@ namespace ZXEngine
 
     void RenderAPIVulkan::Draw(uint32_t VAO)
     {
-        drawRecords.emplace_back(VAO, curPipeLineIdx, curMaterialDataIdx);
+        drawRecords.emplace_back(VAO, curPipeLineIdx, curMaterialDataIdx, 0, UINT32_MAX);
     }
 
     void RenderAPIVulkan::DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer)
