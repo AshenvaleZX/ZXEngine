@@ -143,6 +143,11 @@ namespace ZXEngine
         uint32_t materialDataID = 0;
         uint32_t instanceNum = 0;
         uint32_t instanceBuffer = UINT32_MAX;
+
+        // 必须显示声明构造函数，否则在MacOS上无法使用emplace操作在一些容器中直接构造
+        VulkanDrawRecord(uint32_t vao, uint32_t pipelineID, uint32_t materialDataID, uint32_t instanceNum, uint32_t instanceBuffer) :
+            VAO(vao), pipelineID(pipelineID), materialDataID(materialDataID), instanceNum(instanceNum), instanceBuffer(instanceBuffer)
+        {}
     };
 
     // For build Vulkan Acceleration Structure Instance
