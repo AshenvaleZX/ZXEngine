@@ -60,6 +60,9 @@ namespace ZXEngine
 				ComponentPool();
 				ComponentPool(CreateFunction create, DestroyFunction destroy);
 
+				ComponentPool(const ComponentPool&) = delete;
+				ComponentPool& operator=(const ComponentPool&) = delete;
+
 				void* Create();
 				void Destroy(void* instance);
 			};
@@ -73,6 +76,9 @@ namespace ZXEngine
 
 				ComponentData() = default;
 				ComponentData(ComponentPool::CreateFunction create, ComponentPool::DestroyFunction destroy) : mPool(create, destroy) {}
+
+				ComponentData(const ComponentData&) = delete;
+				ComponentData& operator=(const ComponentData&) = delete;
 			};
 
 			// 所有的Entity和各自拥有的Component

@@ -64,7 +64,7 @@ namespace ZXEngine
 		{
 			if (auto iter = mWorld.mComponents.find(spawner.ID); iter == mWorld.mComponents.end())
 			{
-				mWorld.mComponents.emplace(spawner.ID, World::ComponentData(spawner.Create, spawner.Destroy));
+				mWorld.mComponents.emplace(std::piecewise_construct, std::forward_as_tuple(spawner.ID), std::forward_as_tuple(spawner.Create, spawner.Destroy));
 			}
 
 			auto& componentData = mWorld.mComponents[spawner.ID];

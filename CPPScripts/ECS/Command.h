@@ -133,7 +133,7 @@ namespace ZXEngine
 
 			if (auto iter = mWorld.mComponents.find(componentID); iter == mWorld.mComponents.end())
 			{
-				mWorld.mComponents.emplace(componentID, World::ComponentData(
+				mWorld.mComponents.emplace(std::piecewise_construct, std::forward_as_tuple(componentID), std::forward_as_tuple(
 					[]()->void* { return new T(); },
 					[](void* ptr)->void { delete (T*)ptr; }
 				));
@@ -162,19 +162,19 @@ namespace ZXEngine
 
 			// 这里如果component是以左值传入的，会产生复制开销，所以在调用时尽可能的使用右值传入
 			spawner.Assign = [capturedComponent = std::forward<T>(component)](void* ptr)mutable->void
-				{
-					*(static_cast<T*>(ptr)) = std::move(capturedComponent);
-				};
+			{
+				*(static_cast<T*>(ptr)) = std::move(capturedComponent);
+			};
 
 			spawner.Create = [](void)->void*
-				{
-					return new T();
-				};
+			{
+				return new T();
+			};
 
 			spawner.Destroy = [](void* ptr)->void
-				{
-					delete static_cast<T*>(ptr);
-				};
+			{
+				delete static_cast<T*>(ptr);
+			};
 
 			spawners.push_back(spawner);
 
