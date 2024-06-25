@@ -66,7 +66,7 @@ Fragment
     {
         using ENGINE_Light_Dir
         using ENGINE_Camera_Pos
-        using ENGINE_Depth_Map
+        using ENGINE_Shadow_Map
 
         float _Ambient
         float _Specular
@@ -82,7 +82,7 @@ Fragment
             float shadow = 0.0;
 
             vec2 texSize = vec2(1, 1);
-            GetTextureSize(ENGINE_Depth_Map, texSize);
+            GetTextureSize(ENGINE_Shadow_Map, texSize);
             float offset = 1.0 / texSize.x;
 
             array<vec2, 9> gridSamplingDisk = 
@@ -113,7 +113,7 @@ Fragment
 
             for(int i = 0; i < samples; ++i)
             {
-                float closestDepth = texture(ENGINE_Depth_Map, projCoords.xy + gridSamplingDisk[i]).r;
+                float closestDepth = texture(ENGINE_Shadow_Map, projCoords.xy + gridSamplingDisk[i]).r;
                 if(currentDepth - bias > closestDepth)
                     shadow += 1.0;
             }

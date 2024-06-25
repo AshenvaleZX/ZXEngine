@@ -62,7 +62,7 @@ Fragment
     {
         using ENGINE_Light_Pos
         using ENGINE_Camera_Pos
-        using ENGINE_Depth_Cube_Map
+        using ENGINE_Shadow_Cube_Map
         using ENGINE_Far_Plane
 
         float _Ambient
@@ -94,7 +94,7 @@ Fragment
 
             for(int i = 0; i < samples; ++i)
             {
-                float closestDepth = texture(ENGINE_Depth_Cube_Map, fragToLight + gridSamplingDisk[i] * diskRadius).r;
+                float closestDepth = texture(ENGINE_Shadow_Cube_Map, fragToLight + gridSamplingDisk[i] * diskRadius).r;
                 closestDepth *= ENGINE_Far_Plane;
                 if(currentDepth - bias > closestDepth)
                     shadow += 1.0;

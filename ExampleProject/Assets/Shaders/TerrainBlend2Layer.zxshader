@@ -87,7 +87,7 @@ Fragment
     {
         using ENGINE_Light_Pos
         using ENGINE_Camera_Pos
-        using ENGINE_Depth_Cube_Map
+        using ENGINE_Shadow_Cube_Map
         using ENGINE_Far_Plane
 
         float _Height
@@ -131,7 +131,7 @@ Fragment
             for(int i = 0; i < samples; ++i)
             {
                 // 在原方向上增加偏移量进行采样，得到当前片元到光源的方向上，离光源最近片元的距离
-                float closestDepth = texture(ENGINE_Depth_Cube_Map, fragToLight + gridSamplingDisk[i] * diskRadius).r;
+                float closestDepth = texture(ENGINE_Shadow_Cube_Map, fragToLight + gridSamplingDisk[i] * diskRadius).r;
                 // 采样出来的值在0-1之间，还原到世界空间下的真实距离
                 closestDepth *= ENGINE_Far_Plane;
                 // 如果当前距离大于最近距离，说明被其它对象遮挡了光源，在阴影内，阴影厚度+1

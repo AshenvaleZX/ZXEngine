@@ -125,12 +125,12 @@ namespace ZXEngine
 			SetMatrix(name, engineProperties->matM_Inv);
 		else if (type == ShaderPropertyType::ENGINE_TIME)
 			SetVector(name, Vector2(Time::curTime, Time::deltaTime));
-		else if (type == ShaderPropertyType::ENGINE_DEPTH_MAP)
+		else if (type == ShaderPropertyType::ENGINE_SHADOW_MAP)
 		{
 			SetTexture(name, engineProperties->shadowMap, textureIdx, false, engineProperties->isShadowMapBuffer);
 			textureIdx++;
 		}
-		else if (type == ShaderPropertyType::ENGINE_DEPTH_CUBE_MAP)
+		else if (type == ShaderPropertyType::ENGINE_SHADOW_CUBE_MAP)
 		{
 			// 先设置SetMaterialProperties获得引擎纹理的初始textureIdx，然后++
 			SetCubeMap(name, engineProperties->shadowCubeMap, textureIdx, false, engineProperties->isShadowCubeMapBuffer);
