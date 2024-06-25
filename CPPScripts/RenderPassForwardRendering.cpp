@@ -38,6 +38,8 @@ namespace ZXEngine
 		ClearInfo clearInfo = {};
 		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT;
 		FBOManager::GetInstance()->CreateFBO("Forward", FrameBufferType::Normal, clearInfo);
+
+		RenderEngineProperties::GetInstance()->SetDepthMap(FBOManager::GetInstance()->GetFBO("Forward")->DepthBuffer);
 	}
 
 	void RenderPassForwardRendering::Render(Camera* camera)

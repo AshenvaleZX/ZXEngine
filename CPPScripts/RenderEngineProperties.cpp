@@ -74,6 +74,11 @@ namespace ZXEngine
 		matM_Inv = Math::Inverse(matM);
 	}
 
+	void RenderEngineProperties::SetDepthMap(uint32_t id)
+	{
+		depthMap = id;
+	}
+
 	void RenderEngineProperties::SetEmptyShadowMap()
 	{
 		shadowMap = emptyShadowMap->GetID();

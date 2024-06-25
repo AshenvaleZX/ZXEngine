@@ -125,6 +125,11 @@ namespace ZXEngine
 			SetMatrix(name, engineProperties->matM_Inv);
 		else if (type == ShaderPropertyType::ENGINE_TIME)
 			SetVector(name, Vector2(Time::curTime, Time::deltaTime));
+		else if (type == ShaderPropertyType::ENGINE_DEPTH_MAP)
+		{
+			SetTexture(name, engineProperties->depthMap, textureIdx, false, true);
+			textureIdx++;
+		}
 		else if (type == ShaderPropertyType::ENGINE_SHADOW_MAP)
 		{
 			SetTexture(name, engineProperties->shadowMap, textureIdx, false, engineProperties->isShadowMapBuffer);

@@ -27,6 +27,7 @@ namespace ZXEngine
 		void SetLightProperties(const vector<Light*>& lights);
 		void SetCameraProperties(Camera* camera);
 		void SetRendererProperties(MeshRenderer* renderer);
+		void SetDepthMap(uint32_t id);
 		void SetEmptyShadowMap();
 		void SetShadowMap(uint32_t id, bool isBuffer = true);
 		void SetEmptyShadowCubeMap();
@@ -44,6 +45,8 @@ namespace ZXEngine
 		Vector3 lightDir;
 		Vector3 lightColor;
 		float lightIntensity = 1.0f;
+
+		uint32_t depthMap = 0;
 
 		uint32_t shadowMap = 0;
 		Texture* emptyShadowMap;
