@@ -64,7 +64,9 @@ namespace ZXEngine
 	void RenderEngineProperties::SetCameraProperties(Camera* camera)
 	{
 		matV = camera->GetViewMatrix();
+		matV_Inv = Math::Inverse(matV);
 		matP = camera->GetProjectionMatrix();
+		matP_Inv = Math::Inverse(matP);
 		camPos = camera->GetTransform()->GetPosition();
 	}
 

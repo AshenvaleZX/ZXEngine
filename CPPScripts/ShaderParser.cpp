@@ -52,6 +52,7 @@ namespace ZXEngine
 		{ "ENGINE_Light_Color", ShaderPropertyType::ENGINE_LIGHT_COLOR }, { "ENGINE_Light_Intensity", ShaderPropertyType::ENGINE_LIGHT_INTENSITY },
 		{ "ENGINE_Shadow_Map",  ShaderPropertyType::ENGINE_SHADOW_MAP  }, { "ENGINE_Shadow_Cube_Map", ShaderPropertyType::ENGINE_SHADOW_CUBE_MAP },
 		{ "ENGINE_Far_Plane",   ShaderPropertyType::ENGINE_FAR_PLANE   }, { "ENGINE_Model_Inv",       ShaderPropertyType::ENGINE_MODEL_INV       },
+		{ "ENGINE_View_Inv",    ShaderPropertyType::ENGINE_VIEW_INV    }, { "ENGINE_Projection_Inv",  ShaderPropertyType::ENGINE_PROJECTION_INV  },
 		{ "ENGINE_Light_Mat",   ShaderPropertyType::ENGINE_LIGHT_MAT   }, { "ENGINE_Time",            ShaderPropertyType::ENGINE_TIME            },
 		{ "ENGINE_Depth_Map",   ShaderPropertyType::ENGINE_DEPTH_MAP   },
 
@@ -61,11 +62,12 @@ namespace ZXEngine
 
 	unordered_map<string, string> enginePropertiesTypeMap =
 	{
-		{ "ENGINE_Model",           "mat4"        }, { "ENGINE_View",            "mat4"  }, { "ENGINE_Projection", "mat4"      }, 
-		{ "ENGINE_Camera_Pos",      "vec3"        }, { "ENGINE_Light_Pos",       "vec3"  }, { "ENGINE_Light_Dir",  "vec3"      }, 
-		{ "ENGINE_Light_Color",     "vec3"        }, { "ENGINE_Light_Intensity", "float" }, { "ENGINE_Shadow_Map", "sampler2D" }, 
-		{ "ENGINE_Shadow_Cube_Map", "samplerCube" }, { "ENGINE_Far_Plane",       "float" }, { "ENGINE_Model_Inv",  "mat4"      },
-		{ "ENGINE_Light_Mat",       "mat4"        }, { "ENGINE_Time",            "vec2"  }, { "ENGINE_Depth_Map",  "sampler2D" },
+		{ "ENGINE_Model",           "mat4"        }, { "ENGINE_View",            "mat4"  }, { "ENGINE_Projection",     "mat4"      }, 
+		{ "ENGINE_Camera_Pos",      "vec3"        }, { "ENGINE_Light_Pos",       "vec3"  }, { "ENGINE_Light_Dir",      "vec3"      }, 
+		{ "ENGINE_Light_Color",     "vec3"        }, { "ENGINE_Light_Intensity", "float" }, { "ENGINE_Shadow_Map",     "sampler2D" }, 
+		{ "ENGINE_Shadow_Cube_Map", "samplerCube" }, { "ENGINE_Far_Plane",       "float" }, { "ENGINE_Depth_Map",      "sampler2D" },
+		{ "ENGINE_Model_Inv",       "mat4"        }, { "ENGINE_View_Inv",        "mat4"  }, { "ENGINE_Projection_Inv", "mat4"      }, 
+		{ "ENGINE_Light_Mat",       "mat4"        }, { "ENGINE_Time",            "vec2"  },
 		// G-Buffer
 		{ "ENGINE_G_Buffer_Position", "sampler2D" }, { "ENGINE_G_Buffer_Normal", "sampler2D" }, { "ENGINE_G_Buffer_Albedo", "sampler2D" },
 	};
@@ -87,6 +89,7 @@ namespace ZXEngine
 		{ ShaderPropertyType::ENGINE_LIGHT_COLOR, "vec3"      }, { ShaderPropertyType::ENGINE_LIGHT_INTENSITY, "float"       },
 		{ ShaderPropertyType::ENGINE_SHADOW_MAP,  "sampler2D" }, { ShaderPropertyType::ENGINE_SHADOW_CUBE_MAP, "samplerCube" },
 		{ ShaderPropertyType::ENGINE_FAR_PLANE,   "float"     }, { ShaderPropertyType::ENGINE_MODEL_INV,       "mat4"        },
+		{ ShaderPropertyType::ENGINE_VIEW_INV,    "mat4"      }, { ShaderPropertyType::ENGINE_PROJECTION_INV,  "mat4"        },
 		{ ShaderPropertyType::ENGINE_LIGHT_MAT,   "mat4"      }, { ShaderPropertyType::ENGINE_TIME,            "vec2"        },
 		{ ShaderPropertyType::ENGINE_DEPTH_MAP,   "sampler2D" },
 	};
@@ -108,6 +111,7 @@ namespace ZXEngine
 		{ ShaderPropertyType::ENGINE_LIGHT_COLOR, "float3"    }, { ShaderPropertyType::ENGINE_LIGHT_INTENSITY, "float"       },
 		{ ShaderPropertyType::ENGINE_SHADOW_MAP,  "Texture2D" }, { ShaderPropertyType::ENGINE_SHADOW_CUBE_MAP, "TextureCube" },
 		{ ShaderPropertyType::ENGINE_FAR_PLANE,   "float"     }, { ShaderPropertyType::ENGINE_MODEL_INV,       "float4x4"    },
+		{ ShaderPropertyType::ENGINE_VIEW_INV,    "float4x4"  }, { ShaderPropertyType::ENGINE_PROJECTION_INV,  "float4x4"    },
 		{ ShaderPropertyType::ENGINE_LIGHT_MAT,   "float4x4"  }, { ShaderPropertyType::ENGINE_TIME,            "float2"      },
 		{ ShaderPropertyType::ENGINE_DEPTH_MAP,   "Texture2D" },
 	};
@@ -223,7 +227,8 @@ namespace ZXEngine
 
 		else if (type == ShaderPropertyType::MAT4 || type == ShaderPropertyType::ENGINE_MODEL
 			|| type == ShaderPropertyType::ENGINE_VIEW || type == ShaderPropertyType::ENGINE_PROJECTION
-			|| type == ShaderPropertyType::ENGINE_MODEL_INV || type == ShaderPropertyType::ENGINE_LIGHT_MAT)
+			|| type == ShaderPropertyType::ENGINE_MODEL_INV || type == ShaderPropertyType::ENGINE_LIGHT_MAT
+			|| type == ShaderPropertyType::ENGINE_VIEW_INV || type == ShaderPropertyType::ENGINE_PROJECTION_INV)
 			if (arrayLength == 0)
 				return { .size = std_size * 16, .align = std_size * 4 };
 			else
@@ -1497,7 +1502,8 @@ namespace ZXEngine
 
 		else if (type == ShaderPropertyType::MAT4 || type == ShaderPropertyType::ENGINE_MODEL
 			|| type == ShaderPropertyType::ENGINE_VIEW || type == ShaderPropertyType::ENGINE_PROJECTION
-			|| type == ShaderPropertyType::ENGINE_MODEL_INV || type == ShaderPropertyType::ENGINE_LIGHT_MAT)
+			|| type == ShaderPropertyType::ENGINE_MODEL_INV || type == ShaderPropertyType::ENGINE_LIGHT_MAT
+			|| type == ShaderPropertyType::ENGINE_VIEW_INV || type == ShaderPropertyType::ENGINE_PROJECTION_INV)
 			if (arrayLength == 0)
 				return { .size = std_size * 16, .align = std_size * 4 };
 			else

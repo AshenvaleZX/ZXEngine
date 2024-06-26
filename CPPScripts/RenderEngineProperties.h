@@ -38,6 +38,8 @@ namespace ZXEngine
 		Matrix4 matV;
 		Matrix4 matP;
 		Matrix4 matM_Inv;
+		Matrix4 matV_Inv;
+		Matrix4 matP_Inv;
 		Vector3 camPos;
 
 		Matrix4 lightMat;

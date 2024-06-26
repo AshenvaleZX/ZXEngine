@@ -123,6 +123,10 @@ namespace ZXEngine
 			SetScalar(name, GlobalData::shadowCubeMapFarPlane);
 		else if (type == ShaderPropertyType::ENGINE_MODEL_INV)
 			SetMatrix(name, engineProperties->matM_Inv);
+		else if (type == ShaderPropertyType::ENGINE_VIEW_INV)
+			SetMatrix(name, engineProperties->matV_Inv);
+		else if (type == ShaderPropertyType::ENGINE_PROJECTION_INV)
+			SetMatrix(name, engineProperties->matP_Inv);
 		else if (type == ShaderPropertyType::ENGINE_TIME)
 			SetVector(name, Vector2(Time::curTime, Time::deltaTime));
 		else if (type == ShaderPropertyType::ENGINE_DEPTH_MAP)
