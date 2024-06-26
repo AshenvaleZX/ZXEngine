@@ -33,13 +33,16 @@ namespace ZXEngine
 		transparentRenderState = new RenderStateSetting();
 		transparentRenderState->depthWrite = false;
 
+		blitCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::NotCare);
 		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ForwardRendering);
 
 		ClearInfo clearInfo = {};
 		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT;
 		FBOManager::GetInstance()->CreateFBO("Forward", FrameBufferType::Normal, clearInfo);
 
-		RenderEngineProperties::GetInstance()->SetDepthMap(FBOManager::GetInstance()->GetFBO("Forward")->DepthBuffer);
+		FBOManager::GetInstance()->CreateFBO("ForwardDepth", FrameBufferType::ShadowMap);
+
+		RenderEngineProperties::GetInstance()->SetDepthMap(FBOManager::GetInstance()->GetFBO("ForwardDepth")->DepthBuffer);
 	}
 
 	void RenderPassForwardRendering::Render(Camera* camera)
@@ -78,6 +81,8 @@ namespace ZXEngine
 		ParticleSystemManager::GetInstance()->Render(camera);
 
 		renderAPI->GenerateDrawCommand(drawCommandID);
+
+		renderAPI->BlitFrameBuffer(blitCommandID, "Forward", "ForwardDepth", ZX_FRAME_BUFFER_PIECE_DEPTH);
 
 		// 每次渲染完要清空，下次要渲染的时候再重新添加
 		RenderQueueManager::GetInstance()->ClearAllRenderQueue();

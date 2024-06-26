@@ -1133,6 +1133,8 @@ namespace ZXEngine
                 VkImageUsageFlags depthUsage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
                 if (type == FrameBufferType::Deferred)
                     depthUsage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+                else if (type == FrameBufferType::Normal)
+					depthUsage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 
                 VulkanImage depthImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
                     depthUsage, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
@@ -1224,7 +1226,8 @@ namespace ZXEngine
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
                 VulkanImage depthImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
-                    VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+                    VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                    VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
                 TransitionImageLayout(depthImage.image,
                     VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_DEPTH_BIT,

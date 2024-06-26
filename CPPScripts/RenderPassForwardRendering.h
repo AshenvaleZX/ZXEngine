@@ -19,6 +19,7 @@ namespace ZXEngine
 
 	private:
 		uint32_t drawCommandID = 0;
+		uint32_t blitCommandID = 0;
 		StaticMesh* skyBox;
 		Material* skyBoxMaterial;
 		RenderStateSetting* skyBoxRenderState;
