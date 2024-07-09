@@ -3,6 +3,7 @@
 #include "Resources.h"
 #include "Component/Component.h"
 #include "Component/Transform.h"
+#include "Component/RectTransform.h"
 #include "Component/MeshRenderer.h"
 #include "Component/ZCamera.h"
 #include "Component/Light.h"
@@ -72,6 +73,7 @@ namespace ZXEngine
 		vector<std::function<void()>> mConstructionCallBacks;
 
 		void ParseTransform(json data);
+		void ParseRectTransform(json data);
 		void ParseMeshRenderer(json data, const ModelData* pModelData, MaterialStruct* material);
 		void ParseCamera(json data);
 		void ParseLight(json data);

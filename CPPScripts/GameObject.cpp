@@ -10,6 +10,7 @@ namespace ZXEngine
 	{
 		auto prefab = Resources::LoadPrefab(path);
 		auto gameObject = new GameObject(prefab);
+		gameObject->EndConstruction();
 		delete prefab;
 
 		SceneManager::GetInstance()->GetCurScene()->AddGameObject(gameObject);
@@ -22,6 +23,7 @@ namespace ZXEngine
 	GameObject* GameObject::CreateInstance(const PrefabStruct* prefab)
 	{
 		auto gameObject = new GameObject(prefab);
+		gameObject->EndConstruction();
 		SceneManager::GetInstance()->GetCurScene()->AddGameObject(gameObject);
 		gameObject->Awake();
 		return gameObject;
@@ -32,6 +34,7 @@ namespace ZXEngine
 		Resources::AsyncLoadPrefab(path, [](PrefabStruct* prefab)
 		{
 			auto gameObject = new GameObject(prefab);
+			gameObject->EndConstruction();
 			SceneManager::GetInstance()->GetCurScene()->AddGameObject(gameObject);
 			gameObject->Awake();
 		});
@@ -149,6 +152,8 @@ namespace ZXEngine
 		{
 			if (component["Type"] == "Transform")
 				ParseTransform(component);
+			else if (component["Type"] == "RectTransform")
+				ParseRectTransform(component);
 			else if (component["Type"] == "MeshRenderer")
 				ParseMeshRenderer(component, prefab->modelData, prefab->material);
 			else if (component["Type"] == "Camera")
@@ -205,6 +210,8 @@ namespace ZXEngine
 		{
 			if (iter.first == ComponentType::Transform)
 				delete static_cast<Transform*>(iter.second);
+			else if (iter.first == ComponentType::RectTransform)
+				delete static_cast<RectTransform*>(iter.second);
 			else if (iter.first == ComponentType::MeshRenderer)
 				delete static_cast<MeshRenderer*>(iter.second);
 			else if (iter.first == ComponentType::Camera)
@@ -273,6 +280,18 @@ namespace ZXEngine
 		transform->SetLocalPosition(Vector3(data["Position"][0], data["Position"][1], data["Position"][2]));
 		transform->SetLocalEulerAngles(data["Rotation"][0], data["Rotation"][1], data["Rotation"][2]);
 		transform->SetLocalScale(Vector3(data["Scale"][0], data["Scale"][1], data["Scale"][2]));
+	}
+
+	void GameObject::ParseRectTransform(json data)
+	{
+		RectTransform* rectTransform = AddComponent<RectTransform>();
+
+		rectTransform->SetLocalPosition(Vector3(data["Position"][0], data["Position"][1], data["Position"][2]));
+		rectTransform->SetLocalEulerAngles(data["Rotation"][0], data["Rotation"][1], data["Rotation"][2]);
+		rectTransform->SetLocalScale(Vector3(data["Scale"][0], data["Scale"][1], data["Scale"][2]));
+
+		rectTransform->mAnchorV = data["VerticalAnchor"];
+		rectTransform->mAnchorH = data["HorizontalAnchor"];
 	}
 
 	void GameObject::ParseMeshRenderer(json data, const ModelData* pModelData, MaterialStruct* material)
@@ -380,8 +399,11 @@ namespace ZXEngine
 	{
 		UITextureRenderer* uiTextureRenderer = AddComponent<UITextureRenderer>();
 
-		string p = Resources::JsonStrToString(data["TexturePath"]);
-		uiTextureRenderer->SetTexture(Resources::GetAssetFullPath(p).c_str());
+		string path = Resources::JsonStrToString(data["TexturePath"]);
+		mConstructionCallBacks.push_back([=]()
+		{
+			uiTextureRenderer->SetTexture(Resources::GetAssetFullPath(path));
+		});
 	}
 
 	void GameObject::ParseParticleSystem(json data)
