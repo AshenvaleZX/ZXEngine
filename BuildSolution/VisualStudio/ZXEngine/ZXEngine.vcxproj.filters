@@ -612,6 +612,9 @@
     <ClCompile Include="..\..\..\CPPScripts\ECS\Command.cpp">
       <Filter>ECS</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\Component\RectTransform.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\CPPScripts\GameObject.h">
@@ -1243,6 +1246,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\ECS\ECS.h">
       <Filter>ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Component\RectTransform.h">
+      <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

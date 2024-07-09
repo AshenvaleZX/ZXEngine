@@ -199,6 +199,7 @@
     <ClCompile Include="..\..\..\CPPScripts\Component\Physics\SpringJoint.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Component\Physics\ZDistanceJoint.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Component\Physics\ZRigidBody.cpp" />
+    <ClCompile Include="..\..\..\CPPScripts\Component\RectTransform.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Component\Transform.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Component\UIButton.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Component\UITextRenderer.cpp" />
@@ -383,6 +384,7 @@
     <ClInclude Include="..\..\..\CPPScripts\Component\Physics\SpringJoint.h" />
     <ClInclude Include="..\..\..\CPPScripts\Component\Physics\ZDistanceJoint.h" />
     <ClInclude Include="..\..\..\CPPScripts\Component\Physics\ZRigidBody.h" />
+    <ClInclude Include="..\..\..\CPPScripts\Component\RectTransform.h" />
     <ClInclude Include="..\..\..\CPPScripts\Component\Transform.h" />
     <ClInclude Include="..\..\..\CPPScripts\Component\UIButton.h" />
     <ClInclude Include="..\..\..\CPPScripts\Component\UITextRenderer.h" />

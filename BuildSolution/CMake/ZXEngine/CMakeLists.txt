@@ -65,6 +65,8 @@ set(Component
     "../../../CPPScripts/Component/MeshRenderer.h"
     "../../../CPPScripts/Component/ParticleSystem.cpp"
     "../../../CPPScripts/Component/ParticleSystem.h"
+    "../../../CPPScripts/Component/RectTransform.cpp"
+    "../../../CPPScripts/Component/RectTransform.h"
     "../../../CPPScripts/Component/Transform.cpp"
     "../../../CPPScripts/Component/Transform.h"
     "../../../CPPScripts/Component/UIButton.cpp"

@@ -139,6 +139,7 @@ namespace ZXEngine
 	{
 		Component,
 		Transform,
+		RectTransform,
 		MeshRenderer,
 		Camera,
 		AudioListener,
