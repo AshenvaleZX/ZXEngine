@@ -3,6 +3,7 @@
 #include "../GameObject.h"
 #include "../Component/Component.h"
 #include "../Component/Transform.h"
+#include "../Component/RectTransform.h"
 #include "../Component/MeshRenderer.h"
 #include "../Component/ZCamera.h"
 #include "../Component/Light.h"
@@ -40,6 +41,8 @@ namespace ZXEngine
 					ComponentType type = iter.first;
 					if (type == ComponentType::Transform)
 						DrawTransform(static_cast<Transform*>(iter.second));
+					else if (type == ComponentType::RectTransform)
+						DrawRectTransform(static_cast<RectTransform*>(iter.second));
 					else if (type == ComponentType::Camera)
 						DrawCamera(static_cast<Camera*>(iter.second));
 					else if (type == ComponentType::Light)
@@ -313,6 +316,79 @@ namespace ZXEngine
 		ImGui::PopItemWidth();
 	}
 
+	void EditorInspectorPanel::DrawRectTransform(RectTransform* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("RectTransform"))
+			return;
+
+		ImGui::PushItemWidth(60);
+		Vector3 position = component->GetLocalPosition();
+		ImGui::Text("Position    ");
+		ImGui::SameLine(); ImGui::Text("X");
+		ImGui::SameLine(); ImGui::DragFloat("##posX", &position.x, 0.15f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::Text("Y");
+		ImGui::SameLine(); ImGui::DragFloat("##posY", &position.y, 0.15f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::Text("Z");
+		ImGui::SameLine(); ImGui::DragFloat("##posZ", &position.z, 0.15f, -FLT_MAX, FLT_MAX);
+		component->SetLocalPosition(position);
+		Vector3 euler = component->GetLocalEulerAngles();
+		ImGui::Text("Rotation    ");
+		ImGui::SameLine(); ImGui::Text("X");
+		ImGui::SameLine(); ImGui::DragFloat("##rotX", &euler.x, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::Text("Y");
+		ImGui::SameLine(); ImGui::DragFloat("##rotY", &euler.y, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::Text("Z");
+		ImGui::SameLine(); ImGui::DragFloat("##rotZ", &euler.z, 0.25f, -FLT_MAX, FLT_MAX);
+		component->SetLocalEulerAngles(euler);
+		Vector3 scale = component->GetLocalScale();
+		ImGui::Text("Scale       ");
+		ImGui::SameLine(); ImGui::Text("X");
+		ImGui::SameLine(); ImGui::DragFloat("##scaX", &scale.x, 0.01f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::Text("Y");
+		ImGui::SameLine(); ImGui::DragFloat("##scaY", &scale.y, 0.01f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); ImGui::Text("Z");
+		ImGui::SameLine(); ImGui::DragFloat("##scaZ", &scale.z, 0.01f, -FLT_MAX, FLT_MAX);
+		component->SetLocalScale(scale);
+		ImGui::PopItemWidth();
+
+		ImGui::PushItemWidth(180);
+		static ImGuiComboFlags rectTransVFlags = 0;
+		const char* rectTransVItems[] = { "Top", "Middle", "Bottom" };
+		static int rectTransVItemCurrentIdx = (int)component->mAnchorV;
+		const char* rectTransVComboPreviewValue = rectTransVItems[rectTransVItemCurrentIdx];
+		ImGui::Text("Vertical Alignment   ");
+		ImGui::SameLine();
+		if (ImGui::BeginCombo("##RectVerticalAlignment", rectTransVComboPreviewValue, rectTransVFlags))
+		{
+			for (int i = 0; i < IM_ARRAYSIZE(rectTransVItems); i++)
+			{
+				const bool is_selected = (rectTransVItemCurrentIdx == i);
+				if (ImGui::Selectable(rectTransVItems[i], is_selected))
+					rectTransVItemCurrentIdx = i;
+			}
+			ImGui::EndCombo();
+		}
+
+		static ImGuiComboFlags rectTransHFlags = 0;
+		const char* rectTransHItems[] = { "Left", "Center", "Right" };
+		static int rectTransHItemCurrentIdx = (int)component->mAnchorH;
+		const char* rectTransHComboPreviewValue = rectTransHItems[rectTransHItemCurrentIdx];
+		ImGui::Text("Horizontal Alignment ");
+		ImGui::SameLine();
+		if (ImGui::BeginCombo("##RectHorizonAlignment", rectTransHComboPreviewValue, rectTransHFlags))
+		{
+			for (int i = 0; i < IM_ARRAYSIZE(rectTransHItems); i++)
+			{
+				const bool is_selected = (rectTransHItemCurrentIdx == i);
+				if (ImGui::Selectable(rectTransHItems[i], is_selected))
+					rectTransHItemCurrentIdx = i;
+			}
+			ImGui::EndCombo();
+		}
+		ImGui::PopItemWidth();
+	}
+
 	void EditorInspectorPanel::DrawMeshRenderer(MeshRenderer* component)
 	{
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
@@ -372,7 +448,7 @@ namespace ZXEngine
 		const char* items[] = { "None", "Directional", "Point" };
 		static int item_current_idx = (int)component->type;
 		const char* combo_preview_value = items[item_current_idx];
-		ImGui::Text("Type      ");
+		ImGui::Text("Type         ");
 		ImGui::SameLine();
 		if (ImGui::BeginCombo("##Type", combo_preview_value, flags))
 		{

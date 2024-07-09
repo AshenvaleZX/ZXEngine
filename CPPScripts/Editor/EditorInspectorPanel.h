@@ -6,6 +6,7 @@ namespace ZXEngine
 {
 	class Material;
 	class Transform;
+	class RectTransform;
 	class MeshRenderer;
 	class Camera;
 	class Light;
@@ -36,6 +37,7 @@ namespace ZXEngine
 		// Component
 		void DrawMaterial(Material* material);
 		void DrawTransform(Transform* component);
+		void DrawRectTransform(RectTransform* component);
 		void DrawMeshRenderer(MeshRenderer* component);
 		void DrawCamera(Camera* component);
 		void DrawLight(Light* component);
