@@ -5,6 +5,7 @@
 #include "../Material.h"
 #include "../Resources.h"
 #include "../GlobalData.h"
+#include "../GeometryGenerator.h"
 
 namespace ZXEngine
 {
@@ -35,15 +36,19 @@ namespace ZXEngine
 		return ComponentType::UITextureRenderer;
 	}
 
-	void UITextureRenderer::Render()
+	void UITextureRenderer::Render(const Matrix4& matVP)
 	{
 		Matrix4 mat_M = GetTransform()->GetModelMatrix();
 		material->Use();
 		material->SetMatrix("ENGINE_Model", mat_M);
+
+		if (!isScreenSpace)
+			material->SetMatrix("ENGINE_Projection", matVP);
+
 		RenderAPI::GetInstance()->Draw(textureMesh->VAO);
 	}
 
-	void UITextureRenderer::SetTexture(const char* path)
+	void UITextureRenderer::SetTexture(const string& path)
 	{
 		if (texture != nullptr)
 			delete texture;
@@ -62,44 +67,24 @@ namespace ZXEngine
 		if (texture == nullptr)
 			return;
 
-		Matrix4 mat_P = Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
+		isScreenSpace = GetTransform()->GetInsType() == ComponentType::RectTransform;
+
 		material = new Material(shader);
 		material->Use();
-		material->SetMatrix("ENGINE_Projection", mat_P, true);
 		material->SetTexture("_Texture", texture->GetID(), 0, true);
 
-		float width = (float)texture->width;
-		float height = (float)texture->height;
-
-		// 根据图片尺寸构建Mesh
-		Vector3 points[4] =
+		if (isScreenSpace)
 		{
-			Vector3(  width / 2 ,   height / 2 , 0),
-			Vector3(  width / 2 , -(height / 2), 0),
-			Vector3(-(width / 2),   height / 2 , 0),
-			Vector3(-(width / 2), -(height / 2), 0),
-		};
-		// GLSL的纹理采样坐标系Y轴是朝下的，HLSL是朝上的
-		Vector2 coords[4] =
-		{
-			Vector2(1, 0),
-			Vector2(1, 1),
-			Vector2(0, 0),
-			Vector2(0, 1),
-		};
-		vector<Vertex> vertices;
-		vector<unsigned int> indices =
-		{
-			2, 3, 1,
-			2, 1, 0,
-		};
-		for (unsigned int i = 0; i < 4; i++)
-		{
-			Vertex vertex;
-			vertex.Position = points[i];
-			vertex.TexCoords = coords[i];
-			vertices.push_back(vertex);
+			Matrix4 mat_P = Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
+			material->SetMatrix("ENGINE_Projection", mat_P, true);
 		}
-		textureMesh = new StaticMesh(vertices, indices);
+
+		float width = static_cast<float>(texture->width);
+		float height = static_cast<float>(texture->height);
+
+		if (isScreenSpace)
+			textureMesh = GeometryGenerator::CreateQuad(width, height);
+		else
+			textureMesh = GeometryGenerator::CreateQuad(1.0f, 1.0f);
 	}
 }

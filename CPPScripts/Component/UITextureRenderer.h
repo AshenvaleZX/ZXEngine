@@ -22,10 +22,11 @@ namespace ZXEngine
 
 		virtual ComponentType GetInsType();
 
-		void Render();
-		void SetTexture(const char* path);
+		void Render(const Matrix4& matVP);
+		void SetTexture(const string& path);
 
 	private:
+		bool isScreenSpace = true;
 		Texture* texture = nullptr;
 		Material* material = nullptr;
 		StaticMesh* textureMesh = nullptr;

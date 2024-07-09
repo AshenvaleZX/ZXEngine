@@ -24,7 +24,7 @@ namespace ZXEngine
         return ComponentType::UITextRenderer;
     }
 
-    void UITextRenderer::Render()
+    void UITextRenderer::Render(const Matrix4& matVP)
     {
         // 如果文本发生了变化，重新生成渲染数据
         if (dirty)
@@ -35,15 +35,19 @@ namespace ZXEngine
             GenerateRenderData();
         }
 
-        Matrix4 mat_M = GetTransform()->GetModelMatrix();
-        Matrix4 mat_P = Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
+        auto transform = GetTransform();
+        Matrix4 mat_M = transform->GetModelMatrix();
+
+        Matrix4 mat_VP = transform->GetInsType() == ComponentType::RectTransform ? 
+            Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f) 
+            : matVP;
 
         auto renderAPI = RenderAPI::GetInstance();
         for (size_t i = 0; i < length; i++)
         {
             textMaterials[i]->Use();
             textMaterials[i]->SetMatrix("ENGINE_Model", mat_M, true);
-            textMaterials[i]->SetMatrix("ENGINE_Projection", mat_P, true);
+            textMaterials[i]->SetMatrix("ENGINE_Projection", mat_VP, true);
             renderAPI->Draw(textMeshes[i]->VAO);
         }
     }

@@ -46,7 +46,7 @@ namespace ZXEngine
 
 		virtual ComponentType GetInsType();
 
-		void Render();
+		void Render(const Matrix4& matVP);
 		void SetContent(const string& text);
 		void SetHorizonAlignment(TextHorizonAlignment align);
 		TextHorizonAlignment GetHorizonAlignment() const;

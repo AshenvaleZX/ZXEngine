@@ -18,6 +18,9 @@ namespace ZXEngine
 
 	void RenderPassUIRendering::Render(Camera* camera)
 	{
+		auto view = camera->GetViewMatrix();
+		auto projection = camera->GetProjectionMatrix();
+		auto viewProjection = projection * view;
 		auto uiGameObjects = RenderQueueManager::GetInstance()->GetUIGameObjects();
 
 		for (auto uiGameObject : uiGameObjects)
@@ -25,12 +28,12 @@ namespace ZXEngine
 			// 绘制UI图片
 			auto uiTextureRenderer = uiGameObject->GetComponent<UITextureRenderer>();
 			if (uiTextureRenderer != nullptr && uiTextureRenderer->IsActive())
-				uiTextureRenderer->Render();
+				uiTextureRenderer->Render(viewProjection);
 
 			// 绘制UI文本
 			auto uiTextRenderer = uiGameObject->GetComponent<UITextRenderer>();
 			if (uiTextRenderer != nullptr && uiTextRenderer->IsActive())
-				uiTextRenderer->Render();
+				uiTextRenderer->Render(viewProjection);
 		}
 
 		RenderAPI::GetInstance()->GenerateDrawCommand(drawCommandID);
