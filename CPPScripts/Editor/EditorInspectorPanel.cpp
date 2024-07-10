@@ -319,47 +319,64 @@ namespace ZXEngine
 	void EditorInspectorPanel::DrawRectTransform(RectTransform* component)
 	{
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-		if (!ImGui::CollapsingHeader("RectTransform"))
+		if (!ImGui::CollapsingHeader("Rect Transform"))
 			return;
 
+		bool xChange = false, yChange = false, zChange = false;
+
 		ImGui::PushItemWidth(60);
-		Vector3 position = component->GetLocalPosition();
+		Vector3 position = component->GetLocalRectPosition();
 		ImGui::Text("Position    ");
 		ImGui::SameLine(); ImGui::Text("X");
-		ImGui::SameLine(); ImGui::DragFloat("##posX", &position.x, 0.15f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); xChange = ImGui::DragFloat("##posX", &position.x, 0.15f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Y");
-		ImGui::SameLine(); ImGui::DragFloat("##posY", &position.y, 0.15f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); yChange = ImGui::DragFloat("##posY", &position.y, 0.15f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Z");
-		ImGui::SameLine(); ImGui::DragFloat("##posZ", &position.z, 0.15f, -FLT_MAX, FLT_MAX);
-		component->SetLocalPosition(position);
+		ImGui::SameLine(); zChange = ImGui::DragFloat("##posZ", &position.z, 0.15f, -FLT_MAX, FLT_MAX);
+		if (xChange || yChange || zChange)
+			component->SetLocalRectPosition(position);
+		
 		Vector3 euler = component->GetLocalEulerAngles();
 		ImGui::Text("Rotation    ");
 		ImGui::SameLine(); ImGui::Text("X");
-		ImGui::SameLine(); ImGui::DragFloat("##rotX", &euler.x, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); xChange = ImGui::DragFloat("##rotX", &euler.x, 0.25f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Y");
-		ImGui::SameLine(); ImGui::DragFloat("##rotY", &euler.y, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); yChange = ImGui::DragFloat("##rotY", &euler.y, 0.25f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Z");
-		ImGui::SameLine(); ImGui::DragFloat("##rotZ", &euler.z, 0.25f, -FLT_MAX, FLT_MAX);
-		component->SetLocalEulerAngles(euler);
+		ImGui::SameLine(); zChange = ImGui::DragFloat("##rotZ", &euler.z, 0.25f, -FLT_MAX, FLT_MAX);
+		if (xChange || yChange || zChange)
+			component->SetLocalEulerAngles(euler);
+
 		Vector3 scale = component->GetLocalScale();
 		ImGui::Text("Scale       ");
 		ImGui::SameLine(); ImGui::Text("X");
-		ImGui::SameLine(); ImGui::DragFloat("##scaX", &scale.x, 0.01f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); xChange = ImGui::DragFloat("##scaX", &scale.x, 0.01f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Y");
-		ImGui::SameLine(); ImGui::DragFloat("##scaY", &scale.y, 0.01f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); yChange = ImGui::DragFloat("##scaY", &scale.y, 0.01f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Z");
-		ImGui::SameLine(); ImGui::DragFloat("##scaZ", &scale.z, 0.01f, -FLT_MAX, FLT_MAX);
-		component->SetLocalScale(scale);
+		ImGui::SameLine(); zChange = ImGui::DragFloat("##scaZ", &scale.z, 0.01f, -FLT_MAX, FLT_MAX);
+		if (xChange || yChange || zChange)
+			component->SetLocalScale(scale);
 		ImGui::PopItemWidth();
 
-		ImGui::PushItemWidth(180);
-		static ImGuiComboFlags rectTransVFlags = 0;
-		const char* rectTransVItems[] = { "Top", "Middle", "Bottom" };
-		static int rectTransVItemCurrentIdx = (int)component->mAnchorV;
+		ImGui::PushItemWidth(95);
+		ImGui::Text("Size              ");
+		float width = component->GetWidth();
+		ImGui::SameLine(); ImGui::DragFloat("##width", &width, 0.1f, 0.0f, FLT_MAX);
+		float height = component->GetHeight();
+		ImGui::SameLine(); ImGui::DragFloat("##height", &height, 0.1f, 0.0f, FLT_MAX);
+		ImGui::PopItemWidth();
+		if (width != component->GetWidth() || height != component->GetHeight())
+			component->SetSize(width, height);
+
+		ImGui::PushItemWidth(200);
+		UIAnchorVertical anchorV = component->mAnchorV;
+		static const char* rectTransVItems[] = { "Top", "Middle", "Bottom" };
+		int rectTransVItemCurrentIdx = (int)anchorV;
 		const char* rectTransVComboPreviewValue = rectTransVItems[rectTransVItemCurrentIdx];
-		ImGui::Text("Vertical Alignment   ");
+		ImGui::Text("Vertical Anchor   ");
 		ImGui::SameLine();
-		if (ImGui::BeginCombo("##RectVerticalAlignment", rectTransVComboPreviewValue, rectTransVFlags))
+		if (ImGui::BeginCombo("##RectVerticalAnchor", rectTransVComboPreviewValue, 0))
 		{
 			for (int i = 0; i < IM_ARRAYSIZE(rectTransVItems); i++)
 			{
@@ -369,14 +386,16 @@ namespace ZXEngine
 			}
 			ImGui::EndCombo();
 		}
+		if (anchorV != (UIAnchorVertical)rectTransVItemCurrentIdx)
+			component->SetVerticalAnchor((UIAnchorVertical)rectTransVItemCurrentIdx);
 
-		static ImGuiComboFlags rectTransHFlags = 0;
-		const char* rectTransHItems[] = { "Left", "Center", "Right" };
-		static int rectTransHItemCurrentIdx = (int)component->mAnchorH;
+		UIAnchorHorizontal anchorH = component->mAnchorH;
+		static const char* rectTransHItems[] = { "Left", "Center", "Right" };
+		int rectTransHItemCurrentIdx = (int)anchorH;
 		const char* rectTransHComboPreviewValue = rectTransHItems[rectTransHItemCurrentIdx];
-		ImGui::Text("Horizontal Alignment ");
+		ImGui::Text("Horizontal Anchor ");
 		ImGui::SameLine();
-		if (ImGui::BeginCombo("##RectHorizonAlignment", rectTransHComboPreviewValue, rectTransHFlags))
+		if (ImGui::BeginCombo("##RectHorizonAnchor", rectTransHComboPreviewValue, 0))
 		{
 			for (int i = 0; i < IM_ARRAYSIZE(rectTransHItems); i++)
 			{
@@ -386,13 +405,15 @@ namespace ZXEngine
 			}
 			ImGui::EndCombo();
 		}
+		if (anchorH != (UIAnchorHorizontal)rectTransHItemCurrentIdx)
+			component->SetHorizontalAnchor((UIAnchorHorizontal)rectTransHItemCurrentIdx);
 		ImGui::PopItemWidth();
 	}
 
 	void EditorInspectorPanel::DrawMeshRenderer(MeshRenderer* component)
 	{
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-		if (!ImGui::CollapsingHeader("MeshRenderer"))
+		if (!ImGui::CollapsingHeader("Mesh Renderer"))
 			return;
 
 		ImGui::Text("Enabled		  ");
@@ -498,7 +519,7 @@ namespace ZXEngine
 	void EditorInspectorPanel::DrawUITextRenderer(UITextRenderer* component)
 	{
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-		if (!ImGui::CollapsingHeader("UITextRenderer"))
+		if (!ImGui::CollapsingHeader("UI Text Renderer"))
 			return;
 
 		char* text = (char*)component->text.c_str();
@@ -555,7 +576,7 @@ namespace ZXEngine
 	void EditorInspectorPanel::DrawUITextureRenderer(UITextureRenderer* component)
 	{
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-		if (!ImGui::CollapsingHeader("UITextureRenderer"))
+		if (!ImGui::CollapsingHeader("UI Texture Renderer"))
 			return;
 
 		ImGui::Text("Path     ");
@@ -576,7 +597,7 @@ namespace ZXEngine
 	void EditorInspectorPanel::DrawUIButton(UIButton* component)
 	{
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-		if (!ImGui::CollapsingHeader("UIButton"))
+		if (!ImGui::CollapsingHeader("UI Button"))
 			return;
 
 		string size = to_string(component->mWidth) + "x" + to_string(component->mHeight);
@@ -587,7 +608,7 @@ namespace ZXEngine
 	void EditorInspectorPanel::DrawParticleSystem(ParticleSystem* component)
 	{
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-		if (!ImGui::CollapsingHeader("ParticleSystem"))
+		if (!ImGui::CollapsingHeader("Particle System"))
 			return;
 
 		int particleNum = (int)component->mParticleNum;
@@ -776,7 +797,7 @@ namespace ZXEngine
 	void EditorInspectorPanel::DrawBoxCollider(BoxCollider* component)
 	{
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-		if (!ImGui::CollapsingHeader("BoxCollider"))
+		if (!ImGui::CollapsingHeader("Box Collider"))
 			return;
 
 		// Friction
@@ -836,7 +857,7 @@ namespace ZXEngine
 	void EditorInspectorPanel::DrawPlaneCollider(PlaneCollider* component)
 	{
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-		if (!ImGui::CollapsingHeader("PlaneCollider"))
+		if (!ImGui::CollapsingHeader("Plane Collider"))
 			return;
 
 		// Friction
@@ -901,7 +922,7 @@ namespace ZXEngine
 	void EditorInspectorPanel::DrawSphereCollider(SphereCollider* component)
 	{
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-		if (!ImGui::CollapsingHeader("SphereCollider"))
+		if (!ImGui::CollapsingHeader("Sphere Collider"))
 			return;
 
 		// Friction
@@ -998,7 +1019,7 @@ namespace ZXEngine
 	void EditorInspectorPanel::DrawSpringJoint(SpringJoint* component)
 	{
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-		if (!ImGui::CollapsingHeader("SpringJoint"))
+		if (!ImGui::CollapsingHeader("Spring Joint"))
 			return;
 
 		// Connected Body
@@ -1032,7 +1053,7 @@ namespace ZXEngine
 	void EditorInspectorPanel::DrawDistanceJoint(ZDistanceJoint* component)
 	{
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-		if (!ImGui::CollapsingHeader("DistanceJoint"))
+		if (!ImGui::CollapsingHeader("Distance Joint"))
 			return;
 
 		// Connected Body
@@ -1093,7 +1114,7 @@ namespace ZXEngine
 	void EditorInspectorPanel::DrawAudioSource(AudioSource* component)
 	{
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-		if (!ImGui::CollapsingHeader("AudioSource"))
+		if (!ImGui::CollapsingHeader("Audio Source"))
 			return;
 
 		// Clip
@@ -1135,7 +1156,7 @@ namespace ZXEngine
 	void EditorInspectorPanel::DrawAudioListener(AudioListener* component)
 	{
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-		if (!ImGui::CollapsingHeader("AudioListener"))
+		if (!ImGui::CollapsingHeader("Audio Listener"))
 			return;
 	}
 }

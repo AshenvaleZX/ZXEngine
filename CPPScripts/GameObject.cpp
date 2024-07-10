@@ -3,6 +3,7 @@
 #include "ModelUtil.h"
 #include "SceneManager.h"
 #include "ZMesh.h"
+#include "GlobalData.h"
 
 namespace ZXEngine
 {
@@ -286,12 +287,23 @@ namespace ZXEngine
 	{
 		RectTransform* rectTransform = AddComponent<RectTransform>();
 
-		rectTransform->SetLocalPosition(Vector3(data["Position"][0], data["Position"][1], data["Position"][2]));
 		rectTransform->SetLocalEulerAngles(data["Rotation"][0], data["Rotation"][1], data["Rotation"][2]);
 		rectTransform->SetLocalScale(Vector3(data["Scale"][0], data["Scale"][1], data["Scale"][2]));
 
 		rectTransform->mAnchorV = data["VerticalAnchor"];
 		rectTransform->mAnchorH = data["HorizontalAnchor"];
+
+		if (data["Width"].is_null())
+			rectTransform->SetWidth(static_cast<float>(GlobalData::srcWidth));
+		else
+			rectTransform->SetWidth(data["Width"]);
+
+		if (data["Height"].is_null())
+			rectTransform->SetHeight(static_cast<float>(GlobalData::srcHeight));
+		else
+			rectTransform->SetHeight(data["Height"]);
+
+		rectTransform->SetLocalRectPosition(data["Position"][0], data["Position"][1], data["Position"][2]);
 	}
 
 	void GameObject::ParseMeshRenderer(json data, const ModelData* pModelData, MaterialStruct* material)
