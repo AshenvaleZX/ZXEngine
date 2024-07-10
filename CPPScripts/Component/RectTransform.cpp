@@ -108,8 +108,8 @@ namespace ZXEngine
 		}
 		else
 		{
-			width = GlobalData::srcWidth;
-			height = GlobalData::srcHeight;
+			width = static_cast<float>(GlobalData::srcWidth);
+			height = static_cast<float>(GlobalData::srcHeight);
 		}
 
 		switch (mAnchorV)
@@ -157,8 +157,8 @@ namespace ZXEngine
 		}
 		else
 		{
-			width = GlobalData::srcWidth;
-			height = GlobalData::srcHeight;
+			width = static_cast<float>(GlobalData::srcWidth);
+			height = static_cast<float>(GlobalData::srcHeight);
 		}
 
 		switch (mAnchorV)
