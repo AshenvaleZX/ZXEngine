@@ -202,9 +202,29 @@ This engine provides a simple game UI system, an example is shown below (see the
 
 ![](Documents/Images/GameUI0.png)
 
-目前有三个基本的UI组件，分别是UITextRenderer，UITextureRenderer和UIButton。
+这里的UI主要有2类：一类是基于屏幕空间的UI，也就是常规的覆盖到屏幕上的，如图中点击地块后出现的弹窗。第二类是基于世界空间的UI，也就是存在于三维空间中的UI，如图中地块上的名牌。
 
-There are currently three basic UI components, UITextRenderer, UITextureRenderer, and UIButton.
+There are two types of UI here: one is the screen-space UI, which is overlaid on the screen, such as the pop-up window that appears when you click on the tile in the picture. The second type is the world-space UI, which is the UI that draw in three-dimensional space, such as the nameplate on the tile in the picture.
+
+目前有四个基本的UI组件，分别是RectTransform，UITextRenderer，UITextureRenderer和UIButton。
+
+There are currently four basic UI components, RectTransform, UITextRenderer, UITextureRenderer, and UIButton.
+
+### RectTransform:
+
+![](Documents/Images/GameUI3.png)
+
+RectTransform是用于基于屏幕空间的UI的特殊Transform。在RectTransform中的Position的X和Y值含义变成了相对父节点的像素偏移量，而不是普通Transform中的局部空间位置。这个偏移量是基于父节点(或屏幕)的位置，大小和锚点的。
+
+RectTransform is a special Transform for screen-space based UI. The X and Y values of position in RectTransform become pixel offsets relative to the parent node, rather than local space positions in ordinary Transforms. This offset is based on the position, size, and anchor of the parent node (or screen).
+
+比如我有一个UI组件希望定位到画面左上角，则Vertical Anchor选择Top，Horizontal Anchor选择Left，X和Y填写相对屏幕左上角的偏移量即可。如果是UI系统中的子对象，锚点就会基于父节点位置和Size来定位子对象。
+
+For example, if I want to position a UI component in the upper left corner of the screen, I can select Top for Vertical Anchor, Left for Horizontal Anchor, and set X and Y to the offset relative to the upper left corner of the screen. If it‘s a child object in the UI system, the anchor will position the child object based on the parent node position and size.
+
+如果不使用RectTransform，而是使用Transform，就会以世界空间的方式，在3D场景中去绘制UI。
+
+If you use Transform instead of RectTransform, you will draw the UI in the 3D scene in world space.
 
 ### UITextRenderer:
 
@@ -582,17 +602,21 @@ The way to switch the graphics API is to modify the macro definition in the pubh
 
 As a personal project, this project has not been rigorously tested in various environments, so it cannot be ruled out that exceptions may occur under certain devices. Of course, it's also possible that I may write some bugs that I have not discovered as I continue to update this project. So if you encounter an exception when compiling or running the project, you can report it to me. If you have any questions or want to discuss anything with me, you can contact me through the email on my Github homepage, or send me a message through my Zhihu homepage.
 
-### 一些废话 (Some mumbles)
+## 一些废话 (Some mumbles)
 
-其实工程在2020年5月就创建了，但是最初其实只是想把2020年初学习OpenGL写的代码保存到GitHub上而已。当时写的代码也只是C语言风格的面向过程式编程，一个1000多行的渲染demo。随后花了1年多时间把《Real-Time Rendering 4th》看了，这期间光看书没再实际写东西了（因为这书实在是太偏理论了，没什么可以立刻实践的东西）。
+闲聊一下关于这个项目是怎么来的。其实仓库在2020年5月就创建了，但是最初只是想把2020年初学习OpenGL写的代码保存到GitHub上而已，完全没有想过要做游戏引擎。当时的代码只有1000多行，而且是面向过程式的C语言风格，整个项目顶多算个小渲染Demo。那个时候其实还想继续扩展，加点新学的东西进去，但是感觉加不动了，因为面向过程的代码实在是难以扩展。所以就开始想把当时的小Demo改成一个正式一点的，有渲染框架的工程。但是不知道从何改起，就一直没动，先看书去了。随后花了1年多时间把《Real-Time Rendering 4th》看了，这期间光看书没再实际写代码了，因为这书实在是太偏理论了，没什么可以立刻实践的东西。结果书看完了还是不知道怎么开始，就沉寂了几个月。
 
-In fact, the project was created in May 2020, but at first I just wanted to save the code I wrote when I learned OpenGL in early 2020 to GitHub. The code I wrote at that time was only procedure oriented programming in C language style, a rendering demo with less than 2000 lines. Then I spent more than a year reading "Real-Time Rendering 4th". During this period, I just read the book and didn't actually write anything (because this book is too theoretical, and there is nothing that can be practiced immediately).
+A little mumbles about how this project came about. This repository was created in May 2020, but initially I just wanted to save the code I wrote when learning OpenGL in early 2020 to GitHub, and I never thought about making a game engine. At that time, there were only about 1,000 lines of code, and it was in a procedural C language style. The entire project was at most a small rendering demo. At that time, I wanted to continue to extend it and add some new features I learned, but I felt that I couldn't make it, because the procedural code had poor extensibility. So I started to think about making that small demo a more formal project with a rendering framework. But I didn't know where to start, so I didn't do it and went to read books first. Then I spent about a year reading "Real-Time Rendering 4th". During this period, I only read the book and didn't actually write any code, because the book was too theoretical and there was nothing that could be put into practice immediately. As a result, I still didn't know how to start after reading the book, so I fell silent for a few months.
 
-其实当时那个1000多行的demo写完我还想继续加点东西上去，但是感觉加不动了，面向过程的代码实在是难扩展。就一直想把这个demo改成一个正式一点的，有渲染框架的工程，但是不知道从何改起，就一直没动，先看书去了。书看完了还是不知道怎么开始，就沉寂了几个月。最后等到了2022年我才开始正式搭建这个工程，准备开发成一个自己的简单游戏引擎。其实我当时应该建一个新的GitHub仓库的，而不是用这个学习OpenGL的仓库。但是当时对C++工程还很陌生，感觉各种环境配置和库链接太麻烦了，就偷懒直接用这个已经搭好的OpenGL开发环境开始搭建引擎了。所以工程里还有之前的demo代码记录。
+时间到了2022年，在一次我们公司的内部技术分享中，有一位大佬前辈以游戏引擎开发为主题做了一次分享。当时展示了一下他业余时间搞的自研引擎，也是仿Unity的，完成度很高。并且不止是PC平台上的玩具，而是已经可以打包到安卓平台发布的了。那次分享深深的震撼了我，曾经我以为游戏引擎这种复杂且庞大的项目是不可能靠个人独立完成的，但是这位前辈改变了我的看法。那次分享在我心中种下了一颗开发个人引擎的种子，并且我也是找到了一个可以学习交流的前辈，于是ZXEngine项目正式起步了。
 
-In fact, after the demo was written, I wanted to continue to add something, but I felt that it couldn't be done, because the procedure oriented code was really difficult to expand. I have always wanted to make this demo a more formal project with a rendering framework, but I don't know where to start, so I haven't moved, and I read the book first. After reading the book, I still didn't know how to start, so I fell silent for several months. Finally, in 2022, I started to build this project, preparing to develop a simple game engine of my own. In fact, I should have built a new GitHub repository instead of using this repository for learning OpenGL. But at that time, I was still very unfamiliar with C++ projects. I felt that various environment configurations and library links were too troublesome, so I was slack off and started building the engine directly with this already established OpenGL development environment. So there are also previous demo code commits in the project.
+In 2022, in an internal technology sharing of our company, a senior made a sharing on the theme of game engine development. He showed us his independent-developed game engine, which was developed in his spare time and it was also modeled after Unity and was highly completed. It was not just a toy engine on the PC platform, but could already be packaged and released on the Android platform. That sharing deeply shocked me. I once thought that a complex and large project like a game engine could not be completed independently by an individual, but this senior changed my mind. That sharing planted a seed in my heart to develop my own game engine, and I also found a senior with whom I could learn and communicate, so the ZXEngine project started.
 
-这个工程我准备用自己工作之余的时间长期更新下去，慢慢完善，添加更高级的特性。也把这个工程当作自己一个学习技术的平台，有什么感兴趣的技术可以在自己这个工程里实验一下。也希望同样对引擎技术感兴趣的人可以一起分享。因为我之前沉寂了几个月迟迟没有开始，就是因为不知道从何开始。我想找一个简单的参考项目，但是找不到。要么就是UE5这种过于庞大和成熟的引擎，要么就是一些很老的比如Ogre这样的引擎，反正我没有找到一个合适的项目让我学习。我这个项目有很多实现是自己瞎想的，还比较简单，换句话说也比较简陋。所以有大佬看到感觉写的不好的地方，欢迎提出建议。可以发邮件给我，ashenvalezx@gmail.com，或者点我头像进主页来知乎私信我。
+ZXEngine项目刚开始的时候我只学过OpenGL，并且由于工作中基本不用写C++，我的C++也就是大学生水平，只在学校里上课学过，以及写过前面说的那个OpenGL渲染小Demo。所以C++工程也是我一边做这个项目一边摸索着学习的。刚开始写这个项目的时候，我对现代C++的熟悉程度真的很低，所以早期写的代码有很多看起来不成熟的地方。随着对C++项目的慢慢熟悉，我的代码风格也有一些变化。所以你可能会看到两个不同模块的代码，由于编写时间间隔较长，连变量命名风格都不一致。而那些早期编写的模块，如果没有一些比较实际的原因，我也不会单纯的因为代码风格问题，或者觉得代码太粗糙而去专门重写。因为我想写的新东西还有不少，所以也就不想把精力放到没必要重写的老模块上。
 
-I plan to use my spare time to keep updating this project, gradually improve it, and add more advanced features. I also regard this project as a platform for my own learning. I can experiment with any interesting technologies in my own project. I also hope that people who are also interested in game engine technology can share it together. I waited for months and didn't start the project because I didn't know where to start. I'm trying to find a relatively simple project to learn from, but can't find it. Either it is an overly large and mature engine like UE5, or some very old engines such as Ogre. Anyway, I didn't find a suitable project for me to learn. Many of the implementations of my project are thought by myself, and they are relatively simple, in other words, they are relatively crude. So if someone sees some implementations that are not good, suggestions are welcome. You can email me, ashenvalezx@gmail.com
+When I started the ZXEngine project, I had only learned OpenGL. And since I basically didn't need to write C++ at work, my C++ was at the school level. I only learned it in class at university and wrote the OpenGL rendering demo mentioned above. So I kept learning C++ while working on this project. When I just started this project, I was not very familiar with modern C++, so there were many immature parts in the early code I wrote. As I gradually became familiar with C++ projects, my code style also changed a little. So you may see that the code of two different modules has inconsistent variable naming styles due to the long time interval between writing. For those codes that I wrote earlier, I wouldn't rewrite them just because of the style of the code, or because the code was too rough, unless there are some practical reasons. Because there are still many new things I want to write, I don't want to spend time on old modules that don't have to be rewritten.
+
+这个工程我准备用自己工作之余的时间长期更新下去，慢慢完善，添加更高级的特性。也把这个工程当作自己一个学习技术的平台，有什么感兴趣的技术可以在自己这个工程里实验一下。也希望同样对引擎技术感兴趣的人可以一起分享。我这个项目有很多实现是自己瞎想的，还比较简单，换句话说也比较简陋。所以有大佬看到感觉写的不好的地方，欢迎提出建议。如果需要联系我的话可以发邮件给我，ashenvalezx@gmail.com，或者点我头像进主页来知乎私信我。
+
+I will use my spare time to keep updating this project, gradually improve it, and add more advanced features. I also regard this project as a platform for myself to learn. If there is any technology that I am interested in, I can experiment with it in this project. I also hope that people who are also interested in game engine technology can share it together. Many of the implementations of this project are based on my own imagination and are relatively simple, in other words relatively crude. So if someone sees some implementations that are not good, suggestions are welcome. If you want to contact me, you can send me an email, ashenvalezx@gmail.com.
 
