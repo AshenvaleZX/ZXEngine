@@ -5,10 +5,12 @@
     [
         {
             "Type": "RectTransform",
-            "Position": [0, 327, 0],
+            "Position": [0, -33, 0],
             "Rotation": [0, 0, 0],
             "Scale": [0.7, 0.85, 1],
-            "VerticalAnchor": 1,
+            "Width": 100,
+            "Height": 100,
+            "VerticalAnchor": 0,
             "HorizontalAnchor": 1
         },
         {

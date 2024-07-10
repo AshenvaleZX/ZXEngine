@@ -5,11 +5,13 @@
     [
         {
             "Type": "RectTransform",
-            "Position": [-620, 330, 0],
+            "Position": [20, -30, 0],
             "Rotation": [0, 0, 0],
             "Scale": [1, 1, 1],
-            "VerticalAnchor": 1,
-            "HorizontalAnchor": 1
+            "Width": 100,
+            "Height": 100,
+            "VerticalAnchor": 0,
+            "HorizontalAnchor": 0
         },
         {
             "Type": "UITextRenderer",
