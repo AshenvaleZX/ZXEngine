@@ -18,15 +18,15 @@ namespace ZXEngine
 
 	UIButton::UIButton()
 	{
-		mUpCallBackKey = EventManager::GetInstance()->AddEventHandler((int)EventType::MOUSE_BUTTON_1_UP, std::bind(&UIButton::BtnUpCallBack, this, std::placeholders::_1));
-		mDownCallBackKey = EventManager::GetInstance()->AddEventHandler((int)EventType::MOUSE_BUTTON_1_DOWN, std::bind(&UIButton::BtnDownCallBack, this, std::placeholders::_1));
+		mUpCallBackKey = EventManager::GetInstance()->AddEventHandler(EventType::MOUSE_BUTTON_1_UP, std::bind(&UIButton::BtnUpCallBack, this, std::placeholders::_1));
+		mDownCallBackKey = EventManager::GetInstance()->AddEventHandler(EventType::MOUSE_BUTTON_1_DOWN, std::bind(&UIButton::BtnDownCallBack, this, std::placeholders::_1));
 	}
 
 	UIButton::~UIButton()
 	{
 		UnregisterCallBack();
-		EventManager::GetInstance()->RemoveEventHandler((int)EventType::MOUSE_BUTTON_1_UP, mUpCallBackKey);
-		EventManager::GetInstance()->RemoveEventHandler((int)EventType::MOUSE_BUTTON_1_DOWN, mDownCallBackKey);
+		EventManager::GetInstance()->RemoveEventHandler(EventType::MOUSE_BUTTON_1_UP, mUpCallBackKey);
+		EventManager::GetInstance()->RemoveEventHandler(EventType::MOUSE_BUTTON_1_DOWN, mDownCallBackKey);
 	}
 
 	void UIButton::UnregisterCallBack()

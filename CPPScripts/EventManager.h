@@ -13,15 +13,16 @@ namespace ZXEngine
         static EventManager* mInstance;
 
     public:
-        void FireEvent(int id, const string& args);
-        uint32_t AddEventHandler(int id, std::function<void(const string&)> callBack);
-        void RemoveEventHandler(int id, uint32_t key);
+        void FireEvent(uint32_t event, const string& args);
+        void FireEvent(EventType event, const string& args);
+        uint32_t AddEventHandler(EventType event, std::function<void(const string&)> callBack);
+        void RemoveEventHandler(EventType event, uint32_t key);
         void ClearEventHandler();
-        void ClearEventHandler(int id);
+        void ClearEventHandler(EventType event);
 
     private:
         uint32_t mNextKey = 0;
         std::queue<uint32_t> mFreeKeys;
-        unordered_map<int, unordered_map<uint32_t, std::function<void(const string&)>>> mCallBackMap;
+        unordered_map<uint32_t, unordered_map<uint32_t, std::function<void(const string&)>>> mCallBackMap;
     };
 }

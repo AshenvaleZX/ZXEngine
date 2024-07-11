@@ -40,7 +40,7 @@ namespace ZXEngine
 		mMouseX = xPos;
 		mMouseY = yPos;
 #endif
-		EventManager::GetInstance()->FireEvent((int)EventType::UPDATE_MOUSE_POS, to_string(mMouseX) + "|" + to_string(mMouseY));
+		EventManager::GetInstance()->FireEvent(EventType::UPDATE_MOUSE_POS, to_string(mMouseX) + "|" + to_string(mMouseY));
 	}
 
 	void InputManagerGLFW::UpdateMouseScroll(float xOffset, float yOffset)
@@ -49,7 +49,7 @@ namespace ZXEngine
 		if (EditorInputManager::GetInstance()->CheckCurMousePos() != EditorAreaType::Game)
 			return;
 #endif
-		EventManager::GetInstance()->FireEvent((int)EventType::UPDATE_MOUSE_SCROLL, to_string(yOffset));
+		EventManager::GetInstance()->FireEvent(EventType::UPDATE_MOUSE_SCROLL, to_string(yOffset));
 	}
 
 	bool InputManagerGLFW::IsShowCursor()
@@ -112,11 +112,11 @@ namespace ZXEngine
 		int state = glfwGetKey(window, id);
 
 		if (state == GLFW_PRESS && mButtonState[(int)button] == GLFW_PRESS)
-			EventManager::GetInstance()->FireEvent((int)e, ""); // Press
+			EventManager::GetInstance()->FireEvent((uint32_t)e, ""); // Press
 		else if (state == GLFW_PRESS && mButtonState[(int)button] == GLFW_RELEASE)
-			EventManager::GetInstance()->FireEvent((int)e + 1, ""); // Down
+			EventManager::GetInstance()->FireEvent((uint32_t)e + 1, ""); // Down
 		else if (state == GLFW_RELEASE && mButtonState[(int)button] == GLFW_PRESS)
-			EventManager::GetInstance()->FireEvent((int)e + 2, ""); // Up
+			EventManager::GetInstance()->FireEvent((uint32_t)e + 2, ""); // Up
 
 		mButtonState[(int)button] = state;
 	}
@@ -129,11 +129,11 @@ namespace ZXEngine
 		string pos = to_string(mMouseX) + "|" + to_string(mMouseY);
 
 		if (state == GLFW_PRESS && mButtonState[(int)button] == GLFW_PRESS)
-			EventManager::GetInstance()->FireEvent((int)e, pos); // Press
+			EventManager::GetInstance()->FireEvent((uint32_t)e, pos); // Press
 		else if (state == GLFW_PRESS && mButtonState[(int)button] == GLFW_RELEASE)
-			EventManager::GetInstance()->FireEvent((int)e + 1, pos); // Down
+			EventManager::GetInstance()->FireEvent((uint32_t)e + 1, pos); // Down
 		else if (state == GLFW_RELEASE && mButtonState[(int)button] == GLFW_PRESS)
-			EventManager::GetInstance()->FireEvent((int)e + 2, pos); // Up
+			EventManager::GetInstance()->FireEvent((uint32_t)e + 2, pos); // Up
 
 		mButtonState[(int)button] = state;
 	}

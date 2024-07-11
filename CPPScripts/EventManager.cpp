@@ -15,21 +15,28 @@ namespace ZXEngine
         return mInstance;
     }
 
-    void EventManager::FireEvent(int id, const string& args)
+    void EventManager::FireEvent(uint32_t id, const string& args)
     {
         auto iter = mCallBackMap.find(id);
         if (iter != mCallBackMap.end())
         {
             for (auto iter2 = iter->second.begin(); iter2 != iter->second.end(); ++iter2)
             {
-				iter2->second(args);
-			}
+                iter2->second(args);
+            }
         }
         LuaManager::GetInstance()->CallFunction("EngineEvent", "FireEvent", (to_string(id) + "," + args).c_str());
     }
 
-    uint32_t EventManager::AddEventHandler(int id, std::function<void(const string&)> callBack)
+    void EventManager::FireEvent(EventType event, const string& args)
     {
+        FireEvent(static_cast<uint32_t>(event), args);
+    }
+
+    uint32_t EventManager::AddEventHandler(EventType event, std::function<void(const string&)> callBack)
+    {
+        uint32_t id = static_cast<uint32_t>(event);
+
         uint32_t key;
         if (mFreeKeys.empty())
         {
@@ -46,8 +53,10 @@ namespace ZXEngine
         return key;
     }
 
-    void EventManager::RemoveEventHandler(int id, uint32_t key)
+    void EventManager::RemoveEventHandler(EventType event, uint32_t key)
     {
+        uint32_t id = static_cast<uint32_t>(event);
+
         auto iter = mCallBackMap.find(id);
         if (iter != mCallBackMap.end())
         {
@@ -67,8 +76,10 @@ namespace ZXEngine
 		mFreeKeys = std::queue<uint32_t>();
     }
 
-    void EventManager::ClearEventHandler(int id)
+    void EventManager::ClearEventHandler(EventType event)
     {
+        uint32_t id = static_cast<uint32_t>(event);
+
         auto iter = mCallBackMap.find(id);
         if (iter != mCallBackMap.end())
         {
