@@ -3,6 +3,7 @@
 #include "Lua_Resources.h"
 #include "Lua_Time.h"
 #include "Lua_Transform.h"
+#include "Lua_RectTransform.h"
 #include "Lua_GameObject.h"
 #include "Lua_UITextRenderer.h"
 #include "Lua_InputManager.h"
@@ -24,6 +25,7 @@ static const luaL_Reg myLibs[] =
     { "Resources",      luaopen_Resources      },
     { "Time",           luaopen_Time           },
     { "Transform",      luaopen_Transform      },
+    { "RectTransform",  luaopen_RectTransform  },
     { "GameObject",     luaopen_GameObject     },
     { "UITextRenderer", luaopen_UITextRenderer },
     { "InputManager",   luaopen_InputManager   },

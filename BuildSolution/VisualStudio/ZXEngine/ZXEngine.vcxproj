@@ -489,6 +489,7 @@
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Material.h" />
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_MeshRenderer.h" />
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Ray.h" />
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_RectTransform.h" />
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Rigidbody.h" />
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Time.h" />
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_Transform.h" />

@@ -136,6 +136,14 @@ static int GameObject_GetComponent(lua_State* L)
 		luaL_getmetatable(L, "ZXEngine.Transform");
 		lua_setmetatable(L, -2);
 	}
+	else if (type == "RectTransform")
+	{
+		size_t nbytes = sizeof(ZXEngine::RectTransform);
+		ZXEngine::RectTransform** t = (ZXEngine::RectTransform**)lua_newuserdata(L, nbytes);
+		*t = (*data)->GetComponent<ZXEngine::RectTransform>();
+		luaL_getmetatable(L, "ZXEngine.RectTransform");
+		lua_setmetatable(L, -2);
+	}
 	else if (type == "Animator")
 	{
 		size_t nbytes = sizeof(ZXEngine::Animator);

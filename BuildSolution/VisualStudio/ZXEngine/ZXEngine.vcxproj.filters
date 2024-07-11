@@ -1250,5 +1250,8 @@
     <ClInclude Include="..\..\..\CPPScripts\Component\RectTransform.h">
       <Filter>Component</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_RectTransform.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -295,6 +295,7 @@ set(LuaWrap
     "../../../CPPScripts/LuaWrap/Lua_Material.h"
     "../../../CPPScripts/LuaWrap/Lua_MeshRenderer.h"
     "../../../CPPScripts/LuaWrap/Lua_Ray.h"
+    "../../../CPPScripts/LuaWrap/Lua_RectTransform.h"
     "../../../CPPScripts/LuaWrap/Lua_Resources.h"
     "../../../CPPScripts/LuaWrap/Lua_Rigidbody.h"
     "../../../CPPScripts/LuaWrap/Lua_Time.h"
