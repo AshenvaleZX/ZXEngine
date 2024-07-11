@@ -5,6 +5,9 @@ EngineEventType = {}
 EngineEventType_NumToStr = 
 {
     "GAME_START",
+
+    "WINDOW_RESIZE",
+
     "UPDATE_MOUSE_POS",
     "UPDATE_MOUSE_SCROLL",
 

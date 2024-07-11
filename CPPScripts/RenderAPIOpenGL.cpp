@@ -12,6 +12,7 @@
 #include "ProjectSetting.h"
 #include "FBOManager.h"
 #include "Window/WindowManager.h"
+#include "EventManager.h"
 #ifdef ZX_EDITOR
 #include "Editor/ImGuiTextureManager.h"
 #endif
@@ -90,6 +91,7 @@ namespace ZXEngine
 		GlobalData::srcHeight = height;
 		FBOManager::GetInstance()->RecreateAllFollowWindowFBO();
 #endif
+		EventManager::GetInstance()->FireEvent(EventType::WINDOW_RESIZE, "");
 	}
 
 	void RenderAPIOpenGL::SetRenderState(RenderStateSetting* state)

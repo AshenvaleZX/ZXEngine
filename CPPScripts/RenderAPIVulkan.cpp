@@ -10,6 +10,7 @@
 #include "ProjectSetting.h"
 #include "FBOManager.h"
 #include "Window/WindowManager.h"
+#include "EventManager.h"
 #ifdef ZX_EDITOR
 #include "Editor/EditorGUIManager.h"
 #include "Editor/ImGuiTextureManager.h"
@@ -4274,6 +4275,8 @@ namespace ZXEngine
 #ifdef ZX_EDITOR
         EditorGUIManager::GetInstance()->OnWindowSizeChange();
 #endif
+        
+        EventManager::GetInstance()->FireEvent(EventType::WINDOW_RESIZE, "");
 
         windowResized = false;
     }

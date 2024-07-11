@@ -310,6 +310,9 @@ namespace ZXEngine
 	{
 		PLACE_HOLDER = 0, // 这里加一个占位符，因为Lua也有一份EventType需要和这里对齐，但是Lua下标是从1开始的
 		GAME_START,
+
+		WINDOW_RESIZE,
+
 		UPDATE_MOUSE_POS,
 		UPDATE_MOUSE_SCROLL,
 
