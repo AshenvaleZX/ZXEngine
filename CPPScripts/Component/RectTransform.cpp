@@ -1,6 +1,7 @@
 #include "RectTransform.h"
 #include "../GameObject.h"
 #include "../GlobalData.h"
+#include "../EventManager.h"
 
 namespace ZXEngine
 {
@@ -12,6 +13,16 @@ namespace ZXEngine
 	ComponentType RectTransform::GetInsType()
 	{
 		return ComponentType::RectTransform;
+	}
+
+	RectTransform::RectTransform()
+	{
+		mWindowResizeCallbackKey = EventManager::GetInstance()->AddEventHandler(EventType::WINDOW_RESIZE, std::bind(&RectTransform::OnWindowResize, this, std::placeholders::_1));
+	}
+
+	RectTransform::~RectTransform()
+	{
+		EventManager::GetInstance()->RemoveEventHandler(EventType::WINDOW_RESIZE, mWindowResizeCallbackKey);
 	}
 
 	void RectTransform::SetWidth(float width)
@@ -208,5 +219,10 @@ namespace ZXEngine
 			if (rectTransform)
 				rectTransform->UpdateLocalRectPosition();
 		}
+	}
+
+	void RectTransform::OnWindowResize(const string& args)
+	{
+		UpdateLocalPosition();
 	}
 }

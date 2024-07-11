@@ -42,7 +42,7 @@ namespace ZXEngine
 		float mTextHeight = 0.0f;
 
 		UITextRenderer();
-		~UITextRenderer() {};
+		~UITextRenderer();
 
 		virtual ComponentType GetInsType();
 
@@ -53,7 +53,12 @@ namespace ZXEngine
 		void SetVerticalAlignment(TextVerticalAlignment align);
 		TextVerticalAlignment GetVerticalAlignment() const;
 
+		void OnWindowResize(const string& args);
+
 	private:
+		bool isScreenSpace = true;
+		uint32_t mWindowResizeCallbackKey = 0;
+
 		// 当前渲染的文本
 		string text = "";
 		vector<Material*> textMaterials;

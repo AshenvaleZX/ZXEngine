@@ -5,6 +5,8 @@
 #include "../DynamicMesh.h"
 #include "../GlobalData.h"
 #include "../Material.h"
+#include "../EventManager.h"
+#include "../GameObject.h"
 
 namespace ZXEngine
 {
@@ -15,9 +17,18 @@ namespace ZXEngine
 
     UITextRenderer::UITextRenderer()
     {
-        text = "";
-        color = Vector4(1, 1, 1, 1);
+        mWindowResizeCallbackKey = EventManager::GetInstance()->AddEventHandler(EventType::WINDOW_RESIZE, std::bind(&UITextRenderer::OnWindowResize, this, std::placeholders::_1));
     }
+
+    UITextRenderer::~UITextRenderer()
+    {
+        for (auto mesh : textMeshes)
+            delete mesh;
+		for (auto material : textMaterials)
+			delete material;
+
+        EventManager::GetInstance()->RemoveEventHandler(EventType::WINDOW_RESIZE, mWindowResizeCallbackKey);
+	}
 
     ComponentType UITextRenderer::GetInsType()
     {
@@ -35,19 +46,16 @@ namespace ZXEngine
             GenerateRenderData();
         }
 
-        auto transform = GetTransform();
-        Matrix4 mat_M = transform->GetModelMatrix();
-
-        Matrix4 mat_VP = transform->GetInsType() == ComponentType::RectTransform ? 
-            Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f) 
-            : matVP;
+        Matrix4 mat_M = GetTransform()->GetModelMatrix();
 
         auto renderAPI = RenderAPI::GetInstance();
         for (size_t i = 0; i < length; i++)
         {
             textMaterials[i]->Use();
             textMaterials[i]->SetMatrix("ENGINE_Model", mat_M, true);
-            textMaterials[i]->SetMatrix("ENGINE_Projection", mat_VP, true);
+            if (!isScreenSpace)
+                textMaterials[i]->SetMatrix("ENGINE_Projection", matVP, true);
+
             renderAPI->Draw(textMeshes[i]->VAO);
         }
     }
@@ -80,8 +88,26 @@ namespace ZXEngine
 		return vAlign;
 	}
 
+    void UITextRenderer::OnWindowResize(const string& args)
+    {
+        if (isScreenSpace)
+        {
+            Matrix4 mat_P = Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
+            for (auto material : textMaterials)
+            {
+				material->SetMatrix("ENGINE_Projection", mat_P, true);
+			}
+        }
+	}
+
     void UITextRenderer::GenerateRenderData()
     {
+        isScreenSpace = GetTransform()->GetInsType() == ComponentType::RectTransform;
+
+        Matrix4 mat_P;
+        if (isScreenSpace)
+			mat_P = Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
+
         auto characterMgr = TextCharactersManager::GetInstance();
 
         mTextWidth = 0.0f;
@@ -166,6 +192,9 @@ namespace ZXEngine
             charMaterial->Use();
             charMaterial->SetVector("_TextColor", color, true);
             charMaterial->SetTexture("_Text", ch.TextureID, 0, true);
+            if (isScreenSpace)
+                charMaterial->SetMatrix("ENGINE_Projection", mat_P, true);
+
             textMaterials.push_back(charMaterial);
 
             // now advance cursors for next glyph (note that advance is number of 1/64 pixels)

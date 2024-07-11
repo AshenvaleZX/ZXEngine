@@ -17,19 +17,21 @@ namespace ZXEngine
 		static ComponentType GetType();
 
 	public:
-		UITextureRenderer() {};
+		UITextureRenderer();
 		~UITextureRenderer();
 
 		virtual ComponentType GetInsType();
 
 		void Render(const Matrix4& matVP);
 		void SetTexture(const string& path);
+		void OnWindowResize(const string& args);
 
 	private:
 		bool isScreenSpace = true;
 		Texture* texture = nullptr;
 		Material* material = nullptr;
 		StaticMesh* textureMesh = nullptr;
+		uint32_t mWindowResizeCallbackKey = 0;
 
 		void CreateRenderData();
 	};

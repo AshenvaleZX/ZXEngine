@@ -6,6 +6,8 @@
 #include "../Resources.h"
 #include "../GlobalData.h"
 #include "../GeometryGenerator.h"
+#include "../EventManager.h"
+#include "../GameObject.h"
 
 namespace ZXEngine
 {
@@ -21,6 +23,11 @@ namespace ZXEngine
 		return ComponentType::UITextureRenderer;
 	}
 
+	UITextureRenderer::UITextureRenderer()
+	{
+		mWindowResizeCallbackKey = EventManager::GetInstance()->AddEventHandler(EventType::WINDOW_RESIZE, std::bind(&UITextureRenderer::OnWindowResize, this, std::placeholders::_1));
+	}
+
 	UITextureRenderer::~UITextureRenderer()
 	{
 		if (texture != nullptr)
@@ -29,6 +36,8 @@ namespace ZXEngine
 			delete material;
 		if (textureMesh != nullptr)
 			delete textureMesh;
+
+		EventManager::GetInstance()->RemoveEventHandler(EventType::WINDOW_RESIZE, mWindowResizeCallbackKey);
 	}
 
 	ComponentType UITextureRenderer::GetInsType()
@@ -60,6 +69,15 @@ namespace ZXEngine
 			delete textureMesh;
 
 		CreateRenderData();
+	}
+
+	void UITextureRenderer::OnWindowResize(const string& args)
+	{
+		if (isScreenSpace)
+		{
+			Matrix4 mat_P = Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
+			material->SetMatrix("ENGINE_Projection", mat_P, true);
+		}
 	}
 
 	void UITextureRenderer::CreateRenderData()

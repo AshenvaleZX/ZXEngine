@@ -26,8 +26,8 @@ namespace ZXEngine
 		UIAnchorVertical mAnchorV = UIAnchorVertical::Middle;
 		UIAnchorHorizontal mAnchorH = UIAnchorHorizontal::Center;
 
-		RectTransform() = default;
-		~RectTransform() = default;
+		RectTransform();
+		~RectTransform();
 
 		virtual ComponentType GetInsType();
 
@@ -44,14 +44,17 @@ namespace ZXEngine
 		void SetLocalRectPosition(float x, float y, float z = 0.0f);
 		Vector3 GetLocalRectPosition() const;
 
-	private:
-		float mWidth = 100.0f;
-		float mHeight = 100.0f;
-		Vector3 mLocalRectPosition;
-
 		void UpdateLocalPosition();
 		void UpdateLocalRectPosition();
 		void UpdateChildrenLocalPosition();
 		void UpdateChildrenLocalRectPosition();
+
+		void OnWindowResize(const string& args);
+
+	private:
+		float mWidth = 100.0f;
+		float mHeight = 100.0f;
+		Vector3 mLocalRectPosition;
+		uint32_t mWindowResizeCallbackKey = 0;
 	};
 }
