@@ -52,9 +52,9 @@ This project aims at a game engine, not just graphics and rendering (although th
 
 This engine currently supports Vulkan, DirectX 12 and OpenGL, supports Windows and Mac OS. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs. This engine also supports ray tracing rendering pipeline based on Vulkan and DirectX12.
 
-本引擎内置了我写的物理引擎PhysZ(看了一些书和别人的项目之后的学习成果，详见后文)，支持基本的刚体力学模拟和布料模拟。同时我也开发了简单的骨骼蒙皮动画系统，粒子系统，JobSystem等。文档后面会有这些系统的图片展示。
+本引擎内置了我写的物理引擎PhysZ(看了一些书和别人的项目之后的学习成果，详见后文)，支持基本的刚体力学模拟和布料模拟。同时我也开发了简单的骨骼蒙皮动画系统，粒子系统，UI系统，JobSystem等。文档后面会有这些系统的图片展示。
 
-This engine has a built-in physics engine written by myself, which I called it PhysZ (It is the learning result after reading some books and other people’s projects), supports rigid body mechanics simulation and cloth simulation. And I also developed a simple skeletal animation system, particle system, JobSystem, etc. Images of these systems are shown later in this document.
+This engine has a built-in physics engine written by myself, which I called it PhysZ (It is the learning result after reading some books and other people’s projects), supports rigid body mechanics simulation and cloth simulation. And I also developed a simple skeletal animation system, particle system, UI system, JobSystem, etc. Images of these systems are shown later in this document.
 
 引擎本身用C++开发，GamePlay层使用Lua语言，引擎层封装部分C++接口给GamePlay层的Lua调用。使用方式类似Unity的XLua，通过一个GameLogic组件把Lua代码绑定到GameObject上，接收所挂载对象上来自引擎的Start和Update调用，并通过self访问GameObject对象(具体示例看后面)。
 
@@ -214,17 +214,17 @@ There are currently four basic UI components, RectTransform, UITextRenderer, UIT
 
 ![](Documents/Images/GameUI3.png)
 
-RectTransform是用于基于屏幕空间的UI的特殊Transform。在RectTransform中的Position的X和Y值含义变成了相对父节点的像素偏移量，而不是普通Transform中的局部空间位置。这个偏移量是基于父节点(或屏幕)的位置，大小和锚点的。
+RectTransform是用于基于屏幕空间的UI的特殊Transform，可以更方便直观地调节UI。在RectTransform中的Position的X和Y值含义变成了相对父节点的像素偏移量，而不是普通Transform中的局部空间位置。这个偏移量是基于父节点(或屏幕)的位置，大小和锚点的。因此基于RectTransform也实现了UI对屏幕分辨率的自适应。
 
-RectTransform is a special Transform for screen-space based UI. The X and Y values of position in RectTransform become pixel offsets relative to the parent node, rather than local space positions in ordinary Transforms. This offset is based on the position, size, and anchor of the parent node (or screen).
+RectTransform is a special Transform for screen-space based UI that makes adjusting the UI easier and more intuitive. The X and Y values of position in RectTransform become pixel offsets relative to the parent node, rather than local space positions in ordinary Transforms. This offset is based on the position, size, and anchor of the parent node (or screen). Therefore, based on RectTransform, the UI is also adaptive to the screen resolution.
 
 比如我有一个UI组件希望定位到画面左上角，则Vertical Anchor选择Top，Horizontal Anchor选择Left，X和Y填写相对屏幕左上角的偏移量即可。如果是UI系统中的子对象，锚点就会基于父节点位置和Size来定位子对象。
 
 For example, if I want to position a UI component in the upper left corner of the screen, I can select Top for Vertical Anchor, Left for Horizontal Anchor, and set X and Y to the offset relative to the upper left corner of the screen. If it‘s a child object in the UI system, the anchor will position the child object based on the parent node position and size.
 
-如果不使用RectTransform，而是使用Transform，就会以世界空间的方式，在3D场景中去绘制UI。
+如果不使用RectTransform而是使用Transform，就相当于直接把UI放到了场景中，会以3D的形式去绘制。
 
-If you use Transform instead of RectTransform, you will draw the UI in the 3D scene in world space.
+If you use Transform instead of RectTransform, it means that you put the UI into the scene, and it will be drawn in 3D.
 
 ### UITextRenderer:
 
@@ -519,15 +519,15 @@ Models, textures, fonts, etc. are common file formats.
 
 ## 实际游戏项目演示 (Actual Game Project Demonstration)
 
-为了更好的演示引擎，也为了让引擎更加完善和可用，我专门创建了另一个仓库：
+为了更好地演示如何使用ZXEngine进行实际开发，以及更好地演示ZXEngine的各种接口和系统的使用方式，我专门创建了另一个仓库：
 
-In order to demonstrate the engine better and make the engine more complete and usable, I created another repository:
+To better demonstrate how to use ZXEngine for real development, and to better demonstrate how to use ZXEngine's various interfaces and systems, I have created another repository:
 
 [ZXEngine-Demo-Projects](https://github.com/AshenvaleZX/ZXEngine-Demo-Projects)
 
-这个仓库里面放了一些用ZXEngine开发的实际游戏Demo项目，更好的展示了如何使用ZXEngine提供的接口进行实际开发。目前有两个Demo：
+这个仓库里面存放了一些用ZXEngine开发的实际游戏项目Demo。除了用于演示外，开发这些Demo也是在用实际需求检验ZXEngine，从而发现引擎不完善的地方并进行扩展和优化。目前有两个Demo：
 
-This repository contains some actual game demo projects developed with ZXEngine, demonstrate how to use the interface provided by ZXEngine for actual development. There are currently two demos:
+This repository contains demos of actual game projects developed with the ZXEngine.In addition to being used for demonstrations, these demos are also being developed to test ZXEngine with real requirements, to find out where the engine falls short and to extend and optimize it. There are currently two demos:
 
 ### SLG Demo:
 
