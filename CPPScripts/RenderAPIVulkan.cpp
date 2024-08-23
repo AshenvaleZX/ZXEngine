@@ -1444,6 +1444,12 @@ namespace ZXEngine
         DestroyFBOByIndex(FBO->ID);
 	}
 
+    uint32_t RenderAPIVulkan::GetRenderBufferTexture(uint32_t id)
+    {
+        auto buffer = GetAttachmentBufferByIndex(id);
+        return buffer->attachmentBuffers[currentFrame];
+    }
+
     uint32_t RenderAPIVulkan::AllocateDrawCommand(CommandType commandType)
     {
         uint32_t idx = GetNextDrawCommandIndex();

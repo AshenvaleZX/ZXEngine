@@ -33,6 +33,7 @@ namespace ZXEngine
         virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
         virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, const ClearInfo& clearInfo, unsigned int width = 0, unsigned int height = 0);
         virtual void DeleteFrameBufferObject(FrameBufferObject* FBO);
+        virtual uint32_t GetRenderBufferTexture(uint32_t id);
 
         // Instance Buffer
         virtual uint32_t CreateStaticInstanceBuffer(uint32_t size, uint32_t num, const void* data);

@@ -869,6 +869,11 @@ namespace ZXEngine
 		CheckError();
 	}
 
+	uint32_t RenderAPIOpenGL::GetRenderBufferTexture(uint32_t id)
+	{
+		return id;
+	}
+
 	uint32_t RenderAPIOpenGL::CreateStaticInstanceBuffer(uint32_t size, uint32_t num, const void* data)
 	{
 		GLuint buffer;

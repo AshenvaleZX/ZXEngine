@@ -1020,6 +1020,12 @@ namespace ZXEngine
 		DestroyFBOByIndex(FBO->ID);
 	}
 
+	uint32_t RenderAPID3D12::GetRenderBufferTexture(uint32_t id)
+	{
+		auto buffer = GetRenderBufferByIndex(id);
+		return buffer->renderBuffers[mCurrentFrame];
+	}
+
 	uint32_t RenderAPID3D12::CreateStaticInstanceBuffer(uint32_t size, uint32_t num, const void* data)
 	{
 		uint32_t idx = GetNextInstanceBufferIndex();
