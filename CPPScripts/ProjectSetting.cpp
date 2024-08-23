@@ -2,6 +2,10 @@
 #include "Resources.h"
 #include "GlobalData.h"
 
+#ifdef ZX_EDITOR
+#include "Editor/EditorGUIManager.h"
+#endif
+
 namespace ZXEngine
 {
 #ifdef __APPLE__
@@ -41,6 +45,8 @@ namespace ZXEngine
 	unsigned int ProjectSetting::inspectorHeight;
 	unsigned int ProjectSetting::mainBarWidth;
 	unsigned int ProjectSetting::mainBarHeight;
+	unsigned int ProjectSetting::gameViewWidth;
+	unsigned int ProjectSetting::gameViewHeight;
 
 	bool ProjectSetting::InitSetting(const string& path)
 	{
@@ -67,27 +73,50 @@ namespace ZXEngine
 		logToFile = data["LogToFile"];
 		stablePhysics = data["StablePhysics"];
 
-#ifdef ZX_EDITOR
-		SetWindowSize(200, 200, 200);
-#else
 		SetWindowSize();
-#endif
 
 		return true;
 	}
 
 #ifdef ZX_EDITOR
+	void ProjectSetting::SetWindowSize()
+	{
+		SetWindowSize(150, 200, 300);
+	}
+
+	void ProjectSetting::SetWindowSize(unsigned int width, unsigned int height)
+	{
+		float hRatio = static_cast<float>(hierarchyWidth) / static_cast<float>(hierarchyWidth + inspectorWidth);
+		uint32_t hWidth = static_cast<uint32_t>(static_cast<float>(width - gameViewWidth) * hRatio);
+		uint32_t iWidth = width - gameViewWidth - hWidth;
+		uint32_t pHeight = height - gameViewHeight - ProjectSetting::mainBarHeight;
+
+		SetWindowSize(hWidth, pHeight, iWidth);
+	}
+
 	void ProjectSetting::SetWindowSize(unsigned int hWidth, unsigned int pHeight, unsigned int iWidth)
 	{
+		auto pGUIManager = EditorGUIManager::GetInstance();
+		if (pGUIManager == nullptr)
+		{
+			gameViewWidth = GlobalData::srcWidth;
+			gameViewHeight = GlobalData::srcHeight;
+		}
+		else
+		{
+			gameViewWidth = GlobalData::srcWidth + static_cast<uint32_t>(pGUIManager->mViewBorderSize.x * 2);
+			gameViewHeight = GlobalData::srcHeight + static_cast<uint32_t>(pGUIManager->mViewBorderSize.y * 2 + pGUIManager->mHeaderSize);
+		}
+
 		hierarchyWidth = hWidth;
-		hierarchyHeight = GlobalData::srcHeight;
-		consoleWidth = (GlobalData::srcWidth + hierarchyWidth) / 3;
+		hierarchyHeight = gameViewHeight;
+		consoleWidth = (gameViewWidth + hierarchyWidth) / 3;
 		consoleHeight = pHeight;
-		projectWidth = GlobalData::srcWidth + hierarchyWidth - consoleWidth;
+		projectWidth = gameViewWidth + hierarchyWidth - consoleWidth;
 		projectHeight = pHeight;
 		inspectorWidth = iWidth;
-		inspectorHeight = GlobalData::srcHeight + projectHeight;
-		mainBarWidth = GlobalData::srcWidth + hierarchyWidth + inspectorWidth;
+		inspectorHeight = gameViewHeight + projectHeight;
+		mainBarWidth = gameViewWidth + hierarchyWidth + inspectorWidth;
 		mainBarHeight = 58;
 		srcWidth = mainBarWidth;
 		srcHeight = inspectorHeight + mainBarHeight;

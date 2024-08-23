@@ -38,10 +38,14 @@ namespace ZXEngine
 		static unsigned int inspectorHeight;
 		static unsigned int mainBarWidth;
 		static unsigned int mainBarHeight;
+		static unsigned int gameViewWidth;
+		static unsigned int gameViewHeight;
 
 		static bool InitSetting(const string& path);
 
 #ifdef ZX_EDITOR
+		static void SetWindowSize();
+		static void SetWindowSize(unsigned int width, unsigned int height);
 		static void SetWindowSize(unsigned int hWidth, unsigned int pHeight, unsigned int iWidth);
 #else
 		static void SetWindowSize();

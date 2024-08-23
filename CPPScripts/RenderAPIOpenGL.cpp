@@ -82,10 +82,7 @@ namespace ZXEngine
 	void RenderAPIOpenGL::OnWindowSizeChange(uint32_t width, uint32_t height)
 	{
 #ifdef ZX_EDITOR
-		unsigned int hWidth = (width - GlobalData::srcWidth) / 3;
-		unsigned int iWidth = width - GlobalData::srcWidth - hWidth;
-		unsigned int pHeight = height - GlobalData::srcHeight - ProjectSetting::mainBarHeight;
-		ProjectSetting::SetWindowSize(hWidth, pHeight, iWidth);
+		ProjectSetting::SetWindowSize(width, height);
 #else
 		GlobalData::srcWidth = width;
 		GlobalData::srcHeight = height;

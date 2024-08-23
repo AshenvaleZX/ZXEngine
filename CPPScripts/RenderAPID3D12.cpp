@@ -4236,10 +4236,7 @@ namespace ZXEngine
 		WaitForRenderFinish();
 
 #ifdef ZX_EDITOR
-		uint32_t hWidth = (mNewWindowWidth - GlobalData::srcWidth) / 3;
-		uint32_t iWidth = mNewWindowWidth - GlobalData::srcWidth - hWidth;
-		uint32_t pHeight = mNewWindowHeight - GlobalData::srcHeight - ProjectSetting::mainBarHeight;
-		ProjectSetting::SetWindowSize(hWidth, pHeight, iWidth);
+		ProjectSetting::SetWindowSize(mNewWindowWidth, mNewWindowHeight);
 #else
 		GlobalData::srcWidth = mNewWindowWidth;
 		GlobalData::srcHeight = mNewWindowHeight;

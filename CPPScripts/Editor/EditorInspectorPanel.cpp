@@ -24,7 +24,7 @@ namespace ZXEngine
 	void EditorInspectorPanel::DrawPanel()
 	{
 		// 面板大小和位置
-		ImGui::SetNextWindowPos(ImVec2((float)ProjectSetting::hierarchyWidth + (float)GlobalData::srcWidth, (float)ProjectSetting::mainBarHeight));
+		ImGui::SetNextWindowPos(ImVec2((float)ProjectSetting::hierarchyWidth + (float)ProjectSetting::gameViewWidth, (float)ProjectSetting::mainBarHeight));
 		ImGui::SetNextWindowSize(ImVec2((float)ProjectSetting::inspectorWidth, (float)ProjectSetting::inspectorHeight));
 
 		// 设置面板具体内容

@@ -93,12 +93,12 @@ namespace ZXEngine
 
 		if (needPreview)
 		{
-			ProjectSetting::inspectorHeight = GlobalData::srcHeight + ProjectSetting::projectHeight - ProjectSetting::inspectorWidth;
+			ProjectSetting::inspectorHeight = ProjectSetting::gameViewHeight + ProjectSetting::projectHeight - ProjectSetting::inspectorWidth;
 			return true;
 		}
 		else
 		{
-			ProjectSetting::inspectorHeight = GlobalData::srcHeight + ProjectSetting::projectHeight;
+			ProjectSetting::inspectorHeight = ProjectSetting::gameViewHeight + ProjectSetting::projectHeight;
 			return false;
 		}
 	}

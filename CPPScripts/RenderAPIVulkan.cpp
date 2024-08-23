@@ -4255,10 +4255,7 @@ namespace ZXEngine
         vkDeviceWaitIdle(device);
 
 #ifdef ZX_EDITOR
-        uint32_t hWidth = (newWindowWidth - GlobalData::srcWidth) / 3;
-        uint32_t iWidth = newWindowWidth - GlobalData::srcWidth - hWidth;
-        uint32_t pHeight = newWindowHeight - GlobalData::srcHeight - ProjectSetting::mainBarHeight;
-        ProjectSetting::SetWindowSize(hWidth, pHeight, iWidth);
+        ProjectSetting::SetWindowSize(newWindowWidth, newWindowHeight);
 #else
         GlobalData::srcWidth = newWindowWidth;
         GlobalData::srcHeight = newWindowHeight;
