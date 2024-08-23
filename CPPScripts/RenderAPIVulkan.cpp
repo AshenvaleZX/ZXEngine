@@ -1602,12 +1602,14 @@ namespace ZXEngine
         vector<VkPipelineStageFlags> waitStages = {};
         waitStages.resize(curWaitSemaphores.size(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
         vector<VkSemaphore> waitSemaphores = curWaitSemaphores;
+#ifndef ZX_EDITOR
         // AfterEffect是第一个直接写入PresentBuffer的，所以需要等PresentBuffer可用
         if (curFBOIdx == presentFBOIdx && curDrawCommandObj->commandType == CommandType::AfterEffectRendering)
         {
             waitStages.push_back(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
             waitSemaphores.push_back(presentImageAvailableSemaphores[currentFrame]);
         }
+#endif
 
         VkSubmitInfo submitInfo = {};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -5192,7 +5194,7 @@ namespace ZXEngine
             colorBlendStates[i].dstColorBlendFactor = vkBlendFactorMap[shaderInfo.stateSet.dstFactor];
             colorBlendStates[i].colorBlendOp = vkBlendOptionMap[shaderInfo.stateSet.blendOp];
             colorBlendStates[i].srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-            colorBlendStates[i].dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+            colorBlendStates[i].dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
             colorBlendStates[i].alphaBlendOp = VK_BLEND_OP_ADD;
 		}
 

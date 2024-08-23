@@ -1605,7 +1605,7 @@ namespace ZXEngine
 		blendDesc.RenderTarget[0].DestBlend = dxBlendFactorMap[shaderInfo.stateSet.dstFactor];
 		blendDesc.RenderTarget[0].BlendOp = dxBlendOptionMap[shaderInfo.stateSet.blendOp];
 		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ONE;
 		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 		pipelineStateDesc.BlendState = blendDesc;
@@ -1879,9 +1879,12 @@ namespace ZXEngine
 			auto rtv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(colorBuffer->handleRTV);
 			drawCommandList->OMSetRenderTargets(1, &rtv, false, nullptr);
 
-			auto& clearInfo = curFBO->clearInfo;
-			const float clearColor[] = { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a };
-			drawCommandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+			if (drawCommand->commandType != CommandType::UIRendering)
+			{
+				auto& clearInfo = curFBO->clearInfo;
+				const float clearColor[] = { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a };
+				drawCommandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+			}
 		}
 		else if (curFBO->bufferType == FrameBufferType::ShadowMap || curFBO->bufferType == FrameBufferType::ShadowCubeMap)
 		{
