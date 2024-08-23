@@ -14,7 +14,9 @@ namespace ZXEngine
 		static EditorGUIManager* mInstance;
 
 	public:
-		EditorAssetPreviewer* assetPreviewer;
+		Vector2 mViewBorderSize;
+		float mHeaderSize = 0.0f;
+		EditorAssetPreviewer* assetPreviewer = nullptr;
 
 		void Render();
 

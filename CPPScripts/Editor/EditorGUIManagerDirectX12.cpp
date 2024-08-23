@@ -4,8 +4,10 @@
 #include "EditorHierarchyPanel.h"
 #include "EditorInspectorPanel.h"
 #include "EditorConsolePanel.h"
+#include "EditorGameViewPanel.h"
 #include "EditorAssetPreviewer.h"
 #include "EditorDialogBoxManager.h"
+#include "../FBOManager.h"
 #include "../RenderAPID3D12.h"
 #include "../Window/WindowManager.h"
 #include "../DirectX12/ZXD3D12DescriptorManager.h"
@@ -44,11 +46,14 @@ namespace ZXEngine
 		allPanels.push_back(new EditorHierarchyPanel());
 		allPanels.push_back(new EditorInspectorPanel());
 		allPanels.push_back(new EditorConsolePanel());
+		allPanels.push_back(new EditorGameViewPanel());
 		assetPreviewer = new EditorAssetPreviewer();
 	}
 
 	void EditorGUIManagerDirectX12::BeginEditorRender()
 	{
+		FBOManager::GetInstance()->SwitchFBO(ScreenBuffer);
+
 		ImGui_ImplDX12_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();

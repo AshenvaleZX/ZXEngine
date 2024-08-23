@@ -4,8 +4,10 @@
 #include "EditorHierarchyPanel.h"
 #include "EditorInspectorPanel.h"
 #include "EditorConsolePanel.h"
+#include "EditorGameViewPanel.h"
 #include "EditorAssetPreviewer.h"
 #include "EditorDialogBoxManager.h"
+#include "../FBOManager.h"
 #include "../RenderAPIVulkan.h"
 #include "../Window/WindowManager.h"
 #include "../External/ImGui/imgui_impl_glfw.h"
@@ -61,11 +63,14 @@ namespace ZXEngine
 		allPanels.push_back(new EditorHierarchyPanel());
 		allPanels.push_back(new EditorInspectorPanel());
 		allPanels.push_back(new EditorConsolePanel());
+		allPanels.push_back(new EditorGameViewPanel());
 		assetPreviewer = new EditorAssetPreviewer();
 	}
 
 	void EditorGUIManagerVulkan::BeginEditorRender()
 	{
+		FBOManager::GetInstance()->SwitchFBO(ScreenBuffer);
+
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -137,11 +142,11 @@ namespace ZXEngine
 			VkAttachmentDescription colorAttachment = {};
 			colorAttachment.format = renderAPI->swapChainImageFormat;
 			colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-			colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+			colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 			colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 			colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 			colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-			colorAttachment.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+			colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 			colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
 			VkAttachmentReference colorAttachmentRef = {};
@@ -291,13 +296,18 @@ namespace ZXEngine
 		// Ã·ΩªCommandBuffer
 		vector<VkPipelineStageFlags> waitStages = {};
 		waitStages.resize(renderAPI->curWaitSemaphores.size(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
+		vector<VkSemaphore> waitSemaphores = renderAPI->curWaitSemaphores;
+
+		waitStages.push_back(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+		waitSemaphores.push_back(renderAPI->presentImageAvailableSemaphores[renderAPI->currentFrame]);
+
 		VkSubmitInfo submitInfo = {};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 		submitInfo.pCommandBuffers = &commandBuffer;
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pWaitSemaphores = renderAPI->curWaitSemaphores.data();
+		submitInfo.pWaitSemaphores = waitSemaphores.data();
 		submitInfo.pWaitDstStageMask = waitStages.data();
-		submitInfo.waitSemaphoreCount = static_cast<uint32_t>(renderAPI->curWaitSemaphores.size());
+		submitInfo.waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size());
 		submitInfo.pSignalSemaphores = &g_RenderFinishSemaphores[renderAPI->currentFrame];
 		submitInfo.signalSemaphoreCount = 1;
 

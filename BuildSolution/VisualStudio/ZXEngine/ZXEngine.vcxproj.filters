@@ -615,6 +615,9 @@
     <ClCompile Include="..\..\..\CPPScripts\Component\RectTransform.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorGameViewPanel.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\CPPScripts\GameObject.h">
@@ -1252,6 +1255,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_RectTransform.h">
       <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorGameViewPanel.h">
+      <Filter>Editor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

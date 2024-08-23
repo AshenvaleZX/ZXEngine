@@ -145,6 +145,8 @@ set(Editor
     "../../../CPPScripts/Editor/EditorDialogBoxManager.h"
     "../../../CPPScripts/Editor/EditorEnumStruct.cpp"
     "../../../CPPScripts/Editor/EditorEnumStruct.h"
+    "../../../CPPScripts/Editor/EditorGameViewPanel.cpp"
+    "../../../CPPScripts/Editor/EditorGameViewPanel.h"
     "../../../CPPScripts/Editor/EditorGUIManager.cpp"
     "../../../CPPScripts/Editor/EditorGUIManager.h"
     "../../../CPPScripts/Editor/EditorGUIManagerDirectX12.cpp"
