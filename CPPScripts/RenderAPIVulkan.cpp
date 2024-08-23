@@ -2386,7 +2386,7 @@ namespace ZXEngine
         // 创建Scratch Buffer，Vulkan构建TLAS需要一个Buffer来放中间数据
         if (!isUpdate)
             rtTLASScratchBuffers[currentFrame] = CreateBuffer(sizeInfo.buildScratchSize,
-                VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+                VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR,
                 VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE, false, true);
 
         // 继续填充构建TLAS需要的信息
