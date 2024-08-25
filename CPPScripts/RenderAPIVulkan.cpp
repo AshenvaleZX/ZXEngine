@@ -894,6 +894,8 @@ namespace ZXEngine
         ShaderReference* reference = new ShaderReference();
         reference->ID = pipelineID;
         reference->shaderInfo = shaderInfo;
+        reference->targetFrameBufferType = type;
+
         return reference;
     }
 

@@ -14,7 +14,7 @@ namespace ZXEngine
 
 		for (auto shaderReference : loadedShaders)
 		{
-			if (path == shaderReference->path)
+			if (path == shaderReference->path && type == shaderReference->targetFrameBufferType)
 			{
 				// 如果已加载过，直接引用
 				reference = shaderReference;
