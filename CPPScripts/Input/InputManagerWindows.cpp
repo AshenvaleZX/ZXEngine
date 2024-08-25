@@ -4,6 +4,10 @@
 #include "../Window/WindowManager.h"
 #include "../ProjectSetting.h"
 
+#ifdef ZX_EDITOR
+#include "../Editor/EditorGUIManager.h"
+#endif
+
 // 防止windows.h里的宏定义max和min影响到其它库里的相同字段
 #ifndef NOMINMAX
 #define NOMINMAX
@@ -33,8 +37,11 @@ namespace ZXEngine
 	void InputManagerWindows::UpdateMousePos(float xPos, float yPos)
 	{
 #ifdef ZX_EDITOR
-		mMouseX = xPos - ProjectSetting::hierarchyWidth;
-		mMouseY = yPos - ProjectSetting::mainBarHeight;
+		float headerSize = EditorGUIManager::GetInstance()->mHeaderSize;
+		const Vector2& viewBorderSize = EditorGUIManager::GetInstance()->mViewBorderSize;
+
+		mMouseX = xPos - ProjectSetting::hierarchyWidth - viewBorderSize.x;
+		mMouseY = yPos - ProjectSetting::mainBarHeight - viewBorderSize.y - headerSize;
 #else
 		mMouseX = xPos;
 		mMouseY = yPos;

@@ -5,6 +5,10 @@
 #include "../ProjectSetting.h"
 #include <GLFW/glfw3.h>
 
+#ifdef ZX_EDITOR
+#include "../Editor/EditorGUIManager.h"
+#endif
+
 // 因为GLFW的函数接口问题，没办法传递成员函数，所以这里用普通函数包了一层
 void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
@@ -34,8 +38,11 @@ namespace ZXEngine
 	void InputManagerGLFW::UpdateMousePos(float xPos, float yPos)
 	{
 #ifdef ZX_EDITOR
-		mMouseX = xPos - ProjectSetting::hierarchyWidth;
-		mMouseY = yPos - ProjectSetting::mainBarHeight;
+		float headerSize = EditorGUIManager::GetInstance()->mHeaderSize;
+		const Vector2& viewBorderSize = EditorGUIManager::GetInstance()->mViewBorderSize;
+
+		mMouseX = xPos - ProjectSetting::hierarchyWidth - viewBorderSize.x;
+		mMouseY = yPos - ProjectSetting::mainBarHeight - viewBorderSize.y - headerSize;
 #else
 		mMouseX = xPos;
 		mMouseY = yPos;

@@ -55,8 +55,14 @@ namespace ZXEngine
 		float posY = io.MousePos.y;
 		posX = Math::Max(0.0f, posX);
 		posY = Math::Max(0.0f, posY);
-		if (posX > ProjectSetting::hierarchyWidth && posX < ProjectSetting::hierarchyWidth + GlobalData::srcWidth
-			&& posY > ProjectSetting::mainBarHeight && posY < ProjectSetting::mainBarHeight + GlobalData::srcHeight)
+
+		float headerSize = EditorGUIManager::GetInstance()->mHeaderSize;
+		const Vector2& viewBorderSize = EditorGUIManager::GetInstance()->mViewBorderSize;
+
+		if (posX > (ProjectSetting::hierarchyWidth + viewBorderSize.x) &&
+			posX < (ProjectSetting::hierarchyWidth + viewBorderSize.x + GlobalData::srcWidth) &&
+			posY > (ProjectSetting::mainBarHeight + viewBorderSize.y + headerSize) &&
+			posY < (ProjectSetting::mainBarHeight + viewBorderSize.y + headerSize + GlobalData::srcHeight))
 			return EditorAreaType::Game;
 		else if (posX > ProjectSetting::srcWidth - ProjectSetting::inspectorWidth && posY > ProjectSetting::mainBarHeight + ProjectSetting::inspectorHeight)
 			return EditorAreaType::AssetPreview;
