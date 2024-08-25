@@ -15,6 +15,12 @@ const string GaussianBlur = "GaussianBlur";
 const string BloomBlend = "BloomBlend";
 const string CopyTexture = "CopyTexture";
 
+#ifdef ZX_EDITOR
+#define OutputBuffer "GameView"
+#else
+#define OutputBuffer ScreenBuffer
+#endif
+
 namespace ZXEngine
 {
 	RenderPassAfterEffectRendering::RenderPassAfterEffectRendering()
@@ -30,6 +36,10 @@ namespace ZXEngine
 		renderState = new RenderStateSetting();
 		renderState->depthTest = false;
 		renderState->depthWrite = false;
+
+#ifdef ZX_EDITOR
+		FBOManager::GetInstance()->CreateFBO("GameView", FrameBufferType::Color);
+#endif
 	}
 
 	void RenderPassAfterEffectRendering::Render(Camera* camera)
@@ -61,7 +71,7 @@ namespace ZXEngine
 		else
 		{
 			// 直接输出原Buffer图像
-			string res = BlitCopy(ScreenBuffer, finalFBO, true);
+			string res = BlitCopy(OutputBuffer, finalFBO, true);
 		}
 	}
 
@@ -106,17 +116,16 @@ namespace ZXEngine
 			return nullptr;
 	}
 
-	void RenderPassAfterEffectRendering::InitExtractBrightArea(bool isFinal)
+	void RenderPassAfterEffectRendering::InitExtractBrightArea()
 	{
 		CreateCommand(ExtractBrightArea);
-		CreateMaterial(ExtractBrightArea, "Shaders/PostProcess/ExtractBrightArea.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
-		if (!isFinal)
-			FBOManager::GetInstance()->CreateFBO(ExtractBrightArea, FrameBufferType::Color);
+		CreateMaterial(ExtractBrightArea, "Shaders/PostProcess/ExtractBrightArea.zxshader", FrameBufferType::Color);
+		FBOManager::GetInstance()->CreateFBO(ExtractBrightArea, FrameBufferType::Color);
 	}
 
-	string RenderPassAfterEffectRendering::BlitExtractBrightArea(const string& sourceFBO, bool isFinal)
+	string RenderPassAfterEffectRendering::BlitExtractBrightArea(const string& sourceFBO)
 	{
-		FBOManager::GetInstance()->SwitchFBO(isFinal ? ScreenBuffer : ExtractBrightArea);
+		FBOManager::GetInstance()->SwitchFBO(ExtractBrightArea);
 		auto material = GetMaterial(ExtractBrightArea);
 		material->Use();
 		material->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(sourceFBO)->ColorBuffer, 0, false, true);
@@ -126,9 +135,9 @@ namespace ZXEngine
 		return ExtractBrightArea;
 	}
 
-	void RenderPassAfterEffectRendering::InitGaussianBlur(bool isFinal)
+	void RenderPassAfterEffectRendering::InitGaussianBlur()
 	{
-		CreateMaterial(GaussianBlur, "Shaders/PostProcess/GaussianBlur.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
+		CreateMaterial(GaussianBlur, "Shaders/PostProcess/GaussianBlur.zxshader", FrameBufferType::Color);
 		CreateCommand("GaussianBlurVertical");
 		CreateCommand("GaussianBlurHorizontal");
 		FBOManager::GetInstance()->CreateFBO("GaussianBlurVertical", FrameBufferType::Color);
@@ -137,7 +146,7 @@ namespace ZXEngine
 
 	// blurTimes 反复模糊次数，次数越多越模糊，但是这个很影响性能，别开太高
 	// texOffset 采样偏移距离，1代表偏移1像素，越大越模糊，这个不影响性能，但是太大了效果会不正常
-	string RenderPassAfterEffectRendering::BlitGaussianBlur(const string& sourceFBO, int blurTimes, float texOffset, bool isFinal)
+	string RenderPassAfterEffectRendering::BlitGaussianBlur(const string& sourceFBO, int blurTimes, float texOffset)
 	{
 		bool isHorizontal = true;
 		string pingpongBuffer[2] = { "GaussianBlurHorizontal", "GaussianBlurVertical" };
@@ -158,17 +167,17 @@ namespace ZXEngine
 		return pingpongBuffer[!isHorizontal];
 	}
 
-	void RenderPassAfterEffectRendering::InitKawaseBlur(bool isFinal)
+	void RenderPassAfterEffectRendering::InitKawaseBlur()
 	{
-		CreateMaterial("KawaseBlur0", "Shaders/PostProcess/KawaseBlur.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
-		CreateMaterial("KawaseBlur1", "Shaders/PostProcess/KawaseBlur.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
+		CreateMaterial("KawaseBlur0", "Shaders/PostProcess/KawaseBlur.zxshader", FrameBufferType::Color);
+		CreateMaterial("KawaseBlur1", "Shaders/PostProcess/KawaseBlur.zxshader", FrameBufferType::Color);
 		CreateCommand("KawaseBlur0");
 		CreateCommand("KawaseBlur1");
 		FBOManager::GetInstance()->CreateFBO("KawaseBlur0", FrameBufferType::Color);
 		FBOManager::GetInstance()->CreateFBO("KawaseBlur1", FrameBufferType::Color);
 	}
 
-	string RenderPassAfterEffectRendering::BlitKawaseBlur(const string& sourceFBO, int blurTimes, float texOffset, bool isFinal)
+	string RenderPassAfterEffectRendering::BlitKawaseBlur(const string& sourceFBO, int blurTimes, float texOffset)
 	{
 		bool isSwitch = true;
 		string pingpongBuffer[2] = { "KawaseBlur0", "KawaseBlur1" };
@@ -194,14 +203,18 @@ namespace ZXEngine
 	void RenderPassAfterEffectRendering::InitBloomBlend(bool isFinal)
 	{
 		CreateCommand(BloomBlend);
+#ifdef ZX_EDITOR
+		CreateMaterial(BloomBlend, "Shaders/PostProcess/BloomBlend.zxshader", FrameBufferType::Color);
+#else
 		CreateMaterial(BloomBlend, "Shaders/PostProcess/BloomBlend.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
+#endif
 		if (!isFinal)
 			FBOManager::GetInstance()->CreateFBO(BloomBlend, FrameBufferType::Color);
 	}
 
 	string RenderPassAfterEffectRendering::BlitBloomBlend(const string& originFBO, const string& blurFBO, bool isFinal)
 	{
-		FBOManager::GetInstance()->SwitchFBO(isFinal ? ScreenBuffer : BloomBlend);
+		FBOManager::GetInstance()->SwitchFBO(isFinal ? OutputBuffer : BloomBlend);
 		auto material = GetMaterial(BloomBlend);
 		material->Use();
 		material->SetTexture("_BrightBlur", FBOManager::GetInstance()->GetFBO(blurFBO)->ColorBuffer, 0, false, true);
@@ -214,7 +227,11 @@ namespace ZXEngine
 	void RenderPassAfterEffectRendering::InitCopy(bool isFinal)
 	{
 		CreateCommand(CopyTexture);
+#ifdef ZX_EDITOR
+		CreateMaterial(CopyTexture, "Shaders/RenderTexture.zxshader", FrameBufferType::Color);
+#else
 		CreateMaterial(CopyTexture, "Shaders/RenderTexture.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
+#endif
 	}
 
 	string RenderPassAfterEffectRendering::BlitCopy(const string& targetFBO, const string& sourceFBO, bool isFinal)

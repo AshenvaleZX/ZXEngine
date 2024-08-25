@@ -28,14 +28,14 @@ namespace ZXEngine
 		Material* GetMaterial(const string& name);
 
 		// 提取画面高亮部分
-		void InitExtractBrightArea(bool isFinal = false);
-		string BlitExtractBrightArea(const string& sourceFBO, bool isFinal = false);
+		void InitExtractBrightArea();
+		string BlitExtractBrightArea(const string& sourceFBO);
 		// 高斯模糊
-		void InitGaussianBlur(bool isFinal = false);
-		string BlitGaussianBlur(const string& sourceFBO, int blurTimes, float texOffset, bool isFinal = false);
+		void InitGaussianBlur();
+		string BlitGaussianBlur(const string& sourceFBO, int blurTimes, float texOffset);
 		// Kawase模糊，性能比高斯好
-		void InitKawaseBlur(bool isFinal = false);
-		string BlitKawaseBlur(const string& sourceFBO, int blurTimes, float texOffset, bool isFinal = false);
+		void InitKawaseBlur();
+		string BlitKawaseBlur(const string& sourceFBO, int blurTimes, float texOffset);
 		// Bloom
 		void InitBloomBlend(bool isFinal = false);
 		string BlitBloomBlend(const string& originFBO, const string& blurFBO, bool isFinal = false);
