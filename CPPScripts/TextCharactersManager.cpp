@@ -22,7 +22,11 @@ namespace ZXEngine
 	TextCharactersManager::TextCharactersManager()
 	{
         // ´´½¨×Ö·ûäÖÈ¾Shader
+#ifdef ZX_EDITOR
+        textShader = new Shader(Resources::GetAssetFullPath("Shaders/TextRenderer.zxshader", true), FrameBufferType::Color);
+#else
         textShader = new Shader(Resources::GetAssetFullPath("Shaders/TextRenderer.zxshader", true), FrameBufferType::Present);
+#endif
 
         // ¼ÓÔØ×Ö·û
         LoadCharacters();
