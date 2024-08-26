@@ -615,6 +615,9 @@
     <ClCompile Include="..\..\..\CPPScripts\Component\RectTransform.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorPanel.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\CPPScripts\Editor\EditorGameViewPanel.cpp">
       <Filter>Editor</Filter>
     </ClCompile>

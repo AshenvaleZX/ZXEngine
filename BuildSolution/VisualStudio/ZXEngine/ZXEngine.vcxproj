@@ -229,6 +229,7 @@
     <ClCompile Include="..\..\..\CPPScripts\Editor\EditorMainBarPanel.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Editor\EditorAssetPreviewer.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Editor\EditorDialogBoxManager.cpp" />
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorPanel.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Editor\EditorProjectPanel.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Editor\ImGuiTextureManager.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Editor\ImGuiTextureManagerD3D12.cpp" />

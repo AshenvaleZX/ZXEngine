@@ -163,6 +163,7 @@ set(Editor
     "../../../CPPScripts/Editor/EditorInspectorPanel.h"
     "../../../CPPScripts/Editor/EditorMainBarPanel.cpp"
     "../../../CPPScripts/Editor/EditorMainBarPanel.h"
+    "../../../CPPScripts/Editor/EditorPanel.cpp"
     "../../../CPPScripts/Editor/EditorPanel.h"
     "../../../CPPScripts/Editor/EditorProjectPanel.cpp"
     "../../../CPPScripts/Editor/EditorProjectPanel.h"
