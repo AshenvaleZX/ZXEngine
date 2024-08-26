@@ -44,11 +44,15 @@ namespace ZXEngine
 		static bool InitSetting(const string& path);
 
 #ifdef ZX_EDITOR
-		static void SetWindowSize();
 		static void SetWindowSize(unsigned int width, unsigned int height);
-		static void SetWindowSize(unsigned int hWidth, unsigned int pHeight, unsigned int iWidth);
 #else
 		static void SetWindowSize();
+#endif
+
+#ifdef ZX_EDITOR
+	private:
+		static void InitWindowSize(unsigned int hWidth, unsigned int pHeight, unsigned int iWidth);
+		static void UpdatePanelSize(unsigned int hWidth, unsigned int pHeight, unsigned int iWidth);
 #endif
 	};
 }
