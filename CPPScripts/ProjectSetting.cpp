@@ -83,6 +83,11 @@ namespace ZXEngine
 	}
 
 #ifdef ZX_EDITOR
+	void ProjectSetting::SetWindowSize()
+	{
+		SetWindowSize(srcWidth, srcHeight);
+	}
+
 	void ProjectSetting::SetWindowSize(unsigned int width, unsigned int height)
 	{
 		srcWidth = width;

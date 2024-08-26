@@ -21,7 +21,7 @@ namespace ZXEngine
 				pGUIManager->mViewBorderSize.y = style.WindowPadding.y;
 				pGUIManager->mHeaderSize = style.FramePadding.y * 2 + ImGui::GetTextLineHeight();
 
-				ProjectSetting::SetWindowSize(ProjectSetting::srcWidth, ProjectSetting::srcHeight);
+				ProjectSetting::SetWindowSize();
 				mFirstDraw = false;
 			}
 
