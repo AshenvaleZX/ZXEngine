@@ -2016,10 +2016,10 @@ namespace ZXEngine
 				// 当前绘制对象在动态描述符堆中的偏移起点
 				UINT curDynamicDescriptorOffset = mDynamicDescriptorOffsets[mCurrentFrame];
 				// 遍历纹理并拷贝到动态描述符堆
-				for (auto& iter : materialData->textureSets[mCurrentFrame].textureHandles)
+				for (auto& iter2 : materialData->textureSets[mCurrentFrame].textureHandles)
 				{
 					// 获取纹理的CPU Handle
-					auto cpuHandle = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(iter);
+					auto cpuHandle = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(iter2);
 					// 拷贝到动态描述符堆
 					mD3D12Device->CopyDescriptorsSimple(1, dynamicDescriptorHandle, cpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 					// 动态描述符堆Handle后移一位
