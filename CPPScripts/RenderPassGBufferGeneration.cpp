@@ -51,11 +51,11 @@ namespace ZXEngine
 
 				auto albedoMap = renderer->mMatetrial->data->GetTexture("_AlbedoMap");
 				if (albedoMap)
-					renderer->mGBufferMaterial->SetTexture("_AlbedoMap", albedoMap->GetID(), 0);
+					renderer->mGBufferMaterial->SetTexture("_AlbedoMap", albedoMap->GetID(), 0, true);
 
 				auto normalMap = renderer->mMatetrial->data->GetTexture("_NormalMap");
 				if (normalMap)
-					renderer->mGBufferMaterial->SetTexture("_NormalMap", normalMap->GetID(), 1);
+					renderer->mGBufferMaterial->SetTexture("_NormalMap", normalMap->GetID(), 1, true);
 			}
 
 			engineProperties->SetRendererProperties(renderer);
