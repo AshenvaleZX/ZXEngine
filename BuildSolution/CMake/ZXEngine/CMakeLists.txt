@@ -137,6 +137,8 @@ source_group("ECS" FILES ${ECS})
 set(Editor
     "../../../CPPScripts/Editor/EditorAssetPreviewer.cpp"
     "../../../CPPScripts/Editor/EditorAssetPreviewer.h"
+    "../../../CPPScripts/Editor/EditorAssetPreviewPanel.cpp"
+    "../../../CPPScripts/Editor/EditorAssetPreviewPanel.h"
     "../../../CPPScripts/Editor/EditorConsolePanel.cpp"
     "../../../CPPScripts/Editor/EditorConsolePanel.h"
     "../../../CPPScripts/Editor/EditorDataManager.cpp"

@@ -37,25 +37,11 @@ namespace ZXEngine
 		cubeMapPath.push_back(Resources::GetAssetFullPath("Textures/white.png", true));
 		shadowCubeMap = new CubeMap(cubeMapPath);
 
-#ifdef ZX_API_OPENGL
-		loadingTexture = new Texture(Resources::GetAssetFullPath("Textures/loading_r.jpg", true));
-#else
-		loadingTexture = new Texture(Resources::GetAssetFullPath("Textures/loading.jpg", true));
-#endif
-
-		previewQuad = GeometryGenerator::CreateScreenQuad();
-		
-		previewQuadMaterial = new Material(new Shader(Resources::GetAssetFullPath("Shaders/RenderTexture.zxshader", true), FrameBufferType::Present));
 		previewModelMaterial = new Material(new Shader(Resources::GetAssetFullPath("Shaders/ModelPreview.zxshader", true), FrameBufferType::Normal));
 
 		renderState = new RenderStateSetting();
 		renderState->clearColor = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
 
-		previewQuadRenderState = new RenderStateSetting();
-		previewQuadRenderState->depthTest = false;
-		previewQuadRenderState->depthWrite = false;
-
-		drawQuadCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::AssetPreviewer);
 		drawPreviewCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::AssetPreviewer);
 
 		ClearInfo clearInfo = {};
@@ -69,10 +55,8 @@ namespace ZXEngine
 		delete cameraGO;
 		delete shadowCubeMap;
 		delete materialSphere;
-		delete previewQuadMaterial;
 		delete previewModelMaterial;
 		delete renderState;
-		delete previewQuadRenderState;
 	}
 
 	bool EditorAssetPreviewer::Check()
@@ -122,8 +106,6 @@ namespace ZXEngine
 			RenderModelPreview(static_cast<AssetModelInfo*>(curAssetInfo));
 
 		renderAPI->GenerateDrawCommand(drawPreviewCommandID);
-
-		RenderToQuad();
 	}
 
 	void EditorAssetPreviewer::RenderMaterialPreview(AssetMaterialInfo* info)
@@ -190,24 +172,6 @@ namespace ZXEngine
 		previewModelMaterial->SetVector("_Direction", Vector3(1.0f, 1.0f, -1.0f).GetNormalized());
 
 		info->meshRenderer->Draw();
-	}
-
-	void EditorAssetPreviewer::RenderToQuad()
-	{
-		auto renderAPI = RenderAPI::GetInstance();
-		renderAPI->SwitchFrameBuffer(UINT32_MAX);
-		renderAPI->SetViewPort(ProjectSetting::inspectorWidth, ProjectSetting::inspectorWidth, ProjectSetting::srcWidth - ProjectSetting::inspectorWidth, 0);
-		renderAPI->SetRenderState(previewQuadRenderState);
-		previewQuadMaterial->Use();
-
-		if (isLoading)
-			previewQuadMaterial->SetTexture("_RenderTexture", loadingTexture->GetID(), 0, false, false);
-		else
-			previewQuadMaterial->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("AssetPreview")->ColorBuffer, 0, false, true);
-
-		renderAPI->Draw(previewQuad->VAO);
-		renderAPI->GenerateDrawCommand(drawQuadCommandID);
-		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight, ProjectSetting::hierarchyWidth, ProjectSetting::projectHeight);
 	}
 
 	void EditorAssetPreviewer::Reset(float size)

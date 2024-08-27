@@ -15,6 +15,8 @@ namespace ZXEngine
 	class EditorAssetPreviewer
 	{
 	public:
+		bool isLoading = false;
+
 		EditorAssetPreviewer();
 		~EditorAssetPreviewer();
 
@@ -27,7 +29,6 @@ namespace ZXEngine
 	private:
 		float yaw = 0.0f;
 		float pitch = 0.0f;
-		bool isLoading = false;
 		const float rotSensitivity = 0.01f;
 		float scale = 1.0f;
 		float minScale = 0.1f;
@@ -37,20 +38,14 @@ namespace ZXEngine
 		const float standardScaleSensitivity = 0.05f;
 		const unsigned int previewSize = 512;
 		GameObject* cameraGO;
-		StaticMesh* previewQuad;
-		Material* previewQuadMaterial;
 		Material* previewModelMaterial;
 		MeshRenderer* materialSphere;
-		Texture* loadingTexture;
 		CubeMap* shadowCubeMap;
 		RenderStateSetting* renderState;
-		RenderStateSetting* previewQuadRenderState;
-		uint32_t drawQuadCommandID = 0;
 		uint32_t drawPreviewCommandID = 0;
 
 		void RenderMaterialPreview(AssetMaterialInfo* info);
 		void RenderModelPreview(AssetModelInfo* info);
-		void RenderToQuad();
 		Matrix4 GetModelMatrix();
 	};
 }

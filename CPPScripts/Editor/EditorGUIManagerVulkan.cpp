@@ -5,6 +5,7 @@
 #include "EditorInspectorPanel.h"
 #include "EditorConsolePanel.h"
 #include "EditorGameViewPanel.h"
+#include "EditorAssetPreviewPanel.h"
 #include "EditorAssetPreviewer.h"
 #include "EditorDialogBoxManager.h"
 #include "../FBOManager.h"
@@ -64,13 +65,12 @@ namespace ZXEngine
 		allPanels.push_back(new EditorInspectorPanel());
 		allPanels.push_back(new EditorConsolePanel());
 		allPanels.push_back(new EditorGameViewPanel());
+		allPanels.push_back(new EditorAssetPreviewPanel());
 		assetPreviewer = new EditorAssetPreviewer();
 	}
 
 	void EditorGUIManagerVulkan::BeginEditorRender()
 	{
-		FBOManager::GetInstance()->SwitchFBO(ScreenBuffer);
-
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -80,6 +80,8 @@ namespace ZXEngine
 	{
 		if (assetPreviewer->Check())
 			assetPreviewer->Draw();
+
+		FBOManager::GetInstance()->SwitchFBO(ScreenBuffer);
 
 		for (auto panel : allPanels)
 		{

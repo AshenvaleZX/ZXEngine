@@ -5,6 +5,7 @@
 #include "EditorInspectorPanel.h"
 #include "EditorConsolePanel.h"
 #include "EditorGameViewPanel.h"
+#include "EditorAssetPreviewPanel.h"
 #include "EditorAssetPreviewer.h"
 #include "EditorDialogBoxManager.h"
 #include "../FBOManager.h"
@@ -47,13 +48,12 @@ namespace ZXEngine
 		allPanels.push_back(new EditorInspectorPanel());
 		allPanels.push_back(new EditorConsolePanel());
 		allPanels.push_back(new EditorGameViewPanel());
+		allPanels.push_back(new EditorAssetPreviewPanel());
 		assetPreviewer = new EditorAssetPreviewer();
 	}
 
 	void EditorGUIManagerDirectX12::BeginEditorRender()
 	{
-		FBOManager::GetInstance()->SwitchFBO(ScreenBuffer);
-
 		ImGui_ImplDX12_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
@@ -63,6 +63,8 @@ namespace ZXEngine
 	{
 		if (assetPreviewer->Check())
 			assetPreviewer->Draw();
+
+		FBOManager::GetInstance()->SwitchFBO(ScreenBuffer);
 
 		for (auto panel : allPanels)
 		{

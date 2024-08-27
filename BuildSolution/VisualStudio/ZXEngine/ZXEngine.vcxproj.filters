@@ -621,6 +621,9 @@
     <ClCompile Include="..\..\..\CPPScripts\Editor\EditorGameViewPanel.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorAssetPreviewPanel.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\CPPScripts\GameObject.h">
@@ -1260,6 +1263,9 @@
       <Filter>LuaWrap</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\Editor\EditorGameViewPanel.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorAssetPreviewPanel.h">
       <Filter>Editor</Filter>
     </ClInclude>
   </ItemGroup>
