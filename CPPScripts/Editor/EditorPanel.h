@@ -17,9 +17,13 @@ namespace ZXEngine
 
 	protected:
 		void CheckManualResize();
-		virtual void OnPanelSizeChange(const Vector2& size) {};
+		virtual void PanelSizeChangeBegin() {};
+		virtual void PanelSizeChanging(const Vector2& size, EditorPanelEdgeFlags flags) {};
+		virtual void PanelSizeChangeEnd(const Vector2& size) {};
 
 	private:
+		Vector2 mPos;
+		Vector2 mDragPos;
 		Vector2 mSize;
 		Vector2 mDragSize;
 		bool mPressing = false;
