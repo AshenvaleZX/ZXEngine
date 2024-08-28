@@ -22,6 +22,16 @@
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
 
+#define CHECK_VK_SUCCESS(func, msg)                                              \
+{                                                                                \
+    VkResult vResult = (func);                                                   \
+    if (vResult != VK_SUCCESS)                                                   \
+    {                                                                            \
+        std::cerr << "VkResult: " << vResult << ", Error: " << msg << std::endl; \
+        throw std::runtime_error(msg);                                           \
+    }                                                                            \
+}
+
 namespace ZXEngine
 {
     bool ZXVK_IsSupportPortabilitySubset = false;
@@ -2424,8 +2434,10 @@ namespace ZXEngine
         submitInfo.waitSemaphoreCount = static_cast<uint32_t>(curWaitSemaphores.size());
         submitInfo.pSignalSemaphores = curDrawCommand.signalSemaphores.data();
         submitInfo.signalSemaphoreCount = static_cast<uint32_t>(curDrawCommand.signalSemaphores.size());
-        if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
-            throw std::runtime_error("Failed to submit draw command buffer!");
+        CHECK_VK_SUCCESS(
+            vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE),
+            "Failed to submit draw command buffer!"
+        );
 
         curWaitSemaphores = curDrawCommand.signalSemaphores;
     }
