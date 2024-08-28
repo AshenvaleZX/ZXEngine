@@ -30,6 +30,15 @@ namespace ZXEngine
 		ZX_SHADER_STAGE_INTERSECTION_BIT = 0x00000080,
 	} ShaderStageFlagBit;
 
+	typedef uint32_t EditorPanelEdgeFlags;
+	typedef enum EditorPanelEdgeFlagBit {
+		ZX_EDITOR_PANEL_EDGE_NONE   = 0x00000000,
+		ZX_EDITOR_PANEL_EDGE_LEFT   = 0x00000001,
+		ZX_EDITOR_PANEL_EDGE_RIGHT  = 0x00000002,
+		ZX_EDITOR_PANEL_EDGE_TOP    = 0x00000004,
+		ZX_EDITOR_PANEL_EDGE_BOTTOM = 0x00000008,
+	} EditorPanelEdgeFlagBit;
+
 	enum class GraphicsAPI
 	{
 		OpenGL,

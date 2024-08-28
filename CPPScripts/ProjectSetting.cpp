@@ -24,8 +24,8 @@ namespace ZXEngine
 
 	string ProjectSetting::mBuiltInAssetsPath;
 
-	unsigned int ProjectSetting::srcWidth;
-	unsigned int ProjectSetting::srcHeight;
+	uint32_t ProjectSetting::srcWidth;
+	uint32_t ProjectSetting::srcHeight;
 	string ProjectSetting::defaultScene;
 	string ProjectSetting::projectPath;
 	bool ProjectSetting::enableDynamicBatch;
@@ -35,18 +35,18 @@ namespace ZXEngine
 	bool ProjectSetting::stablePhysics;
 
 	// Editor
-	unsigned int ProjectSetting::hierarchyWidth;
-	unsigned int ProjectSetting::hierarchyHeight;
-	unsigned int ProjectSetting::consoleWidth;
-	unsigned int ProjectSetting::consoleHeight;
-	unsigned int ProjectSetting::projectWidth;
-	unsigned int ProjectSetting::projectHeight;
-	unsigned int ProjectSetting::inspectorWidth;
-	unsigned int ProjectSetting::inspectorHeight;
-	unsigned int ProjectSetting::mainBarWidth;
-	unsigned int ProjectSetting::mainBarHeight;
-	unsigned int ProjectSetting::gameViewWidth;
-	unsigned int ProjectSetting::gameViewHeight;
+	uint32_t ProjectSetting::hierarchyWidth;
+	uint32_t ProjectSetting::hierarchyHeight;
+	uint32_t ProjectSetting::consoleWidth;
+	uint32_t ProjectSetting::consoleHeight;
+	uint32_t ProjectSetting::projectWidth;
+	uint32_t ProjectSetting::projectHeight;
+	uint32_t ProjectSetting::inspectorWidth;
+	uint32_t ProjectSetting::inspectorHeight;
+	uint32_t ProjectSetting::mainBarWidth;
+	uint32_t ProjectSetting::mainBarHeight;
+	uint32_t ProjectSetting::gameViewWidth;
+	uint32_t ProjectSetting::gameViewHeight;
 
 	bool ProjectSetting::InitSetting(const string& path)
 	{
@@ -88,7 +88,7 @@ namespace ZXEngine
 		SetWindowSize(srcWidth, srcHeight);
 	}
 
-	void ProjectSetting::SetWindowSize(unsigned int width, unsigned int height)
+	void ProjectSetting::SetWindowSize(uint32_t width, uint32_t height)
 	{
 		srcWidth = width;
 		srcHeight = height;
@@ -113,7 +113,7 @@ namespace ZXEngine
 		UpdatePanelSize(hWidth, pHeight, iWidth);
 	}
 
-	void ProjectSetting::InitWindowSize(unsigned int hWidth, unsigned int pHeight, unsigned int iWidth)
+	void ProjectSetting::InitWindowSize(uint32_t hWidth, uint32_t pHeight, uint32_t iWidth)
 	{
 		gameViewWidth = GlobalData::srcWidth;
 		gameViewHeight = GlobalData::srcHeight;
@@ -132,7 +132,7 @@ namespace ZXEngine
 		srcHeight = inspectorHeight + mainBarHeight;
 	}
 
-	void ProjectSetting::UpdatePanelSize(unsigned int hWidth, unsigned int pHeight, unsigned int iWidth)
+	void ProjectSetting::UpdatePanelSize(uint32_t hWidth, uint32_t pHeight, uint32_t iWidth)
 	{
 		hierarchyWidth = hWidth;
 		hierarchyHeight = gameViewHeight;
@@ -152,4 +152,36 @@ namespace ZXEngine
 		srcHeight = GlobalData::srcHeight;
 	}
 #endif
+
+	void ProjectSetting::SetGameViewSize(uint32_t width, uint32_t height, EditorPanelEdgeFlags flags)
+	{
+		uint32_t widthDelta = width - gameViewWidth;
+		uint32_t heightDelta = height - gameViewHeight;
+
+		if (flags & ZX_EDITOR_PANEL_EDGE_LEFT)
+		{
+			hierarchyWidth -= widthDelta;
+			consoleWidth = (width + hierarchyWidth) / 3;
+			projectWidth = width + hierarchyWidth - consoleWidth;
+		}
+		else if (flags & ZX_EDITOR_PANEL_EDGE_RIGHT)
+		{
+			inspectorWidth -= widthDelta;
+			consoleWidth = (srcWidth - inspectorWidth) / 3;
+			projectWidth = srcWidth - inspectorWidth - consoleWidth;
+		}
+
+		if (flags & ZX_EDITOR_PANEL_EDGE_BOTTOM)
+		{
+			hierarchyHeight += heightDelta;
+			consoleHeight -= heightDelta;
+			projectHeight -= heightDelta;
+		}
+
+		if (flags & ZX_EDITOR_PANEL_EDGE_LEFT || flags & ZX_EDITOR_PANEL_EDGE_RIGHT || flags & ZX_EDITOR_PANEL_EDGE_BOTTOM)
+		{
+			gameViewWidth = width;
+			gameViewHeight = height;
+		}
+	}
 }

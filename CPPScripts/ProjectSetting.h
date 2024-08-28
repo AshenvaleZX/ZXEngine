@@ -17,8 +17,8 @@ namespace ZXEngine
 		static string mBuiltInAssetsPath;
 
 		// ProjectSetting.zxprjcfg
-		static unsigned int srcWidth;
-		static unsigned int srcHeight;
+		static uint32_t srcWidth;
+		static uint32_t srcHeight;
 		static string defaultScene;
 		static string projectPath;
 		static bool enableDynamicBatch;
@@ -28,32 +28,33 @@ namespace ZXEngine
 		static bool stablePhysics;
 
 		// Editor
-		static unsigned int hierarchyWidth;
-		static unsigned int hierarchyHeight;
-		static unsigned int consoleWidth;
-		static unsigned int consoleHeight;
-		static unsigned int projectWidth;
-		static unsigned int projectHeight;
-		static unsigned int inspectorWidth;
-		static unsigned int inspectorHeight;
-		static unsigned int mainBarWidth;
-		static unsigned int mainBarHeight;
-		static unsigned int gameViewWidth;
-		static unsigned int gameViewHeight;
+		static uint32_t hierarchyWidth;
+		static uint32_t hierarchyHeight;
+		static uint32_t consoleWidth;
+		static uint32_t consoleHeight;
+		static uint32_t projectWidth;
+		static uint32_t projectHeight;
+		static uint32_t inspectorWidth;
+		static uint32_t inspectorHeight;
+		static uint32_t mainBarWidth;
+		static uint32_t mainBarHeight;
+		static uint32_t gameViewWidth;
+		static uint32_t gameViewHeight;
 
 		static bool InitSetting(const string& path);
 
 #ifdef ZX_EDITOR
 		static void SetWindowSize();
-		static void SetWindowSize(unsigned int width, unsigned int height);
+		static void SetWindowSize(uint32_t width, uint32_t height);
 #else
 		static void SetWindowSize();
 #endif
+		static void SetGameViewSize(uint32_t width, uint32_t height, EditorPanelEdgeFlags flags);
 
 #ifdef ZX_EDITOR
 	private:
-		static void InitWindowSize(unsigned int hWidth, unsigned int pHeight, unsigned int iWidth);
-		static void UpdatePanelSize(unsigned int hWidth, unsigned int pHeight, unsigned int iWidth);
+		static void InitWindowSize(uint32_t hWidth, uint32_t pHeight, uint32_t iWidth);
+		static void UpdatePanelSize(uint32_t hWidth, uint32_t pHeight, uint32_t iWidth);
 #endif
 	};
 }
