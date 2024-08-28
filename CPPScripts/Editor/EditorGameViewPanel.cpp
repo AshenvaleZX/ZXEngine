@@ -11,8 +11,10 @@ namespace ZXEngine
 		ImGui::SetNextWindowPos(ImVec2((float)ProjectSetting::hierarchyWidth, (float)ProjectSetting::mainBarHeight));
 		ImGui::SetNextWindowSize(ImVec2((float)ProjectSetting::gameViewWidth, (float)ProjectSetting::gameViewHeight));
 
-		if (ImGui::Begin("Game", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
+		if (ImGui::Begin("Game", NULL, ImGuiWindowFlags_NoCollapse))
 		{
+			CheckManualResize();
+
 			if (mFirstDraw)
 			{
 				ImGuiStyle& style = ImGui::GetStyle();
@@ -38,5 +40,29 @@ namespace ZXEngine
 #endif
 		}
 		ImGui::End();
+	}
+
+	void EditorGameViewPanel::PanelSizeChangeBegin()
+	{
+		mLastWidth = ProjectSetting::gameViewWidth;
+		mLastHeight = ProjectSetting::gameViewHeight;
+	}
+
+	void EditorGameViewPanel::PanelSizeChanging(const Vector2& size, EditorPanelEdgeFlags flags)
+	{
+		ProjectSetting::SetGameViewSize(static_cast<uint32_t>(size.x), static_cast<uint32_t>(size.y), flags);
+	}
+
+	void EditorGameViewPanel::PanelSizeChangeEnd(const Vector2& size)
+	{
+		if (mLastWidth == ProjectSetting::gameViewWidth && mLastHeight == ProjectSetting::gameViewHeight)
+			return;
+
+		auto pGUIManager = EditorGUIManager::GetInstance();
+
+		GlobalData::srcWidth = static_cast<uint32_t>(size.x - pGUIManager->mViewBorderSize.x * 2.0f);
+		GlobalData::srcHeight = static_cast<uint32_t>(size.y - pGUIManager->mViewBorderSize.y * 2.0f - pGUIManager->mHeaderSize);
+
+		RenderAPI::GetInstance()->OnGameViewSizeChange();
 	}
 }
