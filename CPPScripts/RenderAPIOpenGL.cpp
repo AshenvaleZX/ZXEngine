@@ -91,6 +91,12 @@ namespace ZXEngine
 		EventManager::GetInstance()->FireEvent(EventType::WINDOW_RESIZE, "");
 	}
 
+	void RenderAPIOpenGL::OnGameViewSizeChange()
+	{
+		FBOManager::GetInstance()->RecreateAllFollowWindowFBO();
+		EventManager::GetInstance()->FireEvent(EventType::WINDOW_RESIZE, "");
+	}
+
 	void RenderAPIOpenGL::SetRenderState(RenderStateSetting* state)
 	{
 		*targetState = *state;

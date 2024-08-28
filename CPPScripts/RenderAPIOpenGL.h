@@ -20,6 +20,7 @@ namespace ZXEngine
 
 		// äÖÈ¾×´Ì¬
 		virtual void OnWindowSizeChange(uint32_t width, uint32_t height);
+		virtual void OnGameViewSizeChange();
 		virtual void SetRenderState(RenderStateSetting* state);
 		virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0);
 		virtual void WaitForRenderFinish();

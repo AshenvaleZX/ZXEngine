@@ -154,6 +154,9 @@ namespace ZXEngine
         else if (result != VK_SUCCESS)
             throw std::runtime_error("failed to present swap chain image!");
 
+        if (gameViewResized)
+            DoGameViewSizeChange();
+
         curWaitSemaphores.clear();
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
@@ -163,6 +166,11 @@ namespace ZXEngine
         newWindowWidth = width;
         newWindowHeight = height;
         windowResized = true;
+    }
+
+    void RenderAPIVulkan::OnGameViewSizeChange()
+    {
+        gameViewResized = true;
     }
 
     void RenderAPIVulkan::SetRenderState(RenderStateSetting* state)
@@ -4298,6 +4306,14 @@ namespace ZXEngine
         EventManager::GetInstance()->FireEvent(EventType::WINDOW_RESIZE, "");
 
         windowResized = false;
+    }
+
+    void RenderAPIVulkan::DoGameViewSizeChange()
+    {
+        vkDeviceWaitIdle(device);
+        FBOManager::GetInstance()->RecreateAllFollowWindowFBO();
+        EventManager::GetInstance()->FireEvent(EventType::WINDOW_RESIZE, "");
+        gameViewResized = false;
     }
 
     void RenderAPIVulkan::CleanUpSwapChain()

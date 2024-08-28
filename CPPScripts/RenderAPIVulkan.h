@@ -22,6 +22,7 @@ namespace ZXEngine
 
         // 渲染状态
         virtual void OnWindowSizeChange(uint32_t width, uint32_t height);
+        virtual void OnGameViewSizeChange();
         virtual void SetRenderState(RenderStateSetting* state);
         virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0);
         virtual void WaitForRenderFinish();
@@ -219,6 +220,8 @@ namespace ZXEngine
 
         // 重新创建交换链
         void RecreateSwapChain();
+        // 重新创建随GameView大小变化的Buffer
+        void DoGameViewSizeChange();
         // 清理交换链相关资源
         void CleanUpSwapChain();
         // 销毁PresentBuffer
@@ -408,6 +411,7 @@ namespace ZXEngine
         /// </summary>
     private:
         bool windowResized = false;
+        bool gameViewResized = false;
         uint32_t newWindowWidth = 0;
         uint32_t newWindowHeight = 0;
 

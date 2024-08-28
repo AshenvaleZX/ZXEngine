@@ -21,6 +21,7 @@ namespace ZXEngine
 
 		// äÖÈ¾×´Ì¬
 		virtual void OnWindowSizeChange(uint32_t width, uint32_t height);
+		virtual void OnGameViewSizeChange();
 		virtual void SetRenderState(RenderStateSetting* state);
 		virtual void SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset = 0, unsigned int yOffset = 0);
 		virtual void WaitForRenderFinish();
@@ -336,6 +337,7 @@ namespace ZXEngine
 		/// </summary>
 	private:
 		bool mWindowResized = false;
+		bool mGameViewResized = false;
 		uint32_t mNewWindowWidth = 0;
 		uint32_t mNewWindowHeight = 0;
 
@@ -353,6 +355,7 @@ namespace ZXEngine
 		uint32_t GetCurFrameBufferIndex() const;
 
 		void DoWindowSizeChange();
+		void DoGameViewSizeChange();
 
 		ZXD3D12Fence* CreateZXD3D12Fence();
 		void SignalFence(ZXD3D12Fence* fence);

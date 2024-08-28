@@ -280,6 +280,8 @@ namespace ZXEngine
 
 		if (mWindowResized)
 			DoWindowSizeChange();
+		if (mGameViewResized)
+			DoGameViewSizeChange();
 
 		mDynamicDescriptorOffsets[mCurrentFrame] = 0;
 	}
@@ -297,6 +299,11 @@ namespace ZXEngine
 		mNewWindowWidth = width;
 		mNewWindowHeight = height;
 		mWindowResized = true;
+	}
+
+	void RenderAPID3D12::OnGameViewSizeChange()
+	{
+		mGameViewResized = true;
 	}
 
 	void RenderAPID3D12::SetRenderState(RenderStateSetting* state)
@@ -4280,6 +4287,14 @@ namespace ZXEngine
 		EventManager::GetInstance()->FireEvent(EventType::WINDOW_RESIZE, "");
 
 		mWindowResized = false;
+	}
+
+	void RenderAPID3D12::DoGameViewSizeChange()
+	{
+		WaitForRenderFinish();
+		FBOManager::GetInstance()->RecreateAllFollowWindowFBO();
+		EventManager::GetInstance()->FireEvent(EventType::WINDOW_RESIZE, "");
+		mGameViewResized = false;
 	}
 
 	ZXD3D12Fence* RenderAPID3D12::CreateZXD3D12Fence()
