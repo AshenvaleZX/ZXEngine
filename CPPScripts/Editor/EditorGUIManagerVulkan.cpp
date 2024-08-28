@@ -254,16 +254,14 @@ namespace ZXEngine
 		init_info.Queue = renderAPI->graphicsQueue;
 		init_info.PipelineCache = VK_NULL_HANDLE;
 		init_info.DescriptorPool = g_DescriptorPool;
+		init_info.RenderPass = g_RenderPass;
 		init_info.Subpass = 0;
 		init_info.MinImageCount = g_MinImageCount;
 		init_info.ImageCount = (uint32_t)renderAPI->swapChainImages.size();
 		init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 		init_info.Allocator = VK_NULL_HANDLE;
 		init_info.CheckVkResultFn = check_vk_result;
-		ImGui_ImplVulkan_Init(&init_info, g_RenderPass);
-
-		// ³õÊ¼»¯×ÖÌå
-		renderAPI->ImmediatelyExecute([=](VkCommandBuffer cmd) { ImGui_ImplVulkan_CreateFontsTexture(cmd); });
+		ImGui_ImplVulkan_Init(&init_info);
 	}
 
 	void EditorGUIManagerVulkan::FrameRender()
