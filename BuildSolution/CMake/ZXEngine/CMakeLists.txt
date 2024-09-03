@@ -379,6 +379,11 @@ set(PhysZ__Joint
 )
 source_group("PhysZ\\Joint" FILES ${PhysZ__Joint})
 
+set(Reflection
+    "../../../CPPScripts/Reflection/VariableTraits.h"
+)
+source_group("Reflection" FILES ${Reflection})
+
 set(Vulkan
     "../../../CPPScripts/Vulkan/SPIRVCompiler.cpp"
     "../../../CPPScripts/Vulkan/SPIRVCompiler.h"
@@ -521,6 +526,7 @@ set(ALL_FILES
     ${PhysZ__BoundingVolume}
     ${PhysZ__Force}
     ${PhysZ__Joint}
+    ${Reflection}
     ${Vulkan}
     ${Window}
     ${ZXHeader}
