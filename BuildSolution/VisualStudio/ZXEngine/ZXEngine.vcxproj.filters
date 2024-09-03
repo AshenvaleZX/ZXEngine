@@ -1268,5 +1268,8 @@
     <ClInclude Include="..\..\..\CPPScripts\Editor\EditorAssetPreviewPanel.h">
       <Filter>Editor</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Common\TypeList.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

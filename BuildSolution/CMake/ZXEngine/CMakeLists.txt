@@ -45,6 +45,7 @@ source_group("Audio\\irrKlangImpl" FILES ${Audio__irrKlangImpl})
 
 set(Common
     "../../../CPPScripts/Common/SparseNaturalSet.h"
+    "../../../CPPScripts/Common/TypeList.h"
 )
 source_group("Common" FILES ${Common})
 
