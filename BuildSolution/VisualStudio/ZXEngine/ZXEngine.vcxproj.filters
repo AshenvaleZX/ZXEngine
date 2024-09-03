@@ -1274,6 +1274,9 @@
     <ClInclude Include="..\..\..\CPPScripts\Reflection\VariableTraits.h">
       <Filter>Reflection</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\FunctionTraits.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\Common\TypeList.h">
       <Filter>Common</Filter>
     </ClInclude>
