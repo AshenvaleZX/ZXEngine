@@ -104,6 +104,16 @@ namespace ZXEngine
 		}
 	};
 
+	// 特化版本，用于处理std::string_view
+	template<>
+	struct ToStringHelper<std::string_view>
+	{
+		static std::string Convert(const std::string_view& value)
+		{
+			return std::string(value);
+		}
+	};
+
 	// 特化版本，用于处理char*
 	template<>
 	struct ToStringHelper<const char*>
