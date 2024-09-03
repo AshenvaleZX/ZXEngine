@@ -386,6 +386,11 @@ set(Reflection
 )
 source_group("Reflection" FILES ${Reflection})
 
+set(Util
+    "../../../CPPScripts/Util/Serialization.h"
+)
+source_group("Util" FILES ${Util})
+
 set(Vulkan
     "../../../CPPScripts/Vulkan/SPIRVCompiler.cpp"
     "../../../CPPScripts/Vulkan/SPIRVCompiler.h"
@@ -529,6 +534,7 @@ set(ALL_FILES
     ${PhysZ__Force}
     ${PhysZ__Joint}
     ${Reflection}
+    ${Util}
     ${Vulkan}
     ${Window}
     ${ZXHeader}

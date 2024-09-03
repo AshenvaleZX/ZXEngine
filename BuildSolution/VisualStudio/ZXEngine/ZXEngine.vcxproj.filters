@@ -85,6 +85,9 @@
     <Filter Include="Reflection">
       <UniqueIdentifier>{269c417e-ac3e-44fd-bacb-233cca45ff88}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{c0ba031a-8072-4c2b-91b7-a34bfb186af2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\CPPScripts\GameObject.cpp">
@@ -1282,6 +1285,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\Common\TypeList.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Util\Serialization.h">
+      <Filter>Util</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
