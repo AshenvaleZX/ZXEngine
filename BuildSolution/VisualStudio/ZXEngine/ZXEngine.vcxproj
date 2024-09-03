@@ -539,6 +539,7 @@
     <ClInclude Include="..\..\..\CPPScripts\PublicEnum.h" />
     <ClInclude Include="..\..\..\CPPScripts\PublicStruct.h" />
     <ClInclude Include="..\..\..\CPPScripts\Reflection\FunctionTraits.h" />
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\StaticReflection.h" />
     <ClInclude Include="..\..\..\CPPScripts\Reflection\VariableTraits.h" />
     <ClInclude Include="..\..\..\CPPScripts\RenderAPI.h" />
     <ClInclude Include="..\..\..\CPPScripts\RenderAPID3D12.h" />
