@@ -380,12 +380,21 @@ set(PhysZ__Joint
 source_group("PhysZ\\Joint" FILES ${PhysZ__Joint})
 
 set(Reflection
+    "../../../CPPScripts/Reflection/DynamicReflection.h"
+    "../../../CPPScripts/Reflection/Factory.h"
     "../../../CPPScripts/Reflection/FunctionTraits.h"
     "../../../CPPScripts/Reflection/StaticReflection.h"
     "../../../CPPScripts/Reflection/TypeMap.h"
     "../../../CPPScripts/Reflection/VariableTraits.h"
 )
 source_group("Reflection" FILES ${Reflection})
+
+set(Reflection__Factory
+    "../../../CPPScripts/Reflection/Factory/ClassFactory.h"
+    "../../../CPPScripts/Reflection/Factory/EnumFactory.h"
+    "../../../CPPScripts/Reflection/Factory/NumericFactory.h"
+)
+source_group("Reflection\\Factory" FILES ${Reflection__Factory})
 
 set(Reflection__Type
     "../../../CPPScripts/Reflection/Type/BaseType.cpp"
@@ -545,6 +554,7 @@ set(ALL_FILES
     ${PhysZ__Force}
     ${PhysZ__Joint}
     ${Reflection}
+    ${Reflection__Factory}
     ${Reflection__Type}
     ${Util}
     ${Vulkan}

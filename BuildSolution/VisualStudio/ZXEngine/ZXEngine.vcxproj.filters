@@ -91,6 +91,9 @@
     <Filter Include="Reflection\Type">
       <UniqueIdentifier>{0aee39d0-749a-41b9-b7e4-4f3ff442f37b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Reflection\Factory">
+      <UniqueIdentifier>{39c7f92e-fcc7-45a7-a44e-841dcb68708d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\CPPScripts\GameObject.cpp">
@@ -1301,8 +1304,17 @@
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\BaseType.h">
       <Filter>Reflection\Type</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Factory\EnumFactory.h">
+      <Filter>Reflection\Factory</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\EnumType.h">
       <Filter>Reflection\Type</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Factory.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Factory\NumericFactory.h">
+      <Filter>Reflection\Factory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\NumericType.h">
       <Filter>Reflection\Type</Filter>
@@ -1312,6 +1324,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\ClassType.h">
       <Filter>Reflection\Type</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\DynamicReflection.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Factory\ClassFactory.h">
+      <Filter>Reflection\Factory</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
