@@ -386,6 +386,16 @@ set(Reflection
 )
 source_group("Reflection" FILES ${Reflection})
 
+set(Reflection__Type
+    "../../../CPPScripts/Reflection/Type/BaseType.cpp"
+    "../../../CPPScripts/Reflection/Type/BaseType.h"
+    "../../../CPPScripts/Reflection/Type/ClassType.h"
+    "../../../CPPScripts/Reflection/Type/EnumType.h"
+    "../../../CPPScripts/Reflection/Type/NumericType.cpp"
+    "../../../CPPScripts/Reflection/Type/NumericType.h"
+)
+source_group("Reflection\\Type" FILES ${Reflection__Type})
+
 set(Util
     "../../../CPPScripts/Util/Serialization.h"
 )
@@ -534,6 +544,7 @@ set(ALL_FILES
     ${PhysZ__Force}
     ${PhysZ__Joint}
     ${Reflection}
+    ${Reflection__Type}
     ${Util}
     ${Vulkan}
     ${Window}
