@@ -382,6 +382,7 @@ source_group("PhysZ\\Joint" FILES ${PhysZ__Joint})
 set(Reflection
     "../../../CPPScripts/Reflection/FunctionTraits.h"
     "../../../CPPScripts/Reflection/StaticReflection.h"
+    "../../../CPPScripts/Reflection/TypeMap.h"
     "../../../CPPScripts/Reflection/VariableTraits.h"
 )
 source_group("Reflection" FILES ${Reflection})

@@ -1307,6 +1307,9 @@
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\NumericType.h">
       <Filter>Reflection\Type</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\TypeMap.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\ClassType.h">
       <Filter>Reflection\Type</Filter>
     </ClInclude>
