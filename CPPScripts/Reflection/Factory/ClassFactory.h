@@ -36,16 +36,16 @@ namespace ZXEngine
 				mTypeInfo.mName = name;
 			}
 
-			template <typename T1>
-			void AddVariable(const string& name, T1 type)
+			template <typename MemberVariableType>
+			void AddVariable(const string& name, MemberVariableType type)
 			{
-				mTypeInfo.AddVariable(MemberVariable::Create<T1>(name));
+				mTypeInfo.AddVariable(MemberVariable<T, MemberVariableType>::Create(name, type));
 			}
 
-			template <typename T1>
-			void AddFunction(const string& name, T1 type)
+			template <typename MemberFunctionType>
+			void AddFunction(const string& name, MemberFunctionType type)
 			{
-				mTypeInfo.AddFunction(MemberFunction::Create<T1>(name));
+				mTypeInfo.AddFunction(MemberFunction::Create<MemberFunctionType>(name));
 			}
 
 		private:
