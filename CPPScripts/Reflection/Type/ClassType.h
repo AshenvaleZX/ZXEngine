@@ -8,48 +8,96 @@ namespace ZXEngine
 {
 	namespace Reflection
 	{
-		struct MemberVariable
+		struct MemberVariableBase
 		{
+			template <typename T>
+			friend class ClassFactory;
+
 		public:
 			string name;
 			const BaseType* type;
 
-			template <typename T>
-			static MemberVariable Create(const string& name)
+			virtual void Set(void* obj, void* value) const {};
+
+		private:
+			template <typename MemberVariableType>
+			static unique_ptr<MemberVariableBase> Create(const string& name)
 			{
-				using Type = typename VariableTraits<T>::Type;
-				return { name, GetTypeInfo<Type>() };
+				using Type = typename VariableTraits<MemberVariableType>::Type;
+				return make_unique<MemberVariableBase>(name, GetTypeInfo<Type>());
+			}
+		};
+
+		template <typename Class, typename MemberVariableType>
+		struct MemberVariable : public MemberVariableBase
+		{
+			template <typename T>
+			friend class ClassFactory;
+
+		public:
+			// 类成员变量地址
+			MemberVariableType mAddr;
+			using VariableType = typename VariableTraits<MemberVariableType>::Type;
+
+			void Set(void* obj, void* value) const override
+			{
+				auto c = static_cast<Class*>(obj);
+				auto v = static_cast<VariableType*>(value);
+				c->*mAddr = *v;
+			}
+
+		private:
+			static unique_ptr<MemberVariable> Create(const string& name, MemberVariableType addr)
+			{
+				using Type = typename VariableTraits<MemberVariableType>::Type;
+
+				auto mv = make_unique<MemberVariable<Class, MemberVariableType>>();
+				mv->name = name;
+				mv->type = GetTypeInfo<Type>();
+				mv->mAddr = addr;
+
+				return mv;
 			}
 		};
 
 		struct MemberFunction
 		{
+			template <typename T>
+			friend class ClassFactory;
+
 		public:
 			string name;
 			const BaseType* returnType;
 			vector<const BaseType*> paramTypes;
 
-			template <typename T>
-			static MemberFunction Create(const string& name)
+			MemberFunction(const string& name, const BaseType* returnType, vector<const BaseType*> paramTypes) : 
+				name(name), 
+				returnType(returnType), 
+				paramTypes(paramTypes)
+			{}
+
+		private:
+			template <typename MemberFunctionType>
+			static unique_ptr<MemberFunction> Create(const string& name)
 			{
-				using FuncTraits = FunctionTraits<T>;
+				using FuncTraits = FunctionTraits<MemberFunctionType>;
 				if constexpr (FuncTraits::Args::size > 0)
 				{
-					return
-					{
+					return make_unique<MemberFunction>
+					(
 						name,
 						GetTypeInfo<typename FuncTraits::ReturnType>(),
 						GetParamTypes<typename FuncTraits::Args>(std::make_index_sequence<std::tuple_size_v<typename FuncTraits::Args>>())
-					};
+					);
 				}
 				else
 				{
-					return
-					{
+					return make_unique<MemberFunction>
+					(
 						name,
 						GetTypeInfo<typename FuncTraits::ReturnType>(),
-						{}
-					};
+						vector<const BaseType*>{}
+					);
 				}
 			}
 
@@ -72,12 +120,12 @@ namespace ZXEngine
 			ClassType() : BaseType("Undefined-Class", Type::Class) {}
 			ClassType(const string& name) : BaseType(name, Type::Class) {}
 
-			void AddVariable(MemberVariable&& var)
+			void AddVariable(unique_ptr<MemberVariableBase> var)
 			{
 				mVariables.emplace_back(std::move(var));
 			}
 
-			void AddFunction(MemberFunction&& func)
+			void AddFunction(unique_ptr<MemberFunction> func)
 			{
 				mFunctions.emplace_back(std::move(func));
 			}
@@ -92,9 +140,21 @@ namespace ZXEngine
 				return mFunctions;
 			}
 
+			void SetVariableValue(void* obj, const string& name, void* value) const
+			{
+				for (auto& var : mVariables)
+				{
+					if (var->name == name)
+					{
+						var->Set(obj, value);
+						return;
+					}
+				}
+			}
+
 		private:
-			vector<MemberVariable> mVariables;
-			vector<MemberFunction> mFunctions;
+			vector<unique_ptr<MemberVariableBase>> mVariables;
+			vector<unique_ptr<MemberFunction>> mFunctions;
 		};
 	}
 }
