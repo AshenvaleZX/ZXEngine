@@ -68,5 +68,65 @@ namespace ZXEngine
 
 			return data.dump(4);
 		}
+
+		template <typename T>
+		static T Deserialize(json data)
+		{
+			T object{};
+
+			auto typeInfo = Reflection::Reflect<T>();
+
+			typeInfo.TraverseMemberVariableAndDo
+			(
+				[&](auto& field)
+				{
+					if (!data[field.GetName()].is_null())
+					{
+						auto& member = field.Invoke(object);
+
+						using type = typename std::remove_cv_t<std::remove_reference_t<decltype(field)>>::Type;
+
+						if constexpr (std::is_fundamental_v<type>)
+						{
+							member = data[field.GetName()];
+						}
+						else
+						{
+							member = Deserialize<type>(data[field.GetName()]);
+						}
+					}
+				}
+			);
+
+			return object;
+		}
+
+		template <typename T>
+		static void Deserialize(T& object, json data)
+		{
+			auto typeInfo = Reflection::Reflect<T>();
+
+			typeInfo.TraverseMemberVariableAndDo
+			(
+				[&](auto& field)
+				{
+					if (!data[field.GetName()].is_null())
+					{
+						auto& member = field.Invoke(object);
+
+						using type = typename std::remove_cv_t<std::remove_reference_t<decltype(field)>>::Type;
+
+						if constexpr (std::is_fundamental_v<type>)
+						{
+							member = data[field.GetName()];
+						}
+						else
+						{
+							Deserialize(member, data[field.GetName()]);
+						}
+					}
+				}
+			);
+		}
 	}
 }
