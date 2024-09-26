@@ -19,6 +19,7 @@ namespace ZXEngine
 			const BaseType* type = nullptr;
 
 			virtual void Set(void* obj, Argument value) const {};
+			virtual std::any Get(void* obj) const { return std::any(); }
 
 		private:
 			template <typename MemberVariableType>
@@ -44,6 +45,12 @@ namespace ZXEngine
 			{
 				auto c = static_cast<Class*>(obj);
 				c->*mAddr = value.Get<VariableType>();
+			}
+
+			std::any Get(void* obj) const override
+			{
+				auto c = static_cast<Class*>(obj);
+				return c->*mAddr;
 			}
 
 		private:
@@ -150,6 +157,18 @@ namespace ZXEngine
 						return;
 					}
 				}
+			}
+
+			std::any GetVariable(void* obj, const string& name) const
+			{
+				for (auto& var : mVariables)
+				{
+					if (var->name == name)
+					{
+						return var->Get(obj);
+					}
+				}
+				return std::any();
 			}
 
 		private:
