@@ -1331,5 +1331,8 @@
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Factory\ClassFactory.h">
       <Filter>Reflection\Factory</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Argument.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

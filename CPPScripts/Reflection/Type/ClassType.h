@@ -3,6 +3,7 @@
 #include "BaseType.h"
 #include "../VariableTraits.h"
 #include "../FunctionTraits.h"
+#include "../Argument.h"
 
 namespace ZXEngine
 {
@@ -15,9 +16,9 @@ namespace ZXEngine
 
 		public:
 			string name;
-			const BaseType* type;
+			const BaseType* type = nullptr;
 
-			virtual void Set(void* obj, void* value) const {};
+			virtual void Set(void* obj, Argument value) const {};
 
 		private:
 			template <typename MemberVariableType>
@@ -36,14 +37,13 @@ namespace ZXEngine
 
 		public:
 			// 类成员变量地址
-			MemberVariableType mAddr;
+			MemberVariableType mAddr = nullptr;
 			using VariableType = typename VariableTraits<MemberVariableType>::Type;
 
-			void Set(void* obj, void* value) const override
+			void Set(void* obj, Argument value) const override
 			{
 				auto c = static_cast<Class*>(obj);
-				auto v = static_cast<VariableType*>(value);
-				c->*mAddr = *v;
+				c->*mAddr = value.Get<VariableType>();
 			}
 
 		private:
@@ -140,7 +140,7 @@ namespace ZXEngine
 				return mFunctions;
 			}
 
-			void SetVariableValue(void* obj, const string& name, void* value) const
+			void SetVariable(void* obj, const string& name, Argument value) const
 			{
 				for (auto& var : mVariables)
 				{

@@ -540,6 +540,7 @@
     <ClInclude Include="..\..\..\CPPScripts\pubh.h" />
     <ClInclude Include="..\..\..\CPPScripts\PublicEnum.h" />
     <ClInclude Include="..\..\..\CPPScripts\PublicStruct.h" />
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Argument.h" />
     <ClInclude Include="..\..\..\CPPScripts\Reflection\DynamicReflection.h" />
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Factory.h" />
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Factory\ClassFactory.h" />
