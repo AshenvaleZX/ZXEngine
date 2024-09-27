@@ -408,6 +408,11 @@ set(Reflection__Type
 )
 source_group("Reflection\\Type" FILES ${Reflection__Type})
 
+set(Test
+    "../../../CPPScripts/Test/ReflectionAndSerializationCase.h"
+)
+source_group("Test" FILES ${Test})
+
 set(Util
     "../../../CPPScripts/Util/Serialization.h"
 )
@@ -558,6 +563,7 @@ set(ALL_FILES
     ${Reflection}
     ${Reflection__Factory}
     ${Reflection__Type}
+    ${Test}
     ${Util}
     ${Vulkan}
     ${Window}

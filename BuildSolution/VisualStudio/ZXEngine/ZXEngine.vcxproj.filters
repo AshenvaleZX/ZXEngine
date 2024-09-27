@@ -94,6 +94,9 @@
     <Filter Include="Reflection\Factory">
       <UniqueIdentifier>{39c7f92e-fcc7-45a7-a44e-841dcb68708d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{6c110d88-4846-44cc-b24a-b5241391805c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\CPPScripts\GameObject.cpp">
@@ -1336,6 +1339,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Argument.h">
       <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Test\ReflectionAndSerializationCase.h">
+      <Filter>Test</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

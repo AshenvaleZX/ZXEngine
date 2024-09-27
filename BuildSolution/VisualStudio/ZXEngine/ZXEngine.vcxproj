@@ -577,6 +577,7 @@
     <ClInclude Include="..\..\..\CPPScripts\Scene.h" />
     <ClInclude Include="..\..\..\CPPScripts\SceneManager.h" />
     <ClInclude Include="..\..\..\CPPScripts\ShaderParser.h" />
+    <ClInclude Include="..\..\..\CPPScripts\Test\ReflectionAndSerializationCase.h" />
     <ClInclude Include="..\..\..\CPPScripts\TextCharactersManager.h" />
     <ClInclude Include="..\..\..\CPPScripts\Texture.h" />
     <ClInclude Include="..\..\..\CPPScripts\Time.h" />
