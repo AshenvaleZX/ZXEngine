@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "../Reflection/StaticReflection.h"
 
 namespace ZXEngine
 {
@@ -65,4 +66,14 @@ namespace ZXEngine
 		friend Vector2 operator* (float n, const Vector2& v);
 		friend Vector2 operator/ (float n, const Vector2& v);
 	};
+
+	StaticReflection
+	(
+		Vector2,
+		Fields
+		(
+			Field(&Vector2::x),
+			Field(&Vector2::y)
+		)
+	)
 }

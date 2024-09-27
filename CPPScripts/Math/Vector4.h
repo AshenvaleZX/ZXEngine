@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "../Reflection/StaticReflection.h"
 
 namespace ZXEngine
 {
@@ -73,4 +74,16 @@ namespace ZXEngine
 		Vector4 operator* (const Matrix4& mat) const;
 		Vector4 operator*= (const Matrix4& mat);
 	};
+
+	StaticReflection
+	(
+		Vector4,
+		Fields
+		(
+			Field(&Vector4::x),
+			Field(&Vector4::y),
+			Field(&Vector4::z),
+			Field(&Vector4::w)
+		)
+	)
 }
