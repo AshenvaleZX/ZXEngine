@@ -553,6 +553,7 @@
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\ClassType.h" />
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\EnumType.h" />
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\NumericType.h" />
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Variable.h" />
     <ClInclude Include="..\..\..\CPPScripts\Reflection\VariableTraits.h" />
     <ClInclude Include="..\..\..\CPPScripts\RenderAPI.h" />
     <ClInclude Include="..\..\..\CPPScripts\RenderAPID3D12.h" />

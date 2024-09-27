@@ -386,6 +386,7 @@ set(Reflection
     "../../../CPPScripts/Reflection/FunctionTraits.h"
     "../../../CPPScripts/Reflection/StaticReflection.h"
     "../../../CPPScripts/Reflection/TypeMap.h"
+    "../../../CPPScripts/Reflection/Variable.h"
     "../../../CPPScripts/Reflection/VariableTraits.h"
 )
 source_group("Reflection" FILES ${Reflection})
