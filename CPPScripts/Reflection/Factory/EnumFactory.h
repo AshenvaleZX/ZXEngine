@@ -44,6 +44,16 @@ namespace ZXEngine
 
 		private:
 			EnumType mTypeInfo;
+
+			// 不允许从外部构造和销毁
+			EnumFactory() = default;
+			~EnumFactory() = default;
+
+			EnumFactory(EnumFactory&&) = delete;
+			EnumFactory& operator=(EnumFactory&&) = delete;
+
+			EnumFactory(const EnumFactory&) = delete;
+			EnumFactory& operator=(const EnumFactory&) = delete;
 		};
 	}
 }

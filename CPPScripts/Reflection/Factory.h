@@ -17,6 +17,16 @@ namespace ZXEngine
 				static DefaultFactory instance;
 				return instance;
 			}
+
+		private:
+			DefaultFactory() = default;
+			~DefaultFactory() = default;
+
+			DefaultFactory(DefaultFactory&&) = delete;
+			DefaultFactory& operator=(DefaultFactory&&) = delete;
+
+			DefaultFactory(const DefaultFactory&) = delete;
+			DefaultFactory& operator=(const DefaultFactory&) = delete;
 		};
 
 		template <typename T>

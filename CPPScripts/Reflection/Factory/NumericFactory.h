@@ -34,6 +34,16 @@ namespace ZXEngine
 		private:
 			NumericType mTypeInfo;
 
+			// 不允许从外部构造和销毁
+			NumericFactory() = default;
+			~NumericFactory() = default;
+
+			NumericFactory(NumericFactory&&) = delete;
+			NumericFactory& operator=(NumericFactory&&) = delete;
+
+			NumericFactory(const NumericFactory&) = delete;
+			NumericFactory& operator=(const NumericFactory&) = delete;
+
 			NumericFactory(NumericType&& typeInfo) : mTypeInfo(std::move(typeInfo)) {}
 		};
 	}

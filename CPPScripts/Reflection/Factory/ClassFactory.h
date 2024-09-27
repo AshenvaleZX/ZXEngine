@@ -50,6 +50,16 @@ namespace ZXEngine
 
 		private:
 			ClassType mTypeInfo;
+
+			// 不允许从外部构造和销毁
+			ClassFactory() = default;
+			~ClassFactory() = default;
+
+			ClassFactory(ClassFactory&&) = delete;
+			ClassFactory& operator=(ClassFactory&&) = delete;
+
+			ClassFactory(const ClassFactory&) = delete;
+			ClassFactory& operator=(const ClassFactory&) = delete;
 		};
 	}
 }
