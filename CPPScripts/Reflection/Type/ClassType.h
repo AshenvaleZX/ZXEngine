@@ -94,7 +94,7 @@ namespace ZXEngine
 					(
 						name,
 						GetTypeInfo<typename FuncTraits::ReturnType>(),
-						GetParamTypes<typename FuncTraits::Args>(std::make_index_sequence<std::tuple_size_v<typename FuncTraits::Args>>())
+						GetParamTypes<typename FuncTraits::Args>(std::make_index_sequence<FuncTraits::Args::size>())
 					);
 				}
 				else
@@ -113,8 +113,10 @@ namespace ZXEngine
 			template <typename Params, size_t... I>
 			static vector<const BaseType*> GetParamTypes(std::index_sequence<I...>)
 			{
+				// 将TypeList转换为Tuple
+				using TupleType = typename TypeListToTuple<Params>::type;
 				// 不定参数模板展开
-				return { GetTypeInfo<typename std::tuple_element<I, Params>::type>()... };
+				return { GetTypeInfo<typename std::tuple_element<I, TupleType>::type>()... };
 			}
 		};
 

@@ -24,6 +24,16 @@ namespace ZXEngine
         };
     }
 
+    // TypeList ת std::tuple
+    template <typename TypeList>
+    struct TypeListToTuple;
+
+    template <typename... Ts>
+    struct TypeListToTuple<TypeList<Ts...>>
+    {
+        using type = std::tuple<Ts...>;
+    };
+
     template <typename List>
     constexpr size_t ListSize_V = Internal::ListSize<List>::value;
 
