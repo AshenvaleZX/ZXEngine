@@ -7,44 +7,47 @@ namespace ZXEngine
 {
 	namespace Reflection
 	{
-		template<typename T>
-		class NumericFactory
+		namespace Dynamic
 		{
-		public:
-			static NumericFactory& Get()
+			template<typename T>
+			class NumericFactory
 			{
-				static NumericFactory instance{ NumericType::Create<T>() };
-
-				static bool isRegistered = false;
-				if (!isRegistered)
+			public:
+				static NumericFactory& Get()
 				{
-					TypeMap::Get().RegisterType(&instance.mTypeInfo);
-					isRegistered = true;
+					static NumericFactory instance{ NumericType::Create<T>() };
+
+					static bool isRegistered = false;
+					if (!isRegistered)
+					{
+						TypeMap::Get().RegisterType(&instance.mTypeInfo);
+						isRegistered = true;
+					}
+
+					return instance;
 				}
 
-				return instance;
-			}
+			public:
+				const NumericType& GetTypeInfo() const
+				{
+					return mTypeInfo;
+				}
 
-		public:
-			const NumericType& GetTypeInfo() const
-			{
-				return mTypeInfo;
-			}
+			private:
+				NumericType mTypeInfo;
 
-		private:
-			NumericType mTypeInfo;
+				// 不允许从外部构造和销毁
+				NumericFactory() = default;
+				~NumericFactory() = default;
 
-			// 不允许从外部构造和销毁
-			NumericFactory() = default;
-			~NumericFactory() = default;
+				NumericFactory(NumericFactory&&) = delete;
+				NumericFactory& operator=(NumericFactory&&) = delete;
 
-			NumericFactory(NumericFactory&&) = delete;
-			NumericFactory& operator=(NumericFactory&&) = delete;
+				NumericFactory(const NumericFactory&) = delete;
+				NumericFactory& operator=(const NumericFactory&) = delete;
 
-			NumericFactory(const NumericFactory&) = delete;
-			NumericFactory& operator=(const NumericFactory&) = delete;
-
-			NumericFactory(NumericType&& typeInfo) : mTypeInfo(std::move(typeInfo)) {}
-		};
+				NumericFactory(NumericType&& typeInfo) : mTypeInfo(std::move(typeInfo)) {}
+			};
+		}
 	}
 }

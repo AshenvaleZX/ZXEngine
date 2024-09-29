@@ -639,7 +639,7 @@
     <ClCompile Include="..\..\..\CPPScripts\Editor\EditorAssetPreviewPanel.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\CPPScripts\Reflection\Type\BaseType.cpp">
+    <ClCompile Include="..\..\..\CPPScripts\Reflection\Type\TypeInfo.cpp">
       <Filter>Reflection\Type</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\CPPScripts\Reflection\Type\NumericType.cpp">
@@ -1304,7 +1304,7 @@
     <ClInclude Include="..\..\..\CPPScripts\Util\Serialization.h">
       <Filter>Util</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\BaseType.h">
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\TypeInfo.h">
       <Filter>Reflection\Type</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Factory\EnumFactory.h">

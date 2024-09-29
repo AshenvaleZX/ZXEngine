@@ -321,7 +321,7 @@
     <ClCompile Include="..\..\..\CPPScripts\PhysZ\RigidBody.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\ProjectSetting.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\PublicStruct.cpp" />
-    <ClCompile Include="..\..\..\CPPScripts\Reflection\Type\BaseType.cpp" />
+    <ClCompile Include="..\..\..\CPPScripts\Reflection\Type\TypeInfo.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Reflection\Type\NumericType.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\RenderAPI.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\RenderAPID3D12.cpp" />
@@ -549,7 +549,7 @@
     <ClInclude Include="..\..\..\CPPScripts\Reflection\FunctionTraits.h" />
     <ClInclude Include="..\..\..\CPPScripts\Reflection\StaticReflection.h" />
     <ClInclude Include="..\..\..\CPPScripts\Reflection\TypeMap.h" />
-    <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\BaseType.h" />
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\TypeInfo.h" />
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\ClassType.h" />
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\EnumType.h" />
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\NumericType.h" />

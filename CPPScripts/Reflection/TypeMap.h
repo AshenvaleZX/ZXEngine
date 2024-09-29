@@ -1,45 +1,48 @@
 #pragma once
 #include "../pubh.h"
-#include "Type/BaseType.h"
+#include "Type/TypeInfo.h"
 
 namespace ZXEngine
 {
 	namespace Reflection
 	{
-		class TypeMap
+		namespace Dynamic
 		{
-		public:
-			static TypeMap& Get()
+			class TypeMap
 			{
-				static TypeMap instance;
-				return instance;
-			}
-
-		public:
-			void RegisterType(const BaseType* type)
-			{
-				mTypeList.push_back(type);
-			}
-
-			const BaseType* GetType(const string& name)
-			{
-				for (auto iter : mTypeList)
+			public:
+				static TypeMap& Get()
 				{
-					if (iter->GetName() == name)
-						return iter;
+					static TypeMap instance;
+					return instance;
 				}
-				return nullptr;
+
+			public:
+				void RegisterType(const TypeInfo* type)
+				{
+					mTypeList.push_back(type);
+				}
+
+				const TypeInfo* GetType(const string& name)
+				{
+					for (auto iter : mTypeList)
+					{
+						if (iter->GetName() == name)
+							return iter;
+					}
+					return nullptr;
+				}
+
+			private:
+				vector<const TypeInfo*> mTypeList;
+
+				TypeMap() = default;
+			};
+
+			const TypeInfo* GetTypeInfo(const string& name)
+			{
+				return TypeMap::Get().GetType(name);
 			}
-
-		private:
-			vector<const BaseType*> mTypeList;
-
-			TypeMap() = default;
-		};
-
-		const BaseType* GetTypeInfo(const string& name)
-		{
-			return TypeMap::Get().GetType(name);
 		}
 	}
 }

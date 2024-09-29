@@ -12,7 +12,7 @@ namespace ZXEngine
 			static json SerializeToJson(const T& object)
 			{
 				json data;
-				auto typeInfo = Reflection::Reflect(object);
+				auto typeInfo = Reflection::Static::Reflect(object);
 
 				data["Type"] = typeInfo.GetName();
 
@@ -43,7 +43,7 @@ namespace ZXEngine
 		static string Serialize(const T& object)
 		{
 			json data;
-			auto typeInfo = Reflection::Reflect(object);
+			auto typeInfo = Reflection::Static::Reflect(object);
 
 			data["Type"] = typeInfo.GetName();
 
@@ -74,7 +74,7 @@ namespace ZXEngine
 		{
 			T object{};
 
-			auto typeInfo = Reflection::Reflect<T>();
+			auto typeInfo = Reflection::Static::Reflect<T>();
 
 			typeInfo.TraverseMemberVariableAndDo
 			(
@@ -104,7 +104,7 @@ namespace ZXEngine
 		template <typename T>
 		static void Deserialize(T& object, json data)
 		{
-			auto typeInfo = Reflection::Reflect<T>();
+			auto typeInfo = Reflection::Static::Reflect<T>();
 
 			typeInfo.TraverseMemberVariableAndDo
 			(

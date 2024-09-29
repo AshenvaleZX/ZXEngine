@@ -7,53 +7,56 @@ namespace ZXEngine
 {
 	namespace Reflection
 	{
-		template<typename T>
-		class EnumFactory
+		namespace Dynamic
 		{
-		public:
-			static EnumFactory& Get()
+			template<typename T>
+			class EnumFactory
 			{
-				static EnumFactory instance;
-
-				static bool isRegistered = false;
-				if (!isRegistered)
+			public:
+				static EnumFactory& Get()
 				{
-					TypeMap::Get().RegisterType(&instance.mTypeInfo);
-					isRegistered = true;
+					static EnumFactory instance;
+
+					static bool isRegistered = false;
+					if (!isRegistered)
+					{
+						TypeMap::Get().RegisterType(&instance.mTypeInfo);
+						isRegistered = true;
+					}
+
+					return instance;
 				}
 
-				return instance;
-			}
+			public:
+				const EnumType& GetTypeInfo() const
+				{
+					return mTypeInfo;
+				}
 
-		public:
-			const EnumType& GetTypeInfo() const
-			{
-				return mTypeInfo;
-			}
+				void Register(const std::string& name)
+				{
+					mTypeInfo.mName = name;
+				}
 
-			void Register(const std::string& name)
-			{
-				mTypeInfo.mName = name;
-			}
+				template <typename E>
+				void AddEnum(const std::string& name, E value)
+				{
+					mTypeInfo.AddItem(name, value);
+				}
 
-			template <typename E>
-			void AddEnum(const std::string& name, E value)
-			{
-				mTypeInfo.AddItem(name, value);
-			}
+			private:
+				EnumType mTypeInfo;
 
-		private:
-			EnumType mTypeInfo;
+				// 不允许从外部构造和销毁
+				EnumFactory() = default;
+				~EnumFactory() = default;
 
-			// 不允许从外部构造和销毁
-			EnumFactory() = default;
-			~EnumFactory() = default;
+				EnumFactory(EnumFactory&&) = delete;
+				EnumFactory& operator=(EnumFactory&&) = delete;
 
-			EnumFactory(EnumFactory&&) = delete;
-			EnumFactory& operator=(EnumFactory&&) = delete;
-
-			EnumFactory(const EnumFactory&) = delete;
-			EnumFactory& operator=(const EnumFactory&) = delete;
-		};
+				EnumFactory(const EnumFactory&) = delete;
+				EnumFactory& operator=(const EnumFactory&) = delete;
+			};
+		}
 	}
 }

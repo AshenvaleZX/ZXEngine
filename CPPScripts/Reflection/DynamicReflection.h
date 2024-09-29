@@ -8,10 +8,13 @@ namespace ZXEngine
 {
 	namespace Reflection
 	{
-		template <typename T>
-		auto& Register()
+		namespace Dynamic
 		{
-			return Factory<T>::GetFactory();
+			template <typename T>
+			auto& Register()
+			{
+				return Factory<T>::GetFactory();
+			}
 		}
 	}
 }

@@ -63,13 +63,13 @@ namespace ZXEngine
 		Student student3 = Serialization::Deserialize<Student>(student_data);
 
 		// Dynamic reflection test for enum
-		auto& eFac = Reflection::Register<MyEnum>();
+		auto& eFac = Reflection::Dynamic::Register<MyEnum>();
 		eFac.Register("MyEnum");
 		eFac.AddEnum("One", MyEnum::One);
 		eFac.AddEnum("Two", MyEnum::Two);
 		eFac.AddEnum("Three", MyEnum::Three);
 
-		auto typeInfo = Reflection::GetTypeInfo("MyEnum");
+		auto typeInfo = Reflection::Dynamic::GetTypeInfo("MyEnum");
 		auto enumInfo = typeInfo->AsEnum();
 
 		Debug::Log("Type name: %s", typeInfo->GetName());
@@ -79,16 +79,16 @@ namespace ZXEngine
 		}
 
 		// Dynamic reflection test for class
-		auto& strFac = Reflection::Register<string>();
+		auto& strFac = Reflection::Dynamic::Register<string>();
 		strFac.Register("string");
 
-		auto& vFac = Reflection::Register<Vector3>();
+		auto& vFac = Reflection::Dynamic::Register<Vector3>();
 		vFac.Register("Vector3");
 		vFac.AddVariable("x", &Vector3::x);
 		vFac.AddVariable("y", &Vector3::y);
 		vFac.AddVariable("z", &Vector3::z);
 
-		auto& sFac = Reflection::Register<Student>();
+		auto& sFac = Reflection::Dynamic::Register<Student>();
 		sFac.Register("Student");
 		sFac.AddVariable("mName", &Student::mName);
 		sFac.AddVariable("mAge", &Student::mAge);
@@ -97,7 +97,7 @@ namespace ZXEngine
 		sFac.AddFunction("GetAge", &Student::GetAge);
 		sFac.AddFunction("Speak", &Student::Speak);
 
-		auto sTypeInfo = Reflection::GetTypeInfo("Student");
+		auto sTypeInfo = Reflection::Dynamic::GetTypeInfo("Student");
 		auto sInfo = sTypeInfo->AsClass();
 
 		Debug::Log("Type name: %s", sTypeInfo->GetName());
@@ -129,6 +129,6 @@ namespace ZXEngine
 		Debug::Log("Get value2 %s", std::any_cast<Vector3>(pos));
 
 		// Variable copy test
-		Reflection::Variable var = Reflection::Variable::Copy(student);
+		Reflection::Dynamic::Variable var = Reflection::Dynamic::Variable::Copy(student);
 	}
 }

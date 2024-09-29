@@ -399,8 +399,8 @@ set(Reflection__Factory
 source_group("Reflection\\Factory" FILES ${Reflection__Factory})
 
 set(Reflection__Type
-    "../../../CPPScripts/Reflection/Type/BaseType.cpp"
-    "../../../CPPScripts/Reflection/Type/BaseType.h"
+    "../../../CPPScripts/Reflection/Type/TypeInfo.cpp"
+    "../../../CPPScripts/Reflection/Type/TypeInfo.h"
     "../../../CPPScripts/Reflection/Type/ClassType.h"
     "../../../CPPScripts/Reflection/Type/EnumType.h"
     "../../../CPPScripts/Reflection/Type/NumericType.cpp"

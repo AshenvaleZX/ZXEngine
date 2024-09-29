@@ -8,50 +8,53 @@ namespace ZXEngine
 {
 	namespace Reflection
 	{
-		template <typename T>
-		class DefaultFactory
+		namespace Dynamic
 		{
-		public:
-			static auto& Get()
+			template <typename T>
+			class DefaultFactory
 			{
-				static DefaultFactory instance;
-				return instance;
-			}
+			public:
+				static auto& Get()
+				{
+					static DefaultFactory instance;
+					return instance;
+				}
 
-		private:
-			DefaultFactory() = default;
-			~DefaultFactory() = default;
+			private:
+				DefaultFactory() = default;
+				~DefaultFactory() = default;
 
-			DefaultFactory(DefaultFactory&&) = delete;
-			DefaultFactory& operator=(DefaultFactory&&) = delete;
+				DefaultFactory(DefaultFactory&&) = delete;
+				DefaultFactory& operator=(DefaultFactory&&) = delete;
 
-			DefaultFactory(const DefaultFactory&) = delete;
-			DefaultFactory& operator=(const DefaultFactory&) = delete;
-		};
+				DefaultFactory(const DefaultFactory&) = delete;
+				DefaultFactory& operator=(const DefaultFactory&) = delete;
+			};
 
-		template <typename T>
-		class Factory
-		{
-		public:
-			static auto& GetFactory()
+			template <typename T>
+			class Factory
 			{
-				using type = std::remove_cv_t<std::remove_reference_t<T>>;
+			public:
+				static auto& GetFactory()
+				{
+					using type = std::remove_cv_t<std::remove_reference_t<T>>;
 
-				if constexpr (std::is_fundamental_v<type>)
-					return NumericFactory<type>::Get();
-				else if constexpr (std::is_enum_v<type>)
-					return EnumFactory<type>::Get();
-				else if constexpr (std::is_class_v<type>)
-					return ClassFactory<type>::Get();
-				else
-					return DefaultFactory<type>::Get();
+					if constexpr (std::is_fundamental_v<type>)
+						return NumericFactory<type>::Get();
+					else if constexpr (std::is_enum_v<type>)
+						return EnumFactory<type>::Get();
+					else if constexpr (std::is_class_v<type>)
+						return ClassFactory<type>::Get();
+					else
+						return DefaultFactory<type>::Get();
+				}
+			};
+
+			template <typename T>
+			const TypeInfo* GetTypeInfo()
+			{
+				return &Factory<T>::GetFactory().GetTypeInfo();
 			}
-		};
-
-		template <typename T>
-		const BaseType* GetTypeInfo()
-		{
-			return &Factory<T>::GetFactory().GetTypeInfo();
 		}
 	}
 }
