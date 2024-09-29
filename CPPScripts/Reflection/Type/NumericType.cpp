@@ -41,6 +41,10 @@ namespace ZXEngine
 					return "Float";
 				case Type::Double:
 					return "Double";
+				case Type::Bool:
+					return "Bool";
+				case Type::Char:
+					return "Char";
 				default:
 					return "Unknown";
 				}

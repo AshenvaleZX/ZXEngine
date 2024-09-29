@@ -22,7 +22,9 @@ namespace ZXEngine
 					UInt32,
 					UInt64,
 					Float,
-					Double
+					Double,
+					Bool,
+					Char
 				};
 
 			public:
@@ -66,6 +68,10 @@ namespace ZXEngine
 						return Type::Float;
 					else if constexpr (std::is_same_v<T, double>)
 						return Type::Double;
+					else if constexpr (std::is_same_v<T, bool>)
+						return Type::Bool;
+					else if constexpr (std::is_same_v<T, char>)
+						return Type::Char;
 					else
 						return Type::Unknown;
 				}
