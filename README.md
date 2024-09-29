@@ -38,6 +38,8 @@ This project aims at a game engine, not just graphics and rendering (although th
 
 - [多线程与JobSystem (Multithreading And JobSystem)](#多线程与jobsystem-multithreading-and-jobsystem)
 
+- [C++反射与序列化 (C++ Reflection And Serialization)](#C++反射与序列化-c++-reflection-and-serialization)
+
 - [引擎文件格式介绍 (Engine File Format Introduction)](#引擎文件格式介绍-engine-file-format-introduction)
 
 - [实际游戏项目演示 (Actual Game Project Demonstration)](#实际游戏项目演示-actual-game-project-demonstration)
@@ -411,8 +413,11 @@ The interface for asynchronous loading is as follows, which can be called in the
 ```c++
 C++ Interface:
 static void ZXEngine::GameObject::AsyncCreate(const string& path);
+
 static void ZXEngine::Resources::AsyncLoadPrefab(const string& path, std::function<void(PrefabStruct*)> callback, bool isBuiltIn = false);
+
 static void ZXEngine::Resources::AsyncLoadMaterial(const string& path, std::function<void(MaterialStruct*)> callback, bool isBuiltIn = false, bool isEditor = false);
+
 static void ZXEngine::Resources::AsyncLoadModelData(const string& path, std::function<void(ModelData*)> callback, bool isBuiltIn = false, bool isEditor = false);
 ```
 
@@ -472,6 +477,34 @@ If you need to use JobSystem to process some complex data, it's better to use it
 由于引擎的GamePlay层使用的语言为Lua，而Lua解释器并不支持多线程解释执行代码，所以这套JobSystem目前只能在引擎内部使用，并未暴露给GamePlay层。
 
 Because the language of the GamePlay layer of the engine is Lua, and the Lua interpreter does not support multi-threaded interpretation of the Lua code, the JobSystem can only be used in the C++ engine at present, and is not exposed to the GamePlay layer.
+
+## C++反射与序列化 (C++ Reflection And Serialization)
+
+本引擎实现了一套简单的C++反射系统，包括静态反射和动态反射两种。这套反射系统的实现主要参考了[mirror](https://github.com/VisualGMQ/mirrow)和[rttr](https://github.com/rttrorg/rttr)这两个库。目前反射系统在项目中的实际运用是实现了一套C++对象的序列化与反序列化工具。
+
+This engine has a simple C++ reflection system, including static reflection and dynamic reflection. The implementation of this reflection system mainly refers to [mirror](https://github.com/VisualGMQ/mirrow) and [rttr](https://github.com/rttrorg/rttr). At present, the actual use of the reflection system in this project is to implement a C++ object serialization and deserialization tool.
+
+序列化工具接口如下：
+
+The serialization tool interface is as follows:
+
+```c++
+// Serialize an object to string
+template <typename T>
+static string Serialize(const T& object);
+
+// Deserialize an object from string
+template <typename T>
+static T Deserialize(const string& data);
+
+// Deserialize an object from string
+template <typename T>
+static void Deserialize(T& object, const string& data);
+```
+
+反射系统接口比较复杂，就不在本文档里演示了。反射系统的接口，使用方式，序列化工具的演示等请参考Test\ReflectionAndSerializationCase.h
+
+The reflection system interface is more complex and will not be demonstrated in this document. For the interface of the reflection system, use examples, demonstration of serialization tools, etc. please refer to Test\ReflectionAndSerializationCase.h
 
 ## 引擎文件格式介绍 (Engine File Format Introduction)
 
