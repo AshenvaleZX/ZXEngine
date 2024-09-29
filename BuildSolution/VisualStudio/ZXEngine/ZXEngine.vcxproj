@@ -321,6 +321,7 @@
     <ClCompile Include="..\..\..\CPPScripts\PhysZ\RigidBody.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\ProjectSetting.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\PublicStruct.cpp" />
+    <ClCompile Include="..\..\..\CPPScripts\Reflection\DynamicReflection.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Reflection\Type\TypeInfo.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Reflection\Type\NumericType.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\RenderAPI.cpp" />

@@ -39,7 +39,7 @@ namespace ZXEngine
 				TypeMap() = default;
 			};
 
-			const TypeInfo* GetTypeInfo(const string& name)
+			inline const TypeInfo* GetTypeInfo(const string& name)
 			{
 				return TypeMap::Get().GetType(name);
 			}

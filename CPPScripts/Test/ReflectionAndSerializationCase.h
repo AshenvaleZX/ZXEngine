@@ -62,11 +62,11 @@ namespace ZXEngine
 		Student student3 = Serialization::Deserialize<Student>(res);
 
 		// Dynamic reflection test for enum
-		auto& eFac = Reflection::Dynamic::Register<MyEnum>();
-		eFac.Register("MyEnum");
-		eFac.AddEnum("One", MyEnum::One);
-		eFac.AddEnum("Two", MyEnum::Two);
-		eFac.AddEnum("Three", MyEnum::Three);
+		Reflection::Dynamic::Register<MyEnum>()
+			.Register("MyEnum")
+			.AddEnum("One", MyEnum::One)
+			.AddEnum("Two", MyEnum::Two)
+			.AddEnum("Three", MyEnum::Three);
 
 		auto typeInfo = Reflection::Dynamic::GetTypeInfo("MyEnum");
 		auto enumInfo = typeInfo->AsEnum();
@@ -78,33 +78,23 @@ namespace ZXEngine
 		}
 
 		// Dynamic reflection test for class
-		auto& strFac = Reflection::Dynamic::Register<string>();
-		strFac.Register("string");
+		Reflection::Dynamic::Register<Student>()
+			.Register("Student")
+			.AddVariable("mName", &Student::mName)
+			.AddVariable("mAge", &Student::mAge)
+			.AddVariable("mHeight", &Student::mHeight)
+			.AddVariable("mPos", &Student::mPos)
+			.AddFunction("GetAge", &Student::GetAge)
+			.AddFunction("Speak", &Student::Speak);
 
-		auto& vFac = Reflection::Dynamic::Register<Vector3>();
-		vFac.Register("Vector3");
-		vFac.AddVariable("x", &Vector3::x);
-		vFac.AddVariable("y", &Vector3::y);
-		vFac.AddVariable("z", &Vector3::z);
-
-		auto& sFac = Reflection::Dynamic::Register<Student>();
-		sFac.Register("Student");
-		sFac.AddVariable("mName", &Student::mName);
-		sFac.AddVariable("mAge", &Student::mAge);
-		sFac.AddVariable("mHeight", &Student::mHeight);
-		sFac.AddVariable("mPos", &Student::mPos);
-		sFac.AddFunction("GetAge", &Student::GetAge);
-		sFac.AddFunction("Speak", &Student::Speak);
-
-		auto sTypeInfo = Reflection::Dynamic::GetTypeInfo("Student");
-		auto sInfo = sTypeInfo->AsClass();
+		auto sTypeInfo = Reflection::Dynamic::GetTypeInfo("Student")->AsClass();
 
 		Debug::Log("Type name: %s", sTypeInfo->GetName());
-		for (auto& item : sInfo->GetVariables())
+		for (auto& item : sTypeInfo->GetVariables())
 		{
 			Debug::Log("Variable: %s %s", item->type->GetName(), item->name);
 		}
-		for (auto& item : sInfo->GetFunctions())
+		for (auto& item : sTypeInfo->GetFunctions())
 		{
 			Debug::Log("Function: %s return %s", item->name, item->returnType->GetName());
 			for (auto& param : item->paramTypes)
@@ -114,18 +104,34 @@ namespace ZXEngine
 		}
 
 		Debug::Log("Origin mAge %s", student.mAge);
-		sInfo->SetVariable(&student, "mAge", 12);
+		sTypeInfo->SetVariable(&student, "mAge", 12);
 		Debug::Log("New mAge %s", student.mAge);
 
 		Debug::Log("Origin mPos %s", student.mPos);
 		Vector3 nPos = { 6, 0, 3 };
-		sInfo->SetVariable(&student, "mPos", nPos);
+		sTypeInfo->SetVariable(&student, "mPos", nPos);
 		Debug::Log("New mPos %s", student.mPos);
 
-		auto age = sInfo->GetVariable(&student, "mAge");
+		auto age = sTypeInfo->GetVariable(&student, "mAge");
 		Debug::Log("Get value1 %s", std::any_cast<uint32_t>(age));
-		auto pos = sInfo->GetVariable(&student, "mPos");
+		auto pos = sTypeInfo->GetVariable(&student, "mPos");
 		Debug::Log("Get value2 %s", std::any_cast<Vector3>(pos));
+
+		auto qTypeInfo = Reflection::Dynamic::GetTypeInfo<Quaternion>()->AsClass();
+
+		Debug::Log("Type name: %s", qTypeInfo->GetName());
+		for (auto& item : qTypeInfo->GetVariables())
+		{
+			Debug::Log("Variable: %s %s", item->type->GetName(), item->name);
+		}
+		for (auto& item : qTypeInfo->GetFunctions())
+		{
+			Debug::Log("Function: %s return %s", item->name, item->returnType->GetName());
+			for (auto& param : item->paramTypes)
+			{
+				Debug::Log("Param: %s", param->GetName());
+			}
+		}
 
 		// Variable copy test
 		Reflection::Dynamic::Variable var = Reflection::Dynamic::Variable::Copy(student);

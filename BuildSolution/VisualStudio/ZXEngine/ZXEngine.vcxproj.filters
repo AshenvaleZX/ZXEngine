@@ -645,6 +645,9 @@
     <ClCompile Include="..\..\..\CPPScripts\Reflection\Type\NumericType.cpp">
       <Filter>Reflection\Type</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\Reflection\DynamicReflection.cpp">
+      <Filter>Reflection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\CPPScripts\GameObject.h">

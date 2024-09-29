@@ -54,7 +54,7 @@ namespace ZXEngine
 			};
 
 			template <typename T>
-			const TypeInfo* GetTypeInfo()
+			inline const TypeInfo* GetTypeInfo()
 			{
 				return &Factory<T>::GetFactory().GetTypeInfo();
 			}
