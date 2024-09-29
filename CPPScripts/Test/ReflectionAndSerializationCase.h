@@ -37,6 +37,7 @@ namespace ZXEngine
 		Student,
 		Fields
 		(
+			Field(&Student::mName),
 			Field(&Student::mAge),
 			Field(&Student::mHeight),
 			Field(&Student::mPos)
@@ -55,12 +56,10 @@ namespace ZXEngine
 		string res = Serialization::Serialize(student);
 		Debug::Log("Serialize student:\n%s", res);
 
-		json student_data = json::parse(res);
-
 		Student student2;
-		Serialization::Deserialize(student2, student_data);
+		Serialization::Deserialize(student2, res);
 
-		Student student3 = Serialization::Deserialize<Student>(student_data);
+		Student student3 = Serialization::Deserialize<Student>(res);
 
 		// Dynamic reflection test for enum
 		auto& eFac = Reflection::Dynamic::Register<MyEnum>();

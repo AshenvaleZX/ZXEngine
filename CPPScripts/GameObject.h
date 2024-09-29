@@ -77,7 +77,7 @@ namespace ZXEngine
 		void Parse(json data)
 		{
 			T* component = AddComponent<T>();
-			Serialization::Deserialize(*component, data);
+			Serialization::DeserializeFromJson(*component, data);
 		}
 
 		void ParseTransform(json data);
