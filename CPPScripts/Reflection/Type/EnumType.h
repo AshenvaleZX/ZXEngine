@@ -17,6 +17,8 @@ namespace ZXEngine
 				{
 					int value;
 					string name;
+
+					Item(int value, const string& name) : value(value), name(name) {}
 				};
 
 			public:
