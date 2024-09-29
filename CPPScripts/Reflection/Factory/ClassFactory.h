@@ -33,21 +33,24 @@ namespace ZXEngine
 					return mTypeInfo;
 				}
 
-				void Register(const std::string& name)
+				ClassFactory& Register(const std::string& name)
 				{
 					mTypeInfo.mName = name;
+					return *this;
 				}
 
 				template <typename MemberVariableType>
-				void AddVariable(const string& name, MemberVariableType type)
+				ClassFactory& AddVariable(const string& name, MemberVariableType type)
 				{
 					mTypeInfo.AddVariable(MemberVariable<T, MemberVariableType>::Create(name, type));
+					return *this;
 				}
 
 				template <typename MemberFunctionType>
-				void AddFunction(const string& name, MemberFunctionType type)
+				ClassFactory& AddFunction(const string& name, MemberFunctionType type)
 				{
 					mTypeInfo.AddFunction(MemberFunction::Create<MemberFunctionType>(name));
+					return *this;
 				}
 
 			private:

@@ -33,15 +33,17 @@ namespace ZXEngine
 					return mTypeInfo;
 				}
 
-				void Register(const std::string& name)
+				EnumFactory& Register(const std::string& name)
 				{
 					mTypeInfo.mName = name;
+					return *this;
 				}
 
 				template <typename E>
-				void AddEnum(const std::string& name, E value)
+				EnumFactory& AddEnum(const std::string& name, E value)
 				{
 					mTypeInfo.AddItem(name, value);
+					return *this;
 				}
 
 			private:
