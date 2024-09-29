@@ -395,6 +395,7 @@ set(Reflection__Factory
     "../../../CPPScripts/Reflection/Factory/ClassFactory.h"
     "../../../CPPScripts/Reflection/Factory/EnumFactory.h"
     "../../../CPPScripts/Reflection/Factory/NumericFactory.h"
+    "../../../CPPScripts/Reflection/Factory/VoidFactory.h"
 )
 source_group("Reflection\\Factory" FILES ${Reflection__Factory})
 
@@ -405,6 +406,7 @@ set(Reflection__Type
     "../../../CPPScripts/Reflection/Type/EnumType.h"
     "../../../CPPScripts/Reflection/Type/NumericType.cpp"
     "../../../CPPScripts/Reflection/Type/NumericType.h"
+    "../../../CPPScripts/Reflection/Type/VoidType.h"
 )
 source_group("Reflection\\Type" FILES ${Reflection__Type})
 

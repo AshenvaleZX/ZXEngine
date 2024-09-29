@@ -1343,5 +1343,11 @@
     <ClInclude Include="..\..\..\CPPScripts\Test\ReflectionAndSerializationCase.h">
       <Filter>Test</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\VoidType.h">
+      <Filter>Reflection\Type</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Factory\VoidFactory.h">
+      <Filter>Reflection\Factory</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

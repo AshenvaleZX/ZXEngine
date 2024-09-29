@@ -3,6 +3,7 @@
 #include "Factory/NumericFactory.h"
 #include "Factory/EnumFactory.h"
 #include "Factory/ClassFactory.h"
+#include "Factory/VoidFactory.h"
 
 namespace ZXEngine
 {
@@ -39,12 +40,14 @@ namespace ZXEngine
 				{
 					using type = std::remove_cv_t<std::remove_reference_t<T>>;
 
-					if constexpr (std::is_fundamental_v<type>)
+					if constexpr (std::is_arithmetic_v<type>)
 						return NumericFactory<type>::Get();
 					else if constexpr (std::is_enum_v<type>)
 						return EnumFactory<type>::Get();
 					else if constexpr (std::is_class_v<type>)
 						return ClassFactory<type>::Get();
+					else if constexpr (std::is_void_v<type>)
+						return VoidFactory<type>::Get();
 					else
 						return DefaultFactory<type>::Get();
 				}

@@ -18,6 +18,7 @@ namespace ZXEngine
 					Numeric,
 					Enum,
 					Class,
+					Void,
 				};
 
 			public:
