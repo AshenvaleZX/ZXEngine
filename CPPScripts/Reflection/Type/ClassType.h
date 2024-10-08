@@ -93,19 +93,19 @@ namespace ZXEngine
 					if constexpr (FuncTraits::Args::size > 0)
 					{
 						return make_unique<MemberFunction>
-							(
-								name,
-								GetTypeInfo<typename FuncTraits::ReturnType>(),
-								GetParamTypes<typename FuncTraits::Args>(std::make_index_sequence<FuncTraits::Args::size>())
-							);
+						(
+							name,
+							GetTypeInfo<typename FuncTraits::ReturnType>(),
+							GetParamTypes<typename FuncTraits::Args>(std::make_index_sequence<FuncTraits::Args::size>())
+						);
 					}
 					else
 					{
 						return make_unique<MemberFunction>
-							(
-								name,
-								GetTypeInfo<typename FuncTraits::ReturnType>(),
-								vector<const TypeInfo*>{}
+						(
+							name,
+							GetTypeInfo<typename FuncTraits::ReturnType>(),
+							vector<const TypeInfo*>{}
 						);
 					}
 				}

@@ -1,9 +1,7 @@
 #pragma once
 #include "Factory.h"
-#include "TypeMap.h"
-#include "Type/EnumType.h"
-#include "Type/NumericType.h"
 
+// Registration Tool
 #define ZXENGINE_CAT_IMPL(a, b) a##b
 #define ZXENGINE_CAT(a, b) ZXENGINE_CAT_IMPL(a, b)
 

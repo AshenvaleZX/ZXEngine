@@ -392,14 +392,6 @@ set(Reflection
 )
 source_group("Reflection" FILES ${Reflection})
 
-set(Reflection__Factory
-    "../../../CPPScripts/Reflection/Factory/ClassFactory.h"
-    "../../../CPPScripts/Reflection/Factory/EnumFactory.h"
-    "../../../CPPScripts/Reflection/Factory/NumericFactory.h"
-    "../../../CPPScripts/Reflection/Factory/VoidFactory.h"
-)
-source_group("Reflection\\Factory" FILES ${Reflection__Factory})
-
 set(Reflection__Type
     "../../../CPPScripts/Reflection/Type/TypeInfo.cpp"
     "../../../CPPScripts/Reflection/Type/TypeInfo.h"
@@ -564,7 +556,6 @@ set(ALL_FILES
     ${PhysZ__Force}
     ${PhysZ__Joint}
     ${Reflection}
-    ${Reflection__Factory}
     ${Reflection__Type}
     ${Test}
     ${Util}
