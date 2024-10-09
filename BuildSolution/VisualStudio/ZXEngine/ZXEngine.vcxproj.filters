@@ -82,6 +82,18 @@
     <Filter Include="ECS">
       <UniqueIdentifier>{8a9aabb3-1698-4a44-a0f6-cbc10e52fdeb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Reflection">
+      <UniqueIdentifier>{269c417e-ac3e-44fd-bacb-233cca45ff88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{c0ba031a-8072-4c2b-91b7-a34bfb186af2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Reflection\Type">
+      <UniqueIdentifier>{0aee39d0-749a-41b9-b7e4-4f3ff442f37b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{6c110d88-4846-44cc-b24a-b5241391805c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\CPPScripts\GameObject.cpp">
@@ -623,6 +635,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\CPPScripts\Editor\EditorAssetPreviewPanel.cpp">
       <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\Reflection\Type\TypeInfo.cpp">
+      <Filter>Reflection\Type</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\Reflection\Type\NumericType.cpp">
+      <Filter>Reflection\Type</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\Reflection\DynamicReflection.cpp">
+      <Filter>Reflection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1267,6 +1288,54 @@
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\Editor\EditorAssetPreviewPanel.h">
       <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\VariableTraits.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\FunctionTraits.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\StaticReflection.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Common\TypeList.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Util\Serialization.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\TypeInfo.h">
+      <Filter>Reflection\Type</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\EnumType.h">
+      <Filter>Reflection\Type</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Factory.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\NumericType.h">
+      <Filter>Reflection\Type</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\TypeMap.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\ClassType.h">
+      <Filter>Reflection\Type</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\DynamicReflection.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Variable.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Argument.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Test\ReflectionAndSerializationCase.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\VoidType.h">
+      <Filter>Reflection\Type</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -23,6 +23,7 @@
 #include "Component/AudioSource.h"
 #include "Component/AudioListener.h"
 #include "PhysZ/PhysZEnumStruct.h"
+#include "Util/Serialization.h"
 
 namespace ZXEngine
 {
@@ -71,6 +72,13 @@ namespace ZXEngine
 		bool mIsAwake = false;
 		multimap<ComponentType, Component*> components = {};
 		vector<std::function<void()>> mConstructionCallBacks;
+
+		template<class T>
+		void Parse(json data)
+		{
+			T* component = AddComponent<T>();
+			Serialization::DeserializeFromJson(*component, data);
+		}
 
 		void ParseTransform(json data);
 		void ParseRectTransform(json data);

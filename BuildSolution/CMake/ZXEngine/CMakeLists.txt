@@ -45,6 +45,7 @@ source_group("Audio\\irrKlangImpl" FILES ${Audio__irrKlangImpl})
 
 set(Common
     "../../../CPPScripts/Common/SparseNaturalSet.h"
+    "../../../CPPScripts/Common/TypeList.h"
 )
 source_group("Common" FILES ${Common})
 
@@ -378,6 +379,40 @@ set(PhysZ__Joint
 )
 source_group("PhysZ\\Joint" FILES ${PhysZ__Joint})
 
+set(Reflection
+    "../../../CPPScripts/Reflection/Argument.h"
+    "../../../CPPScripts/Reflection/DynamicReflection.cpp"
+    "../../../CPPScripts/Reflection/DynamicReflection.h"
+    "../../../CPPScripts/Reflection/Factory.h"
+    "../../../CPPScripts/Reflection/FunctionTraits.h"
+    "../../../CPPScripts/Reflection/StaticReflection.h"
+    "../../../CPPScripts/Reflection/TypeMap.h"
+    "../../../CPPScripts/Reflection/Variable.h"
+    "../../../CPPScripts/Reflection/VariableTraits.h"
+)
+source_group("Reflection" FILES ${Reflection})
+
+set(Reflection__Type
+    "../../../CPPScripts/Reflection/Type/TypeInfo.cpp"
+    "../../../CPPScripts/Reflection/Type/TypeInfo.h"
+    "../../../CPPScripts/Reflection/Type/ClassType.h"
+    "../../../CPPScripts/Reflection/Type/EnumType.h"
+    "../../../CPPScripts/Reflection/Type/NumericType.cpp"
+    "../../../CPPScripts/Reflection/Type/NumericType.h"
+    "../../../CPPScripts/Reflection/Type/VoidType.h"
+)
+source_group("Reflection\\Type" FILES ${Reflection__Type})
+
+set(Test
+    "../../../CPPScripts/Test/ReflectionAndSerializationCase.h"
+)
+source_group("Test" FILES ${Test})
+
+set(Util
+    "../../../CPPScripts/Util/Serialization.h"
+)
+source_group("Util" FILES ${Util})
+
 set(Vulkan
     "../../../CPPScripts/Vulkan/SPIRVCompiler.cpp"
     "../../../CPPScripts/Vulkan/SPIRVCompiler.h"
@@ -520,6 +555,10 @@ set(ALL_FILES
     ${PhysZ__BoundingVolume}
     ${PhysZ__Force}
     ${PhysZ__Joint}
+    ${Reflection}
+    ${Reflection__Type}
+    ${Test}
+    ${Util}
     ${Vulkan}
     ${Window}
     ${ZXHeader}

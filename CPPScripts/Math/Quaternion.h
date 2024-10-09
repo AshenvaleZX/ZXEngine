@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "../Reflection/StaticReflection.h"
 
 namespace ZXEngine
 {
@@ -53,4 +54,16 @@ namespace ZXEngine
 		Quaternion operator* (const Quaternion& q) const;
 		Quaternion& operator*= (const Quaternion& q);
 	};
+
+	StaticReflection
+	(
+		Quaternion,
+		Fields
+		(
+			Field(&Quaternion::x),
+			Field(&Quaternion::y),
+			Field(&Quaternion::z),
+			Field(&Quaternion::w)
+		)
+	)
 }
