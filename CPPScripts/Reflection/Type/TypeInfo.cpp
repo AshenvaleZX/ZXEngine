@@ -1,7 +1,5 @@
 #include "TypeInfo.h"
-#include "EnumType.h"
-#include "NumericType.h"
-#include "ClassType.h"
+#include "../Factory.h"
 
 namespace ZXEngine
 {
