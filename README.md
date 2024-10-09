@@ -38,7 +38,7 @@ This project aims at a game engine, not just graphics and rendering (although th
 
 - [多线程与JobSystem (Multithreading And JobSystem)](#多线程与jobsystem-multithreading-and-jobsystem)
 
-- [C++反射与序列化 (C++ Reflection And Serialization)](#C++反射与序列化-c++-reflection-and-serialization)
+- [C++反射与序列化 (C++ Reflection And Serialization)](#c反射与序列化-c-reflection-and-serialization)
 
 - [引擎文件格式介绍 (Engine File Format Introduction)](#引擎文件格式介绍-engine-file-format-introduction)
 
@@ -484,6 +484,8 @@ Because the language of the GamePlay layer of the engine is Lua, and the Lua int
 
 This engine has a simple C++ reflection system, including static reflection and dynamic reflection. The implementation of this reflection system mainly refers to [mirror](https://github.com/VisualGMQ/mirrow) and [rttr](https://github.com/rttrorg/rttr). At present, the actual use of the reflection system in this project is to implement a C++ object serialization and deserialization tool.
 
+### Serialization
+
 序列化工具接口如下：
 
 The serialization tool interface is as follows:
@@ -502,7 +504,9 @@ template <typename T>
 static void Deserialize(T& object, const string& data);
 ```
 
-反射系统接口比较复杂，就不在本文档里演示了。反射系统的接口，使用方式，序列化工具的演示等请参考Test\ReflectionAndSerializationCase.h
+### Reflection
+
+反射系统接口比较复杂，就不在本文档里演示了。反射系统的接口，使用方式以及序列化工具的演示等，请参考Test\ReflectionAndSerializationCase.h
 
 The reflection system interface is more complex and will not be demonstrated in this document. For the interface of the reflection system, use examples, demonstration of serialization tools, etc. please refer to Test\ReflectionAndSerializationCase.h
 
