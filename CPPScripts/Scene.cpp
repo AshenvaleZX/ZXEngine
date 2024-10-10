@@ -88,7 +88,7 @@ namespace ZXEngine
 		for (unsigned i = 0; i < Camera::GetAllCameras().size(); ++i)
 		{
 			auto camera = Camera::GetAllCameras()[i];
-			if (camera->cameraType != CameraType::GameCamera)
+			if (camera->mCameraType != CameraType::GameCamera)
 				continue;
 
 			for (auto gameObject : gameObjects)

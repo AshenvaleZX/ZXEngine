@@ -54,7 +54,7 @@ namespace ZXEngine
 		else if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
 			finalFBO = "RayTracing";
 
-		if (camera->enableAfterEffects)
+		if (camera->mEnableAfterEffects)
 		{
 			// 提取画面高亮部分
 			string res1 = BlitExtractBrightArea(finalFBO);

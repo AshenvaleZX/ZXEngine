@@ -27,9 +27,8 @@ namespace ZXEngine
 		return allCameras;
 	}
 
-	Camera::Camera() : Fov(FOV)
+	Camera::Camera()
 	{
-		cameraType = CameraType::GameCamera;
 		allCameras.push_back(this);
 	}
 
@@ -60,10 +59,10 @@ namespace ZXEngine
 
 	Matrix4 Camera::GetProjectionMatrix() const
 	{
-		if (aspect == 0.0f)
-			return Math::Perspective(Math::Deg2Rad(Fov), static_cast<float>(GlobalData::srcWidth) / static_cast<float>(GlobalData::srcHeight), nearClipDis, farClipDis);
+		if (mAspect == 0.0f)
+			return Math::Perspective(Math::Deg2Rad(mFOV), static_cast<float>(GlobalData::srcWidth) / static_cast<float>(GlobalData::srcHeight), mNearClipDis, mFarClipDis);
 		else
-			return Math::Perspective(Math::Deg2Rad(Fov), aspect, nearClipDis, farClipDis);
+			return Math::Perspective(Math::Deg2Rad(mFOV), mAspect, mNearClipDis, mFarClipDis);
 	}
 
 	Matrix4 Camera::GetProjectionMatrixInverse() const

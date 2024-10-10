@@ -10,10 +10,10 @@
         },
         {
             "Type": "Camera",
-            "FOV": 45,
-            "NearClipDis": 0.1,
-            "FarClipDis": 1000,
-            "EnableAfterEffects": true
+            "mFOV": 45,
+            "mNearClipDis": 0.1,
+            "mFarClipDis": 1000,
+            "mEnableAfterEffects": true
         },
         {
             "Type": "AudioListener"

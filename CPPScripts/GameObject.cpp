@@ -158,7 +158,7 @@ namespace ZXEngine
 			else if (component["Type"] == "MeshRenderer")
 				ParseMeshRenderer(component, prefab->modelData, prefab->material);
 			else if (component["Type"] == "Camera")
-				ParseCamera(component);
+				Parse<Camera>(component);
 			else if (component["Type"] == "Light")
 				ParseLight(component);
 			else if (component["Type"] == "GameLogic")
@@ -355,16 +355,6 @@ namespace ZXEngine
 		{
 			Debug::LogWarning("No meshs !");
 		}
-	}
-
-	void GameObject::ParseCamera(json data)
-	{
-		Camera* camera = AddComponent<Camera>();
-
-		camera->Fov = data["FOV"];
-		camera->nearClipDis = data["NearClipDis"];
-		camera->farClipDis = data["FarClipDis"];
-		camera->enableAfterEffects = data["EnableAfterEffects"];
 	}
 
 	void GameObject::ParseLight(json data)

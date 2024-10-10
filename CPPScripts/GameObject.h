@@ -73,6 +73,7 @@ namespace ZXEngine
 		multimap<ComponentType, Component*> components = {};
 		vector<std::function<void()>> mConstructionCallBacks;
 
+		// 通用解析器，使用反序列化接口自动解析
 		template<class T>
 		void Parse(json data)
 		{
@@ -83,7 +84,6 @@ namespace ZXEngine
 		void ParseTransform(json data);
 		void ParseRectTransform(json data);
 		void ParseMeshRenderer(json data, const ModelData* pModelData, MaterialStruct* material);
-		void ParseCamera(json data);
 		void ParseLight(json data);
 		void ParseGameLogic(json data);
 		void ParseUIButton(json data);

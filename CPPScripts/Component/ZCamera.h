@@ -2,11 +2,10 @@
 #include "../pubh.h"
 #include "Component.h"
 #include "../PhysZ/Ray.h"
+#include "../Reflection/StaticReflection.h"
 
 namespace ZXEngine
 {
-    const float FOV = 45.0f;
-
 	class Camera : public Component
 	{
     public:
@@ -19,12 +18,12 @@ namespace ZXEngine
         static vector<Camera*> allCameras;
 
 	public:
-        float Fov;
-        float aspect = 0.0f;
-        float nearClipDis = 0.1f;
-        float farClipDis = 200.0f;
-        bool enableAfterEffects = false;
-        CameraType cameraType;
+        float mFOV = 45.0f;
+        float mAspect = 0.0f;
+        float mNearClipDis = 0.1f;
+        float mFarClipDis = 200.0f;
+        bool mEnableAfterEffects = false;
+        CameraType mCameraType = CameraType::GameCamera;
 
         Camera();
 		~Camera();
@@ -40,4 +39,16 @@ namespace ZXEngine
         Vector2 WorldToScreenPoint(const Vector3& point) const;
         PhysZ::Ray ScreenPointToRay(const Vector2& point) const;
 	};
+
+    StaticReflection
+    (
+        Camera,
+        Fields
+        (
+            Field(&Camera::mFOV),
+            Field(&Camera::mNearClipDis),
+            Field(&Camera::mFarClipDis),
+            Field(&Camera::mEnableAfterEffects)
+        )
+    )
 }

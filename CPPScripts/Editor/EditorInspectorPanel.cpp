@@ -445,17 +445,17 @@ namespace ZXEngine
 
 		ImGui::Text("Field of View ");
 		ImGui::PushItemWidth(180);
-		ImGui::SameLine(); ImGui::SliderFloat("##fov", &component->Fov, 1.0f, 179.0f, "");
+		ImGui::SameLine(); ImGui::SliderFloat("##fov", &component->mFOV, 1.0f, 179.0f, "");
 		ImGui::PushItemWidth(50);
-		ImGui::SameLine(); ImGui::DragFloat("##fov", &component->Fov, 0.1f, 1.0f, 179.0f);
+		ImGui::SameLine(); ImGui::DragFloat("##fov", &component->mFOV, 0.1f, 1.0f, 179.0f);
 		ImGui::PopItemWidth();
 
 		ImGui::Text("Near Clip     ");
-		ImGui::SameLine(); ImGui::DragFloat("##nearClipDis", &component->nearClipDis, 0.1f, 0.0f, FLT_MAX);
+		ImGui::SameLine(); ImGui::DragFloat("##nearClipDis", &component->mNearClipDis, 0.1f, 0.0f, FLT_MAX);
 		ImGui::Text("Far Clip      ");
-		ImGui::SameLine(); ImGui::DragFloat("##farClipDis", &component->farClipDis, 0.1f, 0.0f, FLT_MAX);
+		ImGui::SameLine(); ImGui::DragFloat("##farClipDis", &component->mFarClipDis, 0.1f, 0.0f, FLT_MAX);
 		ImGui::Text("After Effects ");
-		ImGui::SameLine(); ImGui::Checkbox("##enableAfterEffects", &component->enableAfterEffects);
+		ImGui::SameLine(); ImGui::Checkbox("##enableAfterEffects", &component->mEnableAfterEffects);
 	}
 
 	void EditorInspectorPanel::DrawLight(Light* component)
