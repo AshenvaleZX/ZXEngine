@@ -645,6 +645,9 @@
     <ClCompile Include="..\..\..\CPPScripts\Reflection\DynamicReflection.cpp">
       <Filter>Reflection</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\Util\Encryption.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\CPPScripts\GameObject.h">
@@ -1336,6 +1339,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\VoidType.h">
       <Filter>Reflection\Type</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Util\Encryption.h">
+      <Filter>Util</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

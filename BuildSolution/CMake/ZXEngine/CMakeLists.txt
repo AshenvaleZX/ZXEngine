@@ -410,6 +410,8 @@ source_group("Test" FILES ${Test})
 
 set(Util
     "../../../CPPScripts/Util/Serialization.h"
+    "../../../CPPScripts/Util/Encryption.cpp"
+    "../../../CPPScripts/Util/Encryption.h"
 )
 source_group("Util" FILES ${Util})
 
