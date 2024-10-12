@@ -223,6 +223,11 @@ namespace ZXEngine
         // Ìí¼Ó¹Ç÷ÀÐÅÏ¢
         if (mesh->HasBones())
         {
+            if (mesh->mNumBones > MAX_BONE_NUM)
+            {
+                Debug::LogWarning("Too many bones in mesh %s", mesh->mName.C_Str());
+            }
+
             for (unsigned int i = 0; i < mesh->mNumBones; i++)
             {
                 const aiBone* bone = mesh->mBones[i];
