@@ -179,12 +179,12 @@ namespace ZXEngine
             if (length >= textMeshes.size())
             {
                 auto charMesh = new DynamicMesh(4, 6);
-                charMesh->UpdateData(vertices, GlyphIndices);
+                charMesh->UpdateData(std::move(vertices), GlyphIndices);
                 textMeshes.push_back(charMesh);
             }
             else
             {
-                textMeshes[length]->UpdateData(vertices, GlyphIndices);
+                textMeshes[length]->UpdateData(std::move(vertices), GlyphIndices);
             }
 
             // ×Ö·û²ÄÖÊ

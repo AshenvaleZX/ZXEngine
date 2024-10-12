@@ -596,7 +596,7 @@ namespace ZXEngine
 		CreatePlaneVertices(xLength, zLength, xSplit, zSplit, vertices, indices);
 
 		DynamicMesh* mesh = new DynamicMesh(static_cast<uint32_t>(vertices.size()), static_cast<uint32_t>(indices.size()));
-		mesh->UpdateData(vertices, indices);
+		mesh->UpdateData(std::move(vertices), std::move(indices));
 
 		return mesh;
 	}

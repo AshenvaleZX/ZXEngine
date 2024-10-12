@@ -10,8 +10,36 @@ namespace ZXEngine
 		RenderAPI::GetInstance()->SetUpDynamicMesh(VAO, vertexSize, indexSize);
 	}
 
-	void DynamicMesh::UpdateData()
+	void DynamicMesh::UpdateData() const
 	{
+		RenderAPI::GetInstance()->UpdateDynamicMesh(VAO, mVertices, mIndices);
+	}
+
+	void DynamicMesh::UpdateData(vector<Vertex>&& vertices, vector<uint32_t>&& indices)
+	{
+		if (vertices.size() > vertexSize || indices.size() > indexSize)
+		{
+			Debug::LogError("Update dynamic mesh data failed, error data size!");
+			return;
+		}
+
+		mVertices = std::move(vertices);
+		mIndices = std::move(indices);
+
+		RenderAPI::GetInstance()->UpdateDynamicMesh(VAO, mVertices, mIndices);
+	}
+
+	void DynamicMesh::UpdateData(vector<Vertex>&& vertices, const vector<uint32_t>& indices)
+	{
+		if (vertices.size() > vertexSize || indices.size() > indexSize)
+		{
+			Debug::LogError("Update dynamic mesh data failed, error data size!");
+			return;
+		}
+
+		mVertices = std::move(vertices);
+		mIndices = indices;
+
 		RenderAPI::GetInstance()->UpdateDynamicMesh(VAO, mVertices, mIndices);
 	}
 
@@ -26,6 +54,6 @@ namespace ZXEngine
 		mVertices = vertices;
 		mIndices = indices;
 
-		RenderAPI::GetInstance()->UpdateDynamicMesh(VAO, vertices, indices);
+		RenderAPI::GetInstance()->UpdateDynamicMesh(VAO, mVertices, mIndices);
 	}
 }
