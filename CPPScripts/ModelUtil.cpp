@@ -262,7 +262,7 @@ namespace ZXEngine
             }
         }
 
-        auto newMesh = new StaticMesh(vertices, indices, !async);
+        auto newMesh = new StaticMesh(std::move(vertices), std::move(indices), !async);
         newMesh->mBonesFinalTransform.resize(boneOffsetMatrices.size());
         newMesh->mBonesOffset = std::move(boneOffsetMatrices);
         newMesh->mBoneNameToIndexMap = std::move(boneNameToIndexMap);

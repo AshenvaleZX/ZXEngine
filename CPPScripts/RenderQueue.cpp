@@ -137,7 +137,7 @@ namespace ZXEngine
 			}
 		}
 
-		auto newMesh = new StaticMesh(newVertices, newIndices);
+		auto newMesh = new StaticMesh(std::move(newVertices), std::move(newIndices));
 		temporaryMeshPool.push_back(newMesh);
 		auto newMeshRenderer = GetTemporaryRenderer();
 		newMeshRenderer->mMatetrial = batchRenderers[0]->mMatetrial;

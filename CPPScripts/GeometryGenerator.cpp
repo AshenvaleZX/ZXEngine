@@ -67,7 +67,7 @@ namespace ZXEngine
 		indices[30] = 20; indices[31] = 22; indices[32] = 21;
 		indices[33] = 20; indices[34] = 23; indices[35] = 22;
 
-		return new StaticMesh(vertices, indices);
+		return new StaticMesh(std::move(vertices), std::move(indices));
 	}
 
 	StaticMesh* GeometryGenerator::CreateSphere(float radius, uint32_t sliceCount, uint32_t stackCount)
@@ -157,7 +157,7 @@ namespace ZXEngine
 			indices.push_back(baseIndex + i);
 		}
 
-		return new StaticMesh(vertices, indices);
+		return new StaticMesh(std::move(vertices), std::move(indices));
 	}
 
 	StaticMesh* GeometryGenerator::CreateSphereTessellation(float radius, uint32_t subdivisionNum)
@@ -225,7 +225,7 @@ namespace ZXEngine
 			vertices[i].Tangent.Normalize();
 		}
 
-		return new StaticMesh(vertices, indices);
+		return new StaticMesh(std::move(vertices), std::move(indices));
 	}
 
 	StaticMesh* GeometryGenerator::CreateCylinder(float topRadius, float bottomRadius, float height, uint32_t sliceCount, uint32_t stackCount)
@@ -374,7 +374,7 @@ namespace ZXEngine
 			indices.push_back(baseIndex + i);
 		}
 
-		return new StaticMesh(vertices, indices);
+		return new StaticMesh(std::move(vertices), std::move(indices));
 	}
 
 	StaticMesh* GeometryGenerator::CreatePlane(float xLength, float zLength, uint32_t xSplit, uint32_t zSplit)
@@ -384,7 +384,7 @@ namespace ZXEngine
 
 		CreatePlaneVertices(xLength, zLength, xSplit, zSplit, vertices, indices);
 
-		return new StaticMesh(vertices, indices);
+		return new StaticMesh(std::move(vertices), std::move(indices));
 	}
 
 	void GeometryGenerator::CreatePlaneVertices(float xLength, float zLength, uint32_t xSplit, uint32_t zSplit, vector<Vertex>& vertices, vector<uint32_t>& indices)
@@ -460,7 +460,7 @@ namespace ZXEngine
 			1, 2, 3
 		};
 
-		return new StaticMesh(vertices, indices);
+		return new StaticMesh(std::move(vertices), std::move(indices));
 	}
 
 	StaticMesh* GeometryGenerator::CreateScreenQuad()
@@ -537,7 +537,7 @@ namespace ZXEngine
 			vertices.push_back(vertex);
 		}
 
-		return new StaticMesh(vertices, indices);
+		return new StaticMesh(std::move(vertices), std::move(indices));
 	}
 
 	StaticMesh* GeometryGenerator::CreateSimpleInwardBox()
@@ -585,7 +585,7 @@ namespace ZXEngine
 			vertices.push_back(std::move(vertex));
 		}
 
-		return new StaticMesh(vertices, indices);
+		return new StaticMesh(std::move(vertices), std::move(indices));
 	}
 
 	DynamicMesh* GeometryGenerator::CreateDynamicPlane(float xLength, float zLength, uint32_t xSplit, uint32_t zSplit)
