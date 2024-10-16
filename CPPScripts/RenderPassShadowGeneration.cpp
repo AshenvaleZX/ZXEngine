@@ -96,9 +96,7 @@ namespace ZXEngine
 			renderer->mShadowCastMaterial->Use();
 			renderer->mShadowCastMaterial->SetMatrix("_ShadowMatrix", shadowTransform * mat_M);
 
-			renderer->UpdateBoneTransformsForShadow();
-
-			renderer->Draw();
+			renderer->DrawShadow();
 		}
 
 		renderAPI->GenerateDrawCommand(drawCommandID);
@@ -161,9 +159,7 @@ namespace ZXEngine
 			renderer->mShadowCastMaterial->SetScalar("_FarPlane", GlobalData::shadowCubeMapFarPlane);
 			renderer->mShadowCastMaterial->SetVector("_LightPos", lightPos);
 
-			renderer->UpdateBoneTransformsForShadow();
-
-			renderer->Draw();
+			renderer->DrawShadow();
 		}
 
 		// 用完立刻清除，下一帧还会生成

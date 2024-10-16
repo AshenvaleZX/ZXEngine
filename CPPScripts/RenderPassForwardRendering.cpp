@@ -121,8 +121,6 @@ namespace ZXEngine
 
 				material->data->Use();
 
-				renderer->UpdateBoneTransformsForRender();
-
 				renderer->Draw();
 			}
 		}

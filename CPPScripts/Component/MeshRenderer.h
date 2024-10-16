@@ -43,10 +43,9 @@ namespace ZXEngine
 		virtual ComponentType GetInsType();
 
 		void Draw();
+		void DrawShadow();
 		void GenerateModel(GeometryType type);
 		void SetMeshes(const vector<shared_ptr<Mesh>>& meshes);
-		void UpdateBoneTransformsForRender();
-		void UpdateBoneTransformsForShadow();
 
 	private:
 		void UpdateInternalData();
