@@ -323,6 +323,29 @@ namespace ZXEngine
 		return resMat;
 	}
 
+	Matrix3 Math::Rotate(const Matrix3& oriMat, float angle, const Vector3& axis)
+	{
+		float c = cos(angle);
+		float s = sin(angle);
+
+		Vector3 temp((1 - c) * axis);
+
+		Matrix3 rotate(1);
+		rotate.m00 = c + temp[0] * axis[0];
+		rotate.m10 = temp[0] * axis[1] + s * axis[2];
+		rotate.m20 = temp[0] * axis[2] - s * axis[1];
+
+		rotate.m01 = temp[1] * axis[0] - s * axis[2];
+		rotate.m11 = c + temp[1] * axis[1];
+		rotate.m21 = temp[1] * axis[2] + s * axis[0];
+
+		rotate.m02 = temp[2] * axis[0] + s * axis[1];
+		rotate.m12 = temp[2] * axis[1] - s * axis[0];
+		rotate.m22 = c + temp[2] * axis[2];
+
+		return rotate * oriMat;
+	}
+
 	Matrix4 Math::Rotate(const Matrix4& oriMat, float angle, const Vector3& axis)
 	{
 		float c = cos(angle);

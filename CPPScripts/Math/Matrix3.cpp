@@ -6,6 +6,14 @@
 
 namespace ZXEngine
 {
+	const Matrix3 Matrix3::Zero = Matrix3(0.0f);
+	const Matrix3 Matrix3::Identity = Matrix3(1.0f);
+
+	Matrix3 Matrix3::CreateRotation(const Vector3& axis, float angle)
+	{
+		return Matrix3(axis, angle);
+	}
+
 	Matrix3::Matrix3()
 	{
 		m00 = 1.0f; m01 = 0.0f; m02 = 0.0f;

@@ -76,6 +76,7 @@ namespace ZXEngine
 		// Î»ÒÆ
 		static Matrix4 Translate(const Matrix4& oriMat, const Vector3& v);
 		// Ðý×ª
+		static Matrix3 Rotate(const Matrix3& oriMat, float angle, const Vector3& axis);
 		static Matrix4 Rotate(const Matrix4& oriMat, float angle, const Vector3& axis);
 		// Ëõ·Å
 		static Matrix4 Scale(const Matrix4& oriMat, const Vector3& scale);

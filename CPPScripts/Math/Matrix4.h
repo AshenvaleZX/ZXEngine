@@ -9,6 +9,15 @@ namespace ZXEngine
 		friend class Math;
 		friend class Vector4;
 		friend class Matrix3;
+
+	public:
+		static const Matrix4 Zero;
+		static const Matrix4 Identity;
+
+		static Matrix4 CreateTranslation(const Vector3& v);
+		static Matrix4 CreateRotation(const Vector3& axis, float angle);
+		static Matrix4 CreateScale(const Vector3& scale);
+
 	public:
 		Matrix4();
 		Matrix4(float n);

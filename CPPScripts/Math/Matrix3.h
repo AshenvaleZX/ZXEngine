@@ -10,6 +10,13 @@ namespace ZXEngine
 		friend class Math;
 		friend class Vector3;
 		friend class Matrix4;
+
+	public:
+		static const Matrix3 Zero;
+		static const Matrix3 Identity;
+
+		static Matrix3 CreateRotation(const Vector3& axis, float angle);
+
 	public:
 		Matrix3();
 		Matrix3(float n);

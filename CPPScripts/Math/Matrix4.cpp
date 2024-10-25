@@ -6,6 +6,32 @@
 
 namespace ZXEngine
 {
+	const Matrix4 Matrix4::Zero = Matrix4(0.0f);
+	const Matrix4 Matrix4::Identity = Matrix4(1.0f);
+
+	Matrix4 Matrix4::CreateTranslation(const Vector3& v)
+	{
+		return Matrix4(
+			1.0f, 0.0f, 0.0f, v.x,
+			0.0f, 1.0f, 0.0f, v.y,
+			0.0f, 0.0f, 1.0f, v.z,
+			0.0f, 0.0f, 0.0f, 1.0f);
+	}
+
+	Matrix4 Matrix4::CreateRotation(const Vector3& axis, float angle)
+	{
+		return Math::Rotate(Matrix4::Identity, angle, axis);
+	}
+
+	Matrix4 Matrix4::CreateScale(const Vector3& scale)
+	{
+		return Matrix4(
+			scale.x, 0.0f   , 0.0f   , 0.0f,
+			0.0f   , scale.y, 0.0f   , 0.0f,
+			0.0f   , 0.0f   , scale.z, 0.0f,
+			0.0f   , 0.0f   , 0.0f   , 1.0f);
+	}
+
 	Matrix4::Matrix4()
 	{
 		m00 = 1.0f; m01 = 0.0f; m02 = 0.0f; m03 = 0.0f;
