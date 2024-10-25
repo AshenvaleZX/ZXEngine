@@ -4,9 +4,9 @@
     [
         {
             "Type": "Transform",
-            "Position": [-7, -3, 0],
+            "Position": [-7, -3.75, 0],
             "Rotation": [0, 180, 0],
-            "Scale": [0.2, 0.2, 0.2]
+            "Scale": [0.1, 0.1, 0.1]
         },
         {
             "Type": "MeshRenderer",
