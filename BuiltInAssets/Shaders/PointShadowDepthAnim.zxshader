@@ -26,7 +26,7 @@ Vertex
     {
         void main()
         {
-            vec4 pos = vec4(0.0, 0.0, 0.0, 1.0);
+            vec4 pos = vec4(0.0, 0.0, 0.0, 0.0);
             pos += mul(_BoneMatrices[aBoneID.r] * vec4(aPos, 1.0)) * aWeight.r;
             pos += mul(_BoneMatrices[aBoneID.g] * vec4(aPos, 1.0)) * aWeight.g;
             pos += mul(_BoneMatrices[aBoneID.b] * vec4(aPos, 1.0)) * aWeight.b;
