@@ -25,7 +25,7 @@ namespace ZXEngine
 	private:
 		// Processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
 		static void ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData* pModelData, bool async = false);
-		static void ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData* pModelData, BoneNode* pBoneNode, bool async = false);
+		static void ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData* pModelData, BoneNode* pBoneNode, const Matrix4& parentTrans, bool async = false);
 		static shared_ptr<StaticMesh> ProcessMesh(const aiMesh* mesh, bool async = false);
 		static AnimationController* ProcessAnimation(const aiScene* pScene);
 		static void CountNode(const aiNode* pNode, uint32_t& count);

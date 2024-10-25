@@ -23,7 +23,7 @@ namespace ZXEngine
 		mData.mCurAnimation->ForceUpdate(mData.mCurAnimTick);
 		mData.mTargetAnimation->ForceUpdate(mData.mTargetAnimTick);
 
-		UpdateBlendTransforms(mData.mBoneNode, Matrix4());
+		UpdateBlendTransforms(mData.mBoneNode, Matrix4::Identity);
 
 		mSafeData.Move(mData);
 	}
@@ -154,7 +154,7 @@ namespace ZXEngine
 					mCurAnimation->ForceUpdate(curAnimTicks);
 					mTargetAnimation->ForceUpdate(targetAnimTicks);
 
-					UpdateBlendAnimation(pBoneNode, pMeshes, Matrix4());
+					UpdateBlendAnimation(pBoneNode, pMeshes, Matrix4::Identity);
 				}
 			}
 		}

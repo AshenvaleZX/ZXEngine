@@ -75,7 +75,7 @@ namespace ZXEngine
 
 	void Animation::UpdateMeshes(const BoneNode* pBoneNode, const vector<shared_ptr<Mesh>>& pMeshes)
 	{
-		UpdateBoneTransforms(pBoneNode, Matrix4());
+		UpdateBoneTransforms(pBoneNode, Matrix4::Identity);
 
 		for (auto& pMesh : pMeshes)
 		{
@@ -85,7 +85,7 @@ namespace ZXEngine
 				{
 					uint32_t index = pMesh->mBoneNameToIndexMap[iter.first];
 					// 此处的矩阵是给Shader用的，需要转置为列主序
-					pMesh->mBonesFinalTransform[index] = Math::Transpose(iter.second * pMesh->mBonesOffset[index]);
+					pMesh->mBonesFinalTransform[index] = Math::Transpose(iter.second * pMesh->mBonesOffset[index] * pMesh->mRootTrans);
 				}
 			}
 		}
@@ -96,7 +96,7 @@ namespace ZXEngine
 		const vector<unordered_map<string, uint32_t>>& boneNameToIndexMaps,
 		vector<vector<Matrix4>>& bonesFinalTransforms)
 	{
-		UpdateBoneTransforms(pBoneNode, Matrix4());
+		UpdateBoneTransforms(pBoneNode, Matrix4::Identity);
 
 		for (size_t i = 0; i < bonesOffsets.size(); i++)
 		{

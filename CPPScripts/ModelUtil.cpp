@@ -108,7 +108,7 @@ namespace ZXEngine
         if (pModelData->pAnimationController)
         {
             pModelData->pRootBoneNode = new BoneNode();
-            ProcessNode(scene->mRootNode, scene, pModelData, pModelData->pRootBoneNode, async);
+            ProcessNode(scene->mRootNode, scene, pModelData, pModelData->pRootBoneNode, Matrix4::Identity, async);
         }
         // 处理模型数据
         else
@@ -138,8 +138,14 @@ namespace ZXEngine
         }
     }
 
-    void ModelUtil::ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData* pModelData, BoneNode* pBoneNode, bool async)
+    void ModelUtil::ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData* pModelData, BoneNode* pBoneNode, const Matrix4& parentTrans, bool async)
     {
+        // 加载骨骼节点
+        pBoneNode->name = pNode->mName.C_Str();
+        pBoneNode->transform = aiMatrix4x4ToMatrix4(pNode->mTransformation);
+
+        Matrix4 nodeTransform = parentTrans * pBoneNode->transform;
+
         // 处理Mesh数据
         for (unsigned int i = 0; i < pNode->mNumMeshes; i++)
         {
@@ -147,51 +153,51 @@ namespace ZXEngine
             // aiScene包含所有数据，aiNode只是为了让数据组织起来(比如记录节点之间的关系)
             aiMesh* mesh = pScene->mMeshes[pNode->mMeshes[i]];
             pModelData->pMeshes.push_back(ProcessMesh(mesh, async));
+            pModelData->pMeshes.back()->mRootTrans = nodeTransform;
         }
-
-        // 加载骨骼数据
-        pBoneNode->name = pNode->mName.C_Str();
-        pBoneNode->transform = aiMatrix4x4ToMatrix4(pNode->mTransformation);
 
         // 递归处理子节点
         for (unsigned int i = 0; i < pNode->mNumChildren; i++)
         {
             pBoneNode->children.push_back(new BoneNode());
-            ProcessNode(pNode->mChildren[i], pScene, pModelData, pBoneNode->children.back(), async);
+            ProcessNode(pNode->mChildren[i], pScene, pModelData, pBoneNode->children.back(), nodeTransform, async);
         }
     }
 
     shared_ptr<StaticMesh> ModelUtil::ProcessMesh(const aiMesh* mesh, bool async)
     {
-        // data to fill
+        // 顶点数据
         vector<Vertex> vertices;
         vector<uint32_t> indices;
         array<Vertex, 6> extremeVertices;
 
-        // Walk through each of the mesh's vertices
+        if (mesh->mNumVertices > 0)
+            vertices.reserve(mesh->mNumVertices);
+
+        // 遍历顶点
         for (unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
             Vertex vertex;
-            Vector3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to Vector3 class so we transfer the data to this placeholder Vector3 first.
+            // 用于转换aiVector3D到Vector3的临时变量
+            Vector3 vector;
             
-            // positions
+            // Position
             vector.x = mesh->mVertices[i].x;
             vector.y = mesh->mVertices[i].y;
             vector.z = mesh->mVertices[i].z;
             vertex.Position = vector;
             
-            // normals
+            // Normal
             vector.x = mesh->mNormals[i].x;
             vector.y = mesh->mNormals[i].y;
             vector.z = mesh->mNormals[i].z;
             vertex.Normal = vector;
             
-            // texture coordinates
-            if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+            // Texture Coords
+            if (mesh->mTextureCoords[0])
             {
                 Vector2 vec;
-                // a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
-                // use models where a vertex can have multiple texture coordinates so we always take the first set (0).
+                // 一个顶点最多可以包含8个不同的纹理坐标，但是暂时默认只使用第一个
                 vec.x = mesh->mTextureCoords[0][i].x;
                 vec.y = mesh->mTextureCoords[0][i].y;
                 vertex.TexCoords = vec;
@@ -201,7 +207,7 @@ namespace ZXEngine
                 vertex.TexCoords = Vector2(0.0f, 0.0f);
             }
 
-            // tangent and bitangent
+            // Tangent & Bitangent
             if (mesh->HasTangentsAndBitangents())
             {
                 vector.x = mesh->mTangents[i].x;
@@ -256,11 +262,11 @@ namespace ZXEngine
             }
         }
 
-        // now wak through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
+        // 遍历Face(三角形图元)
         for (unsigned int i = 0; i < mesh->mNumFaces; i++)
         {
             const aiFace& face = mesh->mFaces[i];
-            // retrieve all indices of the face and store them in the indices vector
+            // 存储这个面的所有索引
             for (unsigned int j = 0; j < face.mNumIndices; j++)
             {
                 indices.push_back(face.mIndices[j]);
@@ -333,7 +339,7 @@ namespace ZXEngine
             animationController->Add(pAnim);
 		}
 
-		return animationController;
+        return animationController;
     }
 
     void ModelUtil::CountNode(const aiNode* pNode, uint32_t& count)

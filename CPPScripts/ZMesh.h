@@ -15,6 +15,8 @@ namespace ZXEngine
 		vector<Vertex> mVertices;
 		vector<uint32_t> mIndices;
 
+		// 从包含此Mesh数据的节点到模型根节点的变换矩阵(仅在模型包含树形结构时有效)
+		Matrix4 mRootTrans;
 		// 骨骼偏移量数组
 		vector<Matrix4> mBonesOffset;
 		// 骨骼最终变换矩阵数组(列主序，会直接传给显存供Shader使用)
