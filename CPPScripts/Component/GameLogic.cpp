@@ -28,13 +28,32 @@ namespace ZXEngine
 		return ComponentType::GameLogic;
 	}
 
+	const string& GameLogic::GetLuaName()
+	{
+		if (mLuaName.empty())
+		{
+			mLuaName = Resources::GetAssetName(Lua);
+		}
+		return mLuaName;
+	}
+
+	const string& GameLogic::GetLuaFullPath()
+	{
+		if (mLuaFullPath.empty())
+		{
+			mLuaFullPath = Resources::GetAssetFullPath(Lua);
+		}
+		return mLuaFullPath;
+	}
+
 	void GameLogic::Awake()
 	{
 		lua_State* L = LuaManager::GetInstance()->GetState();
 		// 记录当前栈大小
 		int stack_size = lua_gettop(L);
 		// 加载绑定的lua代码
-		auto suc = luaL_dofile(L, luaFullPath.c_str());
+		auto& path = GetLuaFullPath();
+		auto suc = luaL_dofile(L, path.c_str());
 		if (suc == LUA_OK)
 		{
 			// 这里dofile成功后，lua代码的最后一行是return table，此时栈顶是一个table
@@ -62,8 +81,6 @@ namespace ZXEngine
 			// 此时-1位置是this->gameObject，-2位置是"GameObject"，-3位置是绑定的lua table
 			// 设置table["gameObject"] = this->gameObject
 			lua_settable(L, -3);
-
-			CallLuaFunction("Awake");
 		}
 		else
 		{
@@ -71,6 +88,20 @@ namespace ZXEngine
 		}
 		// 恢复栈大小(Pop掉这段代码在栈上产生的数据)
 		lua_settop(L, stack_size);
+
+		if (suc == LUA_OK)
+		{
+			for (auto& iter : mBoolVariables)
+				SetLuaVariable(iter.first, iter.second);
+			for (auto& iter : mFloatVariables)
+				SetLuaVariable(iter.first, iter.second);
+			for (auto& iter : mIntVariables)
+				SetLuaVariable(iter.first, iter.second);
+			for (auto& iter : mStringVariables)
+				SetLuaVariable(iter.first, iter.second);
+
+			CallLuaFunction("Awake");
+		}
 
 		mIsAwake = true;
 	}
@@ -143,6 +174,61 @@ namespace ZXEngine
 			Debug::LogError(lua_tostring(L, -1));
 		}
 		// 恢复栈大小(Pop掉这段代码在栈上产生的数据)
+		lua_settop(L, stack_size);
+	}
+
+	void GameLogic::SetLuaVariable(const string& name, bool value)
+	{
+		lua_State* L = LuaManager::GetInstance()->GetState();
+		// 记录当前栈大小
+		int stack_size = lua_gettop(L);
+		// 此时全局table AllGameLogic在-1位置
+		lua_getglobal(L, "AllGameLogic");
+		// 此时全局table AllGameLogic在-2位置
+		lua_pushnumber(L, luaID);
+		// 获取AllGameLogic[luaID]，此时table AllGameLogic[luaID]在-1
+		lua_gettable(L, -2);
+		// 压入变量，此时table AllGameLogic[luaID]在-2
+		lua_pushboolean(L, value);
+		// 设置AllGameLogic[luaID][name] = value
+		lua_setfield(L, -2, name.c_str());
+		// 恢复栈大小(Pop掉这段代码在栈上产生的数据)
+		lua_settop(L, stack_size);
+	}
+
+	void GameLogic::SetLuaVariable(const string& name, float value)
+	{
+		lua_State* L = LuaManager::GetInstance()->GetState();
+		int stack_size = lua_gettop(L);
+		lua_getglobal(L, "AllGameLogic");
+		lua_pushnumber(L, luaID);
+		lua_gettable(L, -2);
+		lua_pushnumber(L, static_cast<lua_Number>(value));
+		lua_setfield(L, -2, name.c_str());
+		lua_settop(L, stack_size);
+	}
+
+	void GameLogic::SetLuaVariable(const string& name, int32_t value)
+	{
+		lua_State* L = LuaManager::GetInstance()->GetState();
+		int stack_size = lua_gettop(L);
+		lua_getglobal(L, "AllGameLogic");
+		lua_pushnumber(L, luaID);
+		lua_gettable(L, -2);
+		lua_pushinteger(L, static_cast<lua_Integer>(value));
+		lua_setfield(L, -2, name.c_str());
+		lua_settop(L, stack_size);
+	}
+
+	void GameLogic::SetLuaVariable(const string& name, const string& value)
+	{
+		lua_State* L = LuaManager::GetInstance()->GetState();
+		int stack_size = lua_gettop(L);
+		lua_getglobal(L, "AllGameLogic");
+		lua_pushnumber(L, luaID);
+		lua_gettable(L, -2);
+		lua_pushstring(L, value.c_str());
+		lua_setfield(L, -2, name.c_str());
 		lua_settop(L, stack_size);
 	}
 }
