@@ -162,7 +162,7 @@ namespace ZXEngine
 			else if (component["Type"] == "Light")
 				ParseLight(component);
 			else if (component["Type"] == "GameLogic")
-				ParseGameLogic(component);
+				Parse<GameLogic>(component);
 			else if (component["Type"] == "UIButton")
 				ParseUIButton(component);
 			else if (component["Type"] == "UITextRenderer")
@@ -367,15 +367,6 @@ namespace ZXEngine
 
 		if (!data["ShadowRange"].is_null())
 			light->mDirectionalLightSpaceSize = data["ShadowRange"];
-	}
-
-	void GameObject::ParseGameLogic(json data)
-	{
-		GameLogic* gameLogic = AddComponent<GameLogic>();
-
-		string p = Resources::JsonStrToString(data["Lua"]);
-		gameLogic->luaName = Resources::GetAssetName(p);
-		gameLogic->luaFullPath = Resources::GetAssetFullPath(p);
 	}
 
 	void GameObject::ParseUIButton(json data)

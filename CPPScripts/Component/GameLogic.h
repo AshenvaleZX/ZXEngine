@@ -41,4 +41,17 @@ namespace ZXEngine
 		string mLuaName;
 		string mLuaFullPath;
 	};
+
+	StaticReflection
+	(
+		GameLogic,
+		Fields
+		(
+			Field(&GameLogic::Lua),
+			Field(&GameLogic::mBoolVariables),
+			Field(&GameLogic::mFloatVariables),
+			Field(&GameLogic::mIntVariables),
+			Field(&GameLogic::mStringVariables)
+		)
+	)
 }

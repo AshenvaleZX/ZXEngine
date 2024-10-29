@@ -85,7 +85,6 @@ namespace ZXEngine
 		void ParseRectTransform(json data);
 		void ParseMeshRenderer(json data, const ModelData* pModelData, MaterialStruct* material);
 		void ParseLight(json data);
-		void ParseGameLogic(json data);
 		void ParseUIButton(json data);
 		void ParseUITextRenderer(json data);
 		void ParseUITextureRenderer(json data);
