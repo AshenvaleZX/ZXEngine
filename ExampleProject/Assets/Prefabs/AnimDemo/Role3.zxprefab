@@ -17,7 +17,11 @@
         },
         {
             "Type": "GameLogic",
-            "Lua": "Scripts/AnimTest3.lua"
+            "Lua": "Scripts/AnimPlayTest.lua",
+            "mStringVariables":
+            {
+                "animationName": "Victory"
+            }
         }
     ]
 }

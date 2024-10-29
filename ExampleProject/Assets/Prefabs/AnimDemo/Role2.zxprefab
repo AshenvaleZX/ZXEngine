@@ -17,7 +17,11 @@
         },
         {
             "Type": "GameLogic",
-            "Lua": "Scripts/AnimTest2.lua"
+            "Lua": "Scripts/AnimPlayTest.lua",
+            "mStringVariables":
+            {
+                "animationName": "Idle"
+            }
         }
     ]
 }
