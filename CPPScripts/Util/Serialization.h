@@ -50,6 +50,43 @@ namespace ZXEngine
 					return object;
 				}
 			};
+
+			// 特化版本，用于处理unordered_map
+			template <typename K, typename V>
+			struct SerializeHelper<unordered_map<K, V>>
+			{
+				static json SerializeToJson(const unordered_map<K, V>& object)
+				{
+					json data;
+					
+					if constexpr (std::is_same_v<K, std::string>)
+					{
+						for (const auto& [key, value] : object)
+						{
+							if constexpr (std::is_arithmetic_v<V>)
+								data[key] = value;
+							else
+								data[key] = SerializeHelper<V>::SerializeToJson(value);
+						}
+					}
+					else if constexpr (std::is_arithmetic_v<K>)
+					{
+						for (const auto& [key, value] : object)
+						{
+							if constexpr (std::is_arithmetic_v<V>)
+								data[std::to_string(key)] = value;
+							else
+								data[std::to_string(key)] = SerializeHelper<V>::SerializeToJson(value);
+						}
+					}
+					else
+					{
+						Debug::LogWarning("Serialize failed, unsupported key type in unordered_map.");
+					}
+
+					return data;
+				}
+			};
 		}
 
 		template <typename T>
@@ -103,6 +140,53 @@ namespace ZXEngine
 				static string DeserializeFromJson(json data)
 				{
 					return data.get<string>();
+				}
+			};
+
+			// 特化版本，用于处理unordered_map
+			template <typename K, typename V>
+			struct DeserializeHelperV1<unordered_map<K, V>>
+			{
+				static unordered_map<K, V> DeserializeFromJson(json data)
+				{
+					unordered_map<K, V> object;
+
+					if constexpr (std::is_same_v<K, std::string>)
+					{
+						for (auto& [key, value] : data.items())
+						{
+							if constexpr (std::is_arithmetic_v<V>)
+								object[key] = value.get<V>();
+							else
+								object[key] = DeserializeHelperV1<V>::DeserializeFromJson(value);
+						}
+					}
+					else if constexpr (std::is_integral_v<K>)
+					{
+						for (auto& [key, value] : data.items())
+						{
+							if constexpr (std::is_arithmetic_v<V>)
+								object[static_cast<K>(std::stoi(key))] = value.get<V>();
+							else
+								object[static_cast<K>(std::stoi(key))] = DeserializeHelperV1<V>::DeserializeFromJson(value);
+						}
+					}
+					else if constexpr (std::is_floating_point_v<K>)
+					{
+						for (auto& [key, value] : data.items())
+						{
+							if constexpr (std::is_arithmetic_v<V>)
+								object[static_cast<K>(std::stof(key))] = value.get<V>();
+							else
+								object[static_cast<K>(std::stof(key))] = DeserializeHelperV1<V>::DeserializeFromJson(value);
+						}
+					}
+					else
+					{
+						Debug::LogWarning("Deserialize failed, unsupported key type in unordered_map.");
+					}
+					
+					return object;
 				}
 			};
 		}
@@ -160,6 +244,49 @@ namespace ZXEngine
 				static void DeserializeFromJson(string& object, json data)
 				{
 					object = data.get<string>();
+				}
+			};
+
+			// 特化版本，用于处理unordered_map
+			template <typename K, typename V>
+			struct DeserializeHelperV2<unordered_map<K, V>>
+			{
+				static void DeserializeFromJson(unordered_map<K, V>& object, json data)
+				{
+					if constexpr (std::is_same_v<K, std::string>)
+					{
+						for (auto& [key, value] : data.items())
+						{
+							if constexpr (std::is_arithmetic_v<V>)
+								object[key] = value.get<V>();
+							else
+								DeserializeHelperV2<V>::DeserializeFromJson(object[key], value);
+						}
+					}
+					else if constexpr (std::is_integral_v<K>)
+					{
+						for (auto& [key, value] : data.items())
+						{
+							if constexpr (std::is_arithmetic_v<V>)
+								object[static_cast<K>(std::stoi(key))] = value.get<V>();
+							else
+								DeserializeHelperV2<V>::DeserializeFromJson(object[static_cast<K>(std::stoi(key))], value);
+						}
+					}
+					else if constexpr (std::is_floating_point_v<K>)
+					{
+						for (auto& [key, value] : data.items())
+						{
+							if constexpr (std::is_arithmetic_v<V>)
+								object[static_cast<K>(std::stof(key))] = value.get<V>();
+							else
+								DeserializeHelperV2<V>::DeserializeFromJson(object[static_cast<K>(std::stof(key))], value);
+						}
+					}
+					else
+					{
+						Debug::LogWarning("Deserialize failed, unsupported key type in unordered_map.");
+					}
 				}
 			};
 		}
