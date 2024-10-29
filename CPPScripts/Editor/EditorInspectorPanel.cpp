@@ -506,13 +506,43 @@ namespace ZXEngine
 
 		ImGui::Text("Lua Script       ");
 		ImGui::SameLine();
-		if (ImGui::Button(component->luaName.c_str()))
+		auto& name = component->GetLuaName();
+		if (ImGui::Button(name.c_str()))
 		{
+			auto& path = component->GetLuaFullPath();
 #ifdef _WIN64
-			system(("start " + component->luaFullPath).c_str());
+			system(("start " + path).c_str());
 #elif __APPLE__
-			system(("open " + component->luaFullPath).c_str());
+			system(("open " + path).c_str());
 #endif
+		}
+
+		for (auto& iter : component->mBoolVariables)
+		{
+			bool value = iter.second;
+			ImGui::Text(iter.first.c_str());
+			ImGui::SameLine(135); ImGui::Checkbox(("##" + iter.first).c_str(), &value);
+		}
+
+		for (auto& iter : component->mFloatVariables)
+		{
+			float value = iter.second;
+			ImGui::Text(iter.first.c_str());
+			ImGui::SameLine(135); ImGui::DragFloat(("##" + iter.first).c_str(), &value, 0.1f, -FLT_MAX, FLT_MAX);
+		}
+
+		for (auto& iter : component->mIntVariables)
+		{
+			int value = iter.second;
+			ImGui::Text(iter.first.c_str());
+			ImGui::SameLine(135); ImGui::DragInt(("##" + iter.first).c_str(), &value, 1, INT_MIN, INT_MAX);
+		}
+
+		for (auto& iter : component->mStringVariables)
+		{
+			char* value = (char*)iter.second.c_str();
+			ImGui::Text(iter.first.c_str());
+			ImGui::SameLine(135); ImGui::InputText(("##" + iter.first).c_str(), value, 256);
 		}
 	}
 
