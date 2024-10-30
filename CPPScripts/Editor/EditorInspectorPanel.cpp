@@ -554,16 +554,21 @@ namespace ZXEngine
 		{
 			const char* value = iter.second.c_str();
 			// -1是为了保留一个位置放'\0'
+#ifdef _WIN64
 			errno_t err = strncpy_s(StagingBuffer, value, StagingSize - 1);
+			if (err != 0)
+				continue;
+#elif __APPLE__
+			// 不知道为什么在MacOS上无法识别strncpy_s，按理说应该是支持C11标准的
+			strncpy(StagingBuffer, value, StagingSize - 1);
+			StagingBuffer[StagingSize - 1] = '\0';
+#endif
 
-			if (err == 0)
-			{
-				ImGui::Text(iter.first.c_str());
-				ImGui::SameLine(135); ImGui::InputText(("##" + iter.first).c_str(), StagingBuffer, StagingSize);
+			ImGui::Text(iter.first.c_str());
+			ImGui::SameLine(135); ImGui::InputText(("##" + iter.first).c_str(), StagingBuffer, StagingSize);
 
-				if (strcmp(StagingBuffer, value) != 0)
-					component->SetLuaVariable(iter.first, string(StagingBuffer));
-			}
+			if (strcmp(StagingBuffer, value) != 0)
+				component->SetLuaVariable(iter.first, string(StagingBuffer));
 		}
 	}
 
