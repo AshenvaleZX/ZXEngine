@@ -31,10 +31,10 @@ namespace ZXEngine
 		void Update();
 		void FixedUpdate();
 		void CallLuaFunction(const char* func);
-		void SetLuaVariable(const string& name, bool value);
-		void SetLuaVariable(const string& name, float value);
-		void SetLuaVariable(const string& name, int32_t value);
-		void SetLuaVariable(const string& name, const string& value);
+		void SetLuaVariable(const string& name, bool value, bool sync = true);
+		void SetLuaVariable(const string& name, float value, bool sync = true);
+		void SetLuaVariable(const string& name, int32_t value, bool sync = true);
+		void SetLuaVariable(const string& name, const string& value, bool sync = true);
 
 	private:
 		bool firstCall = true;

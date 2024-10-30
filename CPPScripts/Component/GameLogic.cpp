@@ -92,13 +92,13 @@ namespace ZXEngine
 		if (suc == LUA_OK)
 		{
 			for (auto& iter : mBoolVariables)
-				SetLuaVariable(iter.first, iter.second);
+				SetLuaVariable(iter.first, iter.second, false);
 			for (auto& iter : mFloatVariables)
-				SetLuaVariable(iter.first, iter.second);
+				SetLuaVariable(iter.first, iter.second, false);
 			for (auto& iter : mIntVariables)
-				SetLuaVariable(iter.first, iter.second);
+				SetLuaVariable(iter.first, iter.second, false);
 			for (auto& iter : mStringVariables)
-				SetLuaVariable(iter.first, iter.second);
+				SetLuaVariable(iter.first, iter.second, false);
 
 			CallLuaFunction("Awake");
 		}
@@ -177,7 +177,7 @@ namespace ZXEngine
 		lua_settop(L, stack_size);
 	}
 
-	void GameLogic::SetLuaVariable(const string& name, bool value)
+	void GameLogic::SetLuaVariable(const string& name, bool value, bool sync)
 	{
 		lua_State* L = LuaManager::GetInstance()->GetState();
 		// 记录当前栈大小
@@ -194,9 +194,11 @@ namespace ZXEngine
 		lua_setfield(L, -2, name.c_str());
 		// 恢复栈大小(Pop掉这段代码在栈上产生的数据)
 		lua_settop(L, stack_size);
+
+		if (sync) mBoolVariables[name] = value;
 	}
 
-	void GameLogic::SetLuaVariable(const string& name, float value)
+	void GameLogic::SetLuaVariable(const string& name, float value, bool sync)
 	{
 		lua_State* L = LuaManager::GetInstance()->GetState();
 		int stack_size = lua_gettop(L);
@@ -206,9 +208,11 @@ namespace ZXEngine
 		lua_pushnumber(L, static_cast<lua_Number>(value));
 		lua_setfield(L, -2, name.c_str());
 		lua_settop(L, stack_size);
+
+		if (sync) mFloatVariables[name] = value;
 	}
 
-	void GameLogic::SetLuaVariable(const string& name, int32_t value)
+	void GameLogic::SetLuaVariable(const string& name, int32_t value, bool sync)
 	{
 		lua_State* L = LuaManager::GetInstance()->GetState();
 		int stack_size = lua_gettop(L);
@@ -218,9 +222,11 @@ namespace ZXEngine
 		lua_pushinteger(L, static_cast<lua_Integer>(value));
 		lua_setfield(L, -2, name.c_str());
 		lua_settop(L, stack_size);
+
+		if (sync) mIntVariables[name] = value;
 	}
 
-	void GameLogic::SetLuaVariable(const string& name, const string& value)
+	void GameLogic::SetLuaVariable(const string& name, const string& value, bool sync)
 	{
 		lua_State* L = LuaManager::GetInstance()->GetState();
 		int stack_size = lua_gettop(L);
@@ -230,5 +236,7 @@ namespace ZXEngine
 		lua_pushstring(L, value.c_str());
 		lua_setfield(L, -2, name.c_str());
 		lua_settop(L, stack_size);
+
+		if (sync) mStringVariables[name] = value;
 	}
 }

@@ -522,6 +522,9 @@ namespace ZXEngine
 			bool value = iter.second;
 			ImGui::Text(iter.first.c_str());
 			ImGui::SameLine(135); ImGui::Checkbox(("##" + iter.first).c_str(), &value);
+
+			if (value != iter.second)
+				component->SetLuaVariable(iter.first, value);
 		}
 
 		for (auto& iter : component->mFloatVariables)
@@ -529,6 +532,9 @@ namespace ZXEngine
 			float value = iter.second;
 			ImGui::Text(iter.first.c_str());
 			ImGui::SameLine(135); ImGui::DragFloat(("##" + iter.first).c_str(), &value, 0.1f, -FLT_MAX, FLT_MAX);
+
+			if (value != iter.second)
+				component->SetLuaVariable(iter.first, value);
 		}
 
 		for (auto& iter : component->mIntVariables)
@@ -536,13 +542,28 @@ namespace ZXEngine
 			int value = iter.second;
 			ImGui::Text(iter.first.c_str());
 			ImGui::SameLine(135); ImGui::DragInt(("##" + iter.first).c_str(), &value, 1, INT_MIN, INT_MAX);
+
+			if (value != iter.second)
+				component->SetLuaVariable(iter.first, value);
 		}
+
+		static const size_t StagingSize = 256;
+		static char StagingBuffer[StagingSize];
 
 		for (auto& iter : component->mStringVariables)
 		{
-			char* value = (char*)iter.second.c_str();
-			ImGui::Text(iter.first.c_str());
-			ImGui::SameLine(135); ImGui::InputText(("##" + iter.first).c_str(), value, 256);
+			const char* value = iter.second.c_str();
+			// -1是为了保留一个位置放'\0'
+			errno_t err = strncpy_s(StagingBuffer, value, StagingSize - 1);
+
+			if (err == 0)
+			{
+				ImGui::Text(iter.first.c_str());
+				ImGui::SameLine(135); ImGui::InputText(("##" + iter.first).c_str(), StagingBuffer, StagingSize);
+
+				if (strcmp(StagingBuffer, value) != 0)
+					component->SetLuaVariable(iter.first, string(StagingBuffer));
+			}
 		}
 	}
 
