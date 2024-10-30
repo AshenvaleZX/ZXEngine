@@ -278,18 +278,20 @@ The GamePlay layer of this engine uses Lua language. The engine wraps all the C+
 
 The way to use lua in ZXEngine is to create a Lua code, and then use the GameLogic component to load the Lua code to a GameObject. Then the Lua code can receive calls from the engine's Awake, Start, Update and FixedUpdate. You can also use self to access the GameObject you bound, obtain components, call the engine interface, etc.
 
-以控制GameObject旋转移动举例，写一个ObjectMove.lua然后挂到一个GameObject上：
+以控制GameObject移动和旋转为例，可以写一个ObjectMove.lua脚本，然后挂到一个GameObject上。这里我们可以暴露一些Lua脚本中的变量到编辑器面板上，以便在引擎编辑器中直接修改Lua变量的值，方便调试，也方便同一个脚本挂到不同GameObject上时使用不同的参数。这些变量的值会保存到zxprefab文件中，运行时在Awake之前完成初始化。比如我们的ObjectMove.lua脚本暴露了一个speed变量来控制物体移动速度：
 
-Take controlling the rotation and movement of GameObject as an example. Write an ObjectMove.lua and bind it to a GameObject:
+Take controlling the movement and rotation of GameObject as an example. Write an ObjectMove.lua and bind it to a GameObject. Here we can expose some variables from the Lua script to the editor panel so that the values of the Lua variables can be modified in the engine editor for debugging purposes and for using different parameters when the same script is bound to different GameObjects. The values of these variables are stored in a zxprefab file and will be initialized at runtime before Awake. For example, our ObjectMove.lua script exposes a speed variable to control how fast objects move:
 
 ![](Documents/Images/GameLogic.png)
 
-然后Lua代码大致如下：
+这个Lua脚本大致如下：
 
-Then the Lua code is as follows:
+And the Lua script looks something like this:
 
 ```lua
 local ObjectMove = NewGameLogic()
+
+ObjectMove.speed = 2
 
 ObjectMove.radius = 20
 ObjectMove.angle = 0
@@ -300,15 +302,12 @@ function ObjectMove:Start()
 end
 
 function ObjectMove:Update()
-    self.angle = self.angle + 2 * Time.GetDeltaTime()
+    self.angle = self.angle + self.speed * Time.GetDeltaTime()
     local x = math.sin(self.angle) * self.radius
     local z = math.cos(self.angle) * self.radius
     self.trans:SetPosition(x, 0, z)
 
-    self.rot = self.rot + 50 * Time.GetDeltaTime()
-    if self.rot > 360 then
-        self.rot = self.rot - 360
-    end
+    self.rot = CalculateRotation();
     self.trans:SetEulerAngles(0, 0, self.rot)
 end
 
@@ -506,9 +505,111 @@ static void Deserialize(T& object, const string& data);
 
 ### Reflection
 
-反射系统接口比较复杂，就不在本文档里演示了。反射系统的接口，使用方式以及序列化工具的演示等，请参考Test\ReflectionAndSerializationCase.h
+反射系统接口比较复杂，这里只演示一部分。假设有一个Student类：
 
-The reflection system interface is more complex and will not be demonstrated in this document. For the interface of the reflection system, use examples, demonstration of serialization tools, etc. please refer to Test\ReflectionAndSerializationCase.h
+The reflection system has more interfaces than serialization, and only some of them are shown here. Suppose you have a Student class:
+
+```c++
+class Student
+{
+public:
+    string mName;
+    uint32_t mAge = 0;
+    float mHeight = 0.0f;
+    Vector3 mPos;
+
+    int GetAge() const { return mAge; }
+
+    void Speak(const string& words)
+    {
+        Debug::Log("Student speak: %s", words);
+    }
+};
+```
+
+#### Static Reflection:
+
+```c++
+#include "Reflection/StaticReflection.h"
+
+// Register the Student class
+StaticReflection
+(
+    Student,
+    Fields
+    (
+        Field(&Student::mName),
+        Field(&Student::mAge),
+        Field(&Student::mHeight),
+        Field(&Student::mPos)
+    )
+)
+
+int main()
+{
+    // Create an instance
+    Student object;
+    
+    // Get type info
+    auto typeInfo = Reflection::Static::Reflect(object);
+    
+    // Traverse all member and print their name and value
+    typeInfo.TraverseMemberVariableAndDo
+    (
+        [&](auto& field)
+        {
+            auto& member = field.Invoke(object);
+            Debug::Log("Member name: %s, value: %s", field.GetName(), member);
+        }
+    );
+}
+```
+
+#### Dynamic Reflection:
+
+```c++
+#include "Reflection/DynamicReflection.h"
+
+int main()
+{
+    // Register the Student class
+    Reflection::Dynamic::Register<Student>()
+        .Register("Student")
+        .AddVariable("mName",   &Student::mName)
+        .AddVariable("mAge",    &Student::mAge)
+        .AddVariable("mHeight", &Student::mHeight)
+        .AddVariable("mPos",    &Student::mPos)
+        .AddFunction("GetAge",  &Student::GetAge)
+        .AddFunction("Speak",   &Student::Speak);
+    
+    // Create an instance
+    Student object;
+    
+    // Get type info
+    auto typeInfo = Reflection::Dynamic::GetTypeInfo("Student")->AsClass();
+    
+    // Set member value by name
+    typeInfo->SetVariable(&object, "mAge", 12);
+
+    // Traverse all member and print their name and value
+    for (auto& item : typeInfo->GetVariables())
+    {
+        Debug::Log("Variable: %s %s", item->type->GetName(), item->name);
+    }
+    
+    // Traverse all function and print their name, return type and parameters type
+    for (auto& item : typeInfo->GetFunctions())
+    {
+        Debug::Log("Function: %s return %s", item->name, item->returnType->GetName());
+        for (auto& param : item->paramTypes)
+            Debug::Log("Param: %s", param->GetName());
+    }
+}
+```
+
+更多的反射接口，使用方式以及序列化工具等等的演示，请参考Test\ReflectionAndSerializationCase.h
+
+For more reflection interfaces, use way and serialization tool demonstration, etc. please refer to Test\ReflectionAndSerializationCase.h
 
 ## 引擎文件格式介绍 (Engine File Format Introduction)
 
