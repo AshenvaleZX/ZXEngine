@@ -1,5 +1,7 @@
 local ObjectMove = NewGameLogic()
 
+ObjectMove.speed = 2
+
 ObjectMove.radius = 20
 ObjectMove.angle = 0
 ObjectMove.rot = 0
@@ -9,7 +11,7 @@ function ObjectMove:Start()
 end
 
 function ObjectMove:Update()
-    self.angle = self.angle + 2 * Time.GetDeltaTime()
+    self.angle = self.angle + self.speed * Time.GetDeltaTime()
     local x = math.sin(self.angle)*self.radius
     local z = math.cos(self.angle)*self.radius
     self.trans:SetPosition(x, 0, z)

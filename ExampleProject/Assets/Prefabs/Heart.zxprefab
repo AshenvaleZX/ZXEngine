@@ -17,7 +17,11 @@
         },
         {
             "Type": "GameLogic",
-            "Lua": "Scripts/ObjectMove.lua"
+            "Lua": "Scripts/ObjectMove.lua",
+            "mFloatVariables":
+            {
+                "speed": 2.0
+            }
         },
         {
             "Type": "AudioSource",
