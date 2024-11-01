@@ -549,7 +549,6 @@
     <ClInclude Include="..\..\..\CPPScripts\Reflection\StaticReflection.h" />
     <ClInclude Include="..\..\..\CPPScripts\Reflection\TypeMap.h" />
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\TypeInfo.h" />
-    <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\ClassType.h" />
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\EnumType.h" />
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\NumericType.h" />
     <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\VoidType.h" />
