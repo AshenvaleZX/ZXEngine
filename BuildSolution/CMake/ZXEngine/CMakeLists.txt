@@ -539,6 +539,8 @@ source_group("ZXSource" FILES ${ZXSource})
 set(ALL_FILES
     ${Animation}
     ${Audio}
+    ${Audio__DefaultImpl}
+    ${Audio__irrKlangImpl}
     ${Common}
     ${Component}
     ${Component__Physics}
@@ -571,116 +573,61 @@ set(ALL_FILES
 ################################################################################
 add_executable(${PROJECT_NAME} ${ALL_FILES})
 
-use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
-set(ROOT_NAMESPACE ZXEngine)
-
 set_target_properties(${PROJECT_NAME} PROPERTIES
     VS_GLOBAL_KEYWORD "Win32Proj"
 )
 ################################################################################
 # Output directory
 ################################################################################
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}/$<CONFIG>/"
-        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/$<CONFIG>/"
-    )
-endif()
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-        INTERPROCEDURAL_OPTIMIZATION_RELEASE "TRUE"
-    )
-elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x86")
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-        INTERPROCEDURAL_OPTIMIZATION_RELEASE "TRUE"
-    )
-endif()
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/$<CONFIG>"
+)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    INTERPROCEDURAL_OPTIMIZATION_RELEASE "TRUE"
+)
 ################################################################################
 # Compile definitions
 ################################################################################
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    target_compile_definitions(${PROJECT_NAME} PRIVATE
-        "$<$<CONFIG:Debug>:"
-            "_DEBUG"
-        ">"
-        "$<$<CONFIG:Release>:"
-            "NDEBUG"
-        ">"
-        "_CONSOLE;"
-        "UNICODE;"
-        "_UNICODE"
-    )
-elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x86")
-    target_compile_definitions(${PROJECT_NAME} PRIVATE
-        "$<$<CONFIG:Debug>:"
-            "_DEBUG"
-        ">"
-        "$<$<CONFIG:Release>:"
-            "NDEBUG"
-        ">"
-        "WIN32;"
-        "_CONSOLE;"
-        "UNICODE;"
-        "_UNICODE"
-    )
-endif()
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    "$<$<CONFIG:Debug>:"
+        "_DEBUG"
+    ">"
+    "$<$<CONFIG:Release>:"
+        "NDEBUG"
+    ">"
+    "_CONSOLE;"
+    "UNICODE;"
+    "_UNICODE"
+)
 
 ################################################################################
 # Compile and link options
 ################################################################################
 if(MSVC)
-    if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-        target_compile_options(${PROJECT_NAME} PRIVATE
-            $<$<CONFIG:Release>:
-                /Oi;
-                /Gy
-            >
-            /permissive-;
-            /sdl;
-            /W3;
-            ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
-            ${DEFAULT_CXX_EXCEPTION_HANDLING}
-        )
-    elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x86")
-        target_compile_options(${PROJECT_NAME} PRIVATE
-            $<$<CONFIG:Release>:
-                /Oi;
-                /Gy
-            >
-            /permissive-;
-            /sdl;
-            /W3;
-            ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
-            ${DEFAULT_CXX_EXCEPTION_HANDLING}
-        )
-    endif()
-    if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-        target_link_options(${PROJECT_NAME} PRIVATE
-            $<$<CONFIG:Debug>:
-                /INCREMENTAL
-            >
-            $<$<CONFIG:Release>:
-                /OPT:REF;
-                /OPT:ICF;
-                /INCREMENTAL:NO
-            >
-            /DEBUG;
-            /SUBSYSTEM:CONSOLE
-        )
-    elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x86")
-        target_link_options(${PROJECT_NAME} PRIVATE
-            $<$<CONFIG:Debug>:
-                /INCREMENTAL
-            >
-            $<$<CONFIG:Release>:
-                /OPT:REF;
-                /OPT:ICF;
-                /INCREMENTAL:NO
-            >
-            /DEBUG;
-            /SUBSYSTEM:CONSOLE
-        )
-    endif()
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Release>:
+            /Oi;
+            /Gy
+        >
+        /permissive-;
+        /sdl;
+        /W3;
+        ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
+        ${DEFAULT_CXX_EXCEPTION_HANDLING}
+    )
+    target_link_options(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:
+            /INCREMENTAL
+        >
+        $<$<CONFIG:Release>:
+            /OPT:REF;
+            /OPT:ICF;
+            /INCREMENTAL:NO
+        >
+        /DEBUG;
+        /SUBSYSTEM:CONSOLE
+    )
 endif()
 
 target_include_directories(${PROJECT_NAME} PRIVATE 
@@ -688,51 +635,33 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../../Vendor/Include
 )
 target_link_directories(${PROJECT_NAME} PRIVATE 
-    ${PROJECT_SOURCE_DIR}/../../../Vendor/Library/Windows/Static
+    ${PROJECT_SOURCE_DIR}/../../Vendor/Library/Windows/Static
 )
 
 ################################################################################
 # Post build events
 ################################################################################
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    add_custom_command_if(
-        TARGET ${PROJECT_NAME}
-        POST_BUILD
-        COMMANDS
-        COMMAND   $<CONFIG:Debug> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\Library\\Windows\\Dynamic\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
-        COMMAND $<CONFIG:Release> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\Library\\Windows\\Dynamic\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
-    )
-elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x86")
-    add_custom_command_if(
-        TARGET ${PROJECT_NAME}
-        POST_BUILD
-        COMMANDS
-        COMMAND   $<CONFIG:Debug> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\Library\\Windows\\Dynamic\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
-        COMMAND $<CONFIG:Release> xcopy /y /d "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/>..\\..\\..\\Vendor\\Library\\Windows\\Dynamic\\*.dll" "$<SHELL_PATH:${OUTPUT_DIRECTORY}>"
-    )
-endif()
+get_filename_component(ABSOLUTE_VENDOR_DLL_SRC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../Vendor/Library/Windows/Dynamic/*.dll" ABSOLUTE)
+get_filename_component(ABSOLUTE_VENDOR_DLL_DST_PATH "${CMAKE_SOURCE_DIR}/$<CONFIG>" ABSOLUTE)
+
+add_custom_command_if(
+    TARGET ${PROJECT_NAME}
+    POST_BUILD
+    COMMANDS
+    COMMAND $<CONFIG:Debug>   xcopy /y /d "$<SHELL_PATH:${ABSOLUTE_VENDOR_DLL_SRC_PATH}>" "$<SHELL_PATH:${ABSOLUTE_VENDOR_DLL_DST_PATH}>"
+    COMMAND $<CONFIG:Release> xcopy /y /d "$<SHELL_PATH:${ABSOLUTE_VENDOR_DLL_SRC_PATH}>" "$<SHELL_PATH:${ABSOLUTE_VENDOR_DLL_DST_PATH}>"
+)
 
 ################################################################################
 # Dependencies
 ################################################################################
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    set(ADDITIONAL_LIBRARY_DEPENDENCIES
-        "assimp-vc143-mt;"
-        "glfw3;"
-        "opengl32;"
-        "freetype;"
-        "vulkan-1;"
-        "irrKlang"
-    )
-elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x86")
-    set(ADDITIONAL_LIBRARY_DEPENDENCIES
-        "$<$<CONFIG:Debug>:"
-            "assimp-vc143-mt;"
-            "opengl32;"
-            "glfw3;"
-            "freetype"
-        ">"
-    )
-endif()
-target_link_libraries(${PROJECT_NAME} PRIVATE "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
+set(ADDITIONAL_LIBRARY_DEPENDENCIES
+    "assimp-vc143-mt;"
+    "glfw3;"
+    "opengl32;"
+    "freetype;"
+    "vulkan-1;"
+    "irrKlang"
+)
 
+target_link_libraries(${PROJECT_NAME} PRIVATE "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
