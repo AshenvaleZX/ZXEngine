@@ -56,20 +56,22 @@ namespace ZXEngine
 			void DoQuery(vector<Entity>& entities)
 			{
 				auto id = TypeIDAllocator<World::ComponentPool>::Get<T>();
-				auto data = mWorld.mComponents[id];
+				auto& data = mWorld.mComponents[id];
 
 				if constexpr (sizeof...(Components) == 0)
 				{
 					data.mEntitySet.CopyTo(entities);
 					return;
 				}
-
-				for (auto entity : data.mEntitySet)
+				else
 				{
-					const ComponentContainer& componentContainer = mWorld.mEntities[entity];
-					if (CheckRemainComponents<Components...>(entity, componentContainer))
+					for (auto entity : data.mEntitySet)
 					{
-						entities.push_back(entity);
+						const ComponentContainer& componentContainer = mWorld.mEntities[entity];
+						if (CheckRemainComponents<Components...>(entity, componentContainer))
+						{
+							entities.push_back(entity);
+						}
 					}
 				}
 			}
