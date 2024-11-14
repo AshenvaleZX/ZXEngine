@@ -12,7 +12,7 @@ namespace ZXEngine
 		class Queryer;
 
 		using StartSystem = void(*)(Command&);
-		using UpdateSystem = void(*)(Command&, Queryer&, Event&);
+		using UpdateSystem = void(*)(ECS::World&, Command&, Queryer&, Event&);
 
 		class World final
 		{
@@ -38,8 +38,27 @@ namespace ZXEngine
 			void Start();
 			void Update();
 
-			void AddStartSystem(StartSystem system);
-			void AddUpdateSystem(UpdateSystem system);
+			World& AddStartSystem(StartSystem system);
+			World& AddUpdateSystem(UpdateSystem system);
+
+			template<typename T>
+			bool HasSingleton() const
+			{
+				auto singletonID = TypeIDAllocator<World::Singleton>::Get<T>();
+				return mSingletons.find(singletonID) != mSingletons.end();
+			}
+
+			template<typename T>
+			T& GetSingleton()
+			{
+				auto singletonID = TypeIDAllocator<World::Singleton>::Get<T>();
+				auto it = mSingletons.find(singletonID);
+				if (it == mSingletons.end())
+				{
+					assert(false);
+				}
+				return *static_cast<T*>(it->second.mInstance);
+			}
 
 		private:
 			Event mEvent;

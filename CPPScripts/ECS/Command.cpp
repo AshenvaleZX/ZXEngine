@@ -58,6 +58,7 @@ namespace ZXEngine
 					componentContainer[componentSpawner.ID] = SpawnComponentForEntity(entitySpawner.entity, componentSpawner);
 				}
 			}
+			mEntitiesToSpawn.clear();
 		}
 
 		void* Command::SpawnComponentForEntity(Entity entity, const ComponentSpawner& spawner)

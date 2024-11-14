@@ -82,6 +82,7 @@ namespace ZXEngine
 			EntitySpawner entitySpawner;
 			entitySpawner.entity = EntityGenerator::Gen();
 			DoSpawnEntityD(entitySpawner.entity, entitySpawner.componentSpawners, std::forward<ComponentTypes>(components)...);
+			mEntitiesToSpawn.push_back(std::move(entitySpawner));
 			return *this;
 		}
 

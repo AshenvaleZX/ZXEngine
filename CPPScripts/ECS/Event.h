@@ -35,7 +35,7 @@ namespace ZXEngine
 			}
 			
 		private:
-			inline static std::optional<T> mEvent;
+			inline static std::optional<T> mEvent = std::nullopt;
 		};
 
 		template<typename T>

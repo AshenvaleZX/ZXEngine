@@ -83,7 +83,7 @@ namespace ZXEngine
 			{
 				Command command{*this};
 				Queryer queryer{*this};
-				system(command, queryer, mEvent);
+				system(*this, command, queryer, mEvent);
 				commands.push_back(command);
 			}
 
@@ -96,14 +96,16 @@ namespace ZXEngine
 			}
 		}
 
-		void World::AddStartSystem(StartSystem system)
+		World& World::AddStartSystem(StartSystem system)
 		{
 			mStartSystems.push_back(system);
+			return *this;
 		}
 
-		void World::AddUpdateSystem(UpdateSystem system)
+		World& World::AddUpdateSystem(UpdateSystem system)
 		{
 			mUpdateSystems.push_back(system);
+			return *this;
 		}
 	}
 }
