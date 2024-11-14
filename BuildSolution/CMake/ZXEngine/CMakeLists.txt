@@ -403,6 +403,7 @@ set(Reflection__Type
 source_group("Reflection\\Type" FILES ${Reflection__Type})
 
 set(Test
+    "../../../CPPScripts/Test/EntityComponentSystemCase.h"
     "../../../CPPScripts/Test/ReflectionAndSerializationCase.h"
 )
 source_group("Test" FILES ${Test})

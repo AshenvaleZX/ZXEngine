@@ -1322,9 +1322,6 @@
     <ClInclude Include="..\..\..\CPPScripts\Reflection\TypeMap.h">
       <Filter>Reflection</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\CPPScripts\Reflection\Type\ClassType.h">
-      <Filter>Reflection\Type</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\Reflection\DynamicReflection.h">
       <Filter>Reflection</Filter>
     </ClInclude>
@@ -1342,6 +1339,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\Util\Encryption.h">
       <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Test\EntityComponentSystemCase.h">
+      <Filter>Test</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
