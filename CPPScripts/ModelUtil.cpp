@@ -231,7 +231,7 @@ namespace ZXEngine
         {
             if (mesh->mNumBones > MAX_BONE_NUM)
             {
-                Debug::LogWarning("Too many bones in mesh %s", mesh->mName.C_Str());
+                Debug::LogWarning("Too many bones in mesh %s, num: %s", mesh->mName.C_Str(), mesh->mNumBones);
             }
 
             for (unsigned int i = 0; i < mesh->mNumBones; i++)
