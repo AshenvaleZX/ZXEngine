@@ -32,7 +32,7 @@ Vertex
         using ENGINE_View
         using ENGINE_Projection
         using ENGINE_Model_Inv
-        mat4 _BoneMatrices[64]
+        mat4 _BoneMatrices[MAX_BONE_NUM]
     }
 
     Program

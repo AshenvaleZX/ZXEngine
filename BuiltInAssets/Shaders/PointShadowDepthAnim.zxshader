@@ -19,7 +19,7 @@ Vertex
     Properties
     {
         using ENGINE_Model
-        mat4 _BoneMatrices[64]
+        mat4 _BoneMatrices[MAX_BONE_NUM]
     }
 
     Program
