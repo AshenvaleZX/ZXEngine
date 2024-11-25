@@ -8,6 +8,9 @@
 #include "PublicEnum.h"
 #include "Debug.h"
 
+// 一个Mesh支持的最大骨骼数量
+constexpr uint32_t MAX_BONE_NUM = 70;
+
 // 顶点最多关联4个骨骼
 constexpr size_t MAX_NUM_BONES_PER_VERTEX = 4;
 

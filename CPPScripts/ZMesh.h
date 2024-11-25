@@ -4,9 +4,6 @@
 
 namespace ZXEngine
 {
-	// 一个Mesh支持的最大骨骼数量
-	constexpr uint32_t MAX_BONE_NUM = 64;
-
 	class Mesh
 	{
 	public:

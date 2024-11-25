@@ -1247,18 +1247,28 @@ namespace ZXEngine
 
 		name = propertyStr.substr(0, s);
 		string lengthStr = propertyStr.substr(s + 1, e - s - 1);
-		arrayLength = static_cast<uint32_t>(std::stoi(lengthStr));
+
+		if (lengthStr == "MAX_BONE_NUM")
+			arrayLength = MAX_BONE_NUM;
+		else
+			arrayLength = static_cast<uint32_t>(std::stoi(lengthStr));
 	}
 
 	string ShaderParser::PreprocessMacroDefine(const string& code, const string& macro)
 	{
-		if (code.find("#if") == string::npos)
-			return code;
+		string res = code;
 
-		string res;
+		if (Utils::FindWord(code, "MAX_BONE_NUM", 0) != std::string::npos)
+			Utils::ReplaceAllWord(res, "MAX_BONE_NUM", to_string(MAX_BONE_NUM));
+
+		if (res.find("#if") == string::npos)
+			return res;
+
 		bool reserve = true;
 
-		auto lines = Utils::StringSplit(code, '\n');
+		auto lines = Utils::StringSplit(res, '\n');
+		res.clear();
+
 		for (auto& line : lines)
 		{
 			if (line.find("#if") != string::npos)
