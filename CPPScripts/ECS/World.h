@@ -8,11 +8,12 @@ namespace ZXEngine
 {
 	namespace ECS
 	{
+		class World;
 		class Command;
 		class Queryer;
 
 		using StartSystem = void(*)(Command&);
-		using UpdateSystem = void(*)(ECS::World&, Command&, Queryer&, Event&);
+		using UpdateSystem = void(*)(World&, Command&, Queryer&, Event&);
 
 		class World final
 		{
