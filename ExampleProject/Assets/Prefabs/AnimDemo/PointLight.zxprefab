@@ -4,7 +4,7 @@
     [
         {
             "Type": "Transform",
-            "Position": [-4.5, 13, -17],
+            "Position": [-4.5, 15, -17],
             "Rotation": [-45, -45, 0],
             "Scale": [2, 2, 2]
         },

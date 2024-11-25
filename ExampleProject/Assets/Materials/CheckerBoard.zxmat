@@ -5,7 +5,7 @@
     [
         {
             "UniformName": "_Scale",
-            "Value": 5
+            "Value": 15
         },
         {
             "UniformName": "_Ambient",

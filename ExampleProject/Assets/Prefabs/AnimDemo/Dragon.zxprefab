@@ -1,0 +1,27 @@
+{
+    "Name": "Dragon",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 3, 10],
+            "Rotation": [0, 180, 0],
+            "Scale": [0.1, 0.1, 0.1]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Mesh": "Models/Ani/dragon_boss.fbx",
+            "Material": "Materials/BlinnPhongAnimDragon.zxmat",
+            "CastShadow": true,
+            "ReceiveShadow": false
+        },
+        {
+            "Type": "GameLogic",
+            "Lua": "Scripts/AnimPlayTest.lua",
+            "mStringVariables":
+            {
+                "animationName": "Object_5|Dragon_Boss_05_idle_Object_5"
+            }
+        }
+    ]
+}

@@ -15,9 +15,10 @@
         "Prefabs/AnimDemo/Role2.zxprefab",
         "Prefabs/AnimDemo/Role3.zxprefab",
         "Prefabs/AnimDemo/Role4.zxprefab",
+        "Prefabs/AnimDemo/Dragon.zxprefab",
         "Prefabs/AnimDemo/Plane.zxprefab",
         "Prefabs/AnimDemo/PointLight.zxprefab",
-        "Prefabs/MainCamera3.zxprefab",
+        "Prefabs/AnimDemo/MainCamera.zxprefab",
         "Prefabs/UI/FPSText.zxprefab"
     ]
 }

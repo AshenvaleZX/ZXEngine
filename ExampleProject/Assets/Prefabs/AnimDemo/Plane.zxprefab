@@ -6,7 +6,7 @@
             "Type": "Transform",
             "Position": [0, -4, 0],
             "Rotation": [0, 0, 0],
-            "Scale": [5, 1, 5]
+            "Scale": [15, 1, 15]
         },
         {
             "Type": "MeshRenderer",
