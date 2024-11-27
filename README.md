@@ -1,10 +1,8 @@
 # ZXEngine
 
-![Vulkan](Documents/Badges/Vulkan-Supported.svg)
-![DirectX 12](Documents/Badges/DirectX_12-Supported.svg)
-![OpenGL](Documents/Badges/OpenGL-Supported.svg)
-![Windows](Documents/Badges/Windows-Supported-blue.svg)
-![Mac OS](Documents/Badges/Mac_OS-Supported-blue.svg)
+| Graphics API | Platform |
+| :----------: | :------: |
+| ![Vulkan](Documents/Badges/Vulkan-Supported.svg) ![DirectX 12](Documents/Badges/DirectX_12-Supported.svg) ![OpenGL](Documents/Badges/OpenGL-Supported.svg) | ![Windows](Documents/Badges/Windows-Supported-blue.svg) ![Mac OS](Documents/Badges/Mac_OS-Supported-blue.svg) |
 
 这是我自己开发的游戏引擎项目，创建这个项目的主要目的是为了我自己学习和实践游戏引擎技术，不过也希望这个项目能对你有所帮助。
 
