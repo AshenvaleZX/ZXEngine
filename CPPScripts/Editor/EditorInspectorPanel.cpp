@@ -667,27 +667,27 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("Particle System"))
 			return;
 
-		int particleNum = (int)component->mParticleNum;
+		int particleNum = (int)component->mState.mMaxParticleNum;
 		ImGui::Text("ParticleNum      ");
 		ImGui::SameLine(); ImGui::DragInt("##ParticleNum", &particleNum, 0.1f, 0, INT_MAX);
 
 		auto ImTextureMgr = ImGuiTextureManager::GetInstance();
-		uint32_t id = component->mTextureID;
+		uint32_t id = component->mRenderer.mTextureID;
 		if (!ImTextureMgr->CheckExistenceByEngineID(id))
 			ImTextureMgr->CreateFromEngineID(id);
 		ImGui::Text("Texture          ");
 		ImGui::SameLine(); ImGui::Image(ImTextureMgr->GetImTextureIDByEngineID(id), ImVec2(50.0f, 50.0f));
 
-		float lifeTime = component->mLifeTime;
+		float lifeTime = component->mState.mLifeTime;
 		ImGui::Text("LifeTime         ");
 		ImGui::SameLine(); ImGui::DragFloat("##lifeTime", &lifeTime, 0.01f, 0.0f, FLT_MAX);
 
-		Vector3 velocity = component->mVelocity;
+		Vector3 velocity = component->mState.mVelocity;
 		ImVec4 v = ImVec4(velocity.x, velocity.y, velocity.z, 1.0f);
 		ImGui::Text("Velocity         ");
 		ImGui::SameLine(); ImGui::DragFloat3("##velocity", (float*)&v, 0.01f, -FLT_MAX, FLT_MAX);
 
-		Vector3 offset = component->mOffset;
+		Vector3 offset = component->mState.mOffset;
 		ImVec4 o = ImVec4(offset.x, offset.y, offset.z, 1.0f);
 		ImGui::Text("StartOffset      ");
 		ImGui::SameLine(); ImGui::DragFloat3("##offset", (float*)&o, 0.01f, -FLT_MAX, FLT_MAX);

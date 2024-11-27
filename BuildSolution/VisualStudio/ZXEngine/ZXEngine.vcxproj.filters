@@ -94,6 +94,9 @@
     <Filter Include="Test">
       <UniqueIdentifier>{6c110d88-4846-44cc-b24a-b5241391805c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ParticleSystem">
+      <UniqueIdentifier>{3a46da9f-a203-4e0a-80d6-96f17617ad23}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\CPPScripts\GameObject.cpp">
@@ -193,9 +196,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\CPPScripts\DynamicMesh.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\CPPScripts\ParticleSystemManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\CPPScripts\Math\Vector2.cpp">
@@ -648,6 +648,15 @@
     <ClCompile Include="..\..\..\CPPScripts\Util\Encryption.cpp">
       <Filter>Util</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\ParticleSystem\ParticleRenderer.cpp">
+      <Filter>ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\ParticleSystem\ParticleEmitter.cpp">
+      <Filter>ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\ParticleSystem\ParticleSystemManager.cpp">
+      <Filter>ParticleSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\CPPScripts\GameObject.h">
@@ -781,9 +790,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_UITextRenderer.h">
       <Filter>LuaWrap</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\CPPScripts\ParticleSystemManager.h">
-      <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\Math\Vector2.h">
       <Filter>Math</Filter>
@@ -1342,6 +1348,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\Test\EntityComponentSystemCase.h">
       <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\ParticleSystem\ParticleRenderer.h">
+      <Filter>ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\ParticleSystem\ParticleEmitter.h">
+      <Filter>ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\ParticleSystem\ParticleSystemDefinition.h">
+      <Filter>ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\ParticleSystem\ParticleSystemManager.h">
+      <Filter>ParticleSystem</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

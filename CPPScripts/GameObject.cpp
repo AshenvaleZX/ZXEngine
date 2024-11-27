@@ -405,10 +405,11 @@ namespace ZXEngine
 
 		string p = Resources::JsonStrToString(data["TexturePath"]);
 		particleSystem->SetTexture(Resources::GetAssetFullPath(p).c_str());
-		particleSystem->mParticleNum = data["ParticleNum"];
-		particleSystem->mLifeTime = data["LifeTime"];
-		particleSystem->mVelocity = Vector3(data["Velocity"][0], data["Velocity"][1], data["Velocity"][2]);
-		particleSystem->mOffset = Vector3(data["StartOffset"][0], data["StartOffset"][1], data["StartOffset"][2]);
+		particleSystem->mState.mMaxParticleNum = data["ParticleNum"];
+		particleSystem->mState.mLifeTime = data["LifeTime"];
+		particleSystem->mState.mEmissionState.mRate = data["Rate"];
+		particleSystem->mState.mVelocity = Vector3(data["Velocity"][0], data["Velocity"][1], data["Velocity"][2]);
+		particleSystem->mState.mOffset = Vector3(data["StartOffset"][0], data["StartOffset"][1], data["StartOffset"][2]);
 		particleSystem->InternalGeneration();
 	}
 

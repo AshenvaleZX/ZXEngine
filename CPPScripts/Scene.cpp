@@ -11,7 +11,7 @@
 #include "Time.h"
 #include "SceneManager.h"
 #include "GameLogicManager.h"
-#include "ParticleSystemManager.h"
+#include "ParticleSystem/ParticleSystemManager.h"
 #include "Audio/AudioEngine.h"
 
 namespace ZXEngine

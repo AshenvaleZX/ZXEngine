@@ -6,7 +6,7 @@
 #include "../Time.h"
 #include "../SceneManager.h"
 #include "../Resources.h"
-#include "../ParticleSystemManager.h"
+#include "../ParticleSystem/ParticleSystemManager.h"
 #include "../Vulkan/SPIRVCompiler.h"
 #include "../Component/Animator.h"
 #include "../Audio/AudioEngine.h"
