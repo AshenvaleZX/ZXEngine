@@ -25,16 +25,24 @@ namespace ZXEngine
 			Hemisphere,
 			Cone,
 			Circle,
+			Box,
+			Line,
 		};
 
 		// 粒子生成频率(每秒)
 		float mRate = 10.0f;
 		// 粒子发射形状
 		Shape mShape = Shape::Cone;
-		// 粒子发射角度
+		// 粒子发射角度(角度制)
 		float mAngle = 30.0f;
 		// 粒子发射半径
 		float mRadius = 1.0f;
+		// 粒子发射颜色
+		Vector4 mColor = Vector4(1.0f);
+		// 是否随机颜色
+		bool mRandomColor = false;
+		// 粒子发射速度
+		float mSpeed = 1.0f;
 	};
 
 	struct ParticleSystemState
@@ -50,11 +58,11 @@ namespace ZXEngine
 		// 粒子发射状态
 		ParticleEmissionState mEmissionState;
 
-		// 所挂载的GO当前位置
+		// 所挂载的GO当前位置(World Space)
 		Vector3 mCurPos;
-		// 所挂载的GO上一帧位置
+		// 所挂载的GO上一帧位置(World Space)
 		Vector3 mLastPos;
-		// 所挂载的GO当前移动方向
+		// 所挂载的GO当前移动方向(World Space)
 		Vector3 mMoveDir;
 	};
 }
