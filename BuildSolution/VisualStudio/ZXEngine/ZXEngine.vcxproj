@@ -303,6 +303,7 @@
     <ClCompile Include="..\..\..\CPPScripts\Math\Vector4.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\ModelUtil.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\ParticleSystem\ParticleEmitter.cpp" />
+    <ClCompile Include="..\..\..\CPPScripts\ParticleSystem\ParticleEvolver.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\ParticleSystem\ParticleRenderer.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\ParticleSystem\ParticleSystemManager.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\PhysZ\BoundingVolume\BoundingSphere.cpp" />
@@ -521,6 +522,7 @@
     <ClInclude Include="..\..\..\CPPScripts\ModelUtil.h" />
     <ClInclude Include="..\..\..\CPPScripts\OpenGLEnumStruct.h" />
     <ClInclude Include="..\..\..\CPPScripts\ParticleSystem\ParticleEmitter.h" />
+    <ClInclude Include="..\..\..\CPPScripts\ParticleSystem\ParticleEvolver.h" />
     <ClInclude Include="..\..\..\CPPScripts\ParticleSystem\ParticleRenderer.h" />
     <ClInclude Include="..\..\..\CPPScripts\ParticleSystem\ParticleSystemDefinition.h" />
     <ClInclude Include="..\..\..\CPPScripts\ParticleSystem\ParticleSystemManager.h" />

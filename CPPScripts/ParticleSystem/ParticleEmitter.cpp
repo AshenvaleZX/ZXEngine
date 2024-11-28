@@ -3,7 +3,7 @@
 
 namespace ZXEngine
 {
-	void ParticleEmitter::Emit(const ParticleSystemState& state, vector<Particle>& particles)
+	void ParticleEmitter::Update(const ParticleSystemState& state, vector<Particle>& particles)
 	{
 		// 粒子生产的时间间隔
 		float interval = 1.0f / state.mEmissionState.mRate;
@@ -30,18 +30,6 @@ namespace ZXEngine
 		{
 			auto idx = GetUnusedParticleIndex(state, particles);
 			RespawnParticle(state, particles[idx]);
-		}
-
-		float dt = Time::deltaTime;
-		for (uint32_t i = 0; i < state.mMaxParticleNum; i++)
-		{
-			Particle& p = particles[i];
-			p.life -= dt;
-			if (p.life > 0.0f)
-			{
-				p.position += p.velocity * dt;
-				p.color.a -= dt * 1;
-			}
 		}
 	}
 

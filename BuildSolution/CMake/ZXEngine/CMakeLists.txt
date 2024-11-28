@@ -331,6 +331,8 @@ source_group("Math" FILES ${Math})
 set(ParticleSystem
     "../../../CPPScripts/ParticleSystem/ParticleEmitter.cpp"
     "../../../CPPScripts/ParticleSystem/ParticleEmitter.h"
+    "../../../CPPScripts/ParticleSystem/ParticleEvolver.cpp"
+    "../../../CPPScripts/ParticleSystem/ParticleEvolver.h"
     "../../../CPPScripts/ParticleSystem/ParticleRenderer.cpp"
     "../../../CPPScripts/ParticleSystem/ParticleRenderer.h"
     "../../../CPPScripts/ParticleSystem/ParticleSystemDefinition.h"

@@ -657,6 +657,9 @@
     <ClCompile Include="..\..\..\CPPScripts\ParticleSystem\ParticleSystemManager.cpp">
       <Filter>ParticleSystem</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\ParticleSystem\ParticleEvolver.cpp">
+      <Filter>ParticleSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\CPPScripts\GameObject.h">
@@ -1359,6 +1362,9 @@
       <Filter>ParticleSystem</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\ParticleSystem\ParticleSystemManager.h">
+      <Filter>ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\ParticleSystem\ParticleEvolver.h">
       <Filter>ParticleSystem</Filter>
     </ClInclude>
   </ItemGroup>

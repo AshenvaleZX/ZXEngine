@@ -10,7 +10,7 @@ namespace ZXEngine
 		ParticleEmitter() = default;
 		~ParticleEmitter() = default;
 
-		void Emit(const ParticleSystemState& state, vector<Particle>& particles);
+		void Update(const ParticleSystemState& state, vector<Particle>& particles);
 
 	private:
 		float mLastGenTime = 0;

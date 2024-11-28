@@ -2,6 +2,7 @@
 #include "../pubh.h"
 #include "Component.h"
 #include "../ParticleSystem/ParticleEmitter.h"
+#include "../ParticleSystem/ParticleEvolver.h"
 #include "../ParticleSystem/ParticleRenderer.h"
 #include "../ParticleSystem/ParticleSystemDefinition.h"
 
@@ -30,6 +31,7 @@ namespace ZXEngine
 
 	private:
 		ParticleEmitter mEmitter;
+		ParticleEvolver mEvolver;
 		ParticleRenderer mRenderer;
 
 		vector<Particle> mParticles;

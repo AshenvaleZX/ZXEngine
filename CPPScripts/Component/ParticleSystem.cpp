@@ -31,7 +31,8 @@ namespace ZXEngine
 		mState.mMoveDir = (mState.mCurPos - mState.mLastPos).GetNormalized();
 		mState.mLastPos = mState.mCurPos;
 
-		mEmitter.Emit(mState, mParticles);
+		mEmitter.Update(mState, mParticles);
+		mEvolver.Update(mState, mParticles);
 	}
 
 	void ParticleSystem::Render(Camera* camera)
