@@ -16,6 +16,10 @@ namespace ZXEngine
 		static ComponentType GetType();
 
 	public:
+		ParticleEmitter mEmitter;
+		ParticleEvolver mEvolver;
+		ParticleRenderer mRenderer;
+
 		ParticleSystemState mState;
 
 		ParticleSystem();
@@ -30,10 +34,6 @@ namespace ZXEngine
 		void InternalGeneration();
 
 	private:
-		ParticleEmitter mEmitter;
-		ParticleEvolver mEvolver;
-		ParticleRenderer mRenderer;
-
 		vector<Particle> mParticles;
 	};
 }

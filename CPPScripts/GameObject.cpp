@@ -403,13 +403,36 @@ namespace ZXEngine
 	{
 		ParticleSystem* particleSystem = AddComponent<ParticleSystem>();
 
-		string p = Resources::JsonStrToString(data["TexturePath"]);
-		particleSystem->SetTexture(Resources::GetAssetFullPath(p).c_str());
 		particleSystem->mState.mMaxParticleNum = data["ParticleNum"];
 		particleSystem->mState.mLifeTime = data["LifeTime"];
-		particleSystem->mState.mEmissionState.mRate = data["Rate"];
 		particleSystem->mState.mVelocity = Vector3(data["Velocity"][0], data["Velocity"][1], data["Velocity"][2]);
 		particleSystem->mState.mOffset = Vector3(data["StartOffset"][0], data["StartOffset"][1], data["StartOffset"][2]);
+
+		particleSystem->mState.mEmissionState.mRate = data["Rate"];
+		particleSystem->mState.mEmissionState.mSpeed = data["Speed"];
+		particleSystem->mState.mEmissionState.mShape = data["Shape"];
+		particleSystem->mState.mEmissionState.mAngle = data["Angle"];
+		particleSystem->mState.mEmissionState.mRandomColor = data["RandomColor"];
+
+		if (!data["AlphaKeys"].is_null())
+		{
+			for (auto& key : data["AlphaKeys"])
+			{
+				particleSystem->mEvolver.mAlphaKeys.push_back(ParticleEvolver::KeyFloat(key[0], key[1]));
+			}
+		}
+
+		if (!data["RGBKeys"].is_null())
+		{
+			for (auto& key : data["RGBKeys"])
+			{
+				particleSystem->mEvolver.mRGBKeys.push_back(ParticleEvolver::KeyVector3(key[0], Vector3(key[1][0], key[1][1], key[1][2])));
+			}
+		}
+
+		string p = Resources::JsonStrToString(data["TexturePath"]);
+		particleSystem->SetTexture(Resources::GetAssetFullPath(p).c_str());
+
 		particleSystem->InternalGeneration();
 	}
 
