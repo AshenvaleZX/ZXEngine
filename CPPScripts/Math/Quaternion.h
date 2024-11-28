@@ -44,7 +44,8 @@ namespace ZXEngine
 		// 实际PhysZ引擎里都改用了上面真正符合数学公式的Rotate接口
 		void RotateByVector(const Vector3& rotation, float scale = 1.0f);
 
-		Matrix4 ToMatrix() const;
+		Matrix3 ToMatrix3() const;
+		Matrix4 ToMatrix4() const;
 		std::string ToString() const;
 
 		Quaternion operator- () const;

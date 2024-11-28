@@ -146,7 +146,30 @@ namespace ZXEngine
 		Normalize();
 	}
 
-	Matrix4 Quaternion::ToMatrix() const
+	Matrix3 Quaternion::ToMatrix3() const
+	{
+		// 第一行
+		float m00 = 1 - (2 * y * y) - (2 * z * z);
+		float m01 = (2 * x * y) - (2 * w * z);
+		float m02 = (2 * x * z) + (2 * w * y);
+
+		// 第二行
+		float m10 = (2 * x * y) + (2 * w * z);
+		float m11 = 1 - (2 * x * x) - (2 * z * z);
+		float m12 = (2 * y * z) - (2 * w * x);
+
+		// 第三行
+		float m20 = (2 * x * z) - (2 * w * y);
+		float m21 = (2 * y * z) + (2 * w * x);
+		float m22 = 1 - (2 * x * x) - (2 * y * y);
+
+		return Matrix3(
+			m00, m01, m02,
+			m10, m11, m12,
+			m20, m21, m22);
+	}
+
+	Matrix4 Quaternion::ToMatrix4() const
 	{
 		// 第一行
 		float m00 = 1 - (2 * y * y) - (2 * z * z);

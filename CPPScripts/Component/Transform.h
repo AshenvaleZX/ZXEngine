@@ -60,6 +60,6 @@ namespace ZXEngine
 		Quaternion localRotation = Quaternion();
 		Vector3 localScale = Vector3(1.0f);
 
-		void UpdateColliderTransform();
+		void UpdateColliderTransform() const;
 	};
 }

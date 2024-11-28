@@ -20,7 +20,7 @@ namespace ZXEngine
 
 	Matrix4 Transform::GetLocalRotationMatrix() const
 	{
-		return localRotation.ToMatrix();
+		return localRotation.ToMatrix4();
 	}
 
 	Matrix4 Transform::GetLocalScaleMatrix() const
@@ -47,13 +47,13 @@ namespace ZXEngine
 	Matrix4 Transform::GetRotationMatrix() const
 	{
 		Quaternion rotation = GetRotation();
-		return rotation.ToMatrix();
+		return rotation.ToMatrix4();
 	}
 
 	Matrix4 Transform::GetScaleMatrix() const
 	{
 		// 在Transform嵌套起来，并且有旋转的情况下，scale只能倒推出来，很难正向计算
-		auto invRotationMat = Math::Inverse(GetRotation().ToMatrix());
+		auto invRotationMat = Math::Inverse(GetRotation().ToMatrix4());
 		auto rotationAndScaleMat = GetRotationAndScaleMatrix();
 		return invRotationMat * rotationAndScaleMat;
 	}
@@ -211,25 +211,22 @@ namespace ZXEngine
 	Vector3 Transform::GetUp() const
 	{
 		Quaternion rotation = GetRotation();
-		Vector4 up = rotation.ToMatrix() * Vector4(0, 1, 0, 0);
-		return Vector3(up.x, up.y, up.z);
+		return rotation.ToMatrix3() * Vector3::Up;
 	}
 
 	Vector3 Transform::GetRight() const
 	{
 		Quaternion rotation = GetRotation();
-		Vector4 right = rotation.ToMatrix() * Vector4(1, 0, 0, 0);
-		return Vector3(right.x, right.y, right.z);
+		return rotation.ToMatrix3() * Vector3::Right;
 	}
 
 	Vector3 Transform::GetForward() const
 	{
 		Quaternion rotation = GetRotation();
-		Vector4 forward = rotation.ToMatrix() * Vector4(0, 0, 1, 0);
-		return Vector3(forward.x, forward.y, forward.z);
+		return rotation.ToMatrix3() * Vector3::Forward;
 	}
 
-	void Transform::UpdateColliderTransform()
+	void Transform::UpdateColliderTransform() const
 	{
 		auto collider = gameObject->GetComponent<Collider>();
 		if (collider != nullptr)

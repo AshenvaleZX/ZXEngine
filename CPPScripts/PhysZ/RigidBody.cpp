@@ -92,7 +92,7 @@ namespace ZXEngine
 
 		void RigidBody::UpdateTransform()
 		{
-			mTransform = mRotation.ToMatrix();
+			mTransform = mRotation.ToMatrix4();
 			mTransform = Math::Translate(mTransform, mPosition);
 
 			// 如果有碰撞体，同步碰撞体的Transform
