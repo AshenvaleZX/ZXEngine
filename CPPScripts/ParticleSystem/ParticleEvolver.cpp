@@ -13,7 +13,11 @@ namespace ZXEngine
 			if (p.life > 0.0f)
 			{
 				p.position += p.velocity * dt;
-				p.color.a -= dt * 1;
+
+				float t = 1.0f - p.life / state.mLifeTime;
+
+				KeyLerp(t, mAlphaKeys, p.color.a);
+				KeyLerp(t, mRGBKeys, p.color.rgb);
 			}
 		}
 	}
