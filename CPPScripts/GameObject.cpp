@@ -413,6 +413,7 @@ namespace ZXEngine
 		particleSystem->mState.mEmissionState.mShape = data["Shape"];
 		particleSystem->mState.mEmissionState.mAngle = data["Angle"];
 		particleSystem->mState.mEmissionState.mRandomColor = data["RandomColor"];
+		particleSystem->mState.mEmissionState.mRotation = Quaternion(data["Rotation"][0], data["Rotation"][1], data["Rotation"][2], data["Rotation"][3]);
 
 		if (!data["AlphaKeys"].is_null())
 		{

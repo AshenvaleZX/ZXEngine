@@ -27,9 +27,10 @@ namespace ZXEngine
 	void ParticleSystem::Update()
 	{
 		// 更新当前位置和移动方向
-		mState.mCurPos = GetTransform()->GetPosition();
-		mState.mMoveDir = (mState.mCurPos - mState.mLastPos).GetNormalized();
-		mState.mLastPos = mState.mCurPos;
+		Vector3 pos = GetTransform()->GetPosition();
+		mState.mMoveDir = (pos - mState.mCurPos).GetNormalized();
+		mState.mCurPos = std::move(pos);
+		mState.mCurRot = GetTransform()->GetRotation();
 
 		mEmitter.Update(mState, mParticles);
 		mEvolver.Update(mState, mParticles);

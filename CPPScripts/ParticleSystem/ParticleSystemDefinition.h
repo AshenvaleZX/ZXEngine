@@ -43,6 +43,8 @@ namespace ZXEngine
 		bool mRandomColor = false;
 		// 粒子发射速度
 		float mSpeed = 1.0f;
+		// 粒子发射方向旋转
+		Quaternion mRotation;
 	};
 
 	struct ParticleSystemState
@@ -60,9 +62,9 @@ namespace ZXEngine
 
 		// 所挂载的GO当前位置(World Space)
 		Vector3 mCurPos;
-		// 所挂载的GO上一帧位置(World Space)
-		Vector3 mLastPos;
 		// 所挂载的GO当前移动方向(World Space)
 		Vector3 mMoveDir;
+		// 所挂载的GO当前旋转(相对于World Space)
+		Quaternion mCurRot;
 	};
 }

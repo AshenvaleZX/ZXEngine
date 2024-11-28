@@ -79,7 +79,7 @@ namespace ZXEngine
 			particle.color = state.mEmissionState.mColor;
 		}
 
-		const Vector3& front = state.mMoveDir;
+		const Vector3& front = (state.mCurRot * state.mEmissionState.mRotation).ToMatrix3() * Vector3::Up;
 
 		if (state.mEmissionState.mShape == ParticleEmissionState::Shape::Sphere)
 		{
