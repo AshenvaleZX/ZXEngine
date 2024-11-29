@@ -32,6 +32,10 @@ namespace ZXEngine
 							{
 								data[field.GetName()] = member;
 							}
+							else if constexpr (std::is_enum_v<type>)
+							{
+								data[field.GetName()] = static_cast<int>(member);
+							}
 							else
 							{
 								data[field.GetName()] = SerializeHelper<type>::SerializeToJson(member);
@@ -111,8 +115,16 @@ namespace ZXEngine
 		template <typename T>
 		static string Serialize(const T& object)
 		{
-			json data = Internal::SerializeHelper<T>::SerializeToJson(object);
-			return data.dump(4);
+			if constexpr (std::is_pointer_v<T>)
+			{
+				json data = Internal::SerializeHelper<std::remove_pointer_t<T>>::SerializeToJson(*object);
+				return data.dump(4);
+			}
+			else
+			{
+				json data = Internal::SerializeHelper<T>::SerializeToJson(object);
+				return data.dump(4);
+			}
 		}
 
 		// --------------------------------------- Deserialize V1 --------------------------------------- //
@@ -141,6 +153,10 @@ namespace ZXEngine
 								if constexpr (std::is_fundamental_v<type>)
 								{
 									member = data[field.GetName()];
+								}
+								else if constexpr (std::is_enum_v<type>)
+								{
+									member = static_cast<type>(data[field.GetName()].get<int>());
 								}
 								else
 								{
@@ -238,8 +254,16 @@ namespace ZXEngine
 		template <typename T>
 		static T Deserialize(const string& data)
 		{
-			json jsonData = json::parse(data);
-			return DeserializeFromJson<T>(jsonData);
+			if constexpr (std::is_pointer_v<T>)
+			{
+				json jsonData = json::parse(data);
+				return DeserializeFromJson<std::remove_pointer_t<T>>(jsonData);
+			}
+			else
+			{
+				json jsonData = json::parse(data);
+				return DeserializeFromJson<T>(jsonData);
+			}
 		}
 
 		// --------------------------------------- Deserialize V2 --------------------------------------- //
@@ -266,6 +290,10 @@ namespace ZXEngine
 								if constexpr (std::is_fundamental_v<type>)
 								{
 									member = data[field.GetName()];
+								}
+								else if constexpr (std::is_enum_v<type>)
+								{
+									member = static_cast<type>(data[field.GetName()].get<int>());
 								}
 								else
 								{
@@ -360,8 +388,16 @@ namespace ZXEngine
 		template <typename T>
 		static void Deserialize(T& object, const string& data)
 		{
-			json jsonData = json::parse(data);
-			DeserializeFromJson(object, jsonData);
+			if constexpr (std::is_pointer_v<T>)
+			{
+				json jsonData = json::parse(data);
+				DeserializeFromJson<std::remove_pointer_t<T>>(*object, jsonData);
+			}
+			else
+			{
+				json jsonData = json::parse(data);
+				DeserializeFromJson(object, jsonData);
+			}
 		}
 	}
 }
