@@ -5,7 +5,7 @@
         {
             "Type": "Transform",
             "Position": [0, 10, 0],
-            "Rotation": [-45, -45, 0],
+            "Rotation": [0, 0, 0],
             "Scale": [2, 2, 2]
         },
         {
@@ -23,15 +23,87 @@
         },
         {
             "Type": "GameLogic",
-            "Lua": "Scripts/ObjectMove2.lua"
+            "Lua": "Scripts/ObjectMove3.lua"
         },
         {
             "Type": "ParticleSystem",
-            "ParticleNum": 100,
-            "TexturePath": "Textures/star.png",
-            "LifeTime": 1,
-            "Velocity": [0, 5, 0],
-            "StartOffset": [1, 1, 0]
+            "mEvolver": {
+                "Type": "ParticleEvolver",
+                "mAlphaKeys": [
+                    {
+                        "Type": "ParticleEvolver::KeyFloat",
+                        "t": 0.0,
+                        "value": 1.0
+                    },
+                    {
+                        "Type": "ParticleEvolver::KeyFloat",
+                        "t": 1.0,
+                        "value": 0.0
+                    }
+                ]
+            },
+            "mRenderer": {
+                "Type": "ParticleRenderer",
+                "mTexturePath": "Textures/star.png"
+            },
+            "mState": {
+                "Type": "ParticleSystemState",
+                "mCurPos": {
+                    "Type": "Vector3",
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "mCurRot": {
+                    "Type": "Quaternion",
+                    "w": 1.0,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "mEmissionState": {
+                    "Type": "ParticleEmissionState",
+                    "mAngle": 90.0,
+                    "mColor": {
+                        "Type": "Vector4",
+                        "w": 1.0,
+                        "x": 1.0,
+                        "y": 1.0,
+                        "z": 1.0
+                    },
+                    "mRandomColor": true,
+                    "mRate": 100.0,
+                    "mRotation": {
+                        "Type": "Quaternion",
+                        "w": 0.7071070075035095,
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": -0.7071070075035095
+                    },
+                    "mShape": 2,
+                    "mSpeed": 10.0
+                },
+                "mLifeTime": 1.0,
+                "mMaxParticleNum": 100,
+                "mMoveDir": {
+                    "Type": "Vector3",
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "mOffset": {
+                    "Type": "Vector3",
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 0.0
+                },
+                "mVelocity": {
+                    "Type": "Vector3",
+                    "x": 0.0,
+                    "y": 5.0,
+                    "z": 0.0
+                }
+            }
         }
     ]
 }
