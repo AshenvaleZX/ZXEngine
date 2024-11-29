@@ -157,6 +157,11 @@ namespace ZXEngine
 		*this = Math::Rotate(*this, angle, axis);
 	}
 
+	void Matrix4::Rotate(const Vector3& from, const Vector3& to)
+	{
+		*this = Math::Rotate(*this, from, to);
+	}
+
 	void Matrix4::Scale(const Vector3& scale)
 	{
 		m00 *= scale.x;

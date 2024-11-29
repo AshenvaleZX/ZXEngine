@@ -369,6 +369,13 @@ namespace ZXEngine
 		return rotate * oriMat;
 	}
 
+	Matrix4 Math::Rotate(const Matrix4& oriMat, const Vector3& from, const Vector3& to)
+	{
+		Vector3 axis = Cross(from, to);
+		float angle = acos(Dot(from, to) / (from.GetMagnitude() * to.GetMagnitude()));
+		return Rotate(oriMat, angle, axis);
+	}
+
 	Matrix4 Math::Scale(const Matrix4& oriMat, const Vector3& scale)
 	{
 		Matrix4 resMat(oriMat);

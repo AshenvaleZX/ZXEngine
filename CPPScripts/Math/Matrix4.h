@@ -39,6 +39,7 @@ namespace ZXEngine
 		void Transpose();
 		void Translate(const Vector3& v);
 		void Rotate(float angle, const Vector3& axis);
+		void Rotate(const Vector3& from, const Vector3& to);
 		void Scale(const Vector3& scale);
 
 		void ToRowMajorArray(float* array) const;
