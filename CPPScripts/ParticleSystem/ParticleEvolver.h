@@ -48,4 +48,34 @@ namespace ZXEngine
 			}
 		}
 	};
+
+	StaticReflection
+	(
+		ParticleEvolver::KeyFloat,
+		Fields
+		(
+			Field(&ParticleEvolver::KeyFloat::t),
+			Field(&ParticleEvolver::KeyFloat::value)
+		)
+	)
+
+	StaticReflection
+	(
+		ParticleEvolver::KeyVector3,
+		Fields
+		(
+			Field(&ParticleEvolver::KeyVector3::t),
+			Field(&ParticleEvolver::KeyVector3::value)
+		)
+	)
+
+	StaticReflection
+	(
+		ParticleEvolver,
+		Fields
+		(
+			Field(&ParticleEvolver::mAlphaKeys),
+			Field(&ParticleEvolver::mRGBKeys)
+		)
+	)
 }

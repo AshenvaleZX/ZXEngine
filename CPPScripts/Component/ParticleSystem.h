@@ -36,4 +36,15 @@ namespace ZXEngine
 	private:
 		vector<Particle> mParticles;
 	};
+
+	StaticReflection
+	(
+		ParticleSystem,
+		Fields
+		(
+			Field(&ParticleSystem::mState),
+			Field(&ParticleSystem::mEvolver),
+			Field(&ParticleSystem::mRenderer)
+		)
+	)
 }

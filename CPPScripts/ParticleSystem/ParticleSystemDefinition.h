@@ -47,6 +47,21 @@ namespace ZXEngine
 		Quaternion mRotation;
 	};
 
+	StaticReflection
+	(
+		ParticleEmissionState,
+		Fields
+		(
+			Field(&ParticleEmissionState::mRate),
+			Field(&ParticleEmissionState::mShape),
+			Field(&ParticleEmissionState::mAngle),
+			Field(&ParticleEmissionState::mColor),
+			Field(&ParticleEmissionState::mRandomColor),
+			Field(&ParticleEmissionState::mSpeed),
+			Field(&ParticleEmissionState::mRotation)
+		)
+	)
+
 	struct ParticleSystemState
 	{
 		// 最大粒子数量
@@ -67,4 +82,20 @@ namespace ZXEngine
 		// 所挂载的GO当前旋转(相对于World Space)
 		Quaternion mCurRot;
 	};
+
+	StaticReflection
+	(
+		ParticleSystemState,
+		Fields
+		(
+			Field(&ParticleSystemState::mMaxParticleNum),
+			Field(&ParticleSystemState::mLifeTime),
+			Field(&ParticleSystemState::mVelocity),
+			Field(&ParticleSystemState::mOffset),
+			Field(&ParticleSystemState::mEmissionState),
+			Field(&ParticleSystemState::mCurPos),
+			Field(&ParticleSystemState::mMoveDir),
+			Field(&ParticleSystemState::mCurRot)
+		)
+	)
 }

@@ -10,6 +10,8 @@ namespace ZXEngine
 	{
 		friend class EditorInspectorPanel;
 	public:
+		string mTexturePath;
+
 		ParticleRenderer() = default;
 		~ParticleRenderer();
 
@@ -30,4 +32,13 @@ namespace ZXEngine
 
 		void UpdateInstanceData(const Vector3& camPos, const vector<Particle>& particles);
 	};
+
+	StaticReflection
+	(
+		ParticleRenderer,
+		Fields
+		(
+			Field(&ParticleRenderer::mTexturePath)
+		)
+	)
 }
