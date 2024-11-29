@@ -51,6 +51,8 @@ namespace ZXEngine
 
 	void ParticleRenderer::Init(const ParticleSystemState& state)
 	{
+		SetTexture(Resources::GetAssetFullPath(mTexturePath));
+
 		mInstanceData.resize(state.mMaxParticleNum);
 
 		mMaterial = new Material(ParticleSystemManager::GetInstance()->shader);
@@ -68,32 +70,15 @@ namespace ZXEngine
 
 	void ParticleRenderer::UpdateInstanceData(const Vector3& camPos, const vector<Particle>& particles)
 	{
-		bool caculateAngle = true;
-		float hypotenuse = 0;
-		float angle = 0;
 		mInstanceActiveNum = 0;
 
 		for (auto& particle : particles)
 		{
 			if (particle.life > 0)
 			{
-				if (caculateAngle)
-				{
-					hypotenuse = static_cast<float>(sqrt(pow(camPos.x - particle.position.x, 2) + pow(camPos.z - particle.position.z, 2)));
-					if (camPos.z > particle.position.x)
-					{
-						angle = asin((camPos.x - particle.position.x) / hypotenuse);
-					}
-					else
-					{
-						angle = asin((particle.position.x - camPos.x) / hypotenuse);
-					}
-					caculateAngle = false;
-				}
-
 				Matrix4 model;
 				model.Scale(Vector3(2.0f));
-				model.Rotate(angle, Vector3(0.0f, 1.0f, 0.0f));
+				model.Rotate(Vector3::Back, (camPos - particle.position).GetNormalized());
 				model.Translate(particle.position);
 				model.Transpose();
 
