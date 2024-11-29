@@ -8,6 +8,8 @@ namespace ZXEngine
 	{
 		namespace Internal
 		{
+			// ----------------------------------------- Serialize ----------------------------------------- //
+
 			template <typename T>
 			struct SerializeHelper
 			{
@@ -41,7 +43,6 @@ namespace ZXEngine
 				}
 			};
 
-			// 特化版本，用于处理string
 			template <>
 			struct SerializeHelper<string>
 			{
@@ -51,7 +52,6 @@ namespace ZXEngine
 				}
 			};
 
-			// 特化版本，用于处理unordered_map
 			template <typename K, typename V>
 			struct SerializeHelper<unordered_map<K, V>>
 			{
@@ -87,6 +87,25 @@ namespace ZXEngine
 					return data;
 				}
 			};
+
+			template<typename T>
+			struct SerializeHelper<vector<T>>
+			{
+				static json SerializeToJson(const vector<T>& object)
+				{
+					json data;
+
+					for (size_t i = 0; i < object.size(); i++)
+					{
+						if constexpr (std::is_arithmetic_v<T>)
+							data.push_back(object[i]);
+						else
+							data.push_back(SerializeHelper<T>::SerializeToJson(object[i]));
+					}
+
+					return data;
+				}
+			};
 		}
 
 		template <typename T>
@@ -95,6 +114,8 @@ namespace ZXEngine
 			json data = Internal::SerializeHelper<T>::SerializeToJson(object);
 			return data.dump(4);
 		}
+
+		// --------------------------------------- Deserialize V1 --------------------------------------- //
 
 		namespace Internal
 		{
@@ -133,7 +154,6 @@ namespace ZXEngine
 				}
 			};
 
-			// 特化版本，用于处理string
 			template <>
 			struct DeserializeHelperV1<string>
 			{
@@ -143,7 +163,6 @@ namespace ZXEngine
 				}
 			};
 
-			// 特化版本，用于处理unordered_map
 			template <typename K, typename V>
 			struct DeserializeHelperV1<unordered_map<K, V>>
 			{
@@ -189,6 +208,25 @@ namespace ZXEngine
 					return object;
 				}
 			};
+
+			template<typename T>
+			struct DeserializeHelperV1<vector<T>>
+			{
+				static vector<T> DeserializeFromJson(json data)
+				{
+					vector<T> object;
+
+					for (auto& value : data)
+					{
+						if constexpr (std::is_arithmetic_v<T>)
+							object.push_back(value.get<T>());
+						else
+							object.push_back(DeserializeHelperV1<T>::DeserializeFromJson(value));
+					}
+
+					return object;
+				}
+			};
 		}
 
 		template <typename T>
@@ -203,6 +241,8 @@ namespace ZXEngine
 			json jsonData = json::parse(data);
 			return DeserializeFromJson<T>(jsonData);
 		}
+
+		// --------------------------------------- Deserialize V2 --------------------------------------- //
 
 		namespace Internal
 		{
@@ -237,7 +277,6 @@ namespace ZXEngine
 				}
 			};
 
-			// 特化版本，用于处理string
 			template <>
 			struct DeserializeHelperV2<string>
 			{
@@ -247,7 +286,6 @@ namespace ZXEngine
 				}
 			};
 
-			// 特化版本，用于处理unordered_map
 			template <typename K, typename V>
 			struct DeserializeHelperV2<unordered_map<K, V>>
 			{
@@ -286,6 +324,28 @@ namespace ZXEngine
 					else
 					{
 						Debug::LogWarning("Deserialize failed, unsupported key type in unordered_map.");
+					}
+				}
+			};
+
+			template<typename T>
+			struct DeserializeHelperV2<vector<T>>
+			{
+				static void DeserializeFromJson(vector<T>& object, json data)
+				{
+					object.clear();
+
+					for (auto& value : data)
+					{
+						if constexpr (std::is_arithmetic_v<T>)
+						{
+							object.push_back(value.get<T>());
+						}
+						else
+						{
+							object.emplace_back();
+							DeserializeHelperV2<T>::DeserializeFromJson(object.back(), value);
+						}
 					}
 				}
 			};
