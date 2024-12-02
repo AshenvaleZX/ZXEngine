@@ -146,6 +146,23 @@ namespace ZXEngine
 		Normalize();
 	}
 
+	Vector3 Quaternion::ToEuler() const
+	{
+		float sinPitch = 2 * (w * x - y * z);
+		float cosPitch = 1 - 2 * (x * x + y * y);
+		float pitch = atan2(sinPitch, cosPitch);
+
+		float sinYaw_cosPitch = 2 * (w * y + z * x);
+		float cosYaw_cosPitch = 1 - 2 * (x * x + y * y);
+		float yaw = atan2(sinYaw_cosPitch, cosYaw_cosPitch);
+
+		float sinRoll_cosPitch = 2 * (w * z + x * y);
+		float cosRoll_cosPitch = 1 - 2 * (z * z + x * x);
+		float roll = atan2(sinRoll_cosPitch, cosRoll_cosPitch);
+
+		return Vector3(Math::Rad2Deg(pitch), Math::Rad2Deg(yaw), Math::Rad2Deg(roll));
+	}
+
 	Matrix3 Quaternion::ToMatrix3() const
 	{
 		// µÚÒ»ÐÐ
