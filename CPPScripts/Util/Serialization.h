@@ -156,7 +156,7 @@ namespace ZXEngine
 								}
 								else if constexpr (std::is_enum_v<type>)
 								{
-									member = static_cast<type>(data[field.GetName()].get<int>());
+									member = static_cast<type>(data[field.GetName()].template get<int>());
 								}
 								else
 								{
@@ -293,7 +293,7 @@ namespace ZXEngine
 								}
 								else if constexpr (std::is_enum_v<type>)
 								{
-									member = static_cast<type>(data[field.GetName()].get<int>());
+									member = static_cast<type>(data[field.GetName()].template get<int>());
 								}
 								else
 								{
