@@ -1,12 +1,12 @@
 {
-    "Name": "Sun",
+    "Name": "Particle5",
     "Components":
     [
         {
             "Type": "Transform",
-            "Position": [0, 10, 0],
+            "Position": [-20, 0, 0],
             "Rotation": [0, 0, 0],
-            "Scale": [2, 2, 2]
+            "Scale": [1, 1, 1]
         },
         {
             "Type": "MeshRenderer",
@@ -14,16 +14,6 @@
             "Material": "Materials/NoLight.zxmat",
             "CastShadow": false,
             "ReceiveShadow": false
-        },
-        {
-            "Type": "Light",
-            "Color": [1, 1, 1],
-            "Intensity": 1,
-            "LightType": 2
-        },
-        {
-            "Type": "GameLogic",
-            "Lua": "Scripts/ObjectMove3.lua"
         },
         {
             "Type": "ParticleSystem",
@@ -63,7 +53,7 @@
                 },
                 "mEmissionState": {
                     "Type": "ParticleEmissionState",
-                    "mAngle": 90.0,
+                    "mAngle": 30.0,
                     "mColor": {
                         "Type": "Vector4",
                         "w": 1.0,
@@ -72,19 +62,19 @@
                         "z": 1.0
                     },
                     "mRandomColor": true,
-                    "mRate": 100.0,
+                    "mRate": 120.0,
                     "mRotation": {
                         "Type": "Quaternion",
-                        "w": 0.7071070075035095,
+                        "w": 1.0,
                         "x": 0.0,
                         "y": 0.0,
-                        "z": -0.7071070075035095
+                        "z": 0.0
                     },
-                    "mShape": 2,
-                    "mSpeed": 10.0
+                    "mShape": 0,
+                    "mSpeed": 8.0
                 },
                 "mLifeTime": 1.0,
-                "mMaxParticleNum": 100,
+                "mMaxParticleNum": 120,
                 "mMoveDir": {
                     "Type": "Vector3",
                     "x": 0.0,
@@ -93,14 +83,14 @@
                 },
                 "mOffset": {
                     "Type": "Vector3",
-                    "x": 1.0,
-                    "y": 1.0,
+                    "x": 0.0,
+                    "y": 0.0,
                     "z": 0.0
                 },
                 "mVelocity": {
                     "Type": "Vector3",
                     "x": 0.0,
-                    "y": 5.0,
+                    "y": 1.0,
                     "z": 0.0
                 }
             }

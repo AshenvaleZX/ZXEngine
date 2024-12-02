@@ -9,7 +9,7 @@
 #include "RenderPass.h"
 #include "RenderQueueManager.h"
 #include "FBOManager.h"
-#include "ParticleSystemManager.h"
+#include "ParticleSystem/ParticleSystemManager.h"
 #include "ProjectSetting.h"
 #include "RenderEngineProperties.h"
 #include "Window/WindowManager.h"

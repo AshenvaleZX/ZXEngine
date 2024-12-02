@@ -401,15 +401,10 @@ namespace ZXEngine
 
 	void GameObject::ParseParticleSystem(json data)
 	{
-		ParticleSystem* particleSystem = AddComponent<ParticleSystem>();
+		auto component = AddComponent<ParticleSystem>();
+		Serialization::DeserializeFromJson(*component, data);
 
-		string p = Resources::JsonStrToString(data["TexturePath"]);
-		particleSystem->SetTexture(Resources::GetAssetFullPath(p).c_str());
-		particleSystem->mParticleNum = data["ParticleNum"];
-		particleSystem->mLifeTime = data["LifeTime"];
-		particleSystem->mVelocity = Vector3(data["Velocity"][0], data["Velocity"][1], data["Velocity"][2]);
-		particleSystem->mOffset = Vector3(data["StartOffset"][0], data["StartOffset"][1], data["StartOffset"][2]);
-		particleSystem->InternalGeneration();
+		component->InternalGeneration();
 	}
 
 	void GameObject::ParseBoxCollider(json data)

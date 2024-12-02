@@ -1,9 +1,9 @@
 #include "ParticleSystemManager.h"
-#include "Component/ParticleSystem.h"
-#include "ZShader.h"
-#include "Resources.h"
-#include "RenderStateSetting.h"
-#include "RenderAPI.h"
+#include "../Component/ParticleSystem.h"
+#include "../ZShader.h"
+#include "../Resources.h"
+#include "../RenderStateSetting.h"
+#include "../RenderAPI.h"
 
 namespace ZXEngine
 {

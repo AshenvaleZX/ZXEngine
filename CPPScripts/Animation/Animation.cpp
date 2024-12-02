@@ -156,7 +156,7 @@ namespace ZXEngine
 
 			Matrix4 translationMatrix = Math::TranslationMatrix(pNodeAnimation->mCurFrame.mPosition);
 
-			Matrix4 rotationMatrix = pNodeAnimation->mCurFrame.mRotation.ToMatrix();
+			Matrix4 rotationMatrix = pNodeAnimation->mCurFrame.mRotation.ToMatrix4();
 
 			nodeTransform = translationMatrix * rotationMatrix * scaleMatrix;
 		}

@@ -49,7 +49,7 @@ namespace ZXEngine
 			Matrix4 translationMatrix = Math::TranslationMatrix(position);
 
 			Quaternion rotation = Math::Slerp(curKeyFrame.mRotation, targetKeyFrame.mRotation, mData.mBlendFactor);
-			Matrix4 rotationMatrix = rotation.ToMatrix();
+			Matrix4 rotationMatrix = rotation.ToMatrix4();
 
 			nodeTransform = translationMatrix * rotationMatrix * scaleMatrix;
 		}
@@ -303,7 +303,7 @@ namespace ZXEngine
 			Matrix4 translationMatrix = Math::TranslationMatrix(position);
 
 			Quaternion rotation = Math::Slerp(curKeyFrame.mRotation, targetKeyFrame.mRotation, mBlendFactor);
-			Matrix4 rotationMatrix = rotation.ToMatrix();
+			Matrix4 rotationMatrix = rotation.ToMatrix4();
 
 			nodeTransform = translationMatrix * rotationMatrix * scaleMatrix;
 		}

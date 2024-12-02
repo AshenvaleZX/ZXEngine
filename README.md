@@ -28,6 +28,8 @@ This project aims at a game engine, not just graphics and rendering (although th
 
 - [骨骼蒙皮动画系统 (Skeletal Animation System)](#骨骼蒙皮动画系统-skeletal-animation-system)
 
+- [粒子系统 (Particle System)](#粒子系统-particle-system)
+
 - [游戏UI系统 (Game UI System)](#游戏ui系统-game-ui-system)
 
 - [GamePlay层的Lua系统 (Lua System of GamePlay Layer)](#gameplay层的lua系统-lua-system-of-gameplay-layer)
@@ -193,6 +195,20 @@ This animation system also uses the engine's built-in JobSystem to optimize perf
 这里动画的播放代码属于业务逻辑模块而不是引擎，所以是写在Lua代码中的，通过GameLogic组件绑定到对应的GameObject上。
 
 The code to play the animation belongs to the GamePlay rather than the engine, so it‘s written in the Lua code and bound to the GameObject through the GameLogic component.
+
+## 粒子系统 (Particle System)
+
+本引擎有一个简易的粒子系统，可以配置一些简单的粒子特效，使用GPU Instance渲染。示例如下：
+
+This engine has a simple particle system, which can be used to configure some particle effects, rendered by GPU Instance. Examples are as follows:
+
+![](Documents/Images/ParticleSystem0.jpg)
+
+引擎编辑器中的粒子系统面板如下，由于参数较多就不详细介绍了，感兴趣的可以打开示例工程中的ParticleDemo场景自行调试：
+
+The particle system panel in the engine editor is as follows. Since there are numerous parameters, their explanation is not written here in detail. If you're interested, you can open the ParticleDemo scene in the example project to try it out:
+
+![](Documents/Images/ParticleSystem1.png)
 
 ## 游戏UI系统 (Game UI System)
 

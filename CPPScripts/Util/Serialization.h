@@ -8,6 +8,8 @@ namespace ZXEngine
 	{
 		namespace Internal
 		{
+			// ----------------------------------------- Serialize ----------------------------------------- //
+
 			template <typename T>
 			struct SerializeHelper
 			{
@@ -30,6 +32,10 @@ namespace ZXEngine
 							{
 								data[field.GetName()] = member;
 							}
+							else if constexpr (std::is_enum_v<type>)
+							{
+								data[field.GetName()] = static_cast<int>(member);
+							}
 							else
 							{
 								data[field.GetName()] = SerializeHelper<type>::SerializeToJson(member);
@@ -41,7 +47,6 @@ namespace ZXEngine
 				}
 			};
 
-			// 特化版本，用于处理string
 			template <>
 			struct SerializeHelper<string>
 			{
@@ -51,7 +56,6 @@ namespace ZXEngine
 				}
 			};
 
-			// 特化版本，用于处理unordered_map
 			template <typename K, typename V>
 			struct SerializeHelper<unordered_map<K, V>>
 			{
@@ -87,14 +91,43 @@ namespace ZXEngine
 					return data;
 				}
 			};
+
+			template<typename T>
+			struct SerializeHelper<vector<T>>
+			{
+				static json SerializeToJson(const vector<T>& object)
+				{
+					json data;
+
+					for (size_t i = 0; i < object.size(); i++)
+					{
+						if constexpr (std::is_arithmetic_v<T>)
+							data.push_back(object[i]);
+						else
+							data.push_back(SerializeHelper<T>::SerializeToJson(object[i]));
+					}
+
+					return data;
+				}
+			};
 		}
 
 		template <typename T>
 		static string Serialize(const T& object)
 		{
-			json data = Internal::SerializeHelper<T>::SerializeToJson(object);
-			return data.dump(4);
+			if constexpr (std::is_pointer_v<T>)
+			{
+				json data = Internal::SerializeHelper<std::remove_pointer_t<T>>::SerializeToJson(*object);
+				return data.dump(4);
+			}
+			else
+			{
+				json data = Internal::SerializeHelper<T>::SerializeToJson(object);
+				return data.dump(4);
+			}
 		}
+
+		// --------------------------------------- Deserialize V1 --------------------------------------- //
 
 		namespace Internal
 		{
@@ -121,6 +154,10 @@ namespace ZXEngine
 								{
 									member = data[field.GetName()];
 								}
+								else if constexpr (std::is_enum_v<type>)
+								{
+									member = static_cast<type>(data[field.GetName()].template get<int>());
+								}
 								else
 								{
 									member = DeserializeHelperV1<type>::DeserializeFromJson(data[field.GetName()]);
@@ -133,7 +170,6 @@ namespace ZXEngine
 				}
 			};
 
-			// 特化版本，用于处理string
 			template <>
 			struct DeserializeHelperV1<string>
 			{
@@ -143,7 +179,6 @@ namespace ZXEngine
 				}
 			};
 
-			// 特化版本，用于处理unordered_map
 			template <typename K, typename V>
 			struct DeserializeHelperV1<unordered_map<K, V>>
 			{
@@ -189,6 +224,25 @@ namespace ZXEngine
 					return object;
 				}
 			};
+
+			template<typename T>
+			struct DeserializeHelperV1<vector<T>>
+			{
+				static vector<T> DeserializeFromJson(json data)
+				{
+					vector<T> object;
+
+					for (auto& value : data)
+					{
+						if constexpr (std::is_arithmetic_v<T>)
+							object.push_back(value.get<T>());
+						else
+							object.push_back(DeserializeHelperV1<T>::DeserializeFromJson(value));
+					}
+
+					return object;
+				}
+			};
 		}
 
 		template <typename T>
@@ -200,9 +254,19 @@ namespace ZXEngine
 		template <typename T>
 		static T Deserialize(const string& data)
 		{
-			json jsonData = json::parse(data);
-			return DeserializeFromJson<T>(jsonData);
+			if constexpr (std::is_pointer_v<T>)
+			{
+				json jsonData = json::parse(data);
+				return DeserializeFromJson<std::remove_pointer_t<T>>(jsonData);
+			}
+			else
+			{
+				json jsonData = json::parse(data);
+				return DeserializeFromJson<T>(jsonData);
+			}
 		}
+
+		// --------------------------------------- Deserialize V2 --------------------------------------- //
 
 		namespace Internal
 		{
@@ -227,6 +291,10 @@ namespace ZXEngine
 								{
 									member = data[field.GetName()];
 								}
+								else if constexpr (std::is_enum_v<type>)
+								{
+									member = static_cast<type>(data[field.GetName()].template get<int>());
+								}
 								else
 								{
 									DeserializeHelperV2<type>::DeserializeFromJson(member, data[field.GetName()]);
@@ -237,7 +305,6 @@ namespace ZXEngine
 				}
 			};
 
-			// 特化版本，用于处理string
 			template <>
 			struct DeserializeHelperV2<string>
 			{
@@ -247,7 +314,6 @@ namespace ZXEngine
 				}
 			};
 
-			// 特化版本，用于处理unordered_map
 			template <typename K, typename V>
 			struct DeserializeHelperV2<unordered_map<K, V>>
 			{
@@ -289,6 +355,28 @@ namespace ZXEngine
 					}
 				}
 			};
+
+			template<typename T>
+			struct DeserializeHelperV2<vector<T>>
+			{
+				static void DeserializeFromJson(vector<T>& object, json data)
+				{
+					object.clear();
+
+					for (auto& value : data)
+					{
+						if constexpr (std::is_arithmetic_v<T>)
+						{
+							object.push_back(value.get<T>());
+						}
+						else
+						{
+							object.emplace_back();
+							DeserializeHelperV2<T>::DeserializeFromJson(object.back(), value);
+						}
+					}
+				}
+			};
 		}
 
 		template <typename T>
@@ -300,8 +388,16 @@ namespace ZXEngine
 		template <typename T>
 		static void Deserialize(T& object, const string& data)
 		{
-			json jsonData = json::parse(data);
-			DeserializeFromJson(object, jsonData);
+			if constexpr (std::is_pointer_v<T>)
+			{
+				json jsonData = json::parse(data);
+				DeserializeFromJson<std::remove_pointer_t<T>>(*object, jsonData);
+			}
+			else
+			{
+				json jsonData = json::parse(data);
+				DeserializeFromJson(object, jsonData);
+			}
 		}
 	}
 }

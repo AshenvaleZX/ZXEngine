@@ -146,7 +146,47 @@ namespace ZXEngine
 		Normalize();
 	}
 
-	Matrix4 Quaternion::ToMatrix() const
+	Vector3 Quaternion::ToEuler() const
+	{
+		float sinPitch = 2 * (w * x - y * z);
+		float cosPitch = 1 - 2 * (x * x + y * y);
+		float pitch = atan2(sinPitch, cosPitch);
+
+		float sinYaw_cosPitch = 2 * (w * y + z * x);
+		float cosYaw_cosPitch = 1 - 2 * (x * x + y * y);
+		float yaw = atan2(sinYaw_cosPitch, cosYaw_cosPitch);
+
+		float sinRoll_cosPitch = 2 * (w * z + x * y);
+		float cosRoll_cosPitch = 1 - 2 * (z * z + x * x);
+		float roll = atan2(sinRoll_cosPitch, cosRoll_cosPitch);
+
+		return Vector3(Math::Rad2Deg(pitch), Math::Rad2Deg(yaw), Math::Rad2Deg(roll));
+	}
+
+	Matrix3 Quaternion::ToMatrix3() const
+	{
+		// 第一行
+		float m00 = 1 - (2 * y * y) - (2 * z * z);
+		float m01 = (2 * x * y) - (2 * w * z);
+		float m02 = (2 * x * z) + (2 * w * y);
+
+		// 第二行
+		float m10 = (2 * x * y) + (2 * w * z);
+		float m11 = 1 - (2 * x * x) - (2 * z * z);
+		float m12 = (2 * y * z) - (2 * w * x);
+
+		// 第三行
+		float m20 = (2 * x * z) - (2 * w * y);
+		float m21 = (2 * y * z) + (2 * w * x);
+		float m22 = 1 - (2 * x * x) - (2 * y * y);
+
+		return Matrix3(
+			m00, m01, m02,
+			m10, m11, m12,
+			m20, m21, m22);
+	}
+
+	Matrix4 Quaternion::ToMatrix4() const
 	{
 		// 第一行
 		float m00 = 1 - (2 * y * y) - (2 * z * z);

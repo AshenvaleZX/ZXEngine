@@ -10,7 +10,7 @@
 #include "SceneManager.h"
 #include "CubeMap.h"
 #include "GlobalData.h"
-#include "ParticleSystemManager.h"
+#include "ParticleSystem/ParticleSystemManager.h"
 #include "RenderStateSetting.h"
 #include "RenderEngineProperties.h"
 #include "MaterialData.h"

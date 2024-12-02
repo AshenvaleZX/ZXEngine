@@ -328,6 +328,19 @@ set(Math
 )
 source_group("Math" FILES ${Math})
 
+set(ParticleSystem
+    "../../../CPPScripts/ParticleSystem/ParticleEmitter.cpp"
+    "../../../CPPScripts/ParticleSystem/ParticleEmitter.h"
+    "../../../CPPScripts/ParticleSystem/ParticleEvolver.cpp"
+    "../../../CPPScripts/ParticleSystem/ParticleEvolver.h"
+    "../../../CPPScripts/ParticleSystem/ParticleRenderer.cpp"
+    "../../../CPPScripts/ParticleSystem/ParticleRenderer.h"
+    "../../../CPPScripts/ParticleSystem/ParticleSystemDefinition.h"
+    "../../../CPPScripts/ParticleSystem/ParticleSystemManager.cpp"
+    "../../../CPPScripts/ParticleSystem/ParticleSystemManager.h"
+)
+source_group("ParticleSystem" FILES ${ParticleSystem})
+
 set(PhysZ
     "../../../CPPScripts/PhysZ/BVHNode.cpp"
     "../../../CPPScripts/PhysZ/BVHNode.h"
@@ -450,7 +463,6 @@ set(ZXHeader
     "../../../CPPScripts/Math.h"
     "../../../CPPScripts/ModelUtil.h"
     "../../../CPPScripts/OpenGLEnumStruct.h"
-    "../../../CPPScripts/ParticleSystemManager.h"
     "../../../CPPScripts/ProjectSetting.h"
     "../../../CPPScripts/pubh.h"
     "../../../CPPScripts/PublicEnum.h"
@@ -504,7 +516,6 @@ set(ZXSource
     "../../../CPPScripts/MaterialData.cpp"
     "../../../CPPScripts/Math.cpp"
     "../../../CPPScripts/ModelUtil.cpp"
-    "../../../CPPScripts/ParticleSystemManager.cpp"
     "../../../CPPScripts/ProjectSetting.cpp"
     "../../../CPPScripts/PublicStruct.cpp"
     "../../../CPPScripts/RenderAPI.cpp"
@@ -555,6 +566,7 @@ set(ALL_FILES
     ${Input}
     ${LuaWrap}
     ${Math}
+    ${ParticleSystem}
     ${PhysZ}
     ${PhysZ__BoundingVolume}
     ${PhysZ__Force}
