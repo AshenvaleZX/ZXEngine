@@ -1,0 +1,131 @@
+{
+    "Name": "Particle1",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 0, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [1, 1, 1]
+        },
+        {
+            "Type": "MeshRenderer",
+            "Geometry": 1,
+            "Material": "Materials/NoLight.zxmat",
+            "CastShadow": false,
+            "ReceiveShadow": false
+        },
+        {
+            "Type": "ParticleSystem",
+            "mEvolver": {
+                "Type": "ParticleEvolver",
+                "mAlphaKeys": [
+                    {
+                        "Type": "ParticleEvolver::KeyFloat",
+                        "t": 0.0,
+                        "value": 1.0
+                    },
+                    {
+                        "Type": "ParticleEvolver::KeyFloat",
+                        "t": 1.0,
+                        "value": 0.0
+                    }
+                ],
+                "mRGBKeys": [
+                    {
+                        "Type": "ParticleEvolver::KeyVector3",
+                        "t": 0.0,
+                        "value": {
+                            "Type": "Vector3",
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 1.0
+                        }
+                    },
+                    {
+                        "Type": "ParticleEvolver::KeyVector3",
+                        "t": 0.5,
+                        "value": {
+                            "Type": "Vector3",
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 1.0
+                        }
+                    },
+                    {
+                        "Type": "ParticleEvolver::KeyVector3",
+                        "t": 1.0,
+                        "value": {
+                            "Type": "Vector3",
+                            "x": 1.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        }
+                    }
+                ]
+            },
+            "mRenderer": {
+                "Type": "ParticleRenderer",
+                "mTexturePath": "Textures/star.png"
+            },
+            "mState": {
+                "Type": "ParticleSystemState",
+                "mCurPos": {
+                    "Type": "Vector3",
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "mCurRot": {
+                    "Type": "Quaternion",
+                    "w": 1.0,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "mEmissionState": {
+                    "Type": "ParticleEmissionState",
+                    "mAngle": 90.0,
+                    "mColor": {
+                        "Type": "Vector4",
+                        "w": 1.0,
+                        "x": 1.0,
+                        "y": 1.0,
+                        "z": 1.0
+                    },
+                    "mRandomColor": false,
+                    "mRate": 100.0,
+                    "mRotation": {
+                        "Type": "Quaternion",
+                        "w": 1.0,
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "mShape": 5,
+                    "mSpeed": 6.0
+                },
+                "mLifeTime": 1.0,
+                "mMaxParticleNum": 100,
+                "mMoveDir": {
+                    "Type": "Vector3",
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "mOffset": {
+                    "Type": "Vector3",
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "mVelocity": {
+                    "Type": "Vector3",
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0
+                }
+            }
+        }
+    ]
+}
