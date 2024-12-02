@@ -667,30 +667,198 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("Particle System"))
 			return;
 
-		int particleNum = (int)component->mState.mMaxParticleNum;
-		ImGui::Text("ParticleNum      ");
-		ImGui::SameLine(); ImGui::DragInt("##ParticleNum", &particleNum, 0.1f, 0, INT_MAX);
+		// Particle System
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			ImVec2 oldWindowPadding = style.WindowPadding;
+			style.WindowPadding = ImVec2(5.0f, 5.0f);
 
-		auto ImTextureMgr = ImGuiTextureManager::GetInstance();
-		uint32_t id = component->mRenderer.mTextureID;
-		if (!ImTextureMgr->CheckExistenceByEngineID(id))
-			ImTextureMgr->CreateFromEngineID(id);
-		ImGui::Text("Texture          ");
-		ImGui::SameLine(); ImGui::Image(ImTextureMgr->GetImTextureIDByEngineID(id), ImVec2(50.0f, 50.0f));
+			// 5 + 19 + 5 = 29, 19是Checkbox高度，可由ImGui::GetFrameHeight()获取
+			static bool expand = true;
+			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 3.0f);
+			ImGui::BeginChild("Particle System", ImVec2(0.0f, 29.0f), ImGuiChildFlags_Border, ImGuiWindowFlags_None);
+			ImGui::Checkbox("Particle System", &expand);
+			ImGui::EndChild();
+			ImGui::PopStyleVar();
 
-		float lifeTime = component->mState.mLifeTime;
-		ImGui::Text("LifeTime         ");
-		ImGui::SameLine(); ImGui::DragFloat("##lifeTime", &lifeTime, 0.01f, 0.0f, FLT_MAX);
+			style.WindowPadding = oldWindowPadding;
 
-		Vector3 velocity = component->mState.mVelocity;
-		ImVec4 v = ImVec4(velocity.x, velocity.y, velocity.z, 1.0f);
-		ImGui::Text("Velocity         ");
-		ImGui::SameLine(); ImGui::DragFloat3("##velocity", (float*)&v, 0.01f, -FLT_MAX, FLT_MAX);
+			if (expand)
+			{
+				int particleNum = (int)component->mState.mMaxParticleNum;
+				ImGui::Text("ParticleNum      ");
+				ImGui::SameLine(); ImGui::DragInt("##ParticleNum", &particleNum, 0.1f, 0, INT_MAX);
 
-		Vector3 offset = component->mState.mOffset;
-		ImVec4 o = ImVec4(offset.x, offset.y, offset.z, 1.0f);
-		ImGui::Text("StartOffset      ");
-		ImGui::SameLine(); ImGui::DragFloat3("##offset", (float*)&o, 0.01f, -FLT_MAX, FLT_MAX);
+				float lifeTime = component->mState.mLifeTime;
+				ImGui::Text("LifeTime         ");
+				ImGui::SameLine(); ImGui::DragFloat("##lifeTime", &lifeTime, 0.01f, 0.0f, FLT_MAX);
+
+				Vector3 velocity = component->mState.mVelocity;
+				ImVec4 v = ImVec4(velocity.x, velocity.y, velocity.z, 1.0f);
+				ImGui::Text("Velocity         ");
+				ImGui::SameLine(); ImGui::DragFloat3("##velocity", (float*)&v, 0.01f, -FLT_MAX, FLT_MAX);
+
+				Vector3 offset = component->mState.mOffset;
+				ImVec4 o = ImVec4(offset.x, offset.y, offset.z, 1.0f);
+				ImGui::Text("StartOffset      ");
+				ImGui::SameLine(); ImGui::DragFloat3("##offset", (float*)&o, 0.01f, -FLT_MAX, FLT_MAX);
+			}
+		}
+
+		// Particle Emitter
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			ImVec2 oldWindowPadding = style.WindowPadding;
+			style.WindowPadding = ImVec2(5.0f, 5.0f);
+
+			static bool expand = true;
+			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 3.0f);
+			ImGui::BeginChild("Particle Emitter", ImVec2(0.0f, 29.0f), ImGuiChildFlags_Border, ImGuiWindowFlags_None);
+			ImGui::Checkbox("Particle Emitter", &expand);
+			ImGui::EndChild();
+			ImGui::PopStyleVar();
+
+			style.WindowPadding = oldWindowPadding;
+
+			if (expand)
+			{
+				ImGui::Text("Rate             ");
+				ImGui::SameLine(); ImGui::DragFloat("##rate", &component->mState.mEmissionState.mRate, 0.01f, 0.0f, FLT_MAX);
+
+				ParticleEmissionState::Shape shape = component->mState.mEmissionState.mShape;
+				static const char* emitterShapeItems[] = { "Sphere", "Hemisphere", "Cone", "Circle", "Box", "Line" };
+				int emitterShapeItemCurrentIdx = static_cast<int>(shape);
+				const char* emitterShapeComboPreviewValue = emitterShapeItems[emitterShapeItemCurrentIdx];
+				ImGui::Text("Shape            ");
+				ImGui::SameLine();
+				if (ImGui::BeginCombo("##Shape", emitterShapeComboPreviewValue, 0))
+				{
+					for (int i = 0; i < IM_ARRAYSIZE(emitterShapeItems); i++)
+					{
+						const bool is_selected = (emitterShapeItemCurrentIdx == i);
+						if (ImGui::Selectable(emitterShapeItems[i], is_selected))
+							emitterShapeItemCurrentIdx = i;
+					}
+					ImGui::EndCombo();
+				}
+				ParticleEmissionState::Shape nShape = static_cast<ParticleEmissionState::Shape>(emitterShapeItemCurrentIdx);
+				if (shape != nShape)
+				{
+					component->mState.mEmissionState.mShape = nShape;
+				}
+
+				ImGui::Text("Angle            ");
+				ImGui::SameLine(); ImGui::DragFloat("##angle", &component->mState.mEmissionState.mAngle, 0.01f, 0.0f, 180.0f);
+
+				ImGui::Text("Radius           ");
+				ImGui::SameLine(); ImGui::DragFloat("##radius", &component->mState.mEmissionState.mRadius, 0.01f, 0.0f, FLT_MAX);
+
+				ImGui::Text("Speed            ");
+				ImGui::SameLine(); ImGui::DragFloat("##speed", &component->mState.mEmissionState.mSpeed, 0.01f, 0.0f, FLT_MAX);
+
+				Vector3 dir = component->mState.mEmissionState.mRotation.ToEuler();
+				ImGui::Text("Direction        ");
+				ImGui::SameLine(); ImGui::DragFloat3("##dir", (float*)&dir, 0.01f, -FLT_MAX, FLT_MAX);
+
+				Vector4 color = component->mState.mEmissionState.mColor;
+				ImVec4 imColor = ImVec4(color.r, color.g, color.b, color.a);
+				ImGui::Text("Color            ");
+				ImGui::SameLine(); ImGui::ColorEdit4("##color", (float*)&imColor);
+				Vector4 nColor = Vector4(imColor.x, imColor.y, imColor.z, imColor.w);
+				if (color != nColor)
+				{
+					component->mState.mEmissionState.mColor = std::move(nColor);
+				}
+
+				ImGui::Text("Random Color     ");
+				ImGui::SameLine(); ImGui::Checkbox("##randomColor", &component->mState.mEmissionState.mRandomColor);
+			}
+		}
+
+		// Particle Evolver
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			ImVec2 oldWindowPadding = style.WindowPadding;
+			style.WindowPadding = ImVec2(5.0f, 5.0f);
+
+			static bool expand = true;
+			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 3.0f);
+			ImGui::BeginChild("Particle Evolver", ImVec2(0.0f, 29.0f), ImGuiChildFlags_Border, ImGuiWindowFlags_None);
+			ImGui::Checkbox("Particle Evolver", &expand);
+			ImGui::EndChild();
+			ImGui::PopStyleVar();
+
+			style.WindowPadding = oldWindowPadding;
+
+			if (expand)
+			{
+				ImGui::Text("RGB Over Life    ");
+				ImGui::BeginChild("RGB Over Life", ImVec2(0.0f, 33.0f), ImGuiChildFlags_None, ImGuiWindowFlags_HorizontalScrollbar);
+				ImGui::PushItemWidth(36.0f);
+				for (size_t i = 0; i < component->mEvolver.mRGBKeys.size(); i++)
+				{
+					auto& key = component->mEvolver.mRGBKeys[i];
+
+					if (i > 0) ImGui::SameLine();
+
+					string label = "##KeyT1_" + to_string(i);
+					ImGui::DragFloat(label.c_str(), &key.t, 0.01f, 0.0f, 1.0f, "%.2f");
+
+					label = "##KeyC1_" + to_string(i);
+					ImGui::SameLine(); ImGui::ColorEdit3(label.c_str(), (float*)&key.value, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
+				}
+				ImGui::PopItemWidth();
+				ImGui::EndChild();
+
+				ImGui::Text("Alpha Over Life  ");
+				ImGui::BeginChild("Alpha Over Life", ImVec2(0.0f, 33.0f), ImGuiChildFlags_None, ImGuiWindowFlags_HorizontalScrollbar);
+				ImGui::PushItemWidth(36.0f);
+				for (size_t i = 0; i < component->mEvolver.mAlphaKeys.size(); i++)
+				{
+					auto& key = component->mEvolver.mAlphaKeys[i];
+
+					if (i > 0) ImGui::SameLine();
+
+					string label = "##KeyT2_" + to_string(i);
+					ImGui::DragFloat(label.c_str(), &key.t, 0.01f, 0.0f, 1.0f, "%.2f");
+
+					label = "##KeyC2_" + to_string(i);
+					ImVec4 color = ImVec4(1.0f, 1.0f, 1.0f, key.value);
+					ImGui::SameLine(); ImGui::ColorEdit4(label.c_str(), (float*)&color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_AlphaPreview);
+					key.value = color.w;
+				}
+				ImGui::PopItemWidth();
+				ImGui::EndChild();
+			}
+		}
+
+		// Particle Renderer
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			ImVec2 oldWindowPadding = style.WindowPadding;
+			style.WindowPadding = ImVec2(5.0f, 5.0f);
+
+			static bool expand = true;
+			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 3.0f);
+			ImGui::BeginChild("Particle Renderer", ImVec2(0.0f, 29.0f), ImGuiChildFlags_Border, ImGuiWindowFlags_None);
+			ImGui::Checkbox("Particle Renderer", &expand);
+			ImGui::EndChild();
+			ImGui::PopStyleVar();
+
+			style.WindowPadding = oldWindowPadding;
+
+			if (expand)
+			{
+				auto ImTextureMgr = ImGuiTextureManager::GetInstance();
+				uint32_t id = component->mRenderer.mTextureID;
+				if (!ImTextureMgr->CheckExistenceByEngineID(id))
+					ImTextureMgr->CreateFromEngineID(id);
+				ImGui::Text("Texture          ");
+				ImGui::SameLine(); ImGui::Text(component->mRenderer.mTexturePath.c_str());
+				ImGui::Text("                 ");
+				ImGui::SameLine(); ImGui::Image(ImTextureMgr->GetImTextureIDByEngineID(id), ImVec2(50.0f, 50.0f));
+			}
+		}
 	}
 
 	void EditorInspectorPanel::DrawScript(AssetScriptInfo* info)
