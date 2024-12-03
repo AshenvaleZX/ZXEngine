@@ -17,8 +17,12 @@ namespace ZXEngine
 		static const Vector2 Right;
 
 	public:
-		union { float x, r; };
-		union { float y, g; };
+		union
+		{
+			struct { float v[2]; };
+			struct { float x, y; };
+			struct { float r, g; };
+		};
 
 		Vector2();
 		Vector2(float n);

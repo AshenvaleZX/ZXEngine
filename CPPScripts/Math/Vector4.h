@@ -1,11 +1,11 @@
 #pragma once
 #include <string>
-#include "Vector3.h"
 #include "../Reflection/StaticReflection.h"
 
 namespace ZXEngine
 {
 	class Vector2;
+	class Vector3;
 	class Matrix4;
 	class Vector4
 	{
@@ -16,19 +16,9 @@ namespace ZXEngine
 	public:
 		union
 		{
-			struct
-			{
-				float x, y, z, w;
-			};
-			struct
-			{
-				float r, g, b, a;
-			};
-			struct
-			{
-				Vector3 rgb;
-				float alpha;
-			};
+			struct { float v[4]; };
+			struct { float x, y, z, w; };
+			struct { float r, g, b, a; };
 		};
 
 		Vector4();

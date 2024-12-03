@@ -20,9 +20,12 @@ namespace ZXEngine
 		static const Vector3 Back;
 
 	public:
-		union { float x, r; };
-		union { float y, g; };
-		union { float z, b; };
+		union
+		{
+			struct { float v[3]; };
+			struct { float x, y, z; };
+			struct { float r, g, b; };
+		};
 
 		Vector3();
 		Vector3(float n);
