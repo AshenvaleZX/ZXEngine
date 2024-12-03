@@ -222,6 +222,14 @@ namespace ZXEngine
 		return *this;
 	}
 
+	Vector4& Vector4::operator= (const Vector3& v)
+	{
+		x = v.x;
+		y = v.y;
+		z = v.z;
+		return *this;
+	}
+
 	Vector4 Vector4::operator- () const
 	{
 		return Vector4(-x, -y, -z, -w);

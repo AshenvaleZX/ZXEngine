@@ -52,6 +52,7 @@ namespace ZXEngine
 		bool operator== (const Vector4& v) const;
 		bool operator!= (const Vector4& v) const;
 		Vector4& operator= (const Vector4& v);
+		Vector4& operator= (const Vector3& v);
 		Vector4 operator- () const;
 		Vector4 operator+ (const Vector4& v) const;
 		Vector4 operator- (const Vector4& v) const;
