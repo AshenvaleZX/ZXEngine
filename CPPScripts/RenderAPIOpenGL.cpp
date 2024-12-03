@@ -1205,10 +1205,7 @@ namespace ZXEngine
 	}
 	void RenderAPIOpenGL::RealSetShaderVector(const string& name, const Vector2& value)
 	{
-		float* array = new float[2];
-		value.ToArray(array);
-		glUniform2fv(glGetUniformLocation(curShaderID, name.c_str()), 1, array);
-		delete[] array;
+		glUniform2fv(glGetUniformLocation(curShaderID, name.c_str()), 1, value.v);
 		CheckError();
 	}
 
@@ -1225,10 +1222,7 @@ namespace ZXEngine
 	}
 	void RenderAPIOpenGL::RealSetShaderVector(const string& name, const Vector3& value)
 	{
-		float* array = new float[3];
-		value.ToArray(array);
-		glUniform3fv(glGetUniformLocation(curShaderID, name.c_str()), 1, array);
-		delete[] array;
+		glUniform3fv(glGetUniformLocation(curShaderID, name.c_str()), 1, value.v);
 		CheckError();
 	}
 
@@ -1250,10 +1244,7 @@ namespace ZXEngine
 	}
 	void RenderAPIOpenGL::RealSetShaderVector(const string& name, const Vector4& value)
 	{
-		float* array = new float[4];
-		value.ToArray(array);
-		glUniform4fv(glGetUniformLocation(curShaderID, name.c_str()), 1, array);
-		delete[] array;
+		glUniform4fv(glGetUniformLocation(curShaderID, name.c_str()), 1, value.v);
 		CheckError();
 	}
 	void RenderAPIOpenGL::RealSetShaderVector(const string& name, const Vector4* value, uint32_t count)

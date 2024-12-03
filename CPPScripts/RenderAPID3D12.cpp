@@ -2354,8 +2354,6 @@ namespace ZXEngine
 	}
 	void RenderAPID3D12::SetShaderVector(Material* material, const string& name, const Vector2& value, uint32_t idx, bool allBuffer)
 	{
-		float* array = new float[2];
-		value.ToArray(array);
 		if (allBuffer)
 		{
 			vector<void*> valueAddresses;
@@ -2366,7 +2364,7 @@ namespace ZXEngine
 				valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
 
 			for (auto valueAddress : valueAddresses)
-				memcpy(valueAddress, array, sizeof(float) * 2);
+				memcpy(valueAddress, value.v, sizeof(float) * 2);
 		}
 		else
 		{
@@ -2378,9 +2376,8 @@ namespace ZXEngine
 				valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
 
 			if (valueAddress != nullptr)
-				memcpy(valueAddress, array, sizeof(float) * 2);
+				memcpy(valueAddress, value.v, sizeof(float) * 2);
 		}
-		delete[] array;
 	}
 
 	// Vector3
@@ -2390,8 +2387,6 @@ namespace ZXEngine
 	}
 	void RenderAPID3D12::SetShaderVector(Material* material, const string& name, const Vector3& value, uint32_t idx, bool allBuffer)
 	{
-		float* array = new float[3];
-		value.ToArray(array);
 		if (allBuffer)
 		{
 			vector<void*> valueAddresses;
@@ -2402,7 +2397,7 @@ namespace ZXEngine
 				valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
 
 			for (auto valueAddress : valueAddresses)
-				memcpy(valueAddress, array, sizeof(float) * 3);
+				memcpy(valueAddress, value.v, sizeof(float) * 3);
 		}
 		else
 		{
@@ -2414,9 +2409,8 @@ namespace ZXEngine
 				valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
 
 			if (valueAddress != nullptr)
-				memcpy(valueAddress, array, sizeof(float) * 3);
+				memcpy(valueAddress, value.v, sizeof(float) * 3);
 		}
-		delete[] array;
 	}
 
 	// Vector4
@@ -2426,8 +2420,6 @@ namespace ZXEngine
 	}
 	void RenderAPID3D12::SetShaderVector(Material* material, const string& name, const Vector4& value, uint32_t idx, bool allBuffer)
 	{
-		float* array = new float[4];
-		value.ToArray(array);
 		if (allBuffer)
 		{
 			vector<void*> valueAddresses;
@@ -2438,7 +2430,7 @@ namespace ZXEngine
 				valueAddresses = GetShaderPropertyAddressAllBuffer(material->shader->reference, material->data->GetID(), name, idx);
 
 			for (auto valueAddress : valueAddresses)
-				memcpy(valueAddress, array, sizeof(float) * 4);
+				memcpy(valueAddress, value.v, sizeof(float) * 4);
 		}
 		else
 		{
@@ -2450,9 +2442,8 @@ namespace ZXEngine
 				valueAddress = GetShaderPropertyAddress(material->shader->reference, material->data->GetID(), name, idx);
 
 			if (valueAddress != nullptr)
-				memcpy(valueAddress, array, sizeof(float) * 4);
+				memcpy(valueAddress, value.v, sizeof(float) * 4);
 		}
-		delete[] array;
 	}
 	void RenderAPID3D12::SetShaderVector(Material* material, const string& name, const Vector4* value, uint32_t count, bool allBuffer)
 	{
