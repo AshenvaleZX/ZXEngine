@@ -105,7 +105,7 @@ namespace ZXEngine
 			return;
 		}
 
-		mTimerStack[mTimerStackTop++] = std::chrono::high_resolution_clock::now();
+		mTimerStack[mTimerStackTop++] = std::chrono::steady_clock::now();
 	}
 
 	void Debug::PopTimer(const std::string& name)
@@ -116,7 +116,7 @@ namespace ZXEngine
 			return;
 		}
 
-		auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - mTimerStack[--mTimerStackTop]).count();
+		auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - mTimerStack[--mTimerStackTop]).count();
 
 		// 没有用Log，因为Log速度慢一倍，会影响计时，如果有需要写入文件再用Log
 		// 先拼接再输出，效率比直接用<<高
@@ -125,12 +125,12 @@ namespace ZXEngine
 
 	void Debug::StartTimer(const std::string& name)
 	{
-		mTimerMap[name] = std::chrono::high_resolution_clock::now();
+		mTimerMap[name] = std::chrono::steady_clock::now();
 	}
 
 	void Debug::EndTimer(const std::string& name)
 	{
-		auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - mTimerMap[name]).count();
+		auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - mTimerMap[name]).count();
 
 		cout << (name + " : " + std::to_string(duration) + " ns") << endl;
 	}
