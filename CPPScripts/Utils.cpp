@@ -6,6 +6,9 @@
 #elif __APPLE__
 #include <mach-o/dyld.h>
 #include <limits.h>
+#elif __linux__
+#include <unistd.h>
+#include <limits.h>
 #endif
 
 namespace ZXEngine
@@ -251,8 +254,14 @@ namespace ZXEngine
         uint32_t size = sizeof(buffer);
         if (_NSGetExecutablePath(buffer, &size) != 0)
             return "";
-#else
+#elif __linux__
+        char buffer[PATH_MAX];
+        ssize_t count = readlink("/proc/self/exe", buffer, sizeof(buffer));
+        if (count == -1)
             return "";
+        buffer[count] = '\0';
+#else
+        return "";
 #endif
 
         std::filesystem::path path(buffer);
