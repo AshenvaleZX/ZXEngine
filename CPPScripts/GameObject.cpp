@@ -190,7 +190,7 @@ namespace ZXEngine
 			else if (component["Type"] == "AudioListener")
 				ParseAudioListener(component);
 			else
-				Debug::LogError("Try parse undefined component type: " + component["Type"]);
+				Debug::LogError("Try parse undefined component type: " + component["Type"].template get<string>());
 		}
 
 		for (auto subPrefab : prefab->children)
