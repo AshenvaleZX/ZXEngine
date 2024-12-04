@@ -15,7 +15,10 @@ on_load(function(target)
     if is_plat("macosx") then
         target:add("linkdirs", path.join(os.projectdir(), "../../Vendor/Library/MacOS"), { public = true })
         target:add("links", "vulkan.1.3.280", "MoltenVK", { public = true })
-    else
+    elseif is_plat("linux") then
+        target:add("linkdirs", path.join(os.projectdir(), "../../Vendor/Library/Linux/x86_64"), { public = true })
+        target:add("links", "vulkan", { public = true })
+    elseif is_plat("windows") then
         target:add("linkdirs", path.join(os.projectdir(), "../../Vendor/Library/Windows/Static"), { public = true })
         target:add("links", "vulkan-1", { public = true })
     end
@@ -66,7 +69,7 @@ target("zxengine")
 set_kind("binary")
 
 add_files("../../CPPScripts/**.cpp", "../../CPPScripts/**.c", "../../Vendor/Src/**.c")
-if is_plat("macosx") then
+if is_plat("macosx", "linux") then
     remove_files("../../CPPScripts/DirectX12/**.cpp")
     remove_files("../../CPPScripts/Input/InputManagerWindows.cpp")
     remove_files("../../CPPScripts/Window/WindowManagerWindows.cpp")
@@ -91,20 +94,31 @@ if is_plat("macosx") then
     else
         add_rpathdirs(path.join(os.projectdir(), "release"))
     end
-else
+elseif is_plat("linux") then
+    add_linkdirs(path.join(os.projectdir(), "../../Vendor/Library/Linux/x86_64"))
+    add_links("assimp", "freetype", "glfw3", "GL", "z")
+    if is_mode("debug") then
+        add_rpathdirs(path.join(os.projectdir(), "debug"))
+    else
+        add_rpathdirs(path.join(os.projectdir(), "release"))
+    end
+elseif is_plat("windows") then
     add_linkdirs(path.join(os.projectdir(), "../../Vendor/Library/Windows/Static"))
     add_links("assimp-vc143-mt", "freetype", "glfw3", "irrKlang", "opengl32", "Shell32")
 end
 
 set_pcxxheader("../../CPPScripts/pubh.h")
 add_defines("UNICODE")
--- copy dll
+-- copy dynamic library
 after_build(function(target)
     local bin_dir = path.join(os.projectdir(), get_config("mode"))
     if is_plat("macosx") then
         local src_dir = path.join(os.projectdir(), "../../Vendor/Library/MacOS")
         os.cp(path.join(src_dir, "*.dylib"), bin_dir)
-    else
+    elseif is_plat("linux") then
+        local src_dir = path.join(os.projectdir(), "../../Vendor/Library/Linux/x86_64")
+        os.cp(path.join(src_dir, "*.so*"), bin_dir)
+    elseif is_plat("windows") then
         local src_dir = path.join(os.projectdir(), "../../Vendor/Library/Windows/Dynamic")
         os.cp(path.join(src_dir, "*.dll"), bin_dir)
     end

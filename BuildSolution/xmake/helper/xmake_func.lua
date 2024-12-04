@@ -60,16 +60,6 @@ on_load(function(target)
         target:set("languages", "clatest", "cxx20")
     end
 
-    -- MacOS执行这个会导致exception被禁用，导致try catch编译失败
-    if not is_plat("macosx") then
-        local enable_exception = _get_or("enable_exception", nil)
-        if enable_exception then
-            target:set("exceptions", "cxx")
-        else
-            target:set("exceptions", "no-cxx")
-        end
-    end
-
     if is_mode("debug") then
         target:set("runtimes", "MDd")
         target:set("optimize", "none")
