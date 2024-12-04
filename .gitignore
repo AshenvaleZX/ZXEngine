@@ -17,6 +17,9 @@ log.txt
 # ImGui
 imgui.ini
 
+# xmake
+.xmake/
+
 # Build
 [Bb]uild/
 
