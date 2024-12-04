@@ -33,16 +33,6 @@ set(Audio__DefaultImpl
 )
 source_group("Audio\\DefaultImpl" FILES ${Audio__DefaultImpl})
 
-set(Audio__irrKlangImpl
-    "../../../CPPScripts/Audio/irrKlangImpl/AudioClip_irrKlang.cpp"
-    "../../../CPPScripts/Audio/irrKlangImpl/AudioClip_irrKlang.h"
-    "../../../CPPScripts/Audio/irrKlangImpl/AudioEngine_irrKlang.cpp"
-    "../../../CPPScripts/Audio/irrKlangImpl/AudioEngine_irrKlang.h"
-    "../../../CPPScripts/Audio/irrKlangImpl/AudioStream_irrKlang.cpp"
-    "../../../CPPScripts/Audio/irrKlangImpl/AudioStream_irrKlang.h"
-)
-source_group("Audio\\irrKlangImpl" FILES ${Audio__irrKlangImpl})
-
 set(Common
     "../../../CPPScripts/Common/SparseNaturalSet.h"
     "../../../CPPScripts/Common/TypeList.h"
@@ -112,17 +102,6 @@ set(Concurrent
 )
 source_group("Concurrent" FILES ${Concurrent})
 
-set(DirectX12
-    "../../../CPPScripts/DirectX12/D3D12EnumStruct.h"
-    "../../../CPPScripts/DirectX12/ZXD3D12DescriptorAllocator.cpp"
-    "../../../CPPScripts/DirectX12/ZXD3D12DescriptorAllocator.h"
-    "../../../CPPScripts/DirectX12/ZXD3D12DescriptorManager.cpp"
-    "../../../CPPScripts/DirectX12/ZXD3D12DescriptorManager.h"
-    "../../../CPPScripts/DirectX12/ZXD3D12Util.cpp"
-    "../../../CPPScripts/DirectX12/ZXD3D12Util.h"
-)
-source_group("DirectX12" FILES ${DirectX12})
-
 set(ECS
     "../../../CPPScripts/ECS/Command.cpp"
     "../../../CPPScripts/ECS/Command.h"
@@ -152,8 +131,6 @@ set(Editor
     "../../../CPPScripts/Editor/EditorGameViewPanel.h"
     "../../../CPPScripts/Editor/EditorGUIManager.cpp"
     "../../../CPPScripts/Editor/EditorGUIManager.h"
-    "../../../CPPScripts/Editor/EditorGUIManagerDirectX12.cpp"
-    "../../../CPPScripts/Editor/EditorGUIManagerDirectX12.h"
     "../../../CPPScripts/Editor/EditorGUIManagerOpenGL.cpp"
     "../../../CPPScripts/Editor/EditorGUIManagerOpenGL.h"
     "../../../CPPScripts/Editor/EditorGUIManagerVulkan.cpp"
@@ -172,20 +149,30 @@ set(Editor
     "../../../CPPScripts/Editor/EditorProjectPanel.h"
     "../../../CPPScripts/Editor/ImGuiTextureManager.cpp"
     "../../../CPPScripts/Editor/ImGuiTextureManager.h"
-    "../../../CPPScripts/Editor/ImGuiTextureManagerD3D12.cpp"
-    "../../../CPPScripts/Editor/ImGuiTextureManagerD3D12.h"
     "../../../CPPScripts/Editor/ImGuiTextureManagerOpenGL.cpp"
     "../../../CPPScripts/Editor/ImGuiTextureManagerOpenGL.h"
     "../../../CPPScripts/Editor/ImGuiTextureManagerVulkan.cpp"
     "../../../CPPScripts/Editor/ImGuiTextureManagerVulkan.h"
 )
+if(WIN32)
+    list(APPEND Editor
+        "../../../CPPScripts/Editor/EditorGUIManagerDirectX12.cpp"
+        "../../../CPPScripts/Editor/EditorGUIManagerDirectX12.h"
+        "../../../CPPScripts/Editor/ImGuiTextureManagerD3D12.cpp"
+        "../../../CPPScripts/Editor/ImGuiTextureManagerD3D12.h"
+    )
+endif()
 source_group("Editor" FILES ${Editor})
 
 set(External
-    "../../../Vendor/Src/d3dx12_property_format_table.cpp"
     "../../../Vendor/Src/glad.c"
     "../../../Vendor/Src/volk.c"
 )
+if(WIN32)
+    list(APPEND External
+        "../../../Vendor/Src/d3dx12_property_format_table.cpp"
+    )
+endif()
 source_group("External" FILES ${External})
 
 set(External__ImGui
@@ -193,8 +180,6 @@ set(External__ImGui
     "../../../CPPScripts/External/ImGui/imgui.cpp"
     "../../../CPPScripts/External/ImGui/imgui.h"
     "../../../CPPScripts/External/ImGui/imgui_draw.cpp"
-    "../../../CPPScripts/External/ImGui/imgui_impl_dx12.cpp"
-    "../../../CPPScripts/External/ImGui/imgui_impl_dx12.h"
     "../../../CPPScripts/External/ImGui/imgui_impl_glfw.cpp"
     "../../../CPPScripts/External/ImGui/imgui_impl_glfw.h"
     "../../../CPPScripts/External/ImGui/imgui_impl_opengl3.cpp"
@@ -202,8 +187,6 @@ set(External__ImGui
     "../../../CPPScripts/External/ImGui/imgui_impl_opengl3_loader.h"
     "../../../CPPScripts/External/ImGui/imgui_impl_vulkan.cpp"
     "../../../CPPScripts/External/ImGui/imgui_impl_vulkan.h"
-    "../../../CPPScripts/External/ImGui/imgui_impl_win32.cpp"
-    "../../../CPPScripts/External/ImGui/imgui_impl_win32.h"
     "../../../CPPScripts/External/ImGui/imgui_internal.h"
     "../../../CPPScripts/External/ImGui/imgui_tables.cpp"
     "../../../CPPScripts/External/ImGui/imgui_widgets.cpp"
@@ -211,6 +194,14 @@ set(External__ImGui
     "../../../CPPScripts/External/ImGui/imstb_textedit.h"
     "../../../CPPScripts/External/ImGui/imstb_truetype.h"
 )
+if(WIN32)
+    list(APPEND External__ImGui
+        "../../../CPPScripts/External/ImGui/imgui_impl_dx12.cpp"
+        "../../../CPPScripts/External/ImGui/imgui_impl_dx12.h"
+        "../../../CPPScripts/External/ImGui/imgui_impl_win32.cpp"
+        "../../../CPPScripts/External/ImGui/imgui_impl_win32.h"
+    )
+endif()
 source_group("External\\ImGui" FILES ${External__ImGui})
 
 set(External__Lua
@@ -284,9 +275,13 @@ set(Input
     "../../../CPPScripts/Input/InputManager.h"
     "../../../CPPScripts/Input/InputManagerGLFW.cpp"
     "../../../CPPScripts/Input/InputManagerGLFW.h"
-    "../../../CPPScripts/Input/InputManagerWindows.cpp"
-    "../../../CPPScripts/Input/InputManagerWindows.h"
 )
+if(WIN32)
+    list(APPEND Input
+        "../../../CPPScripts/Input/InputManagerWindows.cpp"
+        "../../../CPPScripts/Input/InputManagerWindows.h"
+    )
+endif()
 source_group("Input" FILES ${Input})
 
 set(LuaWrap
@@ -440,9 +435,13 @@ set(Window
     "../../../CPPScripts/Window/WindowManager.h"
     "../../../CPPScripts/Window/WindowManagerGLFW.cpp"
     "../../../CPPScripts/Window/WindowManagerGLFW.h"
-    "../../../CPPScripts/Window/WindowManagerWindows.cpp"
-    "../../../CPPScripts/Window/WindowManagerWindows.h"
 )
+if(WIN32)
+    list(APPEND Window
+        "../../../CPPScripts/Window/WindowManagerWindows.cpp"
+        "../../../CPPScripts/Window/WindowManagerWindows.h"
+    )
+endif()
 source_group("Window" FILES ${Window})
 
 set(ZXHeader
@@ -468,7 +467,6 @@ set(ZXHeader
     "../../../CPPScripts/PublicEnum.h"
     "../../../CPPScripts/PublicStruct.h"
     "../../../CPPScripts/RenderAPI.h"
-    "../../../CPPScripts/RenderAPID3D12.h"
     "../../../CPPScripts/RenderAPIOpenGL.h"
     "../../../CPPScripts/RenderAPIVulkan.h"
     "../../../CPPScripts/RenderEngine.h"
@@ -497,6 +495,11 @@ set(ZXHeader
     "../../../CPPScripts/ZMesh.h"
     "../../../CPPScripts/ZShader.h"
 )
+if(WIN32)
+    list(APPEND ZXHeader
+        "../../../CPPScripts/RenderAPID3D12.h"
+    )
+endif()
 source_group("ZXHeader" FILES ${ZXHeader})
 
 set(ZXSource
@@ -519,7 +522,6 @@ set(ZXSource
     "../../../CPPScripts/ProjectSetting.cpp"
     "../../../CPPScripts/PublicStruct.cpp"
     "../../../CPPScripts/RenderAPI.cpp"
-    "../../../CPPScripts/RenderAPID3D12.cpp"
     "../../../CPPScripts/RenderAPIOpenGL.cpp"
     "../../../CPPScripts/RenderAPIVulkan.cpp"
     "../../../CPPScripts/RenderEngine.cpp"
@@ -546,18 +548,44 @@ set(ZXSource
     "../../../CPPScripts/ZMesh.cpp"
     "../../../CPPScripts/ZShader.cpp"
 )
+if(WIN32)
+    list(APPEND ZXSource
+        "../../../CPPScripts/RenderAPID3D12.cpp"
+    )
+endif()
 source_group("ZXSource" FILES ${ZXSource})
+
+if(WIN32)
+    set(Audio__irrKlangImpl
+        "../../../CPPScripts/Audio/irrKlangImpl/AudioClip_irrKlang.cpp"
+        "../../../CPPScripts/Audio/irrKlangImpl/AudioClip_irrKlang.h"
+        "../../../CPPScripts/Audio/irrKlangImpl/AudioEngine_irrKlang.cpp"
+        "../../../CPPScripts/Audio/irrKlangImpl/AudioEngine_irrKlang.h"
+        "../../../CPPScripts/Audio/irrKlangImpl/AudioStream_irrKlang.cpp"
+        "../../../CPPScripts/Audio/irrKlangImpl/AudioStream_irrKlang.h"
+    )
+    source_group("Audio\\irrKlangImpl" FILES ${Audio__irrKlangImpl})
+
+    set(DirectX12
+        "../../../CPPScripts/DirectX12/D3D12EnumStruct.h"
+        "../../../CPPScripts/DirectX12/ZXD3D12DescriptorAllocator.cpp"
+        "../../../CPPScripts/DirectX12/ZXD3D12DescriptorAllocator.h"
+        "../../../CPPScripts/DirectX12/ZXD3D12DescriptorManager.cpp"
+        "../../../CPPScripts/DirectX12/ZXD3D12DescriptorManager.h"
+        "../../../CPPScripts/DirectX12/ZXD3D12Util.cpp"
+        "../../../CPPScripts/DirectX12/ZXD3D12Util.h"
+    )
+    source_group("DirectX12" FILES ${DirectX12})
+endif()
 
 set(ALL_FILES
     ${Animation}
     ${Audio}
     ${Audio__DefaultImpl}
-    ${Audio__irrKlangImpl}
     ${Common}
     ${Component}
     ${Component__Physics}
     ${Concurrent}
-    ${DirectX12}
     ${ECS}
     ${Editor}
     ${External}
@@ -580,6 +608,12 @@ set(ALL_FILES
     ${ZXHeader}
     ${ZXSource}
 )
+if(WIN32)
+    list(APPEND ALL_FILES
+        ${Audio__irrKlangImpl}
+        ${DirectX12}
+    )
+endif()
 
 ################################################################################
 # Target
@@ -647,34 +681,63 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../../Vendor/Include/Vulkan
     ${CMAKE_CURRENT_SOURCE_DIR}/../../../Vendor/Include
 )
-target_link_directories(${PROJECT_NAME} PRIVATE 
-    ${PROJECT_SOURCE_DIR}/../../Vendor/Library/Windows/Static
-)
+if(WIN32)
+    target_link_directories(${PROJECT_NAME} PRIVATE 
+        ${PROJECT_SOURCE_DIR}/../../Vendor/Library/Windows/Static
+    )
+elseif(LINUX)
+    target_link_directories(${PROJECT_NAME} PRIVATE 
+        ${PROJECT_SOURCE_DIR}/../../Vendor/Library/Linux/x86_64
+    )
+endif()
 
 ################################################################################
 # Post build events
 ################################################################################
-get_filename_component(ABSOLUTE_VENDOR_DLL_SRC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../Vendor/Library/Windows/Dynamic/*.dll" ABSOLUTE)
+if(WIN32)
+    get_filename_component(ABSOLUTE_VENDOR_DLL_SRC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../Vendor/Library/Windows/Dynamic/*.dll" ABSOLUTE)
+elseif(LINUX)
+    file(GLOB ABSOLUTE_VENDOR_DLL_SRC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../Vendor/Library/Linux/x86_64/*.so*")
+endif()
 get_filename_component(ABSOLUTE_VENDOR_DLL_DST_PATH "${CMAKE_SOURCE_DIR}/$<CONFIG>" ABSOLUTE)
 
-add_custom_command_if(
-    TARGET ${PROJECT_NAME}
-    POST_BUILD
-    COMMANDS
-    COMMAND $<CONFIG:Debug>   xcopy /y /d "$<SHELL_PATH:${ABSOLUTE_VENDOR_DLL_SRC_PATH}>" "$<SHELL_PATH:${ABSOLUTE_VENDOR_DLL_DST_PATH}>"
-    COMMAND $<CONFIG:Release> xcopy /y /d "$<SHELL_PATH:${ABSOLUTE_VENDOR_DLL_SRC_PATH}>" "$<SHELL_PATH:${ABSOLUTE_VENDOR_DLL_DST_PATH}>"
-)
+if(WIN32)
+    add_custom_command(
+        TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND xcopy /y /d "$<SHELL_PATH:${ABSOLUTE_VENDOR_DLL_SRC_PATH}>" "$<SHELL_PATH:${ABSOLUTE_VENDOR_DLL_DST_PATH}>"
+    )
+elseif(LINUX)
+    foreach(SO_FILE ${ABSOLUTE_VENDOR_DLL_SRC_PATH})
+        add_custom_command(
+            TARGET ${PROJECT_NAME}
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SO_FILE} ${ABSOLUTE_VENDOR_DLL_DST_PATH}
+        )
+    endforeach()
+endif()
 
 ################################################################################
 # Dependencies
 ################################################################################
-set(ADDITIONAL_LIBRARY_DEPENDENCIES
-    "assimp-vc143-mt;"
-    "glfw3;"
-    "opengl32;"
-    "freetype;"
-    "vulkan-1;"
-    "irrKlang"
-)
+if(WIN32)
+    set(ADDITIONAL_LIBRARY_DEPENDENCIES
+        "assimp-vc143-mt;"
+        "glfw3;"
+        "opengl32;"
+        "freetype;"
+        "vulkan-1;"
+        "irrKlang"
+    )
+elseif(LINUX)
+    set(ADDITIONAL_LIBRARY_DEPENDENCIES
+        "assimp;"
+        "glfw3;"
+        "GL;"
+        "freetype;"
+        "vulkan;"
+        "z"
+    )
+endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
