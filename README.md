@@ -691,9 +691,9 @@ This repository contains demos of actual game projects developed with the ZXEngi
 
 ## 构建与跨平台 (Build And Cross-Platform)
 
-本项目支持Windows和Mac OS，在Windows平台支持Vulkan，DirectX 12和OpenGL，在Mac OS平台支持Vulkan和OpenGL。目前有三种构建工具，分别是Visual Studio 2022，xmake和CMake，放到了BuildSolution文件夹中。
+本项目支持Windows和Mac OS，对Linux的支持还在开发中。在Windows平台支持Vulkan，DirectX 12和OpenGL，在Mac OS平台支持Vulkan和OpenGL。目前有三种构建工具，分别是Visual Studio 2022，xmake和CMake，放到了BuildSolution文件夹中。
 
-This project supports Windows and Mac OS. It supports Vulkan, DirectX 12 and OpenGL on the Windows platform, and Vulkan and OpenGL on the Mac OS platform. There are currently three building methods, which are Visual Studio 2022, xmake and CMake, and they placed in the BuildSolution folder.
+This project supports Windows and Mac OS, support for Linux is still under development. It supports Vulkan, DirectX 12 and OpenGL on the Windows platform, and Vulkan and OpenGL on the Mac OS platform. There are currently three building methods, which are Visual Studio 2022, xmake and CMake, and they placed in the BuildSolution folder.
 
 ### Windows
 
@@ -707,13 +707,13 @@ xmake
 xmake run zxengine
 ```
 
-然后是CMake，不过不是很推荐使用。因为CMake写起来比较麻烦，我对它的编写并不是很熟，我是在工具生成的基础上再手动调整一下写出来的，所以不保证各种环境和使用方式下都没问题。更推荐xmake，要简单好用一些。
+然后是CMake，直接运行 BuildSolution\CMake\BuildWin.bat 脚本即可。
 
-And there is CMake, but it is not recommended. Because I'm not very familiar with writing CMake, I use a tool to generate the CMake file, and then manually modified it, so I cannot guarantee that there will be no problem in various environments and usage methods. I recommend xmake, which is simpler and easier to use.
+Then for CMake, just run the BuildSolution\CMake\BuildWin.bat script.
 
 ```shell
 cd BuildSolution\CMake
-cmake CMakeLists.txt
+.\BuildWin.bat
 ```
 
 对于DirectX 12版本的ZXEngine，推荐直接用Visual Studio来编译。因为你如果用Clang或者GCC来编译的话，可能没法支持一些Windows特性(也可能支持但是我不知道怎么搞)，出现奇怪的问题。比如“高DPI识别”，如果没有这个会导致在设置了Windows系统缩放的时候，应用程序分辨率异常，出现显示模糊的问题。
@@ -722,14 +722,23 @@ For the DirectX 12 version of ZXEngine, it is recommended to compile with Visual
 
 ### Mac OS
 
-本项目在Mac OS平台提供的构建工具为xmake，使用方式和在Windows平台一样：
+本项目在Mac OS平台提供的构建工具为xmake和CMake，xmake的使用方式和在Windows平台一样：
 
-This project is built with xmake on the Mac OS platform. The shell commands are the same as on the Windows platform:
+The build tools for Mac OS are xmake and Cmake, and xmake works the same way it does on Windows:
 
 ```shell
-cd BuildSolution\xmake
+cd BuildSolution/xmake
 xmake
 xmake run zxengine
+```
+
+然后是CMake，直接运行 BuildSolution\CMake\BuildMac.sh 脚本即可。
+
+Then for CMake, just run the BuildSolution\CMake\BuildMac.sh script.
+
+```shell
+cd BuildSolution/CMake
+./BuildMac.sh
 ```
 
 在Mac OS下运行时，如果有引擎编辑器和画面显示错位的问题，多半是由分辨率过低导致的。因为Mac Book的屏幕较小，所以即使屏幕的硬件分辨率很高，但是为了文本和图标不会太小，Mac OS的默认分辨率设置还是可能会比较低。比如我这台13寸的Mac系统默认分辨率为1440x900，显示就会异常。推荐运行时分辨率设置在1920x1080以上。
@@ -739,6 +748,25 @@ When running on Mac OS, if there is a display misalignment between the engine ed
 还有一个问题是Mac的芯片可能不支持Vulkan的几何着色器，比如我这台M1芯片的Mac就不支持。我也不知道为什么用OpenGL都支持，但是用Vulkan就不支持。由于本引擎的Shadow Cube Map是使用几何着色器渲染的，所以在不支持几何着色器的设备上运行时，在使用点光源的场景中阴影系统会失效。
 
 Another problem is that the Apple Silicon may not support Vulkan's geometry shader. For example, my M1 Mac does not support it. I don't know why it is supported with OpenGL but not supported with Vulkan. Since the shadow cube map of this engine is rendered using a geometry shader, when running on a device that does not support geometry shader, the shadow system will not work in a scene using point light.
+
+### Linux
+
+目前对Linux的支持还未完成，但是构建工具已经可以用了。在Linux平台也提供了xmake和CMake，xmake的使用方式还是一样：
+
+```shell
+cd BuildSolution/xmake
+xmake
+xmake run zxengine
+```
+
+然后是CMake，直接运行 BuildSolution\CMake\BuildLinux.sh 脚本即可。
+
+Then for CMake, just run the BuildSolution\CMake\BuildLinux.sh script.
+
+```shell
+cd BuildSolution/CMake
+./BuildLinux.sh
+```
 
 ## 注意事项 (Precautions)
 
