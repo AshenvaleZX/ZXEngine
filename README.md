@@ -50,9 +50,9 @@ This project aims at a game engine, not just graphics and rendering (although th
 
 ## 引擎简介 (Engine Introduction)
 
-本引擎目前同时支持Vulkan，DirectX 12和OpenGL，支持Windows和Mac OS。使用自创的zxshader语言来编写shader，支持前面三种图形API，可一次编写3种环境运行。本引擎同时也支持基于Vulkan和DirectX12的光线追踪渲染管线。
+本引擎目前同时支持Vulkan，DirectX 12和OpenGL，支持Windows和macOS。使用自创的zxshader语言来编写shader，支持前面三种图形API，可一次编写3种环境运行。本引擎同时也支持基于Vulkan和DirectX12的光线追踪渲染管线。
 
-This engine currently supports Vulkan, DirectX 12 and OpenGL, supports Windows and Mac OS. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs. This engine also supports ray tracing rendering pipeline based on Vulkan and DirectX12.
+This engine currently supports Vulkan, DirectX 12 and OpenGL, supports Windows and macOS. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs. This engine also supports ray tracing rendering pipeline based on Vulkan and DirectX12.
 
 本引擎内置了我写的物理引擎PhysZ(看了一些书和别人的项目之后的学习成果，详见后文)，支持基本的刚体力学模拟和布料模拟。同时我也开发了简单的骨骼蒙皮动画系统，粒子系统，UI系统，JobSystem等。文档后面会有这些系统的图片展示。
 
@@ -409,9 +409,9 @@ AudioListener同样也是用于3D音效的，如果你不需要3D音效的话场
 
 ![](Documents/Images/Audio2.png)
 
-本引擎的绝大部分系统和模块都是我自己编写的，但是音频处理是一个和图形渲染，物理引擎一样很专业的领域，涉及音频编码和时域频域变换等相关专业知识。而我对音频相关的专业知识了解还不够，所以目前本引擎音频系统中的核心部分，即音频解码和播放功能使用了irrKlang这个第三方库。由于irrKlang没有对Apple Silicon做支持，所以在MacOS上的音频系统目前是一个空的实现。
+本引擎的绝大部分系统和模块都是我自己编写的，但是音频处理是一个和图形渲染，物理引擎一样很专业的领域，涉及音频编码和时域频域变换等相关专业知识。而我对音频相关的专业知识了解还不够，所以目前本引擎音频系统中的核心部分，即音频解码和播放功能使用了irrKlang这个第三方库。由于irrKlang没有对Apple Silicon做支持，所以在macOS上的音频系统目前是一个空的实现。
 
-Most of the systems and modules of this engine are written by myself, but audio processing is a very professional field like graphics rendering and physics engine, involving audio coding, time domain and frequency domain transformation and other related professional knowledge. I don’t know enough about audio-related professional knowledge, so the core part of the audio system of this engine, that is, the audio decoding and playback functions, uses the third-party library irrKlang. Since irrKlang does not support Apple Silicon, the audio system on MacOS is currently an empty implementation.
+Most of the systems and modules of this engine are written by myself, but audio processing is a very professional field like graphics rendering and physics engine, involving audio coding, time domain and frequency domain transformation and other related professional knowledge. I don’t know enough about audio-related professional knowledge, so the core part of the audio system of this engine, that is, the audio decoding and playback functions, uses the third-party library irrKlang. Since irrKlang does not support Apple Silicon, the audio system on macOS is currently an empty implementation.
 
 ## 多线程与JobSystem (Multithreading And JobSystem)
 
@@ -691,9 +691,9 @@ This repository contains demos of actual game projects developed with the ZXEngi
 
 ## 构建与跨平台 (Build And Cross-Platform)
 
-本项目支持Windows和Mac OS，对Linux的支持还在开发中。在Windows平台支持Vulkan，DirectX 12和OpenGL，在Mac OS平台支持Vulkan和OpenGL。目前有三种构建工具，分别是Visual Studio 2022，xmake和CMake，放到了BuildSolution文件夹中。
+本项目支持Windows和macOS，对Linux的支持还在开发中。在Windows平台支持Vulkan，DirectX 12和OpenGL，在macOS平台支持Vulkan和OpenGL。目前有三种构建工具，分别是Visual Studio 2022，xmake和CMake，放到了BuildSolution文件夹中。
 
-This project supports Windows and Mac OS, support for Linux is still under development. It supports Vulkan, DirectX 12 and OpenGL on the Windows platform, and Vulkan and OpenGL on the Mac OS platform. There are currently three building methods, which are Visual Studio 2022, xmake and CMake, and they placed in the BuildSolution folder.
+This project supports Windows and macOS, support for Linux is still under development. It supports Vulkan, DirectX 12 and OpenGL on the Windows platform, and Vulkan and OpenGL on the macOS platform. There are currently three building methods, which are Visual Studio 2022, xmake and CMake, and they placed in the BuildSolution folder.
 
 ### Windows
 
@@ -720,11 +720,11 @@ cd BuildSolution\CMake
 
 For the DirectX 12 version of ZXEngine, it is recommended to compile with Visual Studio. Because if you use Clang or GCC to compile, some Windows features may not be supported (it may be supported but I don't know how), and strange problems may occur. For example, "DPI Awareness", without this, will cause the application resolution to be abnormal and the display to be blurry when Windows system scaling is set.
 
-### Mac OS
+### macOS
 
-本项目在Mac OS平台提供的构建工具为xmake和CMake，xmake的使用方式和在Windows平台一样：
+本项目在macOS平台提供的构建工具为xmake和CMake，xmake的使用方式和在Windows平台一样：
 
-The build tools for Mac OS are xmake and Cmake, and xmake works the same way it does on Windows:
+The build tools for macOS are xmake and Cmake, and xmake works the same way it does on Windows:
 
 ```shell
 cd BuildSolution/xmake
@@ -741,9 +741,9 @@ cd BuildSolution/CMake
 ./BuildMac.sh
 ```
 
-在Mac OS下运行时，如果有引擎编辑器和画面显示错位的问题，多半是由分辨率过低导致的。因为Mac Book的屏幕较小，所以即使屏幕的硬件分辨率很高，但是为了文本和图标不会太小，Mac OS的默认分辨率设置还是可能会比较低。比如我这台13寸的Mac系统默认分辨率为1440x900，显示就会异常。推荐运行时分辨率设置在1920x1080以上。
+在macOS下运行时，如果有引擎编辑器和画面显示错位的问题，多半是由分辨率过低导致的。因为Mac Book的屏幕较小，所以即使屏幕的硬件分辨率很高，但是为了文本和图标不会太小，macOS的默认分辨率设置还是可能会比较低。比如我这台13寸的Mac系统默认分辨率为1440x900，显示就会异常。推荐运行时分辨率设置在1920x1080以上。
 
-When running on Mac OS, if there is a display misalignment between the engine editor and the rendering scene, it is most likely caused by a low resolution. Because the Mac Book's screen is small, even if the screen's hardware resolution is high, the default resolution setting of Mac OS may still be relatively low so that text and icons are not too small. For example, the default resolution setting of my 13-inch Mac is 1440x900, and the display will be abnormal. It is recommended to set the resolution to above 1920x1080 when running ZXEngine with editor.
+When running on macOS, if there is a display misalignment between the engine editor and the rendering scene, it is most likely caused by a low resolution. Because the Mac Book's screen is small, even if the screen's hardware resolution is high, the default resolution setting of macOS may still be relatively low so that text and icons are not too small. For example, the default resolution setting of my 13-inch Mac is 1440x900, and the display will be abnormal. It is recommended to set the resolution to above 1920x1080 when running ZXEngine with editor.
 
 还有一个问题是Mac的芯片可能不支持Vulkan的几何着色器，比如我这台M1芯片的Mac就不支持。我也不知道为什么用OpenGL都支持，但是用Vulkan就不支持。由于本引擎的Shadow Cube Map是使用几何着色器渲染的，所以在不支持几何着色器的设备上运行时，在使用点光源的场景中阴影系统会失效。
 
@@ -752,6 +752,8 @@ Another problem is that the Apple Silicon may not support Vulkan's geometry shad
 ### Linux
 
 目前对Linux的支持还未完成，但是构建工具已经可以用了。在Linux平台也提供了xmake和CMake，xmake的使用方式还是一样：
+
+Support for Linux is not yet complete, but the build tools are already available. xmake and CMake are also provided on the Linux platform, and the usage of xmake is still the same:
 
 ```shell
 cd BuildSolution/xmake
