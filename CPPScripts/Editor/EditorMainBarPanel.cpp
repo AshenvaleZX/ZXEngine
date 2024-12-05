@@ -11,7 +11,7 @@
 #include "../Component/Animator.h"
 #include "../Audio/AudioEngine.h"
 
-#ifdef _WIN64
+#ifdef ZX_PLATFORM_WINDOWS
 #include "../DirectX12/ZXD3D12Util.h"
 #endif
 
@@ -78,7 +78,7 @@ namespace ZXEngine
 
 					if (ImGui::MenuItem("Compile All Shader for DirectX12"))
 					{
-#ifdef _WIN64
+#ifdef ZX_PLATFORM_WINDOWS
 						std::thread t([]
 						{
 							ZXD3D12Util::CompileAllShader(Resources::GetAssetsPath());
@@ -93,7 +93,7 @@ namespace ZXEngine
 
 					if (ImGui::MenuItem("Generate HLSL for DirectX12"))
 					{
-#ifdef _WIN64
+#ifdef ZX_PLATFORM_WINDOWS
 						std::thread t([]
 						{
 							ZXD3D12Util::TranslateAllShaderToHLSL(Resources::GetAssetsPath());

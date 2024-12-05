@@ -26,7 +26,7 @@ namespace ZXEngine
 #endif
 
 #ifdef ZX_API_VULKAN
-#ifdef __APPLE__
+#ifdef ZX_PLATFORM_MACOS
 		windowName = "ZXEngine <Vulkan 1.2>";
 #else
 		windowName = "ZXEngine <Vulkan 1.3>";

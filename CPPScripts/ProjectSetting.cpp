@@ -9,7 +9,7 @@
 
 namespace ZXEngine
 {
-#ifdef __APPLE__
+#ifdef ZX_PLATFORM_MACOS
 	const string ProjectSetting::OpenGLVersion = "410";
 	const int ProjectSetting::OpenGLVersionMajor = 4;
 	const int ProjectSetting::OpenGLVersionMinor = 1;

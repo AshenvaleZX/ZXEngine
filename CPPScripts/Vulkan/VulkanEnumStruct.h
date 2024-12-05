@@ -15,7 +15,7 @@
 
 #define ShaderModuleSet map<VkShaderStageFlagBits, VkShaderModule>
 
-#ifdef __APPLE__
+#ifdef ZX_PLATFORM_MACOS
 #define ZX_VK_API_VERSION VK_API_VERSION_1_2
 #else
 #define ZX_VK_API_VERSION VK_API_VERSION_1_3

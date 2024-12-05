@@ -510,9 +510,9 @@ namespace ZXEngine
 		if (ImGui::Button(name.c_str()))
 		{
 			auto& path = component->GetLuaFullPath();
-#ifdef _WIN64
+#if defined(ZX_PLATFORM_WINDOWS)
 			system(("start " + path).c_str());
-#elif __APPLE__
+#elif defined(ZX_PLATFORM_MACOS)
 			system(("open " + path).c_str());
 #endif
 		}
@@ -554,11 +554,11 @@ namespace ZXEngine
 		{
 			const char* value = iter.second.c_str();
 			// -1是为了保留一个位置放'\0'
-#ifdef _WIN64
+#if defined(ZX_PLATFORM_WINDOWS)
 			errno_t err = strncpy_s(StagingBuffer, value, StagingSize - 1);
 			if (err != 0)
 				continue;
-#elif __APPLE__
+#elif defined(ZX_PLATFORM_MACOS)
 			// 不知道为什么在MacOS上无法识别strncpy_s，按理说应该是支持C11标准的
 			strncpy(StagingBuffer, value, StagingSize - 1);
 			StagingBuffer[StagingSize - 1] = '\0';

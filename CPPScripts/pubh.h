@@ -16,6 +16,14 @@
 // #define ZX_API_VULKAN
 // #define ZX_API_D3D12
 
+#if defined(__linux__)
+#define ZX_PLATFORM_LINUX
+#elif defined(__APPLE__)
+#define ZX_PLATFORM_MACOS
+#elif defined(_WIN32) || defined(_WIN64)
+#define ZX_PLATFORM_WINDOWS
+#endif
+
 #include <string>
 #include <list>
 #include <cstdint>

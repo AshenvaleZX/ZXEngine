@@ -1,7 +1,7 @@
 #include "JobSystem.h"
 #include "Job.h"
 
-#if defined(_WIN64) && defined(_DEBUG)
+#if defined(ZX_PLATFORM_WINDOWS) && defined(_DEBUG)
 #include <windows.h>
 #undef AddJob
 #endif
@@ -65,7 +65,7 @@ namespace ZXEngine
 					job();
 				}
 			});
-#if defined(_WIN64) && defined(_DEBUG)
+#if defined(ZX_PLATFORM_WINDOWS) && defined(_DEBUG)
 			SetThreadDescription(mThreads[i].native_handle(), L"JobSystemThread");
 #endif
 		}

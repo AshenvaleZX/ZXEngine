@@ -1,11 +1,11 @@
 #include "Utils.h"
 
-#ifdef _WIN64
+#if defined(ZX_PLATFORM_WINDOWS)
 #include <Windows.h>
-#elif __APPLE__
+#elif defined(ZX_PLATFORM_MACOS)
 #include <mach-o/dyld.h>
 #include <limits.h>
-#elif __linux__
+#elif defined(ZX_PLATFORM_LINUX)
 #include <unistd.h>
 #include <limits.h>
 #endif
@@ -245,15 +245,15 @@ namespace ZXEngine
 
     string Utils::GetCurrentExecutableFilePath()
     {
-#ifdef _WIN64
+#if defined(ZX_PLATFORM_WINDOWS)
         char buffer[MAX_PATH];
         GetModuleFileNameA(NULL, buffer, MAX_PATH);
-#elif __APPLE__
+#elif defined(ZX_PLATFORM_MACOS)
         char buffer[PATH_MAX];
         uint32_t size = sizeof(buffer);
         if (_NSGetExecutablePath(buffer, &size) != 0)
             return "";
-#elif __linux__
+#elif defined(ZX_PLATFORM_LINUX)
         char buffer[PATH_MAX];
         ssize_t count = readlink("/proc/self/exe", buffer, sizeof(buffer));
         if (count == -1)

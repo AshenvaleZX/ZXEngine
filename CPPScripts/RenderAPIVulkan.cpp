@@ -3549,7 +3549,7 @@ namespace ZXEngine
         VkInstanceCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         createInfo.pApplicationInfo = &appInfo;
-#ifdef __APPLE__
+#ifdef ZX_PLATFORM_MACOS
         createInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #endif
 
@@ -3685,7 +3685,7 @@ namespace ZXEngine
         deviceFeatures.features.sampleRateShading = VK_TRUE;
         deviceFeatures.features.shaderInt64 = VK_TRUE;
         deviceFeatures.features.geometryShader = ProjectSetting::isSupportGeometryShader ? VK_TRUE : VK_FALSE;
-#ifndef __APPLE__
+#ifndef ZX_PLATFORM_MACOS
         deviceFeatures.pNext = &accelerationFeature;
 #else
         deviceFeatures.pNext = &deviceVulkan12Features;
@@ -3985,7 +3985,7 @@ namespace ZXEngine
         if (validationLayersEnabled)
             extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
-#ifdef __APPLE__
+#ifdef ZX_PLATFORM_MACOS
         extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
 #endif
 
@@ -4018,7 +4018,7 @@ namespace ZXEngine
         VkPhysicalDeviceProperties deviceProperties;
         vkGetPhysicalDeviceProperties(device, &deviceProperties);
 
-#ifndef __APPLE__
+#ifndef ZX_PLATFORM_MACOS
         // –Ë“™∂¿œ‘
         if (deviceProperties.deviceType != VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
             return false;

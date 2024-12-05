@@ -105,9 +105,9 @@ namespace ZXEngine
 				case AssetType::Script:
 				case AssetType::Audio:
 				case AssetType::Text:
-#ifdef _WIN64
+#if defined(ZX_PLATFORM_WINDOWS)
 					system(("start " + asset->path).c_str());
-#elif __APPLE__
+#elif defined(ZX_PLATFORM_MACOS)
 					system(("open " + asset->path).c_str());
 #endif
 					break;

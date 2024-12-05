@@ -592,7 +592,7 @@ namespace ZXEngine
 
 			// 创建DepthBuffer
 			unsigned int depthBuffer;
-#if __APPLE__
+#if ZX_PLATFORM_MACOS
 			if (type == FrameBufferType::Normal)
 			{
 				// 在Mac上使用OpenGL 4.1，不支持把Renderbuffer复制到Texture，而目前正向渲染管线里需要这个操作
@@ -620,7 +620,7 @@ namespace ZXEngine
 			// 把ColorBuffer和DepthBuffer绑定到FBO上
 			glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
-#if __APPLE__
+#if ZX_PLATFORM_MACOS
 			if (type == FrameBufferType::Normal)
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBuffer, 0);
 			else

@@ -3,7 +3,7 @@
 #include "AudioClip.h"
 #include "../GameObject.h"
 
-#ifdef _WIN64
+#ifdef ZX_PLATFORM_WINDOWS
 #include "irrKlangImpl/AudioEngine_irrKlang.h"
 #else
 #include "DefaultImpl/AudioEngine_Default.h"
@@ -17,7 +17,7 @@ namespace ZXEngine
 	{
 		if (mInstance == nullptr)
 		{
-#ifdef _WIN64
+#ifdef ZX_PLATFORM_WINDOWS
 			mInstance = new AudioEngine_irrKlang();
 #else
 			mInstance = new AudioEngine_Default();
