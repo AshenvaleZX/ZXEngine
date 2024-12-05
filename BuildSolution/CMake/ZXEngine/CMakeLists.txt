@@ -685,6 +685,10 @@ if(WIN32)
     target_link_directories(${PROJECT_NAME} PRIVATE 
         ${PROJECT_SOURCE_DIR}/../../Vendor/Library/Windows/Static
     )
+elseif(APPLE)
+    target_link_directories(${PROJECT_NAME} PRIVATE 
+        ${PROJECT_SOURCE_DIR}/../../Vendor/Library/MacOS
+    )
 elseif(LINUX)
     target_link_directories(${PROJECT_NAME} PRIVATE 
         ${PROJECT_SOURCE_DIR}/../../Vendor/Library/Linux/x86_64
@@ -696,6 +700,8 @@ endif()
 ################################################################################
 if(WIN32)
     get_filename_component(ABSOLUTE_VENDOR_DLL_SRC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../Vendor/Library/Windows/Dynamic/*.dll" ABSOLUTE)
+elseif(APPLE)
+    file(GLOB ABSOLUTE_VENDOR_DLL_SRC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../Vendor/Library/MacOS/*.dylib")
 elseif(LINUX)
     file(GLOB ABSOLUTE_VENDOR_DLL_SRC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../Vendor/Library/Linux/x86_64/*.so*")
 endif()
@@ -707,6 +713,14 @@ if(WIN32)
         POST_BUILD
         COMMAND xcopy /y /d "$<SHELL_PATH:${ABSOLUTE_VENDOR_DLL_SRC_PATH}>" "$<SHELL_PATH:${ABSOLUTE_VENDOR_DLL_DST_PATH}>"
     )
+elseif(APPLE)
+    foreach(DYLIB_FILE ${ABSOLUTE_VENDOR_DLL_SRC_PATH})
+        add_custom_command(
+            TARGET ${PROJECT_NAME}
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DYLIB_FILE} ${ABSOLUTE_VENDOR_DLL_DST_PATH}
+        )
+    endforeach()
 elseif(LINUX)
     foreach(SO_FILE ${ABSOLUTE_VENDOR_DLL_SRC_PATH})
         add_custom_command(
@@ -729,13 +743,32 @@ if(WIN32)
         "vulkan-1;"
         "irrKlang"
     )
+elseif(APPLE)
+    find_library(CoreFoundation_LIBRARY CoreFoundation)
+    find_library(CoreGraphics_LIBRARY CoreGraphics)
+    find_library(IOKit_LIBRARY IOKit)
+    find_library(AppKit_LIBRARY AppKit)
+    find_library(OpenGL_LIBRARY OpenGL)
+    set(ADDITIONAL_LIBRARY_DEPENDENCIES
+        "assimp.5;"
+        "glfw3;"
+        "freetype;"
+        "vulkan.1;"
+        "z;"
+        "bz2;"
+        "${CoreFoundation_LIBRARY};"
+        "${CoreGraphics_LIBRARY};"
+        "${IOKit_LIBRARY};"
+        "${AppKit_LIBRARY};"
+        "${OpenGL_LIBRARY};"
+    )
 elseif(LINUX)
     set(ADDITIONAL_LIBRARY_DEPENDENCIES
         "assimp;"
         "glfw3;"
-        "GL;"
         "freetype;"
         "vulkan;"
+        "GL;"
         "z"
     )
 endif()
