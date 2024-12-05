@@ -11,10 +11,11 @@
 */
 
 #include "Game.h"
+#include "Utils.h"
 
 int main(int argc, char* argv[])
 {
-	string path = "../../../ExampleProject";
+	string path = ZXEngine::Utils::GetCurrentExecutableFilePath() + "/../../../ExampleProject";
 	if (argc > 1) path = argv[1];
 
 	if (ZXEngine::Game::Launch(path))

@@ -3,6 +3,7 @@
 #include "RenderEngine.h"
 #include "Input/InputManager.h"
 #include "Time.h"
+#include "Utils.h"
 #include "SceneManager.h"
 #include "LuaManager.h"
 #include "GameLogicManager.h"
@@ -29,7 +30,7 @@ namespace ZXEngine
 
 		if (!ProjectSetting::InitSetting(path))
 		{
-			std::cerr << "Invalid project path: " << path << std::endl;
+			std::cerr << "Invalid project path: " << Utils::RelativePathToAbsolutePath(path) << std::endl;
 			return false;
 		}
 		else
