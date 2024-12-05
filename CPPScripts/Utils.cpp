@@ -146,6 +146,15 @@ namespace ZXEngine
         return res;
     }
 
+    string Utils::RelativePathToAbsolutePath(const string& rPath)
+    {
+        filesystem::path path(rPath);
+        if (path.is_absolute())
+            return path.string();
+        else
+            return filesystem::absolute(path).string();
+    }
+
     string Utils::SecondsToString(float seconds)
     {
         uint32_t sec_uint32 = static_cast<uint32_t>(seconds * 1000);

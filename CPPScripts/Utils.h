@@ -28,6 +28,8 @@ namespace ZXEngine
 		static string ConcatenateStrings(const vector<string>& strings);
 		// 路径转换为Windows格式
 		static inline string ConvertPathToWindowsFormat(const string path);
+		// 相对路径转换为绝对路径
+		static string RelativePathToAbsolutePath(const string& rPath);
 		// 获取文件扩展名
 		static inline string GetFileExtension(const string& path);
 		// 时间(秒)转换为字符串
