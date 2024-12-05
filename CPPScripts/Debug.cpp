@@ -120,7 +120,7 @@ namespace ZXEngine
 
 		// 没有用Log，因为Log速度慢一倍，会影响计时，如果有需要写入文件再用Log
 		// 先拼接再输出，效率比直接用<<高
-		cout << (name + " : " + std::to_string(duration) + " ns") << endl;
+		std::cout << (name + " : " + std::to_string(duration) + " ns") << std::endl;
 	}
 
 	void Debug::StartTimer(const std::string& name)
@@ -132,6 +132,6 @@ namespace ZXEngine
 	{
 		auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - mTimerMap[name]).count();
 
-		cout << (name + " : " + std::to_string(duration) + " ns") << endl;
+		std::cout << (name + " : " + std::to_string(duration) + " ns") << std::endl;
 	}
 }
