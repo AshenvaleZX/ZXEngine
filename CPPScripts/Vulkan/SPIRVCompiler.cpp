@@ -1,4 +1,5 @@
 #include "SPIRVCompiler.h"
+#include "../Utils.h"
 #include "../Resources.h"
 #include "../ShaderParser.h"
 #include "../ProjectSetting.h"

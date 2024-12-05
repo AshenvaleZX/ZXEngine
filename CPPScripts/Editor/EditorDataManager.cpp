@@ -2,6 +2,7 @@
 #include "EditorGUIManager.h"
 #include "EditorAssetPreviewer.h"
 #include "../Time.h"
+#include "../Utils.h"
 #include "../Texture.h"
 #include "../Material.h"
 #include "../Component/MeshRenderer.h"
@@ -179,7 +180,7 @@ namespace ZXEngine
 				auto curInfo = static_cast<AssetModelInfo*>(this->curAssetInfo);
 				curInfo->meshRenderer = new MeshRenderer();
 				
-				for (auto mesh : modelData->pMeshes)
+				for (auto& mesh : modelData->pMeshes)
 				{
 					mesh->SetUp();
 				}

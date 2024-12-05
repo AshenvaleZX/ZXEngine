@@ -18,6 +18,7 @@
 
 #include <string>
 #include <list>
+#include <cstdint>
 #include <iostream>
 #include <map>
 #include <set>
@@ -63,6 +64,5 @@ using json = nlohmann::json;
 namespace filesystem = std::filesystem;
 
 #include "Debug.h"
-#include "Utils.h"
 #include "PublicEnum.h"
 #include "Math.h"

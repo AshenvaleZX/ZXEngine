@@ -1,5 +1,4 @@
 #include "Utils.h"
-#include <filesystem>
 
 #ifdef _WIN64
 #include <Windows.h>
@@ -13,12 +12,12 @@
 
 namespace ZXEngine
 {
-	std::vector<std::string> Utils::StringSplit(const std::string& str, char p)
+	vector<string> Utils::StringSplit(const string& str, char p)
 	{
-        std::size_t previous = 0;
-        std::size_t current = str.find(p);
-        std::vector<std::string> elems;
-        while (current != std::string::npos) 
+        size_t previous = 0;
+        size_t current = str.find(p);
+        vector<string> elems;
+        while (current != string::npos) 
         {
             if (current > previous) 
             {
@@ -34,9 +33,9 @@ namespace ZXEngine
         return elems;
 	}
 
-    std::vector<std::string> Utils::ExtractWords(const std::string& str)
+    vector<string> Utils::ExtractWords(const string& str)
     {
-        std::vector<std::string> words;
+        vector<string> words;
 
         size_t s = 0, e = 0;
         bool record = false;
@@ -67,12 +66,12 @@ namespace ZXEngine
         return isalnum(c) or c == '_';
     }
 
-    size_t Utils::FindWord(const std::string& str, const std::string& word, size_t offset)
+    size_t Utils::FindWord(const string& str, const string& word, size_t offset)
     {
         size_t pos = str.find(word, offset);
         size_t strSize = str.size();
         size_t wordSize = word.size();
-        while (pos != std::string::npos)
+        while (pos != string::npos)
         {
             // 同时满足以下两个条件，说明这个单词是一个独立的单词，而不是另一个单词的一部分:
             // 1, 单词前一个位置无字符，或者字符不是合法单词字符
@@ -83,16 +82,16 @@ namespace ZXEngine
             offset = pos + wordSize;
             pos = str.find(word, offset);
         }
-        return std::string::npos;
+        return string::npos;
     }
 
-    void Utils::ReplaceAllWord(std::string& oriStr, const std::string& srcWord, const std::string& dstWord)
+    void Utils::ReplaceAllWord(string& oriStr, const string& srcWord, const string& dstWord)
     {
         size_t offset = 0;
         size_t pos = FindWord(oriStr, srcWord, 0);
         size_t srcL = srcWord.length();
         size_t dstL = dstWord.length();
-        while (pos != std::string::npos)
+        while (pos != string::npos)
         {
             oriStr.replace(pos, srcL, dstWord);
             offset = pos + dstL;
@@ -100,13 +99,13 @@ namespace ZXEngine
         }
     }
 
-    void Utils::ReplaceAllString(std::string& oriStr, const std::string& srcStr, const std::string& dstStr)
+    void Utils::ReplaceAllString(string& oriStr, const string& srcStr, const string& dstStr)
     {
         size_t offset = 0;
         size_t pos = oriStr.find(srcStr, 0);
         size_t srcL = srcStr.length();
         size_t dstL = dstStr.length();
-        while (pos != std::string::npos)
+        while (pos != string::npos)
         {
             oriStr.replace(pos, srcL, dstStr);
             offset = pos + dstL;
@@ -114,7 +113,7 @@ namespace ZXEngine
         }
     }
 
-    void Utils::GetNextStringBlockPos(std::string& oriStr, size_t offset, char sChar, char eChar, size_t& sPos, size_t& ePos)
+    void Utils::GetNextStringBlockPos(string& oriStr, size_t offset, char sChar, char eChar, size_t& sPos, size_t& ePos)
     {
         int level = 0;
         for (size_t i = offset; i < oriStr.size(); i++)
@@ -139,15 +138,15 @@ namespace ZXEngine
         }
     }
 
-    std::string Utils::ConcatenateStrings(const std::vector<std::string>& strings)
+    string Utils::ConcatenateStrings(const vector<string>& strings)
     {
-        std::string res = "";
+        string res = "";
         for (auto& str : strings)
             res += str;
         return res;
     }
 
-    std::string Utils::SecondsToString(float seconds)
+    string Utils::SecondsToString(float seconds)
     {
         uint32_t sec_uint32 = static_cast<uint32_t>(seconds * 1000);
 
@@ -156,15 +155,15 @@ namespace ZXEngine
             uint32_t frac = sec_uint32 % 1000;
             uint32_t secs = sec_uint32 / 1000;
 
-            std::string fracStr;
+            string fracStr;
             if (frac < 10)
-                fracStr = "00" + std::to_string(frac);
+                fracStr = "00" + to_string(frac);
             else if (frac < 100)
-                fracStr = "0" + std::to_string(frac);
+                fracStr = "0" + to_string(frac);
             else
-                fracStr = std::to_string(frac);
+                fracStr = to_string(frac);
 
-            std::string secsStr = (secs < 10 ? "0" : "") + std::to_string(secs);
+            string secsStr = (secs < 10 ? "0" : "") + to_string(secs);
 
             return "00:00:" + secsStr + "." + fracStr;
         }
@@ -174,43 +173,43 @@ namespace ZXEngine
         }
     }
 
-    std::string Utils::SecondsToString(uint32_t seconds)
+    string Utils::SecondsToString(uint32_t seconds)
     {
         uint32_t hours = seconds / 3600;
         uint32_t minutes = (seconds % 3600) / 60;
         uint32_t secs = seconds % 60;
 
-        std::string hoursStr = (hours < 10 ? "0" : "") + std::to_string(hours);
-        std::string minutesStr = (minutes < 10 ? "0" : "") + std::to_string(minutes);
-        std::string secsStr = (secs < 10 ? "0" : "") + std::to_string(secs);
+        string hoursStr = (hours < 10 ? "0" : "") + to_string(hours);
+        string minutesStr = (minutes < 10 ? "0" : "") + to_string(minutes);
+        string secsStr = (secs < 10 ? "0" : "") + to_string(secs);
 
         return hoursStr + ":" + minutesStr + ":" + secsStr;
     }
 
-    std::string Utils::MillisecondsToString(uint32_t milliseconds)
+    string Utils::MillisecondsToString(uint32_t milliseconds)
     {
 		uint32_t seconds = milliseconds / 1000;
         uint32_t frac = milliseconds % 1000;
 
-        std::string fracStr;
+        string fracStr;
         if (frac < 10)
-            fracStr = "00" + std::to_string(frac);
+            fracStr = "00" + to_string(frac);
         else if (frac < 100)
-            fracStr = "0" + std::to_string(frac);
+            fracStr = "0" + to_string(frac);
         else
-            fracStr = std::to_string(frac);
+            fracStr = to_string(frac);
 
         return SecondsToString(seconds) + "." + fracStr;
     }
 
-    std::string Utils::DataSizeToString(uint64_t dataSize)
+    string Utils::DataSizeToString(uint64_t dataSize)
     {
         if (dataSize < 1024)
         {
-            return std::to_string(dataSize) + "B";
+            return to_string(dataSize) + "B";
         }
 
-        std::string unit;
+        string unit;
         uint64_t stepSize;
         if (dataSize < 1024ULL * 1024ULL)
         {
@@ -237,14 +236,14 @@ namespace ZXEngine
         uint32_t percentage_u32 = static_cast<uint32_t>(percentage);
 
         if (percentage_u32 == 0)
-            return std::to_string(dataSize / stepSize) + unit;
+            return to_string(dataSize / stepSize) + unit;
         else if (percentage_u32 < 10)
-            return std::to_string(dataSize / stepSize) + ".0" + std::to_string(percentage_u32) + unit;
+            return to_string(dataSize / stepSize) + ".0" + to_string(percentage_u32) + unit;
         else
-            return std::to_string(dataSize / stepSize) + "." + std::to_string(percentage_u32) + unit;
+            return to_string(dataSize / stepSize) + "." + to_string(percentage_u32) + unit;
 	}
 
-    std::string Utils::GetCurrentExecutableFilePath()
+    string Utils::GetCurrentExecutableFilePath()
     {
 #ifdef _WIN64
         char buffer[MAX_PATH];
@@ -264,8 +263,8 @@ namespace ZXEngine
         return "";
 #endif
 
-        std::filesystem::path path(buffer);
-        if (std::filesystem::is_directory(path))
+        filesystem::path path(buffer);
+        if (filesystem::is_directory(path))
 			return path.string();
 		else
 			return path.parent_path().string();

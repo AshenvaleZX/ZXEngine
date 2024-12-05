@@ -1,4 +1,5 @@
 #include "EditorProjectPanel.h"
+#include "../Utils.h"
 #include "../Resources.h"
 
 namespace ZXEngine

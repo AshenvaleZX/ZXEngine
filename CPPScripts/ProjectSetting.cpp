@@ -1,4 +1,5 @@
 #include "ProjectSetting.h"
+#include "Utils.h"
 #include "Resources.h"
 #include "GlobalData.h"
 

@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "Utils.h"
 #include "Material.h"
 #include "ModelUtil.h"
 #include "SceneManager.h"
