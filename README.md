@@ -2,7 +2,7 @@
 
 | Graphics API | Platform |
 | :----------: | :------: |
-| ![Vulkan](Documents/Badges/Vulkan-Supported.svg) ![DirectX 12](Documents/Badges/DirectX_12-Supported.svg) ![OpenGL](Documents/Badges/OpenGL-Supported.svg) | ![Windows](Documents/Badges/Windows-Supported-blue.svg) ![Mac OS](Documents/Badges/Mac_OS-Supported-blue.svg) |
+| ![Vulkan](Documents/Badges/Vulkan-Supported.svg) ![DirectX 12](Documents/Badges/DirectX_12-Supported.svg) ![OpenGL](Documents/Badges/OpenGL-Supported.svg) | ![Windows](Documents/Badges/Windows-Supported-blue.svg) ![macOS](Documents/Badges/macOS-Supported-blue.svg) ![Linux](Documents/Badges/Linux-Supported-blue.svg) |
 
 这是我自己开发的游戏引擎项目，创建这个项目的主要目的是为了我自己学习和实践游戏引擎技术，不过也希望这个项目能对你有所帮助。
 
@@ -50,9 +50,9 @@ This project aims at a game engine, not just graphics and rendering (although th
 
 ## 引擎简介 (Engine Introduction)
 
-本引擎目前同时支持Vulkan，DirectX 12和OpenGL，支持Windows和macOS。使用自创的zxshader语言来编写shader，支持前面三种图形API，可一次编写3种环境运行。本引擎同时也支持基于Vulkan和DirectX12的光线追踪渲染管线。
+本引擎目前同时支持Vulkan，DirectX 12和OpenGL，支持Windows，macOS和Linux。使用自创的zxshader语言来编写shader，支持前面三种图形API，可一次编写3种环境运行。本引擎同时也支持基于Vulkan和DirectX12的光线追踪渲染管线。
 
-This engine currently supports Vulkan, DirectX 12 and OpenGL, supports Windows and macOS. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs. This engine also supports ray tracing rendering pipeline based on Vulkan and DirectX12.
+This engine currently supports Vulkan, DirectX 12 and OpenGL, supports Windows, macOS and Linux. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs. This engine also supports ray tracing rendering pipeline based on Vulkan and DirectX12.
 
 本引擎内置了我写的物理引擎PhysZ(看了一些书和别人的项目之后的学习成果，详见后文)，支持基本的刚体力学模拟和布料模拟。同时我也开发了简单的骨骼蒙皮动画系统，粒子系统，UI系统，JobSystem等。文档后面会有这些系统的图片展示。
 
@@ -691,9 +691,13 @@ This repository contains demos of actual game projects developed with the ZXEngi
 
 ## 构建与跨平台 (Build And Cross-Platform)
 
-本项目支持Windows和macOS，对Linux的支持还在开发中。在Windows平台支持Vulkan，DirectX 12和OpenGL，在macOS平台支持Vulkan和OpenGL。目前有三种构建工具，分别是Visual Studio 2022，xmake和CMake，放到了BuildSolution文件夹中。
+本项目支持Windows，macOS和Linux，提供了三种构建工具，分别是xmake，CMake和Visual Studio 2022，放到了BuildSolution文件夹中。
 
-This project supports Windows and macOS, support for Linux is still under development. It supports Vulkan, DirectX 12 and OpenGL on the Windows platform, and Vulkan and OpenGL on the macOS platform. There are currently three building methods, which are Visual Studio 2022, xmake and CMake, and they placed in the BuildSolution folder.
+This project supports Windows, macOS and Linux, provides three build tools: xmake, CMake and Visual Studio 2022, which are placed in the BuildSolution folder.
+
+本项目在Windows平台支持Vulkan，DirectX 12和OpenGL，在macOS平台支持Vulkan和OpenGL，在Linux平台支持OpenGL。在Linux上的Vulkan应该也是能支持的，但是由于我缺少符合条件的硬件设备，所以暂时还没有在Linux上调试运行过Vulkan版的ZXEngine。
+
+This project supports Vulkan, DirectX 12 and OpenGL on Windows, Vulkan and OpenGL on macOS, and OpenGL on Linux. Vulkan on Linux is also supposed to be supported, but I haven't debugged and test the Vulkan version of ZXEngine on Linux yet because I don't have the device that meets the requirements.
 
 ### Windows
 
@@ -751,9 +755,9 @@ Another problem is that the Apple Silicon may not support Vulkan's geometry shad
 
 ### Linux
 
-目前对Linux的支持还未完成，但是构建工具已经可以用了。在Linux平台也提供了xmake和CMake，xmake的使用方式还是一样：
+本项目在Linux平台也提供了xmake和CMake，xmake的使用方式还是一样：
 
-Support for Linux is not yet complete, but the build tools are already available. xmake and CMake are also provided on the Linux platform, and the usage of xmake is still the same:
+This project also provides xmake and CMake on the Linux. The usage of xmake is still the same:
 
 ```shell
 cd BuildSolution/xmake
@@ -769,6 +773,14 @@ Then for CMake, just run the BuildSolution\CMake\BuildLinux.sh script.
 cd BuildSolution/CMake
 ./BuildLinux.sh
 ```
+
+由于我没有可以满足Vulkan运行条件的Linux设备，所以在Linux上我暂时只成功测试运行过OpenGL版本的ZXEngine。但是如果你有一台装有支持Vulkan的硬件和驱动的Linux设备，那可以试试运行Vulkan版本的。
+
+Since I don't have a Linux device that meets the requirements for running Vulkan, I have only successfully tested and run the OpenGL version of ZXEngine on Linux. But if you have a Linux device with hardware and driver that support Vulkan, you can try running the Vulkan version.
+
+Linux版本众多，环境复杂，而我只有一个Linux测试环境，所以我不确定本项目是否在所有的Linux环境下都能正常运行。还有由于本项目依赖的第三方库，主要是Assimp和FreeType需要自己编译，而我的Linux是安装在使用x86_64架构的设备上的，我也没有ARM架构的Linux设备，所以我只提供了x86_64版本的Linux依赖库。如果需要在ARM架构的Linux设备上运行只能自己编译一下依赖库了。
+
+There are many Linux distributions and different hardware, and I only have one Linux environment, so I‘m not sure whether this project can run successfully in all Linux environments. Also, since the third-party libraries that this project relies on, mainly Assimp and FreeType, need to be compiled by myself, and my Linux is installed on a x86_64 device, and I don't have an ARM architecture Linux device, so I only provide the x86_64 version of the Linux library. If you need to run it on an ARM architecture Linux device, you need to compile the libraries yourself.
 
 ## 注意事项 (Precautions)
 
