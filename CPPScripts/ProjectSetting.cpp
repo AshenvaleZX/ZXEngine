@@ -9,14 +9,18 @@
 
 namespace ZXEngine
 {
-#ifdef ZX_PLATFORM_MACOS
-	const string ProjectSetting::OpenGLVersion = "410";
-	const int ProjectSetting::OpenGLVersionMajor = 4;
-	const int ProjectSetting::OpenGLVersionMinor = 1;
-#else
+#if defined(ZX_PLATFORM_WINDOWS)
 	const string ProjectSetting::OpenGLVersion = "460";
 	const int ProjectSetting::OpenGLVersionMajor = 4;
 	const int ProjectSetting::OpenGLVersionMinor = 6;
+#elif defined(ZX_PLATFORM_MACOS)
+	const string ProjectSetting::OpenGLVersion = "410";
+	const int ProjectSetting::OpenGLVersionMajor = 4;
+	const int ProjectSetting::OpenGLVersionMinor = 1;
+#elif defined(ZX_PLATFORM_LINUX)
+	const string ProjectSetting::OpenGLVersion = "450";
+	const int ProjectSetting::OpenGLVersionMajor = 4;
+	const int ProjectSetting::OpenGLVersionMinor = 5;
 #endif
 
 	bool ProjectSetting::isSupportRayTracing = true;
