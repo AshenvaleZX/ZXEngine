@@ -184,8 +184,8 @@ namespace ZXEngine
 
 	json Resources::GetAssetData(const string& path, bool isBuiltIn)
 	{
+		Debug::Log("Load asset: " + path);
 		string p = Resources::GetAssetFullPath(path, isBuiltIn);
-		Debug::Log("Load asset: " + p);
 		return Resources::LoadJson(p);
 	}
 
