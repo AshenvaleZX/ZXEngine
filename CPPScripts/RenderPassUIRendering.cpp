@@ -23,17 +23,33 @@ namespace ZXEngine
 		auto viewProjection = projection * view;
 		auto uiGameObjects = RenderQueueManager::GetInstance()->GetUIGameObjects();
 
-		for (auto uiGameObject : uiGameObjects)
+#ifdef ZX_EDITOR
+		if (camera->mCameraType == CameraType::EditorCamera)
 		{
-			// 绘制UI图片
-			auto uiTextureRenderer = uiGameObject->GetComponent<UITextureRenderer>();
-			if (uiTextureRenderer != nullptr && uiTextureRenderer->IsActive())
-				uiTextureRenderer->Render(viewProjection);
+			for (auto uiGameObject : uiGameObjects)
+			{
+				auto uiTextureRenderer = uiGameObject->GetComponent<UITextureRenderer>();
+				if (uiTextureRenderer != nullptr && uiTextureRenderer->IsActive() && !uiTextureRenderer->IsScreenSpace())
+					uiTextureRenderer->Render(viewProjection);
 
-			// 绘制UI文本
-			auto uiTextRenderer = uiGameObject->GetComponent<UITextRenderer>();
-			if (uiTextRenderer != nullptr && uiTextRenderer->IsActive())
-				uiTextRenderer->Render(viewProjection);
+				auto uiTextRenderer = uiGameObject->GetComponent<UITextRenderer>();
+				if (uiTextRenderer != nullptr && uiTextRenderer->IsActive() && !uiTextRenderer->IsScreenSpace())
+					uiTextRenderer->Render(viewProjection);
+			}
+		}
+		else
+#endif
+		{
+			for (auto uiGameObject : uiGameObjects)
+			{
+				auto uiTextureRenderer = uiGameObject->GetComponent<UITextureRenderer>();
+				if (uiTextureRenderer != nullptr && uiTextureRenderer->IsActive())
+					uiTextureRenderer->Render(viewProjection);
+
+				auto uiTextRenderer = uiGameObject->GetComponent<UITextRenderer>();
+				if (uiTextRenderer != nullptr && uiTextRenderer->IsActive())
+					uiTextRenderer->Render(viewProjection);
+			}
 		}
 
 		RenderAPI::GetInstance()->GenerateDrawCommand(drawCommandID);
