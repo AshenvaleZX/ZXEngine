@@ -119,6 +119,8 @@ set(Editor
     "../../../CPPScripts/Editor/EditorAssetPreviewer.h"
     "../../../CPPScripts/Editor/EditorAssetPreviewPanel.cpp"
     "../../../CPPScripts/Editor/EditorAssetPreviewPanel.h"
+    "../../../CPPScripts/Editor/EditorCamera.cpp"
+    "../../../CPPScripts/Editor/EditorCamera.h"
     "../../../CPPScripts/Editor/EditorConsolePanel.cpp"
     "../../../CPPScripts/Editor/EditorConsolePanel.h"
     "../../../CPPScripts/Editor/EditorDataManager.cpp"
