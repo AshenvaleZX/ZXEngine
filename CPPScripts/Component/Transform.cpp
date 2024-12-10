@@ -13,6 +13,12 @@ namespace ZXEngine
 		return ComponentType::Transform;
 	}
 
+	void Transform::Translate(const Vector3& offset)
+	{
+		localPosition += offset;
+		UpdateColliderTransform();
+	}
+
 	Matrix4 Transform::GetLocalPositionMatrix() const
 	{
 		return Math::TranslationMatrix(localPosition);
