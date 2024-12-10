@@ -19,6 +19,7 @@ namespace ZXEngine
 		GameObject* selectedGO = nullptr;
 		EditorAssetNode* selectedAsset = nullptr;
 		void* curAssetInfo = nullptr;
+		bool isGameView = true;
 
 		LogInfo* logHead = nullptr;
 		LogInfo* logTail = nullptr;
