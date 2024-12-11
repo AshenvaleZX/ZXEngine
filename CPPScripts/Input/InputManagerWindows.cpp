@@ -86,6 +86,8 @@ namespace ZXEngine
 
 		CheckKey(VK_SPACE,  InputButton::KEY_SPACE,  EventType::KEY_SPACE_PRESS );
 		CheckKey(VK_ESCAPE, InputButton::KEY_ESCAPE, EventType::KEY_ESCAPE_PRESS);
+		CheckKey(VK_LSHIFT, InputButton::KEY_LSHIFT, EventType::KEY_LSHIFT_PRESS);
+		CheckKey(VK_RSHIFT, InputButton::KEY_RSHIFT, EventType::KEY_RSHIFT_PRESS);
 		CheckKey(VK_RIGHT,  InputButton::KEY_RIGHT,  EventType::KEY_RIGHT_PRESS );
 		CheckKey(VK_LEFT,   InputButton::KEY_LEFT,   EventType::KEY_LEFT_PRESS  );
 		CheckKey(VK_DOWN,   InputButton::KEY_DOWN,   EventType::KEY_DOWN_PRESS  );

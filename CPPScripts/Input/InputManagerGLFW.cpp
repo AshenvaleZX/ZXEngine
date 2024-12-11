@@ -102,6 +102,8 @@ namespace ZXEngine
 
 		CheckKey(GLFW_KEY_SPACE, InputButton::KEY_SPACE, EventType::KEY_SPACE_PRESS);
 		CheckKey(GLFW_KEY_ESCAPE, InputButton::KEY_ESCAPE, EventType::KEY_ESCAPE_PRESS);
+		CheckKey(GLFW_KEY_LEFT_SHIFT, InputButton::KEY_LSHIFT, EventType::KEY_LSHIFT_PRESS);
+		CheckKey(GLFW_KEY_RIGHT_SHIFT, InputButton::KEY_RSHIFT, EventType::KEY_RSHIFT_PRESS);
 		CheckKey(GLFW_KEY_RIGHT, InputButton::KEY_RIGHT, EventType::KEY_RIGHT_PRESS);
 		CheckKey(GLFW_KEY_LEFT, InputButton::KEY_LEFT, EventType::KEY_LEFT_PRESS);
 		CheckKey(GLFW_KEY_DOWN, InputButton::KEY_DOWN, EventType::KEY_DOWN_PRESS);

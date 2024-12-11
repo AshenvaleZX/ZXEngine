@@ -134,6 +134,12 @@ EngineEventType_NumToStr =
     "KEY_ESCAPE_PRESS",
     "KEY_ESCAPE_DOWN",
     "KEY_ESCAPE_UP",
+    "KEY_LSHIFT_PRESS",
+    "KEY_LSHIFT_DOWN",
+    "KEY_LSHIFT_UP",
+    "KEY_RSHIFT_PRESS",
+    "KEY_RSHIFT_DOWN",
+    "KEY_RSHIFT_UP",
 
     "KEY_RIGHT_PRESS",
     "KEY_RIGHT_DOWN",
