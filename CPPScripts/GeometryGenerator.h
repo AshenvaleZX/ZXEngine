@@ -12,6 +12,7 @@ namespace ZXEngine
 		static StaticMesh* CreateBox(float xLength, float yLength, float zLength);
 		static StaticMesh* CreateSphere(float radius, uint32_t sliceCount, uint32_t stackCount);
 		static StaticMesh* CreateSphereTessellation(float radius, uint32_t subdivisionNum);
+		static StaticMesh* CreateCone(float radius, float height, uint32_t sliceCount);
 		static StaticMesh* CreateCylinder(float topRadius, float bottomRadius, float height, uint32_t sliceCount, uint32_t stackCount);
 		static StaticMesh* CreatePlane(float xLength, float zLength, uint32_t xSplit, uint32_t zSplit);
 		static StaticMesh* CreateQuad(float xLength, float yLength);

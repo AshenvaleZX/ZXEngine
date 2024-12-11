@@ -228,6 +228,103 @@ namespace ZXEngine
 		return new StaticMesh(std::move(vertices), std::move(indices));
 	}
 
+	StaticMesh* GeometryGenerator::CreateCone(float radius, float height, uint32_t sliceCount)
+	{
+		vector<Vertex> vertices;
+		vector<uint32_t> indices;
+
+		Vertex bottomVertex = { .Position = { 0.0f, -0.5f * height, 0.0f }, .TexCoords = { 0.0f, 1.0f }, .Normal = { 0.0f, -1.0f, 0.0f }, .Tangent = { 1.0f, 0.0f, 0.0f } };
+		vertices.push_back(bottomVertex);
+
+		float y = radius * radius / height;
+		float dTheta = Math::PIx2 / sliceCount;
+		Vector3 topVertexPos = { 0.0f, 0.5f * height, 0.0f };
+
+		// 计算顶部顶点(位置相同，法线不同，否则光照效果不太正常)
+		for (uint32_t i = 0; i < sliceCount; i++)
+		{
+			float x1 = radius * cosf(i * dTheta);
+			float z1 = radius * sinf(i * dTheta);
+			float x2 = radius * cosf((i + 1) * dTheta);
+			float z2 = radius * sinf((i + 1) * dTheta);
+			Vector3 p1 = { x1, -0.5f * height, z1 };
+			Vector3 p2 = { x2, -0.5f * height, z2 };
+
+			Vertex v;
+			v.Position = topVertexPos;
+
+			v.Normal = Math::Cross(topVertexPos - p1, p2 - p1);
+			v.Normal.Normalize();
+
+			v.Tangent = topVertexPos - p1;
+			v.Tangent.Normalize();
+
+			v.TexCoords.x = 0.5f;
+			v.TexCoords.y = 0.0f;
+
+			vertices.push_back(v);
+		}
+
+		// 计算底部圆的顶点(第一圈，用于侧边)
+		for (uint32_t i = 0; i <= sliceCount; i++)
+		{
+			float x = cosf(i * dTheta);
+			float z = sinf(i * dTheta);
+
+			Vertex v;
+			v.Position = { x * radius, -0.5f * height, z * radius };
+
+			v.Normal = { x, y, z };
+			v.Normal.Normalize();
+
+			v.Tangent = topVertexPos - v.Position;
+			v.Tangent.Normalize();
+
+			v.TexCoords.x = static_cast<float>(i) / static_cast<float>(sliceCount);
+			v.TexCoords.y = 0.5f;
+
+			vertices.push_back(v);
+		}
+
+		// 计算底部圆的顶点(第二圈，用于底部)
+		for (uint32_t i = 0; i <= sliceCount; i++)
+		{
+			float x = cosf(i * dTheta);
+			float z = sinf(i * dTheta);
+
+			Vertex v;
+			v.Position = { x * radius, -0.5f * height, z * radius };
+
+			v.Normal = { 0.0f, -1.0f, 0.0f };
+
+			v.Tangent = { x, 0.0f, z };
+
+			v.TexCoords.x = static_cast<float>(i) / static_cast<float>(sliceCount);
+			v.TexCoords.y = 0.5f;
+
+			vertices.push_back(v);
+		}
+
+		// 侧面的索引
+		for (uint32_t i = 1; i <= sliceCount; i++)
+		{
+			indices.push_back(i);
+			indices.push_back(i + sliceCount);
+			indices.push_back(i + sliceCount + 1);
+		}
+
+		// 底部圆的索引
+		uint32_t baseIndex = 2 * sliceCount + 2;
+		for (uint32_t i = 0; i < sliceCount; i++)
+		{
+			indices.push_back(0);
+			indices.push_back(baseIndex + i + 1);
+			indices.push_back(baseIndex + i);
+		}
+
+		return new StaticMesh(std::move(vertices), std::move(indices));
+	}
+
 	StaticMesh* GeometryGenerator::CreateCylinder(float topRadius, float bottomRadius, float height, uint32_t sliceCount, uint32_t stackCount)
 	{
 		vector<Vertex> vertices;

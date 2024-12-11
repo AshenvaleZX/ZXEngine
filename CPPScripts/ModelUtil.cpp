@@ -11,9 +11,10 @@ namespace ZXEngine
 {
     const unordered_map<GeometryType, string> GeometryTypeName =
     {
-        { GeometryType::Box,      "Box"      }, { GeometryType::Sphere, "Sphere" }, { GeometryType::TessellationSphere, "TessellationSphere" },
-        { GeometryType::Cylinder, "Cylinder" }, { GeometryType::Plane,  "Plane"  }, { GeometryType::Quad,               "Quad"               },
-		{ GeometryType::DynamicPlane, "DynamicPlane" }
+        { GeometryType::Box,                "Box"                }, { GeometryType::Sphere,   "Sphere"   },
+        { GeometryType::TessellationSphere, "TessellationSphere" }, { GeometryType::Cylinder, "Cylinder" },
+        { GeometryType::Plane,              "Plane"              }, { GeometryType::Quad,     "Quad"     },
+		{ GeometryType::DynamicPlane,       "DynamicPlane"       }, { GeometryType::Cone,     "Cone"     }
     };
 
     shared_ptr<Mesh> ModelUtil::GenerateGeometry(GeometryType type)
@@ -37,6 +38,13 @@ namespace ZXEngine
         else if (type == GeometryType::TessellationSphere)
         {
             mesh = GeometryGenerator::CreateSphereTessellation(0.5f, 4);
+            mesh->mAABBSizeX = 1.0f;
+            mesh->mAABBSizeY = 1.0f;
+            mesh->mAABBSizeZ = 1.0f;
+        }
+        else if (type == GeometryType::Cone)
+        {
+            mesh = GeometryGenerator::CreateCone(0.5f, 1.0f, 40);
             mesh->mAABBSizeX = 1.0f;
             mesh->mAABBSizeY = 1.0f;
             mesh->mAABBSizeZ = 1.0f;

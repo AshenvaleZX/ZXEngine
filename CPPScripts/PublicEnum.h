@@ -95,8 +95,8 @@ namespace ZXEngine
 		Cylinder,
 		Plane,
 		Quad,
-
 		DynamicPlane,
+		Cone,
 	};
 
 	enum class ShadowType
