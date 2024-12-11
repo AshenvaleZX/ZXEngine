@@ -7,12 +7,15 @@ namespace ZXEngine
 {
 	long long Time::curSysTime = 0;
 	long long Time::curSysTime_micro = 0;
+	long long Time::curSysStartTime = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	long long Time::curSysStartTime_micro = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 	float Time::curTime = 0.0f;
 	long long Time::curTime_micro = 0;
 	float Time::deltaTime = 0.0f;
 	long long Time::deltaTime_micro = 0;
 #ifdef ZX_EDITOR
 	float Time::curEditorTime = 0.0f;
+	float Time::deltaTimeEditor = 0.0f;
 #endif
 
 	const int Time::fixedFrameRate = 100;
@@ -29,22 +32,23 @@ namespace ZXEngine
 		{
 #ifdef ZX_EDITOR
 			// 编辑器时间不受暂停影响
-			curEditorTime += (time_micro - curSysTime_micro) / 1000000.0f;
+			curEditorTime = static_cast<float>(time_micro - curSysStartTime_micro) / 1'000'000.0f;
+			deltaTimeEditor = static_cast<float>(time_micro - curSysTime_micro) / 1'000'000.0f;
 
 			if (EditorDataManager::isGameStart && EditorDataManager::isGamePause)
 			{
 				deltaTime = 0.02f;
-				deltaTime_micro = 20000;
+				deltaTime_micro = 20'000LL;
 			}
 			else
 			{
 				deltaTime_micro = time_micro - curSysTime_micro;
-				deltaTime = deltaTime_micro / 1000000.0f;
+				deltaTime = static_cast<float>(deltaTime_micro) / 1'000'000.0f;
 			}
 #else
 			// 这里用微秒计算deltaTime，用毫秒有可能精度不够
 			deltaTime_micro = time_micro - curSysTime_micro;
-			deltaTime = deltaTime_micro / 1000000.0f;
+			deltaTime = static_cast<float>(deltaTime_micro) / 1'000'000.0f;
 #endif
 		}
 
