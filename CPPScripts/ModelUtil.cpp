@@ -51,9 +51,9 @@ namespace ZXEngine
         }
         else if (type == GeometryType::Cylinder)
         {
-            mesh = GeometryGenerator::CreateCylinder(0.5f, 0.5f, 2.0f, 40, 20);
+            mesh = GeometryGenerator::CreateCylinder(0.5f, 0.5f, 1.0f, 40, 1);
             mesh->mAABBSizeX = 1.0f;
-            mesh->mAABBSizeY = 2.0f;
+            mesh->mAABBSizeY = 1.0f;
             mesh->mAABBSizeZ = 1.0f;
         }
         else if (type == GeometryType::Plane)
