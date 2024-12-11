@@ -48,6 +48,8 @@ namespace ZXEngine
 		mMoveLeftHandle    = eventMgr->AddEditorEventHandler(EventType::KEY_A_PRESS,      std::bind(&EditorCamera::MoveLeftCallBack,    this, std::placeholders::_1));
 		mMoveRightHandle   = eventMgr->AddEditorEventHandler(EventType::KEY_D_PRESS,      std::bind(&EditorCamera::MoveRightCallBack,   this, std::placeholders::_1));
 		mMoveMouseHandle   = eventMgr->AddEditorEventHandler(EventType::UPDATE_MOUSE_POS, std::bind(&EditorCamera::MoveMouseCallBack,   this, std::placeholders::_1));
+		mAccelerateHandle  = eventMgr->AddEditorEventHandler(EventType::KEY_LSHIFT_DOWN,  std::bind(&EditorCamera::AccelerateCallBack,  this, std::placeholders::_1));
+		mDecelerateHandle  = eventMgr->AddEditorEventHandler(EventType::KEY_LSHIFT_UP,    std::bind(&EditorCamera::DecelerateCallBack,  this, std::placeholders::_1));
 	}
 
 	void EditorCamera::UnrigisterHandle(const string& args) const
@@ -60,6 +62,8 @@ namespace ZXEngine
 		eventMgr->RemoveEditorEventHandler(EventType::KEY_A_PRESS,      mMoveLeftHandle);
 		eventMgr->RemoveEditorEventHandler(EventType::KEY_D_PRESS,      mMoveRightHandle);
 		eventMgr->RemoveEditorEventHandler(EventType::UPDATE_MOUSE_POS, mMoveMouseHandle);
+		eventMgr->RemoveEditorEventHandler(EventType::KEY_LSHIFT_DOWN,  mAccelerateHandle);
+		eventMgr->RemoveEditorEventHandler(EventType::KEY_LSHIFT_UP,    mDecelerateHandle);
 	}
 
 	void EditorCamera::MoveForwardCallBack(const string& args)
@@ -108,9 +112,19 @@ namespace ZXEngine
 		RotateCamera(xOffset, yOffset);
 	}
 
+	void EditorCamera::AccelerateCallBack(const string& args)
+	{
+		mRate = 3.0f;
+	}
+
+	void EditorCamera::DecelerateCallBack(const string& args)
+	{
+		mRate = 1.0f;
+	}
+
 	void EditorCamera::MoveCamera(const Vector3& dir)
 	{
-		Vector3 offset = dir * mSpeed * Time::deltaTime;
+		Vector3 offset = dir * mSpeed * mRate * Time::deltaTimeEditor;
 		mCameraTrans->Translate(offset);
 	}
 

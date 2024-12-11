@@ -25,6 +25,7 @@ namespace ZXEngine
 		GameObject* mCameraGO;
 
 		float mSpeed = 25.0f;
+		float mRate = 1.0f;
 		float mSensitivity = 0.1f;
 		float mLastX = 0.0f;
 		float mLastY = 0.0f;
@@ -45,6 +46,10 @@ namespace ZXEngine
 		void MoveRightCallBack(const string& args);
 		uint32_t mMoveMouseHandle = 0;
 		void MoveMouseCallBack(const string& args);
+		uint32_t mAccelerateHandle = 0;
+		void AccelerateCallBack(const string& args);
+		uint32_t mDecelerateHandle = 0;
+		void DecelerateCallBack(const string& args);
 
 		void MoveCamera(const Vector3& dir);
 		void RotateCamera(float hOffset, float vOffset);
