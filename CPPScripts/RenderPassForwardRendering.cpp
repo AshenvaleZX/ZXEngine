@@ -33,11 +33,10 @@ namespace ZXEngine
 		transparentRenderState = new RenderStateSetting();
 		transparentRenderState->depthWrite = false;
 
-		blitCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::NotCare);
-		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ForwardRendering);
+		blitCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::NotCare, ZX_CLEAR_FRAME_BUFFER_NONE_BIT);
+		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ForwardRendering, ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
 		ClearInfo clearInfo = {};
-		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT;
 		FBOManager::GetInstance()->CreateFBO("Forward", FrameBufferType::Normal, clearInfo);
 
 		FBOManager::GetInstance()->CreateFBO("ForwardDepth", FrameBufferType::ShadowMap);
@@ -53,7 +52,7 @@ namespace ZXEngine
 		// ViewPort设置为窗口大小
 		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight);
 		// 清理上一帧数据
-		renderAPI->ClearFrameBuffer();
+		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 		
 		// 渲染天空盒
 		renderAPI->SetRenderState(skyBoxRenderState);

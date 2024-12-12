@@ -129,17 +129,17 @@ namespace ZXEngine
 		CheckError();
 	}
 
-	void RenderAPIOpenGL::ClearFrameBuffer()
+	void RenderAPIOpenGL::ClearFrameBuffer(FrameBufferClearFlags clearFlags)
 	{
 		auto& clearInfo = FBOClearInfoMap[curFBOID];
 
-		if (clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
+		if (clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
 			ClearColorBuffer(clearInfo.color);
 
-		if (clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT)
+		if (clearFlags & ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT)
 			ClearDepthBuffer(clearInfo.depth);
 
-		if (clearInfo.clearFlags & ZX_CLEAR_FRAME_BUFFER_STENCIL_BIT)
+		if (clearFlags & ZX_CLEAR_FRAME_BUFFER_STENCIL_BIT)
 			ClearStencilBuffer(clearInfo.stencil);
 	}
 
@@ -954,7 +954,7 @@ namespace ZXEngine
 		SetUpStaticMesh(VAO, vertices, indices);
 	}
 
-	uint32_t RenderAPIOpenGL::AllocateDrawCommand(CommandType commandType)
+	uint32_t RenderAPIOpenGL::AllocateDrawCommand(CommandType commandType, FrameBufferClearFlags clearFlags)
 	{
 		// OpenGL不需要这个接口
 		return 0;

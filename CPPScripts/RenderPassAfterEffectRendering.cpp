@@ -38,7 +38,7 @@ namespace ZXEngine
 		renderState->depthWrite = false;
 
 #ifdef ZX_EDITOR
-		FBOManager::GetInstance()->CreateFBO("GameView", FrameBufferType::Color);
+		FBOManager::GetInstance()->CreateFBO("GameView", FrameBufferType::Normal);
 #endif
 	}
 
@@ -82,7 +82,7 @@ namespace ZXEngine
 			Debug::LogError("Try to add an existing command");
 			return;
 		}
-		aeCommands.insert(pair(name, RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::AfterEffectRendering)));
+		aeCommands.insert(pair(name, RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::AfterEffectRendering, ZX_CLEAR_FRAME_BUFFER_NONE_BIT)));
 	}
 
 	uint32_t RenderPassAfterEffectRendering::GetCommand(const string& name)
@@ -204,7 +204,7 @@ namespace ZXEngine
 	{
 		CreateCommand(BloomBlend);
 #ifdef ZX_EDITOR
-		CreateMaterial(BloomBlend, "Shaders/PostProcess/BloomBlend.zxshader", FrameBufferType::Color);
+		CreateMaterial(BloomBlend, "Shaders/PostProcess/BloomBlend.zxshader", FrameBufferType::Normal);
 #else
 		CreateMaterial(BloomBlend, "Shaders/PostProcess/BloomBlend.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
 #endif
@@ -228,7 +228,7 @@ namespace ZXEngine
 	{
 		CreateCommand(CopyTexture);
 #ifdef ZX_EDITOR
-		CreateMaterial(CopyTexture, "Shaders/RenderTexture.zxshader", FrameBufferType::Color);
+		CreateMaterial(CopyTexture, "Shaders/RenderTexture.zxshader", FrameBufferType::Normal);
 #else
 		CreateMaterial(CopyTexture, "Shaders/RenderTexture.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
 #endif

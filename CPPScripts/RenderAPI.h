@@ -35,7 +35,7 @@ namespace ZXEngine
 
 		// Frame Buffer
 		virtual void SwitchFrameBuffer(uint32_t id) = 0;
-		virtual void ClearFrameBuffer() = 0;
+		virtual void ClearFrameBuffer(FrameBufferClearFlags clearFlags) = 0;
 		virtual void BlitFrameBuffer(uint32_t cmd, const string& src, const string& dst, FrameBufferPieceFlags flags) = 0;
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0) = 0;
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, const ClearInfo& clearInfo, unsigned int width = 0, unsigned int height = 0) = 0;
@@ -69,7 +69,7 @@ namespace ZXEngine
 		virtual void DeleteMaterialData(uint32_t id) = 0;
 
 		// Draw
-		virtual uint32_t AllocateDrawCommand(CommandType commandType) = 0;
+		virtual uint32_t AllocateDrawCommand(CommandType commandType, FrameBufferClearFlags clearFlags) = 0;
 		virtual void Draw(uint32_t VAO) = 0;
 		virtual void DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer) = 0;
 		virtual void GenerateDrawCommand(uint32_t id) = 0;

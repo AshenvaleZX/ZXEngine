@@ -23,7 +23,7 @@ namespace ZXEngine
 	{
         // ´´½¨×Ö·ûäÖÈ¾Shader
 #ifdef ZX_EDITOR
-        textShader = new Shader(Resources::GetAssetFullPath("Shaders/TextRenderer.zxshader", true), FrameBufferType::Color);
+        textShader = new Shader(Resources::GetAssetFullPath("Shaders/TextRenderer.zxshader", true), FrameBufferType::Normal);
 #else
         textShader = new Shader(Resources::GetAssetFullPath("Shaders/TextRenderer.zxshader", true), FrameBufferType::Present);
 #endif

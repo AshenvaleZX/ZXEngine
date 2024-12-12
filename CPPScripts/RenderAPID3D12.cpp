@@ -338,7 +338,7 @@ namespace ZXEngine
 			mCurFBOIdx = id;
 	}
 
-	void RenderAPID3D12::ClearFrameBuffer()
+	void RenderAPID3D12::ClearFrameBuffer(FrameBufferClearFlags clearFlags)
 	{
 		// D3D12不需要实现这个接口
 	}
@@ -1800,10 +1800,11 @@ namespace ZXEngine
 		mMaterialDatasToDelete.insert(pair(id, DX_MAX_FRAMES_IN_FLIGHT));
 	}
 
-	uint32_t RenderAPID3D12::AllocateDrawCommand(CommandType commandType)
+	uint32_t RenderAPID3D12::AllocateDrawCommand(CommandType commandType, FrameBufferClearFlags clearFlags)
 	{
 		uint32_t idx = GetNextDrawCommandIndex();
 		auto drawCmd = GetDrawCommandByIndex(idx);
+		drawCmd->clearFlags = clearFlags;
 		drawCmd->commandType = commandType;
 
 		drawCmd->allocators.resize(DX_MAX_FRAMES_IN_FLIGHT);
@@ -1872,9 +1873,15 @@ namespace ZXEngine
 
 			// 清理缓冲区
 			auto& clearInfo = curFBO->clearInfo;
-			const float clearColor[] = { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a };
-			drawCommandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
-			drawCommandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, clearInfo.depth, 0, 0, nullptr);
+			if (drawCommand->clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
+			{
+				const float clearColor[] = { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a };
+				drawCommandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+			}
+			if (drawCommand->clearFlags & ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT)
+			{
+				drawCommandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, clearInfo.depth, 0, 0, nullptr);
+			}
 		}
 		else if (curFBO->bufferType == FrameBufferType::Color || curFBO->bufferType == FrameBufferType::HigthPrecision)
 		{
@@ -1887,7 +1894,7 @@ namespace ZXEngine
 			auto rtv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(colorBuffer->handleRTV);
 			drawCommandList->OMSetRenderTargets(1, &rtv, false, nullptr);
 
-			if (drawCommand->commandType != CommandType::UIRendering)
+			if (drawCommand->clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
 			{
 				auto& clearInfo = curFBO->clearInfo;
 				const float clearColor[] = { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a };
@@ -1905,8 +1912,11 @@ namespace ZXEngine
 			auto dsv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(depthBuffer->handleDSV);
 			drawCommandList->OMSetRenderTargets(0, nullptr, false, &dsv);
 
-			auto& clearInfo = curFBO->clearInfo;
-			drawCommandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, clearInfo.depth, 0, 0, nullptr);
+			if (drawCommand->clearFlags & ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT)
+			{
+				auto& clearInfo = curFBO->clearInfo;
+				drawCommandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, clearInfo.depth, 0, 0, nullptr);
+			}
 		}
 		else if (curFBO->bufferType == FrameBufferType::GBuffer)
 		{
@@ -1937,11 +1947,17 @@ namespace ZXEngine
 			drawCommandList->OMSetRenderTargets(3, rtvs.data(), false, &dsv);
 
 			auto& clearInfo = curFBO->clearInfo;
-			const float clearColor[] = { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a };
-			drawCommandList->ClearRenderTargetView(pos_rtv, clearColor, 0, nullptr);
-			drawCommandList->ClearRenderTargetView(normal_rtv, clearColor, 0, nullptr);
-			drawCommandList->ClearRenderTargetView(color_rtv, clearColor, 0, nullptr);
-			drawCommandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, clearInfo.depth, 0, 0, nullptr);
+			if (drawCommand->clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
+			{
+				const float clearColor[] = { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a };
+				drawCommandList->ClearRenderTargetView(pos_rtv, clearColor, 0, nullptr);
+				drawCommandList->ClearRenderTargetView(normal_rtv, clearColor, 0, nullptr);
+				drawCommandList->ClearRenderTargetView(color_rtv, clearColor, 0, nullptr);
+			}
+			if (drawCommand->clearFlags & ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT)
+			{
+				drawCommandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, clearInfo.depth, 0, 0, nullptr);
+			}
 		}
 		else if (curFBO->bufferType == FrameBufferType::Deferred)
 		{
@@ -1960,9 +1976,12 @@ namespace ZXEngine
 			drawCommandList->OMSetRenderTargets(1, &rtv, false, &dsv);
 
 			// Deferred Buffer的深度缓存来自G-Buffer，不清理
-			auto& clearInfo = curFBO->clearInfo;
-			const float clearColor[] = { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a };
-			drawCommandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+			if (drawCommand->clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
+			{
+				auto& clearInfo = curFBO->clearInfo;
+				const float clearColor[] = { clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a };
+				drawCommandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+			}
 		}
 		else if (curFBO->bufferType == FrameBufferType::Present)
 		{

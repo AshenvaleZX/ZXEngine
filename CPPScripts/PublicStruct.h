@@ -90,10 +90,9 @@ namespace ZXEngine
 
 	struct ClearInfo
 	{
-		FrameBufferClearFlags clearFlags = ZX_CLEAR_FRAME_BUFFER_NONE_BIT;
-		Vector4 color                    = { 0.0f, 0.0f, 0.0f, 1.0f };
-		float depth                      = 1.0f;
-		uint32_t stencil                 = 0;
+		Vector4 color    = { 0.0f, 0.0f, 0.0f, 1.0f };
+		float depth      = 1.0f;
+		uint32_t stencil = 0;
 	};
 
 	struct ShaderStateSet

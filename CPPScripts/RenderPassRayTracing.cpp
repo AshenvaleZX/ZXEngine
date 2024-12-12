@@ -20,11 +20,10 @@ namespace ZXEngine
 	{
 		auto renderAPI = RenderAPI::GetInstance();
 
-		asCommandID = renderAPI->AllocateDrawCommand(CommandType::RayTracing);
-		rtCommandID = renderAPI->AllocateDrawCommand(CommandType::RayTracing);
+		asCommandID = renderAPI->AllocateDrawCommand(CommandType::RayTracing, ZX_CLEAR_FRAME_BUFFER_NONE_BIT);
+		rtCommandID = renderAPI->AllocateDrawCommand(CommandType::RayTracing, ZX_CLEAR_FRAME_BUFFER_COLOR_BIT);
 
 		ClearInfo clearInfo = {};
-		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT;
 		FBOManager::GetInstance()->CreateFBO("RayTracing", FrameBufferType::RayTracing, clearInfo);
 	}
 
@@ -45,7 +44,7 @@ namespace ZXEngine
 		for (auto renderer : renderQueue->GetRenderers())
 		{
 			renderAPI->PushRayTracingMaterialData(renderer->mMatetrial);
-			for (auto mesh : renderer->mMeshes)
+			for (auto& mesh : renderer->mMeshes)
 			{
 				renderAPI->PushAccelerationStructure(mesh->VAO, renderer->mMatetrial->hitGroupIdx, renderer->mMatetrial->data->GetRTID(), renderer->GetTransform()->GetModelMatrix());
 			}

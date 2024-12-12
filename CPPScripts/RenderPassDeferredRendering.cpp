@@ -21,8 +21,8 @@ namespace ZXEngine
 {
 	RenderPassDeferredRendering::RenderPassDeferredRendering()
 	{
-		mBlitCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::NotCare);
-		mDrawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::DeferredRendering);
+		mBlitCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::NotCare, ZX_CLEAR_FRAME_BUFFER_NONE_BIT);
+		mDrawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::DeferredRendering, ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 		mScreenQuad = GeometryGenerator::CreateScreenQuad();
 
 		skyBox = GeometryGenerator::CreateSimpleInwardBox();
@@ -44,7 +44,6 @@ namespace ZXEngine
 		deferredRenderState->depthWrite = false;
 
 		ClearInfo clearInfo = {};
-		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT;
 		FBOManager::GetInstance()->CreateFBO("Deferred", FrameBufferType::Deferred, clearInfo);
 	}
 
@@ -53,7 +52,7 @@ namespace ZXEngine
 		auto renderAPI = RenderAPI::GetInstance();
 		FBOManager::GetInstance()->SwitchFBO("Deferred");
 		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight);
-		renderAPI->ClearFrameBuffer();
+		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
 		// ¸´ÖÆ Depth Buffer
 		renderAPI->BlitFrameBuffer(mBlitCommandID, "GBuffer", "Deferred", ZX_FRAME_BUFFER_PIECE_DEPTH);

@@ -16,7 +16,7 @@ namespace ZXEngine
 	void UITextureRenderer::Init()
 	{
 #ifdef ZX_EDITOR
-		shader = new Shader(Resources::GetAssetFullPath("Shaders/UITextureRenderer.zxshader", true), FrameBufferType::Color);
+		shader = new Shader(Resources::GetAssetFullPath("Shaders/UITextureRenderer.zxshader", true), FrameBufferType::Normal);
 #else
 		shader = new Shader(Resources::GetAssetFullPath("Shaders/UITextureRenderer.zxshader", true), FrameBufferType::Present);
 #endif
