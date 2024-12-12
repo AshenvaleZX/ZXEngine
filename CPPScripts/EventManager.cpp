@@ -117,7 +117,6 @@ namespace ZXEngine
         }
     }
 
-#ifdef ZX_EDITOR
     uint32_t EventManager::AddEditorEventHandler(EventType event, std::function<void(const string&)> callBack)
     {
         uint32_t id = static_cast<uint32_t>(event);
@@ -175,5 +174,4 @@ namespace ZXEngine
             mEditorCallBackMap.erase(iter);
         }
     }
-#endif
 }

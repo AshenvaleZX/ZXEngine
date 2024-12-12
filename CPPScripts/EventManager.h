@@ -25,7 +25,7 @@ namespace ZXEngine
         std::queue<uint32_t> mFreeKeys;
         unordered_map<uint32_t, unordered_map<uint32_t, std::function<void(const string&)>>> mCallBackMap;
 
-#ifdef ZX_EDITOR
+        // -------------------------------- For Editor --------------------------------
     public:
         uint32_t AddEditorEventHandler(EventType event, std::function<void(const string&)> callBack);
         void RemoveEditorEventHandler(EventType event, uint32_t key);
@@ -36,6 +36,5 @@ namespace ZXEngine
         uint32_t mNextEditorKey = 0;
         std::queue<uint32_t> mFreeEditorKeys;
         unordered_map<uint32_t, unordered_map<uint32_t, std::function<void(const string&)>>> mEditorCallBackMap;
-#endif
     };
 }

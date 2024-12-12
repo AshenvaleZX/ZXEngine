@@ -13,10 +13,8 @@ namespace ZXEngine
 	long long Time::curTime_micro = 0;
 	float Time::deltaTime = 0.0f;
 	long long Time::deltaTime_micro = 0;
-#ifdef ZX_EDITOR
 	float Time::curEditorTime = 0.0f;
 	float Time::deltaTimeEditor = 0.0f;
-#endif
 
 	const int Time::fixedFrameRate = 100;
 	const float Time::fixedDeltaTime = 1.0f / Time::fixedFrameRate;
