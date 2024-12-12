@@ -1,0 +1,22 @@
+{
+    "Type": "Forward",
+    "Shader": "Shaders/StaticSolidDiffuse.zxshader",
+    "Float":
+    [
+        {
+            "UniformName": "_Ambient",
+            "Value": 0.5
+        },
+        {
+            "UniformName": "_Diffuse",
+            "Value": 0.5
+        }
+    ],
+    "Color":
+    [
+        {
+            "UniformName": "_Color",
+            "Value": [0.0, 1.0, 0.0, 1.0]
+        }
+    ]
+}
