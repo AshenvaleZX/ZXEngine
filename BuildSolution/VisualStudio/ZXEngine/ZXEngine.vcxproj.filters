@@ -663,6 +663,9 @@
     <ClCompile Include="..\..\..\CPPScripts\Editor\EditorCamera.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorSceneWidgetsRenderer.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\CPPScripts\GameObject.h">
@@ -1371,6 +1374,9 @@
       <Filter>ParticleSystem</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\Editor\EditorCamera.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorSceneWidgetsRenderer.h">
       <Filter>Editor</Filter>
     </ClInclude>
   </ItemGroup>

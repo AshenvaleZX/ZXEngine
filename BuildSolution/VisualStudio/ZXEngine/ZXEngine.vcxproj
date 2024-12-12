@@ -233,6 +233,7 @@
     <ClCompile Include="..\..\..\CPPScripts\Editor\EditorDialogBoxManager.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Editor\EditorPanel.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Editor\EditorProjectPanel.cpp" />
+    <ClCompile Include="..\..\..\CPPScripts\Editor\EditorSceneWidgetsRenderer.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Editor\ImGuiTextureManager.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Editor\ImGuiTextureManagerD3D12.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Editor\ImGuiTextureManagerOpenGL.cpp" />
@@ -431,6 +432,7 @@
     <ClInclude Include="..\..\..\CPPScripts\Editor\EditorGUIManagerVulkan.h" />
     <ClInclude Include="..\..\..\CPPScripts\Editor\EditorHierarchyPanel.h" />
     <ClInclude Include="..\..\..\CPPScripts\Editor\EditorDialogBoxManager.h" />
+    <ClInclude Include="..\..\..\CPPScripts\Editor\EditorSceneWidgetsRenderer.h" />
     <ClInclude Include="..\..\..\CPPScripts\Editor\ImGuiTextureManager.h" />
     <ClInclude Include="..\..\..\CPPScripts\Editor\EditorInputManager.h" />
     <ClInclude Include="..\..\..\CPPScripts\Editor\EditorInspectorPanel.h" />

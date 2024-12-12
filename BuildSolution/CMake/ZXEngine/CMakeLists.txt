@@ -149,6 +149,8 @@ set(Editor
     "../../../CPPScripts/Editor/EditorPanel.h"
     "../../../CPPScripts/Editor/EditorProjectPanel.cpp"
     "../../../CPPScripts/Editor/EditorProjectPanel.h"
+    "../../../CPPScripts/Editor/EditorSceneWidgetsRenderer.cpp"
+    "../../../CPPScripts/Editor/EditorSceneWidgetsRenderer.h"
     "../../../CPPScripts/Editor/ImGuiTextureManager.cpp"
     "../../../CPPScripts/Editor/ImGuiTextureManager.h"
     "../../../CPPScripts/Editor/ImGuiTextureManagerOpenGL.cpp"

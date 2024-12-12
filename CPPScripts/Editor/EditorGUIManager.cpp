@@ -1,6 +1,7 @@
 #include "EditorGUIManager.h"
 #include "ImGuiTextureManager.h"
 #include "EditorDialogBoxManager.h"
+#include "EditorSceneWidgetsRenderer.h"
 #ifdef ZX_API_OPENGL
 #include "EditorGUIManagerOpenGL.h"
 #endif
@@ -28,6 +29,7 @@ namespace ZXEngine
 #endif
 		ImGuiTextureManager::Creat();
 		EditorDialogBoxManager::Create();
+		EditorSceneWidgetsRenderer::Create();
 		mInstance->Init();
 	}
 
@@ -38,6 +40,8 @@ namespace ZXEngine
 
 	void EditorGUIManager::Render()
 	{
+		EditorSceneWidgetsRenderer::GetInstance()->Render();
+
 		mInstance->BeginEditorRender();
 		mInstance->EditorRender();
 		mInstance->EndEditorRender();
