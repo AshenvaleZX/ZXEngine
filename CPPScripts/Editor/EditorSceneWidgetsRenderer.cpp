@@ -54,7 +54,7 @@ namespace ZXEngine
 
 		RenderEngineProperties::GetInstance()->SetCameraProperties(EditorCamera::GetInstance()->mCamera);
 
-		auto widget = dataMgr->mTransPosWidget;
+		auto widget = dataMgr->GetTransWidget();
 
 		auto goTrans = dataMgr->selectedGO->GetComponent<Transform>();
 		auto widgetTrans = widget->GetComponent<Transform>();
