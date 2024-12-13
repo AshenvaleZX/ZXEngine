@@ -239,5 +239,10 @@ namespace ZXEngine
 		{
 			collider->SynchronizeTransform(GetModelMatrix());
 		}
+
+		for (auto child : gameObject->children)
+		{
+			child->GetComponent<Transform>()->UpdateColliderTransform();
+		}
 	}
 }
