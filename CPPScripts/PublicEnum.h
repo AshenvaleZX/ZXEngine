@@ -73,6 +73,21 @@ namespace ZXEngine
 		Error,
 	};
 
+	enum class AxisType
+	{
+		None,
+		X,
+		Y,
+		Z
+	};
+
+	enum class TransformType
+	{
+		Position,
+		Rotation,
+		Scale
+	};
+
 	enum class RenderQueueType
 	{
 		Deferred    = 500,

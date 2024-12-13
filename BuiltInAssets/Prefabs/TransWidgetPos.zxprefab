@@ -50,6 +50,26 @@
             ]
         },
         {
+            "Name": "XCollider",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [7, 0, 0],
+                    "Rotation": [0, 0, 90],
+                    "Scale": [1, 14, 1]
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [1, 1, 1]
+                }
+            ]
+        },
+        {
             "Name": "YStick",
             "Components":
             [
@@ -88,6 +108,26 @@
             ]
         },
         {
+            "Name": "YCollider",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 7, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 14, 1]
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [1, 1, 1]
+                }
+            ]
+        },
+        {
             "Name": "ZStick",
             "Components":
             [
@@ -122,6 +162,26 @@
                     "Material": "Materials/SolidDiffuseBlue.zxmat",
                     "CastShadow": false,
                     "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "ZCollider",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 0, 7],
+                    "Rotation": [90, 0, 0],
+                    "Scale": [1, 14, 1]
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [1, 1, 1]
                 }
             ]
         }

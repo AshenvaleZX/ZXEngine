@@ -45,6 +45,8 @@ namespace ZXEngine
 		PrefabStruct* prefab = Resources::LoadPrefab("Prefabs/TransWidgetPos.zxprefab", true);
 		mTransPosWidget = new GameObject(prefab);
 		delete prefab;
+
+		RecordWidgetAxisInfo(mTransPosWidgetColliders, mTransPosWidgetOrientations, mTransPosWidget);
 	}
 
 	void EditorDataManager::AddLog(LogType type, string msg)
@@ -233,6 +235,11 @@ namespace ZXEngine
 		}
 	}
 
+	GameObject* EditorDataManager::GetTransWidget() const
+	{
+		return mTransPosWidget;
+	}
+
 	void EditorDataManager::DeleteCurAssetInfo()
 	{
 		if (curAssetInfo != nullptr)
@@ -283,6 +290,41 @@ namespace ZXEngine
 		{
 			Debug::LogError("Get text file preview failed: " + path);
 			return "";
+		}
+	}
+
+	void EditorDataManager::RecordWidgetAxisInfo(WidgetColliderMap& colliders, WidgetOrientationMap& orientations, GameObject* widget)
+	{
+		auto collider = widget->GetComponent<BoxCollider>();
+
+		if (collider)
+		{
+			if (widget->name == "XCollider")
+				colliders[AxisType::X] = collider;
+			else if (widget->name == "YCollider")
+				colliders[AxisType::Y] = collider;
+			else if (widget->name == "ZCollider")
+				colliders[AxisType::Z] = collider;
+		}
+		else
+		{
+			if (widget->name == "XCone")
+				orientations[AxisType::X].first = widget;
+			else if (widget->name == "XStick")
+				orientations[AxisType::X].second = widget;
+			else if (widget->name == "YCone")
+				orientations[AxisType::Y].first = widget;
+			else if (widget->name == "YStick")
+				orientations[AxisType::Y].second = widget;
+			else if (widget->name == "ZCone")
+				orientations[AxisType::Z].first = widget;
+			else if (widget->name == "ZStick")
+				orientations[AxisType::Z].second = widget;
+		}
+
+		for (auto& child : widget->children)
+		{
+			RecordWidgetAxisInfo(colliders, orientations, child);
 		}
 	}
 }

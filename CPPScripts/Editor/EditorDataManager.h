@@ -4,6 +4,11 @@
 namespace ZXEngine
 {
 	class GameObject;
+	class BoxCollider;
+
+	using WidgetColliderMap = unordered_map<AxisType, BoxCollider*>;
+	using WidgetOrientationMap = unordered_map<AxisType, pair<GameObject*, GameObject*>>;
+
 	class EditorDataManager
 	{
 	public:
@@ -21,6 +26,7 @@ namespace ZXEngine
 		void* curAssetInfo = nullptr;
 		bool isGameView = true;
 
+		// -------------------------------- Console Log --------------------------------
 		LogInfo* logHead = nullptr;
 		LogInfo* logTail = nullptr;
 		int logSize = 0;
@@ -29,14 +35,21 @@ namespace ZXEngine
 		int errorSize = 0;
 		const int maxLogSize = 128;
 
+		// -------------------------------- Transform Widget --------------------------------
+		TransformType mCurTransType = TransformType::Position;
+
 		GameObject* mTransPosWidget = nullptr;
 		GameObject* mTransRotWidget = nullptr;
 		GameObject* mTransScaleWidget = nullptr;
+
+		WidgetColliderMap mTransPosWidgetColliders;
+		WidgetOrientationMap mTransPosWidgetOrientations;
 
 		void InitWidgets();
 		void AddLog(LogType type, string msg);
 		void SetSelectedGO(GameObject* go);
 		void SetSelectedAsset(EditorAssetNode* asset);
+		GameObject* GetTransWidget() const;
 
 	private:
 		std::mutex logMutex;
@@ -47,5 +60,6 @@ namespace ZXEngine
 
 		void DeleteCurAssetInfo();
 		string GetTextFilePreview(string path);
+		void RecordWidgetAxisInfo(WidgetColliderMap& colliders, WidgetOrientationMap& orientations, GameObject* widget);
 	};
 }
