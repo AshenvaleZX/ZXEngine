@@ -21,10 +21,6 @@ namespace ZXEngine
 		uint32_t mDrawCommandID;
 		RenderStateSetting* mRenderStateSetting;
 
-		GameObject* mTransWidgetPos;
-		GameObject* mTransWidgetRot;
-		GameObject* mTransWidgetScale;
-
 		EditorSceneWidgetsRenderer();
 		~EditorSceneWidgetsRenderer();
 

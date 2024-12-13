@@ -29,22 +29,14 @@ namespace ZXEngine
 	EditorSceneWidgetsRenderer::EditorSceneWidgetsRenderer()
 	{
 		mRenderStateSetting = new RenderStateSetting();
-
-		PrefabStruct* prefab = Resources::LoadPrefab("Prefabs/TransWidgetPos.zxprefab", true);
-		mTransWidgetPos = new GameObject(prefab);
-		delete prefab;
-
-		mTransWidgetRot = nullptr;
-		mTransWidgetScale = nullptr;
-
 		mDrawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ForwardRendering, ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
+
+		EditorDataManager::GetInstance()->InitWidgets();
 	}
 
 	EditorSceneWidgetsRenderer::~EditorSceneWidgetsRenderer()
 	{
 		delete mRenderStateSetting;
-
-		delete mTransWidgetPos;
 	}
 
 	void EditorSceneWidgetsRenderer::Render()
@@ -62,8 +54,10 @@ namespace ZXEngine
 
 		RenderEngineProperties::GetInstance()->SetCameraProperties(EditorCamera::GetInstance()->mCamera);
 
+		auto widget = dataMgr->mTransPosWidget;
+
 		auto goTrans = dataMgr->selectedGO->GetComponent<Transform>();
-		auto widgetTrans = mTransWidgetPos->GetComponent<Transform>();
+		auto widgetTrans = widget->GetComponent<Transform>();
 
 		Vector3 camPos = EditorCamera::GetInstance()->mCameraTrans->GetPosition();
 		Vector3 dir = goTrans->GetPosition() - camPos;
@@ -72,7 +66,7 @@ namespace ZXEngine
 		widgetTrans->SetPosition(camPos + dir * WidgetDis);
 		widgetTrans->SetRotation(goTrans->GetRotation());
 
-		RenderObject(mTransWidgetPos);
+		RenderObject(widget);
 
 		renderAPI->GenerateDrawCommand(mDrawCommandID);
 	}

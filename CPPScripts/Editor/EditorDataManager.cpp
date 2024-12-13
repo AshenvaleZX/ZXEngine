@@ -10,6 +10,7 @@
 #include "../ModelUtil.h"
 #include "../ZMesh.h"
 #include "../Audio/ZAudio.h"
+#include "../GameObject.h"
 
 #define ZX_EDITOR_ASYNC_LOAD
 
@@ -27,6 +28,23 @@ namespace ZXEngine
 	EditorDataManager* EditorDataManager::GetInstance()
 	{
 		return mInstance;
+	}
+
+	EditorDataManager::~EditorDataManager()
+	{
+		if (mTransPosWidget)
+			delete mTransPosWidget;
+		if (mTransRotWidget)
+			delete mTransRotWidget;
+		if (mTransScaleWidget)
+			delete mTransScaleWidget;
+	}
+
+	void EditorDataManager::InitWidgets()
+	{
+		PrefabStruct* prefab = Resources::LoadPrefab("Prefabs/TransWidgetPos.zxprefab", true);
+		mTransPosWidget = new GameObject(prefab);
+		delete prefab;
 	}
 
 	void EditorDataManager::AddLog(LogType type, string msg)

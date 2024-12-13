@@ -29,9 +29,11 @@ namespace ZXEngine
 		int errorSize = 0;
 		const int maxLogSize = 128;
 
-		EditorDataManager() {};
-		~EditorDataManager() {};
+		GameObject* mTransPosWidget = nullptr;
+		GameObject* mTransRotWidget = nullptr;
+		GameObject* mTransScaleWidget = nullptr;
 
+		void InitWidgets();
 		void AddLog(LogType type, string msg);
 		void SetSelectedGO(GameObject* go);
 		void SetSelectedAsset(EditorAssetNode* asset);
@@ -39,6 +41,9 @@ namespace ZXEngine
 	private:
 		std::mutex logMutex;
 		long long lastClickTime = 0;
+
+		EditorDataManager() = default;
+		~EditorDataManager();
 
 		void DeleteCurAssetInfo();
 		string GetTextFilePreview(string path);
