@@ -57,6 +57,7 @@ Fragment
 
     Properties
     {
+        using ENGINE_Camera_Pos
         vec4 _Color
         float _Ambient
         float _Diffuse
@@ -69,7 +70,7 @@ Fragment
             // ambient
             vec3 ambient = _Ambient * _Color.rgb;
             // diffuse
-            vec3 lightDir = vec3(0.57735, 0.57735, 0.57735);
+            vec3 lightDir = normalize(ENGINE_Camera_Pos - WorldPos);
             vec3 normal = normalize(Normal);
             float diff = max(dot(lightDir, normal), 0.0);
             vec3 diffuse = diff * _Diffuse * _Color.rgb;

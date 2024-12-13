@@ -5,11 +5,11 @@
     [
         {
             "UniformName": "_Ambient",
-            "Value": 0.5
+            "Value": 0.4
         },
         {
             "UniformName": "_Diffuse",
-            "Value": 0.5
+            "Value": 0.6
         }
     ],
     "Color":
