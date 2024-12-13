@@ -12,6 +12,8 @@
 
 namespace ZXEngine
 {
+	constexpr float WidgetDis = 100.0f;
+
 	EditorSceneWidgetsRenderer* EditorSceneWidgetsRenderer::mInstance = nullptr;
 
 	void EditorSceneWidgetsRenderer::Create()
@@ -60,8 +62,15 @@ namespace ZXEngine
 
 		RenderEngineProperties::GetInstance()->SetCameraProperties(EditorCamera::GetInstance()->mCamera);
 
-		mTransWidgetPos->GetComponent<Transform>()->SetPosition(dataMgr->selectedGO->GetComponent<Transform>()->GetPosition());
-		mTransWidgetPos->GetComponent<Transform>()->SetRotation(dataMgr->selectedGO->GetComponent<Transform>()->GetRotation());
+		auto goTrans = dataMgr->selectedGO->GetComponent<Transform>();
+		auto widgetTrans = mTransWidgetPos->GetComponent<Transform>();
+
+		Vector3 camPos = EditorCamera::GetInstance()->mCameraTrans->GetPosition();
+		Vector3 dir = goTrans->GetPosition() - camPos;
+		dir.Normalize();
+
+		widgetTrans->SetPosition(camPos + dir * WidgetDis);
+		widgetTrans->SetRotation(goTrans->GetRotation());
 
 		RenderObject(mTransWidgetPos);
 

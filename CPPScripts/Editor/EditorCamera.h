@@ -16,12 +16,12 @@ namespace ZXEngine
 
 	public:
 		Camera* mCamera;
+		Transform* mCameraTrans;
 
 	private:
 		EditorCamera();
 		~EditorCamera();
 
-		Transform* mCameraTrans;
 		GameObject* mCameraGO;
 
 		float mSpeed = 25.0f;
