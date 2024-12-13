@@ -24,6 +24,7 @@ namespace ZXEngine
 
 		GameObject* mCameraGO;
 
+		// -------------------------------- Camera Operation --------------------------------
 		float mSpeed = 25.0f;
 		float mRate = 1.0f;
 		float mSensitivity = 0.1f;
@@ -53,5 +54,16 @@ namespace ZXEngine
 
 		void MoveCamera(const Vector3& dir);
 		void RotateCamera(float hOffset, float vOffset);
+
+		// -------------------------------- Widget Operation --------------------------------
+		AxisType mCurAxis = AxisType::None;
+		Vector2 mLastWidgetScreenPos;
+
+		uint32_t mClickHandle = 0;
+		void ClickCallBack(const string& args);
+		uint32_t mReleaseHandle = 0;
+		void ReleaseCallBack(const string& args) const;
+		uint32_t mOperateWidgetHandle = 0;
+		void OperateWidgetCallBack(const string& args);
 	};
 }

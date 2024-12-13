@@ -1,4 +1,5 @@
 #include "EditorCamera.h"
+#include "EditorDataManager.h"
 #include "../GameObject.h"
 #include "../EventManager.h"
 #include "../Time.h"
@@ -24,10 +25,15 @@ namespace ZXEngine
 		mCamera = mCameraGO->AddComponent<Camera>();
 		mCameraTrans = mCameraGO->AddComponent<Transform>();
 
+		mCameraTrans->SetPosition(-20.0f, 20.0f, -20.0f);
+		mCameraTrans->SetEulerAngles(45.0f, 45.0f, 0.0f);
+
 		mCamera->mFarClipDis = 1000.0f;
 		mCamera->mCameraType = CameraType::EditorCamera;
 
 		auto eventMgr = EventManager::GetInstance();
+		mClickHandle = eventMgr->AddEditorEventHandler(EventType::MOUSE_BUTTON_1_DOWN, std::bind(&EditorCamera::ClickCallBack, this, std::placeholders::_1));
+		mReleaseHandle = eventMgr->AddEditorEventHandler(EventType::MOUSE_BUTTON_1_UP, std::bind(&EditorCamera::ReleaseCallBack, this, std::placeholders::_1));
 		mRigisterHandle = eventMgr->AddEditorEventHandler(EventType::MOUSE_BUTTON_2_DOWN, std::bind(&EditorCamera::RigisterHandle, this, std::placeholders::_1));
 		mUnrigisterHandle = eventMgr->AddEditorEventHandler(EventType::MOUSE_BUTTON_2_UP, std::bind(&EditorCamera::UnrigisterHandle, this, std::placeholders::_1));
 	}
@@ -64,6 +70,94 @@ namespace ZXEngine
 		eventMgr->RemoveEditorEventHandler(EventType::UPDATE_MOUSE_POS, mMoveMouseHandle);
 		eventMgr->RemoveEditorEventHandler(EventType::KEY_LSHIFT_DOWN,  mAccelerateHandle);
 		eventMgr->RemoveEditorEventHandler(EventType::KEY_LSHIFT_UP,    mDecelerateHandle);
+	}
+
+	void EditorCamera::ClickCallBack(const string& args)
+	{
+		auto dataMgr = EditorDataManager::GetInstance();
+		if (dataMgr->isGameView || dataMgr->selectedGO == nullptr)
+			return;
+
+		auto argList = Utils::StringSplit(args, '|');
+
+		mLastWidgetScreenPos.x = std::stof(argList[0]);
+		mLastWidgetScreenPos.y = std::stof(argList[1]);
+
+		auto ray = mCamera->ScreenPointToRay(mLastWidgetScreenPos);
+
+		mCurAxis = AxisType::None;
+
+		for (auto& iter : EditorDataManager::GetInstance()->mTransPosWidgetColliders)
+		{
+			if (iter.second->IntersectRay(ray))
+			{
+				mCurAxis = iter.first;
+			}
+		}
+
+		mOperateWidgetHandle = EventManager::GetInstance()->AddEditorEventHandler(EventType::UPDATE_MOUSE_POS, std::bind(&EditorCamera::OperateWidgetCallBack, this, std::placeholders::_1));
+	}
+
+	void EditorCamera::ReleaseCallBack(const string& args) const
+	{
+		EventManager::GetInstance()->RemoveEditorEventHandler(EventType::UPDATE_MOUSE_POS, mOperateWidgetHandle);
+	}
+
+	void EditorCamera::OperateWidgetCallBack(const string& args)
+	{
+		if (mCurAxis == AxisType::None)
+			return;
+
+		auto go = EditorDataManager::GetInstance()->selectedGO;
+		if (go == nullptr)
+			return;
+
+		auto argList = Utils::StringSplit(args, '|');
+
+		Vector2 widgetScreenPos;
+		widgetScreenPos.x = std::stof(argList[0]);
+		widgetScreenPos.y = std::stof(argList[1]);
+		// 当前帧拖拽Widget在屏幕上产生的位移
+		Vector2 deltaScreenPos = widgetScreenPos - mLastWidgetScreenPos;
+
+		auto& widgetOrientations = EditorDataManager::GetInstance()->mTransPosWidgetOrientations;
+		Vector3 headPos = widgetOrientations[mCurAxis].first->GetComponent<Transform>()->GetPosition();
+		Vector3 tailPos = widgetOrientations[mCurAxis].second->GetComponent<Transform>()->GetPosition();
+
+		Vector2 headScreenPos = mCamera->WorldToScreenPoint(headPos);
+		Vector2 tailScreenPos = mCamera->WorldToScreenPoint(tailPos);
+
+		// 当前选中的轴的3D方向投影到屏幕上后的2D方向
+		Vector2 axisDir = headScreenPos - tailScreenPos;
+		axisDir.Normalize();
+
+		// 将鼠标在屏幕上的位移距离投影到轴的方向上
+		float dis = Math::Dot(deltaScreenPos, axisDir);
+
+		Vector3 offset;
+		auto goTrans = go->GetComponent<Transform>();
+		switch (mCurAxis)
+		{
+		case::ZXEngine::AxisType::X:
+			offset = goTrans->GetRight();
+			break;
+		case::ZXEngine::AxisType::Y:
+			offset = goTrans->GetUp();
+			break;
+		case::ZXEngine::AxisType::Z:
+			offset = goTrans->GetForward();
+			break;
+		}
+
+		// 移动速率，离镜头越远移动速率越快
+		float transRate = (mCameraTrans->GetPosition() - goTrans->GetPosition()).GetMagnitude();
+		transRate *= 0.001f;
+
+		offset *= (dis * transRate);
+
+		goTrans->Translate(offset);
+
+		mLastWidgetScreenPos = widgetScreenPos;
 	}
 
 	void EditorCamera::MoveForwardCallBack(const string& args)
