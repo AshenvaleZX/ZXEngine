@@ -94,6 +94,16 @@ namespace ZXEngine
 		}
 	};
 
+	// 特化版本，用于处理enum和enum class
+	template<typename T>
+	struct ToStringHelper<T, std::enable_if_t<std::is_enum_v<T>>>
+	{
+		static std::string Convert(const T& value)
+		{
+			return std::to_string(static_cast<std::underlying_type_t<T>>(value));
+		}
+	};
+
 	// 特化版本，用于处理string
 	template<>
 	struct ToStringHelper<std::string>
