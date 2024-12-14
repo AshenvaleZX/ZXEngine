@@ -35,6 +35,8 @@ namespace ZXEngine
 
 		// 窗口居中
 		ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+		// 顶置窗口
+		ImGui::SetNextWindowFocus();
 
 		// 标题(居中)
 		style.WindowTitleAlign.x = 0.5f;
