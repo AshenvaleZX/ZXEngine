@@ -49,6 +49,12 @@ namespace ZXEngine
 			return Math::Dot(mHalfSize, axisProjected);
 		}
 
+		void CollisionPlane::SynchronizeTransform(const Matrix4& transform)
+		{
+			mTransform = transform;
+			mNormal = Math::InverseTranspose(Matrix3(transform)) * mLocalNormal;
+		}
+
 		ColliderType CollisionPlane::GetType() const
 		{
 			return ColliderType::Plane;

@@ -59,11 +59,11 @@ namespace ZXEngine
 		Vector3 GetRight() const;
 		Vector3 GetForward() const;
 
+		void UpdateColliderTransform() const;
+
 	protected:
 		Vector3 localPosition = Vector3();
 		Quaternion localRotation = Quaternion();
 		Vector3 localScale = Vector3(1.0f);
-
-		void UpdateColliderTransform() const;
 	};
 }
