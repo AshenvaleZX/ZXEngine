@@ -61,7 +61,23 @@ namespace ZXEngine
 
 		bool IntersectionDetector::Detect(const Ray& ray, const CollisionPlane& plane)
 		{
-			return Math::Dot(ray.mDirection, plane.mNormal) < 0.0f;
+			Matrix4 iTrans = Math::Inverse(plane.mTransform);
+			Ray localRay = Ray(iTrans * ray.mOrigin.ToPosVec4(), Math::Transpose(iTrans) * ray.mDirection.ToDirVec4());
+
+			// 射线起点在平面的哪一边
+			float pSide = Math::Dot(localRay.mOrigin, plane.mLocalNormal);
+
+			// 射线方向和平面法线是否同向
+			float rDotN = Math::Dot(localRay.mDirection, plane.mLocalNormal);
+
+			if ((pSide > 0.0f && rDotN > 0.0f) || (pSide < 0.0f && rDotN < 0.0f))
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
 		}
 
 		bool IntersectionDetector::Detect(const Ray& ray, const CollisionSphere& sphere)
