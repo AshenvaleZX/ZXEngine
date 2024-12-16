@@ -14,7 +14,8 @@ namespace ZXEngine
         { GeometryType::Box,                "Box"                }, { GeometryType::Sphere,   "Sphere"   },
         { GeometryType::TessellationSphere, "TessellationSphere" }, { GeometryType::Cylinder, "Cylinder" },
         { GeometryType::Plane,              "Plane"              }, { GeometryType::Quad,     "Quad"     },
-		{ GeometryType::DynamicPlane,       "DynamicPlane"       }, { GeometryType::Cone,     "Cone"     }
+        { GeometryType::DynamicPlane,       "DynamicPlane"       }, { GeometryType::Cone,     "Cone"     },
+        { GeometryType::Circle,             "Circle"             }
     };
 
     shared_ptr<Mesh> ModelUtil::GenerateGeometry(GeometryType type)
@@ -41,6 +42,13 @@ namespace ZXEngine
             mesh->mAABBSizeX = 1.0f;
             mesh->mAABBSizeY = 1.0f;
             mesh->mAABBSizeZ = 1.0f;
+        }
+        else if (type == GeometryType::Circle)
+        {
+            mesh = GeometryGenerator::CreateCircle(0.5f, 40);
+            mesh->mAABBSizeX = 1.0f;
+            mesh->mAABBSizeY = 1.0f;
+            mesh->mAABBSizeZ = 0.0f;
         }
         else if (type == GeometryType::Cone)
         {

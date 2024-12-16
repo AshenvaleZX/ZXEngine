@@ -228,6 +228,39 @@ namespace ZXEngine
 		return new StaticMesh(std::move(vertices), std::move(indices));
 	}
 
+	StaticMesh* GeometryGenerator::CreateCircle(float radius, uint32_t sliceCount)
+	{
+		vector<Vertex> vertices;
+		vector<uint32_t> indices;
+
+		Vertex centerVertex = { .Position = { 0.0f, 0.0f, 0.0f }, .TexCoords = { 0.5f, 0.5f }, .Normal = { 0.0f, 0.0f, -1.0f }, .Tangent = { 1.0f, 0.0f, 0.0f } };
+		vertices.push_back(centerVertex);
+
+		float dTheta = Math::PIx2 / sliceCount;
+		for (uint32_t i = 0; i <= sliceCount; i++)
+		{
+			float x = radius * cosf(i * dTheta);
+			float y = radius * sinf(i * dTheta);
+
+			Vertex v;
+			v.Position = { x, y, 0.0f };
+			v.Normal = { 0.0f, 0.0f, -1.0f };
+			v.Tangent = { -y, x, 0.0f };
+			v.TexCoords = { 0.5f * (x / radius + 1.0f), 0.5f * (y / radius + 1.0f) };
+
+			vertices.push_back(std::move(v));
+		}
+
+		for (uint32_t i = 1; i <= sliceCount; i++)
+		{
+			indices.push_back(0);
+			indices.push_back(i);
+			indices.push_back(i + 1);
+		}
+
+		return new StaticMesh(std::move(vertices), std::move(indices));
+	}
+
 	StaticMesh* GeometryGenerator::CreateCone(float radius, float height, uint32_t sliceCount)
 	{
 		vector<Vertex> vertices;

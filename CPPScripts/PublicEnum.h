@@ -112,6 +112,7 @@ namespace ZXEngine
 		Quad,
 		DynamicPlane,
 		Cone,
+		Circle,
 	};
 
 	enum class ShadowType
