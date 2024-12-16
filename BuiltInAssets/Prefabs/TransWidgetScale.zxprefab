@@ -1,5 +1,5 @@
 {
-    "Name": "TransWidgetPos",
+    "Name": "TransWidgetScale",
     "Components":
     [
         {
@@ -42,7 +42,7 @@
                 },
                 {
                     "Type": "MeshRenderer",
-                    "Geometry": 7,
+                    "Geometry": 0,
                     "Material": "Materials/SolidDiffuseRed.zxmat",
                     "CastShadow": false,
                     "ReceiveShadow": false
@@ -100,7 +100,7 @@
                 },
                 {
                     "Type": "MeshRenderer",
-                    "Geometry": 7,
+                    "Geometry": 0,
                     "Material": "Materials/SolidDiffuseGreen.zxmat",
                     "CastShadow": false,
                     "ReceiveShadow": false
@@ -158,7 +158,7 @@
                 },
                 {
                     "Type": "MeshRenderer",
-                    "Geometry": 7,
+                    "Geometry": 0,
                     "Material": "Materials/SolidDiffuseBlue.zxmat",
                     "CastShadow": false,
                     "ReceiveShadow": false

@@ -44,6 +44,8 @@ namespace ZXEngine
 
 		WidgetColliderMap mTransPosWidgetColliders;
 		WidgetOrientationMap mTransPosWidgetOrientations;
+		WidgetColliderMap mTransScaleWidgetColliders;
+		WidgetOrientationMap mTransScaleWidgetOrientations;
 
 		void InitWidgets();
 		void AddLog(LogType type, string msg);

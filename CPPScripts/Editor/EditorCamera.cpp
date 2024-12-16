@@ -87,7 +87,8 @@ namespace ZXEngine
 
 		mCurAxis = AxisType::None;
 
-		for (auto& iter : EditorDataManager::GetInstance()->mTransPosWidgetColliders)
+		auto& widgetColliders = dataMgr->mCurTransType == TransformType::Position ? dataMgr->mTransPosWidgetColliders : dataMgr->mTransScaleWidgetColliders;
+		for (auto& iter : widgetColliders)
 		{
 			if (iter.second->IntersectRay(ray))
 			{
@@ -108,7 +109,8 @@ namespace ZXEngine
 		if (mCurAxis == AxisType::None)
 			return;
 
-		auto go = EditorDataManager::GetInstance()->selectedGO;
+		auto dataMgr = EditorDataManager::GetInstance();
+		auto go = dataMgr->selectedGO;
 		if (go == nullptr)
 			return;
 
@@ -120,7 +122,7 @@ namespace ZXEngine
 		// 当前帧拖拽Widget在屏幕上产生的位移
 		Vector2 deltaScreenPos = widgetScreenPos - mLastWidgetScreenPos;
 
-		auto& widgetOrientations = EditorDataManager::GetInstance()->mTransPosWidgetOrientations;
+		auto& widgetOrientations = dataMgr->mCurTransType == TransformType::Position ? dataMgr->mTransPosWidgetOrientations : dataMgr->mTransScaleWidgetOrientations;
 		Vector3 headPos = widgetOrientations[mCurAxis].first->GetComponent<Transform>()->GetPosition();
 		Vector3 tailPos = widgetOrientations[mCurAxis].second->GetComponent<Transform>()->GetPosition();
 
@@ -134,28 +136,51 @@ namespace ZXEngine
 		// 将鼠标在屏幕上的位移距离投影到轴的方向上
 		float dis = Math::Dot(deltaScreenPos, axisDir);
 
-		Vector3 offset;
-		auto goTrans = go->GetComponent<Transform>();
-		switch (mCurAxis)
-		{
-		case::ZXEngine::AxisType::X:
-			offset = goTrans->GetRight();
-			break;
-		case::ZXEngine::AxisType::Y:
-			offset = goTrans->GetUp();
-			break;
-		case::ZXEngine::AxisType::Z:
-			offset = goTrans->GetForward();
-			break;
-		}
-
 		// 移动速率，离镜头越远移动速率越快
+		auto goTrans = go->GetComponent<Transform>();
 		float transRate = (mCameraTrans->GetPosition() - goTrans->GetPosition()).GetMagnitude();
-		transRate *= 0.001f;
 
-		offset *= (dis * transRate);
+		if (dataMgr->mCurTransType == TransformType::Position)
+		{
+			transRate *= 0.001f;
 
-		goTrans->Translate(offset);
+			Vector3 offset;
+			switch (mCurAxis)
+			{
+			case::ZXEngine::AxisType::X:
+				offset = goTrans->GetRight();
+				break;
+			case::ZXEngine::AxisType::Y:
+				offset = goTrans->GetUp();
+				break;
+			case::ZXEngine::AxisType::Z:
+				offset = goTrans->GetForward();
+				break;
+			}
+			offset *= (dis * transRate);
+
+			goTrans->Translate(offset);
+		}
+		else if (dataMgr->mCurTransType == TransformType::Scale)
+		{
+			transRate *= 0.0001f;
+
+			Vector3 scale(1.0f);
+			switch (mCurAxis)
+			{
+			case::ZXEngine::AxisType::X:
+				scale.x += (dis * transRate);
+				break;
+			case::ZXEngine::AxisType::Y:
+				scale.y += (dis * transRate);
+				break;
+			case::ZXEngine::AxisType::Z:
+				scale.z += (dis * transRate);
+				break;
+			}
+
+			goTrans->Scale(scale);
+		}
 
 		mLastWidgetScreenPos = widgetScreenPos;
 	}

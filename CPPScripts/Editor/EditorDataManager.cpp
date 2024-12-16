@@ -45,8 +45,12 @@ namespace ZXEngine
 		PrefabStruct* prefab = Resources::LoadPrefab("Prefabs/TransWidgetPos.zxprefab", true);
 		mTransPosWidget = new GameObject(prefab);
 		delete prefab;
-
 		RecordWidgetAxisInfo(mTransPosWidgetColliders, mTransPosWidgetOrientations, mTransPosWidget);
+
+		prefab = Resources::LoadPrefab("Prefabs/TransWidgetScale.zxprefab", true);
+		mTransScaleWidget = new GameObject(prefab);
+		delete prefab;
+		RecordWidgetAxisInfo(mTransScaleWidgetColliders, mTransScaleWidgetOrientations, mTransScaleWidget);
 	}
 
 	void EditorDataManager::AddLog(LogType type, string msg)
@@ -237,7 +241,10 @@ namespace ZXEngine
 
 	GameObject* EditorDataManager::GetTransWidget() const
 	{
-		return mTransPosWidget;
+		if (mCurTransType == TransformType::Position)
+			return mTransPosWidget;
+		else
+			return mTransScaleWidget;
 	}
 
 	void EditorDataManager::DeleteCurAssetInfo()
@@ -308,15 +315,15 @@ namespace ZXEngine
 		}
 		else
 		{
-			if (widget->name == "XCone")
+			if (widget->name == "XHead")
 				orientations[AxisType::X].first = widget;
 			else if (widget->name == "XStick")
 				orientations[AxisType::X].second = widget;
-			else if (widget->name == "YCone")
+			else if (widget->name == "YHead")
 				orientations[AxisType::Y].first = widget;
 			else if (widget->name == "YStick")
 				orientations[AxisType::Y].second = widget;
-			else if (widget->name == "ZCone")
+			else if (widget->name == "ZHead")
 				orientations[AxisType::Z].first = widget;
 			else if (widget->name == "ZStick")
 				orientations[AxisType::Z].second = widget;
