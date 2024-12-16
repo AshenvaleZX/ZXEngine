@@ -88,6 +88,9 @@ namespace ZXEngine
 		// 计算转置矩阵
 		static Matrix3 Transpose(const Matrix3& mat);
 		static Matrix4 Transpose(const Matrix4& mat);
+		// 计算逆转置矩阵
+		static Matrix3 InverseTranspose(const Matrix3& mat);
+		static Matrix4 InverseTranspose(const Matrix4& mat);
 		
 		// 获取垂直向量
 		static Vector2 GetPerpendicular(const Vector2& v);

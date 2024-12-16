@@ -507,6 +507,55 @@ namespace ZXEngine
 			mat.m03, mat.m13, mat.m23, mat.m33);
 	}
 
+	Matrix3 Math::InverseTranspose(const Matrix3& mat)
+	{
+		float oneOverDeterminant = 1.0f / mat.GetDeterminant();
+
+		Matrix3 resMat = Matrix3();
+		resMat.m00 = +(mat.m11 * mat.m22 - mat.m12 * mat.m21) * oneOverDeterminant;
+		resMat.m10 = -(mat.m10 * mat.m22 - mat.m12 * mat.m20) * oneOverDeterminant;
+		resMat.m20 = +(mat.m10 * mat.m21 - mat.m11 * mat.m20) * oneOverDeterminant;
+
+		resMat.m01 = -(mat.m01 * mat.m22 - mat.m02 * mat.m21) * oneOverDeterminant;
+		resMat.m11 = +(mat.m00 * mat.m22 - mat.m02 * mat.m20) * oneOverDeterminant;
+		resMat.m21 = -(mat.m00 * mat.m21 - mat.m01 * mat.m20) * oneOverDeterminant;
+
+		resMat.m02 = +(mat.m01 * mat.m12 - mat.m02 * mat.m11) * oneOverDeterminant;
+		resMat.m12 = -(mat.m00 * mat.m12 - mat.m02 * mat.m10) * oneOverDeterminant;
+		resMat.m22 = +(mat.m00 * mat.m11 - mat.m01 * mat.m10) * oneOverDeterminant;
+
+		return resMat;
+	}
+
+	Matrix4 Math::InverseTranspose(const Matrix4& mat)
+	{
+		float inv00, inv01, inv02, inv03, inv10, inv11, inv12, inv13, inv20, inv21, inv22, inv23, inv30, inv31, inv32, inv33;
+		inv00 =  mat.m11 * mat.m22 * mat.m33 - mat.m11 * mat.m23 * mat.m32 - mat.m21 * mat.m12 * mat.m33 + mat.m21 * mat.m13 * mat.m32 + mat.m31 * mat.m12 * mat.m23 - mat.m31 * mat.m13 * mat.m22;
+		inv10 = -mat.m10 * mat.m22 * mat.m33 + mat.m10 * mat.m23 * mat.m32 + mat.m20 * mat.m12 * mat.m33 - mat.m20 * mat.m13 * mat.m32 - mat.m30 * mat.m12 * mat.m23 + mat.m30 * mat.m13 * mat.m22;
+		inv20 =  mat.m10 * mat.m21 * mat.m33 - mat.m10 * mat.m23 * mat.m31 - mat.m20 * mat.m11 * mat.m33 + mat.m20 * mat.m13 * mat.m31 + mat.m30 * mat.m11 * mat.m23 - mat.m30 * mat.m13 * mat.m21;
+		inv30 = -mat.m10 * mat.m21 * mat.m32 + mat.m10 * mat.m22 * mat.m31 + mat.m20 * mat.m11 * mat.m32 - mat.m20 * mat.m12 * mat.m31 - mat.m30 * mat.m11 * mat.m22 + mat.m30 * mat.m12 * mat.m21;
+		inv01 = -mat.m01 * mat.m22 * mat.m33 + mat.m01 * mat.m23 * mat.m32 + mat.m21 * mat.m02 * mat.m33 - mat.m21 * mat.m03 * mat.m32 - mat.m31 * mat.m02 * mat.m23 + mat.m31 * mat.m03 * mat.m22;
+		inv11 =  mat.m00 * mat.m22 * mat.m33 - mat.m00 * mat.m23 * mat.m32 - mat.m20 * mat.m02 * mat.m33 + mat.m20 * mat.m03 * mat.m32 + mat.m30 * mat.m02 * mat.m23 - mat.m30 * mat.m03 * mat.m22;
+		inv21 = -mat.m00 * mat.m21 * mat.m33 + mat.m00 * mat.m23 * mat.m31 + mat.m20 * mat.m01 * mat.m33 - mat.m20 * mat.m03 * mat.m31 - mat.m30 * mat.m01 * mat.m23 + mat.m30 * mat.m03 * mat.m21;
+		inv31 =  mat.m00 * mat.m21 * mat.m32 - mat.m00 * mat.m22 * mat.m31 - mat.m20 * mat.m01 * mat.m32 + mat.m20 * mat.m02 * mat.m31 + mat.m30 * mat.m01 * mat.m22 - mat.m30 * mat.m02 * mat.m21;
+		inv02 =  mat.m01 * mat.m12 * mat.m33 - mat.m01 * mat.m13 * mat.m32 - mat.m11 * mat.m02 * mat.m33 + mat.m11 * mat.m03 * mat.m32 + mat.m31 * mat.m02 * mat.m13 - mat.m31 * mat.m03 * mat.m12;
+		inv12 = -mat.m00 * mat.m12 * mat.m33 + mat.m00 * mat.m13 * mat.m32 + mat.m10 * mat.m02 * mat.m33 - mat.m10 * mat.m03 * mat.m32 - mat.m30 * mat.m02 * mat.m13 + mat.m30 * mat.m03 * mat.m12;
+		inv22 =  mat.m00 * mat.m11 * mat.m33 - mat.m00 * mat.m13 * mat.m31 - mat.m10 * mat.m01 * mat.m33 + mat.m10 * mat.m03 * mat.m31 + mat.m30 * mat.m01 * mat.m13 - mat.m30 * mat.m03 * mat.m11;
+		inv32 = -mat.m00 * mat.m11 * mat.m32 + mat.m00 * mat.m12 * mat.m31 + mat.m10 * mat.m01 * mat.m32 - mat.m10 * mat.m02 * mat.m31 - mat.m30 * mat.m01 * mat.m12 + mat.m30 * mat.m02 * mat.m11;
+		inv03 = -mat.m01 * mat.m12 * mat.m23 + mat.m01 * mat.m13 * mat.m22 + mat.m11 * mat.m02 * mat.m23 - mat.m11 * mat.m03 * mat.m22 - mat.m21 * mat.m02 * mat.m13 + mat.m21 * mat.m03 * mat.m12;
+		inv13 =  mat.m00 * mat.m12 * mat.m23 - mat.m00 * mat.m13 * mat.m22 - mat.m10 * mat.m02 * mat.m23 + mat.m10 * mat.m03 * mat.m22 + mat.m20 * mat.m02 * mat.m13 - mat.m20 * mat.m03 * mat.m12;
+		inv23 = -mat.m00 * mat.m11 * mat.m23 + mat.m00 * mat.m13 * mat.m21 + mat.m10 * mat.m01 * mat.m23 - mat.m10 * mat.m03 * mat.m21 - mat.m20 * mat.m01 * mat.m13 + mat.m20 * mat.m03 * mat.m11;
+		inv33 =  mat.m00 * mat.m11 * mat.m22 - mat.m00 * mat.m12 * mat.m21 - mat.m10 * mat.m01 * mat.m22 + mat.m10 * mat.m02 * mat.m21 + mat.m20 * mat.m01 * mat.m12 - mat.m20 * mat.m02 * mat.m11;
+
+		float oneOverDeterminant = 1.0f / (mat.m00 * inv00 + mat.m01 * inv10 + mat.m02 * inv20 + mat.m03 * inv30);
+
+		return Matrix4(
+			inv00 * oneOverDeterminant, inv10 * oneOverDeterminant, inv20 * oneOverDeterminant, inv30 * oneOverDeterminant,
+			inv01 * oneOverDeterminant, inv11 * oneOverDeterminant, inv21 * oneOverDeterminant, inv31 * oneOverDeterminant,
+			inv02 * oneOverDeterminant, inv12 * oneOverDeterminant, inv22 * oneOverDeterminant, inv32 * oneOverDeterminant,
+			inv03 * oneOverDeterminant, inv13 * oneOverDeterminant, inv23 * oneOverDeterminant, inv33 * oneOverDeterminant);
+	}
+
 	Vector2 Math::GetPerpendicular(const Vector2& v)
 	{
 		return Vector2(-v.y, v.x).GetNormalized();
