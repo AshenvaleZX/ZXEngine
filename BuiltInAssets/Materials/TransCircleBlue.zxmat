@@ -1,0 +1,11 @@
+{
+    "Type": "Forward",
+    "Shader": "Shaders/TransCircle.zxshader",
+    "Color":
+    [
+        {
+            "UniformName": "_Color",
+            "Value": [0.0, 0.0, 1.0, 1.0]
+        }
+    ]
+}

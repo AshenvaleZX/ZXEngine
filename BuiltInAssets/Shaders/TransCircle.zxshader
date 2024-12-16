@@ -1,0 +1,84 @@
+Setting 
+{
+    Blend SrcAlpha OneMinusSrcAlpha
+    BlendOp Add
+    Cull Off
+    ZTest Always
+    ZWrite Off
+    RenderQueue Opaque
+}
+
+Vertex
+{
+    Input
+    {
+        0 vec3 aPos       : POSITION
+        2 vec3 aNormal    : NORMAL
+    }
+
+    Output
+    {
+        0 vec3 LocalPos  : TEXCOORD0
+        1 vec3 WorldPos  : TEXCOORD1
+        2 vec3 CenterPos : TEXCOORD2
+    }
+
+    Properties
+    {
+        using ENGINE_Model
+        using ENGINE_View
+        using ENGINE_Projection
+    }
+
+    Program
+    {
+        void main()
+        {
+            LocalPos = aPos;
+            WorldPos = to_vec3(mul(ENGINE_Model * vec4(aPos, 1.0)));
+            CenterPos = to_vec3(mul(ENGINE_Model * vec4(0, 0, 0, 1)));
+            ZX_Position = mul(ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 1.0));
+        }
+    }
+}
+
+Fragment
+{
+    Input
+    {
+        0 vec3 LocalPos  : TEXCOORD0
+        1 vec3 WorldPos  : TEXCOORD1
+        2 vec3 CenterPos : TEXCOORD2
+    }
+
+    Output
+    {
+        0 vec4 FragColor : SV_Target
+    }
+
+    Properties
+    {
+        using ENGINE_Camera_Pos
+        vec4 _Color
+    }
+
+    Program
+    {
+        void main()
+        {
+            float transparency = 0.2;
+            // Radius 0.5, Radius^2 0.25
+            if (LocalPos.x * LocalPos.x + LocalPos.y * LocalPos.y > 0.2)
+            {
+                vec3 pDir = normalize(WorldPos - CenterPos);
+                vec3 cDir = normalize(ENGINE_Camera_Pos - CenterPos);
+                float dotProd = dot(pDir, cDir);
+                if (dotProd > 0.0)
+                {
+                    transparency = 0.9;
+                }
+            }
+            FragColor = vec4(_Color.rgb, transparency);
+        }
+    }
+}

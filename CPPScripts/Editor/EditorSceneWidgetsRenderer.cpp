@@ -29,6 +29,8 @@ namespace ZXEngine
 	EditorSceneWidgetsRenderer::EditorSceneWidgetsRenderer()
 	{
 		mRenderStateSetting = new RenderStateSetting();
+		mRenderStateSetting->faceCull = false;
+
 		mDrawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ForwardRendering, ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
 		EditorDataManager::GetInstance()->InitWidgets();
@@ -50,6 +52,7 @@ namespace ZXEngine
 
 		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
+		mRenderStateSetting->depthTest = dataMgr->mCurTransType != TransformType::Rotation;
 		renderAPI->SetRenderState(mRenderStateSetting);
 
 		RenderEngineProperties::GetInstance()->SetCameraProperties(EditorCamera::GetInstance()->mCamera);

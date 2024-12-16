@@ -1,0 +1,132 @@
+{
+    "Name": "TransWidgetRot",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 0, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [1, 1, 1]
+        }
+    ],
+    "GameObjects":
+    [
+        {
+            "Name": "XTurnplate",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 0, 0],
+                    "Rotation": [0, -90, 0],
+                    "Scale": [20, 20, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 8,
+                    "Material": "Materials/TransCircleRed.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "XCollider",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 0, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [1, 1, 1]
+                }
+            ]
+        },
+        {
+            "Name": "YTurnplate",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 0, 0],
+                    "Rotation": [90, 0, 0],
+                    "Scale": [20, 20, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 8,
+                    "Material": "Materials/TransCircleGreen.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "YCollider",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 0, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [1, 1, 1]
+                }
+            ]
+        },
+        {
+            "Name": "ZTurnplate",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 0, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [20, 20, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 8,
+                    "Material": "Materials/TransCircleBlue.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "ZCollider",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 0, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [1, 1, 1]
+                }
+            ]
+        }
+    ]
+}

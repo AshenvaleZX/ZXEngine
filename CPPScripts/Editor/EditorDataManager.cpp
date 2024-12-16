@@ -47,6 +47,10 @@ namespace ZXEngine
 		delete prefab;
 		RecordWidgetAxisInfo(mTransPosWidgetColliders, mTransPosWidgetOrientations, mTransPosWidget);
 
+		prefab = Resources::LoadPrefab("Prefabs/TransWidgetRot.zxprefab", true);
+		mTransRotWidget = new GameObject(prefab);
+		delete prefab;
+
 		prefab = Resources::LoadPrefab("Prefabs/TransWidgetScale.zxprefab", true);
 		mTransScaleWidget = new GameObject(prefab);
 		delete prefab;
@@ -183,7 +187,7 @@ namespace ZXEngine
 				auto curInfo = static_cast<AssetMaterialInfo*>(this->curAssetInfo);
 				curInfo->material = new Material(matStruct);
 				EditorGUIManager::GetInstance()->assetPreviewer->Reset();
-		}, false, true);
+			}, false, true);
 #else
 			MaterialStruct* matStruct = Resources::LoadMaterial(localPath);
 			info->material = new Material(matStruct);
@@ -243,6 +247,8 @@ namespace ZXEngine
 	{
 		if (mCurTransType == TransformType::Position)
 			return mTransPosWidget;
+		else if (mCurTransType == TransformType::Rotation)
+			return mTransRotWidget;
 		else
 			return mTransScaleWidget;
 	}
