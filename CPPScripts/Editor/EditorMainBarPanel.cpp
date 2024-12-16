@@ -116,10 +116,64 @@ namespace ZXEngine
 			float avail = ImGui::GetContentRegionAvail().x;
 			float offset = (avail - threeButtonSize) * 0.5f;
 			// 计算3个按钮要居中的话，第一个按钮的起始位置
-			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset);
+			float midBtnPosX = ImGui::GetCursorPosX() + offset;
 
 			bool isPop = false;
+			// Translation
+			if (EditorDataManager::GetInstance()->mCurTransType == TransformType::Position)
+			{
+				isPop = true;
+				ImGui::PushStyleColor(ImGuiCol_Text, selectTextColor);
+				ImGui::PushStyleColor(ImGuiCol_Button, selectBtnColor);
+			}
+			if (ImGui::Button("=", buttonSize))
+			{
+				EditorDataManager::GetInstance()->mCurTransType = TransformType::Position;
+			}
+			if (isPop)
+			{
+				isPop = false;
+				ImGui::PopStyleColor(2);
+			}
+
+			// Rotation
+			ImGui::SameLine();
+			if (EditorDataManager::GetInstance()->mCurTransType == TransformType::Rotation)
+			{
+				isPop = true;
+				ImGui::PushStyleColor(ImGuiCol_Text, selectTextColor);
+				ImGui::PushStyleColor(ImGuiCol_Button, selectBtnColor);
+			}
+			if (ImGui::Button("O", buttonSize))
+			{
+				EditorDataManager::GetInstance()->mCurTransType = TransformType::Rotation;
+			}
+			if (isPop)
+			{
+				isPop = false;
+				ImGui::PopStyleColor(2);
+			}
+
+			// Scale
+			ImGui::SameLine();
+			if (EditorDataManager::GetInstance()->mCurTransType == TransformType::Scale)
+			{
+				isPop = true;
+				ImGui::PushStyleColor(ImGuiCol_Text, selectTextColor);
+				ImGui::PushStyleColor(ImGuiCol_Button, selectBtnColor);
+			}
+			if (ImGui::Button("+", buttonSize))
+			{
+				EditorDataManager::GetInstance()->mCurTransType = TransformType::Scale;
+			}
+			if (isPop)
+			{
+				isPop = false;
+				ImGui::PopStyleColor(2);
+			}
+
 			// Play
+			ImGui::SameLine(midBtnPosX);
 			if (EditorDataManager::isGameStart)
 			{
 				isPop = true;
