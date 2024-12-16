@@ -15,6 +15,8 @@ namespace ZXEngine
 		virtual ComponentType GetInsType();
 
 		void Translate(const Vector3& offset);
+		void Scale(float scale);
+		void Scale(const Vector3& scale);
 
 		// Local Space
 		Matrix4 GetLocalPositionMatrix() const;

@@ -19,6 +19,18 @@ namespace ZXEngine
 		UpdateColliderTransform();
 	}
 
+	void Transform::Scale(float scale)
+	{
+		localScale *= scale;
+		UpdateColliderTransform();
+	}
+
+	void Transform::Scale(const Vector3& scale)
+	{
+		localScale *= scale;
+		UpdateColliderTransform();
+	}
+
 	Matrix4 Transform::GetLocalPositionMatrix() const
 	{
 		return Math::TranslationMatrix(localPosition);
