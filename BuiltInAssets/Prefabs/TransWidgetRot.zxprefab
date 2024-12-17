@@ -37,16 +37,17 @@
                 {
                     "Type": "Transform",
                     "Position": [0, 0, 0],
-                    "Rotation": [0, 0, 0],
+                    "Rotation": [0, -90, 0],
                     "Scale": [1, 1, 1]
                 },
                 {
-                    "Type": "BoxCollider",
+                    "Type": "Circle2DCollider",
                     "Friction": 0.4,
                     "Bounciness": 0.2,
                     "FrictionCombine": 0,
                     "BounceCombine": 0,
-                    "Size": [1, 1, 1]
+                    "mRadius": 10,
+                    "Normal": [0, 0, -1]
                 }
             ]
         },
@@ -76,16 +77,17 @@
                 {
                     "Type": "Transform",
                     "Position": [0, 0, 0],
-                    "Rotation": [0, 0, 0],
+                    "Rotation": [90, 0, 0],
                     "Scale": [1, 1, 1]
                 },
                 {
-                    "Type": "BoxCollider",
+                    "Type": "Circle2DCollider",
                     "Friction": 0.4,
                     "Bounciness": 0.2,
                     "FrictionCombine": 0,
                     "BounceCombine": 0,
-                    "Size": [1, 1, 1]
+                    "mRadius": 10,
+                    "Normal": [0, 0, -1]
                 }
             ]
         },
@@ -119,12 +121,13 @@
                     "Scale": [1, 1, 1]
                 },
                 {
-                    "Type": "BoxCollider",
+                    "Type": "Circle2DCollider",
                     "Friction": 0.4,
                     "Bounciness": 0.2,
                     "FrictionCombine": 0,
                     "BounceCombine": 0,
-                    "Size": [1, 1, 1]
+                    "mRadius": 10,
+                    "Normal": [0, 0, -1]
                 }
             ]
         }
