@@ -18,6 +18,7 @@ namespace ZXEngine
 	class BoxCollider;
 	class PlaneCollider;
 	class SphereCollider;
+	class Circle2DCollider;
 	class ZRigidBody;
 	class Animator;
 	class SpringJoint;
@@ -49,6 +50,7 @@ namespace ZXEngine
 		void DrawBoxCollider(BoxCollider* component);
 		void DrawPlaneCollider(PlaneCollider* component);
 		void DrawSphereCollider(SphereCollider* component);
+		void DrawCircle2DCollider(Circle2DCollider* component);
 		void DrawRigidBody(ZRigidBody* component);
 		void DrawAnimator(Animator* component);
 		void DrawSpringJoint(SpringJoint* component);
