@@ -18,5 +18,6 @@ namespace ZXEngine
 		virtual void SynchronizeData();
 		virtual void SynchronizeTransform(const Matrix4& transform);
 		virtual bool IntersectRay(const PhysZ::Ray& ray);
+		virtual bool IntersectRay(const PhysZ::Ray& ray, PhysZ::RayHitInfo& hit);
 	};
 }
