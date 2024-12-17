@@ -32,5 +32,10 @@ namespace ZXEngine
 		{
 			RigidBody* mRigidBodies[2];
 		};
+
+		struct RayHitInfo
+		{
+			float distance = 0.0f;
+		};
 	}
 }
