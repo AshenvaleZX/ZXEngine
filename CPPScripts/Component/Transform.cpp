@@ -19,6 +19,12 @@ namespace ZXEngine
 		UpdateColliderTransform();
 	}
 
+	void Transform::Rotate(const Vector3& axis, float angle)
+	{
+		localRotation.Rotate(axis, angle);
+		UpdateColliderTransform();
+	}
+
 	void Transform::Scale(float scale)
 	{
 		localScale *= scale;

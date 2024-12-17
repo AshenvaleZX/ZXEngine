@@ -15,6 +15,7 @@ namespace ZXEngine
 		virtual ComponentType GetInsType();
 
 		void Translate(const Vector3& offset);
+		void Rotate(const Vector3& axis, float angle);
 		void Scale(float scale);
 		void Scale(const Vector3& scale);
 
