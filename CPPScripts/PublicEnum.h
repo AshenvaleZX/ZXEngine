@@ -184,6 +184,7 @@ namespace ZXEngine
 		Cloth,
 		AudioSource,
 		UIButton,
+		Circle2DCollider,
 	};
 
 	enum class FaceCullOption

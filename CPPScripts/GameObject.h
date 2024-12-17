@@ -15,6 +15,7 @@
 #include "Component/Physics/BoxCollider.h"
 #include "Component/Physics/PlaneCollider.h"
 #include "Component/Physics/SphereCollider.h"
+#include "Component/Physics/Circle2DCollider.h"
 #include "Component/Physics/ZRigidBody.h"
 #include "Component/Physics/SpringJoint.h"
 #include "Component/Physics/ZDistanceJoint.h"
@@ -92,6 +93,7 @@ namespace ZXEngine
 		void ParseBoxCollider(json data);
 		void ParsePlaneCollider(json data);
 		void ParseSphereCollider(json data);
+		void ParseCircle2DCollider(json data);
 		void ParseRigidBody(json data);
 		void ParseSpringJoint(json data);
 		void ParseDistanceJoint(json data);

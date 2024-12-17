@@ -187,17 +187,19 @@ namespace ZXEngine
 
 	static const std::multimap<ComponentType, ComponentType> ComponentChildLUT
 	{
-		{ ComponentType::Collider,  ComponentType::BoxCollider    },
-		{ ComponentType::Collider,  ComponentType::PlaneCollider  },
-		{ ComponentType::Collider,  ComponentType::SphereCollider },
-		{ ComponentType::Transform, ComponentType::RectTransform  },
+		{ ComponentType::Collider,  ComponentType::BoxCollider      },
+		{ ComponentType::Collider,  ComponentType::PlaneCollider    },
+		{ ComponentType::Collider,  ComponentType::SphereCollider   },
+		{ ComponentType::Collider,  ComponentType::Circle2DCollider },
+		{ ComponentType::Transform, ComponentType::RectTransform    },
 	};
 
 	static const std::unordered_map<ComponentType, ComponentType> ComponentParentLUT
 	{
-		{ ComponentType::BoxCollider,    ComponentType::Collider  },
-		{ ComponentType::PlaneCollider,  ComponentType::Collider  },
-		{ ComponentType::SphereCollider, ComponentType::Collider  },
-		{ ComponentType::RectTransform,  ComponentType::Transform },
+		{ ComponentType::BoxCollider,      ComponentType::Collider  },
+		{ ComponentType::PlaneCollider,    ComponentType::Collider  },
+		{ ComponentType::SphereCollider,   ComponentType::Collider  },
+		{ ComponentType::Circle2DCollider, ComponentType::Collider  },
+		{ ComponentType::RectTransform,    ComponentType::Transform },
 	};
 }

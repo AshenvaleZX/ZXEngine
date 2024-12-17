@@ -178,6 +178,8 @@ namespace ZXEngine
 				ParsePlaneCollider(component);
 			else if (component["Type"] == "SphereCollider")
 				ParseSphereCollider(component);
+			else if (component["Type"] == "Circle2DCollider")
+				ParseCircle2DCollider(component);
 			else if (component["Type"] == "RigidBody")
 				ParseRigidBody(component);
 			else if (component["Type"] == "SpringJoint")
@@ -487,6 +489,23 @@ namespace ZXEngine
 			rigidBody->mRigidBody->mCollisionVolume = sphereCollider->mCollider;
 			rigidBody->mRigidBody->SetInertiaTensor(sphereCollider->mCollider->GetInertiaTensor(rigidBody->mRigidBody->GetMass()));
 		}
+	}
+
+	void GameObject::ParseCircle2DCollider(json data)
+	{
+		Circle2DCollider* component = AddComponent<Circle2DCollider>();
+
+		mColliderType = PhysZ::ColliderType::Circle2D;
+
+		component->mFriction = data["Friction"];
+		component->mBounciness = data["Bounciness"];
+		component->mFrictionCombine = data["FrictionCombine"];
+		component->mBounceCombine = data["BounceCombine"];
+
+		component->mCollider->mRadius = data["mRadius"];
+		component->mCollider->mLocalNormal = Vector3(data["Normal"][0], data["Normal"][1], data["Normal"][2]);
+
+		component->SynchronizeData();
 	}
 
 	void GameObject::ParseRigidBody(json data)
