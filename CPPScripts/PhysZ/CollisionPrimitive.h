@@ -87,5 +87,18 @@ namespace ZXEngine
 				CollisionSphere* mSphere;
 			};
 		};
+
+		class CollisionCircle2D : public CollisionPrimitive
+		{
+		public:
+			Vector3 mLocalNormal;
+			Vector3 mWorldNormal;
+			float mRadius;
+
+			virtual void SynchronizeTransform(const Matrix4& transform);
+
+			virtual ColliderType GetType() const;
+			virtual Matrix3 GetInertiaTensor(float mass) const;
+		};
 	}
 }

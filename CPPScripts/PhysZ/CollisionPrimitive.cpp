@@ -81,5 +81,22 @@ namespace ZXEngine
 				0.0f, i, 0.0f,
 				0.0f, 0.0f, i);
 		}
+
+		void CollisionCircle2D::SynchronizeTransform(const Matrix4& transform)
+		{
+			mTransform = transform;
+			mWorldNormal = Math::InverseTranspose(Matrix3(transform)) * mLocalNormal;
+		}
+
+		ColliderType CollisionCircle2D::GetType() const
+		{
+			return ColliderType::Circle2D;
+		}
+
+		Matrix3 CollisionCircle2D::GetInertiaTensor(float mass) const
+		{
+			// ÔÝÎ´ÊµÏÖ2DÅö×²
+			return Matrix3();
+		}
 	}
 }

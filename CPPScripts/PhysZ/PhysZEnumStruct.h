@@ -16,6 +16,7 @@ namespace ZXEngine
 			Plane,
 			Sphere,
 			Cloth,
+			Circle2D,
 		};
 
 		enum class CombineType
