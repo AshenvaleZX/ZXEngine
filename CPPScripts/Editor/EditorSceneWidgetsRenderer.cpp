@@ -12,6 +12,7 @@
 #include "../FBOManager.h"
 #include "../GeometryGenerator.h"
 #include "../StaticMesh.h"
+#include "../GlobalData.h"
 
 namespace ZXEngine
 {
@@ -34,7 +35,14 @@ namespace ZXEngine
 		mRenderStateSetting = new RenderStateSetting();
 		mRenderStateSetting->faceCull = false;
 
+		PrefabStruct* prefab = Resources::LoadPrefab("Prefabs/WorldTransWidget.zxprefab", true);
+		mWorldTransWidget = new GameObject(prefab);
+		delete prefab;
+
+		InitWorldTransWidgetCamera();
+
 		mDrawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ForwardRendering, ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
+		mDrawWorldTransCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ForwardRendering, ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 		mDrawSilhouetteCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ForwardRendering, ZX_CLEAR_FRAME_BUFFER_COLOR_BIT);
 
 		FBOManager::GetInstance()->CreateFBO("Silhouette", FrameBufferType::Color);
@@ -59,59 +67,86 @@ namespace ZXEngine
 		{
 			delete material;
 		}
+
+		delete mWorldTransWidget;
+		delete mWorldTransWidgetCamera;
 	}
 
 	void EditorSceneWidgetsRenderer::Render()
 	{
 		auto dataMgr = EditorDataManager::GetInstance();
 
-		if (dataMgr->isGameView || dataMgr->selectedGO == nullptr)
+		if (dataMgr->isGameView)
 			return;
 
 		auto renderAPI = RenderAPI::GetInstance();
 
-		// Selected Object Outline
-		FBOManager::GetInstance()->SwitchFBO("Silhouette");
+		if (dataMgr->selectedGO == nullptr)
+		{
+			renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
-		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_COLOR_BIT);
+			DrawWorldTransWidget();
+		}
+		else
+		{
+			// Selected Object Outline
+			FBOManager::GetInstance()->SwitchFBO("Silhouette");
 
-		size_t idx = 0;
-		DrawObjectSilhouette(dataMgr->selectedGO, idx);
+			renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_COLOR_BIT);
 
-		RenderAPI::GetInstance()->GenerateDrawCommand(mDrawSilhouetteCommandID);
+			size_t idx = 0;
+			DrawObjectSilhouette(dataMgr->selectedGO, idx);
 
-		FBOManager::GetInstance()->SwitchFBO("GameView");
+			RenderAPI::GetInstance()->GenerateDrawCommand(mDrawSilhouetteCommandID);
 
-		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
+			FBOManager::GetInstance()->SwitchFBO("GameView");
 
-		mRenderStateSetting->depthTest = false;
-		mRenderStateSetting->depthWrite = false;
-		renderAPI->SetRenderState(mRenderStateSetting);
+			renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
-		DrawSilhouetteOutline();
+			mRenderStateSetting->depthTest = false;
+			mRenderStateSetting->depthWrite = false;
+			renderAPI->SetRenderState(mRenderStateSetting);
 
-		// Widget
-		mRenderStateSetting->depthTest = dataMgr->mCurTransType != TransformType::Rotation;
-		mRenderStateSetting->depthWrite = dataMgr->mCurTransType != TransformType::Rotation;
-		renderAPI->SetRenderState(mRenderStateSetting);
+			DrawSilhouetteOutline();
 
-		RenderEngineProperties::GetInstance()->SetCameraProperties(EditorCamera::GetInstance()->mCamera);
+			// Widget
+			mRenderStateSetting->depthTest = dataMgr->mCurTransType != TransformType::Rotation;
+			mRenderStateSetting->depthWrite = dataMgr->mCurTransType != TransformType::Rotation;
+			renderAPI->SetRenderState(mRenderStateSetting);
 
-		auto widget = dataMgr->GetTransWidget();
+			RenderEngineProperties::GetInstance()->SetCameraProperties(EditorCamera::GetInstance()->mCamera);
 
-		auto goTrans = dataMgr->selectedGO->GetComponent<Transform>();
-		auto widgetTrans = widget->GetComponent<Transform>();
+			auto widget = dataMgr->GetTransWidget();
 
-		Vector3 camPos = EditorCamera::GetInstance()->mCameraTrans->GetPosition();
-		Vector3 dir = goTrans->GetPosition() - camPos;
-		dir.Normalize();
+			auto goTrans = dataMgr->selectedGO->GetComponent<Transform>();
+			auto widgetTrans = widget->GetComponent<Transform>();
 
-		widgetTrans->SetPosition(camPos + dir * WidgetDis);
-		widgetTrans->SetRotation(goTrans->GetRotation());
+			Vector3 camPos = EditorCamera::GetInstance()->mCameraTrans->GetPosition();
+			Vector3 dir = goTrans->GetPosition() - camPos;
+			dir.Normalize();
 
-		RenderWidget(widget);
+			widgetTrans->SetPosition(camPos + dir * WidgetDis);
+			widgetTrans->SetRotation(goTrans->GetRotation());
 
-		renderAPI->GenerateDrawCommand(mDrawCommandID);
+			RenderWidget(widget);
+
+			renderAPI->GenerateDrawCommand(mDrawCommandID);
+
+			// World Axis Widget
+			DrawWorldTransWidget();
+		}
+	}
+
+	void EditorSceneWidgetsRenderer::InitWorldTransWidgetCamera()
+	{
+		mWorldTransWidgetCamera = new GameObject();
+
+		auto transform = mWorldTransWidgetCamera->AddComponent<Transform>();
+		transform->SetPosition(Vector3(0.0f, 0.0f, -8.0f));
+
+		auto camera = mWorldTransWidgetCamera->AddComponent<Camera>();
+		camera->mAspect = 1.0f;
+		camera->mCameraType = CameraType::EditorCamera;
 	}
 
 	void EditorSceneWidgetsRenderer::RenderWidget(GameObject* obj)
@@ -174,5 +209,31 @@ namespace ZXEngine
 		mSilhouetteOutlineMaterial->Use();
 		mSilhouetteOutlineMaterial->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("Silhouette")->ColorBuffer, 0, false, true);
 		RenderAPI::GetInstance()->Draw(mScreenQuad->VAO);
+	}
+
+	void EditorSceneWidgetsRenderer::DrawWorldTransWidget()
+	{
+		auto renderAPI = RenderAPI::GetInstance();
+
+		mRenderStateSetting->depthTest = true;
+		mRenderStateSetting->depthWrite = true;
+		renderAPI->SetRenderState(mRenderStateSetting);
+
+		const static uint32_t Edge = 10;
+		const static uint32_t Size = 100;
+
+#ifdef ZX_API_OPENGL
+		renderAPI->SetViewPort(Size, Size, GlobalData::srcWidth - Size - Edge, GlobalData::srcHeight - Size - Edge);
+#else
+		renderAPI->SetViewPort(Size, Size, GlobalData::srcWidth - Size - Edge, Edge);
+#endif
+
+		RenderEngineProperties::GetInstance()->SetCameraProperties(mWorldTransWidgetCamera->GetComponent<Camera>());
+
+		mWorldTransWidget->GetComponent<Transform>()->SetRotation(EditorCamera::GetInstance()->mCameraTrans->GetRotation().GetInverse());
+
+		RenderWidget(mWorldTransWidget);
+
+		renderAPI->GenerateDrawCommand(mDrawWorldTransCommandID);
 	}
 }

@@ -22,8 +22,12 @@ namespace ZXEngine
 
 	private:
 		uint32_t mDrawCommandID;
+		uint32_t mDrawWorldTransCommandID;
 		uint32_t mDrawSilhouetteCommandID;
 		RenderStateSetting* mRenderStateSetting;
+
+		GameObject* mWorldTransWidget;
+		GameObject* mWorldTransWidgetCamera;
 
 		StaticMesh* mScreenQuad;
 		Shader* mSilhouetteShader;
@@ -35,8 +39,10 @@ namespace ZXEngine
 		EditorSceneWidgetsRenderer();
 		~EditorSceneWidgetsRenderer();
 
+		void InitWorldTransWidgetCamera();
 		void RenderWidget(GameObject* obj);
 		void DrawObjectSilhouette(GameObject* obj, size_t& idx);
 		void DrawSilhouetteOutline();
+		void DrawWorldTransWidget();
 	};
 }
