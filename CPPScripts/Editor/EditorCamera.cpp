@@ -43,6 +43,14 @@ namespace ZXEngine
 		delete mCameraGO;
 	}
 
+	void EditorCamera::Update()
+	{
+		if (mAutoMove)
+		{
+			AutoMoveToTarget();
+		}
+	}
+
 	void EditorCamera::RigisterHandle(const string& args)
 	{
 		mFirstMove = true;
@@ -70,6 +78,33 @@ namespace ZXEngine
 		eventMgr->RemoveEditorEventHandler(EventType::UPDATE_MOUSE_POS, mMoveMouseHandle);
 		eventMgr->RemoveEditorEventHandler(EventType::KEY_LSHIFT_DOWN,  mAccelerateHandle);
 		eventMgr->RemoveEditorEventHandler(EventType::KEY_LSHIFT_UP,    mDecelerateHandle);
+	}
+
+	void EditorCamera::MoveTo(const GameObject* target)
+	{
+		mAutoMove = true;
+		mCurAutoMoveTime = 0.0f;
+
+		mAutoMoveOriginPos = mCameraTrans->GetPosition();
+		auto pos = target->GetComponent<Transform>()->GetPosition();
+		mAutoMoveTargetPos = pos - mCameraTrans->GetForward() * 30.0f;
+	}
+
+	void EditorCamera::AutoMoveToTarget()
+	{
+		mCurAutoMoveTime += Time::deltaTimeEditor;
+
+		if (mCurAutoMoveTime >= mAutoMoveTime)
+		{
+			mAutoMove = false;
+			mCameraTrans->SetPosition(mAutoMoveTargetPos);
+		}
+		else
+		{
+			float t = mCurAutoMoveTime / mAutoMoveTime;
+			Vector3 pos = Math::Lerp(mAutoMoveOriginPos, mAutoMoveTargetPos, t);
+			mCameraTrans->SetPosition(pos);
+		}
 	}
 
 	void EditorCamera::ClickCallBack(const string& args)

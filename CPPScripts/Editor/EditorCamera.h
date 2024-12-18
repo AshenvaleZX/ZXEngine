@@ -18,6 +18,9 @@ namespace ZXEngine
 		Camera* mCamera;
 		Transform* mCameraTrans;
 
+		void Update();
+		void MoveTo(const GameObject* target);
+
 	private:
 		EditorCamera();
 		~EditorCamera();
@@ -54,6 +57,14 @@ namespace ZXEngine
 
 		void MoveCamera(const Vector3& dir);
 		void RotateCamera(float hOffset, float vOffset);
+
+		bool mAutoMove = false;
+		Vector3 mAutoMoveOriginPos;
+		Vector3 mAutoMoveTargetPos;
+		float mCurAutoMoveTime = 0.0f;
+		const float mAutoMoveTime = 0.3f;
+
+		void AutoMoveToTarget();
 
 		// -------------------------------- Widget Operation --------------------------------
 		AxisType mCurAxis = AxisType::None;

@@ -1,6 +1,7 @@
 #include "EditorDataManager.h"
 #include "EditorGUIManager.h"
 #include "EditorAssetPreviewer.h"
+#include "EditorCamera.h"
 #include "../Time.h"
 #include "../Utils.h"
 #include "../Texture.h"
@@ -106,6 +107,15 @@ namespace ZXEngine
 
 	void EditorDataManager::SetSelectedGO(GameObject* go)
 	{
+		long long curTime = Time::curSysTime_micro;
+		long long dt = curTime - mLastGOClick;
+		mLastGOClick = curTime;
+
+		if (selectedGO == go && dt < mDoubleClickInterval)
+		{
+			EditorCamera::GetInstance()->MoveTo(go);
+		}
+
 		selectedGO = go;
 		DeleteCurAssetInfo();
 		selectedAsset = nullptr;
@@ -114,14 +124,14 @@ namespace ZXEngine
 	void EditorDataManager::SetSelectedAsset(EditorAssetNode* asset)
 	{
 		long long curTime = Time::curSysTime_micro;
-		long long dt = curTime - lastClickTime;
-		lastClickTime = curTime;
+		long long dt = curTime - mLastAssetClick;
+		mLastAssetClick = curTime;
 
 		// 点击同一个Asset
 		if (selectedAsset == asset)
 		{
-			// 如果间隔时间小于300ms，则认为是双击
-			if (dt < 300000)
+			// 双击
+			if (dt < mDoubleClickInterval)
 			{
 
 				switch (asset->type)

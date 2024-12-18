@@ -1,4 +1,5 @@
 #include "EditorGUIManager.h"
+#include "EditorCamera.h"
 #include "ImGuiTextureManager.h"
 #include "EditorDialogBoxManager.h"
 #include "EditorSceneWidgetsRenderer.h"
@@ -40,6 +41,7 @@ namespace ZXEngine
 
 	void EditorGUIManager::Render()
 	{
+		EditorCamera::GetInstance()->Update();
 		EditorSceneWidgetsRenderer::GetInstance()->Render();
 
 		mInstance->BeginEditorRender();

@@ -45,7 +45,7 @@ namespace ZXEngine
 			ImGui::TreeNodeEx((void*)(intptr_t)nodeIdx, nodeFlags, gameObject->name.c_str());
 			if (!gameObject->IsActive()) ImGui::PopStyleColor();
 
-			if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+			if (ImGui::IsItemClicked())
 			{
 				selectedGO = gameObject;
 				EditorDataManager::GetInstance()->SetSelectedGO(gameObject);
@@ -58,7 +58,7 @@ namespace ZXEngine
 			bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)nodeIdx, nodeFlags, gameObject->name.c_str());
 			if (!gameObject->IsActive()) ImGui::PopStyleColor();
 
-			if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+			if (ImGui::IsItemClicked())
 			{
 				selectedGO = gameObject;
 				EditorDataManager::GetInstance()->SetSelectedGO(gameObject);

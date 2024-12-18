@@ -58,7 +58,9 @@ namespace ZXEngine
 
 	private:
 		std::mutex logMutex;
-		long long lastClickTime = 0;
+		long long mLastGOClick = 0;
+		long long mLastAssetClick = 0;
+		const long long mDoubleClickInterval = 300'000LL; // 300ms
 
 		EditorDataManager() = default;
 		~EditorDataManager();
