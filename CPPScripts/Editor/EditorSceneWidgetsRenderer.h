@@ -3,6 +3,9 @@
 
 namespace ZXEngine
 {
+	class Shader;
+	class Material;
+	class StaticMesh;
 	class GameObject;
 	class RenderStateSetting;
 	class EditorSceneWidgetsRenderer
@@ -19,11 +22,21 @@ namespace ZXEngine
 
 	private:
 		uint32_t mDrawCommandID;
+		uint32_t mDrawSilhouetteCommandID;
 		RenderStateSetting* mRenderStateSetting;
+
+		StaticMesh* mScreenQuad;
+		Shader* mSilhouetteShader;
+		Shader* mSilhouetteOutlineShader;
+		
+		Material* mSilhouetteOutlineMaterial;
+		vector<Material*> mSilhouetteMaterials;
 
 		EditorSceneWidgetsRenderer();
 		~EditorSceneWidgetsRenderer();
 
-		void RenderObject(GameObject* obj);
+		void RenderWidget(GameObject* obj);
+		void DrawObjectSilhouette(GameObject* obj, size_t& idx);
+		void DrawSilhouetteOutline();
 	};
 }

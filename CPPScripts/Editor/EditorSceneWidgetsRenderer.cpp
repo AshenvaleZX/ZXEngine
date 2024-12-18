@@ -9,6 +9,9 @@
 #include "../Resources.h"
 #include "../RenderStateSetting.h"
 #include "../ZShader.h"
+#include "../FBOManager.h"
+#include "../GeometryGenerator.h"
+#include "../StaticMesh.h"
 
 namespace ZXEngine
 {
@@ -32,6 +35,15 @@ namespace ZXEngine
 		mRenderStateSetting->faceCull = false;
 
 		mDrawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ForwardRendering, ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
+		mDrawSilhouetteCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ForwardRendering, ZX_CLEAR_FRAME_BUFFER_COLOR_BIT);
+
+		FBOManager::GetInstance()->CreateFBO("Silhouette", FrameBufferType::Color);
+
+		mScreenQuad = GeometryGenerator::CreateScreenQuad();
+
+		mSilhouetteShader = new Shader(Resources::GetAssetFullPath("Shaders/Silhouette.zxshader", true), FrameBufferType::Color);
+		mSilhouetteOutlineShader = new Shader(Resources::GetAssetFullPath("Shaders/SilhouetteOutline.zxshader", true), FrameBufferType::Normal);
+		mSilhouetteOutlineMaterial = new Material(mSilhouetteOutlineShader);
 
 		EditorDataManager::GetInstance()->InitWidgets();
 	}
@@ -39,6 +51,14 @@ namespace ZXEngine
 	EditorSceneWidgetsRenderer::~EditorSceneWidgetsRenderer()
 	{
 		delete mRenderStateSetting;
+		delete mSilhouetteShader;
+		delete mSilhouetteOutlineShader;
+		delete mSilhouetteOutlineMaterial;
+
+		for (auto material : mSilhouetteMaterials)
+		{
+			delete material;
+		}
 	}
 
 	void EditorSceneWidgetsRenderer::Render()
@@ -50,9 +70,29 @@ namespace ZXEngine
 
 		auto renderAPI = RenderAPI::GetInstance();
 
+		// Selected Object Outline
+		FBOManager::GetInstance()->SwitchFBO("Silhouette");
+
+		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_COLOR_BIT);
+
+		size_t idx = 0;
+		DrawObjectSilhouette(dataMgr->selectedGO, idx);
+
+		RenderAPI::GetInstance()->GenerateDrawCommand(mDrawSilhouetteCommandID);
+
+		FBOManager::GetInstance()->SwitchFBO("GameView");
+
 		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
+		mRenderStateSetting->depthTest = false;
+		mRenderStateSetting->depthWrite = false;
+		renderAPI->SetRenderState(mRenderStateSetting);
+
+		DrawSilhouetteOutline();
+
+		// Widget
 		mRenderStateSetting->depthTest = dataMgr->mCurTransType != TransformType::Rotation;
+		mRenderStateSetting->depthWrite = dataMgr->mCurTransType != TransformType::Rotation;
 		renderAPI->SetRenderState(mRenderStateSetting);
 
 		RenderEngineProperties::GetInstance()->SetCameraProperties(EditorCamera::GetInstance()->mCamera);
@@ -69,12 +109,12 @@ namespace ZXEngine
 		widgetTrans->SetPosition(camPos + dir * WidgetDis);
 		widgetTrans->SetRotation(goTrans->GetRotation());
 
-		RenderObject(widget);
+		RenderWidget(widget);
 
 		renderAPI->GenerateDrawCommand(mDrawCommandID);
 	}
 
-	void EditorSceneWidgetsRenderer::RenderObject(GameObject* obj)
+	void EditorSceneWidgetsRenderer::RenderWidget(GameObject* obj)
 	{
 		auto engineProperties = RenderEngineProperties::GetInstance();
 
@@ -96,7 +136,43 @@ namespace ZXEngine
 
 		for (auto child : obj->children)
 		{
-			RenderObject(child);
+			RenderWidget(child);
 		}
+	}
+
+	void EditorSceneWidgetsRenderer::DrawObjectSilhouette(GameObject* obj, size_t& idx)
+	{
+		auto renderer = obj->GetComponent<MeshRenderer>();
+		if (renderer != nullptr)
+		{
+			if (mSilhouetteMaterials.size() < idx + 1)
+			{
+				mSilhouetteMaterials.push_back(new Material(mSilhouetteShader));
+			}
+			auto material = mSilhouetteMaterials[idx];
+
+			material->shader->Use();
+			material->data->Use();
+
+			RenderEngineProperties::GetInstance()->SetRendererProperties(renderer);
+
+			material->SetEngineProperties();
+
+			renderer->Draw();
+
+			idx++;
+		}
+
+		for (auto child : obj->children)
+		{
+			DrawObjectSilhouette(child, idx);
+		}
+	}
+
+	void EditorSceneWidgetsRenderer::DrawSilhouetteOutline()
+	{
+		mSilhouetteOutlineMaterial->Use();
+		mSilhouetteOutlineMaterial->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO("Silhouette")->ColorBuffer, 0, false, true);
+		RenderAPI::GetInstance()->Draw(mScreenQuad->VAO);
 	}
 }
