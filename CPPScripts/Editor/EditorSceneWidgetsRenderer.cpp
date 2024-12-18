@@ -94,6 +94,8 @@ namespace ZXEngine
 
 			renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_COLOR_BIT);
 
+			RenderEngineProperties::GetInstance()->SetCameraProperties(EditorCamera::GetInstance()->mCamera);
+
 			size_t idx = 0;
 			DrawObjectSilhouette(dataMgr->selectedGO, idx);
 
@@ -113,8 +115,6 @@ namespace ZXEngine
 			mRenderStateSetting->depthTest = dataMgr->mCurTransType != TransformType::Rotation;
 			mRenderStateSetting->depthWrite = dataMgr->mCurTransType != TransformType::Rotation;
 			renderAPI->SetRenderState(mRenderStateSetting);
-
-			RenderEngineProperties::GetInstance()->SetCameraProperties(EditorCamera::GetInstance()->mCamera);
 
 			auto widget = dataMgr->GetTransWidget();
 
