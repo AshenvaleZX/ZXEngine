@@ -91,11 +91,18 @@ namespace ZXEngine
 	{
 		return x * x + y * y + z * z + w * w;
 	}
+
+	// 参考: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
 	Vector3 Quaternion::GetEulerAngles() const
 	{
-		// 参考: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
-		float sinp = sqrt(1 + 2 * (w * x - y * z));
-		float cosp = sqrt(1 - 2 * (w * x - y * z));
+		// 理论上这里的最小值为0，但是由于浮点数精度问题，可能会出现负数导致sqrt异常，所以这里做了一个保护
+		float sinpSquare = 1 + 2 * (w * x - y * z);
+		float cospSquare = 1 - 2 * (w * x - y * z);
+		sinpSquare = Math::Max(sinpSquare, 0.0f);
+		cospSquare = Math::Max(cospSquare, 0.0f);
+
+		float sinp = sqrt(sinpSquare);
+		float cosp = sqrt(cospSquare);
 		float pitch = 2 * atan2(sinp, cosp) - Math::PI / 2.0f;
 
 		float siny_cosp = 2 * (w * y + z * x);
@@ -239,9 +246,9 @@ namespace ZXEngine
 		return *this;
 	}
 
+	// 参考: https://www.mathworks.com/help/aeroblks/quaternionmultiplication.html
 	Quaternion Quaternion::operator* (const Quaternion& q) const
 	{
-		// 参考: https://www.mathworks.com/help/aeroblks/quaternionmultiplication.html
 		float qx =  q.x * w - q.y * z + q.z * y + q.w * x;
 		float qy =  q.x * z + q.y * w - q.z * x + q.w * y;
 		float qz = -q.x * y + q.y * x + q.z * w + q.w * z;
