@@ -1564,6 +1564,24 @@ namespace ZXEngine
             renderPassInfo.pClearValues = VK_NULL_HANDLE;
             renderPassInfo.clearValueCount = 0;
         }
+        else if (curFBO->renderPassType == RenderPassType::Color)
+        {
+            auto& clearInfo = curFBO->clearInfo;
+
+            if (curDrawCommandObj->clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
+            {
+                VkClearValue clearValue = {};
+                clearValue.color = { curFBO->clearInfo.color.r, curFBO->clearInfo.color.g, curFBO->clearInfo.color.b, curFBO->clearInfo.color.a };
+                VkClearAttachment clearColorAttachment = {};
+                clearColorAttachment.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                clearColorAttachment.colorAttachment = 0;
+                clearColorAttachment.clearValue = clearValue;
+                clearAttachments.push_back(clearColorAttachment);
+            }
+
+            renderPassInfo.pClearValues = VK_NULL_HANDLE;
+            renderPassInfo.clearValueCount = 0;
+        }
         else if (curFBO->renderPassType == RenderPassType::ShadowMap || curFBO->renderPassType == RenderPassType::ShadowCubeMap)
         {
             auto& clearInfo = curFBO->clearInfo;
@@ -1594,7 +1612,7 @@ namespace ZXEngine
         }
         vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-        if (curFBO->renderPassType == RenderPassType::Normal && clearAttachments.size() > 0)
+        if (clearAttachments.size() > 0)
         {
             VkClearRect clearRect = {};
             clearRect.baseArrayLayer = 0;
