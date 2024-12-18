@@ -126,7 +126,7 @@ namespace ZXEngine
 				ImGui::PushStyleColor(ImGuiCol_Text, selectTextColor);
 				ImGui::PushStyleColor(ImGuiCol_Button, selectBtnColor);
 			}
-			if (ImGui::Button("=", buttonSize))
+			if (ImGui::Button("T", buttonSize))
 			{
 				EditorDataManager::GetInstance()->mCurTransType = TransformType::Position;
 			}
@@ -144,7 +144,7 @@ namespace ZXEngine
 				ImGui::PushStyleColor(ImGuiCol_Text, selectTextColor);
 				ImGui::PushStyleColor(ImGuiCol_Button, selectBtnColor);
 			}
-			if (ImGui::Button("O", buttonSize))
+			if (ImGui::Button("R", buttonSize))
 			{
 				EditorDataManager::GetInstance()->mCurTransType = TransformType::Rotation;
 			}
@@ -162,7 +162,7 @@ namespace ZXEngine
 				ImGui::PushStyleColor(ImGuiCol_Text, selectTextColor);
 				ImGui::PushStyleColor(ImGuiCol_Button, selectBtnColor);
 			}
-			if (ImGui::Button("+", buttonSize))
+			if (ImGui::Button("S", buttonSize))
 			{
 				EditorDataManager::GetInstance()->mCurTransType = TransformType::Scale;
 			}
