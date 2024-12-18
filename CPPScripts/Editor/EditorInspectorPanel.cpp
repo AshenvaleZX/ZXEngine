@@ -63,6 +63,8 @@ namespace ZXEngine
 						DrawPlaneCollider(static_cast<PlaneCollider*>(iter.second));
 					else if (type == ComponentType::SphereCollider)
 						DrawSphereCollider(static_cast<SphereCollider*>(iter.second));
+					else if (type == ComponentType::Circle2DCollider)
+						DrawCircle2DCollider(static_cast<Circle2DCollider*>(iter.second));
 					else if (type == ComponentType::RigidBody)
 						DrawRigidBody(static_cast<ZRigidBody*>(iter.second));
 					else if (type == ComponentType::Animator)
@@ -285,34 +287,55 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("Transform"))
 			return;
 
+		bool xChange = false, yChange = false, zChange = false;
+
 		ImGui::PushItemWidth(60);
 		Vector3 position = component->GetLocalPosition();
 		ImGui::Text("Position    ");
 		ImGui::SameLine(); ImGui::Text("X");
-		ImGui::SameLine(); ImGui::DragFloat("##posX", &position.x, 0.15f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); xChange = ImGui::DragFloat("##posX", &position.x, 0.15f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Y");
-		ImGui::SameLine(); ImGui::DragFloat("##posY", &position.y, 0.15f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); yChange = ImGui::DragFloat("##posY", &position.y, 0.15f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Z");
-		ImGui::SameLine(); ImGui::DragFloat("##posZ", &position.z, 0.15f, -FLT_MAX, FLT_MAX);
-		component->SetLocalPosition(position);
+		ImGui::SameLine(); zChange = ImGui::DragFloat("##posZ", &position.z, 0.15f, -FLT_MAX, FLT_MAX);
+		if (xChange || yChange || zChange)
+			component->SetLocalPosition(position);
+
 		Vector3 euler = component->GetLocalEulerAngles();
+		Vector3 eulerOrigin = euler;
 		ImGui::Text("Rotation    ");
 		ImGui::SameLine(); ImGui::Text("X");
-		ImGui::SameLine(); ImGui::DragFloat("##rotX", &euler.x, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); xChange = ImGui::DragFloat("##rotX", &euler.x, 0.25f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Y");
-		ImGui::SameLine(); ImGui::DragFloat("##rotY", &euler.y, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); yChange = ImGui::DragFloat("##rotY", &euler.y, 0.25f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Z");
-		ImGui::SameLine(); ImGui::DragFloat("##rotZ", &euler.z, 0.25f, -FLT_MAX, FLT_MAX);
-		component->SetLocalEulerAngles(euler);
+		ImGui::SameLine(); zChange = ImGui::DragFloat("##rotZ", &euler.z, 0.25f, -FLT_MAX, FLT_MAX);
+		if (xChange)
+		{
+			float delta = Math::Deg2Rad(euler.x - eulerOrigin.x);
+			component->Rotate(component->GetRight(), delta);
+		}
+		if (yChange)
+		{
+			float delta = Math::Deg2Rad(euler.y - eulerOrigin.y);
+			component->Rotate(component->GetUp(), delta);
+		}
+		if (zChange)
+		{
+			float delta = Math::Deg2Rad(euler.z - eulerOrigin.z);
+			component->Rotate(component->GetForward(), delta);
+		}
+
 		Vector3 scale = component->GetLocalScale();
 		ImGui::Text("Scale       ");
 		ImGui::SameLine(); ImGui::Text("X");
-		ImGui::SameLine(); ImGui::DragFloat("##scaX", &scale.x, 0.01f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); xChange = ImGui::DragFloat("##scaX", &scale.x, 0.01f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Y");
-		ImGui::SameLine(); ImGui::DragFloat("##scaY", &scale.y, 0.01f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); yChange = ImGui::DragFloat("##scaY", &scale.y, 0.01f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Z");
-		ImGui::SameLine(); ImGui::DragFloat("##scaZ", &scale.z, 0.01f, -FLT_MAX, FLT_MAX);
-		component->SetLocalScale(scale);
+		ImGui::SameLine(); zChange = ImGui::DragFloat("##scaZ", &scale.z, 0.01f, -FLT_MAX, FLT_MAX);
+		if (xChange || yChange || zChange)
+			component->SetLocalScale(scale);
 		ImGui::PopItemWidth();
 	}
 
@@ -337,6 +360,7 @@ namespace ZXEngine
 			component->SetLocalRectPosition(position);
 		
 		Vector3 euler = component->GetLocalEulerAngles();
+		Vector3 eulerOrigin = euler;
 		ImGui::Text("Rotation    ");
 		ImGui::SameLine(); ImGui::Text("X");
 		ImGui::SameLine(); xChange = ImGui::DragFloat("##rotX", &euler.x, 0.25f, -FLT_MAX, FLT_MAX);
@@ -344,8 +368,21 @@ namespace ZXEngine
 		ImGui::SameLine(); yChange = ImGui::DragFloat("##rotY", &euler.y, 0.25f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Z");
 		ImGui::SameLine(); zChange = ImGui::DragFloat("##rotZ", &euler.z, 0.25f, -FLT_MAX, FLT_MAX);
-		if (xChange || yChange || zChange)
-			component->SetLocalEulerAngles(euler);
+		if (xChange)
+		{
+			float delta = Math::Deg2Rad(euler.x - eulerOrigin.x);
+			component->Rotate(component->GetRight(), delta);
+		}
+		if (yChange)
+		{
+			float delta = Math::Deg2Rad(euler.y - eulerOrigin.y);
+			component->Rotate(component->GetUp(), delta);
+		}
+		if (zChange)
+		{
+			float delta = Math::Deg2Rad(euler.z - eulerOrigin.z);
+			component->Rotate(component->GetForward(), delta);
+		}
 
 		Vector3 scale = component->GetLocalScale();
 		ImGui::Text("Scale       ");
