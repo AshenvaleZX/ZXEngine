@@ -23,9 +23,6 @@ namespace ZXEngine
 		// 直接写入到默认的屏幕Buffer
 		if (name == ScreenBuffer)
 		{
-#ifdef ZX_EDITOR
-			RenderAPI::GetInstance()->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight, ProjectSetting::hierarchyWidth, ProjectSetting::projectHeight);
-#endif
 			RenderAPI::GetInstance()->SwitchFrameBuffer(UINT32_MAX);
 			return;
 		}

@@ -125,6 +125,7 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset, unsigned int yOffset)
 	{
+		// 0µãÔÚ×óÏÂ½Ç
 		glViewport(xOffset, yOffset, width, height);
 		CheckError();
 	}

@@ -315,13 +315,9 @@ namespace ZXEngine
 	{
 		mViewPortInfo.width = width;
 		mViewPortInfo.height = height;
+		// 0点在左上角
 		mViewPortInfo.xOffset = xOffset;
-
-		// 传入的参数是按0点在左下角的标准来的，Vulkan的0点在左上角，如果有偏移(编辑器模式)的话，Y轴偏移量要重新计算一下
-		if (xOffset == 0 && yOffset == 0)
-			mViewPortInfo.yOffset = yOffset;
-		else
-			mViewPortInfo.yOffset = ProjectSetting::srcHeight - height - yOffset;
+		mViewPortInfo.yOffset = yOffset;
 	}
 
 	void RenderAPID3D12::WaitForRenderFinish()
