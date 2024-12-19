@@ -94,7 +94,8 @@ namespace ZXEngine
 
 			renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_COLOR_BIT);
 
-			RenderEngineProperties::GetInstance()->SetCameraProperties(EditorCamera::GetInstance()->mCamera);
+			auto editorCamera = EditorCamera::GetInstance();
+			RenderEngineProperties::GetInstance()->SetCameraProperties(editorCamera->mCamera);
 
 			size_t idx = 0;
 			DrawObjectSilhouette(dataMgr->selectedGO, idx);
@@ -121,19 +122,115 @@ namespace ZXEngine
 			auto goTrans = dataMgr->selectedGO->GetComponent<Transform>();
 			auto widgetTrans = widget->GetComponent<Transform>();
 
-			Vector3 camPos = EditorCamera::GetInstance()->mCameraTrans->GetPosition();
+			Vector3 camPos = editorCamera->mCameraTrans->GetPosition();
 			Vector3 dir = goTrans->GetPosition() - camPos;
 			dir.Normalize();
 
 			widgetTrans->SetPosition(camPos + dir * WidgetDis);
 			widgetTrans->SetRotation(goTrans->GetRotation());
 
+			if (dataMgr->mCurTransType == TransformType::Rotation)
+			{
+				for (auto& iter : dataMgr->mTransRotWidgetTurnplates)
+				{
+					iter.second->GetComponent<MeshRenderer>()->mMatetrial->SetScalar("_Angle", iter.first == editorCamera->GetCurAxis() ? editorCamera->GetRotationRadian() : 0.0f);
+				}
+			}
 			RenderWidget(widget);
 
 			renderAPI->GenerateDrawCommand(mDrawCommandID);
 
 			// World Axis Widget
 			DrawWorldTransWidget();
+		}
+	}
+
+	void EditorSceneWidgetsRenderer::UpdateWidgetColor(bool isSelect)
+	{
+		auto dataMgr = EditorDataManager::GetInstance();
+		AxisType axisType = EditorCamera::GetInstance()->GetCurAxis();
+
+		if (dataMgr->mCurTransType == TransformType::Rotation)
+		{
+			for (auto& iter : dataMgr->mTransRotWidgetTurnplates)
+			{
+				Vector4 color;
+
+				if (isSelect)
+				{
+					if (iter.first == axisType)
+					{
+						color = Vector4(1.0f, 1.0f, 0.0f, 1.0f);
+					}
+					else
+					{
+						switch (iter.first)
+						{
+						case AxisType::X:
+							color = Vector4(1.0f, 0.0f, 0.0f, 0.5f);
+							break;
+						case AxisType::Y:
+							color = Vector4(0.0f, 1.0f, 0.0f, 0.5f);
+							break;
+						case AxisType::Z:
+							color = Vector4(0.0f, 0.0f, 1.0f, 0.5f);
+							break;
+						}
+					}
+				}
+				else
+				{
+					switch (iter.first)
+					{
+					case AxisType::X:
+						color = Vector4(1.0f, 0.0f, 0.0f, 0.9f);
+						break;
+					case AxisType::Y:
+						color = Vector4(0.0f, 1.0f, 0.0f, 0.9f);
+						break;
+					case AxisType::Z:
+						color = Vector4(0.0f, 0.0f, 1.0f, 0.9f);
+						break;
+					}
+				}
+
+				iter.second->GetComponent<MeshRenderer>()->mMatetrial->SetVector("_Color", color, true);
+			}
+		}
+		else
+		{
+			WidgetOrientationMap& axisGOs = dataMgr->mCurTransType == TransformType::Position ? dataMgr->mTransPosWidgetOrientations : dataMgr->mTransScaleWidgetOrientations;
+
+			for (auto& iter : axisGOs)
+			{
+				Vector4 color;
+
+				if (isSelect)
+				{
+					if (iter.first == axisType)
+						color = Vector4(1.0f, 1.0f, 0.0f, 1.0f);
+					else
+						color = Vector4(0.8f, 0.8f, 0.8f, 1.0f);
+				}
+				else
+				{
+					switch (iter.first)
+					{
+					case AxisType::X:
+						color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+						break;
+					case AxisType::Y:
+						color = Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+						break;
+					case AxisType::Z:
+						color = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+						break;
+					}
+				}
+
+				iter.second.first->GetComponent<MeshRenderer>()->mMatetrial->SetVector("_Color", color, true);
+				iter.second.second->GetComponent<MeshRenderer>()->mMatetrial->SetVector("_Color", color, true);
+			}
 		}
 	}
 

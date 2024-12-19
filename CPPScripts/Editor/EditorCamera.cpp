@@ -1,5 +1,6 @@
 #include "EditorCamera.h"
 #include "EditorDataManager.h"
+#include "EditorSceneWidgetsRenderer.h"
 #include "../GameObject.h"
 #include "../EventManager.h"
 #include "../Time.h"
@@ -151,11 +152,15 @@ namespace ZXEngine
 			}
 		}
 
+		EditorSceneWidgetsRenderer::GetInstance()->UpdateWidgetColor(true);
+
 		mOperateWidgetHandle = EventManager::GetInstance()->AddEditorEventHandler(EventType::UPDATE_MOUSE_POS, std::bind(&EditorCamera::OperateWidgetCallBack, this, std::placeholders::_1));
 	}
 
-	void EditorCamera::ReleaseCallBack(const string& args) const
+	void EditorCamera::ReleaseCallBack(const string& args)
 	{
+		mRotationRadian = 0.0f;
+		EditorSceneWidgetsRenderer::GetInstance()->UpdateWidgetColor(false);
 		EventManager::GetInstance()->RemoveEditorEventHandler(EventType::UPDATE_MOUSE_POS, mOperateWidgetHandle);
 	}
 
@@ -192,6 +197,11 @@ namespace ZXEngine
 			Vector2 clockWiseDir(centerDir.y, -centerDir.x);
 			float moveDis = Math::Dot(deltaScreenPos, clockWiseDir);
 
+			// 这里轴的正负方向不影响旋转操作，因为下一步会根据相机视角与所选取的轴方向来调整旋转的方向
+			// 所以这里z轴取反后旋转操作依然是正确的，因为z轴取反后相当于Roate参数的axis和angle同时取反了，这对于旋转操作是等效的
+			// 这个取反的意义是让angle的正负发生变化，进而影响mRotationRadian数值的正负
+			// 而mRotationRadian会作为Shader参数，影响绘制旋转操作组件的已旋转角度扇形区域
+			// 如果这里不取反，在操作z轴旋转时的渲染效果和操作xy轴时的就会不一致
 			Vector3 axis;
 			switch (mCurAxis)
 			{
@@ -202,13 +212,16 @@ namespace ZXEngine
 				axis = goTrans->GetUp();
 				break;
 			case ZXEngine::AxisType::Z:
-				axis = goTrans->GetForward();
+				axis = -goTrans->GetForward();
 				break;
 			}
 
+			// 根据视角调整旋转方向，保证操作逻辑的一致性
 			float angle = moveDis * 0.01f;
 			if (Math::Dot(axis, goDir) > 0.0f)
 				angle = -angle;
+
+			mRotationRadian += angle;
 
 			goTrans->Rotate(axis, angle);
 		}

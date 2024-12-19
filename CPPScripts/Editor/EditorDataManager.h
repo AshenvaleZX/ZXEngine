@@ -10,6 +10,7 @@ namespace ZXEngine
 	using WidgetColliderMap = unordered_map<AxisType, BoxCollider*>;
 	using RotWidgetColliderMap = unordered_map<AxisType, Circle2DCollider*>;
 	using WidgetOrientationMap = unordered_map<AxisType, pair<GameObject*, GameObject*>>;
+	using RotWidgetTurnplateMap = unordered_map<AxisType, GameObject*>;
 
 	class EditorDataManager
 	{
@@ -48,7 +49,9 @@ namespace ZXEngine
 		WidgetOrientationMap mTransPosWidgetOrientations;
 		WidgetColliderMap mTransScaleWidgetColliders;
 		WidgetOrientationMap mTransScaleWidgetOrientations;
+
 		RotWidgetColliderMap mTransRotWidgetColliders;
+		RotWidgetTurnplateMap mTransRotWidgetTurnplates;
 
 		void InitWidgets();
 		void AddLog(LogType type, string msg);
@@ -68,6 +71,6 @@ namespace ZXEngine
 		void DeleteCurAssetInfo();
 		string GetTextFilePreview(string path);
 		void RecordWidgetAxisInfo(WidgetColliderMap& colliders, WidgetOrientationMap& orientations, GameObject* widget);
-		void RecordRotWidgetAxisInfo(RotWidgetColliderMap& colliders, GameObject* widget);
+		void RecordRotWidgetAxisInfo(RotWidgetColliderMap& colliders, RotWidgetTurnplateMap& turnplates, GameObject* widget);
 	};
 }

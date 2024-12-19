@@ -20,6 +20,8 @@ namespace ZXEngine
 
 		void Update();
 		void MoveTo(const GameObject* target);
+		AxisType GetCurAxis() const { return mCurAxis; }
+		float GetRotationRadian() const { return mRotationRadian; }
 
 	private:
 		EditorCamera();
@@ -69,11 +71,12 @@ namespace ZXEngine
 		// -------------------------------- Widget Operation --------------------------------
 		AxisType mCurAxis = AxisType::None;
 		Vector2 mLastWidgetScreenPos;
+		float mRotationRadian = 0.0f;
 
 		uint32_t mClickHandle = 0;
 		void ClickCallBack(const string& args);
 		uint32_t mReleaseHandle = 0;
-		void ReleaseCallBack(const string& args) const;
+		void ReleaseCallBack(const string& args);
 		uint32_t mOperateWidgetHandle = 0;
 		void OperateWidgetCallBack(const string& args);
 	};

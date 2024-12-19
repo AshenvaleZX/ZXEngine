@@ -51,7 +51,7 @@ namespace ZXEngine
 		prefab = Resources::LoadPrefab("Prefabs/TransWidgetRot.zxprefab", true);
 		mTransRotWidget = new GameObject(prefab);
 		delete prefab;
-		RecordRotWidgetAxisInfo(mTransRotWidgetColliders, mTransRotWidget);
+		RecordRotWidgetAxisInfo(mTransRotWidgetColliders, mTransRotWidgetTurnplates, mTransRotWidget);
 
 		prefab = Resources::LoadPrefab("Prefabs/TransWidgetScale.zxprefab", true);
 		mTransScaleWidget = new GameObject(prefab);
@@ -352,7 +352,7 @@ namespace ZXEngine
 		}
 	}
 
-	void EditorDataManager::RecordRotWidgetAxisInfo(RotWidgetColliderMap& colliders, GameObject* widget)
+	void EditorDataManager::RecordRotWidgetAxisInfo(RotWidgetColliderMap& colliders, RotWidgetTurnplateMap& turnplates, GameObject* widget)
 	{
 		auto collider = widget->GetComponent<Circle2DCollider>();
 
@@ -365,10 +365,19 @@ namespace ZXEngine
 			else if (widget->name == "ZCollider")
 				colliders[AxisType::Z] = collider;
 		}
+		else
+		{
+			if (widget->name == "XTurnplate")
+				turnplates[AxisType::X] = widget;
+			else if (widget->name == "YTurnplate")
+				turnplates[AxisType::Y] = widget;
+			else if (widget->name == "ZTurnplate")
+				turnplates[AxisType::Z] = widget;
+		}
 
 		for (auto& child : widget->children)
 		{
-			RecordRotWidgetAxisInfo(colliders, child);
+			RecordRotWidgetAxisInfo(colliders, turnplates, child);
 		}
 	}
 }

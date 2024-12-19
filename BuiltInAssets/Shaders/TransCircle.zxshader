@@ -60,6 +60,7 @@ Fragment
     {
         using ENGINE_Camera_Pos
         vec4 _Color
+        float _Angle
     }
 
     Program
@@ -67,6 +68,19 @@ Fragment
         void main()
         {
             float transparency = 0.2;
+            vec2 curVec = vec2(LocalPos.x, LocalPos.y);
+            curVec = normalize(curVec);
+
+            float angle = acos(curVec.y);
+            if ((curVec.x > 0.0 && _Angle > 0.0) || curVec.x < 0.0 && _Angle < 0.0)
+            {
+                angle = 2.0 * 3.1415926 - angle;
+            }
+            if (angle < abs(_Angle))
+            {
+                transparency = 0.6;
+            }
+            
             // Radius 0.5, Radius^2 0.25
             if (LocalPos.x * LocalPos.x + LocalPos.y * LocalPos.y > 0.2)
             {
@@ -75,7 +89,7 @@ Fragment
                 float dotProd = dot(pDir, cDir);
                 if (dotProd > 0.0)
                 {
-                    transparency = 0.9;
+                    transparency = _Color.a;
                 }
             }
             FragColor = vec4(_Color.rgb, transparency);

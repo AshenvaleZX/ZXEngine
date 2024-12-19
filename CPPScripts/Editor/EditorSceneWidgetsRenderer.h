@@ -19,6 +19,7 @@ namespace ZXEngine
 
 	public:
 		void Render();
+		void UpdateWidgetColor(bool isSelect);
 
 	private:
 		uint32_t mDrawCommandID;
