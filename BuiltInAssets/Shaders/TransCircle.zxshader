@@ -80,7 +80,7 @@ Fragment
             {
                 transparency = 0.6;
             }
-            
+
             // Radius 0.5, Radius^2 0.25
             if (LocalPos.x * LocalPos.x + LocalPos.y * LocalPos.y > 0.2)
             {
@@ -92,6 +92,11 @@ Fragment
                     transparency = _Color.a;
                 }
             }
+            else if (angle > abs(_Angle))
+            {
+                transparency = 0.0;
+            }
+
             FragColor = vec4(_Color.rgb, transparency);
         }
     }
