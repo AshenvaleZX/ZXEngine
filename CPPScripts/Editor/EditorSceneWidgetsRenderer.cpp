@@ -147,9 +147,11 @@ namespace ZXEngine
 
 	void EditorSceneWidgetsRenderer::UpdateWidgetColor(bool isSelect)
 	{
-		auto dataMgr = EditorDataManager::GetInstance();
 		AxisType axisType = EditorCamera::GetInstance()->GetCurAxis();
+		if (axisType == AxisType::None)
+			return;
 
+		auto dataMgr = EditorDataManager::GetInstance();
 		if (dataMgr->mCurTransType == TransformType::Rotation)
 		{
 			for (auto& iter : dataMgr->mTransRotWidgetTurnplates)
