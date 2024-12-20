@@ -51,11 +51,14 @@ namespace ZXEngine
 		string outputFinalPath = path.parent_path().string() + "\\" + path.stem().string() + ".spv";
 		string stage = Utils::GetFileExtension(path.stem().string());
 
-#ifdef ZX_PLATFORM_WINDOWS
+#if defined(ZX_PLATFORM_WINDOWS)
 		string command = "..\\..\\..\\Tools\\glslangValidator.exe -V " + Utils::ConvertPathToWindowsFormat(filePath) + 
 			" --target-env spirv1.6 -S " + stage + " -o " + Utils::ConvertPathToWindowsFormat(outputFinalPath);
-#else
-		string command = "../../../Tools/glslang -V " + filePath +
+#elif defined(ZX_PLATFORM_MACOS)
+		string command = "../../../Tools/glslang_macOS -V " + filePath +
+			" --target-env spirv1.6 -S " + stage + " -o " + outputFinalPath;
+#elif defined(ZX_PLATFORM_LINUX)
+		string command = "../../../Tools/glslang_Linux_x86-64 -V " + filePath +
 			" --target-env spirv1.6 -S " + stage + " -o " + outputFinalPath;
 #endif
 
@@ -102,10 +105,12 @@ namespace ZXEngine
 		}
 
 		// 用Vulkan工具生成SPIR-V文件
-#ifdef ZX_PLATFORM_WINDOWS
+#if defined(ZX_PLATFORM_WINDOWS)
 		string command = "..\\..\\..\\Tools\\glslangValidator.exe -V " + Utils::ConvertPathToWindowsFormat(writeTempPath) + " -o " + Utils::ConvertPathToWindowsFormat(outputFinalPath);
-#else
-		string command = "../../../Tools/glslang -V " + writeTempPath + " -o " + outputFinalPath;
+#elif defined(ZX_PLATFORM_MACOS)
+		string command = "../../../Tools/glslang_macOS -V " + writeTempPath + " -o " + outputFinalPath;
+#elif defined(ZX_PLATFORM_LINUX)
+		string command = "../../../Tools/glslang_Linux_x86-64 -V " + writeTempPath + " -o " + outputFinalPath;
 #endif
 		std::system(command.c_str());
 		// 删除临时文件
