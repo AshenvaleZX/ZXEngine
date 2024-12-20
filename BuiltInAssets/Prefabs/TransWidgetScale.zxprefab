@@ -57,7 +57,7 @@
                     "Type": "Transform",
                     "Position": [7, 0, 0],
                     "Rotation": [0, 0, 90],
-                    "Scale": [1, 14, 1]
+                    "Scale": [2, 14, 2]
                 },
                 {
                     "Type": "BoxCollider",
@@ -115,7 +115,7 @@
                     "Type": "Transform",
                     "Position": [0, 7, 0],
                     "Rotation": [0, 0, 0],
-                    "Scale": [1, 14, 1]
+                    "Scale": [2, 14, 2]
                 },
                 {
                     "Type": "BoxCollider",
@@ -173,7 +173,7 @@
                     "Type": "Transform",
                     "Position": [0, 0, 7],
                     "Rotation": [90, 0, 0],
-                    "Scale": [1, 14, 1]
+                    "Scale": [2, 14, 2]
                 },
                 {
                     "Type": "BoxCollider",
