@@ -68,41 +68,39 @@ The project has now completed the development of the basic scenes, prefabs, mate
 
 ## 引擎编辑器和更多演示 (Engine Editor And More Demonstration)
 
-下面是一些图片展示，引擎页面如图，和Unity编辑器类似。上面是主菜单栏，中间是游戏画面窗口，左边是展示场景中GameObject的Hierarchy面板，下面左边是展示当前打开项目的Assets文件目录的Project面板，中间是展示日志的Console面板，右边是展示当前选中对象详细信息的Inspector面板。
+引擎顶部为主菜单栏，中间是Game和Scene视图，左边是展示场景中GameObject的Hierarchy面板，下面是显示当前项目Assets目录的Project面板和显示日志的Console面板，右边是显示当前选中对象详细信息的Inspector面板。
 
-The following are some picture displays, the engine is shown in the figure, which is similar to the Unity editor. The top is the main menu bar, the middle is the game screen window, the left is the Hierarchy panel showing the GameObject in the scene, the lower left is the Project panel showing the Assets file directory of the currently opened project, the middle is the Console panel showing the log, and the right is showing the currently selected Inspector panel for object details.
+The top of the engine is the main menu bar, the middle is the Game and Scene views, on the left is the Hierarchy panel that displays the GameObjects in the scene, below is the Project panel that displays the assets of the current project and the Console panel that displays the log, and on the right is the Inspector panel that displays detailed information of the currently selected object.
 
 ![](Documents/Images/EngineShow1.jpg)
 
-当前选中了场景中的Sun对象，Inspector面板就展示这个GameObject所挂载的Component信息。
+切换到Scene视图后可以直接在场景中对选中的GameObject进行操作：
 
-The Sun object in the scene is currently selected, and the Inspector panel displays the Component information on the GameObject.
+Switch to the Scene view can manipulate the selected GameObject in the scene:
 
-点击主菜单栏的运行按钮，游戏开始运行，此时能看到场景中物体动了起来，粒子系统也开始工作。
+![](Documents\Images\TransWidgetPos.gif)![](Documents\Images\TransWidgetRot.gif)![](Documents\Images\TransWidgetScale.gif)
 
-Click the Play button on the main menu bar, and the game starts to run. At this time, you can see the objects in the scene move, and the particle system starts to work. 
+点击材质文件后Inspector面板的材质信息和材质预览：
 
-接下来展示的是一个基于PBR+IBL场景渲染，同时展示了点击材质文件后Inspector面板展示的材质信息和材质预览。
-
-Next picture is a scene rendering based on PBR+IBL, and also shows the material information and material preview displayed on the Inspector panel after clicking the material file.
+Click the material file, material information and preview on the Inspector panel:
 
 ![](Documents/Images/EngineShow2.jpg)
 
-然后通过双击场景文件，切换到一个使用光线追踪渲染管线渲染的场景。同时展示了点击模型文件后Inspector面板展示的模型信息和模型预览，如果模型带有动画还会显示骨骼和动画信息。
+双击场景文件可切换场景，光追管线也可以直接切换。图为点击模型文件后Inspector面板的模型信息和模型预览：
 
-Then switch to a scene rendered with the ray tracing pipeline by double-clicking on the scene file. At the same time, it shows the model information and model preview displayed on the Inspector panel after clicking the model file. If the model has animation, the skeleton and animation information will also be displayed.
+Double-clicking a scene file can switch scenes, and the ray tracing pipeline can also be switched directly. The picture shows the model information and model preview in the Inspector panel after clicking a model file:
 
 ![](Documents/Images/EngineShow3.jpg)
 
-接下来展示的是通过算法生成的体积云及其阴影投射效果。同时展示了点击图片文件后，Inspector面板显示的图像信息。
+点击图片文件后，Inspector面板的图像信息：
 
-Shown next are code-generated volumetric clouds and their shadow casting effects. And the right side shows the image information displayed on the Inspector panel after clicking the image file.
+Click the image file, the image information in the Inspector panel:
 
 ![](Documents/Images/EngineShow4.jpg)
 
-下面是分别点击zxshader和Lua后Inspector上的代码预览。
+点击zxshader和Lua后Inspector上的代码预览：
 
-The following is the code preview on the Inspector after clicking zxshader and Lua respectively.
+Click zxshader and Lua to preview the code in the Inspector:
 
 ![](Documents/Images/EngineShow5.jpg)
 
