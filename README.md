@@ -78,7 +78,7 @@ The top of the engine is the main menu bar, the middle is the Game and Scene vie
 
 Switch to the Scene view can manipulate the selected GameObject in the scene:
 
-![](Documents\Images\TransWidgetPos.gif)![](Documents\Images\TransWidgetRot.gif)![](Documents\Images\TransWidgetScale.gif)
+![](Documents/Images/TransWidgetPos.gif)![](Documents/Images/TransWidgetRot.gif)![](Documents/Images/TransWidgetScale.gif)
 
 点击材质文件后Inspector面板的材质信息和材质预览：
 
