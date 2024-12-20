@@ -1,6 +1,10 @@
 #include "EventManager.h"
 #include "LuaManager.h"
 
+#ifdef ZX_EDITOR
+#include "Editor/EditorDataManager.h"
+#endif
+
 namespace ZXEngine
 {
     EventManager* EventManager::mInstance = nullptr;
@@ -17,15 +21,37 @@ namespace ZXEngine
 
     void EventManager::FireEvent(uint32_t id, const string& args)
     {
-        auto iter = mCallBackMap.find(id);
-        if (iter != mCallBackMap.end())
+#ifdef ZX_EDITOR
+        if (EditorDataManager::GetInstance()->isGameView)
+#endif
         {
-            for (auto iter2 = iter->second.begin(); iter2 != iter->second.end(); ++iter2)
+#ifdef ZX_EDITOR
+            if (EditorDataManager::GetInstance()->isGamePause)
+                return;
+#endif
+            auto iter = mCallBackMap.find(id);
+            if (iter != mCallBackMap.end())
             {
-                iter2->second(args);
+                for (auto iter2 = iter->second.begin(); iter2 != iter->second.end(); ++iter2)
+                {
+                    iter2->second(args);
+                }
             }
+            LuaManager::GetInstance()->CallFunction("EngineEvent", "FireEvent", (to_string(id) + "," + args).c_str());
         }
-        LuaManager::GetInstance()->CallFunction("EngineEvent", "FireEvent", (to_string(id) + "," + args).c_str());
+#ifdef ZX_EDITOR
+        else
+        {
+            auto iter = mEditorCallBackMap.find(id);
+			if (iter != mEditorCallBackMap.end())
+			{
+				for (auto iter2 = iter->second.begin(); iter2 != iter->second.end(); ++iter2)
+				{
+					iter2->second(args);
+				}
+			}
+        }
+#endif
     }
 
     void EventManager::FireEvent(EventType event, const string& args)
@@ -88,6 +114,64 @@ namespace ZXEngine
 				mFreeKeys.push(iter2->first);
 			}
             mCallBackMap.erase(iter);
+        }
+    }
+
+    uint32_t EventManager::AddEditorEventHandler(EventType event, std::function<void(const string&)> callBack)
+    {
+        uint32_t id = static_cast<uint32_t>(event);
+
+        uint32_t key;
+        if (mFreeEditorKeys.empty())
+        {
+            key = mNextEditorKey++;
+        }
+        else
+        {
+            key = mFreeEditorKeys.front();
+            mFreeEditorKeys.pop();
+        }
+
+        mEditorCallBackMap[id][key] = callBack;
+
+        return key;
+    }
+
+    void EventManager::RemoveEditorEventHandler(EventType event, uint32_t key)
+    {
+        uint32_t id = static_cast<uint32_t>(event);
+
+        auto iter = mEditorCallBackMap.find(id);
+        if (iter != mEditorCallBackMap.end())
+        {
+            auto iter2 = iter->second.find(key);
+            if (iter2 != iter->second.end())
+            {
+                iter->second.erase(iter2);
+                mFreeEditorKeys.push(key);
+            }
+        }
+    }
+
+    void EventManager::ClearEditorEventHandler()
+    {
+        mNextEditorKey = 0;
+        mEditorCallBackMap.clear();
+        mFreeEditorKeys = std::queue<uint32_t>();
+    }
+
+    void EventManager::ClearEditorEventHandler(EventType event)
+    {
+        uint32_t id = static_cast<uint32_t>(event);
+
+        auto iter = mEditorCallBackMap.find(id);
+        if (iter != mEditorCallBackMap.end())
+        {
+            for (auto iter2 = iter->second.begin(); iter2 != iter->second.end(); ++iter2)
+            {
+                mFreeEditorKeys.push(iter2->first);
+            }
+            mEditorCallBackMap.erase(iter);
         }
     }
 }

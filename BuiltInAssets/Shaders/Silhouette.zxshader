@@ -1,0 +1,47 @@
+Setting 
+{
+    Blend SrcAlpha OneMinusSrcAlpha
+    BlendOp Add
+    Cull Back
+    ZTest Less
+    ZWrite On
+}
+
+Vertex
+{
+    Input
+    {
+        0 vec3 aPos : POSITION
+    }
+
+    Properties
+    {
+        using ENGINE_Model
+        using ENGINE_View
+        using ENGINE_Projection
+    }
+
+    Program
+    {
+        void main()
+        {
+            ZX_Position = mul(ENGINE_Projection * ENGINE_View * ENGINE_Model * vec4(aPos, 1.0));
+        }
+    }
+}
+
+Fragment
+{
+    Output
+    {
+        0 vec4 FragColor : SV_Target
+    }
+
+    Program
+    {
+        void main()
+        {
+            FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+        }
+    }
+}

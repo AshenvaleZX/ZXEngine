@@ -16,10 +16,12 @@ namespace ZXEngine
 
 	Camera* Camera::GetMainCamera()
 	{
-		if (allCameras.size() > 0)
-			return allCameras[0];
-		else
-			return nullptr;
+		for (auto cam : allCameras)
+		{
+			if (cam->mCameraType == CameraType::GameCamera)
+				return cam;
+		}
+		return nullptr;
 	}
 
 	vector<Camera*> Camera::GetAllCameras()

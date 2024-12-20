@@ -27,7 +27,7 @@ namespace ZXEngine
 
 			virtual ~CollisionPrimitive();
 
-			void SynchronizeTransform(const Matrix4& transform);
+			virtual void SynchronizeTransform(const Matrix4& transform);
 
 			// 获取碰撞体类型
 			virtual ColliderType GetType() const = 0;
@@ -48,14 +48,18 @@ namespace ZXEngine
 			float GetHalfProjectedLength(const Vector3& axis) const;
 		};
 
-		// 碰撞平面(通常表示场景中一个不可移动的墙或地面，而不是刚体，所以没有继承CollisionPrimitive)
+		// 碰撞平面(通常表示场景中一个不可移动的墙或地面，而不是刚体)
 		class CollisionPlane : public CollisionPrimitive
 		{
 		public:
-			// 碰撞平面法线
+			// 碰撞平面法线(World)
 			Vector3 mNormal;
+			// 碰撞平面法线(Local)
+			Vector3 mLocalNormal;
 			// 碰撞平面到原点的距离
 			float mDistance;
+
+			virtual void SynchronizeTransform(const Matrix4& transform);
 
 			virtual ColliderType GetType() const;
 			virtual Matrix3 GetInertiaTensor(float mass) const;
@@ -82,6 +86,19 @@ namespace ZXEngine
 				CollisionPlane* mPlane;
 				CollisionSphere* mSphere;
 			};
+		};
+
+		class CollisionCircle2D : public CollisionPrimitive
+		{
+		public:
+			Vector3 mLocalNormal;
+			Vector3 mWorldNormal;
+			float mRadius;
+
+			virtual void SynchronizeTransform(const Matrix4& transform);
+
+			virtual ColliderType GetType() const;
+			virtual Matrix3 GetInertiaTensor(float mass) const;
 		};
 	}
 }

@@ -178,6 +178,8 @@ namespace ZXEngine
 				ParsePlaneCollider(component);
 			else if (component["Type"] == "SphereCollider")
 				ParseSphereCollider(component);
+			else if (component["Type"] == "Circle2DCollider")
+				ParseCircle2DCollider(component);
 			else if (component["Type"] == "RigidBody")
 				ParseRigidBody(component);
 			else if (component["Type"] == "SpringJoint")
@@ -282,6 +284,11 @@ namespace ZXEngine
 		transform->SetLocalPosition(Vector3(data["Position"][0], data["Position"][1], data["Position"][2]));
 		transform->SetLocalEulerAngles(data["Rotation"][0], data["Rotation"][1], data["Rotation"][2]);
 		transform->SetLocalScale(Vector3(data["Scale"][0], data["Scale"][1], data["Scale"][2]));
+
+		mConstructionCallBacks.push_back([=]()
+		{
+			transform->UpdateColliderTransform();
+		});
 	}
 
 	void GameObject::ParseRectTransform(json data)
@@ -444,7 +451,7 @@ namespace ZXEngine
 		planeCollider->mFrictionCombine = data["FrictionCombine"];
 		planeCollider->mBounceCombine = data["BounceCombine"];
 
-		planeCollider->mCollider->mNormal = Vector3(data["Normal"][0], data["Normal"][1], data["Normal"][2]);
+		planeCollider->mCollider->mLocalNormal = Vector3(data["Normal"][0], data["Normal"][1], data["Normal"][2]);
 		planeCollider->mCollider->mDistance = data["Distance"];
 
 		planeCollider->SynchronizeData();
@@ -482,6 +489,23 @@ namespace ZXEngine
 			rigidBody->mRigidBody->mCollisionVolume = sphereCollider->mCollider;
 			rigidBody->mRigidBody->SetInertiaTensor(sphereCollider->mCollider->GetInertiaTensor(rigidBody->mRigidBody->GetMass()));
 		}
+	}
+
+	void GameObject::ParseCircle2DCollider(json data)
+	{
+		Circle2DCollider* component = AddComponent<Circle2DCollider>();
+
+		mColliderType = PhysZ::ColliderType::Circle2D;
+
+		component->mFriction = data["Friction"];
+		component->mBounciness = data["Bounciness"];
+		component->mFrictionCombine = data["FrictionCombine"];
+		component->mBounceCombine = data["BounceCombine"];
+
+		component->mCollider->mRadius = data["mRadius"];
+		component->mCollider->mLocalNormal = Vector3(data["Normal"][0], data["Normal"][1], data["Normal"][2]);
+
+		component->SynchronizeData();
 	}
 
 	void GameObject::ParseRigidBody(json data)

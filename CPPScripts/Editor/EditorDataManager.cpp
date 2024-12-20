@@ -1,6 +1,7 @@
 #include "EditorDataManager.h"
 #include "EditorGUIManager.h"
 #include "EditorAssetPreviewer.h"
+#include "EditorCamera.h"
 #include "../Time.h"
 #include "../Utils.h"
 #include "../Texture.h"
@@ -10,6 +11,7 @@
 #include "../ModelUtil.h"
 #include "../ZMesh.h"
 #include "../Audio/ZAudio.h"
+#include "../GameObject.h"
 
 #define ZX_EDITOR_ASYNC_LOAD
 
@@ -27,6 +29,34 @@ namespace ZXEngine
 	EditorDataManager* EditorDataManager::GetInstance()
 	{
 		return mInstance;
+	}
+
+	EditorDataManager::~EditorDataManager()
+	{
+		if (mTransPosWidget)
+			delete mTransPosWidget;
+		if (mTransRotWidget)
+			delete mTransRotWidget;
+		if (mTransScaleWidget)
+			delete mTransScaleWidget;
+	}
+
+	void EditorDataManager::InitWidgets()
+	{
+		PrefabStruct* prefab = Resources::LoadPrefab("Prefabs/TransWidgetPos.zxprefab", true);
+		mTransPosWidget = new GameObject(prefab);
+		delete prefab;
+		RecordWidgetAxisInfo(mTransPosWidgetColliders, mTransPosWidgetOrientations, mTransPosWidget);
+
+		prefab = Resources::LoadPrefab("Prefabs/TransWidgetRot.zxprefab", true);
+		mTransRotWidget = new GameObject(prefab);
+		delete prefab;
+		RecordRotWidgetAxisInfo(mTransRotWidgetColliders, mTransRotWidgetTurnplates, mTransRotWidget);
+
+		prefab = Resources::LoadPrefab("Prefabs/TransWidgetScale.zxprefab", true);
+		mTransScaleWidget = new GameObject(prefab);
+		delete prefab;
+		RecordWidgetAxisInfo(mTransScaleWidgetColliders, mTransScaleWidgetOrientations, mTransScaleWidget);
 	}
 
 	void EditorDataManager::AddLog(LogType type, string msg)
@@ -77,6 +107,15 @@ namespace ZXEngine
 
 	void EditorDataManager::SetSelectedGO(GameObject* go)
 	{
+		long long curTime = Time::curSysTime_micro;
+		long long dt = curTime - mLastGOClick;
+		mLastGOClick = curTime;
+
+		if (selectedGO == go && dt < mDoubleClickInterval)
+		{
+			EditorCamera::GetInstance()->MoveTo(go);
+		}
+
 		selectedGO = go;
 		DeleteCurAssetInfo();
 		selectedAsset = nullptr;
@@ -85,14 +124,14 @@ namespace ZXEngine
 	void EditorDataManager::SetSelectedAsset(EditorAssetNode* asset)
 	{
 		long long curTime = Time::curSysTime_micro;
-		long long dt = curTime - lastClickTime;
-		lastClickTime = curTime;
+		long long dt = curTime - mLastAssetClick;
+		mLastAssetClick = curTime;
 
 		// 点击同一个Asset
 		if (selectedAsset == asset)
 		{
-			// 如果间隔时间小于300ms，则认为是双击
-			if (dt < 300000)
+			// 双击
+			if (dt < mDoubleClickInterval)
 			{
 
 				switch (asset->type)
@@ -159,7 +198,7 @@ namespace ZXEngine
 				auto curInfo = static_cast<AssetMaterialInfo*>(this->curAssetInfo);
 				curInfo->material = new Material(matStruct);
 				EditorGUIManager::GetInstance()->assetPreviewer->Reset();
-		}, false, true);
+			}, false, true);
 #else
 			MaterialStruct* matStruct = Resources::LoadMaterial(localPath);
 			info->material = new Material(matStruct);
@@ -215,6 +254,16 @@ namespace ZXEngine
 		}
 	}
 
+	GameObject* EditorDataManager::GetTransWidget() const
+	{
+		if (mCurTransType == TransformType::Position)
+			return mTransPosWidget;
+		else if (mCurTransType == TransformType::Rotation)
+			return mTransRotWidget;
+		else
+			return mTransScaleWidget;
+	}
+
 	void EditorDataManager::DeleteCurAssetInfo()
 	{
 		if (curAssetInfo != nullptr)
@@ -265,6 +314,70 @@ namespace ZXEngine
 		{
 			Debug::LogError("Get text file preview failed: " + path);
 			return "";
+		}
+	}
+
+	void EditorDataManager::RecordWidgetAxisInfo(WidgetColliderMap& colliders, WidgetOrientationMap& orientations, GameObject* widget)
+	{
+		auto collider = widget->GetComponent<BoxCollider>();
+
+		if (collider)
+		{
+			if (widget->name == "XCollider")
+				colliders[AxisType::X] = collider;
+			else if (widget->name == "YCollider")
+				colliders[AxisType::Y] = collider;
+			else if (widget->name == "ZCollider")
+				colliders[AxisType::Z] = collider;
+		}
+		else
+		{
+			if (widget->name == "XHead")
+				orientations[AxisType::X].first = widget;
+			else if (widget->name == "XStick")
+				orientations[AxisType::X].second = widget;
+			else if (widget->name == "YHead")
+				orientations[AxisType::Y].first = widget;
+			else if (widget->name == "YStick")
+				orientations[AxisType::Y].second = widget;
+			else if (widget->name == "ZHead")
+				orientations[AxisType::Z].first = widget;
+			else if (widget->name == "ZStick")
+				orientations[AxisType::Z].second = widget;
+		}
+
+		for (auto& child : widget->children)
+		{
+			RecordWidgetAxisInfo(colliders, orientations, child);
+		}
+	}
+
+	void EditorDataManager::RecordRotWidgetAxisInfo(RotWidgetColliderMap& colliders, RotWidgetTurnplateMap& turnplates, GameObject* widget)
+	{
+		auto collider = widget->GetComponent<Circle2DCollider>();
+
+		if (collider)
+		{
+			if (widget->name == "XCollider")
+				colliders[AxisType::X] = collider;
+			else if (widget->name == "YCollider")
+				colliders[AxisType::Y] = collider;
+			else if (widget->name == "ZCollider")
+				colliders[AxisType::Z] = collider;
+		}
+		else
+		{
+			if (widget->name == "XTurnplate")
+				turnplates[AxisType::X] = widget;
+			else if (widget->name == "YTurnplate")
+				turnplates[AxisType::Y] = widget;
+			else if (widget->name == "ZTurnplate")
+				turnplates[AxisType::Z] = widget;
+		}
+
+		for (auto& child : widget->children)
+		{
+			RecordRotWidgetAxisInfo(colliders, turnplates, child);
 		}
 	}
 }

@@ -33,10 +33,9 @@ namespace ZXEngine
 		}
 
 		renderState = new RenderStateSetting();
-		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ShadowGeneration);
+		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ShadowGeneration, ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
 		ClearInfo clearInfo = {};
-		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT;
 		FBOManager::GetInstance()->CreateFBO("ShadowMap", FrameBufferType::ShadowMap, clearInfo, GlobalData::depthMapWidth, GlobalData::depthMapWidth);
 		FBOManager::GetInstance()->CreateFBO("ShadowCubeMap", FrameBufferType::ShadowCubeMap, clearInfo, GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
 	}
@@ -69,7 +68,7 @@ namespace ZXEngine
 		// 切换到阴影渲染设置
 		renderAPI->SetRenderState(renderState);
 		// 清理上一帧数据
-		renderAPI->ClearFrameBuffer();
+		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
 		// 类似相机的VP矩阵
 		Matrix4 shadowTransform = light->GetProjectionMatrix() * light->GetLightMatrix();
@@ -115,7 +114,7 @@ namespace ZXEngine
 		// 切换到阴影渲染设置
 		renderAPI->SetRenderState(renderState);
 		// 清理上一帧数据
-		renderAPI->ClearFrameBuffer();
+		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
 		// 基于左手坐标系构建6个方向上的VP矩阵
 		Vector3 lightPos = light->GetTransform()->GetPosition();

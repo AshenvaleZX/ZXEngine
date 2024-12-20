@@ -16,7 +16,7 @@ namespace ZXEngine
 	private:
 		int nodeIdx = 0;
 		GameObject* selectedGO = nullptr;
-		ImGuiTreeNodeFlags baseFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
+		ImGuiTreeNodeFlags baseFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 
 		void DrawNode(GameObject* gameObject);
 	};

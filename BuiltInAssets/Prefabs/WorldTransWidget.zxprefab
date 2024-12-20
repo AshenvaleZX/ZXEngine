@@ -1,0 +1,148 @@
+{
+    "Name": "WorldTransWidget",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 0, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [1, 1, 1]
+        }
+    ],
+    "GameObjects":
+    [
+        {
+            "Name": "Center",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 0, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 1, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/SolidDiffuseGray.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "XAxisP",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [1.5, 0, 0],
+                    "Rotation": [0, 0, 90],
+                    "Scale": [1, 2, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 7,
+                    "Material": "Materials/SolidDiffuseRed.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "XAxisN",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [-1.5, 0, 0],
+                    "Rotation": [0, 0, -90],
+                    "Scale": [1, 2, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 7,
+                    "Material": "Materials/SolidDiffuseGray.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "YAxisP",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 1.5, 0],
+                    "Rotation": [180, 0, 0],
+                    "Scale": [1, 2, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 7,
+                    "Material": "Materials/SolidDiffuseGreen.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "YAxisN",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, -1.5, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 2, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 7,
+                    "Material": "Materials/SolidDiffuseGray.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "ZAxisP",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 0, 1.5],
+                    "Rotation": [-90, 0, 0],
+                    "Scale": [1, 2, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 7,
+                    "Material": "Materials/SolidDiffuseBlue.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "ZAxisN",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 0, -1.5],
+                    "Rotation": [90, 0, 0],
+                    "Scale": [1, 2, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 7,
+                    "Material": "Materials/SolidDiffuseGray.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                }
+            ]
+        }
+    ]
+}

@@ -3,8 +3,8 @@ Setting
     Blend SrcAlpha OneMinusSrcAlpha
     BlendOp Add
     Cull Back
-    ZTest Less
-    ZWrite On
+    ZTest Always
+    ZWrite Off
 }
 
 Vertex

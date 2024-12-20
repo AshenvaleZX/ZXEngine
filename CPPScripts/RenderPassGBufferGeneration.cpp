@@ -17,12 +17,11 @@ namespace ZXEngine
 	RenderPassGBufferGeneration::RenderPassGBufferGeneration()
 	{
 		mGBufferShader = new Shader(Resources::GetAssetFullPath("Shaders/GBufferGeneration.zxshader", true), FrameBufferType::GBuffer);
-		mDrawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::GBufferGeneration);
+		mDrawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::GBufferGeneration, ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
 		gBufferRenderState = new RenderStateSetting();
 
 		ClearInfo clearInfo = {};
-		clearInfo.clearFlags = ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT;
 		FBOManager::GetInstance()->CreateFBO("GBuffer", FrameBufferType::GBuffer, clearInfo);
 	}
 
@@ -33,7 +32,7 @@ namespace ZXEngine
 
 		FBOManager::GetInstance()->SwitchFBO("GBuffer");
 		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight);
-		renderAPI->ClearFrameBuffer();
+		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
 		engineProperties->SetCameraProperties(camera);
 

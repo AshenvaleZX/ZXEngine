@@ -1,0 +1,189 @@
+{
+    "Name": "TransWidgetScale",
+    "Components":
+    [
+        {
+            "Type": "Transform",
+            "Position": [0, 0, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [1, 1, 1]
+        }
+    ],
+    "GameObjects":
+    [
+        {
+            "Name": "XStick",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [5, 0, 0],
+                    "Rotation": [0, 0, 90],
+                    "Scale": [1, 10, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 3,
+                    "Material": "Materials/SolidDiffuseRed.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "XHead",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [12, 0, 0],
+                    "Rotation": [0, 0, -90],
+                    "Scale": [4, 4, 4]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/SolidDiffuseRed.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "XCollider",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [7, 0, 0],
+                    "Rotation": [0, 0, 90],
+                    "Scale": [2, 14, 2]
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [1, 1, 1]
+                }
+            ]
+        },
+        {
+            "Name": "YStick",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 5, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [1, 10, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 3,
+                    "Material": "Materials/SolidDiffuseGreen.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "YHead",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 12, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [4, 4, 4]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/SolidDiffuseGreen.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "YCollider",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 7, 0],
+                    "Rotation": [0, 0, 0],
+                    "Scale": [2, 14, 2]
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [1, 1, 1]
+                }
+            ]
+        },
+        {
+            "Name": "ZStick",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 0, 5],
+                    "Rotation": [90, 0, 0],
+                    "Scale": [1, 10, 1]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 3,
+                    "Material": "Materials/SolidDiffuseBlue.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "ZHead",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 0, 12],
+                    "Rotation": [90, 0, 0],
+                    "Scale": [4, 4, 4]
+                },
+                {
+                    "Type": "MeshRenderer",
+                    "Geometry": 0,
+                    "Material": "Materials/SolidDiffuseBlue.zxmat",
+                    "CastShadow": false,
+                    "ReceiveShadow": false
+                }
+            ]
+        },
+        {
+            "Name": "ZCollider",
+            "Components":
+            [
+                {
+                    "Type": "Transform",
+                    "Position": [0, 0, 7],
+                    "Rotation": [90, 0, 0],
+                    "Scale": [2, 14, 2]
+                },
+                {
+                    "Type": "BoxCollider",
+                    "Friction": 0.4,
+                    "Bounciness": 0.2,
+                    "FrictionCombine": 0,
+                    "BounceCombine": 0,
+                    "Size": [1, 1, 1]
+                }
+            ]
+        }
+    ]
+}

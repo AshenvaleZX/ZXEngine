@@ -90,10 +90,9 @@ namespace ZXEngine
 
 	struct ClearInfo
 	{
-		FrameBufferClearFlags clearFlags = ZX_CLEAR_FRAME_BUFFER_NONE_BIT;
-		Vector4 color                    = { 0.0f, 0.0f, 0.0f, 1.0f };
-		float depth                      = 1.0f;
-		uint32_t stencil                 = 0;
+		Vector4 color    = { 0.0f, 0.0f, 0.0f, 1.0f };
+		float depth      = 1.0f;
+		uint32_t stencil = 0;
 	};
 
 	struct ShaderStateSet
@@ -188,17 +187,19 @@ namespace ZXEngine
 
 	static const std::multimap<ComponentType, ComponentType> ComponentChildLUT
 	{
-		{ ComponentType::Collider,  ComponentType::BoxCollider    },
-		{ ComponentType::Collider,  ComponentType::PlaneCollider  },
-		{ ComponentType::Collider,  ComponentType::SphereCollider },
-		{ ComponentType::Transform, ComponentType::RectTransform  },
+		{ ComponentType::Collider,  ComponentType::BoxCollider      },
+		{ ComponentType::Collider,  ComponentType::PlaneCollider    },
+		{ ComponentType::Collider,  ComponentType::SphereCollider   },
+		{ ComponentType::Collider,  ComponentType::Circle2DCollider },
+		{ ComponentType::Transform, ComponentType::RectTransform    },
 	};
 
 	static const std::unordered_map<ComponentType, ComponentType> ComponentParentLUT
 	{
-		{ ComponentType::BoxCollider,    ComponentType::Collider  },
-		{ ComponentType::PlaneCollider,  ComponentType::Collider  },
-		{ ComponentType::SphereCollider, ComponentType::Collider  },
-		{ ComponentType::RectTransform,  ComponentType::Transform },
+		{ ComponentType::BoxCollider,      ComponentType::Collider  },
+		{ ComponentType::PlaneCollider,    ComponentType::Collider  },
+		{ ComponentType::SphereCollider,   ComponentType::Collider  },
+		{ ComponentType::Circle2DCollider, ComponentType::Collider  },
+		{ ComponentType::RectTransform,    ComponentType::Transform },
 	};
 }

@@ -14,6 +14,11 @@ namespace ZXEngine
 
 		virtual ComponentType GetInsType();
 
+		void Translate(const Vector3& offset);
+		void Rotate(const Vector3& axis, float angle);
+		void Scale(float scale);
+		void Scale(const Vector3& scale);
+
 		// Local Space
 		Matrix4 GetLocalPositionMatrix() const;
 		Matrix4 GetLocalRotationMatrix() const;
@@ -55,11 +60,11 @@ namespace ZXEngine
 		Vector3 GetRight() const;
 		Vector3 GetForward() const;
 
+		void UpdateColliderTransform() const;
+
 	protected:
 		Vector3 localPosition = Vector3();
 		Quaternion localRotation = Quaternion();
 		Vector3 localScale = Vector3(1.0f);
-
-		void UpdateColliderTransform() const;
 	};
 }

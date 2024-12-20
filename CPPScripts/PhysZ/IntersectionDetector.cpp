@@ -61,7 +61,24 @@ namespace ZXEngine
 
 		bool IntersectionDetector::Detect(const Ray& ray, const CollisionPlane& plane)
 		{
-			return Math::Dot(ray.mDirection, plane.mNormal) < 0.0f;
+			Matrix4 iTrans = Math::Inverse(plane.mTransform);
+			// 变化射线的方向向量不同于变化法线，直接用和变化顶点相同的矩阵即可
+			Ray localRay = Ray(iTrans * ray.mOrigin.ToPosVec4(), iTrans * ray.mDirection.ToDirVec4());
+
+			// 射线起点在平面的哪一边
+			float pSide = Math::Dot(localRay.mOrigin, plane.mLocalNormal);
+
+			// 射线方向和平面法线是否同向
+			float rDotN = Math::Dot(localRay.mDirection, plane.mLocalNormal);
+
+			if ((pSide > 0.0f && rDotN > 0.0f) || (pSide < 0.0f && rDotN < 0.0f))
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
 		}
 
 		bool IntersectionDetector::Detect(const Ray& ray, const CollisionSphere& sphere)
@@ -98,6 +115,36 @@ namespace ZXEngine
 			}
 
 			return true;
+		}
+
+		bool IntersectionDetector::Detect(const Ray& ray, const CollisionCircle2D& circle)
+		{
+			RayHitInfo hit;
+			return Detect(ray, circle, hit);
+		}
+
+		bool IntersectionDetector::Detect(const Ray& ray, const CollisionCircle2D& circle, RayHitInfo& hit)
+		{
+			Matrix4 iTrans = Math::Inverse(circle.mTransform);
+			// 变化射线的方向向量不同于变化法线，直接用和变化顶点相同的矩阵即可
+			Ray localRay = Ray(iTrans * ray.mOrigin.ToPosVec4(), iTrans * ray.mDirection.ToDirVec4());
+
+			// 射线起点在平面的哪一边
+			float pSide = Math::Dot(localRay.mOrigin, circle.mLocalNormal);
+
+			// 射线方向和平面法线是否同向
+			float rDotN = Math::Dot(localRay.mDirection, circle.mLocalNormal);
+
+			if ((pSide > 0.0f && rDotN > 0.0f) || (pSide < 0.0f && rDotN < 0.0f))
+			{
+				return false;
+			}
+
+			hit.distance = -pSide / rDotN;
+
+			Vector3 pHit = localRay.mOrigin + hit.distance * localRay.mDirection;
+
+			return pHit.GetMagnitudeSquared() <= circle.mRadius * circle.mRadius;
 		}
 
 		bool IntersectionDetector::Detect(const CollisionBox& box1, const CollisionBox& box2)

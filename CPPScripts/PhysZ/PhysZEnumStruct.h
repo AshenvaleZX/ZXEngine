@@ -16,6 +16,7 @@ namespace ZXEngine
 			Plane,
 			Sphere,
 			Cloth,
+			Circle2D,
 		};
 
 		enum class CombineType
@@ -30,6 +31,11 @@ namespace ZXEngine
 		struct PotentialContact
 		{
 			RigidBody* mRigidBodies[2];
+		};
+
+		struct RayHitInfo
+		{
+			float distance = 0.0f;
 		};
 	}
 }

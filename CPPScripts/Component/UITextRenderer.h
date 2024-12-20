@@ -52,6 +52,7 @@ namespace ZXEngine
 		TextHorizonAlignment GetHorizonAlignment() const;
 		void SetVerticalAlignment(TextVerticalAlignment align);
 		TextVerticalAlignment GetVerticalAlignment() const;
+		inline bool IsScreenSpace() const { return isScreenSpace; }
 
 		void OnWindowResize(const string& args);
 

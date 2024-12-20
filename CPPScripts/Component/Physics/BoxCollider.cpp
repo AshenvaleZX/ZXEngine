@@ -39,4 +39,9 @@ namespace ZXEngine
 	{
 		return PhysZ::IntersectionDetector::Detect(ray, *mCollider);
 	}
+
+	bool BoxCollider::IntersectRay(const PhysZ::Ray& ray, PhysZ::RayHitInfo& hit)
+	{
+		return PhysZ::IntersectionDetector::Detect(ray, *mCollider);
+	}
 }

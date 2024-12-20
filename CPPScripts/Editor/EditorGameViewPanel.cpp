@@ -1,6 +1,7 @@
 #include "EditorGameViewPanel.h"
 #include "ImGuiTextureManager.h"
 #include "EditorGUIManager.h"
+#include "EditorDataManager.h"
 #include "../FBOManager.h"
 #include "../RenderAPI.h"
 
@@ -11,9 +12,26 @@ namespace ZXEngine
 		ImGui::SetNextWindowPos(ImVec2((float)ProjectSetting::hierarchyWidth, (float)ProjectSetting::mainBarHeight));
 		ImGui::SetNextWindowSize(ImVec2((float)ProjectSetting::gameViewWidth, (float)ProjectSetting::gameViewHeight));
 
-		if (ImGui::Begin("Game", NULL, ImGuiWindowFlags_NoCollapse))
+		if (ImGui::Begin("Game", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse))
 		{
 			CheckManualResize();
+
+			float yMax = ImGui::GetCursorPosY();
+
+			if (ImGui::BeginTabBar("ViewSwitchBar", ImGuiTabBarFlags_None))
+			{
+				if (ImGui::BeginTabItem("Game"))
+				{
+					EditorDataManager::GetInstance()->isGameView = true;
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Scene"))
+				{
+					EditorDataManager::GetInstance()->isGameView = false;
+					ImGui::EndTabItem();
+				}
+				ImGui::EndTabBar();
+			}
 
 			if (mFirstDraw)
 			{
@@ -21,7 +39,7 @@ namespace ZXEngine
 				auto pGUIManager = EditorGUIManager::GetInstance();
 				pGUIManager->mViewBorderSize.x = style.WindowPadding.x;
 				pGUIManager->mViewBorderSize.y = style.WindowPadding.y;
-				pGUIManager->mHeaderSize = style.FramePadding.y * 2 + ImGui::GetTextLineHeight();
+				pGUIManager->mHeaderSize = ImGui::GetCursorPosY() - yMax;
 
 				ProjectSetting::SetWindowSize();
 				mFirstDraw = false;

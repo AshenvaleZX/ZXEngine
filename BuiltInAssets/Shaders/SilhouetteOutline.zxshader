@@ -1,0 +1,71 @@
+Setting 
+{
+    Blend SrcAlpha OneMinusSrcAlpha
+    BlendOp Add
+    Cull Back
+    ZTest Always
+    ZWrite Off
+}
+
+Vertex
+{
+    Input
+    {
+        0 vec3 aPos       : POSITION
+        1 vec2 aTexCoords : TEXCOORD
+    }
+
+    Output
+    {
+        0 vec2 TexCoords : TEXCOORD0
+    }
+
+    Program
+    {
+        void main()
+        {
+            TexCoords = aTexCoords;    
+            ZX_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
+        }
+    }
+}
+
+Fragment
+{
+    Input
+    {
+        0 vec2 TexCoords : TEXCOORD0
+    }
+
+    Output
+    {
+        0 vec4 FragColor : SV_Target
+    }
+
+    Properties
+    {
+        sampler2D _RenderTexture
+    }
+
+    Program
+    {
+        void main()
+        {             
+            vec2 texSize = vec2(1, 1);
+            GetTextureSize(_RenderTexture, texSize);
+            vec2 texOffset = 2.0 / texSize;
+
+            float v0 = texture(_RenderTexture, TexCoords).r;
+
+            float v1 = texture(_RenderTexture, TexCoords + vec2( texOffset.x,  texOffset.y)).r;
+            v1 += texture(_RenderTexture, TexCoords + vec2( texOffset.x, -texOffset.y)).r;
+            v1 += texture(_RenderTexture, TexCoords + vec2(-texOffset.x,  texOffset.y)).r;
+            v1 += texture(_RenderTexture, TexCoords + vec2(-texOffset.x, -texOffset.y)).r;
+
+            if ((v0 < 0.5 && v1 > 0.5) || (v0 > 0.5 && v1 < 3.5))
+                FragColor = vec4(1.0, 0.5, 0.0, 1.0);
+            else
+                FragColor = vec4(1.0, 0.5, 0.0, 0.0);
+        }
+    }
+}

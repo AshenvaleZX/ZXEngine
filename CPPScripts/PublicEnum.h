@@ -73,6 +73,21 @@ namespace ZXEngine
 		Error,
 	};
 
+	enum class AxisType
+	{
+		None,
+		X,
+		Y,
+		Z
+	};
+
+	enum class TransformType
+	{
+		Position,
+		Rotation,
+		Scale
+	};
+
 	enum class RenderQueueType
 	{
 		Deferred    = 500,
@@ -95,8 +110,9 @@ namespace ZXEngine
 		Cylinder,
 		Plane,
 		Quad,
-
 		DynamicPlane,
+		Cone,
+		Circle,
 	};
 
 	enum class ShadowType
@@ -168,6 +184,7 @@ namespace ZXEngine
 		Cloth,
 		AudioSource,
 		UIButton,
+		Circle2DCollider,
 	};
 
 	enum class FaceCullOption
@@ -306,6 +323,8 @@ namespace ZXEngine
 
 		KEY_SPACE,
 		KEY_ESCAPE,
+		KEY_LSHIFT,
+		KEY_RSHIFT,
 
 		KEY_RIGHT,
 		KEY_LEFT,
@@ -448,6 +467,12 @@ namespace ZXEngine
 		KEY_ESCAPE_PRESS,
 		KEY_ESCAPE_DOWN,
 		KEY_ESCAPE_UP,
+		KEY_LSHIFT_PRESS,
+		KEY_LSHIFT_DOWN,
+		KEY_LSHIFT_UP,
+		KEY_RSHIFT_PRESS,
+		KEY_RSHIFT_DOWN,
+		KEY_RSHIFT_UP,
 
 		KEY_RIGHT_PRESS,
 		KEY_RIGHT_DOWN,

@@ -71,6 +71,7 @@ namespace ZXEngine
     struct ZXD3D12DrawCommand
     {
         CommandType commandType = CommandType::NotCare;
+        FrameBufferClearFlags clearFlags = ZX_CLEAR_FRAME_BUFFER_NONE_BIT;
         // Allocator和CommandList其实不用1对1的，一个Allocator可以对应多个CommandList
         // 但是在一个Allocator所对应的所有CommandList中，只能有一个CommandList处于Recording状态
         // 这里稍微有点偷懒了，先直接搞成1对1，反正现在数量小

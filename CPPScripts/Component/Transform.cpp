@@ -13,6 +13,30 @@ namespace ZXEngine
 		return ComponentType::Transform;
 	}
 
+	void Transform::Translate(const Vector3& offset)
+	{
+		localPosition += offset;
+		UpdateColliderTransform();
+	}
+
+	void Transform::Rotate(const Vector3& axis, float angle)
+	{
+		localRotation.Rotate(axis, angle);
+		UpdateColliderTransform();
+	}
+
+	void Transform::Scale(float scale)
+	{
+		localScale *= scale;
+		UpdateColliderTransform();
+	}
+
+	void Transform::Scale(const Vector3& scale)
+	{
+		localScale *= scale;
+		UpdateColliderTransform();
+	}
+
 	Matrix4 Transform::GetLocalPositionMatrix() const
 	{
 		return Math::TranslationMatrix(localPosition);
@@ -232,6 +256,11 @@ namespace ZXEngine
 		if (collider != nullptr)
 		{
 			collider->SynchronizeTransform(GetModelMatrix());
+		}
+
+		for (auto child : gameObject->children)
+		{
+			child->GetComponent<Transform>()->UpdateColliderTransform();
 		}
 	}
 }

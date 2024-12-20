@@ -25,6 +25,7 @@ namespace ZXEngine
 		void Render(const Matrix4& matVP);
 		void SetTexture(const string& path);
 		void OnWindowResize(const string& args);
+		inline bool IsScreenSpace() const { return isScreenSpace; }
 
 	private:
 		bool isScreenSpace = true;

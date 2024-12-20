@@ -120,7 +120,7 @@ namespace ZXEngine
 		static string mAssetsPath;
 
 		static json GetAssetData(const string& path, bool isBuiltIn = false);
-		static PrefabStruct* ParsePrefab(json data, bool async = false);
+		static PrefabStruct* ParsePrefab(json data, bool async = false, bool isBuiltIn = false);
 
 
 		// -------- Òì²½½Ó¿Ú --------

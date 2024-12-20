@@ -168,6 +168,7 @@ namespace ZXEngine
     struct VulkanDrawCommand
     {
         CommandType commandType = CommandType::NotCare;
+        FrameBufferClearFlags clearFlags = ZX_CLEAR_FRAME_BUFFER_NONE_BIT;
         vector<VulkanCommand> drawCommands;
         bool inUse = false;
     };

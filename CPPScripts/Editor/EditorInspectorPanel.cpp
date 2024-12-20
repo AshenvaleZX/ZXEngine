@@ -63,6 +63,8 @@ namespace ZXEngine
 						DrawPlaneCollider(static_cast<PlaneCollider*>(iter.second));
 					else if (type == ComponentType::SphereCollider)
 						DrawSphereCollider(static_cast<SphereCollider*>(iter.second));
+					else if (type == ComponentType::Circle2DCollider)
+						DrawCircle2DCollider(static_cast<Circle2DCollider*>(iter.second));
 					else if (type == ComponentType::RigidBody)
 						DrawRigidBody(static_cast<ZRigidBody*>(iter.second));
 					else if (type == ComponentType::Animator)
@@ -285,34 +287,55 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("Transform"))
 			return;
 
+		bool xChange = false, yChange = false, zChange = false;
+
 		ImGui::PushItemWidth(60);
 		Vector3 position = component->GetLocalPosition();
 		ImGui::Text("Position    ");
 		ImGui::SameLine(); ImGui::Text("X");
-		ImGui::SameLine(); ImGui::DragFloat("##posX", &position.x, 0.15f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); xChange = ImGui::DragFloat("##posX", &position.x, 0.15f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Y");
-		ImGui::SameLine(); ImGui::DragFloat("##posY", &position.y, 0.15f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); yChange = ImGui::DragFloat("##posY", &position.y, 0.15f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Z");
-		ImGui::SameLine(); ImGui::DragFloat("##posZ", &position.z, 0.15f, -FLT_MAX, FLT_MAX);
-		component->SetLocalPosition(position);
+		ImGui::SameLine(); zChange = ImGui::DragFloat("##posZ", &position.z, 0.15f, -FLT_MAX, FLT_MAX);
+		if (xChange || yChange || zChange)
+			component->SetLocalPosition(position);
+
 		Vector3 euler = component->GetLocalEulerAngles();
+		Vector3 eulerOrigin = euler;
 		ImGui::Text("Rotation    ");
 		ImGui::SameLine(); ImGui::Text("X");
-		ImGui::SameLine(); ImGui::DragFloat("##rotX", &euler.x, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); xChange = ImGui::DragFloat("##rotX", &euler.x, 0.25f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Y");
-		ImGui::SameLine(); ImGui::DragFloat("##rotY", &euler.y, 0.25f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); yChange = ImGui::DragFloat("##rotY", &euler.y, 0.25f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Z");
-		ImGui::SameLine(); ImGui::DragFloat("##rotZ", &euler.z, 0.25f, -FLT_MAX, FLT_MAX);
-		component->SetLocalEulerAngles(euler);
+		ImGui::SameLine(); zChange = ImGui::DragFloat("##rotZ", &euler.z, 0.25f, -FLT_MAX, FLT_MAX);
+		if (xChange)
+		{
+			float delta = Math::Deg2Rad(euler.x - eulerOrigin.x);
+			component->Rotate(component->GetRight(), delta);
+		}
+		if (yChange)
+		{
+			float delta = Math::Deg2Rad(euler.y - eulerOrigin.y);
+			component->Rotate(component->GetUp(), delta);
+		}
+		if (zChange)
+		{
+			float delta = Math::Deg2Rad(euler.z - eulerOrigin.z);
+			component->Rotate(component->GetForward(), delta);
+		}
+
 		Vector3 scale = component->GetLocalScale();
 		ImGui::Text("Scale       ");
 		ImGui::SameLine(); ImGui::Text("X");
-		ImGui::SameLine(); ImGui::DragFloat("##scaX", &scale.x, 0.01f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); xChange = ImGui::DragFloat("##scaX", &scale.x, 0.01f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Y");
-		ImGui::SameLine(); ImGui::DragFloat("##scaY", &scale.y, 0.01f, -FLT_MAX, FLT_MAX);
+		ImGui::SameLine(); yChange = ImGui::DragFloat("##scaY", &scale.y, 0.01f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Z");
-		ImGui::SameLine(); ImGui::DragFloat("##scaZ", &scale.z, 0.01f, -FLT_MAX, FLT_MAX);
-		component->SetLocalScale(scale);
+		ImGui::SameLine(); zChange = ImGui::DragFloat("##scaZ", &scale.z, 0.01f, -FLT_MAX, FLT_MAX);
+		if (xChange || yChange || zChange)
+			component->SetLocalScale(scale);
 		ImGui::PopItemWidth();
 	}
 
@@ -337,6 +360,7 @@ namespace ZXEngine
 			component->SetLocalRectPosition(position);
 		
 		Vector3 euler = component->GetLocalEulerAngles();
+		Vector3 eulerOrigin = euler;
 		ImGui::Text("Rotation    ");
 		ImGui::SameLine(); ImGui::Text("X");
 		ImGui::SameLine(); xChange = ImGui::DragFloat("##rotX", &euler.x, 0.25f, -FLT_MAX, FLT_MAX);
@@ -344,8 +368,21 @@ namespace ZXEngine
 		ImGui::SameLine(); yChange = ImGui::DragFloat("##rotY", &euler.y, 0.25f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Z");
 		ImGui::SameLine(); zChange = ImGui::DragFloat("##rotZ", &euler.z, 0.25f, -FLT_MAX, FLT_MAX);
-		if (xChange || yChange || zChange)
-			component->SetLocalEulerAngles(euler);
+		if (xChange)
+		{
+			float delta = Math::Deg2Rad(euler.x - eulerOrigin.x);
+			component->Rotate(component->GetRight(), delta);
+		}
+		if (yChange)
+		{
+			float delta = Math::Deg2Rad(euler.y - eulerOrigin.y);
+			component->Rotate(component->GetUp(), delta);
+		}
+		if (zChange)
+		{
+			float delta = Math::Deg2Rad(euler.z - eulerOrigin.z);
+			component->Rotate(component->GetForward(), delta);
+		}
 
 		Vector3 scale = component->GetLocalScale();
 		ImGui::Text("Scale       ");
@@ -1200,6 +1237,66 @@ namespace ZXEngine
 		float radius = component->mCollider->mRadius;
 		ImGui::Text("Radius           ");
 		ImGui::SameLine(); ImGui::DragFloat("##radius", &radius, 0.01f, 0.0f, FLT_MAX);
+	}
+
+	void EditorInspectorPanel::DrawCircle2DCollider(Circle2DCollider* component)
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+		if (!ImGui::CollapsingHeader("Circle 2D Collider"))
+			return;
+
+		// Friction
+		float friction = component->mFriction;
+		ImGui::Text("Friction         ");
+		ImGui::SameLine(); ImGui::DragFloat("##friction", &friction, 0.01f, 0.0f, FLT_MAX);
+
+		// Bounciness
+		float bounciness = component->mBounciness;
+		ImGui::Text("Bounciness       ");
+		ImGui::SameLine(); ImGui::DragFloat("##bounciness", &bounciness, 0.01f, 0.0f, 1.0f);
+
+		// Combine Type
+		const char* items[] = { "Average", "Minimum", "Maximum", "Multiply" };
+
+		// Friction Combine
+		static ImGuiComboFlags frictionCombineFlags = 0;
+		static int frictionCombineIdx = static_cast<int>(component->mFrictionCombine);
+		const char* frictionPreviewValue = items[frictionCombineIdx];
+		ImGui::Text("Friction Combine ");
+		ImGui::SameLine();
+		if (ImGui::BeginCombo("##FrictionType", frictionPreviewValue, frictionCombineFlags))
+		{
+			for (int i = 0; i < IM_ARRAYSIZE(items); i++)
+			{
+				const bool is_selected = (frictionCombineIdx == i);
+				if (ImGui::Selectable(items[i], is_selected))
+					frictionCombineIdx = i;
+			}
+			ImGui::EndCombo();
+		}
+
+		// Bounce Combine
+		static ImGuiComboFlags bounceCombineFlags = 0;
+		static int bounceCombineIdx = static_cast<int>(component->mBounceCombine);
+		const char* bouncePreviewValue = items[bounceCombineIdx];
+		ImGui::Text("Bounce Combine   ");
+		ImGui::SameLine();
+		if (ImGui::BeginCombo("##BounceType", bouncePreviewValue, bounceCombineFlags))
+		{
+			for (int i = 0; i < IM_ARRAYSIZE(items); i++)
+			{
+				const bool is_selected = (bounceCombineIdx == i);
+				if (ImGui::Selectable(items[i], is_selected))
+					bounceCombineIdx = i;
+			}
+			ImGui::EndCombo();
+		}
+
+		// Normal
+		Vector3 normal = component->mCollider->mWorldNormal;
+		ImVec4 v = ImVec4(normal.x, normal.y, normal.z, 1.0f);
+		ImGui::Text("Normal           ");
+		ImGui::SameLine(); ImGui::DragFloat3("##normal", (float*)&v, 0.01f, -FLT_MAX, FLT_MAX);
 	}
 
 	void EditorInspectorPanel::DrawRigidBody(ZRigidBody* component)
