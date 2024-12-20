@@ -11,7 +11,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 namespace ZXEngine
 {
-	LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+	static LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		return static_cast<WindowManagerWindows*>(WindowManager::GetInstance())->WindowProcedure(hWnd, msg, wParam, lParam);
 	}
@@ -36,8 +36,15 @@ namespace ZXEngine
 
 		mWindowWidth = ProjectSetting::srcWidth;
 		mWindowHeight = ProjectSetting::srcHeight;
+
+		// CreateWindowW传入的窗口大小会包括标题栏和边框，需要根据客户区大小来计算实际窗口大小
+		RECT rc = { 0, 0, static_cast<LONG>(mWindowWidth), static_cast<LONG>(mWindowHeight) };
+		AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
+		int width = static_cast<int>(rc.right - rc.left);
+		int height = static_cast<int>(rc.bottom - rc.top);
+
 		mWindow = CreateWindowW(wndClass.lpszClassName, L"ZXEngine <Direct3D 12>", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
-			ProjectSetting::srcWidth, ProjectSetting::srcHeight, NULL, NULL, wndClass.hInstance, NULL);
+			width, height, NULL, NULL, wndClass.hInstance, NULL);
 	}
 
 	void* WindowManagerWindows::GetWindow()
