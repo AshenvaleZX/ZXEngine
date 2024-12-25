@@ -10,6 +10,8 @@ namespace ZXEngine
 		// ‘§±‡“Î
 	public:
 		static void CompileAllShader(string path);
+		static void CompileShader(const string& path);
+		static void GenerateSPIRVFile(const string& path);
 
 	private:
 		static void CompileShader(const filesystem::path& path);

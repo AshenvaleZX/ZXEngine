@@ -163,23 +163,23 @@ namespace ZXEngine
 		return text;
 	}
 
-	vector<char> Resources::LoadBinaryFile(const string& path)
+	bool Resources::LoadBinaryFile(vector<char>& data, const string& path)
 	{
 		// ate:在文件末尾开始读取，从文件末尾开始读取的优点是我们可以使用读取位置来确定文件的大小并分配缓冲区
 		ifstream file(path, std::ios::ate | std::ios::binary);
 		if (!file.is_open())
-			Debug::LogError("Failed to load binary file: " + path);
+			return false;
 
 		// 使用读取位置来确定文件的大小并分配缓冲区
 		size_t fileSize = (size_t)file.tellg();
-		vector<char> data(fileSize);
+		data.resize(fileSize);
 
 		// 返回文件开头，真正读取内容
 		file.seekg(0);
 		file.read(data.data(), fileSize);
 		file.close();
 
-		return data;
+		return true;
 	}
 
 	json Resources::GetAssetData(const string& path, bool isBuiltIn)

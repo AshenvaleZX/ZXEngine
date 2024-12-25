@@ -11,6 +11,8 @@
 #include "FBOManager.h"
 #include "Window/WindowManager.h"
 #include "EventManager.h"
+#include "Vulkan/SPIRVCompiler.h"
+
 #ifdef ZX_EDITOR
 #include "Editor/EditorGUIManager.h"
 #include "Editor/ImGuiTextureManager.h"
@@ -1912,7 +1914,7 @@ namespace ZXEngine
         for (auto& path : rtShaderPathGroup.rGenPaths)
         {
 			stageInfo.stage = VK_SHADER_STAGE_RAYGEN_BIT_KHR;
-			stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath(path + ".spv")));
+			stageInfo.module = CreateShaderModule(GetSPIRVShader(Resources::GetAssetFullPath(path), ZX_SHADER_STAGE_RAYGEN_BIT));
 			stages.push_back(stageInfo);
 
             shaderGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
@@ -1925,7 +1927,7 @@ namespace ZXEngine
         for (auto& path : rtShaderPathGroup.rMissPaths)
         {
             stageInfo.stage = VK_SHADER_STAGE_MISS_BIT_KHR;
-            stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath(path + ".spv")));
+            stageInfo.module = CreateShaderModule(GetSPIRVShader(Resources::GetAssetFullPath(path), ZX_SHADER_STAGE_MISS_BIT));
             stages.push_back(stageInfo);
 
             shaderGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
@@ -1938,7 +1940,7 @@ namespace ZXEngine
         for (auto& groupPath : rtShaderPathGroup.rHitGroupPaths)
         {
             stageInfo.stage = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
-			stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath(groupPath.rClosestHitPath + ".spv")));
+			stageInfo.module = CreateShaderModule(GetSPIRVShader(Resources::GetAssetFullPath(groupPath.rClosestHitPath), ZX_SHADER_STAGE_CLOSEST_HIT_BIT));
 			stages.push_back(stageInfo);
 
             shaderGroupInfo.type = groupPath.rIntersectionPath.empty() ? VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR : VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR;
@@ -1950,7 +1952,7 @@ namespace ZXEngine
             if (!groupPath.rAnyHitPath.empty())
             {
 				stageInfo.stage = VK_SHADER_STAGE_ANY_HIT_BIT_KHR;
-				stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath(groupPath.rAnyHitPath + ".spv")));
+				stageInfo.module = CreateShaderModule(GetSPIRVShader(Resources::GetAssetFullPath(groupPath.rAnyHitPath), ZX_SHADER_STAGE_ANY_HIT_BIT));
 				stages.push_back(stageInfo);
 
 				shaderGroupInfo.anyHitShader = shaderIndex++;
@@ -1959,7 +1961,7 @@ namespace ZXEngine
             if (!groupPath.rIntersectionPath.empty())
             {
                 stageInfo.stage = VK_SHADER_STAGE_INTERSECTION_BIT_KHR;
-                stageInfo.module = CreateShaderModule(Resources::LoadBinaryFile(Resources::GetAssetFullPath(groupPath.rIntersectionPath + ".spv")));
+                stageInfo.module = CreateShaderModule(GetSPIRVShader(Resources::GetAssetFullPath(groupPath.rIntersectionPath), ZX_SHADER_STAGE_INTERSECTION_BIT));
                 stages.push_back(stageInfo);
 
                 shaderGroupInfo.intersectionShader = shaderIndex++;
@@ -5392,7 +5394,7 @@ namespace ZXEngine
         return descriptorSets;
     }
 
-    VkShaderModule RenderAPIVulkan::CreateShaderModule(vector<char> code)
+    VkShaderModule RenderAPIVulkan::CreateShaderModule(const vector<char>& code)
     {
         VkShaderModuleCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -5413,17 +5415,17 @@ namespace ZXEngine
         string prePath = path.substr(0, path.length() - 9);
         ShaderModuleSet shaderModules;
 
-        auto vertShader = Resources::LoadBinaryFile(prePath + ".vert.spv");
+        auto vertShader = GetSPIRVShader(prePath, ZX_SHADER_STAGE_VERTEX_BIT);
         auto vertModule = CreateShaderModule(vertShader);
         shaderModules.insert(make_pair(VK_SHADER_STAGE_VERTEX_BIT, vertModule));
 
-        auto fragShader = Resources::LoadBinaryFile(prePath + ".frag.spv");
+        auto fragShader = GetSPIRVShader(prePath, ZX_SHADER_STAGE_FRAGMENT_BIT);
         auto fragModule = CreateShaderModule(fragShader);
         shaderModules.insert(make_pair(VK_SHADER_STAGE_FRAGMENT_BIT, fragModule));
 
         if (info.stages & ZX_SHADER_STAGE_GEOMETRY_BIT)
         {
-            auto geomShader = Resources::LoadBinaryFile(prePath + ".geom.spv");
+            auto geomShader = GetSPIRVShader(prePath, ZX_SHADER_STAGE_GEOMETRY_BIT);
             auto geomModule = CreateShaderModule(geomShader);
             shaderModules.insert(make_pair(VK_SHADER_STAGE_GEOMETRY_BIT, geomModule));
         }
@@ -6139,5 +6141,49 @@ namespace ZXEngine
             throw std::runtime_error("failed to create pipeline layout!");
 
         return pipelineLayout;
+    }
+
+    vector<char> RenderAPIVulkan::GetSPIRVShader(const string& path, ShaderStageFlagBit stage)
+    {
+        bool isRasterization = stage & ZX_SHADER_STAGE_VERTEX_BIT || stage & ZX_SHADER_STAGE_GEOMETRY_BIT || stage & ZX_SHADER_STAGE_FRAGMENT_BIT;
+
+        string extension = "";
+        if (stage & ZX_SHADER_STAGE_VERTEX_BIT)
+            extension = ".vert";
+        else if (stage & ZX_SHADER_STAGE_GEOMETRY_BIT)
+            extension = ".geom";
+        else if (stage & ZX_SHADER_STAGE_FRAGMENT_BIT)
+            extension = ".frag";
+        else if (stage & ZX_SHADER_STAGE_RAYGEN_BIT)
+            extension = ".rgen";
+        else if (stage & ZX_SHADER_STAGE_ANY_HIT_BIT)
+            extension = ".rahit";
+        else if (stage & ZX_SHADER_STAGE_CLOSEST_HIT_BIT)
+            extension = ".rchit";
+        else if (stage & ZX_SHADER_STAGE_MISS_BIT)
+            extension = ".rmiss";
+        else if (stage & ZX_SHADER_STAGE_INTERSECTION_BIT)
+            extension = ".rint";
+        else
+            throw std::runtime_error("Unknown shader stage!");
+
+        string fullPath = isRasterization ? path + extension + ".spv" : path + ".spv";
+
+        vector<char> shader;
+        bool suc = Resources::LoadBinaryFile(shader, fullPath);
+
+        if (!suc)
+        {
+            if (isRasterization)
+                SPIRVCompiler::CompileShader(path + ".zxshader");
+            else
+                SPIRVCompiler::GenerateSPIRVFile(path + ".vkr");
+
+            suc = Resources::LoadBinaryFile(shader, fullPath);
+        }
+
+        if (!suc) throw std::runtime_error("Failed to load shader!");
+
+        return shader;
     }
 }

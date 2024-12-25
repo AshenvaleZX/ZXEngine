@@ -321,7 +321,7 @@ namespace ZXEngine
         VkDescriptorPool CreateDescriptorPool(const ShaderInfo& info);
         vector<VkDescriptorSet> CreateDescriptorSets(VkDescriptorPool descriptorPool, const vector<VkDescriptorSetLayout>& descriptorSetLayouts);
 
-        VkShaderModule CreateShaderModule(vector<char> code);
+        VkShaderModule CreateShaderModule(const vector<char>& code);
         ShaderModuleSet CreateShaderModules(const string& path, const ShaderInfo& info);
         void DestroyShaderModules(ShaderModuleSet shaderModules);
 
@@ -437,5 +437,6 @@ namespace ZXEngine
         VkPipelineInputAssemblyStateCreateInfo GetAssemblyInfo(VkPrimitiveTopology topology);
         VkPipelineRasterizationStateCreateInfo GetRasterizationInfo(VkCullModeFlagBits cullMode);
         VkPipelineMultisampleStateCreateInfo GetPipelineMultisampleInfo(VkSampleCountFlagBits rasterizationSamples);
+        vector<char> GetSPIRVShader(const string& path, ShaderStageFlagBit stage);
     };
 }

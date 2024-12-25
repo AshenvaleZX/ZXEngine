@@ -12,11 +12,29 @@ namespace ZXEngine
 		{
 			string extension = entry.path().filename().extension().string();
 			if (extension == ".zxshader")
-				CompileShader(entry.path().string());
+				CompileShader(entry.path());
 			else if (extension == ".vkr")
 				GenerateSPIRVFile(entry.path());
 			else if (entry.is_directory())
 				CompileAllShader(entry.path().string());
+		}
+	}
+
+	void SPIRVCompiler::CompileShader(const string& path)
+	{
+		filesystem::path p(path);
+		if (filesystem::exists(p))
+		{
+			CompileShader(p);
+		}
+	}
+
+	void SPIRVCompiler::GenerateSPIRVFile(const string& path)
+	{
+		filesystem::path p(path);
+		if (filesystem::exists(p))
+		{
+			GenerateSPIRVFile(p);
 		}
 	}
 
