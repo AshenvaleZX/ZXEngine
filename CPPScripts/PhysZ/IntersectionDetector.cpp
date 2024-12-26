@@ -1,6 +1,7 @@
 #include "IntersectionDetector.h"
 #include "CollisionPrimitive.h"
 #include "Ray.h"
+#include "../ZMesh.h"
 
 namespace ZXEngine
 {
@@ -145,6 +146,70 @@ namespace ZXEngine
 			Vector3 pHit = localRay.mOrigin + hit.distance * localRay.mDirection;
 
 			return pHit.GetMagnitudeSquared() <= circle.mRadius * circle.mRadius;
+		}
+
+		// Moller-Trumbore intersection algorithm
+		// "Fast, Minimum Storage Ray-Triangle Intersection", Journal of Graphics Tools, vol. 2, no. 1, pp 21-28, 1997.
+		bool IntersectionDetector::Detect(const Ray& ray, const Vector3& v0, const Vector3& v1, const Vector3& v2)
+		{
+			Vector3 e1 = v1 - v0;
+			Vector3 e2 = v2 - v0;
+			Vector3 p = Math::Cross(ray.mDirection, e2);
+			float det = Math::Dot(e1, p);
+
+			// Æ½ÐÐ
+			if (det > -0.0001f && det < 0.0001f)
+			{
+				return false;
+			}
+
+			float f = 1.0f / det;
+			Vector3 s = ray.mOrigin - v0;
+			float u = f * Math::Dot(s, p);
+
+			if (u < 0.0f || u > 1.0f)
+			{
+				return false;
+			}
+
+			Vector3 q = Math::Cross(s, e1);
+			float v = f * Math::Dot(ray.mDirection, q);
+
+			if (v < 0.0f || u + v > 1.0f)
+			{
+				return false;
+			}
+
+			float t = f * Math::Dot(e2, q);
+
+			if (t > 0.0001f)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		bool IntersectionDetector::Detect(const Ray& ray, const Mesh& mesh)
+		{
+			bool hit = false;
+
+			for (size_t i = 0; i < mesh.mIndices.size(); i += 3)
+			{
+				const Vector3& v0 = mesh.mVertices[mesh.mIndices[i]].Position;
+				const Vector3& v1 = mesh.mVertices[mesh.mIndices[i + 1]].Position;
+				const Vector3& v2 = mesh.mVertices[mesh.mIndices[i + 2]].Position;
+
+				if (Detect(ray, v0, v1, v2))
+				{
+					hit = true;
+					break;
+				}
+			}
+
+			return hit;
 		}
 
 		bool IntersectionDetector::Detect(const CollisionBox& box1, const CollisionBox& box2)

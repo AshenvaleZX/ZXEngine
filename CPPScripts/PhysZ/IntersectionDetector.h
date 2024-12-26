@@ -4,6 +4,7 @@
 
 namespace ZXEngine
 {
+	class Mesh;
 	namespace PhysZ
 	{
 		class Ray;
@@ -19,6 +20,8 @@ namespace ZXEngine
 			static bool Detect(const Ray& ray, const CollisionSphere& sphere);
 			static bool Detect(const Ray& ray, const CollisionCircle2D& circle);
 			static bool Detect(const Ray& ray, const CollisionCircle2D& circle, RayHitInfo& hit);
+			static bool Detect(const Ray& ray, const Vector3& v0, const Vector3& v1, const Vector3& v2);
+			static bool Detect(const Ray& ray, const Mesh& mesh);
 			static bool Detect(const CollisionBox& box1, const CollisionBox& box2);
 			static bool Detect(const CollisionSphere& sphere1, const CollisionSphere& sphere2);
 			static bool Detect(const CollisionBox& box, const CollisionPlane& plane);
