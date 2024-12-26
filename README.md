@@ -718,10 +718,6 @@ cd BuildSolution\CMake
 .\BuildWin.bat
 ```
 
-对于DirectX 12版本的ZXEngine，推荐直接用Visual Studio来编译。因为你如果用Clang或者GCC来编译的话，可能没法支持一些Windows特性(也可能支持但是我不知道怎么搞)，出现奇怪的问题。比如“高DPI识别”，如果没有这个会导致在设置了Windows系统缩放的时候，应用程序分辨率异常，出现显示模糊的问题。
-
-For the DirectX 12 version of ZXEngine, it is recommended to compile with Visual Studio. Because if you use Clang or GCC to compile, some Windows features may not be supported (it may be supported but I don't know how), and strange problems may occur. For example, "DPI Awareness", without this, will cause the application resolution to be abnormal and the display to be blurry when Windows system scaling is set.
-
 ### macOS
 
 本项目在macOS平台提供的构建工具为xmake和CMake，xmake的使用方式和在Windows平台一样：

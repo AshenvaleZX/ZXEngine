@@ -18,6 +18,9 @@ namespace ZXEngine
 
 	WindowManagerWindows::WindowManagerWindows()
 	{
+		// 处理系统缩放
+		SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+
 		WNDCLASSEXW wndClass = {};
 		wndClass.cbSize = sizeof(wndClass);
 		wndClass.style = CS_HREDRAW | CS_VREDRAW;
