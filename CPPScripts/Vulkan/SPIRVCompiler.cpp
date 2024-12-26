@@ -66,7 +66,7 @@ namespace ZXEngine
 	void SPIRVCompiler::GenerateSPIRVFile(const filesystem::path& path)
 	{
 		string filePath = path.string();
-		string outputFinalPath = path.parent_path().string() + "\\" + path.stem().string() + ".spv";
+		string outputFinalPath = path.parent_path().string() + "/" + path.stem().string() + ".spv";
 		string stage = Utils::GetFileExtension(path.stem().string());
 
 #if defined(ZX_PLATFORM_WINDOWS)
