@@ -28,6 +28,15 @@ namespace ZXEngine
             mesh->mAABBSizeX = 1.0f;
             mesh->mAABBSizeY = 1.0f;
             mesh->mAABBSizeZ = 1.0f;
+            mesh->mExtremeVertices =
+            {
+                Vertex{ .Position = Vector3( 0.5f,  0.0f,  0.0f) },
+                Vertex{ .Position = Vector3(-0.5f,  0.0f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.5f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f, -0.5f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.0f,  0.5f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.0f, -0.5f) }
+            };
         }
         else if (type == GeometryType::Sphere)
         {
@@ -35,6 +44,15 @@ namespace ZXEngine
             mesh->mAABBSizeX = 1.0f;
             mesh->mAABBSizeY = 1.0f;
             mesh->mAABBSizeZ = 1.0f;
+            mesh->mExtremeVertices =
+            {
+                Vertex{ .Position = Vector3( 0.5f,  0.0f,  0.0f) },
+                Vertex{ .Position = Vector3(-0.5f,  0.0f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.5f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f, -0.5f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.0f,  0.5f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.0f, -0.5f) }
+            };
         }
         else if (type == GeometryType::TessellationSphere)
         {
@@ -42,6 +60,15 @@ namespace ZXEngine
             mesh->mAABBSizeX = 1.0f;
             mesh->mAABBSizeY = 1.0f;
             mesh->mAABBSizeZ = 1.0f;
+            mesh->mExtremeVertices =
+            {
+                Vertex{ .Position = Vector3( 0.5f,  0.0f,  0.0f) },
+                Vertex{ .Position = Vector3(-0.5f,  0.0f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.5f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f, -0.5f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.0f,  0.5f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.0f, -0.5f) }
+            };
         }
         else if (type == GeometryType::Circle)
         {
@@ -49,6 +76,15 @@ namespace ZXEngine
             mesh->mAABBSizeX = 1.0f;
             mesh->mAABBSizeY = 1.0f;
             mesh->mAABBSizeZ = 0.0f;
+            mesh->mExtremeVertices =
+            {
+                Vertex{ .Position = Vector3( 0.5f,  0.0f, 0.0f) },
+                Vertex{ .Position = Vector3(-0.5f,  0.0f, 0.0f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.5f, 0.0f) },
+                Vertex{ .Position = Vector3( 0.0f, -0.5f, 0.0f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.0f, 0.0f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.0f, 0.0f) }
+            };
         }
         else if (type == GeometryType::Cone)
         {
@@ -56,6 +92,15 @@ namespace ZXEngine
             mesh->mAABBSizeX = 1.0f;
             mesh->mAABBSizeY = 1.0f;
             mesh->mAABBSizeZ = 1.0f;
+            mesh->mExtremeVertices =
+            {
+                Vertex{ .Position = Vector3( 0.5f, -0.5f,  0.0f) },
+                Vertex{ .Position = Vector3(-0.5f, -0.5f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.5f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f, -0.5f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f, -0.5f,  0.5f) },
+                Vertex{ .Position = Vector3( 0.0f, -0.5f, -0.5f) }
+            };
         }
         else if (type == GeometryType::Cylinder)
         {
@@ -63,6 +108,15 @@ namespace ZXEngine
             mesh->mAABBSizeX = 1.0f;
             mesh->mAABBSizeY = 1.0f;
             mesh->mAABBSizeZ = 1.0f;
+            mesh->mExtremeVertices =
+            {
+                Vertex{ .Position = Vector3( 0.5f,  0.0f,  0.0f) },
+                Vertex{ .Position = Vector3(-0.5f,  0.0f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.5f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f, -0.5f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.0f,  0.5f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.0f, -0.5f) }
+            };
         }
         else if (type == GeometryType::Plane)
         {
@@ -70,6 +124,15 @@ namespace ZXEngine
             mesh->mAABBSizeX = 10.0f;
             mesh->mAABBSizeY = 0.0f;
             mesh->mAABBSizeZ = 10.0f;
+            mesh->mExtremeVertices =
+            {
+                Vertex{ .Position = Vector3( 5.0f, 0.0f,  0.0f) },
+                Vertex{ .Position = Vector3(-5.0f, 0.0f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f, 0.0f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f, 0.0f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f, 0.0f,  5.0f) },
+                Vertex{ .Position = Vector3( 0.0f, 0.0f, -5.0f) }
+            };
         }
         else if (type == GeometryType::Quad)
         {
@@ -77,6 +140,15 @@ namespace ZXEngine
             mesh->mAABBSizeX = 1.0f;
             mesh->mAABBSizeY = 1.0f;
             mesh->mAABBSizeZ = 0.0f;
+            mesh->mExtremeVertices =
+            {
+                Vertex{ .Position = Vector3( 0.5f,  0.0f, 0.0f) },
+                Vertex{ .Position = Vector3(-0.5f,  0.0f, 0.0f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.5f, 0.0f) },
+                Vertex{ .Position = Vector3( 0.0f, -0.5f, 0.0f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.0f, 0.0f) },
+                Vertex{ .Position = Vector3( 0.0f,  0.0f, 0.0f) }
+            };
         }
         else if (type == GeometryType::DynamicPlane)
         {
@@ -84,6 +156,15 @@ namespace ZXEngine
 			mesh->mAABBSizeX = 5.0f;
 			mesh->mAABBSizeY = 0.0f;
 			mesh->mAABBSizeZ = 5.0f;
+            mesh->mExtremeVertices =
+            {
+                Vertex{ .Position = Vector3( 2.5f, 0.0f,  0.0f) },
+                Vertex{ .Position = Vector3(-2.5f, 0.0f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f, 0.0f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f, 0.0f,  0.0f) },
+                Vertex{ .Position = Vector3( 0.0f, 0.0f,  2.5f) },
+                Vertex{ .Position = Vector3( 0.0f, 0.0f, -2.5f) }
+            };
         }
         else
         {
