@@ -16,12 +16,14 @@ namespace ZXEngine
 		{
 		public:
 			static bool Detect(const Ray& ray, const CollisionBox& box);
+			static bool Detect(const Ray& ray, const CollisionBox& box, RayHitInfo& hit);
+			static bool Detect(const Ray& localRay, const Vector3& boxHalfSize, RayHitInfo& hit);
 			static bool Detect(const Ray& ray, const CollisionPlane& plane);
 			static bool Detect(const Ray& ray, const CollisionSphere& sphere);
 			static bool Detect(const Ray& ray, const CollisionCircle2D& circle);
 			static bool Detect(const Ray& ray, const CollisionCircle2D& circle, RayHitInfo& hit);
-			static bool Detect(const Ray& ray, const Vector3& v0, const Vector3& v1, const Vector3& v2);
-			static bool Detect(const Ray& ray, const Mesh& mesh);
+			static bool Detect(const Ray& ray, const Vector3& v0, const Vector3& v1, const Vector3& v2, float& t);
+			static bool Detect(const Ray& ray, const Mesh& mesh, RayHitInfo& hit);
 			static bool Detect(const CollisionBox& box1, const CollisionBox& box2);
 			static bool Detect(const CollisionSphere& sphere1, const CollisionSphere& sphere2);
 			static bool Detect(const CollisionBox& box, const CollisionPlane& plane);

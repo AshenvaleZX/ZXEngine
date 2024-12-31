@@ -9,10 +9,20 @@ namespace ZXEngine
 	{
 		bool IntersectionDetector::Detect(const Ray& ray, const CollisionBox& box)
 		{
+			RayHitInfo hit;
+			return Detect(ray, box, hit);
+		}
+
+		bool IntersectionDetector::Detect(const Ray& ray, const CollisionBox& box, RayHitInfo& hit)
+		{
 			// 将射线转换到Box的局部空间
 			Matrix4 transform = Math::Inverse(box.mTransform);
 			Ray localRay = Ray(transform * ray.mOrigin.ToPosVec4(), transform * ray.mDirection.ToDirVec4());
+			return Detect(localRay, box.mHalfSize, hit);
+		}
 
+		bool IntersectionDetector::Detect(const Ray& localRay, const Vector3& boxHalfSize, RayHitInfo& hit)
+		{
 			// 射线距离的最小最大值
 			float tMin = 0.0f;
 			float tMax = FLT_MAX;
@@ -21,8 +31,8 @@ namespace ZXEngine
 			Vector3 inverseDirection = Vector3(1.0f / localRay.mDirection.x, 1.0f / localRay.mDirection.y, 1.0f / localRay.mDirection.z);
 
 			// Box的最小最大值
-			Vector3 bMin = -box.mHalfSize;
-			Vector3 bMax =  box.mHalfSize;
+			Vector3 bMin = -boxHalfSize;
+			Vector3 bMax =  boxHalfSize;
 
 			for (int i = 0; i < 3; i++)
 			{
@@ -56,6 +66,8 @@ namespace ZXEngine
 					}
 				}
 			}
+
+			hit.distance = tMin;
 
 			return true;
 		}
@@ -150,7 +162,7 @@ namespace ZXEngine
 
 		// Moller-Trumbore intersection algorithm
 		// "Fast, Minimum Storage Ray-Triangle Intersection", Journal of Graphics Tools, vol. 2, no. 1, pp 21-28, 1997.
-		bool IntersectionDetector::Detect(const Ray& ray, const Vector3& v0, const Vector3& v1, const Vector3& v2)
+		bool IntersectionDetector::Detect(const Ray& ray, const Vector3& v0, const Vector3& v1, const Vector3& v2, float& t)
 		{
 			Vector3 e1 = v1 - v0;
 			Vector3 e2 = v2 - v0;
@@ -180,7 +192,7 @@ namespace ZXEngine
 				return false;
 			}
 
-			float t = f * Math::Dot(e2, q);
+			t = f * Math::Dot(e2, q);
 
 			if (t > 0.0001f)
 			{
@@ -192,9 +204,10 @@ namespace ZXEngine
 			}
 		}
 
-		bool IntersectionDetector::Detect(const Ray& ray, const Mesh& mesh)
+		bool IntersectionDetector::Detect(const Ray& ray, const Mesh& mesh, RayHitInfo& hit)
 		{
-			bool hit = false;
+			bool isHit = false;
+			float minDistance = FLT_MAX;
 
 			for (size_t i = 0; i < mesh.mIndices.size(); i += 3)
 			{
@@ -202,14 +215,20 @@ namespace ZXEngine
 				const Vector3& v1 = mesh.mVertices[mesh.mIndices[i + 1]].Position;
 				const Vector3& v2 = mesh.mVertices[mesh.mIndices[i + 2]].Position;
 
-				if (Detect(ray, v0, v1, v2))
+				float t;
+				if (Detect(ray, v0, v1, v2, t))
 				{
-					hit = true;
-					break;
+					isHit = true;
+
+					if (t < minDistance)
+					{
+						minDistance = t;
+						hit.distance = t;
+					}
 				}
 			}
 
-			return hit;
+			return isHit;
 		}
 
 		bool IntersectionDetector::Detect(const CollisionBox& box1, const CollisionBox& box2)
