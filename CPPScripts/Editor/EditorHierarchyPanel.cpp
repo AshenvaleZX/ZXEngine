@@ -16,6 +16,12 @@ namespace ZXEngine
 		if (ImGui::Begin("Hierarchy", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
 		{
 			nodeIdx = 0;
+
+			auto newSelectedGO = EditorDataManager::GetInstance()->selectedGO;
+			// 如果选中的物体发生变化，需要自动展开并移动到选中的物体
+			autoExpand = newSelectedGO != nullptr && newSelectedGO != selectedGO;
+			selectedGO = newSelectedGO;
+			
 			auto scene = SceneManager::GetInstance()->GetCurScene();
 			for (auto gameObject : scene->gameObjects)
 				DrawNode(gameObject);
@@ -45,23 +51,44 @@ namespace ZXEngine
 			ImGui::TreeNodeEx((void*)(intptr_t)nodeIdx, nodeFlags, gameObject->name.c_str());
 			if (!gameObject->IsActive()) ImGui::PopStyleColor();
 
+			// 滚动到选中的项
+			if (autoExpand && selectedGO == gameObject)
+			{
+				ImVec2 itemPos = ImGui::GetCursorScreenPos();
+				ImGui::SetScrollHereY();
+			}
+
 			if (ImGui::IsItemClicked())
 			{
-				selectedGO = gameObject;
 				EditorDataManager::GetInstance()->SetSelectedGO(gameObject);
+				// 如果是在面板上点击选取的，不会触发autoExpand
+				selectedGO = gameObject;
 			}
 		}
 		else
 		{
 			// 中间节点
+			if (autoExpand && selectedGO->IsChildOf(gameObject))
+			{
+				ImGui::SetNextItemOpen(true);
+			}
+
 			if (!gameObject->IsActive()) ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(160, 160, 160, 255));
 			bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)nodeIdx, nodeFlags, gameObject->name.c_str());
 			if (!gameObject->IsActive()) ImGui::PopStyleColor();
 
+			// 滚动到选中的项
+			if (autoExpand && selectedGO == gameObject)
+			{
+				ImVec2 itemPos = ImGui::GetCursorScreenPos();
+				ImGui::SetScrollHereY();
+			}
+
 			if (ImGui::IsItemClicked())
 			{
-				selectedGO = gameObject;
 				EditorDataManager::GetInstance()->SetSelectedGO(gameObject);
+				// 如果是在面板上点击选取的，不会触发autoExpand
+				selectedGO = gameObject;
 			}
 
 			if (nodeOpen)
