@@ -132,6 +132,16 @@ namespace ZXEngine
 		}
 	}
 
+	bool GameObject::IsChildOf(GameObject* other) const
+	{
+		if (parent == other)
+			return true;
+		else if (parent)
+			return parent->IsChildOf(other);
+		else
+			return false;
+	}
+
 	void GameObject::SetParent(GameObject* parent)
 	{
 		parent->AddChild(this);

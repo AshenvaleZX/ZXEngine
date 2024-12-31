@@ -63,6 +63,7 @@ namespace ZXEngine
 		void SetActive(bool active);
 		void AddChild(GameObject* child);
 		void RemoveChild(GameObject* child, bool toRoot = true);
+		bool IsChildOf(GameObject* other) const;
 		void SetParent(GameObject* parent);
 		GameObject* FindChildren(const string& path) const;
 		void AddComponent(ComponentType type, Component* component);
