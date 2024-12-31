@@ -13,6 +13,7 @@
 #include "GameLogicManager.h"
 #include "ParticleSystem/ParticleSystemManager.h"
 #include "Audio/AudioEngine.h"
+#include "ZMesh.h"
 
 #ifdef ZX_EDITOR
 #include "Editor/EditorCamera.h"
@@ -104,6 +105,21 @@ namespace ZXEngine
 		RenderEngine::GetInstance()->Render(camera);
 	}
 
+	GameObject* Scene::Pick(const PhysZ::Ray& ray)
+	{
+		PhysZ::RayHitInfo hit;
+		GameObject* res = nullptr;
+
+		for (auto go : gameObjects)
+		{
+			auto result = Pick(ray, go, hit);
+			if (result)
+				res = result;
+		}
+
+		return res;
+	}
+
 	void Scene::AddGameObject(GameObject* gameObject)
 	{
 		auto iter = std::find(gameObjects.begin(), gameObjects.end(), gameObject);
@@ -154,5 +170,71 @@ namespace ZXEngine
 			mPhyScene->Update(Time::deltaTime);
 			mPhyScene->EndFrame();
 		}
+	}
+
+	GameObject* Scene::Pick(const PhysZ::Ray& ray, GameObject* gameObject, PhysZ::RayHitInfo& hit)
+	{
+		if (!gameObject->IsActive())
+			return nullptr;
+
+		GameObject* res = nullptr;
+
+		auto meshRenderer = gameObject->GetComponent<MeshRenderer>();
+		if (meshRenderer)
+		{
+			auto mTrans = gameObject->GetComponent<Transform>()->GetModelMatrix();
+			auto iTrans = Math::Inverse(mTrans);
+			PhysZ::Ray localRay = PhysZ::Ray(iTrans * ray.mOrigin.ToPosVec4(), iTrans * ray.mDirection.ToDirVec4());
+
+			for (auto& mesh : meshRenderer->mMeshes)
+			{
+				Vector3 halfSize;
+				halfSize.x = mesh->mExtremeVertices[0].Position.x - mesh->mExtremeVertices[1].Position.x;
+				halfSize.y = mesh->mExtremeVertices[2].Position.y - mesh->mExtremeVertices[3].Position.y;
+				halfSize.z = mesh->mExtremeVertices[4].Position.z - mesh->mExtremeVertices[5].Position.z;
+
+				Vector3 offset;
+				offset.x = (mesh->mExtremeVertices[0].Position.x + mesh->mExtremeVertices[1].Position.x) / 2.0f;
+				offset.y = (mesh->mExtremeVertices[2].Position.y + mesh->mExtremeVertices[3].Position.y) / 2.0f;
+				offset.z = (mesh->mExtremeVertices[4].Position.z + mesh->mExtremeVertices[5].Position.z) / 2.0f;
+
+				// 这里有一个抽象的AABB，但是中心点不一定在原点，所以做个偏移
+				PhysZ::Ray correctionRay = PhysZ::Ray(localRay.mOrigin - offset, localRay.mDirection);
+
+				PhysZ::RayHitInfo boxHit;
+				if (PhysZ::IntersectionDetector::Detect(correctionRay, halfSize, boxHit))
+				{
+					Vector3 boxHitPosLocal = correctionRay.mOrigin + correctionRay.mDirection * boxHit.distance;
+					Vector3 boxHitPosWorld = mTrans * boxHitPosLocal.ToPosVec4();
+					boxHit.distance = (boxHitPosWorld - ray.mOrigin).GetMagnitude();
+
+					if (boxHit.distance < hit.distance)
+					{
+						PhysZ::RayHitInfo meshHit;
+						if (PhysZ::IntersectionDetector::Detect(localRay, *mesh.get(), meshHit))
+						{
+							Vector3 meshHitPosLocal = localRay.mOrigin + localRay.mDirection * meshHit.distance;
+							Vector3 meshHitPosWorld = mTrans * meshHitPosLocal.ToPosVec4();
+							meshHit.distance = (meshHitPosWorld - ray.mOrigin).GetMagnitude();
+
+							if (meshHit.distance < hit.distance)
+							{
+								hit = meshHit;
+								res = gameObject;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		for (auto child : gameObject->children)
+		{
+			auto result = Pick(ray, child, hit);
+			if (result)
+				res = result;
+		}
+
+		return res;
 	}
 }

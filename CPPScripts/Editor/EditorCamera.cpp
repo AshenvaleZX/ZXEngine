@@ -6,6 +6,8 @@
 #include "../Time.h"
 #include "../Utils.h"
 #include "../Input/InputManager.h"
+#include "../GlobalData.h"
+#include "../SceneManager.h"
 
 namespace ZXEngine
 {
@@ -152,16 +154,49 @@ namespace ZXEngine
 			}
 		}
 
-		EditorSceneWidgetsRenderer::GetInstance()->UpdateWidgetColor(true);
-
-		mOperateWidgetHandle = EventManager::GetInstance()->AddEditorEventHandler(EventType::UPDATE_MOUSE_POS, std::bind(&EditorCamera::OperateWidgetCallBack, this, std::placeholders::_1));
+		if (mCurAxis != AxisType::None)
+		{
+			EditorSceneWidgetsRenderer::GetInstance()->UpdateWidgetColor(true);
+			mOperateWidgetHandle = EventManager::GetInstance()->AddEditorEventHandler(EventType::UPDATE_MOUSE_POS, std::bind(&EditorCamera::OperateWidgetCallBack, this, std::placeholders::_1));
+		}
 	}
 
 	void EditorCamera::ReleaseCallBack(const string& args)
 	{
-		mRotationRadian = 0.0f;
-		EditorSceneWidgetsRenderer::GetInstance()->UpdateWidgetColor(false);
-		EventManager::GetInstance()->RemoveEditorEventHandler(EventType::UPDATE_MOUSE_POS, mOperateWidgetHandle);
+		if (mCurAxis == AxisType::None)
+		{
+			auto argList = Utils::StringSplit(args, '|');
+
+			Vector2 releaseScreenPos;
+			releaseScreenPos.x = std::stof(argList[0]);
+			releaseScreenPos.y = std::stof(argList[1]);
+
+			if (releaseScreenPos.x > 0.0f && releaseScreenPos.x < GlobalData::srcWidth &&
+				releaseScreenPos.y > 0.0f && releaseScreenPos.y < GlobalData::srcHeight)
+			{
+				auto ray = mCamera->ScreenPointToRay(releaseScreenPos);
+				auto go = SceneManager::GetInstance()->GetCurScene()->Pick(ray);
+
+				if (go)
+				{
+					EditorDataManager::GetInstance()->SetSelectedGO(go);
+				}
+				else
+				{
+					EditorDataManager::GetInstance()->SetSelectedGO(nullptr);
+				}
+			}
+			else
+			{
+				EditorDataManager::GetInstance()->SetSelectedGO(nullptr);
+			}
+		}
+		else
+		{
+			mRotationRadian = 0.0f;
+			EditorSceneWidgetsRenderer::GetInstance()->UpdateWidgetColor(false);
+			EventManager::GetInstance()->RemoveEditorEventHandler(EventType::UPDATE_MOUSE_POS, mOperateWidgetHandle);
+		}
 	}
 
 	void EditorCamera::OperateWidgetCallBack(const string& args)

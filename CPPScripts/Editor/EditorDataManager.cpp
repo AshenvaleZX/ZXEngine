@@ -111,14 +111,18 @@ namespace ZXEngine
 		long long dt = curTime - mLastGOClick;
 		mLastGOClick = curTime;
 
-		if (selectedGO == go && dt < mDoubleClickInterval)
+		if (go != nullptr)
 		{
-			EditorCamera::GetInstance()->MoveTo(go);
+			DeleteCurAssetInfo();
+			selectedAsset = nullptr;
+
+			if (selectedGO == go && dt < mDoubleClickInterval)
+			{
+				EditorCamera::GetInstance()->MoveTo(go);
+			}
 		}
 
 		selectedGO = go;
-		DeleteCurAssetInfo();
-		selectedAsset = nullptr;
 	}
 
 	void EditorDataManager::SetSelectedAsset(EditorAssetNode* asset)

@@ -10,7 +10,9 @@ namespace ZXEngine
 
 	namespace PhysZ
 	{
+		class Ray;
 		class PScene;
+		struct RayHitInfo;
 	}
 
 	class Scene
@@ -26,6 +28,7 @@ namespace ZXEngine
 
 		void Update();
 		void Render();
+		GameObject* Pick(const PhysZ::Ray& ray);
 		// 添加到场景根节点
 		void AddGameObject(GameObject* gameObject);
 		// 从场景根节点移除
@@ -39,5 +42,6 @@ namespace ZXEngine
 		long long mCurPhyFrame = 0;
 
 		void UpdatePhysics();
+		GameObject* Pick(const PhysZ::Ray& ray, GameObject* gameObject, PhysZ::RayHitInfo& hit);
 	};
 }

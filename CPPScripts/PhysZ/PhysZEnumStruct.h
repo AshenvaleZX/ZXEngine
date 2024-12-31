@@ -35,7 +35,7 @@ namespace ZXEngine
 
 		struct RayHitInfo
 		{
-			float distance = 0.0f;
+			float distance = FLT_MAX;
 		};
 	}
 }
