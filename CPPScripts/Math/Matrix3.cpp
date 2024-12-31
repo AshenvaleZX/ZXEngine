@@ -83,6 +83,13 @@ namespace ZXEngine
 		m20 = t * x * z - s * y;	m21 = t * y * z + s * x;	m22 = t * z * z + c;
 	}
 
+	float Matrix3::GetNorm() const
+	{
+		return sqrtf(m00 * m00 + m01 * m01 + m02 * m02 +
+					 m10 * m10 + m11 * m11 + m12 * m12 +
+					 m20 * m20 + m21 * m21 + m22 * m22);
+	}
+
 	float Matrix3::GetDeterminant() const
 	{
 		return (m00 * m11 * m22) + (m01 * m12 * m20) + (m02 * m10 * m21) - 

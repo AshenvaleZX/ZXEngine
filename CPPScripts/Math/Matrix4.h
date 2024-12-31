@@ -32,6 +32,7 @@ namespace ZXEngine
 			float m30, float m31, float m32, float m33
 		);
 
+		float GetNorm() const;
 		float GetDeterminant() const;
 		float Get(uint32_t row, uint32_t col) const;
 		Vector4 GetRow(uint32_t index) const;

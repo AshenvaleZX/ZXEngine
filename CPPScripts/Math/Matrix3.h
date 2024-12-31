@@ -34,6 +34,7 @@ namespace ZXEngine
 		// 旋转矩阵构造函数(绕axis轴旋转angle度)
 		Matrix3(const Vector3& axis, float angle);
 
+		float GetNorm() const;
 		float GetDeterminant() const;
 		float Get(uint32_t row, uint32_t col) const;
 		Vector3 GetRow(uint32_t index) const;
