@@ -112,6 +112,8 @@ namespace ZXEngine
 
 	void EditorCamera::ClickCallBack(const string& args)
 	{
+		mCurAxis = AxisType::None;
+
 		auto dataMgr = EditorDataManager::GetInstance();
 		if (dataMgr->isGameView || dataMgr->selectedGO == nullptr)
 			return;
@@ -122,8 +124,6 @@ namespace ZXEngine
 		mLastWidgetScreenPos.y = std::stof(argList[1]);
 
 		auto ray = mCamera->ScreenPointToRay(mLastWidgetScreenPos);
-
-		mCurAxis = AxisType::None;
 
 		if (dataMgr->mCurTransType == TransformType::Rotation)
 		{
