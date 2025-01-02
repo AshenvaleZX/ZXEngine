@@ -25,9 +25,9 @@ namespace ZXEngine
         if (type == GeometryType::Box)
         {
             mesh = GeometryGenerator::CreateBox(1.0f, 1.0f, 1.0f);
-            mesh->mAABBSizeX = 1.0f;
-            mesh->mAABBSizeY = 1.0f;
-            mesh->mAABBSizeZ = 1.0f;
+            mesh->mAABBSize.x = 1.0f;
+            mesh->mAABBSize.y = 1.0f;
+            mesh->mAABBSize.z = 1.0f;
             mesh->mExtremeVertices =
             {
                 Vertex{ .Position = Vector3( 0.5f,  0.0f,  0.0f) },
@@ -41,9 +41,9 @@ namespace ZXEngine
         else if (type == GeometryType::Sphere)
         {
             mesh = GeometryGenerator::CreateSphere(0.5f, 40, 20);
-            mesh->mAABBSizeX = 1.0f;
-            mesh->mAABBSizeY = 1.0f;
-            mesh->mAABBSizeZ = 1.0f;
+            mesh->mAABBSize.x = 1.0f;
+            mesh->mAABBSize.y = 1.0f;
+            mesh->mAABBSize.z = 1.0f;
             mesh->mExtremeVertices =
             {
                 Vertex{ .Position = Vector3( 0.5f,  0.0f,  0.0f) },
@@ -57,9 +57,9 @@ namespace ZXEngine
         else if (type == GeometryType::TessellationSphere)
         {
             mesh = GeometryGenerator::CreateSphereTessellation(0.5f, 4);
-            mesh->mAABBSizeX = 1.0f;
-            mesh->mAABBSizeY = 1.0f;
-            mesh->mAABBSizeZ = 1.0f;
+            mesh->mAABBSize.x = 1.0f;
+            mesh->mAABBSize.y = 1.0f;
+            mesh->mAABBSize.z = 1.0f;
             mesh->mExtremeVertices =
             {
                 Vertex{ .Position = Vector3( 0.5f,  0.0f,  0.0f) },
@@ -73,9 +73,9 @@ namespace ZXEngine
         else if (type == GeometryType::Circle)
         {
             mesh = GeometryGenerator::CreateCircle(0.5f, 40);
-            mesh->mAABBSizeX = 1.0f;
-            mesh->mAABBSizeY = 1.0f;
-            mesh->mAABBSizeZ = 0.0f;
+            mesh->mAABBSize.x = 1.0f;
+            mesh->mAABBSize.y = 1.0f;
+            mesh->mAABBSize.z = 0.0f;
             mesh->mExtremeVertices =
             {
                 Vertex{ .Position = Vector3( 0.5f,  0.0f, 0.0f) },
@@ -89,9 +89,9 @@ namespace ZXEngine
         else if (type == GeometryType::Cone)
         {
             mesh = GeometryGenerator::CreateCone(0.5f, 1.0f, 40);
-            mesh->mAABBSizeX = 1.0f;
-            mesh->mAABBSizeY = 1.0f;
-            mesh->mAABBSizeZ = 1.0f;
+            mesh->mAABBSize.x = 1.0f;
+            mesh->mAABBSize.y = 1.0f;
+            mesh->mAABBSize.z = 1.0f;
             mesh->mExtremeVertices =
             {
                 Vertex{ .Position = Vector3( 0.5f, -0.5f,  0.0f) },
@@ -105,9 +105,9 @@ namespace ZXEngine
         else if (type == GeometryType::Cylinder)
         {
             mesh = GeometryGenerator::CreateCylinder(0.5f, 0.5f, 1.0f, 40, 1);
-            mesh->mAABBSizeX = 1.0f;
-            mesh->mAABBSizeY = 1.0f;
-            mesh->mAABBSizeZ = 1.0f;
+            mesh->mAABBSize.x = 1.0f;
+            mesh->mAABBSize.y = 1.0f;
+            mesh->mAABBSize.z = 1.0f;
             mesh->mExtremeVertices =
             {
                 Vertex{ .Position = Vector3( 0.5f,  0.0f,  0.0f) },
@@ -121,9 +121,9 @@ namespace ZXEngine
         else if (type == GeometryType::Plane)
         {
             mesh = GeometryGenerator::CreatePlane(10.0f, 10.0f, 11, 11);
-            mesh->mAABBSizeX = 10.0f;
-            mesh->mAABBSizeY = 0.0f;
-            mesh->mAABBSizeZ = 10.0f;
+            mesh->mAABBSize.x = 10.0f;
+            mesh->mAABBSize.y = 0.0f;
+            mesh->mAABBSize.z = 10.0f;
             mesh->mExtremeVertices =
             {
                 Vertex{ .Position = Vector3( 5.0f, 0.0f,  0.0f) },
@@ -137,9 +137,9 @@ namespace ZXEngine
         else if (type == GeometryType::Quad)
         {
             mesh = GeometryGenerator::CreateQuad(1.0f, 1.0f);
-            mesh->mAABBSizeX = 1.0f;
-            mesh->mAABBSizeY = 1.0f;
-            mesh->mAABBSizeZ = 0.0f;
+            mesh->mAABBSize.x = 1.0f;
+            mesh->mAABBSize.y = 1.0f;
+            mesh->mAABBSize.z = 0.0f;
             mesh->mExtremeVertices =
             {
                 Vertex{ .Position = Vector3( 0.5f,  0.0f, 0.0f) },
@@ -153,9 +153,9 @@ namespace ZXEngine
         else if (type == GeometryType::DynamicPlane)
         {
 			mesh = GeometryGenerator::CreateDynamicPlane(5.0f, 5.0f, 11, 11);
-			mesh->mAABBSizeX = 5.0f;
-			mesh->mAABBSizeY = 0.0f;
-			mesh->mAABBSizeZ = 5.0f;
+			mesh->mAABBSize.x = 5.0f;
+			mesh->mAABBSize.y = 0.0f;
+			mesh->mAABBSize.z = 5.0f;
             mesh->mExtremeVertices =
             {
                 Vertex{ .Position = Vector3( 2.5f, 0.0f,  0.0f) },
@@ -376,9 +376,12 @@ namespace ZXEngine
         newMesh->mBoneNameToIndexMap = std::move(boneNameToIndexMap);
 
         newMesh->mExtremeVertices = std::move(extremeVertices);
-        newMesh->mAABBSizeX = newMesh->mExtremeVertices[0].Position.x - newMesh->mExtremeVertices[1].Position.x;
-        newMesh->mAABBSizeY = newMesh->mExtremeVertices[2].Position.y - newMesh->mExtremeVertices[3].Position.y;
-        newMesh->mAABBSizeZ = newMesh->mExtremeVertices[4].Position.z - newMesh->mExtremeVertices[5].Position.z;
+        newMesh->mAABBSize.x = newMesh->mExtremeVertices[0].Position.x - newMesh->mExtremeVertices[1].Position.x;
+        newMesh->mAABBSize.y = newMesh->mExtremeVertices[2].Position.y - newMesh->mExtremeVertices[3].Position.y;
+        newMesh->mAABBSize.z = newMesh->mExtremeVertices[4].Position.z - newMesh->mExtremeVertices[5].Position.z;
+        newMesh->mAABBCenter.x = (newMesh->mExtremeVertices[0].Position.x + newMesh->mExtremeVertices[1].Position.x) / 2.0f;
+        newMesh->mAABBCenter.y = (newMesh->mExtremeVertices[2].Position.y + newMesh->mExtremeVertices[3].Position.y) / 2.0f;
+        newMesh->mAABBCenter.z = (newMesh->mExtremeVertices[4].Position.z + newMesh->mExtremeVertices[5].Position.z) / 2.0f;
 
         return shared_ptr<StaticMesh>(newMesh);
     }
