@@ -404,6 +404,11 @@ namespace ZXEngine
 		uiTextRenderer->SetHorizonAlignment(data["HorizonAlignment"]);
 		uiTextRenderer->SetVerticalAlignment(data["VerticalAlignment"]);
 		uiTextRenderer->color = Vector4(data["Color"][0], data["Color"][1], data["Color"][2], data["Color"][3]);
+
+		mConstructionCallBacks.push_back([=]()
+		{
+			uiTextRenderer->isScreenSpace = uiTextRenderer->GetTransform()->GetInsType() == ComponentType::RectTransform;
+		});
 	}
 
 	void GameObject::ParseUITextureRenderer(json data)

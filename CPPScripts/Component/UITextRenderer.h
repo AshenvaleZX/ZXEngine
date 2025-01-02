@@ -31,6 +31,7 @@ namespace ZXEngine
 	class DynamicMesh;
 	class UITextRenderer : public Component
 	{
+		friend class GameObject;
 		friend class EditorInspectorPanel;
 	public:
 		static ComponentType GetType();
