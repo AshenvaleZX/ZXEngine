@@ -4,6 +4,12 @@
 
 namespace ZXEngine
 {
+	namespace PhysZ
+	{
+		class Ray;
+		struct RayHitInfo;
+	}
+
 	class Mesh
 	{
 	public:
@@ -30,5 +36,8 @@ namespace ZXEngine
 		~Mesh();
 
 		virtual void SetUp() {};
+
+		bool Intersect(const PhysZ::Ray& ray, PhysZ::RayHitInfo& hit) const;
+		bool IntersectAABB(const PhysZ::Ray& ray, PhysZ::RayHitInfo& hit) const;
 	};
 }

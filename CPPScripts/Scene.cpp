@@ -188,22 +188,17 @@ namespace ZXEngine
 
 			for (auto& mesh : meshRenderer->mMeshes)
 			{
-				Vector3 halfSize = mesh->mAABBSize / 2.0f;
-
-				// 这里有一个抽象的AABB，但是中心点不一定在原点，所以做个偏移
-				PhysZ::Ray correctionRay = PhysZ::Ray(localRay.mOrigin - mesh->mAABBCenter, localRay.mDirection);
-
 				PhysZ::RayHitInfo boxHit;
-				if (PhysZ::IntersectionDetector::Detect(correctionRay, halfSize, boxHit))
+				if (mesh->IntersectAABB(localRay, boxHit))
 				{
-					Vector3 boxHitPosLocal = correctionRay.mOrigin + correctionRay.mDirection * boxHit.distance;
+					Vector3 boxHitPosLocal = localRay.mOrigin + localRay.mDirection * boxHit.distance;
 					Vector3 boxHitPosWorld = mTrans * boxHitPosLocal.ToPosVec4();
 					boxHit.distance = (boxHitPosWorld - ray.mOrigin).GetMagnitude();
 
 					if (boxHit.distance < hit.distance)
 					{
 						PhysZ::RayHitInfo meshHit;
-						if (PhysZ::IntersectionDetector::Detect(localRay, *mesh.get(), meshHit))
+						if (mesh->Intersect(localRay, meshHit))
 						{
 							Vector3 meshHitPosLocal = localRay.mOrigin + localRay.mDirection * meshHit.distance;
 							Vector3 meshHitPosWorld = mTrans * meshHitPosLocal.ToPosVec4();
