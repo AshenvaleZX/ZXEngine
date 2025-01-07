@@ -42,17 +42,17 @@ namespace ZXEngine
 		string mLuaFullPath;
 	};
 
-	StaticReflection
+	ZXRef_StaticReflection
 	(
 		GameLogic,
-		BaseType(Component)
-		Fields
+		ZXRef_BaseType(Component)
+		ZXRef_Fields
 		(
-			Field(&GameLogic::Lua),
-			Field(&GameLogic::mBoolVariables),
-			Field(&GameLogic::mFloatVariables),
-			Field(&GameLogic::mIntVariables),
-			Field(&GameLogic::mStringVariables)
+			ZXRef_Field(&GameLogic::Lua),
+			ZXRef_Field(&GameLogic::mBoolVariables),
+			ZXRef_Field(&GameLogic::mFloatVariables),
+			ZXRef_Field(&GameLogic::mIntVariables),
+			ZXRef_Field(&GameLogic::mStringVariables)
 		)
 	)
 }

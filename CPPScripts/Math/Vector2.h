@@ -71,13 +71,13 @@ namespace ZXEngine
 		friend Vector2 operator/ (float n, const Vector2& v);
 	};
 
-	StaticReflection
+	ZXRef_StaticReflection
 	(
 		Vector2,
-		Fields
+		ZXRef_Fields
 		(
-			Field(&Vector2::x),
-			Field(&Vector2::y)
+			ZXRef_Field(&Vector2::x),
+			ZXRef_Field(&Vector2::y)
 		)
 	)
 }

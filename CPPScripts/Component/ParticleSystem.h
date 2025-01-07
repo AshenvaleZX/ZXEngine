@@ -37,15 +37,15 @@ namespace ZXEngine
 		vector<Particle> mParticles;
 	};
 
-	StaticReflection
+	ZXRef_StaticReflection
 	(
 		ParticleSystem,
-		BaseType(Component)
-		Fields
+		ZXRef_BaseType(Component)
+		ZXRef_Fields
 		(
-			Field(&ParticleSystem::mState),
-			Field(&ParticleSystem::mEvolver),
-			Field(&ParticleSystem::mRenderer)
+			ZXRef_Field(&ParticleSystem::mState),
+			ZXRef_Field(&ParticleSystem::mEvolver),
+			ZXRef_Field(&ParticleSystem::mRenderer)
 		)
 	)
 }

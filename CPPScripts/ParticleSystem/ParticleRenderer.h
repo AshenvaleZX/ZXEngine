@@ -33,12 +33,12 @@ namespace ZXEngine
 		void UpdateInstanceData(const Vector3& camPos, const vector<Particle>& particles);
 	};
 
-	StaticReflection
+	ZXRef_StaticReflection
 	(
 		ParticleRenderer,
-		Fields
+		ZXRef_Fields
 		(
-			Field(&ParticleRenderer::mTexturePath)
+			ZXRef_Field(&ParticleRenderer::mTexturePath)
 		)
 	)
 }

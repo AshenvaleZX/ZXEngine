@@ -82,14 +82,14 @@ namespace ZXEngine
 		Vector3& operator*= (const Matrix3& mat);
 	};
 
-	StaticReflection
+	ZXRef_StaticReflection
 	(
 		Vector3,
-		Fields
+		ZXRef_Fields
 		(
-			Field(&Vector3::x),
-			Field(&Vector3::y),
-			Field(&Vector3::z)
+			ZXRef_Field(&Vector3::x),
+			ZXRef_Field(&Vector3::y),
+			ZXRef_Field(&Vector3::z)
 		)
 	)
 }

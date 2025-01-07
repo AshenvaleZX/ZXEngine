@@ -58,15 +58,15 @@ namespace ZXEngine
 		Quaternion& operator*= (const Quaternion& q);
 	};
 
-	StaticReflection
+	ZXRef_StaticReflection
 	(
 		Quaternion,
-		Fields
+		ZXRef_Fields
 		(
-			Field(&Quaternion::x),
-			Field(&Quaternion::y),
-			Field(&Quaternion::z),
-			Field(&Quaternion::w)
+			ZXRef_Field(&Quaternion::x),
+			ZXRef_Field(&Quaternion::y),
+			ZXRef_Field(&Quaternion::z),
+			ZXRef_Field(&Quaternion::w)
 		)
 	)
 }

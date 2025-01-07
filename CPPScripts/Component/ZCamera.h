@@ -39,16 +39,16 @@ namespace ZXEngine
         PhysZ::Ray ScreenPointToRay(const Vector2& point) const;
 	};
 
-    StaticReflection
+    ZXRef_StaticReflection
     (
         Camera,
-        BaseType(Component)
-        Fields
+        ZXRef_BaseType(Component)
+        ZXRef_Fields
         (
-            Field(&Camera::mFOV),
-            Field(&Camera::mNearClipDis),
-            Field(&Camera::mFarClipDis),
-            Field(&Camera::mEnableAfterEffects)
+            ZXRef_Field(&Camera::mFOV),
+            ZXRef_Field(&Camera::mNearClipDis),
+            ZXRef_Field(&Camera::mFarClipDis),
+            ZXRef_Field(&Camera::mEnableAfterEffects)
         )
     )
 }

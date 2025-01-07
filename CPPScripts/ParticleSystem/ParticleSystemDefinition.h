@@ -48,18 +48,18 @@ namespace ZXEngine
 		Quaternion mRotation;
 	};
 
-	StaticReflection
+	ZXRef_StaticReflection
 	(
 		ParticleEmissionState,
-		Fields
+		ZXRef_Fields
 		(
-			Field(&ParticleEmissionState::mRate),
-			Field(&ParticleEmissionState::mShape),
-			Field(&ParticleEmissionState::mAngle),
-			Field(&ParticleEmissionState::mColor),
-			Field(&ParticleEmissionState::mRandomColor),
-			Field(&ParticleEmissionState::mSpeed),
-			Field(&ParticleEmissionState::mRotation)
+			ZXRef_Field(&ParticleEmissionState::mRate),
+			ZXRef_Field(&ParticleEmissionState::mShape),
+			ZXRef_Field(&ParticleEmissionState::mAngle),
+			ZXRef_Field(&ParticleEmissionState::mColor),
+			ZXRef_Field(&ParticleEmissionState::mRandomColor),
+			ZXRef_Field(&ParticleEmissionState::mSpeed),
+			ZXRef_Field(&ParticleEmissionState::mRotation)
 		)
 	)
 
@@ -84,19 +84,19 @@ namespace ZXEngine
 		Quaternion mCurRot;
 	};
 
-	StaticReflection
+	ZXRef_StaticReflection
 	(
 		ParticleSystemState,
-		Fields
+		ZXRef_Fields
 		(
-			Field(&ParticleSystemState::mMaxParticleNum),
-			Field(&ParticleSystemState::mLifeTime),
-			Field(&ParticleSystemState::mVelocity),
-			Field(&ParticleSystemState::mOffset),
-			Field(&ParticleSystemState::mEmissionState),
-			Field(&ParticleSystemState::mCurPos),
-			Field(&ParticleSystemState::mMoveDir),
-			Field(&ParticleSystemState::mCurRot)
+			ZXRef_Field(&ParticleSystemState::mMaxParticleNum),
+			ZXRef_Field(&ParticleSystemState::mLifeTime),
+			ZXRef_Field(&ParticleSystemState::mVelocity),
+			ZXRef_Field(&ParticleSystemState::mOffset),
+			ZXRef_Field(&ParticleSystemState::mEmissionState),
+			ZXRef_Field(&ParticleSystemState::mCurPos),
+			ZXRef_Field(&ParticleSystemState::mMoveDir),
+			ZXRef_Field(&ParticleSystemState::mCurRot)
 		)
 	)
 }

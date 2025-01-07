@@ -165,7 +165,7 @@ namespace ZXEngine
             template <typename T>
             struct TypeInfo;
 
-#define StaticReflection(Type, ...)                                                             \
+#define ZXRef_StaticReflection(Type, ...)                                                       \
             namespace Reflection                                                                \
             {                                                                                   \
                 namespace Static                                                                \
@@ -183,15 +183,15 @@ namespace ZXEngine
                 }                                                                               \
             }
 
-#define BaseType(T) using BaseType = T;
+#define ZXRef_BaseType(T)       using BaseType = T;
 
-#define Field(p, ...) FieldTraits { p, #p, ##__VA_ARGS__ }
+#define ZXRef_Field(p, ...)     FieldTraits { p, #p, ##__VA_ARGS__ }
 
-#define Fields(...) inline static constexpr auto mFields = std::make_tuple(__VA_ARGS__);
+#define ZXRef_Fields(...)       inline static constexpr auto mFields = std::make_tuple(__VA_ARGS__);
 
-#define Constructor(...) Constructor<__VA_ARGS__>
+#define ZXRef_Constructor(...)  Constructor<__VA_ARGS__>
 
-#define Constructors(...) using Constructors = TypeList<__VA_ARGS__>;
+#define ZXRef_Constructors(...) using Constructors = TypeList<__VA_ARGS__>;
 
             namespace Internal
             {

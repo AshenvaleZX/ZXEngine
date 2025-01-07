@@ -29,12 +29,12 @@ namespace ZXEngine
 		bool mIsAwake = false;
 	};
 
-	StaticReflection
+	ZXRef_StaticReflection
 	(
 		Component,
-		Fields
+		ZXRef_Fields
 		(
-			Field(&Component::mEnabled)
+			ZXRef_Field(&Component::mEnabled)
 		)
 	)
 }

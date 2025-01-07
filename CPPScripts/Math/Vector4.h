@@ -78,15 +78,15 @@ namespace ZXEngine
 		Vector4 operator*= (const Matrix4& mat);
 	};
 
-	StaticReflection
+	ZXRef_StaticReflection
 	(
 		Vector4,
-		Fields
+		ZXRef_Fields
 		(
-			Field(&Vector4::x),
-			Field(&Vector4::y),
-			Field(&Vector4::z),
-			Field(&Vector4::w)
+			ZXRef_Field(&Vector4::x),
+			ZXRef_Field(&Vector4::y),
+			ZXRef_Field(&Vector4::z),
+			ZXRef_Field(&Vector4::w)
 		)
 	)
 }

@@ -49,33 +49,33 @@ namespace ZXEngine
 		}
 	};
 
-	StaticReflection
+	ZXRef_StaticReflection
 	(
 		ParticleEvolver::KeyFloat,
-		Fields
+		ZXRef_Fields
 		(
-			Field(&ParticleEvolver::KeyFloat::t),
-			Field(&ParticleEvolver::KeyFloat::value)
+			ZXRef_Field(&ParticleEvolver::KeyFloat::t),
+			ZXRef_Field(&ParticleEvolver::KeyFloat::value)
 		)
 	)
 
-	StaticReflection
+	ZXRef_StaticReflection
 	(
 		ParticleEvolver::KeyVector3,
-		Fields
+		ZXRef_Fields
 		(
-			Field(&ParticleEvolver::KeyVector3::t),
-			Field(&ParticleEvolver::KeyVector3::value)
+			ZXRef_Field(&ParticleEvolver::KeyVector3::t),
+			ZXRef_Field(&ParticleEvolver::KeyVector3::value)
 		)
 	)
 
-	StaticReflection
+	ZXRef_StaticReflection
 	(
 		ParticleEvolver,
-		Fields
+		ZXRef_Fields
 		(
-			Field(&ParticleEvolver::mAlphaKeys),
-			Field(&ParticleEvolver::mRGBKeys)
+			ZXRef_Field(&ParticleEvolver::mAlphaKeys),
+			ZXRef_Field(&ParticleEvolver::mRGBKeys)
 		)
 	)
 }

@@ -32,15 +32,15 @@ namespace ZXEngine
 		}
 	};
 
-	StaticReflection
+	ZXRef_StaticReflection
 	(
 		Student,
-		Fields
+		ZXRef_Fields
 		(
-			Field(&Student::mName),
-			Field(&Student::mAge),
-			Field(&Student::mHeight),
-			Field(&Student::mPos)
+			ZXRef_Field(&Student::mName),
+			ZXRef_Field(&Student::mAge),
+			ZXRef_Field(&Student::mHeight),
+			ZXRef_Field(&Student::mPos)
 		)
 	)
 
