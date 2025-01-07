@@ -1,5 +1,6 @@
 #pragma once
 #include "../pubh.h"
+#include "../Reflection/StaticReflection.h"
 
 namespace ZXEngine
 {

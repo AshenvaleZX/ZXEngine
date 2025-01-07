@@ -2,7 +2,6 @@
 #include "../pubh.h"
 #include "Component.h"
 #include "../PhysZ/Ray.h"
-#include "../Reflection/StaticReflection.h"
 
 namespace ZXEngine
 {
@@ -43,6 +42,7 @@ namespace ZXEngine
     StaticReflection
     (
         Camera,
+        BaseType(Component)
         Fields
         (
             Field(&Camera::mFOV),

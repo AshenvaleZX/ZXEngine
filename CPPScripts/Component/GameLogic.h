@@ -45,6 +45,7 @@ namespace ZXEngine
 	StaticReflection
 	(
 		GameLogic,
+		BaseType(Component)
 		Fields
 		(
 			Field(&GameLogic::Lua),

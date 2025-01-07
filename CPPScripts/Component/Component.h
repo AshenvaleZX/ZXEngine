@@ -1,5 +1,6 @@
 #pragma once
 #include "../pubh.h"
+#include "../Reflection/StaticReflection.h"
 
 namespace ZXEngine
 {
@@ -27,4 +28,13 @@ namespace ZXEngine
 	protected:
 		bool mIsAwake = false;
 	};
+
+	StaticReflection
+	(
+		Component,
+		Fields
+		(
+			Field(&Component::mEnabled)
+		)
+	)
 }

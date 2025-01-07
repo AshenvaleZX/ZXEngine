@@ -40,6 +40,7 @@ namespace ZXEngine
 	StaticReflection
 	(
 		ParticleSystem,
+		BaseType(Component)
 		Fields
 		(
 			Field(&ParticleSystem::mState),
