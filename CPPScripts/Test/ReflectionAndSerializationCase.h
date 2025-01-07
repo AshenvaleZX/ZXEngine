@@ -13,12 +13,27 @@ namespace ZXEngine
 		Three
 	};
 
-	class Student
+	class Human
+	{
+	public:
+		uint32_t mAge = 0;
+		float mHeight = 0.0f;
+	};
+
+	ZXRef_StaticReflection
+	(
+		Human,
+		ZXRef_Fields
+		(
+			ZXRef_Field(&Human::mAge),
+			ZXRef_Field(&Human::mHeight)
+		)
+	)
+
+	class Student : public Human
 	{
 	public:
 		string mName;
-		uint32_t mAge = 0;
-		float mHeight = 0.0f;
 		Vector3 mPos;
 
 		int GetAge() const
@@ -35,11 +50,10 @@ namespace ZXEngine
 	ZXRef_StaticReflection
 	(
 		Student,
+		ZXRef_BaseType(Human)
 		ZXRef_Fields
 		(
 			ZXRef_Field(&Student::mName),
-			ZXRef_Field(&Student::mAge),
-			ZXRef_Field(&Student::mHeight),
 			ZXRef_Field(&Student::mPos)
 		)
 	)
