@@ -149,6 +149,12 @@ namespace ZXEngine
                 using Args = TypeList<Argss...>;
             };
 
+            template <typename T, typename = void>
+            struct HasBaseType : std::false_type {};
+
+            template <typename T>
+            struct HasBaseType<T, std::void_t<typename T::BaseType>> : std::true_type {};
+
             template <typename T>
             struct BaseTypeInfo
             {
@@ -159,22 +165,25 @@ namespace ZXEngine
             template <typename T>
             struct TypeInfo;
 
-#define StaticReflection(Type, ...)                             \
-        namespace Reflection                                    \
-        {                                                       \
-            namespace Static                                    \
-            {                                                   \
-                template <>                                     \
-                struct TypeInfo<Type> : BaseTypeInfo<Type>      \
-                {                                               \
-                    static constexpr std::string_view GetName() \
-                    {                                           \
-                        return #Type;                           \
-                    }                                           \
-                    __VA_ARGS__                                 \
-                };                                              \
-            }                                                   \
-        }
+#define StaticReflection(Type, ...)                                                             \
+            namespace Reflection                                                                \
+            {                                                                                   \
+                namespace Static                                                                \
+                {                                                                               \
+                    template <>                                                                 \
+                    struct TypeInfo<Type> : BaseTypeInfo<Type>                                  \
+                    {                                                                           \
+                        static constexpr std::string_view GetName()                             \
+                        {                                                                       \
+                            return #Type;                                                       \
+                        }                                                                       \
+                        __VA_ARGS__                                                             \
+                        static constexpr bool isDerived = HasBaseType<TypeInfo<Type>>::value;   \
+                    };                                                                          \
+                }                                                                               \
+            }
+
+#define BaseType(T) using BaseType = T;
 
 #define Field(p, ...) FieldTraits { p, #p, ##__VA_ARGS__ }
 
@@ -210,6 +219,8 @@ namespace ZXEngine
             public:
                 using Type = TypeInfo<T>;
 
+                constexpr ReflectInfo() noexcept = default;
+
                 constexpr std::string_view GetName() const noexcept
                 {
                     return Type::GetName();
@@ -228,12 +239,23 @@ namespace ZXEngine
 
                 constexpr bool HasFields() const noexcept
                 {
+                    if constexpr (Type::isDerived)
+                    {
+                        auto baseTypeInfo = ReflectInfo<typename Type::BaseType>{};
+                        if (baseTypeInfo.HasFields())
+                            return true;
+                    }
                     return HasFields_V<Type>;
                 }
 
                 template <typename Function>
                 void VisitAllFields(Function&& func)
                 {
+                    if constexpr (Type::isDerived)
+                    {
+                        auto baseTypeInfo = ReflectInfo<typename Type::BaseType>{};
+                        baseTypeInfo.VisitAllFields(std::forward<Function>(func));
+                    }
                     if constexpr (HasFields_V<Type>)
                     {
                         std::apply
@@ -250,6 +272,11 @@ namespace ZXEngine
                 template <typename Function>
                 void TraverseMemberVariableAndDo(Function&& func)
                 {
+                    if constexpr (Type::isDerived)
+                    {
+                        auto baseTypeInfo = ReflectInfo<typename Type::BaseType>{};
+                        baseTypeInfo.TraverseMemberVariableAndDo(std::forward<Function>(func));
+                    }
                     if constexpr (HasFields_V<Type>)
                     {
                         DoTraverseMemberVariableAndDo<0>(std::forward<Function>(func));
@@ -259,6 +286,11 @@ namespace ZXEngine
                 template <typename Function>
                 void TraverseMemberFunctionAndDo(Function&& func)
                 {
+                    if constexpr (Type::isDerived)
+                    {
+                        auto baseTypeInfo = ReflectInfo<typename Type::BaseType>{};
+                        baseTypeInfo.TraverseMemberFunctionAndDo(std::forward<Function>(func));
+                    }
                     if constexpr (HasFields_V<Type>)
                     {
                         DoTraverseMemberFunctionAndDo<0>(std::forward<Function>(func));
