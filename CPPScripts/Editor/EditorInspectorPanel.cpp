@@ -18,6 +18,7 @@
 #include "../Material.h"
 #include "../MaterialData.h"
 #include "../Audio/AudioClip.h"
+#include "../Utils.h"
 
 namespace ZXEngine
 {
@@ -546,12 +547,8 @@ namespace ZXEngine
 		auto& name = component->GetLuaName();
 		if (ImGui::Button(name.c_str()))
 		{
-			auto& path = component->GetLuaFullPath();
-#if defined(ZX_PLATFORM_WINDOWS)
-			system(("start " + path).c_str());
-#elif defined(ZX_PLATFORM_MACOS)
-			system(("open " + path).c_str());
-#endif
+			const string& path = component->GetLuaFullPath();
+			Utils::OpenFileWithDefaultApplication(path);
 		}
 
 		for (auto& iter : component->mBoolVariables)

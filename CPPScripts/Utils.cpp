@@ -279,6 +279,20 @@ namespace ZXEngine
 			return path.parent_path().string();
 	}
 
+    void Utils::OpenFileWithDefaultApplication(const string& path)
+    {
+        int ret = 0;
+#if defined(ZX_PLATFORM_WINDOWS)
+        ret = std::system(("start " + path).c_str());
+#elif defined(ZX_PLATFORM_MACOS)
+        ret = std::system(("open " + path).c_str());
+#elif defined(ZX_PLATFORM_LINUX)
+        ret = std::system(("xdg-open " + path).c_str());
+#endif
+        if (ret != 0)
+            Debug::LogError("Failed to open file with default application: " + path);
+    }
+
     void Utils::ShowSystemMessageBox(const string& title, const string& message)
     {
 #if defined(ZX_PLATFORM_WINDOWS)

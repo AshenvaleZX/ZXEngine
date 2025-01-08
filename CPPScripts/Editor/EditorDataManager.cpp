@@ -148,13 +148,7 @@ namespace ZXEngine
 				case AssetType::Script:
 				case AssetType::Audio:
 				case AssetType::Text:
-#if defined(ZX_PLATFORM_WINDOWS)
-					system(("start " + asset->path).c_str());
-#elif defined(ZX_PLATFORM_MACOS)
-					system(("open " + asset->path).c_str());
-#elif defined(ZX_PLATFORM_LINUX)
-					system(("xdg-open " + asset->path).c_str());
-#endif
+					Utils::OpenFileWithDefaultApplication(asset->path);
 					break;
 				default:
 					break;

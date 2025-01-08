@@ -43,6 +43,8 @@ namespace ZXEngine
 
 		// 获取当前可执行文件(ZXEngine)路径
 		static string GetCurrentExecutableFilePath();
+		// 用系统默认应用打开文件
+		static void OpenFileWithDefaultApplication(const string& path);
 		// 弹出系统消息框
 		static void ShowSystemMessageBox(const string& title, const string& message);
 	};
