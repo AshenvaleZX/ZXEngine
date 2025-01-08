@@ -177,6 +177,8 @@ namespace ZXEngine
 						case AxisType::Z:
 							color = Vector4(0.0f, 0.0f, 1.0f, 0.5f);
 							break;
+						default:
+							break;
 						}
 					}
 				}
@@ -192,6 +194,8 @@ namespace ZXEngine
 						break;
 					case AxisType::Z:
 						color = Vector4(0.0f, 0.0f, 1.0f, 0.9f);
+						break;
+					default:
 						break;
 					}
 				}
@@ -226,6 +230,8 @@ namespace ZXEngine
 						break;
 					case AxisType::Z:
 						color = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+						break;
+					default:
 						break;
 					}
 				}

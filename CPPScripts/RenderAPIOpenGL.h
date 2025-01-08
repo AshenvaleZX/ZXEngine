@@ -150,7 +150,7 @@ namespace ZXEngine
 
 		void ClearColorBuffer(const Vector4& color);
 		void ClearDepthBuffer(float depth);
-		void ClearStencilBuffer(int stencil);
+		void ClearStencilBuffer(uint32_t stencil);
 
 		void RealSetShaderScalar(const string& name, bool value);
 		void RealSetShaderScalar(const string& name, float value);

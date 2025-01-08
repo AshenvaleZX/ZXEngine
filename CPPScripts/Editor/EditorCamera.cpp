@@ -249,6 +249,8 @@ namespace ZXEngine
 			case ZXEngine::AxisType::Z:
 				axis = -goTrans->GetForward();
 				break;
+			default:
+				break;
 			}
 
 			// 根据视角调整旋转方向，保证操作逻辑的一致性
@@ -295,6 +297,8 @@ namespace ZXEngine
 				case ZXEngine::AxisType::Z:
 					offset = goTrans->GetForward();
 					break;
+				default:
+					break;
 				}
 				offset *= (dis * transRate);
 
@@ -315,6 +319,8 @@ namespace ZXEngine
 					break;
 				case ZXEngine::AxisType::Z:
 					scale.z += (dis * transRate);
+					break;
+				default:
 					break;
 				}
 

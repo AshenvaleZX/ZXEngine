@@ -1191,7 +1191,7 @@ namespace ZXEngine
             FBO->ColorBuffer = GetNextAttachmentBufferIndex();
             auto colorAttachmentBuffer = GetAttachmentBufferByIndex(FBO->ColorBuffer);
             colorAttachmentBuffer->inUse = true;
-            FBO->DepthBuffer = NULL;
+            FBO->DepthBuffer = UINT32_MAX;
 
             auto vulkanFBO = GetFBOByIndex(FBO->ID);
             vulkanFBO->colorAttachmentIdx = FBO->ColorBuffer;
@@ -1232,7 +1232,7 @@ namespace ZXEngine
         else if (type == FrameBufferType::ShadowMap)
         {
             FBO->ID = GetNextFBOIndex();
-            FBO->ColorBuffer = NULL;
+            FBO->ColorBuffer = UINT32_MAX;
             FBO->DepthBuffer = GetNextAttachmentBufferIndex();
             auto depthAttachmentBuffer = GetAttachmentBufferByIndex(FBO->DepthBuffer);
             depthAttachmentBuffer->inUse = true;
@@ -1277,7 +1277,7 @@ namespace ZXEngine
         else if (type == FrameBufferType::ShadowCubeMap)
         {
             FBO->ID = GetNextFBOIndex();
-            FBO->ColorBuffer = NULL;
+            FBO->ColorBuffer = UINT32_MAX;
             FBO->DepthBuffer = GetNextAttachmentBufferIndex();
             auto depthAttachmentBuffer = GetAttachmentBufferByIndex(FBO->DepthBuffer);
             depthAttachmentBuffer->inUse = true;
@@ -1412,7 +1412,7 @@ namespace ZXEngine
             FBO->ColorBuffer = GetNextAttachmentBufferIndex();
             auto colorAttachmentBuffer = GetAttachmentBufferByIndex(FBO->ColorBuffer);
             colorAttachmentBuffer->inUse = true;
-            FBO->DepthBuffer = NULL;
+            FBO->DepthBuffer = UINT32_MAX;
 
             auto vulkanFBO = GetFBOByIndex(FBO->ID);
             vulkanFBO->colorAttachmentIdx = FBO->ColorBuffer;

@@ -16,9 +16,9 @@ namespace ZXEngine
 		Shader(const string& path, const string& shaderCode, FrameBufferType type);
 		~Shader();
 
-		void Use();
-		unsigned int GetID();
-		LightType GetLightType();
-		ShadowType GetShadowType();
+		void Use() const;
+		unsigned int GetID() const;
+		LightType GetLightType() const;
+		ShadowType GetShadowType() const;
 	};
 }

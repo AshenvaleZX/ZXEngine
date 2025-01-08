@@ -511,7 +511,7 @@ namespace ZXEngine
 				D3D12_CLEAR_VALUE optDepthClear = {};
 				optDepthClear.Format = DXGI_FORMAT_D32_FLOAT;
 				optDepthClear.DepthStencil.Depth = clearInfo.depth;
-				optDepthClear.DepthStencil.Stencil = clearInfo.stencil;
+				optDepthClear.DepthStencil.Stencil = static_cast<UINT8>(clearInfo.stencil);
 
 				ComPtr<ID3D12Resource> depthBufferResource;
 				ThrowIfFailed(mD3D12Device->CreateCommittedResource(
@@ -547,7 +547,7 @@ namespace ZXEngine
 			FBO->ColorBuffer = GetNextRenderBufferIndex();
 			auto colorBuffer = GetRenderBufferByIndex(FBO->ColorBuffer);
 			colorBuffer->inUse = true;
-			FBO->DepthBuffer = NULL;
+			FBO->DepthBuffer = UINT32_MAX;
 
 			auto D3D12FBO = GetFBOByIndex(FBO->ID);
 			D3D12FBO->colorBufferIdx = FBO->ColorBuffer;
@@ -610,7 +610,7 @@ namespace ZXEngine
 		else if (type == FrameBufferType::ShadowMap)
 		{
 			FBO->ID = GetNextFBOIndex();
-			FBO->ColorBuffer = NULL;
+			FBO->ColorBuffer = UINT32_MAX;
 			FBO->DepthBuffer = GetNextRenderBufferIndex();
 			auto depthBuffer = GetRenderBufferByIndex(FBO->DepthBuffer);
 			depthBuffer->inUse = true;
@@ -641,7 +641,7 @@ namespace ZXEngine
 				D3D12_CLEAR_VALUE optDepthClear = {};
 				optDepthClear.Format = DXGI_FORMAT_D32_FLOAT;
 				optDepthClear.DepthStencil.Depth = clearInfo.depth;
-				optDepthClear.DepthStencil.Stencil = clearInfo.stencil;
+				optDepthClear.DepthStencil.Stencil = static_cast<UINT8>(clearInfo.stencil);
 
 				ComPtr<ID3D12Resource> depthBufferResource;
 				ThrowIfFailed(mD3D12Device->CreateCommittedResource(
@@ -674,7 +674,7 @@ namespace ZXEngine
 		else if (type == FrameBufferType::ShadowCubeMap)
 		{
 			FBO->ID = GetNextFBOIndex();
-			FBO->ColorBuffer = NULL;
+			FBO->ColorBuffer = UINT32_MAX;
 			FBO->DepthBuffer = GetNextRenderBufferIndex();
 			auto depthBuffer = GetRenderBufferByIndex(FBO->DepthBuffer);
 			depthBuffer->inUse = true;
@@ -705,7 +705,7 @@ namespace ZXEngine
 				D3D12_CLEAR_VALUE optDepthClear = {};
 				optDepthClear.Format = DXGI_FORMAT_D32_FLOAT;
 				optDepthClear.DepthStencil.Depth = clearInfo.depth;
-				optDepthClear.DepthStencil.Stencil = clearInfo.stencil;
+				optDepthClear.DepthStencil.Stencil = static_cast<UINT8>(clearInfo.stencil);
 
 				ComPtr<ID3D12Resource> depthBufferResource;
 				ThrowIfFailed(mD3D12Device->CreateCommittedResource(
@@ -926,7 +926,7 @@ namespace ZXEngine
 				D3D12_CLEAR_VALUE optDepthClear = {};
 				optDepthClear.Format = DXGI_FORMAT_D32_FLOAT;
 				optDepthClear.DepthStencil.Depth = clearInfo.depth;
-				optDepthClear.DepthStencil.Stencil = clearInfo.stencil;
+				optDepthClear.DepthStencil.Stencil = static_cast<UINT8>(clearInfo.stencil);
 
 				ComPtr<ID3D12Resource> depthBufferResource;
 				ThrowIfFailed(mD3D12Device->CreateCommittedResource(
@@ -962,7 +962,7 @@ namespace ZXEngine
 			FBO->ColorBuffer = GetNextRenderBufferIndex();
 			auto colorBuffer = GetRenderBufferByIndex(FBO->ColorBuffer);
 			colorBuffer->inUse = true;
-			FBO->DepthBuffer = NULL;
+			FBO->DepthBuffer = UINT32_MAX;
 
 			auto D3D12FBO = GetFBOByIndex(FBO->ID);
 			D3D12FBO->colorBufferIdx = FBO->ColorBuffer;

@@ -66,7 +66,7 @@ namespace ZXEngine
 				{
 					SetCurNode(pathNodes[i - 1]);
 					// 切换路径的时候刷新选中状态
-					selected = -1;
+					selected = SIZE_MAX;
 				}
 				if (i > 1)
 				{
@@ -112,7 +112,7 @@ namespace ZXEngine
 					if (node->type == AssetType::Folder)
 					{
 						// 切换路径的时候刷新选中状态
-						selected = -1;
+						selected = SIZE_MAX;
 						break;
 					}
 				}

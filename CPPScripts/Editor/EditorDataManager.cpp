@@ -292,7 +292,8 @@ namespace ZXEngine
 			else if (selectedAsset->type == AssetType::Audio)
 				delete static_cast<AssetAudioInfo*>(curAssetInfo);
 			else
-				delete curAssetInfo;
+				Debug::LogError("DeleteCurAssetInfo failed, unknown asset type: %s", selectedAsset->type);
+
 			// delete后立刻重新赋值为nullptr，防止连续delete指针出现无法预期的行为导致直接崩溃
 			curAssetInfo = nullptr;
 #ifdef ZX_EDITOR

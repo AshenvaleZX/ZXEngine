@@ -181,11 +181,11 @@ namespace ZXEngine
 		CheckError();
 	}
 
-	void RenderAPIOpenGL::ClearStencilBuffer(int stencil)
+	void RenderAPIOpenGL::ClearStencilBuffer(uint32_t stencil)
 	{
 		if (curRealState->clearStencil != stencil)
 		{
-			glClearStencil(stencil);
+			glClearStencil(static_cast<GLint>(stencil));
 			curRealState->clearStencil = stencil;
 			stateDirty = true;
 		}

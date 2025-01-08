@@ -15,7 +15,7 @@ namespace ZXEngine
 
 	private:
 		// 当前选中的id
-		size_t selected = -1;
+		size_t selected = SIZE_MAX;
 		EditorAssetNode* root;
 		EditorAssetNode* curNode;
 		void SetCurNode(EditorAssetNode* node);

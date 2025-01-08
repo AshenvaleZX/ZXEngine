@@ -59,7 +59,7 @@ namespace ZXEngine
 		// 引用计数归零后执行真正的删除操作
 		if (reference->referenceCount == 0)
 		{
-			size_t pos = -1;
+			size_t pos = SIZE_MAX;
 			for (size_t i = 0; i < loadedShaders.size(); i++)
 			{
 				if (loadedShaders[i]->ID == reference->ID)
@@ -68,7 +68,7 @@ namespace ZXEngine
 					break;
 				}
 			}
-			if (pos != -1)
+			if (pos != SIZE_MAX)
 			{
 				// 执行清理操作
 				loadedShaders.erase(loadedShaders.begin() + pos);
@@ -82,22 +82,22 @@ namespace ZXEngine
 		}
 	}
 
-	unsigned int Shader::GetID()
+	unsigned int Shader::GetID() const
 	{
 		return reference->ID;
 	}
 
-	LightType Shader::GetLightType()
+	LightType Shader::GetLightType() const
 	{
 		return reference->shaderInfo.lightType;
 	}
 
-	ShadowType Shader::GetShadowType()
+	ShadowType Shader::GetShadowType() const
 	{
 		return reference->shaderInfo.shadowType;
 	}
 
-	void Shader::Use()
+	void Shader::Use() const
 	{
 		RenderAPI::GetInstance()->UseShader(reference->ID);
 	}

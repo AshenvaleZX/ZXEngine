@@ -18,6 +18,8 @@ namespace ZXEngine
 		public:
 			ForceGeneratorType mType;
 
+			virtual ~ForceGenerator() = default;
+
 			virtual void UpdateForce(RigidBody* rigidBody, float duration) = 0;
 		};
 	}
