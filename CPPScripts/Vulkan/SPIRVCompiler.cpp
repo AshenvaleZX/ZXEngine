@@ -70,7 +70,7 @@ namespace ZXEngine
 		string stage = Utils::GetFileExtension(path.stem().string());
 
 #if defined(ZX_PLATFORM_WINDOWS)
-		string command = "..\\..\\..\\Tools\\glslangValidator.exe -V " + Utils::ConvertPathToWindowsFormat(filePath) + 
+		string command = "..\\..\\..\\Tools\\glslangValidator.exe -V " + Utils::ConvertPathToWindowsFormat(filePath) +
 			" --target-env spirv1.6 -S " + stage + " -o " + Utils::ConvertPathToWindowsFormat(outputFinalPath);
 #elif defined(ZX_PLATFORM_MACOS)
 		string command = "../../../Tools/glslang_macOS -V " + filePath +
@@ -79,8 +79,9 @@ namespace ZXEngine
 		string command = "../../../Tools/glslang_Linux_x86-64 -V " + filePath +
 			" --target-env spirv1.6 -S " + stage + " -o " + outputFinalPath;
 #endif
-
-		std::system(command.c_str());
+		int ret = std::system(command.c_str());
+		if (ret != 0)
+			Debug::LogError("Generate SPIR-V file failed: " + path.string());
 	}
 
 	void SPIRVCompiler::GenerateSPIRVFile(const filesystem::path& path, const string& code, ShaderStageFlagBit stage)
@@ -130,7 +131,10 @@ namespace ZXEngine
 #elif defined(ZX_PLATFORM_LINUX)
 		string command = "../../../Tools/glslang_Linux_x86-64 -V " + writeTempPath + " -o " + outputFinalPath;
 #endif
-		std::system(command.c_str());
+		int ret = std::system(command.c_str());
+		if (ret != 0)
+			Debug::LogError("Generate SPIR-V file failed: " + path.string());
+
 		// É¾³ýÁÙÊ±ÎÄ¼þ
 		if (!ProjectSetting::preserveIntermediateShader)
 			if (!(std::remove(writeTempPath.c_str()) == 0))

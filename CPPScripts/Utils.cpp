@@ -299,10 +299,10 @@ namespace ZXEngine
         MessageBoxA(NULL, message.c_str(), title.c_str(), MB_OK | MB_ICONINFORMATION);
 #elif defined(ZX_PLATFORM_MACOS)
         string command = "osascript -e 'display dialog \"" + message + "\" with title \"" + title + "\" buttons {\"OK\"} default button \"OK\"'";
-        std::system(command.c_str());
+        int ret = std::system(command.c_str());
 #elif defined(ZX_PLATFORM_LINUX)
         string command = "zenity --info --title=\"" + title + "\" --text=\"" + message + "\"";
-        std::system(command.c_str());
+        int ret = std::system(command.c_str());
 #endif
     }
 }

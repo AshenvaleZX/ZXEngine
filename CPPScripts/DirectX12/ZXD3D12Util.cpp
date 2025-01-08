@@ -27,15 +27,23 @@ namespace ZXEngine
 		// 用微软的工具预编译hlsl代码
 		// VS
 		string command = "..\\..\\..\\Tools\\fxc.exe /T vs_5_1 /E VS /Fo " + Utils::ConvertPathToWindowsFormat(outputPath + ".vert.fxc") + " " + Utils::ConvertPathToWindowsFormat(hlslPath);
-		std::system(command.c_str());
+		int ret = std::system(command.c_str());
+		if (ret != 0)
+			Debug::LogError("Compile vertex shader failed: " + path.string());
+
 		// PS
 		command = "..\\..\\..\\Tools\\fxc.exe /T ps_5_1 /E PS /Fo " + Utils::ConvertPathToWindowsFormat(outputPath + ".frag.fxc") + " " + Utils::ConvertPathToWindowsFormat(hlslPath);
-		std::system(command.c_str());
+		ret = std::system(command.c_str());
+		if (ret != 0)
+			Debug::LogError("Compile fragment shader failed: " + path.string());
+
 		// GS
 		if (stageFlags & ZX_SHADER_STAGE_GEOMETRY_BIT)
 		{
 			command = "..\\..\\..\\Tools\\fxc.exe /T gs_5_1 /E GS /Fo " + Utils::ConvertPathToWindowsFormat(outputPath + ".geom.fxc") + " " + Utils::ConvertPathToWindowsFormat(hlslPath);
-			std::system(command.c_str());
+			ret = std::system(command.c_str());
+			if (ret != 0)
+				Debug::LogError("Compile geometry shader failed: " + path.string());
 		}
 
 		// 删除临时文件
