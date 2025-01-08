@@ -151,7 +151,7 @@ namespace ZXEngine
 		{
 			ImGui::Text("Hit Group:");
 			ImGui::SameLine(120);
-			ImGui::Text("%d", material->hitGroupIdx);
+			ImGui::Text("%u", material->hitGroupIdx);
 		}
 
 		uint32_t idx = 0;
@@ -995,11 +995,11 @@ namespace ZXEngine
 
 		ImGui::Text("Vertices Num:");
 		ImGui::SameLine(120);
-		ImGui::Text("%d", info->meshRenderer->mVerticesNum);
+		ImGui::Text("%zu", info->meshRenderer->mVerticesNum);
 
 		ImGui::Text("Triangles Num:");
 		ImGui::SameLine(120);
-		ImGui::Text("%d", info->meshRenderer->mTrianglesNum);
+		ImGui::Text("%zu", info->meshRenderer->mTrianglesNum);
 
 		ImGui::Text("Bounds Size:");
 		ImGui::Text("          X:");
@@ -1013,10 +1013,10 @@ namespace ZXEngine
 		ImGui::Text("%.2f", info->meshRenderer->mAABBSizeZ);
 
 		ImGui::Text("Bone Num:        ");
-		ImGui::SameLine(); ImGui::Text("%d", info->boneNum);
+		ImGui::SameLine(); ImGui::Text("%u", info->boneNum);
 
 		ImGui::Text("Animations Num:  ");
-		ImGui::SameLine(); ImGui::Text("%d", info->animBriefInfos.size());
+		ImGui::SameLine(); ImGui::Text("%zu", info->animBriefInfos.size());
 		for (auto& animBrief : info->animBriefInfos)
 		{
 			ImGui::Text("    Name:        ");
