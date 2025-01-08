@@ -592,8 +592,7 @@ namespace ZXEngine
 			errno_t err = strncpy_s(StagingBuffer, value, StagingSize - 1);
 			if (err != 0)
 				continue;
-#elif defined(ZX_PLATFORM_MACOS)
-			// 不知道为什么在MacOS上无法识别strncpy_s，按理说应该是支持C11标准的
+#elif defined(ZX_PLATFORM_MACOS) || defined(ZX_PLATFORM_LINUX)
 			strncpy(StagingBuffer, value, StagingSize - 1);
 			StagingBuffer[StagingSize - 1] = '\0';
 #endif
