@@ -44,8 +44,7 @@ namespace ZXEngine
 		style.WindowTitleAlign.x = 0.0f;
 
 		// ÄÚÈÝ
-		string str = "\n" + msg.content + "\n\n";
-		ImGui::Text(str.c_str());
+		ImGui::Text("\n%s\n\n", msg.content.c_str());
 
 		// °´Å¥(¾ÓÖÐ)
 		float size = ImGui::CalcTextSize("OK").x + style.FramePadding.x * 2.0f;

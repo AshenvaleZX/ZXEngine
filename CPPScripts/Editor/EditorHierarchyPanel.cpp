@@ -48,7 +48,7 @@ namespace ZXEngine
 			nodeFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
 			if (!gameObject->IsActive()) ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(160, 160, 160, 255));
-			ImGui::TreeNodeEx((void*)(intptr_t)nodeIdx, nodeFlags, gameObject->name.c_str());
+			ImGui::TreeNodeEx((void*)(intptr_t)nodeIdx, nodeFlags, "%s", gameObject->name.c_str());
 			if (!gameObject->IsActive()) ImGui::PopStyleColor();
 
 			// 滚动到选中的项
@@ -74,7 +74,7 @@ namespace ZXEngine
 			}
 
 			if (!gameObject->IsActive()) ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(160, 160, 160, 255));
-			bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)nodeIdx, nodeFlags, gameObject->name.c_str());
+			bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)nodeIdx, nodeFlags, "%s", gameObject->name.c_str());
 			if (!gameObject->IsActive()) ImGui::PopStyleColor();
 
 			// 滚动到选中的项

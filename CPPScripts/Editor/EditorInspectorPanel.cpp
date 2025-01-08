@@ -35,7 +35,7 @@ namespace ZXEngine
 			if (curGO != nullptr)
 			{
 				Material* mat = nullptr;
-				ImGui::Text(curGO->name.c_str());
+				ImGui::Text("%s", curGO->name.c_str());
 				for (auto& iter : curGO->components)
 				{
 					ComponentType type = iter.first;
@@ -151,7 +151,7 @@ namespace ZXEngine
 		{
 			ImGui::Text("Hit Group:");
 			ImGui::SameLine(120);
-			ImGui::Text(std::to_string(material->hitGroupIdx).c_str());
+			ImGui::Text("%d", material->hitGroupIdx);
 		}
 
 		uint32_t idx = 0;
@@ -159,7 +159,7 @@ namespace ZXEngine
 		for (auto& iter : material->data->floatDatas)
 		{
 			float value = iter.second;
-			ImGui::Text(iter.first.c_str());
+			ImGui::Text("%s", iter.first.c_str());
 			ImGui::SameLine(120); ImGui::DragFloat(("##float" + to_string(idx)).c_str(), &value, 0.1f, -FLT_MAX, FLT_MAX);
 			idx++;
 
@@ -172,7 +172,7 @@ namespace ZXEngine
 		for (auto& iter : material->data->uintDatas)
 		{
 			int value = static_cast<int>(iter.second);
-			ImGui::Text(iter.first.c_str());
+			ImGui::Text("%s", iter.first.c_str());
 			ImGui::SameLine(120); ImGui::DragInt(("##uint32_t" + to_string(idx)).c_str(), &value, 1.0f, 0, UINT32_MAX);
 			idx++;
 
@@ -186,7 +186,7 @@ namespace ZXEngine
 		for (auto& iter : material->data->vec2Datas)
 		{
 			Vector2 value = iter.second;
-			ImGui::Text(iter.first.c_str());
+			ImGui::Text("%s", iter.first.c_str());
 			ImGui::SameLine(120); ImGui::DragFloat(("##Vec2X" + to_string(idx)).c_str(), &value.x, 0.25f, -FLT_MAX, FLT_MAX);
 			ImGui::SameLine(); ImGui::DragFloat(("##Vec2Y" + to_string(idx)).c_str(), &value.y, 0.25f, -FLT_MAX, FLT_MAX);
 			idx++;
@@ -200,7 +200,7 @@ namespace ZXEngine
 		for (auto& iter : material->data->vec3Datas)
 		{
 			Vector3 value = iter.second;
-			ImGui::Text(iter.first.c_str());
+			ImGui::Text("%s", iter.first.c_str());
 			ImGui::SameLine(120); ImGui::DragFloat(("##Vec3X" + to_string(idx)).c_str(), &value.x, 0.25f, -FLT_MAX, FLT_MAX);
 			ImGui::SameLine(); ImGui::DragFloat(("##Vec3Y" + to_string(idx)).c_str(), &value.y, 0.25f, -FLT_MAX, FLT_MAX);
 			ImGui::SameLine(); ImGui::DragFloat(("##Vec3Z" + to_string(idx)).c_str(), &value.z, 0.25f, -FLT_MAX, FLT_MAX);
@@ -215,7 +215,7 @@ namespace ZXEngine
 		for (auto& iter : material->data->vec4Datas)
 		{
 			Vector4 value = iter.second;
-			ImGui::Text(iter.first.c_str());
+			ImGui::Text("%s", iter.first.c_str());
 			ImGui::SameLine(120); ImGui::DragFloat(("##Vec4X" + to_string(idx)).c_str(), &value.x, 0.25f, -FLT_MAX, FLT_MAX);
 			ImGui::SameLine(); ImGui::DragFloat(("##Vec4Y" + to_string(idx)).c_str(), &value.y, 0.25f, -FLT_MAX, FLT_MAX);
 			ImGui::SameLine(); ImGui::DragFloat(("##Vec4Z" + to_string(idx)).c_str(), &value.z, 0.25f, -FLT_MAX, FLT_MAX);
@@ -234,7 +234,7 @@ namespace ZXEngine
 		{
 			Vector4 value = iter.second;
 			ImVec4 color = ImVec4(value.x, value.y, value.z, value.w);
-			ImGui::Text(iter.first.c_str());
+			ImGui::Text("%s", iter.first.c_str());
 			ImGui::SameLine(120); ImGui::ColorEdit4(("##color" + to_string(idx)).c_str(), (float*)&color);
 			idx++;
 
@@ -254,7 +254,7 @@ namespace ZXEngine
 				uint32_t id = iter.second->GetID();
 				if (!ImTextureMgr->CheckExistenceByEngineID(id))
 					ImTextureMgr->CreateFromEngineID(id);
-				ImGui::Text(iter.first.c_str());
+				ImGui::Text("%s", iter.first.c_str());
 				ImGui::SameLine(120); ImGui::Image(ImTextureMgr->GetImTextureIDByEngineID(id), ImVec2(50.0f, 50.0f));
 			}
 		}
@@ -557,7 +557,7 @@ namespace ZXEngine
 		for (auto& iter : component->mBoolVariables)
 		{
 			bool value = iter.second;
-			ImGui::Text(iter.first.c_str());
+			ImGui::Text("%s", iter.first.c_str());
 			ImGui::SameLine(135); ImGui::Checkbox(("##" + iter.first).c_str(), &value);
 
 			if (value != iter.second)
@@ -567,7 +567,7 @@ namespace ZXEngine
 		for (auto& iter : component->mFloatVariables)
 		{
 			float value = iter.second;
-			ImGui::Text(iter.first.c_str());
+			ImGui::Text("%s", iter.first.c_str());
 			ImGui::SameLine(135); ImGui::DragFloat(("##" + iter.first).c_str(), &value, 0.1f, -FLT_MAX, FLT_MAX);
 
 			if (value != iter.second)
@@ -577,7 +577,7 @@ namespace ZXEngine
 		for (auto& iter : component->mIntVariables)
 		{
 			int value = iter.second;
-			ImGui::Text(iter.first.c_str());
+			ImGui::Text("%s", iter.first.c_str());
 			ImGui::SameLine(135); ImGui::DragInt(("##" + iter.first).c_str(), &value, 1, INT_MIN, INT_MAX);
 
 			if (value != iter.second)
@@ -601,7 +601,7 @@ namespace ZXEngine
 			StagingBuffer[StagingSize - 1] = '\0';
 #endif
 
-			ImGui::Text(iter.first.c_str());
+			ImGui::Text("%s", iter.first.c_str());
 			ImGui::SameLine(135); ImGui::InputText(("##" + iter.first).c_str(), StagingBuffer, StagingSize);
 
 			if (strcmp(StagingBuffer, value) != 0)
@@ -673,11 +673,10 @@ namespace ZXEngine
 			return;
 
 		ImGui::Text("Path     ");
-		ImGui::SameLine(); ImGui::Text(component->texture->path.c_str());
+		ImGui::SameLine(); ImGui::Text("%s", component->texture->path.c_str());
 
-		string size = to_string(component->texture->width) + "x" + to_string(component->texture->height);
 		ImGui::Text("Size     ");
-		ImGui::SameLine(); ImGui::Text(size.c_str());
+		ImGui::SameLine(); ImGui::Text("%d x %d", component->texture->width, component->texture->height);
 
 		auto ImTextureMgr = ImGuiTextureManager::GetInstance();
 		uint32_t id = component->texture->GetID();
@@ -693,9 +692,8 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("UI Button"))
 			return;
 
-		string size = to_string(component->mWidth) + "x" + to_string(component->mHeight);
 		ImGui::Text("Size     ");
-		ImGui::SameLine(); ImGui::Text(size.c_str());
+		ImGui::SameLine(); ImGui::Text("%.2f x %.2f", component->mWidth, component->mHeight);
 	}
 
 	void EditorInspectorPanel::DrawParticleSystem(ParticleSystem* component)
@@ -891,7 +889,7 @@ namespace ZXEngine
 				if (!ImTextureMgr->CheckExistenceByEngineID(id))
 					ImTextureMgr->CreateFromEngineID(id);
 				ImGui::Text("Texture          ");
-				ImGui::SameLine(); ImGui::Text(component->mRenderer.mTexturePath.c_str());
+				ImGui::SameLine(); ImGui::Text("%s", component->mRenderer.mTexturePath.c_str());
 				ImGui::Text("                 ");
 				ImGui::SameLine(); ImGui::Image(ImTextureMgr->GetImTextureIDByEngineID(id), ImVec2(50.0f, 50.0f));
 			}
@@ -930,20 +928,19 @@ namespace ZXEngine
 
 		ImGui::Text("Name:");
 		ImGui::SameLine(120);
-		ImGui::Text(info->name.c_str());
+		ImGui::Text("%s", info->name.c_str());
 
 		ImGui::Text("Format:");
 		ImGui::SameLine(120);
-		ImGui::Text(info->format.c_str());
+		ImGui::Text("%s", info->format.c_str());
 
 		auto id = info->texture->GetID();
 		auto width = info->texture->width;
 		auto height = info->texture->height;
 
-		string sizeText = to_string(width) + "x" + to_string(height);
 		ImGui::Text("Size:");
 		ImGui::SameLine(120);
-		ImGui::Text(sizeText.c_str());
+		ImGui::Text("%d x %d", width, height);
 		
 		int maxWidth = (int)ProjectSetting::inspectorWidth - 16;
 		if (width > maxWidth)
@@ -973,11 +970,11 @@ namespace ZXEngine
 
 			ImGui::Text("Name:");
 			ImGui::SameLine(120);
-			ImGui::Text(info->name.c_str());
+			ImGui::Text("%s", info->name.c_str());
 
 			ImGui::Text("Format:");
 			ImGui::SameLine(120);
-			ImGui::Text(info->format.c_str());
+			ImGui::Text("%s", info->format.c_str());
 
 			ImGui::Text("More information is loading......");
 
@@ -990,42 +987,42 @@ namespace ZXEngine
 
 		ImGui::Text("Name:");
 		ImGui::SameLine(120);
-		ImGui::Text(info->name.c_str());
+		ImGui::Text("%s", info->name.c_str());
 
 		ImGui::Text("Format:");
 		ImGui::SameLine(120);
-		ImGui::Text(info->format.c_str());
+		ImGui::Text("%s", info->format.c_str());
 
 		ImGui::Text("Vertices Num:");
 		ImGui::SameLine(120);
-		ImGui::Text(to_string(info->meshRenderer->mVerticesNum).c_str());
+		ImGui::Text("%d", info->meshRenderer->mVerticesNum);
 
 		ImGui::Text("Triangles Num:");
 		ImGui::SameLine(120);
-		ImGui::Text(to_string(info->meshRenderer->mTrianglesNum).c_str());
+		ImGui::Text("%d", info->meshRenderer->mTrianglesNum);
 
 		ImGui::Text("Bounds Size:");
 		ImGui::Text("          X:");
 		ImGui::SameLine(120);
-		ImGui::Text(to_string(info->meshRenderer->mAABBSizeX).c_str());
+		ImGui::Text("%.2f", info->meshRenderer->mAABBSizeX);
 		ImGui::Text("          Y:");
 		ImGui::SameLine(120);
-		ImGui::Text(to_string(info->meshRenderer->mAABBSizeY).c_str());
+		ImGui::Text("%.2f", info->meshRenderer->mAABBSizeY);
 		ImGui::Text("          Z:");
 		ImGui::SameLine(120);
-		ImGui::Text(to_string(info->meshRenderer->mAABBSizeZ).c_str());
+		ImGui::Text("%.2f", info->meshRenderer->mAABBSizeZ);
 
 		ImGui::Text("Bone Num:        ");
-		ImGui::SameLine(); ImGui::Text(to_string(info->boneNum).c_str());
+		ImGui::SameLine(); ImGui::Text("%d", info->boneNum);
 
 		ImGui::Text("Animations Num:  ");
-		ImGui::SameLine(); ImGui::Text(to_string(info->animBriefInfos.size()).c_str());
+		ImGui::SameLine(); ImGui::Text("%d", info->animBriefInfos.size());
 		for (auto& animBrief : info->animBriefInfos)
 		{
 			ImGui::Text("    Name:        ");
-			ImGui::SameLine(); ImGui::Text(animBrief.name.c_str());
+			ImGui::SameLine(); ImGui::Text("%s", animBrief.name.c_str());
 			ImGui::Text("    Duration:    ");
-			ImGui::SameLine(); ImGui::Text(to_string(animBrief.duration).c_str());
+			ImGui::SameLine(); ImGui::Text("%.2f", animBrief.duration);
 		}
 	}
 
@@ -1037,15 +1034,15 @@ namespace ZXEngine
 
 		ImGui::Text("Name:");
 		ImGui::SameLine(120);
-		ImGui::Text(info->name.c_str());
+		ImGui::Text("%s", info->name.c_str());
 
 		ImGui::Text("Length:");
 		ImGui::SameLine(120);
-		ImGui::Text(info->lengthStr.c_str());
+		ImGui::Text("%s", info->lengthStr.c_str());
 
 		ImGui::Text("Size:");
 		ImGui::SameLine(120);
-		ImGui::Text(info->sizeStr.c_str());
+		ImGui::Text("%s", info->sizeStr.c_str());
 
 		static const ImVec2 audioBtnSize = ImVec2(60.0f, 20.0f);
 		ImGui::SetCursorPosX(80);
@@ -1332,9 +1329,8 @@ namespace ZXEngine
 		if (!ImGui::CollapsingHeader("Animator"))
 			return;
 
-		const string& avatarName = component->mAvatarName;
 		ImGui::Text("Avatar           ");
-		ImGui::SameLine(); ImGui::Text(avatarName.c_str());
+		ImGui::SameLine(); ImGui::Text("%s", component->mAvatarName.c_str());
 	}
 
 	void EditorInspectorPanel::DrawSpringJoint(SpringJoint* component)
@@ -1344,9 +1340,8 @@ namespace ZXEngine
 			return;
 
 		// Connected Body
-		string connectedBodyPath = component->mConnectedGOPath;
 		ImGui::Text("Connected Body   ");
-		ImGui::SameLine(); ImGui::Text(connectedBodyPath.c_str());
+		ImGui::SameLine(); ImGui::Text("%s", component->mConnectedGOPath.c_str());
 
 		// Anchor
 		Vector3 anchor = component->mAnchor;
@@ -1378,9 +1373,8 @@ namespace ZXEngine
 			return;
 
 		// Connected Body
-		string connectedBodyPath = component->mConnectedGOPath;
 		ImGui::Text("Connected Body   ");
-		ImGui::SameLine(); ImGui::Text(connectedBodyPath.c_str());
+		ImGui::SameLine(); ImGui::Text("%s", component->mConnectedGOPath.c_str());
 
 		// Anchor
 		Vector3 anchor = component->mAnchor;
@@ -1439,9 +1433,8 @@ namespace ZXEngine
 			return;
 
 		// Clip
-		string clipName = component->mName;
 		ImGui::Text("Clip             ");
-		ImGui::SameLine(); ImGui::Text(clipName.c_str());
+		ImGui::SameLine(); ImGui::Text("%s", component->mName.c_str());
 
 		// Volume
 		float volume = component->GetVolume();

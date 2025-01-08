@@ -26,13 +26,13 @@ namespace ZXEngine
 			ImGui::SetCursorPosX((float)(ProjectSetting::consoleWidth - 240));
 			ImGui::Checkbox("##ShowMessage", &showMessage);
 			ImGui::SameLine(); ImGui::Image(logIcons[0].ImGuiID, iconSize);
-			ImGui::SameLine(); ImGui::Text(to_string(EditorData->messageSize).c_str());
+			ImGui::SameLine(); ImGui::Text("%d", EditorData->messageSize);
 			ImGui::SameLine(); ImGui::Checkbox("##ShowWarning", &showWarning);
 			ImGui::SameLine(); ImGui::Image(logIcons[1].ImGuiID, iconSize);
-			ImGui::SameLine(); ImGui::Text(to_string(EditorData->warningSize).c_str());
+			ImGui::SameLine(); ImGui::Text("%d", EditorData->warningSize);
 			ImGui::SameLine(); ImGui::Checkbox("##ShowError", &showError);
 			ImGui::SameLine(); ImGui::Image(logIcons[2].ImGuiID, iconSize);
-			ImGui::SameLine(); ImGui::Text(to_string(EditorData->errorSize).c_str());
+			ImGui::SameLine(); ImGui::Text("%d", EditorData->errorSize);
 
 			const ImGuiID childId = ImGui::GetID((void*)(intptr_t)0);
 			const bool childVisible = ImGui::BeginChild(childId, ImVec2((float)(ProjectSetting::consoleWidth - 10), (float)(ProjectSetting::consoleHeight - 60)));
@@ -50,7 +50,7 @@ namespace ZXEngine
 						ImGui::Separator();
 					ImGui::Image(logIcons[(int)log->type].ImGuiID, iconSize);
 					ImGui::SameLine();
-					ImGui::Text(log->data.c_str());
+					ImGui::Text("%s", log->data.c_str());
 				}
 
 				log = log->next;
