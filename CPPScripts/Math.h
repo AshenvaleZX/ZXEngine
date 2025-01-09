@@ -26,6 +26,7 @@ namespace ZXEngine
 		static inline float RandomFloat(float min = 0.0f, float max = 1.0f);
 
 		static inline bool Approximately(float a, float b, float eps = FLT_EPSILON);
+		static inline bool Approximately(Quaternion q1, Quaternion q2, float eps = 0.00001f);
 
 		static inline float Distance(const Vector2& a, const Vector2& b);
 		static inline float Distance(const Vector3& a, const Vector3& b);
@@ -144,6 +145,11 @@ namespace ZXEngine
 	bool Math::Approximately(float a, float b, float eps)
 	{
 		return fabs(a - b) <= eps;
+	}
+
+	bool Math::Approximately(Quaternion q1, Quaternion q2, float eps)
+	{
+		return ((q1 - q2).GetMagnitudeSquare() < eps * eps) || ((q1 + q2).GetMagnitudeSquare() < eps * eps);
 	}
 
 	float Math::Distance(const Vector2& a, const Vector2& b)
