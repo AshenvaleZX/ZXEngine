@@ -165,29 +165,29 @@ namespace ZXEngine
             template <typename T>
             struct TypeInfo;
 
-#define ZXRef_StaticReflection(Type, ...)                                                       \
-            namespace Reflection                                                                \
-            {                                                                                   \
-                namespace Static                                                                \
-                {                                                                               \
-                    template <>                                                                 \
-                    struct TypeInfo<Type> : BaseTypeInfo<Type>                                  \
-                    {                                                                           \
-                        static constexpr std::string_view GetName()                             \
-                        {                                                                       \
-                            return #Type;                                                       \
-                        }                                                                       \
-                        __VA_ARGS__                                                             \
-                        static constexpr bool isDerived = HasBaseType<TypeInfo<Type>>::value;   \
-                    };                                                                          \
-                }                                                                               \
+#define ZXRef_StaticReflection(Type, ...)                                                           \
+            namespace Reflection                                                                    \
+            {                                                                                       \
+                namespace Static                                                                    \
+                {                                                                                   \
+                    template <>                                                                     \
+                    struct TypeInfo<Type> : BaseTypeInfo<Type>                                      \
+                    {                                                                               \
+                        static constexpr std::string_view GetName()                                 \
+                        {                                                                           \
+                            return #Type;                                                           \
+                        }                                                                           \
+                        __VA_ARGS__                                                                 \
+                        static inline constexpr bool isDerived = HasBaseType<TypeInfo<Type>>::value;\
+                    };                                                                              \
+                }                                                                                   \
             }
 
 #define ZXRef_BaseType(T)       using BaseType = T;
 
 #define ZXRef_Field(p, ...)     FieldTraits { p, #p, ##__VA_ARGS__ }
 
-#define ZXRef_Fields(...)       inline static constexpr auto mFields = std::make_tuple(__VA_ARGS__);
+#define ZXRef_Fields(...)       static inline constexpr auto mFields = std::make_tuple(__VA_ARGS__);
 
 #define ZXRef_Constructor(...)  Constructor<__VA_ARGS__>
 
