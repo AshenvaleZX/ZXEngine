@@ -54,7 +54,11 @@ namespace ZXEngine
 		bool operator== (const Quaternion& q) const;
 		bool operator!= (const Quaternion& q) const;
 		Quaternion& operator= (const Quaternion& q);
+		Quaternion operator+ (const Quaternion& q) const;
+		Quaternion operator- (const Quaternion& q) const;
 		Quaternion operator* (const Quaternion& q) const;
+		Quaternion& operator+= (const Quaternion& q);
+		Quaternion& operator-= (const Quaternion& q);
 		Quaternion& operator*= (const Quaternion& q);
 	};
 

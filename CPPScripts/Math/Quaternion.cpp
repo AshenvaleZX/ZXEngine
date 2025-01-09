@@ -246,6 +246,16 @@ namespace ZXEngine
 		return *this;
 	}
 
+	Quaternion Quaternion::operator+ (const Quaternion& q) const
+	{
+		return Quaternion(x + q.x, y + q.y, z + q.z, w + q.w);
+	}
+
+	Quaternion Quaternion::operator- (const Quaternion& q) const
+	{
+		return Quaternion(x - q.x, y - q.y, z - q.z, w - q.w);
+	}
+
 	// ²Î¿¼: https://www.mathworks.com/help/aeroblks/quaternionmultiplication.html
 	Quaternion Quaternion::operator* (const Quaternion& q) const
 	{
@@ -256,6 +266,24 @@ namespace ZXEngine
 		Quaternion result(qx, qy, qz, qw);
 		result.Normalize();
 		return result;
+	}
+
+	Quaternion& Quaternion::operator+= (const Quaternion& q)
+	{
+		x += q.x;
+		y += q.y;
+		z += q.z;
+		w += q.w;
+		return *this;
+	}
+
+	Quaternion& Quaternion::operator-= (const Quaternion& q)
+	{
+		x -= q.x;
+		y -= q.y;
+		z -= q.z;
+		w -= q.w;
+		return *this;
 	}
 
 	Quaternion& Quaternion::operator*= (const Quaternion& q)
