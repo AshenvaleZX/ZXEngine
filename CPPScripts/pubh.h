@@ -1,3 +1,4 @@
+#pragma once
 /*  ______   ___  ___   ______   ___   __   ________   ______   ___   __   ______
 |  |___   |  \  \/  /  |  ____| |   \ |  | |   _____| |__  __| |   \ |  | |  ____|
 |     /  /    \    /   |  |___  | \  \|  | |  | ____    |  |   | \  \|  | |  |___
@@ -10,18 +11,53 @@
 |  License: GPL-3.0
 */
 
-#pragma once
-#define ZX_EDITOR
-#define ZX_API_OPENGL
-// #define ZX_API_VULKAN
-// #define ZX_API_D3D12
-
 #if defined(__linux__)
 #define ZX_PLATFORM_LINUX
 #elif defined(__APPLE__)
 #define ZX_PLATFORM_MACOS
 #elif defined(_WIN32) || defined(_WIN64)
 #define ZX_PLATFORM_WINDOWS
+#elif defined(__ANDROID__)
+#define ZX_PLATFORM_ANDROID
+#endif
+
+#if defined(ZX_PLATFORM_WINDOWS) || defined(ZX_PLATFORM_MACOS) || defined(ZX_PLATFORM_LINUX)
+#define ZX_PLATFORM_DESKTOP
+#elif defined(ZX_PLATFORM_ANDROID)
+#define ZX_PLATFORM_MOBILE
+#endif
+
+#if defined(ZX_PLATFORM_DESKTOP)
+#define ZX_API_DEFAULT 0
+#elif defined(ZX_PLATFORM_ANDROID)
+#define ZX_API_DEFAULT 1
+#endif
+
+/*
+| Graphics API Switch
+| Manually set a ZX_API_SWITCH value instead of ZX_API_DEFAULT to switch the graphics API.
+| 0: OpenGL
+| 1: Vulkan
+| 2: D3D12
+*/
+#define ZX_API_SWITCH ZX_API_DEFAULT
+
+#if ZX_API_SWITCH == 0
+#define ZX_API_OPENGL
+#elif ZX_API_SWITCH == 1
+#define ZX_API_VULKAN
+#elif ZX_API_SWITCH == 2
+#define ZX_API_D3D12
+#else
+#error "No Graphics API"
+#endif
+
+/*
+| Editor Mode Switch
+| Comment the definition of ZX_EDITOR to disable the editor mode.
+*/
+#if defined(ZX_PLATFORM_DESKTOP)
+#define ZX_EDITOR
 #endif
 
 #include <string>
