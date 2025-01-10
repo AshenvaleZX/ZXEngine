@@ -69,6 +69,7 @@ namespace ZXEngine
 		void AutoMoveToTarget();
 
 		// -------------------------------- Widget Operation --------------------------------
+		bool mPressed = false;
 		AxisType mCurAxis = AxisType::None;
 		Vector2 mLastWidgetScreenPos;
 		float mRotationRadian = 0.0f;

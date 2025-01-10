@@ -112,6 +112,7 @@ namespace ZXEngine
 
 	void EditorCamera::ClickCallBack(const string& args)
 	{
+		mPressed = true;
 		mCurAxis = AxisType::None;
 
 		auto dataMgr = EditorDataManager::GetInstance();
@@ -165,6 +166,9 @@ namespace ZXEngine
 	{
 		if (mCurAxis == AxisType::None)
 		{
+			if (!mPressed)
+				return;
+
 			auto argList = Utils::StringSplit(args, '|');
 
 			Vector2 releaseScreenPos;
@@ -197,6 +201,8 @@ namespace ZXEngine
 			EditorSceneWidgetsRenderer::GetInstance()->UpdateWidgetColor(false);
 			EventManager::GetInstance()->RemoveEditorEventHandler(EventType::UPDATE_MOUSE_POS, mOperateWidgetHandle);
 		}
+
+		mPressed = false;
 	}
 
 	void EditorCamera::OperateWidgetCallBack(const string& args)
