@@ -108,7 +108,15 @@ namespace ZXEngine
 
 	Vector3 Transform::GetLocalEulerAngles() const
 	{
+#ifdef ZX_EDITOR
+		if (!Math::Approximately(Quaternion::Euler(localEulerAnglesHint), localRotation))
+		{
+			localEulerAnglesHint = localRotation.GetEulerAngles();
+		}
+		return localEulerAnglesHint;
+#else
 		return localRotation.GetEulerAngles();
+#endif
 	}
 
 	Quaternion Transform::GetLocalRotation() const
@@ -142,6 +150,9 @@ namespace ZXEngine
 	{
 		localRotation.SetEulerAngles(eulerAngles);
 		UpdateColliderTransform();
+#ifdef ZX_EDITOR
+		localEulerAnglesHint = eulerAngles;
+#endif
 	}
 
 	void Transform::SetLocalEulerAngles(float x, float y, float z)

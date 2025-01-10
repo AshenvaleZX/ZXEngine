@@ -311,20 +311,9 @@ namespace ZXEngine
 		ImGui::SameLine(); yChange = ImGui::DragFloat("##rotY", &euler.y, 0.25f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Z");
 		ImGui::SameLine(); zChange = ImGui::DragFloat("##rotZ", &euler.z, 0.25f, -FLT_MAX, FLT_MAX);
-		if (xChange)
+		if (xChange || yChange || zChange)
 		{
-			float delta = Math::Deg2Rad(euler.x - eulerOrigin.x);
-			component->Rotate(component->GetRight(), delta);
-		}
-		if (yChange)
-		{
-			float delta = Math::Deg2Rad(euler.y - eulerOrigin.y);
-			component->Rotate(component->GetUp(), delta);
-		}
-		if (zChange)
-		{
-			float delta = Math::Deg2Rad(euler.z - eulerOrigin.z);
-			component->Rotate(component->GetForward(), delta);
+			component->SetLocalEulerAngles(euler);
 		}
 
 		Vector3 scale = component->GetLocalScale();
@@ -369,20 +358,9 @@ namespace ZXEngine
 		ImGui::SameLine(); yChange = ImGui::DragFloat("##rotY", &euler.y, 0.25f, -FLT_MAX, FLT_MAX);
 		ImGui::SameLine(); ImGui::Text("Z");
 		ImGui::SameLine(); zChange = ImGui::DragFloat("##rotZ", &euler.z, 0.25f, -FLT_MAX, FLT_MAX);
-		if (xChange)
+		if (xChange || yChange || zChange)
 		{
-			float delta = Math::Deg2Rad(euler.x - eulerOrigin.x);
-			component->Rotate(component->GetRight(), delta);
-		}
-		if (yChange)
-		{
-			float delta = Math::Deg2Rad(euler.y - eulerOrigin.y);
-			component->Rotate(component->GetUp(), delta);
-		}
-		if (zChange)
-		{
-			float delta = Math::Deg2Rad(euler.z - eulerOrigin.z);
-			component->Rotate(component->GetForward(), delta);
+			component->SetLocalEulerAngles(euler);
 		}
 
 		Vector3 scale = component->GetLocalScale();

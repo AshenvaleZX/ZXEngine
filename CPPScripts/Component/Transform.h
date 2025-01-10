@@ -63,8 +63,13 @@ namespace ZXEngine
 		void UpdateColliderTransform() const;
 
 	protected:
-		Vector3 localPosition = Vector3();
-		Quaternion localRotation = Quaternion();
+		Vector3 localPosition;
+		Quaternion localRotation;
 		Vector3 localScale = Vector3(1.0f);
+
+#ifdef ZX_EDITOR
+		// 用于编辑器的Inspector面板
+		mutable Vector3 localEulerAnglesHint;
+#endif
 	};
 }
