@@ -61,16 +61,8 @@ namespace ZXEngine
 	void InputManagerWindows::UpdateKeyInput()
 	{
 		// Êó±ê×óÓÒ¼ü
-#ifdef ZX_EDITOR
-		if (EditorInputManager::GetInstance()->IsProcessGameMouseInput())
-		{
-			CheckMouseKey(VK_LBUTTON, InputButton::MOUSE_BUTTON_1, EventType::MOUSE_BUTTON_1_PRESS);
-			CheckMouseKey(VK_RBUTTON, InputButton::MOUSE_BUTTON_2, EventType::MOUSE_BUTTON_2_PRESS);
-		}
-#else
 		CheckMouseKey(VK_LBUTTON, InputButton::MOUSE_BUTTON_1, EventType::MOUSE_BUTTON_1_PRESS);
 		CheckMouseKey(VK_RBUTTON, InputButton::MOUSE_BUTTON_2, EventType::MOUSE_BUTTON_2_PRESS);
-#endif
 
 		// ´Ó0µ½9
 		for (int i = 0; i < 10; i++)
@@ -112,14 +104,36 @@ namespace ZXEngine
 	{
 		SHORT state = GetAsyncKeyState(id);
 
-		string pos = to_string(mMouseX) + "|" + to_string(mMouseY);
-
 		if ((state & 0x8000) && mButtonState[(int)button] == 1)
-			EventManager::GetInstance()->FireEvent((uint32_t)e, pos); // Press
+		{
+#ifdef ZX_EDITOR
+			if (EditorInputManager::GetInstance()->IsProcessGameMouseInput())
+#endif
+			{
+				string pos = to_string(mMouseX) + "|" + to_string(mMouseY);
+				EventManager::GetInstance()->FireEvent((uint32_t)e, pos); // Press
+			}
+		}
 		else if ((state & 0x8000) && mButtonState[(int)button] == 0)
-			EventManager::GetInstance()->FireEvent((uint32_t)e + 1, pos); // Down
+		{
+#ifdef ZX_EDITOR
+			if (EditorInputManager::GetInstance()->IsProcessGameMouseInput())
+#endif
+			{
+				string pos = to_string(mMouseX) + "|" + to_string(mMouseY);
+				EventManager::GetInstance()->FireEvent((uint32_t)e + 1, pos); // Down
+			}
+		}
 		else if (!(state & 0x8000) && mButtonState[(int)button] == 1)
-			EventManager::GetInstance()->FireEvent((uint32_t)e + 2, pos); // Up
+		{
+#ifdef ZX_EDITOR
+			if (EditorInputManager::GetInstance()->IsProcessGameMouseInput())
+#endif
+			{
+				string pos = to_string(mMouseX) + "|" + to_string(mMouseY);
+				EventManager::GetInstance()->FireEvent((uint32_t)e + 2, pos); // Up
+			}
+		}
 
 		mButtonState[(int)button] = (state & 0x8000) ? 1 : 0;
 	}
