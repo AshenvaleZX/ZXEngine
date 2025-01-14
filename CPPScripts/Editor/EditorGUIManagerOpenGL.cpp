@@ -37,7 +37,7 @@ namespace ZXEngine
 
 	void EditorGUIManagerOpenGL::Init()
 	{
-		// InspectorµÄ»æÖÆÒª·ÅÔÚHierarchyºÍProjectºóÃæ£¬ÒòÎªÕâÁ½¸öÃæ°å»á¾ö¶¨InspectorµÄÄÚÈİ
+		// Inspectorçš„ç»˜åˆ¶è¦æ”¾åœ¨Hierarchyå’ŒProjectåé¢ï¼Œå› ä¸ºè¿™ä¸¤ä¸ªé¢æ¿ä¼šå†³å®šInspectorçš„å†…å®¹
 		allPanels.push_back(new EditorProjectPanel());
 		allPanels.push_back(new EditorMainBarPanel());
 		allPanels.push_back(new EditorHierarchyPanel());

@@ -8,17 +8,17 @@ namespace ZXEngine
 {
 	void EditorHierarchyPanel::DrawPanel()
 	{
-		// Ãæ°å´óĞ¡ºÍÎ»ÖÃ
+		// é¢æ¿å¤§å°å’Œä½ç½®
 		ImGui::SetNextWindowPos(ImVec2(0, (float)ProjectSetting::mainBarHeight));
 		ImGui::SetNextWindowSize(ImVec2((float)ProjectSetting::hierarchyWidth, (float)ProjectSetting::hierarchyHeight));
 
-		// ÉèÖÃÃæ°å¾ßÌåÄÚÈİ
+		// è®¾ç½®é¢æ¿å…·ä½“å†…å®¹
 		if (ImGui::Begin("Hierarchy", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
 		{
 			nodeIdx = 0;
 
 			auto newSelectedGO = EditorDataManager::GetInstance()->selectedGO;
-			// Èç¹ûÑ¡ÖĞµÄÎïÌå·¢Éú±ä»¯£¬ĞèÒª×Ô¶¯Õ¹¿ª²¢ÒÆ¶¯µ½Ñ¡ÖĞµÄÎïÌå
+			// å¦‚æœé€‰ä¸­çš„ç‰©ä½“å‘ç”Ÿå˜åŒ–ï¼Œéœ€è¦è‡ªåŠ¨å±•å¼€å¹¶ç§»åŠ¨åˆ°é€‰ä¸­çš„ç‰©ä½“
 			autoExpand = newSelectedGO != nullptr && newSelectedGO != selectedGO;
 			selectedGO = newSelectedGO;
 			
@@ -44,14 +44,14 @@ namespace ZXEngine
 
 		if (gameObject->children.size() == 0)
 		{
-			// Ò¶×Ó½Úµã
+			// å¶å­èŠ‚ç‚¹
 			nodeFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
 			if (!gameObject->IsActive()) ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(160, 160, 160, 255));
 			ImGui::TreeNodeEx((void*)(intptr_t)nodeIdx, nodeFlags, "%s", gameObject->name.c_str());
 			if (!gameObject->IsActive()) ImGui::PopStyleColor();
 
-			// ¹ö¶¯µ½Ñ¡ÖĞµÄÏî
+			// æ»šåŠ¨åˆ°é€‰ä¸­çš„é¡¹
 			if (autoExpand && selectedGO == gameObject)
 			{
 				ImVec2 itemPos = ImGui::GetCursorScreenPos();
@@ -61,13 +61,13 @@ namespace ZXEngine
 			if (ImGui::IsItemClicked())
 			{
 				EditorDataManager::GetInstance()->SetSelectedGO(gameObject);
-				// Èç¹ûÊÇÔÚÃæ°åÉÏµã»÷Ñ¡È¡µÄ£¬²»»á´¥·¢autoExpand
+				// å¦‚æœæ˜¯åœ¨é¢æ¿ä¸Šç‚¹å‡»é€‰å–çš„ï¼Œä¸ä¼šè§¦å‘autoExpand
 				selectedGO = gameObject;
 			}
 		}
 		else
 		{
-			// ÖĞ¼ä½Úµã
+			// ä¸­é—´èŠ‚ç‚¹
 			if (autoExpand && selectedGO->IsChildOf(gameObject))
 			{
 				ImGui::SetNextItemOpen(true);
@@ -77,7 +77,7 @@ namespace ZXEngine
 			bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)nodeIdx, nodeFlags, "%s", gameObject->name.c_str());
 			if (!gameObject->IsActive()) ImGui::PopStyleColor();
 
-			// ¹ö¶¯µ½Ñ¡ÖĞµÄÏî
+			// æ»šåŠ¨åˆ°é€‰ä¸­çš„é¡¹
 			if (autoExpand && selectedGO == gameObject)
 			{
 				ImVec2 itemPos = ImGui::GetCursorScreenPos();
@@ -87,7 +87,7 @@ namespace ZXEngine
 			if (ImGui::IsItemClicked())
 			{
 				EditorDataManager::GetInstance()->SetSelectedGO(gameObject);
-				// Èç¹ûÊÇÔÚÃæ°åÉÏµã»÷Ñ¡È¡µÄ£¬²»»á´¥·¢autoExpand
+				// å¦‚æœæ˜¯åœ¨é¢æ¿ä¸Šç‚¹å‡»é€‰å–çš„ï¼Œä¸ä¼šè§¦å‘autoExpand
 				selectedGO = gameObject;
 			}
 

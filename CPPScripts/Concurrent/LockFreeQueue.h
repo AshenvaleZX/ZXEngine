@@ -5,7 +5,7 @@ namespace ZXEngine
 {
 	namespace Concurrent
 	{
-		// ½öÖ§³Öµ¥¸öÏß³ÌPush£¬µ¥¸öÏß³ÌPopµÄÎŞËø¶ÓÁĞ
+		// ä»…æ”¯æŒå•ä¸ªçº¿ç¨‹Pushï¼Œå•ä¸ªçº¿ç¨‹Popçš„æ— é”é˜Ÿåˆ—
 		template<typename T>
 		class LockFreeQueue
 		{
@@ -32,14 +32,14 @@ namespace ZXEngine
 
 			shared_ptr<T> Pop()
 			{
-				// µ÷ÓÃÏß³Ì°²È«µÄPopHeadÈ¡³öÍ·½Úµã
+				// è°ƒç”¨çº¿ç¨‹å®‰å…¨çš„PopHeadå–å‡ºå¤´èŠ‚ç‚¹
 				Node* oldHead = PopHead();
-				// Èç¹ûµÃµ½µÄÊÇ¿ÕÖ¸Õë£¬ËµÃ÷¶ÓÁĞÎª¿Õ£¬PopÊ§°Ü
+				// å¦‚æœå¾—åˆ°çš„æ˜¯ç©ºæŒ‡é’ˆï¼Œè¯´æ˜é˜Ÿåˆ—ä¸ºç©ºï¼ŒPopå¤±è´¥
 				if (!oldHead)
 				{
 					return shared_ptr<T>();
 				}
-				// ³É¹¦È¡³öÍ·½Úµã£¬´ËÊ±Í·½ÚµãÒÑ¾­´Ó¶ÓÁĞÀïµ¯³öÁË£¬¿ÉÒÔËæÒâĞŞ¸Ä²»Ó°Ïì¶ÓÁĞ±¾Éí£¬²¢ÇÒÊÇÏß³Ì°²È«µÄ
+				// æˆåŠŸå–å‡ºå¤´èŠ‚ç‚¹ï¼Œæ­¤æ—¶å¤´èŠ‚ç‚¹å·²ç»ä»é˜Ÿåˆ—é‡Œå¼¹å‡ºäº†ï¼Œå¯ä»¥éšæ„ä¿®æ”¹ä¸å½±å“é˜Ÿåˆ—æœ¬èº«ï¼Œå¹¶ä¸”æ˜¯çº¿ç¨‹å®‰å…¨çš„
 				shared_ptr<T> const res(oldHead->data);
 				delete oldHead;
 				return res;
@@ -47,7 +47,7 @@ namespace ZXEngine
 
 			void Push(T newValue)
 			{
-				// Ö»ÓĞÒ»¸öÏß³Ì»áPush£¬ĞŞ¸ÄtailÖ¸Õë£¬ÁíÒ»¸öPopµÄÏß³ÌÖ»»á¶ÁÈ¡tail£¬ËùÒÔ²»´æÔÚÌõ¼ş¾ºÕùÎÊÌâ
+				// åªæœ‰ä¸€ä¸ªçº¿ç¨‹ä¼šPushï¼Œä¿®æ”¹tailæŒ‡é’ˆï¼Œå¦ä¸€ä¸ªPopçš„çº¿ç¨‹åªä¼šè¯»å–tailï¼Œæ‰€ä»¥ä¸å­˜åœ¨æ¡ä»¶ç«äº‰é—®é¢˜
 				shared_ptr<T> newData(make_shared<T>(std::move(newValue)));
 				Node* p = new Node();
 				Node* const oldTail = tail.load();
@@ -62,15 +62,15 @@ namespace ZXEngine
 
 			Node* PopHead()
 			{
-				// Ö»ÓĞÒ»¸öÏß³ÌPop£¬ËùÒÔÒ²¾ÍÖ»ÓĞÒ»¸öÏß³Ì»áĞŞ¸Ähead£¬Ò²¾Í²»´æÔÚÌõ¼ş¾ºÕùÎÊÌâÁË
+				// åªæœ‰ä¸€ä¸ªçº¿ç¨‹Popï¼Œæ‰€ä»¥ä¹Ÿå°±åªæœ‰ä¸€ä¸ªçº¿ç¨‹ä¼šä¿®æ”¹headï¼Œä¹Ÿå°±ä¸å­˜åœ¨æ¡ä»¶ç«äº‰é—®é¢˜äº†
 				Node* const oldHead = head.load();
-				// Èç¹ûheadºÍtailÏàµÈ£¬ËµÃ÷¶ÓÁĞÎª¿Õ
+				// å¦‚æœheadå’Œtailç›¸ç­‰ï¼Œè¯´æ˜é˜Ÿåˆ—ä¸ºç©º
 				if (oldHead == tail.load())
 				{
 					return nullptr;
 				}
 				head.store(oldHead->next);
-				// ÕâÀï·µ»ØµÄheadÒÑ¾­´Ó¶ÓÁĞÀïµ¯³öÁË£¬µ÷ÓÃÕßÄÃµ½ºó¿ÉÒÔËæÒâĞŞ¸Ä²»Ó°Ïì¶ÓÁĞ±¾Éí
+				// è¿™é‡Œè¿”å›çš„headå·²ç»ä»é˜Ÿåˆ—é‡Œå¼¹å‡ºäº†ï¼Œè°ƒç”¨è€…æ‹¿åˆ°åå¯ä»¥éšæ„ä¿®æ”¹ä¸å½±å“é˜Ÿåˆ—æœ¬èº«
 				return oldHead;
 			}
 		};

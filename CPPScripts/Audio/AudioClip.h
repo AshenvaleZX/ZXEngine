@@ -5,7 +5,7 @@ namespace ZXEngine
 {
 	class AudioClip
 	{
-		// 不允许外部直接创建此基类，需要通过AudioEngine管理创建
+		// 涓嶅厑璁稿閮ㄧ洿鎺ュ垱寤烘鍩虹被锛岄渶瑕侀�氳繃AudioEngine绠＄悊鍒涘缓
 	protected:
 		AudioClip() {};
 

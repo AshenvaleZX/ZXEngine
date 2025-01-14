@@ -17,7 +17,7 @@ namespace ZXEngine
 
 	void GameLogicManager::Update()
 	{
-		// ÄæĞò±éÀú£¬ÒòÎª±éÀú¹ı³ÌÖĞ¿ÉÄÜ»áÉ¾³ıÔªËØ
+		// é€†åºéå†ï¼Œå› ä¸ºéå†è¿‡ç¨‹ä¸­å¯èƒ½ä¼šåˆ é™¤å…ƒç´ 
 		for (int i = static_cast<int>(allGameLogic.size()) - 1; i >= 0; i--)
 		{
 			allGameLogic[i]->Update();

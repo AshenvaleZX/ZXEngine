@@ -364,7 +364,7 @@ namespace ZXEngine
 				animator->mAvatarName = meshRenderer->mModelName + "Avatar";
 				animator->mRootBoneNode = pModelData->pRootBoneNode;
 				animator->mAnimationController = pModelData->pAnimationController;
-				// ÎªÁË·½±ã£¬ÕâÀïÖ±½ÓÈÃMeshRendererºÍAnimator»¥ÏàÒıÓÃ
+				// ä¸ºäº†æ–¹ä¾¿ï¼Œè¿™é‡Œç›´æ¥è®©MeshRendererå’ŒAnimatoräº’ç›¸å¼•ç”¨
 				meshRenderer->mAnimator = animator;
 				animator->mMeshRenderer = meshRenderer;
 			}
@@ -445,7 +445,7 @@ namespace ZXEngine
 
 		boxCollider->SynchronizeData();
 
-		// ÉèÖÃ¸ÕÌåµÄÅö×²ÌåºÍ¹ßĞÔÕÅÁ¿(Èç¹ûÏÈ½âÎöRigidBodyÔÙ½âÎöCollider¾Í»á´ÓÕâÀïÉèÖÃ)
+		// è®¾ç½®åˆšä½“çš„ç¢°æ’ä½“å’Œæƒ¯æ€§å¼ é‡(å¦‚æœå…ˆè§£æRigidBodyå†è§£æColliderå°±ä¼šä»è¿™é‡Œè®¾ç½®)
 		auto rigidBody = GetComponent<ZRigidBody>();
 		if (rigidBody)
 		{
@@ -471,7 +471,7 @@ namespace ZXEngine
 
 		planeCollider->SynchronizeData();
 
-		// ÉèÖÃ¸ÕÌåµÄÅö×²ÌåºÍ¹ßĞÔÕÅÁ¿(Èç¹ûÏÈ½âÎöRigidBodyÔÙ½âÎöCollider¾Í»á´ÓÕâÀïÉèÖÃ)
+		// è®¾ç½®åˆšä½“çš„ç¢°æ’ä½“å’Œæƒ¯æ€§å¼ é‡(å¦‚æœå…ˆè§£æRigidBodyå†è§£æColliderå°±ä¼šä»è¿™é‡Œè®¾ç½®)
 		auto rigidBody = GetComponent<ZRigidBody>();
 		if (rigidBody)
 		{
@@ -496,7 +496,7 @@ namespace ZXEngine
 
 		sphereCollider->SynchronizeData();
 
-		// ÉèÖÃ¸ÕÌåµÄÅö×²ÌåºÍ¹ßĞÔÕÅÁ¿(Èç¹ûÏÈ½âÎöRigidBodyÔÙ½âÎöCollider¾Í»á´ÓÕâÀïÉèÖÃ)
+		// è®¾ç½®åˆšä½“çš„ç¢°æ’ä½“å’Œæƒ¯æ€§å¼ é‡(å¦‚æœå…ˆè§£æRigidBodyå†è§£æColliderå°±ä¼šä»è¿™é‡Œè®¾ç½®)
 		auto rigidBody = GetComponent<ZRigidBody>();
 		if (rigidBody)
 		{
@@ -529,7 +529,7 @@ namespace ZXEngine
 
 		rigidBody->mUseGravity = data["UseGravity"];
 
-		// Ìí¼ÓÖØÁ¦¼ÓËÙ¶È
+		// æ·»åŠ é‡åŠ›åŠ é€Ÿåº¦
 		if (rigidBody->mUseGravity)
 		{
 			auto fgGravity = new PhysZ::FGGravity(Vector3(0.0f, -9.8f, 0.0f));
@@ -547,11 +547,11 @@ namespace ZXEngine
 		float angularDamping = data["AngularDamping"];
 		rigidBody->mRigidBody->SetAngularDamping(1.0f - angularDamping);
 
-		// ³õÊ¼»¯¸ÕÌåµÄÎ»ÖÃºÍĞı×ª
+		// åˆå§‹åŒ–åˆšä½“çš„ä½ç½®å’Œæ—‹è½¬
 		rigidBody->mRigidBody->SetPosition(GetComponent<Transform>()->GetPosition());
 		rigidBody->mRigidBody->SetRotation(GetComponent<Transform>()->GetRotation());
 
-		// ÉèÖÃ¸ÕÌåµÄÅö×²ÌåºÍ¹ßĞÔÕÅÁ¿(Èç¹ûÏÈ½âÎöColliderÔÙ½âÎöRigidBody¾Í»á´ÓÕâÀïÉèÖÃ)
+		// è®¾ç½®åˆšä½“çš„ç¢°æ’ä½“å’Œæƒ¯æ€§å¼ é‡(å¦‚æœå…ˆè§£æColliderå†è§£æRigidBodyå°±ä¼šä»è¿™é‡Œè®¾ç½®)
 		if (mColliderType == PhysZ::ColliderType::Box)
 		{
 			auto boxCollider = GetComponent<BoxCollider>();

@@ -21,11 +21,11 @@ namespace ZXEngine
 
 	public:
 		string mAvatarName;
-		// Ä£ÐÍ¹Ç÷À¸ù½Úµã
+		// æ¨¡åž‹éª¨éª¼æ ¹èŠ‚ç‚¹
 		BoneNode* mRootBoneNode = nullptr;
-		// ¶¯»­¿ØÖÆÆ÷
+		// åŠ¨ç”»æŽ§åˆ¶å™¨
 		AnimationController* mAnimationController = nullptr;
-		// ¶ÔÓ¦µÄMeshRenderer
+		// å¯¹åº”çš„MeshRenderer
 		MeshRenderer* mMeshRenderer = nullptr;
 
 		Animator();

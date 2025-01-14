@@ -29,9 +29,9 @@ namespace ZXEngine
 		void Update();
 		void Render();
 		GameObject* Pick(const PhysZ::Ray& ray);
-		// 添加到场景根节点
+		// 娣诲姞鍒板満鏅牴鑺傜偣
 		void AddGameObject(GameObject* gameObject);
-		// 从场景根节点移除
+		// 浠庡満鏅牴鑺傜偣绉婚櫎
 		void RemoveGameObject(GameObject* gameObject);
 
 	private:

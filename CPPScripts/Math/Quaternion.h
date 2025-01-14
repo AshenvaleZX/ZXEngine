@@ -36,13 +36,13 @@ namespace ZXEngine
 		void SetEulerAngles(const Vector3& eulerAngles);
 
 		/// <summary>
-		/// ÈÆaxisÖáÐý×ªangle¶È
+		/// ç»•axisè½´æ—‹è½¬angleåº¦
 		/// </summary>
-		/// <param name="axis">Ðý×ªÖá(±ØÐëÊÇµ¥Î»ÏòÁ¿)</param>
-		/// <param name="angle">Ðý×ª½Ç¶È(»¡¶ÈÖÆ)</param>
+		/// <param name="axis">æ—‹è½¬è½´(å¿…é¡»æ˜¯å•ä½å‘é‡)</param>
+		/// <param name="angle">æ—‹è½¬è§’åº¦(å¼§åº¦åˆ¶)</param>
 		void Rotate(const Vector3& axis, float angle);
-		// CycloneÒýÇæÀïÓÃÏòÁ¿Ðý×ªËÄÔªÊýµÄ½Ó¿Ú£¬¿´²»¶®ÊµÏÖÂß¼­£¬ÔËÐÐÆðÀ´Ò²ÊÇ´íµÄ£¬ÏÈÔÝÊ±±£ÁôÔÚÕâÀïµ±²Î¿¼
-		// Êµ¼ÊPhysZÒýÇæÀï¶¼¸ÄÓÃÁËÉÏÃæÕæÕý·ûºÏÊýÑ§¹«Ê½µÄRotate½Ó¿Ú
+		// Cycloneå¼•æ“Žé‡Œç”¨å‘é‡æ—‹è½¬å››å…ƒæ•°çš„æŽ¥å£ï¼Œçœ‹ä¸æ‡‚å®žçŽ°é€»è¾‘ï¼Œè¿è¡Œèµ·æ¥ä¹Ÿæ˜¯é”™çš„ï¼Œå…ˆæš‚æ—¶ä¿ç•™åœ¨è¿™é‡Œå½“å‚è€ƒ
+		// å®žé™…PhysZå¼•æ“Žé‡Œéƒ½æ”¹ç”¨äº†ä¸Šé¢çœŸæ­£ç¬¦åˆæ•°å­¦å…¬å¼çš„RotateæŽ¥å£
 		void RotateByVector(const Vector3& rotation, float scale = 1.0f);
 
 		Vector3 ToEuler() const;

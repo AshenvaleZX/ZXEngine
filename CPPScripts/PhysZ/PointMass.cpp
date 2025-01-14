@@ -6,24 +6,24 @@ namespace ZXEngine
 	{
 		void PointMass::Integrate(float duration)
 		{
-			// ÈôÖÊÁ¿ÎŞÇî´ó£¬ÔòÎŞÊÓÊÜÁ¦
+			// è‹¥è´¨é‡æ— ç©·å¤§ï¼Œåˆ™æ— è§†å—åŠ›
 			if (mInverseMass <= 0.0f) return;
 
 			assert(duration > 0.0);
 
-			// ÓÃËÙ¶È¸üĞÂÎ»ÖÃ
+			// ç”¨é€Ÿåº¦æ›´æ–°ä½ç½®
 			mPosition += mVelocity * duration;
 
-			// ÓÃºÏÁ¦¸üĞÂ¼ÓËÙ¶È
+			// ç”¨åˆåŠ›æ›´æ–°åŠ é€Ÿåº¦
 			Vector3 resultingAcc = mAcceleration + mForceAccum * mInverseMass;
 
-			// ÓÃ¼ÓËÙ¶È¸üĞÂËÙ¶È
+			// ç”¨åŠ é€Ÿåº¦æ›´æ–°é€Ÿåº¦
 			mVelocity += resultingAcc * duration;
 
-			// ¼ÆËã×èÄá´øÀ´µÄËÙ¶ÈË¥¼õ
+			// è®¡ç®—é˜»å°¼å¸¦æ¥çš„é€Ÿåº¦è¡°å‡
 			mVelocity *= pow(mDamping, duration);
 
-			// Çå³ıºÏÁ¦
+			// æ¸…é™¤åˆåŠ›
 			ClearForce();
 		}
 
@@ -46,7 +46,7 @@ namespace ZXEngine
 		{
 			if (mass <= 0.0f)
 			{
-				// ÖÊÁ¿±ØĞë´óÓÚ0£¬·ñÔòÊä³öÒì³£²¢½«ÖÊÁ¿ÉèÖÃÎªÎŞÇî´ó
+				// è´¨é‡å¿…é¡»å¤§äº0ï¼Œå¦åˆ™è¾“å‡ºå¼‚å¸¸å¹¶å°†è´¨é‡è®¾ç½®ä¸ºæ— ç©·å¤§
 				Debug::LogError("Mass must be greater than zero.");
 				mInverseMass = 0.0f;
 			}

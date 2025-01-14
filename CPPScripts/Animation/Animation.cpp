@@ -84,7 +84,7 @@ namespace ZXEngine
 				if (pMesh->mBoneNameToIndexMap.find(iter.first) != pMesh->mBoneNameToIndexMap.end())
 				{
 					uint32_t index = pMesh->mBoneNameToIndexMap[iter.first];
-					// ´Ë´¦µÄ¾ØÕóÊÇ¸øShaderÓÃµÄ£¬ĞèÒª×ªÖÃÎªÁĞÖ÷Ğò
+					// æ­¤å¤„çš„çŸ©é˜µæ˜¯ç»™Shaderç”¨çš„ï¼Œéœ€è¦è½¬ç½®ä¸ºåˆ—ä¸»åº
 					pMesh->mBonesFinalTransform[index] = Math::Transpose(iter.second * pMesh->mBonesOffset[index] * pMesh->mRootTrans);
 				}
 			}
@@ -105,7 +105,7 @@ namespace ZXEngine
 				if (boneNameToIndexMaps[i].find(iter.first) != boneNameToIndexMaps[i].end())
 				{
 					uint32_t index = boneNameToIndexMaps[i].at(iter.first);
-					// ´Ë´¦µÄ¾ØÕóÊÇ¸øShaderÓÃµÄ£¬ĞèÒª×ªÖÃÎªÁĞÖ÷Ğò
+					// æ­¤å¤„çš„çŸ©é˜µæ˜¯ç»™Shaderç”¨çš„ï¼Œéœ€è¦è½¬ç½®ä¸ºåˆ—ä¸»åº
 					bonesFinalTransforms[i][index] = Math::Transpose(iter.second * bonesOffsets[i][index]);
 				}
 			}

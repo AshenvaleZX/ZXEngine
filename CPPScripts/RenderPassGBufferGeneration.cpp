@@ -38,7 +38,7 @@ namespace ZXEngine
 
 		renderAPI->SetRenderState(gBufferRenderState);
 
-		// 延迟渲染仅支持不透明物体
+		// 寤惰繜娓叉煋浠呮敮鎸佷笉閫忔槑鐗╀綋
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Deferred);
 		renderQueue->Sort(camera, RenderSortType::FrontToBack);
 

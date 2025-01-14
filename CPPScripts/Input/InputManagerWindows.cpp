@@ -8,7 +8,7 @@
 #include "../Editor/EditorGUIManager.h"
 #endif
 
-// ·ÀÖ¹windows.hÀïµÄºê¶¨ÒåmaxºÍminÓ°Ïìµ½ÆäËü¿âÀïµÄÏàÍ¬×Ö¶Î
+// é˜²æ­¢windows.hé‡Œçš„å®å®šä¹‰maxå’Œminå½±å“åˆ°å…¶å®ƒåº“é‡Œçš„ç›¸åŒå­—æ®µ
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
@@ -60,17 +60,17 @@ namespace ZXEngine
 
 	void InputManagerWindows::UpdateKeyInput()
 	{
-		// Êó±ê×óÓÒ¼ü
+		// é¼ æ ‡å·¦å³é”®
 		CheckMouseKey(VK_LBUTTON, InputButton::MOUSE_BUTTON_1, EventType::MOUSE_BUTTON_1_PRESS);
 		CheckMouseKey(VK_RBUTTON, InputButton::MOUSE_BUTTON_2, EventType::MOUSE_BUTTON_2_PRESS);
 
-		// ´Ó0µ½9
+		// ä»0åˆ°9
 		for (int i = 0; i < 10; i++)
 		{
 			CheckKey(0x30 + i, InputButton((int)InputButton::KEY_0 + i), EventType((int)EventType::KEY_0_PRESS + i * 3));
 		}
 
-		// ´ÓAµ½Z
+		// ä»Aåˆ°Z
 		for (int i = 0; i < 26; i++)
 		{
 			CheckKey(0x41 + i, InputButton((int)InputButton::KEY_A + i), EventType((int)EventType::KEY_A_PRESS + i * 3));
@@ -156,8 +156,8 @@ namespace ZXEngine
 		if (show == isCursorShow)
 			return;
 
-		// ShowCursorÕâ¸öº¯Êı²»ÊÇÖ±½Ó¼òµ¥µÄÍ¨¹ıbool¿ØÖÆÏÔÊ¾£¬Î¢ÈíÔÚÕâ¸öº¯ÊıÄÚ²¿Î¬»¤ÁËÒ»¸ö¼ÆÊıÆ÷
-		// ÓÃtrueµ÷Ò»´Î¾Í+1£¬falseµ÷Ò»´Î¾Í-1£¬ÔÚ¼ÆÊıÖµ´óÓÚµÈÓÚ0µÄÊ±ºò²ÅÏÔÊ¾
+		// ShowCursorè¿™ä¸ªå‡½æ•°ä¸æ˜¯ç›´æ¥ç®€å•çš„é€šè¿‡boolæ§åˆ¶æ˜¾ç¤ºï¼Œå¾®è½¯åœ¨è¿™ä¸ªå‡½æ•°å†…éƒ¨ç»´æŠ¤äº†ä¸€ä¸ªè®¡æ•°å™¨
+		// ç”¨trueè°ƒä¸€æ¬¡å°±+1ï¼Œfalseè°ƒä¸€æ¬¡å°±-1ï¼Œåœ¨è®¡æ•°å€¼å¤§äºç­‰äº0çš„æ—¶å€™æ‰æ˜¾ç¤º
 		if (show)
 		{
 			while (::ShowCursor(true) < 0) {};
@@ -174,7 +174,7 @@ namespace ZXEngine
 	{
 		for (int i = 0; i < (int)InputButton::END; i++)
 		{
-			// 0´ú±íËÉ¿ª£¬1´ú±í°´ÏÂ
+			// 0ä»£è¡¨æ¾å¼€ï¼Œ1ä»£è¡¨æŒ‰ä¸‹
 			mButtonState[i] = 0;
 		}
 	}

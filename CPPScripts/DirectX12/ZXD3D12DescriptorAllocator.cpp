@@ -19,7 +19,7 @@ namespace ZXEngine
 		ZXD3D12DescriptorHandle handle;
 		handle.heapType = mHeapType;
 
-		// ÕÒµ½µÚÒ»¸öÓĞ¿ÕÓàÎ»ÖÃµÄÃèÊö·û¶Ñ£¬Í¬Ê±Â¼Õâ¸ö¿ÕÓàÎ»ÖÃ
+		// æ‰¾åˆ°ç¬¬ä¸€ä¸ªæœ‰ç©ºä½™ä½ç½®çš„æè¿°ç¬¦å †ï¼ŒåŒæ—¶å½•è¿™ä¸ªç©ºä½™ä½ç½®
 		for (size_t i = 0; i < mDescriptorHeaps.size(); i++)
 		{
 			if (mDescriptorHeaps[i]->availableNum > 0)
@@ -31,7 +31,7 @@ namespace ZXEngine
 			}
 		}
 
-		// Èç¹ûÃ»ÓĞÕÒµ½£¬¾Í´´½¨Ò»¸öĞÂµÄÃèÊö·û¶Ñ
+		// å¦‚æœæ²¡æœ‰æ‰¾åˆ°ï¼Œå°±åˆ›å»ºä¸€ä¸ªæ–°çš„æè¿°ç¬¦å †
 		if (zxDescriptorHeap == nullptr)
 		{
 			CreateNewHeap();
@@ -48,7 +48,7 @@ namespace ZXEngine
 		ZXD3D12DescriptorHeap* zxDescriptorHeap = nullptr;
 		auto handle = GetNextDescriptorHeapAndHandle(zxDescriptorHeap);
 
-		// ´´½¨Sampler
+		// åˆ›å»ºSampler
 		auto renderAPI = static_cast<RenderAPID3D12*>(RenderAPI::GetInstance());
 		CD3DX12_CPU_DESCRIPTOR_HANDLE descriptorHandle(zxDescriptorHeap->descriptorHeap->GetCPUDescriptorHandleForHeapStart());
 		descriptorHandle.Offset(handle.descriptorIdx, mDescriptorSize);
@@ -65,7 +65,7 @@ namespace ZXEngine
 		ZXD3D12DescriptorHeap* zxDescriptorHeap = nullptr;
 		auto handle = GetNextDescriptorHeapAndHandle(zxDescriptorHeap);
 
-		// ´´½¨CBV
+		// åˆ›å»ºCBV
 		auto renderAPI = static_cast<RenderAPID3D12*>(RenderAPI::GetInstance());
 		CD3DX12_CPU_DESCRIPTOR_HANDLE descriptorHandle(zxDescriptorHeap->descriptorHeap->GetCPUDescriptorHandleForHeapStart());
 		descriptorHandle.Offset(handle.descriptorIdx, mDescriptorSize);
@@ -82,7 +82,7 @@ namespace ZXEngine
 		ZXD3D12DescriptorHeap* zxDescriptorHeap = nullptr;
 		auto handle = GetNextDescriptorHeapAndHandle(zxDescriptorHeap);
 
-		// ´´½¨RTV
+		// åˆ›å»ºRTV
 		auto renderAPI = static_cast<RenderAPID3D12*>(RenderAPI::GetInstance());
 		CD3DX12_CPU_DESCRIPTOR_HANDLE descriptorHandle(zxDescriptorHeap->descriptorHeap->GetCPUDescriptorHandleForHeapStart());
 		descriptorHandle.Offset(handle.descriptorIdx, mDescriptorSize);
@@ -99,7 +99,7 @@ namespace ZXEngine
 		ZXD3D12DescriptorHeap* zxDescriptorHeap = nullptr;
 		auto handle = GetNextDescriptorHeapAndHandle(zxDescriptorHeap);
 
-		// ´´½¨DSV
+		// åˆ›å»ºDSV
 		auto renderAPI = static_cast<RenderAPID3D12*>(RenderAPI::GetInstance());
 		CD3DX12_CPU_DESCRIPTOR_HANDLE descriptorHandle(zxDescriptorHeap->descriptorHeap->GetCPUDescriptorHandleForHeapStart());
 		descriptorHandle.Offset(handle.descriptorIdx, mDescriptorSize);
@@ -116,7 +116,7 @@ namespace ZXEngine
 		ZXD3D12DescriptorHeap* zxDescriptorHeap = nullptr;
 		auto handle = GetNextDescriptorHeapAndHandle(zxDescriptorHeap);
 
-		// ´´½¨SRV
+		// åˆ›å»ºSRV
 		auto renderAPI = static_cast<RenderAPID3D12*>(RenderAPI::GetInstance());
 		CD3DX12_CPU_DESCRIPTOR_HANDLE descriptorHandle(zxDescriptorHeap->descriptorHeap->GetCPUDescriptorHandleForHeapStart());
 		descriptorHandle.Offset(handle.descriptorIdx, mDescriptorSize);

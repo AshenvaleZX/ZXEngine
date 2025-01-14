@@ -9,7 +9,7 @@
 #include "../Editor/EditorGUIManager.h"
 #endif
 
-// ÒòÎªGLFWµÄº¯Êı½Ó¿ÚÎÊÌâ£¬Ã»°ì·¨´«µİ³ÉÔ±º¯Êı£¬ËùÒÔÕâÀïÓÃÆÕÍ¨º¯Êı°üÁËÒ»²ã
+// å› ä¸ºGLFWçš„å‡½æ•°æ¥å£é—®é¢˜ï¼Œæ²¡åŠæ³•ä¼ é€’æˆå‘˜å‡½æ•°ï¼Œæ‰€ä»¥è¿™é‡Œç”¨æ™®é€šå‡½æ•°åŒ…äº†ä¸€å±‚
 void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
@@ -76,17 +76,17 @@ namespace ZXEngine
 
 	void InputManagerGLFW::UpdateKeyInput()
 	{
-		// Êó±ê°´¼ü
+		// é¼ æ ‡æŒ‰é”®
 		CheckMouseKey(GLFW_MOUSE_BUTTON_1, InputButton::MOUSE_BUTTON_1, EventType::MOUSE_BUTTON_1_PRESS);
 		CheckMouseKey(GLFW_MOUSE_BUTTON_2, InputButton::MOUSE_BUTTON_2, EventType::MOUSE_BUTTON_2_PRESS);
 
-		// ´Ó0µ½9
+		// ä»0åˆ°9
 		for (int i = 0; i < 10; i++)
 		{
 			CheckKey(GLFW_KEY_0 + i, InputButton((int)InputButton::KEY_0 + i), EventType((int)EventType::KEY_0_PRESS + i * 3));
 		}
 
-		// ´ÓAµ½Z
+		// ä»Aåˆ°Z
 		for (int i = 0; i < 26; i++)
 		{
 			CheckKey(GLFW_KEY_A + i, InputButton((int)InputButton::KEY_A + i), EventType((int)EventType::KEY_A_PRESS + i * 3));

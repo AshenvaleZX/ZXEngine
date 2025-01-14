@@ -24,7 +24,7 @@ namespace ZXEngine
 
 		virtual ComponentType GetInsType();
 
-		// 获取将顶点从世界空间转换到光源空间的矩阵
+		// 鑾峰彇灏嗛《鐐逛粠涓栫晫绌洪棿杞崲鍒板厜婧愮┖闂寸殑鐭╅樀
 		Matrix4 GetLightMatrix();
 		Matrix4 GetProjectionMatrix();
 	};

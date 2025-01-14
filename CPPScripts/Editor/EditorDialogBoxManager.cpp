@@ -33,23 +33,23 @@ namespace ZXEngine
 		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();
 
-		// ´°¿Ú¾ÓÖÐ
+		// çª—å£å±…ä¸­
 		ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-		// ¶¥ÖÃ´°¿Ú
+		// é¡¶ç½®çª—å£
 		ImGui::SetNextWindowFocus();
 
-		// ±êÌâ(¾ÓÖÐ)
+		// æ ‡é¢˜(å±…ä¸­)
 		style.WindowTitleAlign.x = 0.5f;
 		ImGui::Begin(msg.title.c_str(), 0, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse);
 		style.WindowTitleAlign.x = 0.0f;
 
-		// ÄÚÈÝ
+		// å†…å®¹
 		ImGui::Text("\n%s\n\n", msg.content.c_str());
 
-		// °´Å¥(¾ÓÖÐ)
+		// æŒ‰é’®(å±…ä¸­)
 		float size = ImGui::CalcTextSize("OK").x + style.FramePadding.x * 2.0f;
 		float avail = ImGui::GetContentRegionAvail().x;
-		float off = (avail - size) * 0.5f; // 0.5f, ¼´¾ÓÖÐ
+		float off = (avail - size) * 0.5f; // 0.5f, å³å±…ä¸­
 		if (off > 0.0f)
 			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
 

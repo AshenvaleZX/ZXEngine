@@ -10,7 +10,7 @@ namespace ZXEngine
 		friend class EditorGUIManagerDirectX12;
 		friend class ZXD3D12DescriptorAllocator;
 		/// <summary>
-		/// ±ê×¼RenderAPI½Ó¿Ú
+		/// æ ‡å‡†RenderAPIæ¥å£
 		/// </summary>
 	public:
 		RenderAPID3D12();
@@ -19,7 +19,7 @@ namespace ZXEngine
 		virtual void BeginFrame();
 		virtual void EndFrame();
 
-		// äÖÈ¾×´Ì¬
+		// æ¸²æŸ“çŠ¶æ€
 		virtual void OnWindowSizeChange(uint32_t width, uint32_t height);
 		virtual void OnGameViewSizeChange();
 		virtual void SetRenderState(RenderStateSetting* state);
@@ -42,7 +42,7 @@ namespace ZXEngine
 		virtual void SetUpInstanceBufferAttribute(uint32_t VAO, uint32_t instanceBuffer, uint32_t size, uint32_t offset = 6);
 		virtual void DeleteInstanceBuffer(uint32_t id);
 
-		// ÎÆÀí
+		// çº¹ç†
 		virtual unsigned int LoadTexture(const char* path, int& width, int& height);
 		virtual unsigned int LoadCubeMap(const vector<string>& faces);
 		virtual unsigned int CreateTexture(TextureFullData* data);
@@ -55,7 +55,7 @@ namespace ZXEngine
 		virtual ShaderReference* SetUpShader(const string& path, const string& shaderCode, FrameBufferType type);
 		virtual void DeleteShader(uint32_t id);
 
-		// ²ÄÖÊ
+		// æè´¨
 		virtual uint32_t CreateMaterialData();
 		virtual void SetUpMaterial(Material* material);
 		virtual void UseMaterialData(uint32_t ID);
@@ -74,7 +74,7 @@ namespace ZXEngine
 		virtual void UpdateDynamicMesh(unsigned int VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
 		virtual void GenerateParticleMesh(unsigned int& VAO);
 
-		// Shader²ÎÊı
+		// Shaderå‚æ•°
 		virtual void UseShader(unsigned int ID);
 		virtual void SetShaderScalar(Material* material, const string& name, bool value, bool allBuffer = false);
 		virtual void SetShaderScalar(Material* material, const string& name, float value, bool allBuffer = false);
@@ -97,7 +97,7 @@ namespace ZXEngine
 
 
 		/// <summary>
-		/// ±ê×¼RayTracing½Ó¿Ú(ÔİÎ´ÊµÏÖ»ùÓÚDXRµÄ¹âÏß×·×Ù)
+		/// æ ‡å‡†RayTracingæ¥å£(æš‚æœªå®ç°åŸºäºDXRçš„å…‰çº¿è¿½è¸ª)
 		/// </summary>
 	public:
 		// Pipeline
@@ -109,7 +109,7 @@ namespace ZXEngine
 		virtual void SetUpRayTracingMaterialData(Material* material);
 		virtual void DeleteRayTracingMaterialData(uint32_t id);
 
-		// Êı¾İ¸üĞÂ
+		// æ•°æ®æ›´æ–°
 		virtual void SetRayTracingSkyBox(uint32_t textureID);
 		virtual void PushRayTracingMaterialData(Material* material);
 		virtual void PushAccelerationStructure(uint32_t VAO, uint32_t hitGroupIdx, uint32_t rtMaterialDataID, const Matrix4& transform);
@@ -123,32 +123,32 @@ namespace ZXEngine
 
 
 		/// <summary>
-		/// ½öÆô¶¯Ê±Ò»´ÎĞÔ³õÊ¼»¯µÄºËĞÄD3D12×é¼ş¼°Ïà¹Ø±äÁ¿
+		/// ä»…å¯åŠ¨æ—¶ä¸€æ¬¡æ€§åˆå§‹åŒ–çš„æ ¸å¿ƒD3D12ç»„ä»¶åŠç›¸å…³å˜é‡
 		/// </summary>
 	private:
-		// ¸÷ÀàĞÍÃèÊö·û´óĞ¡
+		// å„ç±»å‹æè¿°ç¬¦å¤§å°
 		UINT mRtvDescriptorSize = 0;
 		UINT mDsvDescriptorSize = 0;
 		UINT mCbvSrvUavDescriptorSize = 0;
-		// äÖÈ¾Ê±¶¯Ì¬·ÖÅäµÄÃèÊö·û¶Ñ
+		// æ¸²æŸ“æ—¶åŠ¨æ€åˆ†é…çš„æè¿°ç¬¦å †
 		vector<UINT> mDynamicDescriptorOffsets;
 		vector<ComPtr<ID3D12DescriptorHeap>> mDynamicDescriptorHeaps;
 
-		// ÆÁÄ»ºóÌ¨»º³åÇøÍ¼Ïñ¸ñÊ½
+		// å±å¹•åå°ç¼“å†²åŒºå›¾åƒæ ¼å¼
 		DXGI_FORMAT mPresentBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-		// Ä¬ÈÏµÄÎÆÀíºÍFrameBufferÉ«²Ê¿Õ¼ä
+		// é»˜è®¤çš„çº¹ç†å’ŒFrameBufferè‰²å½©ç©ºé—´
 		const DXGI_FORMAT mDefaultImageFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-		// 4X MSAAÖÊÁ¿µÈ¼¶
+		// 4X MSAAè´¨é‡ç­‰çº§
 		UINT m4xMSAAQuality = 0;
 		UINT msaaSamplesCount = 4;
 
-		// µ±Ç°ÊÇDX_MAX_FRAMES_IN_FLIGHTÖĞµÄµÚ¼¸Ö¡
+		// å½“å‰æ˜¯DX_MAX_FRAMES_IN_FLIGHTä¸­çš„ç¬¬å‡ å¸§
 		uint32_t mCurrentFrame = 0;
-		// µ±Ç°ÕâÒ»Ö¡ÒªĞ´ÈëµÄPresent BufferÏÂ±ê
+		// å½“å‰è¿™ä¸€å¸§è¦å†™å…¥çš„Present Bufferä¸‹æ ‡
 		uint32_t mCurPresentIdx = 0;
-		// µÈ´ıËùÓĞäÖÈ¾²Ù×÷Íê³ÉµÄÌØÊâFence
+		// ç­‰å¾…æ‰€æœ‰æ¸²æŸ“æ“ä½œå®Œæˆçš„ç‰¹æ®ŠFence
 		ZXD3D12Fence* mEndRenderFence;
-		// Ö¡ÓëÖ¡Ö®¼äÍ¬²½ÓÃµÄFence
+		// å¸§ä¸å¸§ä¹‹é—´åŒæ­¥ç”¨çš„Fence
 		vector<ZXD3D12Fence*> mFrameFences;
 
 		ComPtr<IDXGIFactory4> mDXGIFactory;
@@ -171,7 +171,7 @@ namespace ZXEngine
 
 
 		/// <summary>
-		/// D3D12×ÊÔ´£¬ÒÔ¼°Ïà¹Ø´´½¨Ïú»Ù½Ó¿Ú
+		/// D3D12èµ„æºï¼Œä»¥åŠç›¸å…³åˆ›å»ºé”€æ¯æ¥å£
 		/// </summary>
 	private:
 		vector<ZXD3D12VAO*> mVAOArray;
@@ -232,81 +232,81 @@ namespace ZXEngine
 
 
 		/// <summary>
-		/// D3D12¹âÏß×·×ÙÏà¹Ø×ÊÔ´ºÍ½Ó¿Ú
+		/// D3D12å…‰çº¿è¿½è¸ªç›¸å…³èµ„æºå’Œæ¥å£
 		/// </summary>
 	private:
-		// ¹â×·Shader±àÒë¿â
+		// å…‰è¿½Shaderç¼–è¯‘åº“
 		IDxcLibrary* mDxcLibrary = nullptr;
 		IDxcCompiler* mDxcCompiler = nullptr;
 		IDxcIncludeHandler* mDxcIncludeHandler = nullptr;
 
-		// µ±Ç°µÄ¹âÏß×·×Ù¹ÜÏßID
+		// å½“å‰çš„å…‰çº¿è¿½è¸ªç®¡çº¿ID
 		uint32_t mCurRTPipelineID = 0;
-		// ¹âÏß×·×Ù¹ÜÏß
+		// å…‰çº¿è¿½è¸ªç®¡çº¿
 		vector<ZXD3D12RTPipeline*> mRTPipelines;
-		// ¹¹½¨TLASµÄÖĞ¼äBuffer
+		// æ„å»ºTLASçš„ä¸­é—´Buffer
 		vector<ZXD3D12Buffer> mTLASScratchBuffers;
 		vector<ZXD3D12Buffer> mTLASInstanceBuffers;
 
-		// ÔÚÀÛ»ıÊ½¹â×·³¡¾°ÖĞ£¬ÓÃÀ´ÅĞ¶Ï»­ÃæË¢ĞÂµÄÊı¾İ
+		// åœ¨ç´¯ç§¯å¼å…‰è¿½åœºæ™¯ä¸­ï¼Œç”¨æ¥åˆ¤æ–­ç”»é¢åˆ·æ–°çš„æ•°æ®
 		vector<Matrix4> mRTVPMatrix;
 		vector<uint32_t> mRTFrameCount;
 
-		// ³¡¾°ÖĞµÄÎÆÀíÊıÁ¿
+		// åœºæ™¯ä¸­çš„çº¹ç†æ•°é‡
 		uint32_t mRTSceneTextureNum = 100;
-		// ³¡¾°ÖĞµÄCubeMapÊıÁ¿
+		// åœºæ™¯ä¸­çš„CubeMapæ•°é‡
 		uint32_t mRTSceneCubeMapNum = 10;
-		// ³¡¾°ÖĞµÄäÖÈ¾¶ÔÏóÊıÁ¿
+		// åœºæ™¯ä¸­çš„æ¸²æŸ“å¯¹è±¡æ•°é‡
 		uint32_t mRTSceneRenderObjectNum = 100;
-		// ¹â×·¹ÜÏß³£Á¿Buffer´óĞ¡(64¸ö32Î»Êı¾İ)
+		// å…‰è¿½ç®¡çº¿å¸¸é‡Bufferå¤§å°(64ä¸ª32ä½æ•°æ®)
 		uint32_t mRTPipelineConstantBufferSize = 256;
 
-		// ¸ùÇ©ÃûÖĞ¸÷²ÎÊıÔÚÃèÊö·û¶ÑÖĞµÄÆ«ÒÆÁ¿
+		// æ ¹ç­¾åä¸­å„å‚æ•°åœ¨æè¿°ç¬¦å †ä¸­çš„åç§»é‡
 		// register(t0, space0) TLAS
 		const uint32_t mRTRootParamOffsetInDescriptorHeapTLAS = 0;
-		// register(u0, space0) Êä³öÍ¼Ïñ
+		// register(u0, space0) è¾“å‡ºå›¾åƒ
 		const uint32_t mRTRootParamOffsetInDescriptorHeapOutputImage = 1;
-		// register(t0, space1) ¶¥µãË÷ÒıBuffer
+		// register(t0, space1) é¡¶ç‚¹ç´¢å¼•Buffer
 		const uint32_t mRTRootParamOffsetInDescriptorHeapIndexBuffer = 3;
-		// register(t0, space2) ¶¥µãBuffer
+		// register(t0, space2) é¡¶ç‚¹Buffer
 		const uint32_t mRTRootParamOffsetInDescriptorHeapVertexBuffer = mRTRootParamOffsetInDescriptorHeapIndexBuffer + mRTSceneRenderObjectNum;
-		// register(t0, space3) ²ÄÖÊÊı¾İBuffer
+		// register(t0, space3) æè´¨æ•°æ®Buffer
 		const uint32_t mRTRootParamOffsetInDescriptorHeapMaterialData = mRTRootParamOffsetInDescriptorHeapVertexBuffer + mRTSceneRenderObjectNum;
-		// register(t0, space4) 2DÎÆÀíÊı×é
+		// register(t0, space4) 2Dçº¹ç†æ•°ç»„
 		const uint32_t mRTRootParamOffsetInDescriptorHeapTexture2DArray = mRTRootParamOffsetInDescriptorHeapMaterialData + mRTSceneRenderObjectNum;
-		// register(t0, space5) CubeMapÎÆÀíÊı×é
+		// register(t0, space5) CubeMapçº¹ç†æ•°ç»„
 		const uint32_t mRTRootParamOffsetInDescriptorHeapTextureCubeArray = mRTRootParamOffsetInDescriptorHeapTexture2DArray + mRTSceneTextureNum;
-		// register(b0, space0) ³£Á¿Buffer (Vulkan PushConstants)
+		// register(b0, space0) å¸¸é‡Buffer (Vulkan PushConstants)
 		const uint32_t mRTRootParamOffsetInDescriptorHeapConstantBuffer = 2;
-		// ÃèÊö·û¶Ñ×Ü´óĞ¡
+		// æè¿°ç¬¦å †æ€»å¤§å°
 		const uint32_t mRTRootParamOffsetInDescriptorHeapSize = 3 + mRTSceneTextureNum + mRTSceneCubeMapNum + mRTSceneRenderObjectNum * 3;
 
-		// µ±Ç°ÕâÒ»Ö¡Òª»æÖÆµÄ¶ÔÏóĞÅÏ¢Êı×é
+		// å½“å‰è¿™ä¸€å¸§è¦ç»˜åˆ¶çš„å¯¹è±¡ä¿¡æ¯æ•°ç»„
 		vector<ZXD3D12ASInstanceData> mASInstanceData;
-		// µ±Ç°³¡¾°ÖĞËùÓĞÎÆÀíË÷ÒıÊı×é
+		// å½“å‰åœºæ™¯ä¸­æ‰€æœ‰çº¹ç†ç´¢å¼•æ•°ç»„
 		vector<uint32_t> mCurRTSceneTextureIndexes;
-		// µ±Ç°³¡¾°ÖĞËùÓĞÎÆÀíµÄË÷ÒıÓëÎÆÀíÊı×éÏÂ±êµÄÓ³Éä±í
+		// å½“å‰åœºæ™¯ä¸­æ‰€æœ‰çº¹ç†çš„ç´¢å¼•ä¸çº¹ç†æ•°ç»„ä¸‹æ ‡çš„æ˜ å°„è¡¨
 		unordered_map<uint32_t, uint32_t> mCurRTSceneTextureIndexMap;
-		// µ±Ç°³¡¾°ÖĞËùÓĞCubeMapË÷ÒıÊı×é
+		// å½“å‰åœºæ™¯ä¸­æ‰€æœ‰CubeMapç´¢å¼•æ•°ç»„
 		vector<uint32_t> mCurRTSceneCubeMapIndexes;
-		// µ±Ç°³¡¾°ÖĞËùÓĞCubeMapµÄË÷ÒıÓëCubeMapÊı×éÏÂ±êµÄÓ³Éä±í
+		// å½“å‰åœºæ™¯ä¸­æ‰€æœ‰CubeMapçš„ç´¢å¼•ä¸CubeMapæ•°ç»„ä¸‹æ ‡çš„æ˜ å°„è¡¨
 		unordered_map<uint32_t, uint32_t> mCurRTSceneCubeMapIndexMap;
-		// µ±Ç°³¡¾°ÖĞËùÓĞ¹â×·²ÄÖÊË÷ÒıÊı×é
+		// å½“å‰åœºæ™¯ä¸­æ‰€æœ‰å…‰è¿½æè´¨ç´¢å¼•æ•°ç»„
 		vector<uint32_t> mCurRTSceneRTMaterialDatas;
-		// µ±Ç°³¡¾°ÖĞËùÓĞ¹â×·²ÄÖÊµÄË÷ÒıÓë¹â×·²ÄÖÊÊı×éÏÂ±êµÄÓ³Éä±í
+		// å½“å‰åœºæ™¯ä¸­æ‰€æœ‰å…‰è¿½æè´¨çš„ç´¢å¼•ä¸å…‰è¿½æè´¨æ•°ç»„ä¸‹æ ‡çš„æ˜ å°„è¡¨
 		unordered_map<uint32_t, uint32_t> mCurRTSceneRTMaterialDataMap;
 
-		// TLAS Group£¬Ò»¸ö³¡¾°ÓĞÒ»¸öTLAS Group
+		// TLAS Groupï¼Œä¸€ä¸ªåœºæ™¯æœ‰ä¸€ä¸ªTLAS Group
 		vector<ZXD3D12ASGroup*> mTLASGroupArray;
-		// ËùÓĞµÄ¹â×·²ÄÖÊÊı×é£¬ÆäÖĞ¿ÉÄÜ°üÀ¨ÒÑÏú»ÙµÄ£¬Î´ÔÚ³¡¾°ÖĞµÄ
+		// æ‰€æœ‰çš„å…‰è¿½æè´¨æ•°ç»„ï¼Œå…¶ä¸­å¯èƒ½åŒ…æ‹¬å·²é”€æ¯çš„ï¼Œæœªåœ¨åœºæ™¯ä¸­çš„
 		vector<ZXD3D12RTMaterialData*> mRTMaterialDataArray;
-		// ×¼±¸Ïú»ÙµÄ¹â×·²ÄÖÊ
+		// å‡†å¤‡é”€æ¯çš„å…‰è¿½æè´¨
 		unordered_map<uint32_t, uint32_t> rtMaterialDatasToDelete;
 
 		ComPtr<ID3D12RootSignature> mEmptyLocalRootSignature;
 		ComPtr<ID3D12RootSignature> mEmptyGlobalRootSignature;
 
-		// ³õÊ¼»¯È«¾ÖµÄ¹â×·Ïà¹Ø×ÊÔ´
+		// åˆå§‹åŒ–å…¨å±€çš„å…‰è¿½ç›¸å…³èµ„æº
 		void InitDXR();
 		void InitEmptyRootSignature();
 
@@ -333,7 +333,7 @@ namespace ZXEngine
 
 
 		/// <summary>
-		/// ÆäËü¸¨Öú½Ó¿Ú
+		/// å…¶å®ƒè¾…åŠ©æ¥å£
 		/// </summary>
 	private:
 		bool mWindowResized = false;

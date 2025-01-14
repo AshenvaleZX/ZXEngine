@@ -70,13 +70,13 @@ namespace ZXEngine
 			float m[4][4];
 			struct
 			{
-				// µÚÒ»ĞĞ
+				// ç¬¬ä¸€è¡Œ
 				float m00; float m01; float m02; float m03;
-				// µÚ¶şĞĞ
+				// ç¬¬äºŒè¡Œ
 				float m10; float m11; float m12; float m13;
-				// µÚÈıĞĞ
+				// ç¬¬ä¸‰è¡Œ
 				float m20; float m21; float m22; float m23;
-				// µÚËÄĞĞ
+				// ç¬¬å››è¡Œ
 				float m30; float m31; float m32; float m33;
 			};
 		};

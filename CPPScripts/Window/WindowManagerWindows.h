@@ -1,7 +1,7 @@
 #pragma once
 #include "WindowManager.h"
 
-// 防止windows.h里的宏定义max和min影响到其它库里的相同字段
+// 闃叉windows.h閲岀殑瀹忓畾涔塵ax鍜宮in褰卞搷鍒板叾瀹冨簱閲岀殑鐩稿悓瀛楁
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif

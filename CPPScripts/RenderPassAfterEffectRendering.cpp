@@ -44,9 +44,9 @@ namespace ZXEngine
 
 	void RenderPassAfterEffectRendering::Render(Camera* camera)
 	{
-		// ÇĞ»»ºó´¦ÀíäÖÈ¾ÉèÖÃ
+		// åˆ‡æ¢åå¤„ç†æ¸²æŸ“è®¾ç½®
 		RenderAPI::GetInstance()->SetRenderState(renderState);
-		// Õû¸öºó´¦Àí¶¼ÔÚÕâ¸ö¸²¸ÇÆÁÄ»µÄËÄ±ßĞÎÉÏäÖÈ¾
+		// æ•´ä¸ªåå¤„ç†éƒ½åœ¨è¿™ä¸ªè¦†ç›–å±å¹•çš„å››è¾¹å½¢ä¸Šæ¸²æŸ“
 
 		string finalFBO = "Forward";
 		if (ProjectSetting::renderPipelineType == RenderPipelineType::Deferred)
@@ -56,21 +56,21 @@ namespace ZXEngine
 
 		if (camera->mEnableAfterEffects)
 		{
-			// ÌáÈ¡»­Ãæ¸ßÁÁ²¿·Ö
+			// æå–ç”»é¢é«˜äº®éƒ¨åˆ†
 			string res1 = BlitExtractBrightArea(finalFBO);
 
-			// ¸ßË¹Ä£ºı¸ßÁÁÇøÓò
+			// é«˜æ–¯æ¨¡ç³Šé«˜äº®åŒºåŸŸ
 			//string res2 = BlitGaussianBlur(res1, 1, 3.0f);
 
-			// KawaseÄ£ºı¸ßÁÁÇøÓò
+			// Kawaseæ¨¡ç³Šé«˜äº®åŒºåŸŸ
 			string res2 = BlitKawaseBlur(res1, 2, 2.0f);
 
-			// »ìºÏÔ­Í¼ºÍ¸ßÁÁÄ£ºı
+			// æ··åˆåŸå›¾å’Œé«˜äº®æ¨¡ç³Š
 			string res3 = BlitBloomBlend(finalFBO, res2, true);
 		}
 		else
 		{
-			// Ö±½ÓÊä³öÔ­BufferÍ¼Ïñ
+			// ç›´æ¥è¾“å‡ºåŸBufferå›¾åƒ
 			string res = BlitCopy(OutputBuffer, finalFBO, true);
 		}
 	}
@@ -131,7 +131,7 @@ namespace ZXEngine
 		material->SetTexture("_RenderTexture", FBOManager::GetInstance()->GetFBO(sourceFBO)->ColorBuffer, 0, false, true);
 		RenderAPI::GetInstance()->Draw(screenQuad->VAO);
 		RenderAPI::GetInstance()->GenerateDrawCommand(GetCommand(ExtractBrightArea));
-		// ·µ»ØÊä³öµÄFBOÃû×Ö
+		// è¿”å›è¾“å‡ºçš„FBOåå­—
 		return ExtractBrightArea;
 	}
 
@@ -144,8 +144,8 @@ namespace ZXEngine
 		FBOManager::GetInstance()->CreateFBO("GaussianBlurHorizontal", FrameBufferType::Color);
 	}
 
-	// blurTimes ·´¸´Ä£ºı´ÎÊı£¬´ÎÊıÔ½¶àÔ½Ä£ºı£¬µ«ÊÇÕâ¸öºÜÓ°ÏìĞÔÄÜ£¬±ğ¿ªÌ«¸ß
-	// texOffset ²ÉÑùÆ«ÒÆ¾àÀë£¬1´ú±íÆ«ÒÆ1ÏñËØ£¬Ô½´óÔ½Ä£ºı£¬Õâ¸ö²»Ó°ÏìĞÔÄÜ£¬µ«ÊÇÌ«´óÁËĞ§¹û»á²»Õı³£
+	// blurTimes åå¤æ¨¡ç³Šæ¬¡æ•°ï¼Œæ¬¡æ•°è¶Šå¤šè¶Šæ¨¡ç³Šï¼Œä½†æ˜¯è¿™ä¸ªå¾ˆå½±å“æ€§èƒ½ï¼Œåˆ«å¼€å¤ªé«˜
+	// texOffset é‡‡æ ·åç§»è·ç¦»ï¼Œ1ä»£è¡¨åç§»1åƒç´ ï¼Œè¶Šå¤§è¶Šæ¨¡ç³Šï¼Œè¿™ä¸ªä¸å½±å“æ€§èƒ½ï¼Œä½†æ˜¯å¤ªå¤§äº†æ•ˆæœä¼šä¸æ­£å¸¸
 	string RenderPassAfterEffectRendering::BlitGaussianBlur(const string& sourceFBO, int blurTimes, float texOffset)
 	{
 		bool isHorizontal = true;
@@ -163,7 +163,7 @@ namespace ZXEngine
 			RenderAPI::GetInstance()->GenerateDrawCommand(GetCommand(pingpongBuffer[isHorizontal]));
 			isHorizontal = !isHorizontal;
 		}
-		// ·µ»Ø×îÖÕÊä³öµÄFBOÃû×Ö
+		// è¿”å›æœ€ç»ˆè¾“å‡ºçš„FBOåå­—
 		return pingpongBuffer[!isHorizontal];
 	}
 
@@ -196,7 +196,7 @@ namespace ZXEngine
 			RenderAPI::GetInstance()->GenerateDrawCommand(GetCommand(pingpongBuffer[isSwitch]));
 			isSwitch = !isSwitch;
 		}
-		// ·µ»Ø×îÖÕÊä³öµÄFBOÃû×Ö
+		// è¿”å›æœ€ç»ˆè¾“å‡ºçš„FBOåå­—
 		return pingpongBuffer[!isSwitch];
 	}
 

@@ -14,7 +14,7 @@ namespace ZXEngine
 		virtual void DrawPanel();
 
 	private:
-		// µ±Ç°Ñ¡ÖĞµÄid
+		// å½“å‰é€‰ä¸­çš„id
 		size_t selected = SIZE_MAX;
 		EditorAssetNode* root;
 		EditorAssetNode* curNode;
@@ -25,9 +25,9 @@ namespace ZXEngine
 		void InitAssetType();
 		AssetType GetAssetType(const string& extension);
 
-		// ÎÄ¼şÃû´óĞ¡
+		// æ–‡ä»¶åå¤§å°
 		const ImVec2 nameSize = ImVec2(72.0f, 20.0f);
-		// ÎÄ¼şicon´óĞ¡
+		// æ–‡ä»¶iconå¤§å°
 		const ImVec2 iconSize = ImVec2(64.0f, 64.0f);
 		ImGuiTextureIndex fileIcons[static_cast<size_t>(AssetType::Count)];
 		void InitIcons();

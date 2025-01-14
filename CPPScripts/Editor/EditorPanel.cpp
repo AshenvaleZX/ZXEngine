@@ -7,7 +7,7 @@ namespace ZXEngine
 	{
         bool isPressing = ImGui::IsMouseDown(0);
 
-        // 按下
+        // 鎸変笅
         if (isPressing && !mPressing)
         {
             ImVec2 currentWindowPos = ImGui::GetWindowPos();
@@ -22,7 +22,7 @@ namespace ZXEngine
 
             PanelSizeChangeBegin();
         }
-        // 松开
+        // 鏉惧紑
         else if (!isPressing && mPressing)
         {
             if (mSize != mDragSize)
@@ -30,7 +30,7 @@ namespace ZXEngine
                 PanelSizeChangeEnd(mDragSize);
             }
         }
-        // 按住
+        // 鎸変綇
         else if (isPressing)
         {
             ImVec2 currentWindowPos = ImGui::GetWindowPos();

@@ -183,31 +183,31 @@ namespace ZXEngine
     {
         ModelData* pModelData = new ModelData();
 
-        // ÓÃASSIMP¼ÓÔØÄ£ĞÍÎÄ¼ş
+        // ç”¨ASSIMPåŠ è½½æ¨¡å‹æ–‡ä»¶
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace 
             | aiProcess_FixInfacingNormals | aiProcess_FlipWindingOrder | aiProcess_LimitBoneWeights);
         
-        // ¼ì²éÒì³£
+        // æ£€æŸ¥å¼‚å¸¸
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
             Debug::LogError("ASSIMP: %s", importer.GetErrorString());
             return pModelData;
         }
 
-        // ´¦Àí¶¯»­Êı¾İ
+        // å¤„ç†åŠ¨ç”»æ•°æ®
         if (loadFullAnim)
             pModelData->pAnimationController = ProcessAnimation(scene);
         else
             LoadAnimBriefInfos(scene, pModelData);
 
-        // ´¦ÀíÄ£ĞÍºÍ¹Ç÷ÀÊı¾İ
+        // å¤„ç†æ¨¡å‹å’Œéª¨éª¼æ•°æ®
         if (pModelData->pAnimationController)
         {
             pModelData->pRootBoneNode = new BoneNode();
             ProcessNode(scene->mRootNode, scene, pModelData, pModelData->pRootBoneNode, Matrix4::Identity, async);
         }
-        // ´¦ÀíÄ£ĞÍÊı¾İ
+        // å¤„ç†æ¨¡å‹æ•°æ®
         else
 		{
 			ProcessNode(scene->mRootNode, scene, pModelData, async);
@@ -219,16 +219,16 @@ namespace ZXEngine
 
     void ModelUtil::ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData* pModelData, bool async)
     {
-        // ´¦ÀíMeshÊı¾İ
+        // å¤„ç†Meshæ•°æ®
         for (unsigned int i = 0; i < pNode->mNumMeshes; i++)
         {
-            // aiNode½ö°üº¬Ë÷ÒıÀ´»ñÈ¡aiSceneÖĞµÄÊµ¼Ê¶ÔÏó
-            // aiScene°üº¬ËùÓĞÊı¾İ£¬aiNodeÖ»ÊÇÎªÁËÈÃÊı¾İ×éÖ¯ÆğÀ´(±ÈÈç¼ÇÂ¼½ÚµãÖ®¼äµÄ¹ØÏµ)
+            // aiNodeä»…åŒ…å«ç´¢å¼•æ¥è·å–aiSceneä¸­çš„å®é™…å¯¹è±¡
+            // aiSceneåŒ…å«æ‰€æœ‰æ•°æ®ï¼ŒaiNodeåªæ˜¯ä¸ºäº†è®©æ•°æ®ç»„ç»‡èµ·æ¥(æ¯”å¦‚è®°å½•èŠ‚ç‚¹ä¹‹é—´çš„å…³ç³»)
             aiMesh* mesh = pScene->mMeshes[pNode->mMeshes[i]];
             pModelData->pMeshes.push_back(ProcessMesh(mesh, async));
         }
 
-        // µİ¹é´¦Àí×Ó½Úµã
+        // é€’å½’å¤„ç†å­èŠ‚ç‚¹
         for (unsigned int i = 0; i < pNode->mNumChildren; i++)
         {
             ProcessNode(pNode->mChildren[i], pScene, pModelData, async);
@@ -237,23 +237,23 @@ namespace ZXEngine
 
     void ModelUtil::ProcessNode(const aiNode* pNode, const aiScene* pScene, ModelData* pModelData, BoneNode* pBoneNode, const Matrix4& parentTrans, bool async)
     {
-        // ¼ÓÔØ¹Ç÷À½Úµã
+        // åŠ è½½éª¨éª¼èŠ‚ç‚¹
         pBoneNode->name = pNode->mName.C_Str();
         pBoneNode->transform = aiMatrix4x4ToMatrix4(pNode->mTransformation);
 
         Matrix4 nodeTransform = parentTrans * pBoneNode->transform;
 
-        // ´¦ÀíMeshÊı¾İ
+        // å¤„ç†Meshæ•°æ®
         for (unsigned int i = 0; i < pNode->mNumMeshes; i++)
         {
-            // aiNode½ö°üº¬Ë÷ÒıÀ´»ñÈ¡aiSceneÖĞµÄÊµ¼Ê¶ÔÏó
-            // aiScene°üº¬ËùÓĞÊı¾İ£¬aiNodeÖ»ÊÇÎªÁËÈÃÊı¾İ×éÖ¯ÆğÀ´(±ÈÈç¼ÇÂ¼½ÚµãÖ®¼äµÄ¹ØÏµ)
+            // aiNodeä»…åŒ…å«ç´¢å¼•æ¥è·å–aiSceneä¸­çš„å®é™…å¯¹è±¡
+            // aiSceneåŒ…å«æ‰€æœ‰æ•°æ®ï¼ŒaiNodeåªæ˜¯ä¸ºäº†è®©æ•°æ®ç»„ç»‡èµ·æ¥(æ¯”å¦‚è®°å½•èŠ‚ç‚¹ä¹‹é—´çš„å…³ç³»)
             aiMesh* mesh = pScene->mMeshes[pNode->mMeshes[i]];
             pModelData->pMeshes.push_back(ProcessMesh(mesh, async));
             pModelData->pMeshes.back()->mRootTrans = nodeTransform;
         }
 
-        // µİ¹é´¦Àí×Ó½Úµã
+        // é€’å½’å¤„ç†å­èŠ‚ç‚¹
         for (unsigned int i = 0; i < pNode->mNumChildren; i++)
         {
             pBoneNode->children.push_back(new BoneNode());
@@ -263,7 +263,7 @@ namespace ZXEngine
 
     shared_ptr<StaticMesh> ModelUtil::ProcessMesh(const aiMesh* mesh, bool async)
     {
-        // ¶¥µãÊı¾İ
+        // é¡¶ç‚¹æ•°æ®
         vector<Vertex> vertices;
         vector<uint32_t> indices;
         array<Vertex, 6> extremeVertices;
@@ -271,11 +271,11 @@ namespace ZXEngine
         if (mesh->mNumVertices > 0)
             vertices.reserve(mesh->mNumVertices);
 
-        // ±éÀú¶¥µã
+        // éå†é¡¶ç‚¹
         for (unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
             Vertex vertex;
-            // ÓÃÓÚ×ª»»aiVector3Dµ½Vector3µÄÁÙÊ±±äÁ¿
+            // ç”¨äºè½¬æ¢aiVector3Dåˆ°Vector3çš„ä¸´æ—¶å˜é‡
             Vector3 vector;
             
             // Position
@@ -294,7 +294,7 @@ namespace ZXEngine
             if (mesh->mTextureCoords[0])
             {
                 Vector2 vec;
-                // Ò»¸ö¶¥µã×î¶à¿ÉÒÔ°üº¬8¸ö²»Í¬µÄÎÆÀí×ø±ê£¬µ«ÊÇÔİÊ±Ä¬ÈÏÖ»Ê¹ÓÃµÚÒ»¸ö
+                // ä¸€ä¸ªé¡¶ç‚¹æœ€å¤šå¯ä»¥åŒ…å«8ä¸ªä¸åŒçš„çº¹ç†åæ ‡ï¼Œä½†æ˜¯æš‚æ—¶é»˜è®¤åªä½¿ç”¨ç¬¬ä¸€ä¸ª
                 vec.x = mesh->mTextureCoords[0][i].x;
                 vec.y = mesh->mTextureCoords[0][i].y;
                 vertex.TexCoords = vec;
@@ -323,7 +323,7 @@ namespace ZXEngine
 
         vector<Matrix4> boneOffsetMatrices;
         unordered_map<string, uint32_t> boneNameToIndexMap;
-        // Ìí¼Ó¹Ç÷ÀĞÅÏ¢
+        // æ·»åŠ éª¨éª¼ä¿¡æ¯
         if (mesh->HasBones())
         {
             if (mesh->mNumBones > MAX_BONE_NUM)
@@ -339,7 +339,7 @@ namespace ZXEngine
 
                 boneOffsetMatrices.push_back(aiMatrix4x4ToMatrix4(bone->mOffsetMatrix));
 
-                // ¹Ç÷ÀÃûµ½IDµÄÓ³Éä
+                // éª¨éª¼ååˆ°IDçš„æ˜ å°„
                 if (boneNameToIndexMap.find(boneName) == boneNameToIndexMap.end())
                 {
                     boneNameToIndexMap[boneName] = i;
@@ -349,7 +349,7 @@ namespace ZXEngine
                     Debug::LogWarning("Duplicate bone name %s", boneName);
                 }
 
-                // ½«¹Ç÷ÀĞÅÏ¢Ìí¼Óµ½¶¥µãÖĞ
+                // å°†éª¨éª¼ä¿¡æ¯æ·»åŠ åˆ°é¡¶ç‚¹ä¸­
                 for (unsigned int j = 0; j < bone->mNumWeights; j++)
 				{
 					uint32_t vertexID = bone->mWeights[j].mVertexId;
@@ -359,11 +359,11 @@ namespace ZXEngine
             }
         }
 
-        // ±éÀúFace(Èı½ÇĞÎÍ¼Ôª)
+        // éå†Face(ä¸‰è§’å½¢å›¾å…ƒ)
         for (unsigned int i = 0; i < mesh->mNumFaces; i++)
         {
             const aiFace& face = mesh->mFaces[i];
-            // ´æ´¢Õâ¸öÃæµÄËùÓĞË÷Òı
+            // å­˜å‚¨è¿™ä¸ªé¢çš„æ‰€æœ‰ç´¢å¼•
             for (unsigned int j = 0; j < face.mNumIndices; j++)
             {
                 indices.push_back(face.mIndices[j]);

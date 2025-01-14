@@ -67,11 +67,11 @@ namespace ZXEngine
 	private:
 		bool mIsBlending = false;
 		float mBlendFactor = 0.0f;
-		// »ìºÏÒÑÏûºÄµÄÊ±¼ä
+		// æ··åˆå·²æ¶ˆè€—çš„æ—¶é—´
 		float mBlendTime = 0.0f;
-		// µ±Ç°¶¯»­»ìºÏµ½Ä¿±ê¶¯»­µÄ×ÜÊ±¼ä
+		// å½“å‰åŠ¨ç”»æ··åˆåˆ°ç›®æ ‡åŠ¨ç”»çš„æ€»æ—¶é—´
 		float mBlendDuration = 0.0f;
-		// µ±Ç°Õâ¸ö»ìºÏ¶¯»­(¹ı¶É×´Ì¬ÏÂµÄÁÙÊ±¶¯»­)µÄ²¥·ÅÊ±¼ä
+		// å½“å‰è¿™ä¸ªæ··åˆåŠ¨ç”»(è¿‡æ¸¡çŠ¶æ€ä¸‹çš„ä¸´æ—¶åŠ¨ç”»)çš„æ’­æ”¾æ—¶é—´
 		float mCurBlendAnimTime = 0.0f;
 		
 		Animation* mCurAnimation = nullptr;

@@ -25,11 +25,11 @@ namespace ZXEngine
 		long long time = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		long long time_micro = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
-		// Èç¹ûÊÇµÚÒ»´ÎUpdate£¬±£³ÖdeltaTimeÎª0²»±ä£¬·ñÔò»á±ä³ÉÊ±¼ä´Á
+		// å¦‚æœæ˜¯ç¬¬ä¸€æ¬¡Updateï¼Œä¿æŒdeltaTimeä¸º0ä¸å˜ï¼Œå¦åˆ™ä¼šå˜æˆæ—¶é—´æˆ³
 		if (curSysTime_micro != 0)
 		{
 #ifdef ZX_EDITOR
-			// ±à¼­Æ÷Ê±¼ä²»ÊÜÔİÍ£Ó°Ïì
+			// ç¼–è¾‘å™¨æ—¶é—´ä¸å—æš‚åœå½±å“
 			curEditorTime = static_cast<float>(time_micro - curSysStartTime_micro) / 1'000'000.0f;
 			deltaTimeEditor = static_cast<float>(time_micro - curSysTime_micro) / 1'000'000.0f;
 
@@ -44,14 +44,14 @@ namespace ZXEngine
 				deltaTime = static_cast<float>(deltaTime_micro) / 1'000'000.0f;
 			}
 #else
-			// ÕâÀïÓÃÎ¢Ãë¼ÆËãdeltaTime£¬ÓÃºÁÃëÓĞ¿ÉÄÜ¾«¶È²»¹»
+			// è¿™é‡Œç”¨å¾®ç§’è®¡ç®—deltaTimeï¼Œç”¨æ¯«ç§’æœ‰å¯èƒ½ç²¾åº¦ä¸å¤Ÿ
 			deltaTime_micro = time_micro - curSysTime_micro;
 			deltaTime = static_cast<float>(deltaTime_micro) / 1'000'000.0f;
 #endif
 		}
 
 #ifdef ZX_EDITOR
-		// Õı³£ÔËĞĞÊ±Ö±½ÓÔÚÕâÀï¸üĞÂµ±Ç°ÓÎÏ·Ê±¼ä£¬ÔİÍ£×´Ì¬ÏÂĞèÒªÊÖ¶¯µã»÷ÏÂÒ»Ö¡»òÈ¡ÏûÔİÍ£²Å¸üĞÂ
+		// æ­£å¸¸è¿è¡Œæ—¶ç›´æ¥åœ¨è¿™é‡Œæ›´æ–°å½“å‰æ¸¸æˆæ—¶é—´ï¼Œæš‚åœçŠ¶æ€ä¸‹éœ€è¦æ‰‹åŠ¨ç‚¹å‡»ä¸‹ä¸€å¸§æˆ–å–æ¶ˆæš‚åœæ‰æ›´æ–°
 		if (EditorDataManager::isGameStart && !EditorDataManager::isGamePause)
 		{
 			curTime += deltaTime;

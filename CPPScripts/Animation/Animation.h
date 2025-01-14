@@ -25,12 +25,12 @@ namespace ZXEngine
 		void Reset();
 		bool IsPlaying() const;
 
-		// ¸üĞÂËùÓĞ¹Ç÷À½ÚµãÁĞ±íÀïµÄ¶¯»­
+		// æ›´æ–°æ‰€æœ‰éª¨éª¼èŠ‚ç‚¹åˆ—è¡¨é‡Œçš„åŠ¨ç”»
 		void Update(float deltaTime);
-		// ¸üĞÂËùÓĞ¹Ç÷À½ÚµãÁĞ±íÀïµÄ¶¯»­(ÊÖ¶¯´«ÈëTick)
+		// æ›´æ–°æ‰€æœ‰éª¨éª¼èŠ‚ç‚¹åˆ—è¡¨é‡Œçš„åŠ¨ç”»(æ‰‹åŠ¨ä¼ å…¥Tick)
 		void ForceUpdate(float tick);
 
-		// ½«µ±Ç°ÕâÒ»Ö¡µÄ¹Ç÷À±ä»»¾ØÕó¸üĞÂµ½ËùÓĞMeshÀï(½öÊÊÓÃÓÚµ¥¸ö¶¯»­²¥·Å)
+		// å°†å½“å‰è¿™ä¸€å¸§çš„éª¨éª¼å˜æ¢çŸ©é˜µæ›´æ–°åˆ°æ‰€æœ‰Meshé‡Œ(ä»…é€‚ç”¨äºå•ä¸ªåŠ¨ç”»æ’­æ”¾)
 		void UpdateMeshes(const BoneNode* pBoneNode, const vector<shared_ptr<Mesh>>& pMeshes);
 		void UpdateFinalTransforms(const BoneNode* pBoneNode, 
 			const vector<vector<Matrix4>>& bonesOffsets, 
@@ -42,9 +42,9 @@ namespace ZXEngine
 
 	private:
 		bool mIsPlaying = false;
-		// ËùÓĞ¹Ç÷À½áµãµÄ¶¯»­
+		// æ‰€æœ‰éª¨éª¼ç»“ç‚¹çš„åŠ¨ç”»
 		unordered_map<string, NodeAnimation*> mNodeAnimations;
-		// ËùÓĞ¹Ç÷À½áµãµÄ×îÖÕ±ä»»¾ØÕó(½ö²¥·Åµ¥¸ö¶¯»­Ê±ÓĞÓÃ)
+		// æ‰€æœ‰éª¨éª¼ç»“ç‚¹çš„æœ€ç»ˆå˜æ¢çŸ©é˜µ(ä»…æ’­æ”¾å•ä¸ªåŠ¨ç”»æ—¶æœ‰ç”¨)
 		unordered_map<string, Matrix4> mBoneTransforms;
 
 		void UpdateNodeAnimations();

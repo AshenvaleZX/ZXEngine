@@ -13,7 +13,7 @@ namespace ZXEngine
         static vector<Camera*> GetAllCameras();
 
     private:
-        // ËùÓÐÏà»ú
+        // æ‰€æœ‰ç›¸æœº
         static vector<Camera*> allCameras;
 
 	public:

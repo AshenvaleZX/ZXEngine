@@ -90,10 +90,10 @@ namespace ZXEngine
 	{
 		FBOManager::GetInstance()->SwitchFBO("AssetPreview");
 		auto renderAPI = RenderAPI::GetInstance();
-		// ViewPortµÄSizeºÍÆ«ÒÆÁ¿ÊÇ»ùÓÚµ±Ç°µÄFBO£¬¶ø²»ÊÇ»ùÓÚµ±Ç°µÄ½ø³Ì´°¿Ú£¬ÕâÒ»µãºÜÖØÒª
+		// ViewPortçš„Sizeå’Œåç§»é‡æ˜¯åŸºäºå½“å‰çš„FBOï¼Œè€Œä¸æ˜¯åŸºäºå½“å‰çš„è¿›ç¨‹çª—å£ï¼Œè¿™ä¸€ç‚¹å¾ˆé‡è¦
 		renderAPI->SetViewPort(previewSize, previewSize);
 		renderAPI->SetRenderState(renderState);
-		// ÇåÀíÉÏÒ»Ö¡Êı¾İ£¬Ë¢ĞÂ±³¾°ÑÕÉ«
+		// æ¸…ç†ä¸Šä¸€å¸§æ•°æ®ï¼Œåˆ·æ–°èƒŒæ™¯é¢œè‰²
 		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
 		auto curAsset = EditorDataManager::GetInstance()->selectedAsset;
@@ -133,7 +133,7 @@ namespace ZXEngine
 		engineProperties->matP = mat_P;
 		engineProperties->matM_Inv = Math::Inverse(mat_M);
 
-		// ¹Ì¶¨²ÎÊıÄ£Äâ»·¾³
+		// å›ºå®šå‚æ•°æ¨¡æ‹Ÿç¯å¢ƒ
 		engineProperties->camPos = camera->GetTransform()->GetPosition();
 		engineProperties->lightPos = Vector3(10.0f, 10.0f, -10.0f);
 		engineProperties->lightDir = Vector3(1.0f, 1.0f, -1.0f).GetNormalized();
@@ -180,7 +180,7 @@ namespace ZXEngine
 		scale = standardSize / size;
 		minScale = scale * 0.1f;
 		maxScale = scale * 10.0f;
-		// µ÷ÕûËõ·ÅÃô¸Ğ¶È£¬ÈÃ²»Í¬´óĞ¡µÄÄ£ĞÍËõ·ÅËÙ¶ÈµÄÊÖ¸ĞÒ»Ö±
+		// è°ƒæ•´ç¼©æ”¾æ•æ„Ÿåº¦ï¼Œè®©ä¸åŒå¤§å°çš„æ¨¡å‹ç¼©æ”¾é€Ÿåº¦çš„æ‰‹æ„Ÿä¸€ç›´
 		scaleSensitivity = scale * standardScaleSensitivity;
 	}
 

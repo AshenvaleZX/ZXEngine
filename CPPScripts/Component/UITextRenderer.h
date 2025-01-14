@@ -18,9 +18,9 @@ namespace ZXEngine
 		Bottom
 	};
 
-	// ¹Ì¶¨µÄ×ÖĞÎMesh¶¥µã²ÉÑùÎÆÀíUV
+	// å›ºå®šçš„å­—å½¢Meshé¡¶ç‚¹é‡‡æ ·çº¹ç†UV
 	const Vector2 GlyphCoords[4] = { Vector2(0, 1), Vector2(0, 0), Vector2(1, 1), Vector2(1, 0) };
-	// ¹Ì¶¨µÄ×ÖĞÎMeshÈı½ÇĞÎ¶¥µãÊı×é
+	// å›ºå®šçš„å­—å½¢Meshä¸‰è§’å½¢é¡¶ç‚¹æ•°ç»„
 	const vector<unsigned int> GlyphIndices =
 	{
 		1, 0, 2,
@@ -61,17 +61,17 @@ namespace ZXEngine
 		bool isScreenSpace = true;
 		uint32_t mWindowResizeCallbackKey = 0;
 
-		// µ±Ç°äÖÈ¾µÄÎÄ±¾
+		// å½“å‰æ¸²æŸ“çš„æ–‡æœ¬
 		string text = "";
 		vector<Material*> textMaterials;
 		vector<DynamicMesh*> textMeshes;
-		// Êµ¼Ê·ÖÅäÁËäÖÈ¾×ÊÔ´µÄ×Ö·ûÊıÁ¿(²»°üÀ¨¿Õ¸ñµÈÎŞÊµ¼ÊÍ¼Ïñ×Ö·û)
+		// å®é™…åˆ†é…äº†æ¸²æŸ“èµ„æºçš„å­—ç¬¦æ•°é‡(ä¸åŒ…æ‹¬ç©ºæ ¼ç­‰æ— å®é™…å›¾åƒå­—ç¬¦)
 		size_t length = 0;
 
 		TextHorizonAlignment hAlign = TextHorizonAlignment::Center;
 		TextVerticalAlignment vAlign = TextVerticalAlignment::Center;
 		
-		// ÎÄ±¾ÊÇ·ñ·¢ÉúÁË±ä»¯
+		// æ–‡æœ¬æ˜¯å¦å‘ç”Ÿäº†å˜åŒ–
 		bool dirty = false;
 
 		void GenerateRenderData();

@@ -15,9 +15,9 @@ namespace ZXEngine
 	class ModelUtil
 	{
 	public:
-		// Ê¹ÓÃASSIMP¼ÓÔØÄ£ĞÍÎÄ¼ş
+		// ä½¿ç”¨ASSIMPåŠ è½½æ¨¡å‹æ–‡ä»¶
 		static ModelData* LoadModel(const string& path, bool loadFullAnim = true, bool async = false);
-		// Ëã·¨Éú³É¼¸ºÎÌåÄ£ĞÍ
+		// ç®—æ³•ç”Ÿæˆå‡ ä½•ä½“æ¨¡å‹
 		static shared_ptr<Mesh> GenerateGeometry(GeometryType type);
 
 		static string GetGeometryTypeName(GeometryType type);

@@ -54,7 +54,7 @@ namespace ZXEngine
 
 	Matrix4 Transform::GetModelMatrix() const
 	{
-		// °Ñ¶¥µã´ÓLocal Space±ä»»µ½World SpaceµÄ¾ØÕó
+		// æŠŠé¡¶ç‚¹ä»Local Spaceå˜æ¢åˆ°World Spaceçš„çŸ©é˜µ
 		return GetPositionMatrix() * GetRotationAndScaleMatrix();
 	}
 
@@ -76,7 +76,7 @@ namespace ZXEngine
 
 	Matrix4 Transform::GetScaleMatrix() const
 	{
-		// ÔÚTransformÇ¶Ì×ÆğÀ´£¬²¢ÇÒÓĞĞı×ªµÄÇé¿öÏÂ£¬scaleÖ»ÄÜµ¹ÍÆ³öÀ´£¬ºÜÄÑÕıÏò¼ÆËã
+		// åœ¨TransformåµŒå¥—èµ·æ¥ï¼Œå¹¶ä¸”æœ‰æ—‹è½¬çš„æƒ…å†µä¸‹ï¼Œscaleåªèƒ½å€’æ¨å‡ºæ¥ï¼Œå¾ˆéš¾æ­£å‘è®¡ç®—
 		auto invRotationMat = Math::Inverse(GetRotation().ToMatrix4());
 		auto rotationAndScaleMat = GetRotationAndScaleMatrix();
 		return invRotationMat * rotationAndScaleMat;
@@ -168,9 +168,9 @@ namespace ZXEngine
 
 	Matrix3 Transform::GetScale() const
 	{
-		// µ±TransformÇ¶Ì×ÆğÀ´£¬²¢ÇÒÓĞĞı×ªÊ±£¬scaleÎŞ·¨ÔÙÓÃ¼òµ¥µÄVector3±í´ï
-		// ÒòÎª¸¸¼¶Ëõ·ÅÊ±£¬×Ó¶ÔÏóÈç¹ûÓĞĞı×ª£¬Ôò¶ÔÓÚ×Ó¶ÔÏóÀ´ËµËõ·Å²»ÔÙÊÇ±ê×¼µÄxyzÖáËõ·ÅÁË
-		// ÏàÓ¦µÄ£¬Ëõ·ÅÒ²ÎŞ·¨ÔÙÓÃVector3±í´ï£¬Ö»ÄÜÓÃMatrix3±í´ï
+		// å½“TransformåµŒå¥—èµ·æ¥ï¼Œå¹¶ä¸”æœ‰æ—‹è½¬æ—¶ï¼Œscaleæ— æ³•å†ç”¨ç®€å•çš„Vector3è¡¨è¾¾
+		// å› ä¸ºçˆ¶çº§ç¼©æ”¾æ—¶ï¼Œå­å¯¹è±¡å¦‚æœæœ‰æ—‹è½¬ï¼Œåˆ™å¯¹äºå­å¯¹è±¡æ¥è¯´ç¼©æ”¾ä¸å†æ˜¯æ ‡å‡†çš„xyzè½´ç¼©æ”¾äº†
+		// ç›¸åº”çš„ï¼Œç¼©æ”¾ä¹Ÿæ— æ³•å†ç”¨Vector3è¡¨è¾¾ï¼Œåªèƒ½ç”¨Matrix3è¡¨è¾¾
 		return Matrix3(GetScaleMatrix());
 	}
 

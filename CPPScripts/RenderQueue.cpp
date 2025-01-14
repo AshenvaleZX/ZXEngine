@@ -67,7 +67,7 @@ namespace ZXEngine
 			batches[renderer->mMatetrial->shader->GetID()].push_back(renderer);
 		}
 
-		// ¶¯Ì¬ºÏÅú
+		// åŠ¨æ€åˆæ‰¹
 		if (ProjectSetting::enableDynamicBatch)
 		{
 			rendererPoolIdx = 0;
@@ -82,7 +82,7 @@ namespace ZXEngine
 
 	void RenderQueue::DynamicBatch(RendererList& batchRenderers)
 	{
-		// ÕâÀï½ÓÊÜµÄ²ÎÊıÊÇÏàÍ¬ShaderµÄ¶ÔÏó£¬ÔÙ°´²ÄÖÊ·Ö×é
+		// è¿™é‡Œæ¥å—çš„å‚æ•°æ˜¯ç›¸åŒShaderçš„å¯¹è±¡ï¼Œå†æŒ‰æè´¨åˆ†ç»„
 		map<string, RendererList> matMap;
 		for (auto renderer : batchRenderers)
 			matMap[renderer->mMatetrial->path].push_back(renderer);
@@ -92,19 +92,19 @@ namespace ZXEngine
 		{
 			if (iter.second.size() > 1)
 			{
-				// ÏàÍ¬²ÄÖÊ¶ÔÏóÊıÁ¿´óÓÚ1£¬½øĞĞºÏ²¢£¬È»ºóÈ¡´úÖ®Ç°µÄvectorÁĞ±í
+				// ç›¸åŒæè´¨å¯¹è±¡æ•°é‡å¤§äº1ï¼Œè¿›è¡Œåˆå¹¶ï¼Œç„¶åå–ä»£ä¹‹å‰çš„vectoråˆ—è¡¨
 				auto batchedMeshRenderer = MergeMeshs(iter.second);
 				iter.second.clear();
 				iter.second.push_back(batchedMeshRenderer);
 			}
 		}
 
-		// °ÑºÏÅú´¦ÀíºóµÄ¶ÔÏó¼ÓÈëĞÂÁĞ±í
+		// æŠŠåˆæ‰¹å¤„ç†åçš„å¯¹è±¡åŠ å…¥æ–°åˆ—è¡¨
 		for (auto& iter : matMap)
 			for (auto renderer : iter.second)
 				newList.push_back(renderer);
 
-		// ²ÎÊıÒıÓÃ´«µİ£¬Ö±½ÓÈ¡´úÀÏÁĞ±í
+		// å‚æ•°å¼•ç”¨ä¼ é€’ï¼Œç›´æ¥å–ä»£è€åˆ—è¡¨
 		batchRenderers = newList;
 	}
 
@@ -142,7 +142,7 @@ namespace ZXEngine
 		auto newMeshRenderer = GetTemporaryRenderer();
 		newMeshRenderer->mMatetrial = batchRenderers[0]->mMatetrial;
 		newMeshRenderer->mReceiveShadow = batchRenderers[0]->mReceiveShadow;
-		// Ö®Ç°¿ÉÄÜÓĞÊı¾İ£¬ÏÈÇåµô
+		// ä¹‹å‰å¯èƒ½æœ‰æ•°æ®ï¼Œå…ˆæ¸…æ‰
 		newMeshRenderer->mMeshes.clear();
 		newMeshRenderer->mMeshes.push_back(shared_ptr<StaticMesh>(newMesh));
 

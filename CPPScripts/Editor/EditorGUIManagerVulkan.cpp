@@ -14,7 +14,7 @@
 #include "../External/ImGui/imgui_impl_glfw.h"
 #include "../External/ImGui/imgui_impl_vulkan.h"
 
-// VulkanµÄImGui½ÓÈë±È½ÏÂé·³£¬²Î¿¼½Ì³Ì: https://frguthmann.github.io/posts/vulkan_imgui/
+// Vulkançš„ImGuiæ¥å…¥æ¯”è¾ƒéº»çƒ¦ï¼Œå‚è€ƒæ•™ç¨‹: https://frguthmann.github.io/posts/vulkan_imgui/
 static int g_MinImageCount = 2;
 static VkDescriptorPool g_DescriptorPool = VK_NULL_HANDLE;
 static VkRenderPass g_RenderPass = VK_NULL_HANDLE;
@@ -58,7 +58,7 @@ namespace ZXEngine
 
 	void EditorGUIManagerVulkan::Init()
 	{
-		// InspectorµÄ»æÖÆÒª·ÅÔÚHierarchyºÍProjectºóÃæ£¬ÒòÎªÕâÁ½¸öÃæ°å»á¾ö¶¨InspectorµÄÄÚÈİ
+		// Inspectorçš„ç»˜åˆ¶è¦æ”¾åœ¨Hierarchyå’ŒProjectåé¢ï¼Œå› ä¸ºè¿™ä¸¤ä¸ªé¢æ¿ä¼šå†³å®šInspectorçš„å†…å®¹
 		allPanels.push_back(new EditorProjectPanel());
 		allPanels.push_back(new EditorMainBarPanel());
 		allPanels.push_back(new EditorHierarchyPanel());
@@ -113,7 +113,7 @@ namespace ZXEngine
 	{
 		auto renderAPI = reinterpret_cast<RenderAPIVulkan*>(RenderAPI::GetInstance());
 
-		// ´´½¨Ò»¸ö×¨ÓÃµÄDescriptorPool
+		// åˆ›å»ºä¸€ä¸ªä¸“ç”¨çš„DescriptorPool
 		{
 			VkDescriptorPoolSize pool_sizes[] =
 			{
@@ -139,7 +139,7 @@ namespace ZXEngine
 			check_vk_result(err);
 		}
 
-		// ´´½¨Ò»¸ö×¨ÓÃµÄRenderPass
+		// åˆ›å»ºä¸€ä¸ªä¸“ç”¨çš„RenderPass
 		{
 			VkAttachmentDescription colorAttachment = {};
 			colorAttachment.format = renderAPI->swapChainImageFormat;
@@ -180,7 +180,7 @@ namespace ZXEngine
 				throw std::runtime_error("Could not create Dear ImGui's render pass");
 		}
 
-		// ´´½¨×¨ÓÃµÄFrameBuffer
+		// åˆ›å»ºä¸“ç”¨çš„FrameBuffer
 		{
 			g_FrameBuffers.resize(renderAPI->swapChainImageViews.size());
 			for (size_t i = 0; i < renderAPI->swapChainImageViews.size(); i++)
@@ -199,7 +199,7 @@ namespace ZXEngine
 			}
 		}
 
-		// ´´½¨Ò»¸ö×¨ÓÃµÄCommandPool
+		// åˆ›å»ºä¸€ä¸ªä¸“ç”¨çš„CommandPool
 		{
 			VkCommandPoolCreateInfo commandPoolCreateInfo = {};
 			commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -210,7 +210,7 @@ namespace ZXEngine
 				throw std::runtime_error("Could not create graphics command pool");
 		}
 
-		// ´´½¨×¨ÓÃµÄCommandBuffer
+		// åˆ›å»ºä¸“ç”¨çš„CommandBuffer
 		{
 			g_CommandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 
@@ -224,7 +224,7 @@ namespace ZXEngine
 				throw std::runtime_error("failed to allocate command buffers!");
 		}
 
-		// äÖÈ¾Íê³ÉµÄVkSemaphore
+		// æ¸²æŸ“å®Œæˆçš„VkSemaphore
 		{
 			g_RenderFinishSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 
@@ -237,14 +237,14 @@ namespace ZXEngine
 			}
 		}
 
-		// ÔÚµ÷ÓÃImGui_ImplVulkan_Init³õÊ¼»¯»ùÓÚVulkanµÄImGuiÖ®Ç°£¬ÏÈµ÷ÓÃÕâ¸ö½Ó¿Ú£¬¸øImGuiÒ»¸ö¿ÉÒÔ¼ÓÔØVulkanº¯ÊıµÄº¯Êı
-		// ÆäÊµ±¾À´¿ÉÒÔ²»ĞèÒªÕâÒ»²½µÄ£¬ÒòÎªImGuiµÄ»æÖÆÖ»»áÓÃµ½VulkanµÄCoreº¯Êı£¬¶øVulkanµÄCoreº¯Êı²»ĞèÒªÎÒÃÇÊÖ¶¯¼ÓÔØ
-		// µ«ÊÇÈç¹ûÎÒÃÇÒªÊ¹ÓÃVulkan¹â×·£¬¾ÍÒªÆôÓÃÏà¹ØÀ©Õ¹£¬¶øVulkanÀ©Õ¹µÄº¯ÊıËäÈ»ÔÚvulkan.hµÄÍ·ÎÄ¼şÀï£¬µ«ÊÇÕâĞ©º¯Êı²¢Ã»ÓĞÖ±½Ó¼ÓÔØºÃ
-		// ĞèÒªÎÒÃÇ×Ô¼ºÈ¥¼ÓÔØº¯Êı(°ó¶¨º¯ÊıÖ¸Õë)£¬ËùÒÔÒò´Ë¼ä½ÓÓ°ÏìÁË»ùÓÚVulkanµÄImGui
-		// ËäÈ»»ùÓÚVulkanµÄImGuiäÖÈ¾²¢²»ĞèÒªÈÎºÎÀ©Õ¹£¬µ«ÊÇÒòÎªÎÒÃÇÒª×Ô¼º¼ÓÔØËùÓĞVulkanº¯ÊıÁË£¬¾ÍÒ²ĞèÒª¸øImGui´«µİÒ»¸öº¯Êı£¬ÈÃImGuiÈ¥ÕÒVulkanº¯ÊıµØÖ·
+		// åœ¨è°ƒç”¨ImGui_ImplVulkan_Initåˆå§‹åŒ–åŸºäºVulkançš„ImGuiä¹‹å‰ï¼Œå…ˆè°ƒç”¨è¿™ä¸ªæ¥å£ï¼Œç»™ImGuiä¸€ä¸ªå¯ä»¥åŠ è½½Vulkanå‡½æ•°çš„å‡½æ•°
+		// å…¶å®æœ¬æ¥å¯ä»¥ä¸éœ€è¦è¿™ä¸€æ­¥çš„ï¼Œå› ä¸ºImGuiçš„ç»˜åˆ¶åªä¼šç”¨åˆ°Vulkançš„Coreå‡½æ•°ï¼Œè€ŒVulkançš„Coreå‡½æ•°ä¸éœ€è¦æˆ‘ä»¬æ‰‹åŠ¨åŠ è½½
+		// ä½†æ˜¯å¦‚æœæˆ‘ä»¬è¦ä½¿ç”¨Vulkanå…‰è¿½ï¼Œå°±è¦å¯ç”¨ç›¸å…³æ‰©å±•ï¼Œè€ŒVulkanæ‰©å±•çš„å‡½æ•°è™½ç„¶åœ¨vulkan.hçš„å¤´æ–‡ä»¶é‡Œï¼Œä½†æ˜¯è¿™äº›å‡½æ•°å¹¶æ²¡æœ‰ç›´æ¥åŠ è½½å¥½
+		// éœ€è¦æˆ‘ä»¬è‡ªå·±å»åŠ è½½å‡½æ•°(ç»‘å®šå‡½æ•°æŒ‡é’ˆ)ï¼Œæ‰€ä»¥å› æ­¤é—´æ¥å½±å“äº†åŸºäºVulkançš„ImGui
+		// è™½ç„¶åŸºäºVulkançš„ImGuiæ¸²æŸ“å¹¶ä¸éœ€è¦ä»»ä½•æ‰©å±•ï¼Œä½†æ˜¯å› ä¸ºæˆ‘ä»¬è¦è‡ªå·±åŠ è½½æ‰€æœ‰Vulkanå‡½æ•°äº†ï¼Œå°±ä¹Ÿéœ€è¦ç»™ImGuiä¼ é€’ä¸€ä¸ªå‡½æ•°ï¼Œè®©ImGuiå»æ‰¾Vulkanå‡½æ•°åœ°å€
 		ImGui_ImplVulkan_LoadFunctions([](const char* name, void*) { return vkGetInstanceProcAddr(volkGetLoadedInstance(), name); });
 
-		// ³õÊ¼»¯Vulkan°æ±¾µÄImGUI
+		// åˆå§‹åŒ–Vulkanç‰ˆæœ¬çš„ImGUI
 		ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), true);
 		ImGui_ImplVulkan_InitInfo init_info = {};
 		init_info.Instance = renderAPI->vkInstance;
@@ -293,7 +293,7 @@ namespace ZXEngine
 		err = vkEndCommandBuffer(commandBuffer);
 		check_vk_result(err);
 
-		// Ìá½»CommandBuffer
+		// æäº¤CommandBuffer
 		vector<VkPipelineStageFlags> waitStages = {};
 		waitStages.resize(renderAPI->curWaitSemaphores.size(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
 		vector<VkSemaphore> waitSemaphores = renderAPI->curWaitSemaphores;

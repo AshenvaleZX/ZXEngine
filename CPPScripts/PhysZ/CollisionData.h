@@ -9,15 +9,15 @@ namespace ZXEngine
 		class CollisionData
 		{
 		public:
-			// Åö×²Êı×é
+			// ç¢°æ’æ•°ç»„
 			Contact* mContactArray;
-			// Êı×é³¤¶È
+			// æ•°ç»„é•¿åº¦
 			uint32_t mMaxContactCount;
-			// µ±Ç°Åö×²(ÏÂÒ»¸öÅö×²Êı¾İÒªÌîÈëµÄÎ»ÖÃ)
+			// å½“å‰ç¢°æ’(ä¸‹ä¸€ä¸ªç¢°æ’æ•°æ®è¦å¡«å…¥çš„ä½ç½®)
 			Contact* mCurContact;
-			// Åö×²Êı×éÊ£Óà¿Õ¼ä
+			// ç¢°æ’æ•°ç»„å‰©ä½™ç©ºé—´
 			uint32_t mContactsLeft;
-			// Åö×²Êı×éµ±Ç°´óĞ¡
+			// ç¢°æ’æ•°ç»„å½“å‰å¤§å°
 			uint32_t mCurContactCount;
 
 			CollisionData(uint32_t maxContacts);

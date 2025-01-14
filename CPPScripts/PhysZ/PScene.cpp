@@ -36,14 +36,14 @@ namespace ZXEngine
 			if (mBVHRoot == nullptr)
 				return;
 
-			// ÖØÖÃÅö×²Êı¾İ
+			// é‡ç½®ç¢°æ’æ•°æ®
 			mCollisionData->Reset();
 
 			for (auto& iter : mAllRigidBodyGO)
 			{
-				// Çå³ı¸ÕÌåÔÚÉÏÒ»Ö¡ÀÛ¼ÆµÄÁ¦ºÍÁ¦¾Ø
+				// æ¸…é™¤åˆšä½“åœ¨ä¸Šä¸€å¸§ç´¯è®¡çš„åŠ›å’ŒåŠ›çŸ©
 				iter.second->ClearAccumulators();
-				// ¸üĞÂ¸ÕÌåÔÚÕâÒ»Ö¡µÄÏà¹ØÊı¾İ
+				// æ›´æ–°åˆšä½“åœ¨è¿™ä¸€å¸§çš„ç›¸å…³æ•°æ®
 				iter.second->CalculateDerivedData();
 			}
 
@@ -64,7 +64,7 @@ namespace ZXEngine
 
 			for (auto& iter : mAllRigidBodyGO)
 			{
-				// ¸üĞÂ¸ÕÌåµÄÎ»ÖÃºÍĞı×ª
+				// æ›´æ–°åˆšä½“çš„ä½ç½®å’Œæ—‹è½¬
 				iter.second->Integrate(deltaTime);
 			}
 
@@ -76,10 +76,10 @@ namespace ZXEngine
 				}
 			}
 
-			// Éú³ÉÇ±ÔÚÅö×²
+			// ç”Ÿæˆæ½œåœ¨ç¢°æ’
 			uint32_t potentialContactCount = mBVHRoot->GetPotentialContacts(mPotentialContacts, mMaxPotentialContacts);
 			
-			// ´ÓÇ±ÔÚÅö×²ÖĞ¼ì²âÅö×²
+			// ä»æ½œåœ¨ç¢°æ’ä¸­æ£€æµ‹ç¢°æ’
 			uint32_t i = 0;
 			while (i < potentialContactCount)
 			{
@@ -91,13 +91,13 @@ namespace ZXEngine
 				i++;
 			}
 
-			// ´¦Àí¹Ø½Ú
+			// å¤„ç†å…³èŠ‚
 			for (auto joint : Joint::allJoints)
 			{
 				joint->Resolve(mCollisionData);
 			}
 
-			// ´¦ÀíÅö×²
+			// å¤„ç†ç¢°æ’
 			mContactResolver->ResolveContacts(mCollisionData->mContactArray, mCollisionData->mCurContactCount, deltaTime);
 		}
 
@@ -112,7 +112,7 @@ namespace ZXEngine
 				transform->SetPosition(iter.second->GetPosition());
 				transform->SetRotation(iter.second->GetRotation());
 
-				// ¸üĞÂBVµÄÎ»ÖÃ
+				// æ›´æ–°BVçš„ä½ç½®
 				if (iter.second->mBVHNode)
 				{
 					iter.second->mBVHNode->mBoundingVolume.mCenter = iter.second->GetPosition();
@@ -131,7 +131,7 @@ namespace ZXEngine
 
 					cloth->mDynamicMesh->mVertices[i].Position = lPos;
 
-					// ¸üĞÂBVµÄÎ»ÖÃ
+					// æ›´æ–°BVçš„ä½ç½®
 					if (cloth->mParticles[i].first->mBVHNode)
 					{
 						cloth->mParticles[i].first->mBVHNode->mBoundingVolume.mCenter = pPos;
@@ -139,23 +139,23 @@ namespace ZXEngine
 					}
 				}
 
-				// ĞĞÊı(Z)
+				// è¡Œæ•°(Z)
 				size_t row = 11;
-				// ÁĞÊı(X)
+				// åˆ—æ•°(X)
 				size_t col = 11;
-				// ´ÓºóÏòÇ°
+				// ä»åå‘å‰
 				for (size_t i = 1; i < (row - 1); i++)
 				{
-					// ´Ó×óÏòÓÒ
+					// ä»å·¦å‘å³
 					for (size_t j = 1; j < (col - 1); j++)
 					{
-						// ×ó
+						// å·¦
 						size_t pLeft = i * col + j - 1;
-						// ÓÒ
+						// å³
 						size_t pRight = i * col + j + 1;
-						// ºó
+						// å
 						size_t pBack = (i - 1) * col + j;
-						// Ç°
+						// å‰
 						size_t pFront = (i + 1) * col + j;
 
 						if (i == 0)
@@ -208,7 +208,7 @@ namespace ZXEngine
 				{
 					auto transform = gameObject->GetComponent<Transform>();
 					auto scale = transform->GetLocalScale();
-					// ÁÙÊ±°´ÕÕÆ½Ãæ³¤¿íÎª10¼ÆËã
+					// ä¸´æ—¶æŒ‰ç…§å¹³é¢é•¿å®½ä¸º10è®¡ç®—
 					float radius = sqrtf(scale.x * scale.x * 100.0f + scale.z * scale.z * 100.0f);
 					Vector3 pos = transform->GetPosition();
 					BoundingSphere bv(pos, radius);

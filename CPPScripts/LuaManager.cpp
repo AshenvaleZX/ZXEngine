@@ -88,23 +88,23 @@ namespace ZXEngine
 	void LuaManager::InitLuaState()
 	{
 		L = luaL_newstate(); /* create state */
-		luaL_openlibs(L);    /* ¼ÓÔØ±ê×¼¿â */
-		luaL_openMyLibs(L);  /* ¼ÓÔØ×Ô¶¨Òå¿â */
+		luaL_openlibs(L);    /* åŠ è½½æ ‡å‡†åº“ */
+		luaL_openMyLibs(L);  /* åŠ è½½è‡ªå®šä¹‰åº“ */
 
-		// ½«ÄÚÖÃLuaÔ´ÂëµÄÂ·¾¶¼ÓÈëpackage.path
+		// å°†å†…ç½®Luaæºç çš„è·¯å¾„åŠ å…¥package.path
 		lua_getglobal(L, "package");
-		lua_getfield(L, -1, "path");         /* »ñÈ¡package.path */
+		lua_getfield(L, -1, "path");         /* è·å–package.path */
 		const char* cur_path = lua_tostring(L, -1);
 		string new_path(cur_path);
 		new_path += ";" + ProjectSetting::mBuiltInAssetsPath + "/Scripts/?.lua";
-		lua_pop(L, 1);                       /* µ¯³öÔ­À´µÄpackage.path */
-		lua_pushstring(L, new_path.c_str()); /* Ñ¹ÈëĞÂµÄpackage.path */
-		lua_setfield(L, -2, "path");         /* ¶Ôpackage.path¸³Öµ */
-		lua_pop(L, 1);                       /* µ¯³öpackage¿â */
+		lua_pop(L, 1);                       /* å¼¹å‡ºåŸæ¥çš„package.path */
+		lua_pushstring(L, new_path.c_str()); /* å‹å…¥æ–°çš„package.path */
+		lua_setfield(L, -2, "path");         /* å¯¹package.pathèµ‹å€¼ */
+		lua_pop(L, 1);                       /* å¼¹å‡ºpackageåº“ */
 
-		// Ö´ĞĞLuaÆô¶¯½Å±¾
+		// æ‰§è¡ŒLuaå¯åŠ¨è„šæœ¬
 		auto suc = luaL_dofile(L, Resources::GetAssetFullPath("Scripts/Init.lua", true).c_str());
-		// Êä³ö´íÎóÈÕÖ¾
+		// è¾“å‡ºé”™è¯¯æ—¥å¿—
 		if (suc != LUA_OK)
 			Debug::LogError(lua_tostring(L, -1));
 	}
@@ -122,14 +122,14 @@ namespace ZXEngine
 
 	void LuaManager::CallFunction(int table, int func)
 	{
-		// º¯ÊıÈëÕ»
+		// å‡½æ•°å…¥æ ˆ
 		lua_rawgeti(L, LUA_REGISTRYINDEX, func);
-		// tableÈëÕ»
+		// tableå…¥æ ˆ
 		lua_rawgeti(L, LUA_REGISTRYINDEX, table);
 
 		if (lua_isfunction(L, -2))
 		{
-			// µ÷ÓÃº¯Êı£¬1²ÎÊı£¬0·µ»ØÖµ
+			// è°ƒç”¨å‡½æ•°ï¼Œ1å‚æ•°ï¼Œ0è¿”å›å€¼
 			if (lua_pcall(L, 1, 0, 0) != LUA_OK)
 			{
 				Debug::LogError(lua_tostring(L, -1));
@@ -143,15 +143,15 @@ namespace ZXEngine
 
 	void LuaManager::CallFunction(const char* table, const char* func, const char* msg, bool self)
 	{
-		// ¼ÇÂ¼µ±Ç°Õ»´óĞ¡
+		// è®°å½•å½“å‰æ ˆå¤§å°
 		int stack_size = lua_gettop(L);
-		// global tableÃûÈëÕ»
+		// global tableåå…¥æ ˆ
 		lua_getglobal(L, table);
-		// º¯ÊıÃûÈëÕ»
+		// å‡½æ•°åå…¥æ ˆ
 		lua_pushstring(L, func);
-		// »ñÈ¡º¯Êıfunc
+		// è·å–å‡½æ•°func
 		int type = lua_gettable(L, -2);
-		// ¼ì²éÒ»ÏÂÓĞÃ»ÓĞÕâ¸öº¯Êı
+		// æ£€æŸ¥ä¸€ä¸‹æœ‰æ²¡æœ‰è¿™ä¸ªå‡½æ•°
 		if (type != LUA_TFUNCTION)
 		{
 			Debug::LogWarning("Called invalid global function: " + (string)func);
@@ -159,18 +159,18 @@ namespace ZXEngine
 		}
 		if (self)
 		{
-			// °ÑÎ»ÓÚ-2Î»ÖÃÉÏµÄtable¸´ÖÆÒ»±é£¬ÖØĞÂÈëÕ»£¬×÷Îªµ÷ÓÃfuncµÄself²ÎÊı£¬¶ÔÓ¦luaÄÇ±ßµÄ:µ÷ÓÃ
+			// æŠŠä½äº-2ä½ç½®ä¸Šçš„tableå¤åˆ¶ä¸€éï¼Œé‡æ–°å…¥æ ˆï¼Œä½œä¸ºè°ƒç”¨funcçš„selfå‚æ•°ï¼Œå¯¹åº”luaé‚£è¾¹çš„:è°ƒç”¨
 			lua_pushvalue(L, -2);
 		}
-		// ²ÎÊıÈëÕ»
+		// å‚æ•°å…¥æ ˆ
 		lua_pushstring(L, msg);
-		// µ÷ÓÃº¯Êıfunc£¬1»ò2¸ö²ÎÊı£¬0·µ»ØÖµ
+		// è°ƒç”¨å‡½æ•°funcï¼Œ1æˆ–2ä¸ªå‚æ•°ï¼Œ0è¿”å›å€¼
 		if (lua_pcall(L, self?2:1, 0, 0) != LUA_OK)
 		{
-			// µ÷ÓÃÊ§°Ü´òÓ¡ÈÕÖ¾
+			// è°ƒç”¨å¤±è´¥æ‰“å°æ—¥å¿—
 			Debug::LogError(lua_tostring(L, -1));
 		}
-		// »Ö¸´Õ»´óĞ¡(PopµôÕâ¶Î´úÂëÔÚÕ»ÉÏ²úÉúµÄÊı¾İ)
+		// æ¢å¤æ ˆå¤§å°(Popæ‰è¿™æ®µä»£ç åœ¨æ ˆä¸Šäº§ç”Ÿçš„æ•°æ®)
 		lua_settop(L, stack_size);
 	}
 

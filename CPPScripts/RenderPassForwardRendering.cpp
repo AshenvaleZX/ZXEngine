@@ -47,43 +47,43 @@ namespace ZXEngine
 	void RenderPassForwardRendering::Render(Camera* camera)
 	{
 		auto renderAPI = RenderAPI::GetInstance();
-		// ÇÐ»»µ½Ö÷FBO
+		// åˆ‡æ¢åˆ°ä¸»FBO
 		FBOManager::GetInstance()->SwitchFBO("Forward");
-		// ViewPortÉèÖÃÎª´°¿Ú´óÐ¡
+		// ViewPortè®¾ç½®ä¸ºçª—å£å¤§å°
 		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight);
-		// ÇåÀíÉÏÒ»Ö¡Êý¾Ý
+		// æ¸…ç†ä¸Šä¸€å¸§æ•°æ®
 		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 		
-		// äÖÈ¾Ìì¿ÕºÐ
+		// æ¸²æŸ“å¤©ç©ºç›’
 		renderAPI->SetRenderState(skyBoxRenderState);
 		RenderSkyBox(camera);
 
-		// ÉèÖÃÒýÇæ²ÎÊý
+		// è®¾ç½®å¼•æ“Žå‚æ•°
 		RenderEngineProperties::GetInstance()->SetCameraProperties(camera);
 		RenderEngineProperties::GetInstance()->SetLightProperties(Light::GetAllLights());
 
-		// äÖÈ¾²»Í¸Ã÷¶ÓÁÐ
+		// æ¸²æŸ“ä¸é€æ˜Žé˜Ÿåˆ—
 		renderAPI->SetRenderState(opaqueRenderState);
 		auto opaqueQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Opaque);
 		opaqueQueue->Sort(camera, RenderSortType::FrontToBack);
 		opaqueQueue->Batch();
 		RenderBatches(opaqueQueue->GetBatches());
 
-		// äÖÈ¾°ëÍ¸Ã÷¶ÓÁÐ
+		// æ¸²æŸ“åŠé€æ˜Žé˜Ÿåˆ—
 		renderAPI->SetRenderState(transparentRenderState);
 		auto transparentQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Transparent);
 		transparentQueue->Sort(camera, RenderSortType::BackToFront);
 		transparentQueue->Batch();
 		RenderBatches(transparentQueue->GetBatches());
 
-		// äÖÈ¾Á£×ÓÏµÍ³
+		// æ¸²æŸ“ç²’å­ç³»ç»Ÿ
 		ParticleSystemManager::GetInstance()->Render(camera);
 
 		renderAPI->GenerateDrawCommand(drawCommandID);
 
 		renderAPI->BlitFrameBuffer(blitCommandID, "Forward", "ForwardDepth", ZX_FRAME_BUFFER_PIECE_DEPTH);
 
-		// Ã¿´ÎäÖÈ¾ÍêÒªÇå¿Õ£¬ÏÂ´ÎÒªäÖÈ¾µÄÊ±ºòÔÙÖØÐÂÌí¼Ó
+		// æ¯æ¬¡æ¸²æŸ“å®Œè¦æ¸…ç©ºï¼Œä¸‹æ¬¡è¦æ¸²æŸ“çš„æ—¶å€™å†é‡æ–°æ·»åŠ 
 		RenderQueueManager::GetInstance()->ClearAllRenderQueue();
 	}
 
@@ -127,7 +127,7 @@ namespace ZXEngine
 
 	void RenderPassForwardRendering::RenderSkyBox(Camera* camera)
 	{
-		// ÏÈ×ª3x3ÔÙ»Ø4x4£¬°ÑÏà»úÎ»ÒÆÐÅÏ¢È¥³ý
+		// å…ˆè½¬3x3å†å›ž4x4ï¼ŒæŠŠç›¸æœºä½ç§»ä¿¡æ¯åŽ»é™¤
 		Matrix4 mat_V = Matrix4(Matrix3(camera->GetViewMatrix()));
 		Matrix4 mat_P = camera->GetProjectionMatrix();
 

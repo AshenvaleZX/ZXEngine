@@ -32,15 +32,15 @@ namespace ZXEngine
 		auto renderAPI = RenderAPI::GetInstance();
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Opaque);
 
-		// ÇÐ»»µ½Ö÷FBO
+		// åˆ‡æ¢åˆ°ä¸»FBO
 		FBOManager::GetInstance()->SwitchFBO("RayTracing");
-		// ViewPortÉèÖÃÎª´°¿Ú´óÐ¡
+		// ViewPortè®¾ç½®ä¸ºçª—å£å¤§å°
 		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight);
 
-		// ÉèÖÃÌì¿ÕºÐ
+		// è®¾ç½®å¤©ç©ºç›’
 		renderAPI->SetRayTracingSkyBox(SceneManager::GetInstance()->GetCurScene()->skyBox->GetID());
 
-		// ±éÀúäÖÈ¾¶ÓÁÐ£¬½«ËùÓÐmeshµÄVAOºÍ²ÄÖÊÊý¾ÝÍÆÈë¹â×·¹ÜÏß
+		// éåŽ†æ¸²æŸ“é˜Ÿåˆ—ï¼Œå°†æ‰€æœ‰meshçš„VAOå’Œæè´¨æ•°æ®æŽ¨å…¥å…‰è¿½ç®¡çº¿
 		for (auto renderer : renderQueue->GetRenderers())
 		{
 			renderAPI->PushRayTracingMaterialData(renderer->mMatetrial);
@@ -50,10 +50,10 @@ namespace ZXEngine
 			}
 		}
 
-		// ¹¹½¨TLAS
+		// æž„å»ºTLAS
 		renderAPI->BuildTopLevelAccelerationStructure(asCommandID);
 
-		// ¹â×·¹ÜÏß³£Á¿Êý¾Ý
+		// å…‰è¿½ç®¡çº¿å¸¸é‡æ•°æ®
 		rtConstants.VP = camera->GetProjectionMatrix() * camera->GetViewMatrix();
 		rtConstants.V_Inv = camera->GetViewMatrixInverse();
 		rtConstants.P_Inv = camera->GetProjectionMatrixInverse();
@@ -63,15 +63,15 @@ namespace ZXEngine
 		rtConstants.time = Time::curTime;
 #endif
 
-		// ¹âÔ´Î»ÖÃ
+		// å…‰æºä½ç½®
 		auto allLights = Light::GetAllLights();
 		if (allLights.size() > 0)
 			rtConstants.lightPos = Light::GetAllLights()[0]->GetTransform()->GetPosition();
 
-		// ¹â×·äÖÈ¾
+		// å…‰è¿½æ¸²æŸ“
 		renderAPI->RayTrace(rtCommandID, rtConstants);
 
-		// ÇåÀíäÖÈ¾¶ÓÁÐ
+		// æ¸…ç†æ¸²æŸ“é˜Ÿåˆ—
 		RenderQueueManager::GetInstance()->ClearAllRenderQueue();
 	}
 }

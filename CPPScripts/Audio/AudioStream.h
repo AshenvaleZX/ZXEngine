@@ -3,7 +3,7 @@
 
 namespace ZXEngine
 {
-	// ÒôÆµÊı¾İÁ÷£¬´ËÀàÖ»ÔÊĞíÍ¨¹ıAudioEngine´´½¨ºÍÏú»Ù
+	// éŸ³é¢‘æ•°æ®æµï¼Œæ­¤ç±»åªå…è®¸é€šè¿‡AudioEngineåˆ›å»ºå’Œé”€æ¯
 	class AudioStream
 	{
 	protected:

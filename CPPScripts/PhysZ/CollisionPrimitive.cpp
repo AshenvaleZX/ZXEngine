@@ -25,7 +25,7 @@ namespace ZXEngine
 
 		Matrix3 CollisionBox::GetInertiaTensor(float mass) const
 		{
-			// ÓÉÓÚÊÇhalfSize£¬ËùÒÔÒªÏÈ³Ë2ÔÙÆ½·½£¬¼òĞ´Îª*4
+			// ç”±äºæ˜¯halfSizeï¼Œæ‰€ä»¥è¦å…ˆä¹˜2å†å¹³æ–¹ï¼Œç®€å†™ä¸º*4
 			float x2 = mHalfSize.x * mHalfSize.x * 4.0f;
 			float y2 = mHalfSize.y * mHalfSize.y * 4.0f;
 			float z2 = mHalfSize.z * mHalfSize.z * 4.0f;
@@ -41,11 +41,11 @@ namespace ZXEngine
 
 		float CollisionBox::GetHalfProjectedLength(const Vector3& axis) const
 		{
-			// ÏÈ°ÑÖá´ÓÊÀ½ç¿Õ¼ä±ä»»µ½BoxµÄ¾Ö²¿¿Õ¼ä(½ö¿¼ÂÇĞı×ª¼´¿É)
+			// å…ˆæŠŠè½´ä»ä¸–ç•Œç©ºé—´å˜æ¢åˆ°Boxçš„å±€éƒ¨ç©ºé—´(ä»…è€ƒè™‘æ—‹è½¬å³å¯)
 			Vector3 axisProjected = Math::Transpose(Matrix3(mTransform)) * axis;
-			// ºÍmHalfSize·Åµ½Í¬Ò»¸öÏóÏŞÄÚ
+			// å’ŒmHalfSizeæ”¾åˆ°åŒä¸€ä¸ªè±¡é™å†…
 			axisProjected.Absolutize();
-			// È»ºó¼ÆËãBoxÔÚÕâ¸öÖáÉÏµÄÍ¶Ó°³¤¶È
+			// ç„¶åè®¡ç®—Boxåœ¨è¿™ä¸ªè½´ä¸Šçš„æŠ•å½±é•¿åº¦
 			return Math::Dot(mHalfSize, axisProjected);
 		}
 
@@ -62,7 +62,7 @@ namespace ZXEngine
 
 		Matrix3 CollisionPlane::GetInertiaTensor(float mass) const
 		{
-			// ÎŞÏŞÔ¶Æ½Ãæ²»µ±×÷¸ÕÌåÀ´Ä£Äâ£¬¹ßĞÔÕÅÁ¿ÎŞÒâÒå
+			// æ— é™è¿œå¹³é¢ä¸å½“ä½œåˆšä½“æ¥æ¨¡æ‹Ÿï¼Œæƒ¯æ€§å¼ é‡æ— æ„ä¹‰
 			return Matrix3();
 		}
 
@@ -95,7 +95,7 @@ namespace ZXEngine
 
 		Matrix3 CollisionCircle2D::GetInertiaTensor(float mass) const
 		{
-			// ÔİÎ´ÊµÏÖ2DÅö×²
+			// æš‚æœªå®ç°2Dç¢°æ’
 			return Matrix3();
 		}
 	}

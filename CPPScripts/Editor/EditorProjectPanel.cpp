@@ -4,16 +4,16 @@
 
 namespace ZXEngine
 {
-	// ÔÚProjectÃæ°åÖĞÆÁ±ÎµÄÎÄ¼şÀàĞÍ
+	// åœ¨Projecté¢æ¿ä¸­å±è”½çš„æ–‡ä»¶ç±»å‹
 	unordered_set<string> ignoreExtensions = 
 	{ 
-		// Éú³ÉµÄHLSL´úÂë
+		// ç”Ÿæˆçš„HLSLä»£ç 
 		".hlsl",
-		// Ô¤±àÒëµÄD3D12 Shader
+		// é¢„ç¼–è¯‘çš„D3D12 Shader
 		".fxc",
-		// Éú³ÉµÄGLSL´úÂë
+		// ç”Ÿæˆçš„GLSLä»£ç 
 		".vert", ".frag", ".geom",
-		// Ô¤±àÒëµÄVulkan Shader
+		// é¢„ç¼–è¯‘çš„Vulkan Shader
 		".spv",
 	};
 
@@ -33,23 +33,23 @@ namespace ZXEngine
 
 	void EditorProjectPanel::DrawPanel()
 	{
-		// Ãæ°å´óĞ¡ºÍÎ»ÖÃ
+		// é¢æ¿å¤§å°å’Œä½ç½®
 		ImGui::SetNextWindowPos(ImVec2(0, (float)ProjectSetting::mainBarHeight + (float)ProjectSetting::hierarchyHeight));
 		ImGui::SetNextWindowSize(ImVec2((float)ProjectSetting::projectWidth, (float)ProjectSetting::projectHeight));
 
-		// ÉèÖÃÃæ°å¾ßÌåÄÚÈİ
+		// è®¾ç½®é¢æ¿å…·ä½“å†…å®¹
 		ImGui::Begin("Peoject", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 		{
-			// ¼ÇÂ¼Ò»ÏÂ°´Å¥Ô­±¾ÑÕÉ«
+			// è®°å½•ä¸€ä¸‹æŒ‰é’®åŸæœ¬é¢œè‰²
 			ImGuiStyle& style = ImGui::GetStyle();
 			ImVec4 btnColor = style.Colors[ImGuiCol_Button];
 			ImVec4 selectBtnColor = ImVec4(btnColor.x - 0.1f, btnColor.y - 0.1f, btnColor.z - 0.1f, 1.0f);
 			ImVec4 textColor = style.Colors[ImGuiCol_Text];
 			ImVec4 selectTextColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-			// µ±Ç°Â·¾¶½Úµã£¬Èç¹ûµ±Ç°½Úµã²»ÊÇÎÄ¼ş¼Ğ£¬¾ÍÓÃµ±Ç°½ÚµãµÄ¸¸½Úµã
+			// å½“å‰è·¯å¾„èŠ‚ç‚¹ï¼Œå¦‚æœå½“å‰èŠ‚ç‚¹ä¸æ˜¯æ–‡ä»¶å¤¹ï¼Œå°±ç”¨å½“å‰èŠ‚ç‚¹çš„çˆ¶èŠ‚ç‚¹
 			auto curPathNode = curNode->type == AssetType::Folder ? curNode : curNode->parent;
 
-			// »æÖÆÂ·¾¶Ìõ
+			// ç»˜åˆ¶è·¯å¾„æ¡
 			ImGui::PushStyleColor(ImGuiCol_Button, style.Colors[ImGuiCol_WindowBg]);
 			auto tmpPathNode = curPathNode;
 			vector<EditorAssetNode*> pathNodes;
@@ -58,14 +58,14 @@ namespace ZXEngine
 				pathNodes.push_back(tmpPathNode);
 				tmpPathNode = tmpPathNode->parent;
 			}
-			// µ¹Ğğ»æÖÆ£¬´Órootµ½µ±Ç°Î»ÖÃ
+			// å€’å™ç»˜åˆ¶ï¼Œä»rootåˆ°å½“å‰ä½ç½®
 			for (auto i = pathNodes.size(); i > 0; i--)
 			{
 				ImGui::SameLine(); 
 				if (ImGui::SmallButton(pathNodes[i - 1]->name.c_str()))
 				{
 					SetCurNode(pathNodes[i - 1]);
-					// ÇĞ»»Â·¾¶µÄÊ±ºòË¢ĞÂÑ¡ÖĞ×´Ì¬
+					// åˆ‡æ¢è·¯å¾„çš„æ—¶å€™åˆ·æ–°é€‰ä¸­çŠ¶æ€
 					selected = SIZE_MAX;
 				}
 				if (i > 1)
@@ -77,15 +77,15 @@ namespace ZXEngine
 			ImGui::PopStyleColor(1);
 			ImGui::Separator();
 
-			// µ±Ç°Â·¾¶ÎÄ¼şÊıÁ¿
+			// å½“å‰è·¯å¾„æ–‡ä»¶æ•°é‡
 			size_t childNum = curPathNode->children.size();
-			// µ±Ç°´°¿ÚµÄx×î´óÖµ(ÓÒ±ß½çÎ»ÖÃ)
+			// å½“å‰çª—å£çš„xæœ€å¤§å€¼(å³è¾¹ç•Œä½ç½®)
 			float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
-			// ¼ÇÂ¼µ±Ç°»æÖÆµÄÒ»ÅÅÎÄ¼şÃû
+			// è®°å½•å½“å‰ç»˜åˆ¶çš„ä¸€æ’æ–‡ä»¶å
 			vector<string> fileNames;
-			// µ±Ç°»æÖÆµÄÎÄ¼şÔÚµ±Ç°ÕâÒ»ĞĞÀïÊÇµÚ¼¸¸ö
+			// å½“å‰ç»˜åˆ¶çš„æ–‡ä»¶åœ¨å½“å‰è¿™ä¸€è¡Œé‡Œæ˜¯ç¬¬å‡ ä¸ª
 			int rowIdx = 0;
-			// ¼ÇÂ¼µ±Ç°Ñ¡ÖĞµÄÎÄ¼şÔÚµ±Ç°ÕâÒ»ĞĞÀïÊÇµÚ¼¸¸ö
+			// è®°å½•å½“å‰é€‰ä¸­çš„æ–‡ä»¶åœ¨å½“å‰è¿™ä¸€è¡Œé‡Œæ˜¯ç¬¬å‡ ä¸ª
 			int curRowIdx = -1;
 			for (size_t i = 0; i < childNum; i++)
 			{
@@ -100,7 +100,7 @@ namespace ZXEngine
 					ImGui::PushStyleColor(ImGuiCol_Button, btnColor);
 				}
 
-				// ÎŞÂÛÊÇ·ñµã»÷¶¼±ØĞëPopStyleColor£¬ËùÒÔÃ»ÓĞÖ±½ÓĞ´ÔÚifÖĞ
+				// æ— è®ºæ˜¯å¦ç‚¹å‡»éƒ½å¿…é¡»PopStyleColorï¼Œæ‰€ä»¥æ²¡æœ‰ç›´æ¥å†™åœ¨ifä¸­
 				string label = "##File" + to_string(i);
 				auto icon = fileIcons[(int)node->type];
 				bool click = ImGui::ImageButton(label.c_str(), icon.ImGuiID, iconSize);
@@ -111,14 +111,14 @@ namespace ZXEngine
 					SetCurNode(node);
 					if (node->type == AssetType::Folder)
 					{
-						// ÇĞ»»Â·¾¶µÄÊ±ºòË¢ĞÂÑ¡ÖĞ×´Ì¬
+						// åˆ‡æ¢è·¯å¾„çš„æ—¶å€™åˆ·æ–°é€‰ä¸­çŠ¶æ€
 						selected = SIZE_MAX;
 						break;
 					}
 				}
 				fileNames.push_back(node->name);
 
-				// ¼ÆËãÊÇ·ñ»»ĞĞ
+				// è®¡ç®—æ˜¯å¦æ¢è¡Œ
 				float last_button_x2 = ImGui::GetItemRectMax().x;
 				float next_button_x2 = last_button_x2 + style.ItemSpacing.x + iconSize.x;
 				if (i + 1 < childNum && next_button_x2 < window_visible_x2)
@@ -129,7 +129,7 @@ namespace ZXEngine
 				else
 				{
 					rowIdx = 0;
-					// »æÖÆÏÂÒ»ĞĞÎÄ¼şÇ°£¬ÏÈ°ÑÕâÒ»ĞĞµÄÎÄ¼şÃû»æÖÆ³öÀ´
+					// ç»˜åˆ¶ä¸‹ä¸€è¡Œæ–‡ä»¶å‰ï¼Œå…ˆæŠŠè¿™ä¸€è¡Œçš„æ–‡ä»¶åç»˜åˆ¶å‡ºæ¥
 					for (size_t j = 0; j < fileNames.size(); j++)
 					{
 						if (j > 0)
@@ -169,13 +169,13 @@ namespace ZXEngine
 		{
 #ifdef ZX_PLATFORM_MACOS
 			string filename = entry.path().filename().string();
-			// Ìø¹ıMacOSµÄ.DS_Store(·³ÈËµÄÎÄ¼ş£¬²»ÖªµÀÆ»¹û¸ãÕâÍæÒâ¸ÉÂï)£¬filesystem´¦ÀíÕâ¸öÎÄ¼ş»áÒì³£
+			// è·³è¿‡MacOSçš„.DS_Store(çƒ¦äººçš„æ–‡ä»¶ï¼Œä¸çŸ¥é“è‹¹æœæè¿™ç©æ„å¹²å˜›)ï¼Œfilesystemå¤„ç†è¿™ä¸ªæ–‡ä»¶ä¼šå¼‚å¸¸
 			if (filename.compare(".DS_Store") == 0)
 				continue;
 #endif
 
 			string extension = entry.path().filename().extension().string();
-			// Èç¹ûÊÇºöÂÔµÄÎÄ¼şÀàĞÍ£¬¾ÍÌø¹ı
+			// å¦‚æœæ˜¯å¿½ç•¥çš„æ–‡ä»¶ç±»å‹ï¼Œå°±è·³è¿‡
 			if (ignoreExtensions.find(extension) != ignoreExtensions.end())
 				continue;
 
@@ -197,16 +197,16 @@ namespace ZXEngine
 			}
 			node->children.push_back(child);
 
-			// ÅÅĞò
+			// æ’åº
 			std::sort(node->children.begin(), node->children.end(), 
 				[](EditorAssetNode* a, EditorAssetNode* b) 
 				{ 
-					// ÎÄ¼ş¼ĞÅÅÔÚÇ°Ãæ
+					// æ–‡ä»¶å¤¹æ’åœ¨å‰é¢
 					if (a->type == AssetType::Folder && b->type != AssetType::Folder)
 						return true;
 					if (a->type != AssetType::Folder && b->type == AssetType::Folder)
 						return false;
-					// °´Ãû×ÖÅÅĞò
+					// æŒ‰åå­—æ’åº
 					return a->name < b->name;
 				}
 			);

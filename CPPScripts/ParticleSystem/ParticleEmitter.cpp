@@ -5,23 +5,23 @@ namespace ZXEngine
 {
 	void ParticleEmitter::Update(const ParticleSystemState& state, vector<Particle>& particles)
 	{
-		// Á£×ÓÉú²úµÄÊ±¼ä¼ä¸ô
+		// ç²’å­ç”Ÿäº§çš„æ—¶é—´é—´éš”
 		float interval = 1.0f / state.mEmissionState.mRate;
 		float curTime = Time::curTime;
 		uint32_t genNum = 0;
 		if (mLastGenTime == 0)
 		{
-			// µÚÒ»Ö¡ÏÈ³õÊ¼»¯Êı¾İ
+			// ç¬¬ä¸€å¸§å…ˆåˆå§‹åŒ–æ•°æ®
 			mLastGenTime = curTime;
 		}
 		else
 		{
-			// ÉÏÒ»´ÎÉú²úÁ£×ÓµÄÊ±¼ä
+			// ä¸Šä¸€æ¬¡ç”Ÿäº§ç²’å­çš„æ—¶é—´
 			float delta = curTime - mLastGenTime;
-			// Èç¹ûÏà²îÊ±¼ä´óÓÚÁËÉú²ú¼ä¸ô£¬ÄÇÃ´¸ù¾İÏà²îµÄÕâ¶ÎÊ±¼ä£¬¼ÆËãÕâÒ»Ö¡Ó¦¸ÃÉú²úµÄÊıÁ¿
+			// å¦‚æœç›¸å·®æ—¶é—´å¤§äºäº†ç”Ÿäº§é—´éš”ï¼Œé‚£ä¹ˆæ ¹æ®ç›¸å·®çš„è¿™æ®µæ—¶é—´ï¼Œè®¡ç®—è¿™ä¸€å¸§åº”è¯¥ç”Ÿäº§çš„æ•°é‡
 			if (delta > interval)
 				genNum = static_cast<uint32_t>(delta / interval);
-			// Èç¹ûÕâÒ»Ö¡Éú²úÁËÁ£×Ó£¬ÄÇÃ´¸üĞÂÉú²úÊ±¼ä
+			// å¦‚æœè¿™ä¸€å¸§ç”Ÿäº§äº†ç²’å­ï¼Œé‚£ä¹ˆæ›´æ–°ç”Ÿäº§æ—¶é—´
 			if (genNum > 0)
 				mLastGenTime = curTime;
 		}
@@ -35,7 +35,7 @@ namespace ZXEngine
 
 	uint32_t ParticleEmitter::GetUnusedParticleIndex(const ParticleSystemState& state, vector<Particle>& particles)
 	{
-		// ´ÓÉÏÒ»¸öÓÃ¹ıµÄÏòºóÕÒ
+		// ä»ä¸Šä¸€ä¸ªç”¨è¿‡çš„å‘åæ‰¾
 		for (uint32_t i = mLastUsedIndex; i < state.mMaxParticleNum; ++i)
 		{
 			if (particles[i].life <= 0.0f)
@@ -44,7 +44,7 @@ namespace ZXEngine
 				return i;
 			}
 		}
-		// Ã»ÕÒµ½¾Í´ÓÍ·ÕÒ
+		// æ²¡æ‰¾åˆ°å°±ä»å¤´æ‰¾
 		for (uint32_t i = 0; i < mLastUsedIndex; ++i)
 		{
 			if (particles[i].life <= 0.0f)
@@ -53,7 +53,7 @@ namespace ZXEngine
 				return i;
 			}
 		}
-		// ¶¼Ã»ÕÒµ½¾Í´ÓÍ·¿ªÊ¼
+		// éƒ½æ²¡æ‰¾åˆ°å°±ä»å¤´å¼€å§‹
 		mLastUsedIndex = 0;
 		return 0;
 	}

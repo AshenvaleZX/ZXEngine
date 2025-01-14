@@ -8,32 +8,32 @@ namespace ZXEngine
         template <typename T>
         struct FunctionType;
 
-        // ´æ´¢ÆÕÍ¨º¯ÊıÀàĞÍ
+        // å­˜å‚¨æ™®é€šå‡½æ•°ç±»å‹
         template <typename Ret, typename... Args>
         struct FunctionType<Ret(*)(Args...)>
         {
             using Type = Ret(*)(Args...);
         };
 
-        // ´æ´¢Àà³ÉÔ±º¯ÊıÀàĞÍ
+        // å­˜å‚¨ç±»æˆå‘˜å‡½æ•°ç±»å‹
         template <typename Ret, typename Class, typename... Args>
         struct FunctionType<Ret(Class::*)(Args...)>
         {
             using Type = Ret(Class::*)(Args...);
         };
 
-        // ´æ´¢Àà³£Á¿³ÉÔ±º¯ÊıÀàĞÍ
+        // å­˜å‚¨ç±»å¸¸é‡æˆå‘˜å‡½æ•°ç±»å‹
         template <typename Ret, typename Class, typename... Args>
         struct FunctionType<Ret(Class::*)(Args...) const>
         {
             using Type = Ret(Class::*)(Args...) const;
         };
 
-        // »ñÈ¡º¯ÊıÀàĞÍ
+        // è·å–å‡½æ•°ç±»å‹
         template <typename T>
         using FunctionType_T = typename FunctionType<T>::Type;
 
-        // ÒÔ¡°Î²ÖÃ·µ»ØÀàĞÍ¡±µÄĞÎÊ½ÉùÃ÷º¯Êı£¬Í¨¹ıÕâÖÖ·½Ê½´Ó·µ»ØÖµÀàĞÍ»ñÈ¡º¯ÊıÀàĞÍ
+        // ä»¥â€œå°¾ç½®è¿”å›ç±»å‹â€çš„å½¢å¼å£°æ˜å‡½æ•°ï¼Œé€šè¿‡è¿™ç§æ–¹å¼ä»è¿”å›å€¼ç±»å‹è·å–å‡½æ•°ç±»å‹
         namespace Internal
         {
             template <typename Ret, typename... Args>
@@ -49,11 +49,11 @@ namespace ZXEngine
                 -> Ret(Class::*)(Args...) const {};
         }
 
-        // ´Óº¯ÊıÖ¸Õë»ñÈ¡º¯ÊıÖ¸ÕëÀàĞÍ
+        // ä»å‡½æ•°æŒ‡é’ˆè·å–å‡½æ•°æŒ‡é’ˆç±»å‹
         template <auto T>
         using FunctionPointerToType_T = decltype(Internal::FunctionPointerToType(T));
 
-        // ´Óº¯ÊıÖ¸Õë»ñÈ¡º¯ÊıÀàĞÍ
+        // ä»å‡½æ•°æŒ‡é’ˆè·å–å‡½æ•°ç±»å‹
         template <auto T>
         using FunctionTypeFromPointer_T = FunctionType_T<decltype(Internal::FunctionPointerToType(T))>;
 
@@ -70,7 +70,7 @@ namespace ZXEngine
             };
         }
 
-        // ´æ´¢º¯Êı±¾ÉíµÄÀàĞÍĞÅÏ¢ºÍ²ÎÊıÀàĞÍĞÅÏ¢
+        // å­˜å‚¨å‡½æ•°æœ¬èº«çš„ç±»å‹ä¿¡æ¯å’Œå‚æ•°ç±»å‹ä¿¡æ¯
         template <typename Func>
         struct FunctionTraits;
 

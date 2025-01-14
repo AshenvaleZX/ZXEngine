@@ -5,7 +5,7 @@ namespace ZXEngine
 {
 	Quaternion Quaternion::Euler(float x, float y, float z)
 	{
-		// ²Î¿¼: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+		// å‚è€ƒ: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
 		float pitch = Math::Deg2Rad(x);
 		float yaw = Math::Deg2Rad(y);
 		float roll = Math::Deg2Rad(z);
@@ -77,8 +77,8 @@ namespace ZXEngine
 
 	Quaternion Quaternion::GetInverse() const
 	{
-		// ²Î¿¼: https://www.mathworks.com/help/aeroblks/quaternioninverse.html
-		// ËÄÔªÊıµÄÄæ²Ù×÷°´ÀíËµÓ¦¸ÃÓĞÒ»¸ö³ıÒÔ³¤¶ÈµÄ¼ÆËã£¬µ«ÊÇÎÒÃÇÕâÀï±í´ïĞı×ªµÄËÄÔªÊı³¤¶È¶¼ÊÇ1£¬ËùÒÔÖ±½ÓÊ¡ÂÔÁËÕâÒ»²½
+		// å‚è€ƒ: https://www.mathworks.com/help/aeroblks/quaternioninverse.html
+		// å››å…ƒæ•°çš„é€†æ“ä½œæŒ‰ç†è¯´åº”è¯¥æœ‰ä¸€ä¸ªé™¤ä»¥é•¿åº¦çš„è®¡ç®—ï¼Œä½†æ˜¯æˆ‘ä»¬è¿™é‡Œè¡¨è¾¾æ—‹è½¬çš„å››å…ƒæ•°é•¿åº¦éƒ½æ˜¯1ï¼Œæ‰€ä»¥ç›´æ¥çœç•¥äº†è¿™ä¸€æ­¥
 		return Quaternion(-x, -y, -z, w);
 	}
 
@@ -92,10 +92,10 @@ namespace ZXEngine
 		return x * x + y * y + z * z + w * w;
 	}
 
-	// ²Î¿¼: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+	// å‚è€ƒ: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
 	Vector3 Quaternion::GetEulerAngles() const
 	{
-		// ÀíÂÛÉÏÕâÀïµÄ×îĞ¡ÖµÎª0£¬µ«ÊÇÓÉÓÚ¸¡µãÊı¾«¶ÈÎÊÌâ£¬¿ÉÄÜ»á³öÏÖ¸ºÊıµ¼ÖÂsqrtÒì³££¬ËùÒÔÕâÀï×öÁËÒ»¸ö±£»¤
+		// ç†è®ºä¸Šè¿™é‡Œçš„æœ€å°å€¼ä¸º0ï¼Œä½†æ˜¯ç”±äºæµ®ç‚¹æ•°ç²¾åº¦é—®é¢˜ï¼Œå¯èƒ½ä¼šå‡ºç°è´Ÿæ•°å¯¼è‡´sqrtå¼‚å¸¸ï¼Œæ‰€ä»¥è¿™é‡Œåšäº†ä¸€ä¸ªä¿æŠ¤
 		float sinpSquare = 1 + 2 * (w * x - y * z);
 		float cospSquare = 1 - 2 * (w * x - y * z);
 		sinpSquare = Math::Max(sinpSquare, 0.0f);
@@ -172,17 +172,17 @@ namespace ZXEngine
 
 	Matrix3 Quaternion::ToMatrix3() const
 	{
-		// µÚÒ»ĞĞ
+		// ç¬¬ä¸€è¡Œ
 		float m00 = 1 - (2 * y * y) - (2 * z * z);
 		float m01 = (2 * x * y) - (2 * w * z);
 		float m02 = (2 * x * z) + (2 * w * y);
 
-		// µÚ¶şĞĞ
+		// ç¬¬äºŒè¡Œ
 		float m10 = (2 * x * y) + (2 * w * z);
 		float m11 = 1 - (2 * x * x) - (2 * z * z);
 		float m12 = (2 * y * z) - (2 * w * x);
 
-		// µÚÈıĞĞ
+		// ç¬¬ä¸‰è¡Œ
 		float m20 = (2 * x * z) - (2 * w * y);
 		float m21 = (2 * y * z) + (2 * w * x);
 		float m22 = 1 - (2 * x * x) - (2 * y * y);
@@ -195,17 +195,17 @@ namespace ZXEngine
 
 	Matrix4 Quaternion::ToMatrix4() const
 	{
-		// µÚÒ»ĞĞ
+		// ç¬¬ä¸€è¡Œ
 		float m00 = 1 - (2 * y * y) - (2 * z * z);
 		float m01 = (2 * x * y) - (2 * w * z);
 		float m02 = (2 * x * z) + (2 * w * y);
 
-		// µÚ¶şĞĞ
+		// ç¬¬äºŒè¡Œ
 		float m10 = (2 * x * y) + (2 * w * z);
 		float m11 = 1 - (2 * x * x) - (2 * z * z);
 		float m12 = (2 * y * z) - (2 * w * x);
 
-		// µÚÈıĞĞ
+		// ç¬¬ä¸‰è¡Œ
 		float m20 = (2 * x * z) - (2 * w * y);
 		float m21 = (2 * y * z) + (2 * w * x);
 		float m22 = 1 - (2 * x * x) - (2 * y * y);
@@ -256,7 +256,7 @@ namespace ZXEngine
 		return Quaternion(x - q.x, y - q.y, z - q.z, w - q.w);
 	}
 
-	// ²Î¿¼: https://www.mathworks.com/help/aeroblks/quaternionmultiplication.html
+	// å‚è€ƒ: https://www.mathworks.com/help/aeroblks/quaternionmultiplication.html
 	Quaternion Quaternion::operator* (const Quaternion& q) const
 	{
 		float qx =  q.x * w - q.y * z + q.z * y + q.w * x;
@@ -288,7 +288,7 @@ namespace ZXEngine
 
 	Quaternion& Quaternion::operator*= (const Quaternion& q)
 	{
-		// °Ñthis½âÒıÓÃÔÙ³Ë
+		// æŠŠthisè§£å¼•ç”¨å†ä¹˜
 		*this = *this * q;
 		return *this;
 	}

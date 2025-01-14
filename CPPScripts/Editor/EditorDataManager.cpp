@@ -131,10 +131,10 @@ namespace ZXEngine
 		long long dt = curTime - mLastAssetClick;
 		mLastAssetClick = curTime;
 
-		// µã»÷Í¬Ò»¸öAsset
+		// ç‚¹å‡»åŒä¸€ä¸ªAsset
 		if (selectedAsset == asset)
 		{
-			// Ë«»÷
+			// åŒå‡»
 			if (dt < mDoubleClickInterval)
 			{
 
@@ -155,7 +155,7 @@ namespace ZXEngine
 				}
 			}
 
-			// ÎŞÂÛÊÇ·ñË«»÷£¬¶¼²»ĞèÒª¼ÌĞøÖ´ĞĞºóĞø´úÂë(¸üĞÂµ±Ç°Ñ¡ÖĞ×ÊÔ´)
+			// æ— è®ºæ˜¯å¦åŒå‡»ï¼Œéƒ½ä¸éœ€è¦ç»§ç»­æ‰§è¡Œåç»­ä»£ç (æ›´æ–°å½“å‰é€‰ä¸­èµ„æº)
 			return;
 		}
 
@@ -268,7 +268,7 @@ namespace ZXEngine
 	{
 		if (curAssetInfo != nullptr)
 		{
-			// deleteÉÏÒ»¸öAssetInfoµÄÊ±ºòĞèÒªÏÈ°ÑÖ¸ÕëÓ³Éä³É¶ÔÓ¦ÀàĞÍ£¬²ÅÄÜÕıÈ·µ÷ÓÃÎö¹¹º¯Êı£¬È·±£ÄÚ´æÕıÈ·ÊÍ·Å
+			// deleteä¸Šä¸€ä¸ªAssetInfoçš„æ—¶å€™éœ€è¦å…ˆæŠŠæŒ‡é’ˆæ˜ å°„æˆå¯¹åº”ç±»å‹ï¼Œæ‰èƒ½æ­£ç¡®è°ƒç”¨ææ„å‡½æ•°ï¼Œç¡®ä¿å†…å­˜æ­£ç¡®é‡Šæ”¾
 			if (selectedAsset->type == AssetType::Script ||
 				selectedAsset->type == AssetType::Text)
 				delete static_cast<AssetScriptInfo*>(curAssetInfo);
@@ -288,7 +288,7 @@ namespace ZXEngine
 			else
 				Debug::LogError("DeleteCurAssetInfo failed, unknown asset type: %s", selectedAsset->type);
 
-			// deleteºóÁ¢¿ÌÖØĞÂ¸³ÖµÎªnullptr£¬·ÀÖ¹Á¬ĞødeleteÖ¸Õë³öÏÖÎŞ·¨Ô¤ÆÚµÄĞĞÎªµ¼ÖÂÖ±½Ó±ÀÀ£
+			// deleteåç«‹åˆ»é‡æ–°èµ‹å€¼ä¸ºnullptrï¼Œé˜²æ­¢è¿ç»­deleteæŒ‡é’ˆå‡ºç°æ— æ³•é¢„æœŸçš„è¡Œä¸ºå¯¼è‡´ç›´æ¥å´©æºƒ
 			curAssetInfo = nullptr;
 #ifdef ZX_EDITOR
 			Resources::ClearEditorAsyncLoad();

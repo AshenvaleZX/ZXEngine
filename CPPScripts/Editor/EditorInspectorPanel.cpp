@@ -24,11 +24,11 @@ namespace ZXEngine
 {
 	void EditorInspectorPanel::DrawPanel()
 	{
-		// Ãæ°å´óĞ¡ºÍÎ»ÖÃ
+		// é¢æ¿å¤§å°å’Œä½ç½®
 		ImGui::SetNextWindowPos(ImVec2((float)ProjectSetting::hierarchyWidth + (float)ProjectSetting::gameViewWidth, (float)ProjectSetting::mainBarHeight));
 		ImGui::SetNextWindowSize(ImVec2((float)ProjectSetting::inspectorWidth, (float)ProjectSetting::inspectorHeight));
 
-		// ÉèÖÃÃæ°å¾ßÌåÄÚÈİ
+		// è®¾ç½®é¢æ¿å…·ä½“å†…å®¹
 		if (ImGui::Begin("Inspector", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
 		{
 			auto curGO = EditorDataManager::GetInstance()->selectedGO;
@@ -565,7 +565,7 @@ namespace ZXEngine
 		for (auto& iter : component->mStringVariables)
 		{
 			const char* value = iter.second.c_str();
-			// -1ÊÇÎªÁË±£ÁôÒ»¸öÎ»ÖÃ·Å'\0'
+			// -1æ˜¯ä¸ºäº†ä¿ç•™ä¸€ä¸ªä½ç½®æ”¾'\0'
 #if defined(ZX_PLATFORM_WINDOWS)
 			errno_t err = strncpy_s(StagingBuffer, value, StagingSize - 1);
 			if (err != 0)
@@ -682,7 +682,7 @@ namespace ZXEngine
 			ImVec2 oldWindowPadding = style.WindowPadding;
 			style.WindowPadding = ImVec2(5.0f, 5.0f);
 
-			// 5 + 19 + 5 = 29, 19ÊÇCheckbox¸ß¶È£¬¿ÉÓÉImGui::GetFrameHeight()»ñÈ¡
+			// 5 + 19 + 5 = 29, 19æ˜¯Checkboxé«˜åº¦ï¼Œå¯ç”±ImGui::GetFrameHeight()è·å–
 			static bool expand = true;
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 3.0f);
 			ImGui::BeginChild("Particle System", ImVec2(0.0f, 29.0f), ImGuiChildFlags_Border, ImGuiWindowFlags_None);

@@ -26,24 +26,24 @@ namespace ZXEngine
 			void AddGameObject(GameObject* gameObject);
 
 		private:
-			// µ±Ç°³¡¾°ÖĞµÄËùÓĞ²¼ÁÏ
+			// å½“å‰åœºæ™¯ä¸­çš„æ‰€æœ‰å¸ƒæ–™
 			vector<Cloth*> mAllCloths;
-			// µ±Ç°³¡¾°ÖĞµÄËùÓĞ¸ÕÌå
+			// å½“å‰åœºæ™¯ä¸­çš„æ‰€æœ‰åˆšä½“
 			vector<pair<GameObject*, RigidBody*>> mAllRigidBodyGO;
-			// Bounding Volume Hierarchy (BVH)Ê÷µÄ¸ù½Úµã
+			// Bounding Volume Hierarchy (BVH)æ ‘çš„æ ¹èŠ‚ç‚¹
 			BVHNode* mBVHRoot = nullptr;
 
-			// Åö×²Êı¾İ
+			// ç¢°æ’æ•°æ®
 			CollisionData* mCollisionData;
-			// Ç±ÔÚÅö×²Êı×é
+			// æ½œåœ¨ç¢°æ’æ•°ç»„
 			PotentialContact* mPotentialContacts;
-			// Ç±ÔÚÅö×²Êı×éµÄ³¤¶È
+			// æ½œåœ¨ç¢°æ’æ•°ç»„çš„é•¿åº¦
 			uint32_t mMaxPotentialContacts = 1000;
 
-			// Åö×²´¦ÀíÆ÷
+			// ç¢°æ’å¤„ç†å™¨
 			ContactResolver* mContactResolver;
 
-			// Ïò³¡¾°ÖĞÌí¼ÓĞÂµÄÅö×²Ìå
+			// å‘åœºæ™¯ä¸­æ·»åŠ æ–°çš„ç¢°æ’ä½“
 			void AddBoundingVolume(const BoundingSphere& boundingVolume, RigidBody* rigidBody);
 		};
 	}

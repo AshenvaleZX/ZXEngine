@@ -18,16 +18,16 @@ namespace ZXEngine
 		~EditorInputManager() {};
 
 		void Update();
-		// ÅĞ¶Ïµ±Ç°Êó±êËùÔÚÇøÓò
+		// åˆ¤æ–­å½“å‰é¼ æ ‡æ‰€åœ¨åŒºåŸŸ
 		EditorAreaType CheckCurMousePos();
-		// µ±Ç°ÊÇ·ñ´¦ÀíÓÎÏ·ÊäÈë
+		// å½“å‰æ˜¯å¦å¤„ç†æ¸¸æˆè¾“å…¥
 		bool IsProcessGameInput();
 		bool IsProcessGameKeyInput();
 		bool IsProcessGameMouseInput();
 		void UpdateMouseScroll(float xOffset, float yOffset);
 
 	private:
-		// ÊÇ·ñ´¦ÓÚÍÏ×§×´Ì¬
+		// æ˜¯å¦å¤„äºæ‹–æ‹½çŠ¶æ€
 		bool isDragging = false;
 	};
 }

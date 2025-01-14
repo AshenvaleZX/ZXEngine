@@ -7,7 +7,7 @@
 #include <dxcapi.h>
 #include "../PublicStruct.h"
 
-// Á´½ÓD3D12µÄÏà¹Ø¿â
+// é“¾æ¥D3D12çš„ç›¸å…³åº“
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "D3D12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -22,9 +22,9 @@ inline void ThrowIfFailed(HRESULT hr)
     {
         _com_error err(hr);
         OutputDebugString(err.ErrorMessage());
-        // ÆäÊµÕâÀïthrowµÄÊ±ºò£¬×îºÃÊÇ°ÑErrorMessage·µ»ØµÄ´íÎóĞÅÏ¢µ±×÷²ÎÊı
-        // µ«ÊÇErrorMessageµÄ·µ»ØÖµÊÇconst TCHAR*£¬¶øthrowµÄÊ±ºò£¬Ö»ÄÜ´«Èëconst char*
-        // Õâ¸öTCHARµ½charµÄ×ª»»£¬ÔÚUnicode×Ö·û¼¯ÏÂºÜÂé·³£¬ËùÒÔÕâÀïÖ»Å×³öÒ»¸ö¹Ì¶¨µÄ´íÎóĞÅÏ¢
+        // å…¶å®è¿™é‡Œthrowçš„æ—¶å€™ï¼Œæœ€å¥½æ˜¯æŠŠErrorMessageè¿”å›çš„é”™è¯¯ä¿¡æ¯å½“ä½œå‚æ•°
+        // ä½†æ˜¯ErrorMessageçš„è¿”å›å€¼æ˜¯const TCHAR*ï¼Œè€Œthrowçš„æ—¶å€™ï¼Œåªèƒ½ä¼ å…¥const char*
+        // è¿™ä¸ªTCHARåˆ°charçš„è½¬æ¢ï¼Œåœ¨Unicodeå­—ç¬¦é›†ä¸‹å¾ˆéº»çƒ¦ï¼Œæ‰€ä»¥è¿™é‡ŒåªæŠ›å‡ºä¸€ä¸ªå›ºå®šçš„é”™è¯¯ä¿¡æ¯
         throw std::exception("D3D12 interface call failed !");
     }
 }
@@ -62,7 +62,7 @@ namespace ZXEngine
         uint32_t instanceNum = 0;
         uint32_t instanceBuffer = UINT32_MAX;
 
-        // ±ØĞëÏÔÊ¾ÉùÃ÷¹¹Ôìº¯Êı£¬·ñÔòÔÚMacOSÉÏÎŞ·¨Ê¹ÓÃemplace²Ù×÷ÔÚÒ»Ğ©ÈİÆ÷ÖĞÖ±½Ó¹¹Ôì
+        // å¿…é¡»æ˜¾ç¤ºå£°æ˜æ„é€ å‡½æ•°ï¼Œå¦åˆ™åœ¨MacOSä¸Šæ— æ³•ä½¿ç”¨emplaceæ“ä½œåœ¨ä¸€äº›å®¹å™¨ä¸­ç›´æ¥æ„é€ 
         ZXD3D12DrawRecord(uint32_t vao, uint32_t pipelineID, uint32_t materialDataID, uint32_t instanceNum, uint32_t instanceBuffer) :
             VAO(vao), pipelineID(pipelineID), materialDataID(materialDataID), instanceNum(instanceNum), instanceBuffer(instanceBuffer)
         {}
@@ -72,9 +72,9 @@ namespace ZXEngine
     {
         CommandType commandType = CommandType::NotCare;
         FrameBufferClearFlags clearFlags = ZX_CLEAR_FRAME_BUFFER_NONE_BIT;
-        // AllocatorºÍCommandListÆäÊµ²»ÓÃ1¶Ô1µÄ£¬Ò»¸öAllocator¿ÉÒÔ¶ÔÓ¦¶à¸öCommandList
-        // µ«ÊÇÔÚÒ»¸öAllocatorËù¶ÔÓ¦µÄËùÓĞCommandListÖĞ£¬Ö»ÄÜÓĞÒ»¸öCommandList´¦ÓÚRecording×´Ì¬
-        // ÕâÀïÉÔÎ¢ÓĞµãÍµÀÁÁË£¬ÏÈÖ±½Ó¸ã³É1¶Ô1£¬·´ÕıÏÖÔÚÊıÁ¿Ğ¡
+        // Allocatorå’ŒCommandListå…¶å®ä¸ç”¨1å¯¹1çš„ï¼Œä¸€ä¸ªAllocatorå¯ä»¥å¯¹åº”å¤šä¸ªCommandList
+        // ä½†æ˜¯åœ¨ä¸€ä¸ªAllocatoræ‰€å¯¹åº”çš„æ‰€æœ‰CommandListä¸­ï¼Œåªèƒ½æœ‰ä¸€ä¸ªCommandListå¤„äºRecordingçŠ¶æ€
+        // è¿™é‡Œç¨å¾®æœ‰ç‚¹å·æ‡’äº†ï¼Œå…ˆç›´æ¥ææˆ1å¯¹1ï¼Œåæ­£ç°åœ¨æ•°é‡å°
         vector<ComPtr<ID3D12CommandAllocator>> allocators;
         vector<ComPtr<ID3D12GraphicsCommandList4>> commandLists;
         bool inUse = false;
@@ -88,9 +88,9 @@ namespace ZXEngine
 
     struct ZXD3D12DescriptorHandle
     {
-        // ÔÚÃèÊö·û¶ÑÀïµÄË÷Òı
+        // åœ¨æè¿°ç¬¦å †é‡Œçš„ç´¢å¼•
         uint32_t descriptorIdx = UINT32_MAX;
-        // ÔÚÃèÊö·û¶ÑÊı×éÀïµÄË÷Òı
+        // åœ¨æè¿°ç¬¦å †æ•°ç»„é‡Œçš„ç´¢å¼•
         uint32_t descriptorHeapIdx = UINT32_MAX;
         D3D12_DESCRIPTOR_HEAP_TYPE heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     };
@@ -134,11 +134,11 @@ namespace ZXEngine
 
     struct ZXD3D12VAO
     {
-        UINT indexCount = 0; // Ë÷ÒıÊıÁ¿
+        UINT indexCount = 0; // ç´¢å¼•æ•°é‡
         ZXD3D12Buffer indexBuffer;
         D3D12_INDEX_BUFFER_VIEW indexBufferView = {};
 
-        UINT vertexCount = 0; // ¶¥µãÊıÁ¿
+        UINT vertexCount = 0; // é¡¶ç‚¹æ•°é‡
         ZXD3D12Buffer vertexBuffer;
         D3D12_VERTEX_BUFFER_VIEW vertexBufferView = {};
 

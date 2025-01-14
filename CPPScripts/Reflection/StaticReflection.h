@@ -116,20 +116,20 @@ namespace ZXEngine
                 {
                     if constexpr (IsFunction_V<T>)
                     {
-                        // µ÷ÓÃº¯Êı
+                        // è°ƒç”¨å‡½æ•°
                         return std::invoke(this->mPointer, std::forward<Args>(args)...);
                     }
                     else
                     {
-                        // »ñÈ¡±äÁ¿µÄÖµ
+                        // è·å–å˜é‡çš„å€¼
                         if constexpr (VariableTraits<T>::isMember)
                         {
-                            // ³ÉÔ±±äÁ¿Í¨¹ıInvokeµÄ·½Ê½»ñÈ¡
+                            // æˆå‘˜å˜é‡é€šè¿‡Invokeçš„æ–¹å¼è·å–
                             return std::invoke(this->mPointer, std::forward<Args>(args)...);
                         }
                         else
                         {
-                            // ÆÕÍ¨±äÁ¿Ö±½Ó½âÒıÓÃ»ñÈ¡
+                            // æ™®é€šå˜é‡ç›´æ¥è§£å¼•ç”¨è·å–
                             return *(this->mPointer);
                         }
                     }
@@ -195,14 +195,14 @@ namespace ZXEngine
 
             namespace Internal
             {
-                // µÚ¶ş¸öÄ£°å²ÎÊıÄ¬ÈÏ²ÎÊıstd::void_t<>
-                // std::false_typeÄÚ²¿°üº¬Ò»¸övalue = false;
-                // Ïàµ±ÓÚHasFieldsÃ»ÓĞÆ¥Åäµ½ÌØ»¯°æ±¾Ê±valueÎªfalse
+                // ç¬¬äºŒä¸ªæ¨¡æ¿å‚æ•°é»˜è®¤å‚æ•°std::void_t<>
+                // std::false_typeå†…éƒ¨åŒ…å«ä¸€ä¸ªvalue = false;
+                // ç›¸å½“äºHasFieldsæ²¡æœ‰åŒ¹é…åˆ°ç‰¹åŒ–ç‰ˆæœ¬æ—¶valueä¸ºfalse
                 template <typename TypeInfo, typename = std::void_t<>>
                 struct HasFields final : std::false_type {};
 
-                // ÀûÓÃSFINAE»úÖÆ£¬ÔÚTypeInfoÓĞmFields×Ö¶ÎÊ±Æ¥Åäµ½´ËÌØ»¯°æ±¾
-                // Èç¹ûTypeInfoÃ»ÓĞmFields£¬decltype(TypeInfo::mFields)»á±àÒëÊ§°Ü£¬´Ó¶øÍ¨¹ıSFINAE»úÖÆ±ÜÃâÆ¥Åäµ½´ËÌØ»¯°æ±¾
+                // åˆ©ç”¨SFINAEæœºåˆ¶ï¼Œåœ¨TypeInfoæœ‰mFieldså­—æ®µæ—¶åŒ¹é…åˆ°æ­¤ç‰¹åŒ–ç‰ˆæœ¬
+                // å¦‚æœTypeInfoæ²¡æœ‰mFieldsï¼Œdecltype(TypeInfo::mFields)ä¼šç¼–è¯‘å¤±è´¥ï¼Œä»è€Œé€šè¿‡SFINAEæœºåˆ¶é¿å…åŒ¹é…åˆ°æ­¤ç‰¹åŒ–ç‰ˆæœ¬
                 template <typename TypeInfo>
                 struct HasFields<TypeInfo, std::void_t<decltype(TypeInfo::mFields)>>
                 {

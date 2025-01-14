@@ -51,55 +51,55 @@ namespace ZXEngine
 		static Vector3 Slerp(const Vector3& v1, const Vector3& v2, float t);
 		static Quaternion Slerp(const Quaternion& q1, const Quaternion& q2, float t);
 
-		// ¼ÆËãÍ¸ÊÓÍ¶Ó°¾ØÕó
+		// è®¡ç®—é€è§†æŠ•å½±çŸ©é˜µ
 		static Matrix4 Perspective(float fov, float aspect, float nearClip, float farClip);
-		// ×óÊÖ×ø±êÏµ£¬Z·¶Î§[-1, 1]
+		// å·¦æ‰‹åæ ‡ç³»ï¼ŒZèŒƒå›´[-1, 1]
 		static Matrix4 PerspectiveLHNO(float fov, float aspect, float nearClip, float farClip);
-		// ×óÊÖ×ø±êÏµ£¬Z·¶Î§[0, 1]
+		// å·¦æ‰‹åæ ‡ç³»ï¼ŒZèŒƒå›´[0, 1]
 		static Matrix4 PerspectiveLHZO(float fov, float aspect, float nearClip, float farClip);
-		// ÓÒÊÖ×ø±êÏµ£¬Z·¶Î§[-1, 1]
+		// å³æ‰‹åæ ‡ç³»ï¼ŒZèŒƒå›´[-1, 1]
 		static Matrix4 PerspectiveRHNO(float fov, float aspect, float nearClip, float farClip);
-		// ÓÒÊÖ×ø±êÏµ£¬Z·¶Î§[0, 1]
+		// å³æ‰‹åæ ‡ç³»ï¼ŒZèŒƒå›´[0, 1]
 		static Matrix4 PerspectiveRHZO(float fov, float aspect, float nearClip, float farClip);
 
-		// ¼ÆËãÕı½»Í¶Ó°¾ØÕó
+		// è®¡ç®—æ­£äº¤æŠ•å½±çŸ©é˜µ
 		static Matrix4 Orthographic(float left, float right, float bottom, float top);
 		static Matrix4 Orthographic(float left, float right, float bottom, float top, float zNear, float zFar);
-		// ×óÊÖ×ø±êÏµ£¬Z·¶Î§[-1, 1]
+		// å·¦æ‰‹åæ ‡ç³»ï¼ŒZèŒƒå›´[-1, 1]
 		static Matrix4 OrthographicLHNO(float left, float right, float bottom, float top, float zNear, float zFar);
-		// ×óÊÖ×ø±êÏµ£¬Z·¶Î§[0, 1]
+		// å·¦æ‰‹åæ ‡ç³»ï¼ŒZèŒƒå›´[0, 1]
 		static Matrix4 OrthographicLHZO(float left, float right, float bottom, float top, float zNear, float zFar);
-		// ÓÒÊÖ×ø±êÏµ£¬Z·¶Î§[-1, 1]
+		// å³æ‰‹åæ ‡ç³»ï¼ŒZèŒƒå›´[-1, 1]
 		static Matrix4 OrthographicRHNO(float left, float right, float bottom, float top, float zNear, float zFar);
-		// ÓÒÊÖ×ø±êÏµ£¬Z·¶Î§[0, 1]
+		// å³æ‰‹åæ ‡ç³»ï¼ŒZèŒƒå›´[0, 1]
 		static Matrix4 OrthographicRHZO(float left, float right, float bottom, float top, float zNear, float zFar);
 
-		// Î»ÒÆ
+		// ä½ç§»
 		static Matrix4 Translate(const Matrix4& oriMat, const Vector3& v);
-		// Ğı×ª
+		// æ—‹è½¬
 		static Matrix3 Rotate(const Matrix3& oriMat, float angle, const Vector3& axis);
 		static Matrix4 Rotate(const Matrix4& oriMat, float angle, const Vector3& axis);
 		static Matrix4 Rotate(const Matrix4& oriMat, const Vector3& from, const Vector3& to);
-		// Ëõ·Å
+		// ç¼©æ”¾
 		static Matrix4 Scale(const Matrix4& oriMat, const Vector3& scale);
 
-		// ¼ÆËãÄæ¾ØÕó
+		// è®¡ç®—é€†çŸ©é˜µ
 		static Matrix3 Inverse(const Matrix3& mat);
 		static Matrix4 Inverse(const Matrix4& mat);
-		// ¼ÆËã×ªÖÃ¾ØÕó
+		// è®¡ç®—è½¬ç½®çŸ©é˜µ
 		static Matrix3 Transpose(const Matrix3& mat);
 		static Matrix4 Transpose(const Matrix4& mat);
-		// ¼ÆËãÄæ×ªÖÃ¾ØÕó
+		// è®¡ç®—é€†è½¬ç½®çŸ©é˜µ
 		static Matrix3 InverseTranspose(const Matrix3& mat);
 		static Matrix4 InverseTranspose(const Matrix4& mat);
 		
-		// »ñÈ¡´¹Ö±ÏòÁ¿
+		// è·å–å‚ç›´å‘é‡
 		static Vector2 GetPerpendicular(const Vector2& v);
 		static Vector3 GetPerpendicular(const Vector3& v);
-		// »ñÈ¡Ëæ»ú´¹Ö±ÏòÁ¿
+		// è·å–éšæœºå‚ç›´å‘é‡
 		static Vector2 GetRandomPerpendicular(const Vector2& v);
 		static Vector3 GetRandomPerpendicular(const Vector3& v);
-		// Õâ¸öº¯ÊıºÍGLMµÄLookAtº¯ÊıĞ§¹ûÊÇÒ»ÑùµÄ
+		// è¿™ä¸ªå‡½æ•°å’ŒGLMçš„LookAtå‡½æ•°æ•ˆæœæ˜¯ä¸€æ ·çš„
 		static Matrix4 GetLookToMatrix(const Vector3& pos, const Vector3& forward, const Vector3& up);
 
 
@@ -221,12 +221,12 @@ namespace ZXEngine
 
 	Quaternion Math::Lerp(const Quaternion& q1, const Quaternion& q2, float t)
 	{
-		// Èç¹ûµã»ıĞ¡ÓÚ0£¬ËµÃ÷Á½¸öËÄÔªÊıµÄÏà¾à³¬¹ı360¶È
-		// µ«ÊÇËÄÔªÊıÖ»ÓĞ720¶ÈµÄ×ÔÓÉ¶È£¬ËùÒÔÕâÀï²åÖµµÄÊ±ºòÒªÈ¡·´
+		// å¦‚æœç‚¹ç§¯å°äº0ï¼Œè¯´æ˜ä¸¤ä¸ªå››å…ƒæ•°çš„ç›¸è·è¶…è¿‡360åº¦
+		// ä½†æ˜¯å››å…ƒæ•°åªæœ‰720åº¦çš„è‡ªç”±åº¦ï¼Œæ‰€ä»¥è¿™é‡Œæ’å€¼çš„æ—¶å€™è¦å–å
 		// 
-		// ÕâÀïµÄÈ¡·´²Ù×÷ÒÔ¼°ÉÏÃæÁ½ĞĞ×¢ÊÍ¶¼ÊÇ²Î¿¼µÄÍøÉÏÁ÷´«µÄUnity 4.3µÄÔ´Âë
-		// ¸öÈË¸Ğ¾õÕâÀïµÄÒâÒåÓ¦¸ÃÊÇ²åÖµµÄÊ±ºò²»Òª³¬¹ı180¶ÈÁË£¬³¬¹ı180¶È¾ÍÓ¦¸Ã»»¸ö·½Ïò²åÖµ
-		// ·ñÔò¾Í»á³öÏÖÈÆ¸üÔ¶µÄ·½ÏòÈ¥Ğı×ªµÄÇé¿ö
+		// è¿™é‡Œçš„å–åæ“ä½œä»¥åŠä¸Šé¢ä¸¤è¡Œæ³¨é‡Šéƒ½æ˜¯å‚è€ƒçš„ç½‘ä¸Šæµä¼ çš„Unity 4.3çš„æºç 
+		// ä¸ªäººæ„Ÿè§‰è¿™é‡Œçš„æ„ä¹‰åº”è¯¥æ˜¯æ’å€¼çš„æ—¶å€™ä¸è¦è¶…è¿‡180åº¦äº†ï¼Œè¶…è¿‡180åº¦å°±åº”è¯¥æ¢ä¸ªæ–¹å‘æ’å€¼
+		// å¦åˆ™å°±ä¼šå‡ºç°ç»•æ›´è¿œçš„æ–¹å‘å»æ—‹è½¬çš„æƒ…å†µ
 		if (Dot(q1, q2) < 0.0f)
 		{
 			return Quaternion(

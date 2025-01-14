@@ -19,8 +19,8 @@
 #endif
 
 
-// VMAµÄ¹Ù·½ÎÄµµÀïËµĞèÒªÔÚÒ»¸öCPPÎÄ¼şÀï¶¨ÒåÕâ¸öºê¶¨Òå£¬·ñÔò¿ÉÄÜ»áÓĞÒì³£
-// ¼û:https://gpuopen-librariesandsdks.github.io/VulkanMemoryAllocator/html/quick_start.html#quick_start_project_setup
+// VMAçš„å®˜æ–¹æ–‡æ¡£é‡Œè¯´éœ€è¦åœ¨ä¸€ä¸ªCPPæ–‡ä»¶é‡Œå®šä¹‰è¿™ä¸ªå®å®šä¹‰ï¼Œå¦åˆ™å¯èƒ½ä¼šæœ‰å¼‚å¸¸
+// è§:https://gpuopen-librariesandsdks.github.io/VulkanMemoryAllocator/html/quick_start.html#quick_start_project_setup
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
 
@@ -77,18 +77,18 @@ namespace ZXEngine
         { FrameBufferType::Deferred,  RenderPassType::Deferred  },
     };
 
-    // ×Ô¶¨ÒåµÄDebug»Øµ÷º¯Êı£¬VKAPI_ATTRºÍVKAPI_CALLÈ·±£ÁËÕıÈ·µÄº¯ÊıÇ©Ãû£¬´Ó¶ø±»Vulkanµ÷ÓÃ
+    // è‡ªå®šä¹‰çš„Debugå›è°ƒå‡½æ•°ï¼ŒVKAPI_ATTRå’ŒVKAPI_CALLç¡®ä¿äº†æ­£ç¡®çš„å‡½æ•°ç­¾åï¼Œä»è€Œè¢«Vulkanè°ƒç”¨
     static VKAPI_ATTR VkBool32 VKAPI_CALL VkDebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
     {
         std::cerr << pCallbackData->pMessage << std::endl;
 
-        // Èç¹ûÊÇError£¬Á¢¿ÌÖĞ¶Ï
+        // å¦‚æœæ˜¯Errorï¼Œç«‹åˆ»ä¸­æ–­
         if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) 
             std::abort();
 
-        // ·µ»ØÒ»¸ö²¼¶ûÖµ£¬±íÃ÷´¥·¢validation layerÏûÏ¢µÄVulkanµ÷ÓÃÊÇ·ñÓ¦±»ÖĞÖ¹
-        // Èç¹û·µ»Øtrue£¬Ôòµ÷ÓÃ½«ÒÔVK_ERROR_VALIDATION_FAILED_EXT´íÎóÖĞÖ¹
-        // ÕâÍ¨³£ÓÃÓÚ²âÊÔvalidation layers±¾Éí£¬ËùÒÔÎÒÃÇ×ÜÊÇ·µ»ØVK_FALSE
+        // è¿”å›ä¸€ä¸ªå¸ƒå°”å€¼ï¼Œè¡¨æ˜è§¦å‘validation layeræ¶ˆæ¯çš„Vulkanè°ƒç”¨æ˜¯å¦åº”è¢«ä¸­æ­¢
+        // å¦‚æœè¿”å›trueï¼Œåˆ™è°ƒç”¨å°†ä»¥VK_ERROR_VALIDATION_FAILED_EXTé”™è¯¯ä¸­æ­¢
+        // è¿™é€šå¸¸ç”¨äºæµ‹è¯•validation layersæœ¬èº«ï¼Œæ‰€ä»¥æˆ‘ä»¬æ€»æ˜¯è¿”å›VK_FALSE
         return VK_FALSE;
     }
 
@@ -121,13 +121,13 @@ namespace ZXEngine
         if (vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX) != VK_SUCCESS)
 			throw std::runtime_error("Failed to wait for fence!");
 
-        // ¼ì²éÊÇ·ñÓĞĞèÒªĞ¶ÔØµÄ×ÊÔ´£¬²¢½øĞĞĞ¶ÔØ
-        // Õâ¸öº¯Êıµ÷ÓÃÊ±»ú±È½Ï¹Ø¼ü£¬ÒòÎªÈç¹ûÓĞ×ÊÔ´±»CommandBufferÒıÓÃÁË£¬ÄÇÃ´±ØĞëÔÚÒıÓÃ×ÊÔ´µÄCommandBuffer have completed executionÖ®ºó²Å¿ÉÒÔĞ¶ÔØ
-        // ÕâÀïĞ´ÔÚ¸Õ¸ÕWaitForFenceÖ®ºó£¬¿ÉÒÔ±£Ö¤CommandBuffer´ËÊ±µÄ×´Ì¬ÊÇÂú×ãhave completed executionÒªÇóµÄ
+        // æ£€æŸ¥æ˜¯å¦æœ‰éœ€è¦å¸è½½çš„èµ„æºï¼Œå¹¶è¿›è¡Œå¸è½½
+        // è¿™ä¸ªå‡½æ•°è°ƒç”¨æ—¶æœºæ¯”è¾ƒå…³é”®ï¼Œå› ä¸ºå¦‚æœæœ‰èµ„æºè¢«CommandBufferå¼•ç”¨äº†ï¼Œé‚£ä¹ˆå¿…é¡»åœ¨å¼•ç”¨èµ„æºçš„CommandBuffer have completed executionä¹‹åæ‰å¯ä»¥å¸è½½
+        // è¿™é‡Œå†™åœ¨åˆšåˆšWaitForFenceä¹‹åï¼Œå¯ä»¥ä¿è¯CommandBufferæ­¤æ—¶çš„çŠ¶æ€æ˜¯æ»¡è¶³have completed executionè¦æ±‚çš„
         CheckDeleteData();
 
         VkResult result = vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, presentImageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &curPresentImageIdx);
-        // ½»»»Á´ºÍSurfaceÒÑ¾­²»¼æÈİÁË£¬²»ÄÜ¼ÌĞøÓÃÁË£¬Ò»°ãÊÇ´°¿Ú´óĞ¡±ä»¯µ¼ÖÂµÄ
+        // äº¤æ¢é“¾å’ŒSurfaceå·²ç»ä¸å…¼å®¹äº†ï¼Œä¸èƒ½ç»§ç»­ç”¨äº†ï¼Œä¸€èˆ¬æ˜¯çª—å£å¤§å°å˜åŒ–å¯¼è‡´çš„
         if (result == VK_ERROR_OUT_OF_DATE_KHR)
             RecreateSwapChain();
         else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
@@ -149,8 +149,8 @@ namespace ZXEngine
         presentInfo.pResults = VK_NULL_HANDLE;
         
         VkResult result = vkQueuePresentKHR(presentQueue, &presentInfo);
-        // VK_ERROR_OUT_OF_DATE_KHR±íÊ¾½»»»Á´ºÍSurfaceÒÑ¾­²»¼æÈİÁË£¬²»ÄÜ¼ÌĞøÓÃÁË£¬±ØĞëÖØĞÂ´´½¨½»»»Á´
-        // VK_SUBOPTIMAL_KHR±íÊ¾½»»»Á´»¹ÊÇ¿ÉÒÔ¼ÌĞøÓÃ£¬µ«ÊÇºÍSurfaceµÄÄ³Ğ©ÊôĞÔÆ¥ÅäµÃ²»ÊÇºÜºÃ£¬²»ÖØĞÂ´´½¨Ò²ĞĞ
+        // VK_ERROR_OUT_OF_DATE_KHRè¡¨ç¤ºäº¤æ¢é“¾å’ŒSurfaceå·²ç»ä¸å…¼å®¹äº†ï¼Œä¸èƒ½ç»§ç»­ç”¨äº†ï¼Œå¿…é¡»é‡æ–°åˆ›å»ºäº¤æ¢é“¾
+        // VK_SUBOPTIMAL_KHRè¡¨ç¤ºäº¤æ¢é“¾è¿˜æ˜¯å¯ä»¥ç»§ç»­ç”¨ï¼Œä½†æ˜¯å’ŒSurfaceçš„æŸäº›å±æ€§åŒ¹é…å¾—ä¸æ˜¯å¾ˆå¥½ï¼Œä¸é‡æ–°åˆ›å»ºä¹Ÿè¡Œ
         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || windowResized) 
             RecreateSwapChain();
         else if (result != VK_SUCCESS)
@@ -177,7 +177,7 @@ namespace ZXEngine
 
     void RenderAPIVulkan::SetRenderState(RenderStateSetting* state)
     {
-        // Vulkan²»ĞèÒªÊµÏÖÕâ¸ö½Ó¿Ú
+        // Vulkanä¸éœ€è¦å®ç°è¿™ä¸ªæ¥å£
     }
 
     void RenderAPIVulkan::WaitForRenderFinish()
@@ -198,15 +198,15 @@ namespace ZXEngine
         viewPortInfo.width = width;
         viewPortInfo.height = height;
         viewPortInfo.xOffset = xOffset;
-        // 0µãÔÚ×óÉÏ½Ç
+        // 0ç‚¹åœ¨å·¦ä¸Šè§’
         viewPortInfo.xOffset = xOffset;
         viewPortInfo.yOffset = yOffset;
     }
 
     void RenderAPIVulkan::ClearFrameBuffer(FrameBufferClearFlags clearFlags)
     {
-        // ÕâÀïÊµÏÖÁËÒ»¸öÁ¢¿ÌClear Frame BufferµÄVulkan°æ±¾£¬µ«ÊÇÊµ¼ÊÃ»ÓĞµ÷ÓÃ£¬ÒòÎªÔÚVulkanÀïÕâÑùClearÊÇ²»Ì«ºÃµÄ
-        // ĞÔÄÜ¸üºÃµÄ×ö·¨ÊÇÔÚBeginRenderPassÖĞ£¬¼ÓÔØFrameBufferµÄÊ±ºòÈ¥Clear£¬ËùÒÔÕâÀï¾ÍÎŞĞèClearÁË£¬Õâ¸ö½Ó¿ÚÖ»ÊÇÎªÁË¼æÈİOpenGL
+        // è¿™é‡Œå®ç°äº†ä¸€ä¸ªç«‹åˆ»Clear Frame Bufferçš„Vulkanç‰ˆæœ¬ï¼Œä½†æ˜¯å®é™…æ²¡æœ‰è°ƒç”¨ï¼Œå› ä¸ºåœ¨Vulkané‡Œè¿™æ ·Clearæ˜¯ä¸å¤ªå¥½çš„
+        // æ€§èƒ½æ›´å¥½çš„åšæ³•æ˜¯åœ¨BeginRenderPassä¸­ï¼ŒåŠ è½½FrameBufferçš„æ—¶å€™å»Clearï¼Œæ‰€ä»¥è¿™é‡Œå°±æ— éœ€Clearäº†ï¼Œè¿™ä¸ªæ¥å£åªæ˜¯ä¸ºäº†å…¼å®¹OpenGL
 
         /*
         ImmediatelyExecute([=](VkCommandBuffer cmd)
@@ -298,18 +298,18 @@ namespace ZXEngine
             TransitionImageLayout(commandBuffer, sColorTexture->image.image,
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                 VK_IMAGE_ASPECT_COLOR_BIT,
-                // ĞèÒªµÈäÖÈ¾Êä³öÍê³É
+                // éœ€è¦ç­‰æ¸²æŸ“è¾“å‡ºå®Œæˆ
                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                // ²Å¿ÉÒÔ¿ªÊ¼TransferµÄ¶ÁÈ¡
+                // æ‰å¯ä»¥å¼€å§‹Transferçš„è¯»å–
                 VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT
             );
 
             TransitionImageLayout(commandBuffer, dColorTexture->image.image,
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                 VK_IMAGE_ASPECT_COLOR_BIT,
-                // ĞèÒªµÈ???£¬ÎÒÒ²²»ÖªµÀÓ¦¸ÃµÈÊ²Ã´
+                // éœ€è¦ç­‰???ï¼Œæˆ‘ä¹Ÿä¸çŸ¥é“åº”è¯¥ç­‰ä»€ä¹ˆ
                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                // ²ÅÄÜ¿ªÊ¼TransferµÄĞ´Èë
+                // æ‰èƒ½å¼€å§‹Transferçš„å†™å…¥
                 VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT
             );
 
@@ -361,18 +361,18 @@ namespace ZXEngine
             TransitionImageLayout(commandBuffer, sColorTexture->image.image,
                 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                 VK_IMAGE_ASPECT_COLOR_BIT,
-                // ĞèÒªµÈTransferµÄ¶ÁÈ¡Íê³É
+                // éœ€è¦ç­‰Transferçš„è¯»å–å®Œæˆ
                 VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT,
-                // ²Å¿ÉÒÔ±»Shader¶ÁÈ¡
+                // æ‰å¯ä»¥è¢«Shaderè¯»å–
                 VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT
             );
 
             TransitionImageLayout(commandBuffer, dColorTexture->image.image,
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                 VK_IMAGE_ASPECT_COLOR_BIT,
-                // ĞèÒªµÈTransferµÄĞ´ÈëÍê³É
+                // éœ€è¦ç­‰Transferçš„å†™å…¥å®Œæˆ
                 VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT,
-                // ²Å¿ÉÒÔ±»Shader¶ÁÈ¡
+                // æ‰å¯ä»¥è¢«Shaderè¯»å–
                 VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT
             );
         }
@@ -388,18 +388,18 @@ namespace ZXEngine
             TransitionImageLayout(commandBuffer, sDepthTexture->image.image,
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                 VK_IMAGE_ASPECT_DEPTH_BIT,
-                // ĞèÒªµÈäÖÈ¾Êä³öÍê³É
+                // éœ€è¦ç­‰æ¸²æŸ“è¾“å‡ºå®Œæˆ
                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                // ²Å¿ÉÒÔ¿ªÊ¼TransferµÄ¶ÁÈ¡
+                // æ‰å¯ä»¥å¼€å§‹Transferçš„è¯»å–
                 VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT
             );
 
             TransitionImageLayout(commandBuffer, dDepthTexture->image.image,
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                 VK_IMAGE_ASPECT_DEPTH_BIT,
-                // ĞèÒªµÈ???£¬ÎÒÒ²²»ÖªµÀÓ¦¸ÃµÈÊ²Ã´
+                // éœ€è¦ç­‰???ï¼Œæˆ‘ä¹Ÿä¸çŸ¥é“åº”è¯¥ç­‰ä»€ä¹ˆ
                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                // ²ÅÄÜ¿ªÊ¼TransferµÄĞ´Èë
+                // æ‰èƒ½å¼€å§‹Transferçš„å†™å…¥
                 VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT
             );
 
@@ -451,18 +451,18 @@ namespace ZXEngine
             TransitionImageLayout(commandBuffer, sDepthTexture->image.image,
                 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                 VK_IMAGE_ASPECT_DEPTH_BIT,
-                // ĞèÒªµÈTransferµÄ¶ÁÈ¡Íê³É
+                // éœ€è¦ç­‰Transferçš„è¯»å–å®Œæˆ
                 VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT,
-                // ²Å¿ÉÒÔ±»Shader¶ÁÈ¡
+                // æ‰å¯ä»¥è¢«Shaderè¯»å–
                 VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT
             );
 
             TransitionImageLayout(commandBuffer, dDepthTexture->image.image,
                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                 VK_IMAGE_ASPECT_DEPTH_BIT,
-                // ĞèÒªµÈTransferµÄĞ´ÈëÍê³É
+                // éœ€è¦ç­‰Transferçš„å†™å…¥å®Œæˆ
                 VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT,
-                // ²Å¿ÉÒÔ±»Shader¶ÁÈ¡
+                // æ‰å¯ä»¥è¢«Shaderè¯»å–
                 VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT
             );
         }
@@ -527,7 +527,7 @@ namespace ZXEngine
 
     void RenderAPIVulkan::SetUpInstanceBufferAttribute(uint32_t VAO, uint32_t instanceBuffer, uint32_t size, uint32_t offset)
     {
-        // Vulkan²»ĞèÒªÊµÏÖÕâ¸ö½Ó¿Ú
+        // Vulkanä¸éœ€è¦å®ç°è¿™ä¸ªæ¥å£
         return;
     };
 
@@ -544,9 +544,9 @@ namespace ZXEngine
         VkDeviceSize imageSize = VkDeviceSize(width * height * 4);
         VulkanBuffer stagingBuffer = CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
 
-        // °ÑÊı¾İ¿½±´µ½stagingBuffer
+        // æŠŠæ•°æ®æ‹·è´åˆ°stagingBuffer
         void* data;
-        void* pixelsPtr = pixels; // Îªmemcpy×ª»»Ò»ÏÂÖ¸ÕëÀàĞÍ
+        void* pixelsPtr = pixels; // ä¸ºmemcpyè½¬æ¢ä¸€ä¸‹æŒ‡é’ˆç±»å‹
         vmaMapMemory(vmaAllocator, stagingBuffer.allocation, &data);
         memcpy(data, pixelsPtr, static_cast<size_t>(imageSize));
         vmaUnmapMemory(vmaAllocator, stagingBuffer.allocation);
@@ -557,38 +557,38 @@ namespace ZXEngine
 
         VulkanImage image = CreateImage(width, height, mipLevels, 1, VK_SAMPLE_COUNT_1_BIT,
             defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
-            // ÕâÀïÎÒÃÇÒª´ÓÒ»¸östagingBuffer½ÓÊÕÊı¾İ£¬ËùÒÔÒªĞ´Ò»¸öVK_IMAGE_USAGE_TRANSFER_DST_BIT
-            // ÓÖÒòÎªÎÒÃÇÒªÉú³Émipmap£¬ĞèÒª´ÓÕâ¸öÔ­image¶ÁÊı¾İ£¬ËùÒÔÓÖÔÙ¼ÓÒ»¸öVK_IMAGE_USAGE_TRANSFER_SRC_BIT
-            // È»ºóÔÙĞ´Ò»¸öVK_IMAGE_USAGE_SAMPLED_BIT±íÊ¾»áÓÃÓÚshader´úÂë²ÉÑùÎÆÀí
+            // è¿™é‡Œæˆ‘ä»¬è¦ä»ä¸€ä¸ªstagingBufferæ¥æ”¶æ•°æ®ï¼Œæ‰€ä»¥è¦å†™ä¸€ä¸ªVK_IMAGE_USAGE_TRANSFER_DST_BIT
+            // åˆå› ä¸ºæˆ‘ä»¬è¦ç”Ÿæˆmipmapï¼Œéœ€è¦ä»è¿™ä¸ªåŸimageè¯»æ•°æ®ï¼Œæ‰€ä»¥åˆå†åŠ ä¸€ä¸ªVK_IMAGE_USAGE_TRANSFER_SRC_BIT
+            // ç„¶åå†å†™ä¸€ä¸ªVK_IMAGE_USAGE_SAMPLED_BITè¡¨ç¤ºä¼šç”¨äºshaderä»£ç é‡‡æ ·çº¹ç†
             VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
         TransitionImageLayout(image.image, 
-            // ´Ó³õÊ¼µÄLayout×ª»»µ½½ÓÊÕstagingBufferÊı¾İµÄLayout
+            // ä»åˆå§‹çš„Layoutè½¬æ¢åˆ°æ¥æ”¶stagingBufferæ•°æ®çš„Layout
             VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
-            // ´ÓÓ²ÅÌ¼ÓÔØµÄÍ¼ÏñÄ¬ÈÏ¶¼ÊÇColor
+            // ä»ç¡¬ç›˜åŠ è½½çš„å›¾åƒé»˜è®¤éƒ½æ˜¯Color
             VK_IMAGE_ASPECT_COLOR_BIT,
-            // ×ª»»¿ÉÒÔÖ±½Ó¿ªÊ¼£¬Ã»ÓĞÏŞÖÆ
+            // è½¬æ¢å¯ä»¥ç›´æ¥å¼€å§‹ï¼Œæ²¡æœ‰é™åˆ¶
             VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
-            // Í¼ÏñTransferµÄĞ´Èë²Ù×÷ĞèÒªÔÚÕâ¸ö×ª»»Ö®ºó½øĞĞ
+            // å›¾åƒTransferçš„å†™å…¥æ“ä½œéœ€è¦åœ¨è¿™ä¸ªè½¬æ¢ä¹‹åè¿›è¡Œ
             VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT);
 
-        // °ÑÊı¾İ´ÓstagingBuffer¸´ÖÆµ½image
+        // æŠŠæ•°æ®ä»stagingBufferå¤åˆ¶åˆ°image
         ImmediatelyExecute([=](VkCommandBuffer cmd)
         {
             VkBufferImageCopy region{};
-            // ´Óbuffer¶ÁÈ¡Êı¾İµÄÆğÊ¼Æ«ÒÆÁ¿
+            // ä»bufferè¯»å–æ•°æ®çš„èµ·å§‹åç§»é‡
             region.bufferOffset = 0;
-            // ÕâÁ½¸ö²ÎÊıÃ÷È·ÏñËØÔÚÄÚ´æÀïµÄ²¼¾Ö·½Ê½£¬Èç¹ûÎÒÃÇÖ»ÊÇ¼òµ¥µÄ½ôÃÜÅÅÁĞÊı¾İ£¬¾ÍÌî0
+            // è¿™ä¸¤ä¸ªå‚æ•°æ˜ç¡®åƒç´ åœ¨å†…å­˜é‡Œçš„å¸ƒå±€æ–¹å¼ï¼Œå¦‚æœæˆ‘ä»¬åªæ˜¯ç®€å•çš„ç´§å¯†æ’åˆ—æ•°æ®ï¼Œå°±å¡«0
             region.bufferRowLength = 0;
             region.bufferImageHeight = 0;
-            // ÏÂÃæ4¸ö²ÎÊı¶¼ÊÇÔÚÉèÖÃÎÒÃÇÒª°ÑÊı¾İ¿½±´µ½imageµÄÄÄÒ»²¿·Ö
+            // ä¸‹é¢4ä¸ªå‚æ•°éƒ½æ˜¯åœ¨è®¾ç½®æˆ‘ä»¬è¦æŠŠæ•°æ®æ‹·è´åˆ°imageçš„å“ªä¸€éƒ¨åˆ†
             region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
             region.imageSubresource.mipLevel = 0;
             region.imageSubresource.baseArrayLayer = 0;
             region.imageSubresource.layerCount = 1;
-            // Õâ¸öÒ²ÊÇÔÚÉèÖÃÎÒÃÇÒª°ÑÍ¼Ïñ¿½±´µ½ÄÄÒ»²¿·Ö
-            // Èç¹ûÊÇÕûÕÅÍ¼Æ¬£¬offset¾ÍÈ«ÊÇ0£¬extent¾ÍÖ±½ÓÊÇÍ¼Ïñ¸ß¿í
+            // è¿™ä¸ªä¹Ÿæ˜¯åœ¨è®¾ç½®æˆ‘ä»¬è¦æŠŠå›¾åƒæ‹·è´åˆ°å“ªä¸€éƒ¨åˆ†
+            // å¦‚æœæ˜¯æ•´å¼ å›¾ç‰‡ï¼Œoffsetå°±å…¨æ˜¯0ï¼Œextentå°±ç›´æ¥æ˜¯å›¾åƒé«˜å®½
             region.imageOffset = { 0, 0, 0 };
             region.imageExtent = { (uint32_t)width, (uint32_t)height, 1 };
 
@@ -596,7 +596,7 @@ namespace ZXEngine
                 cmd,
                 stagingBuffer.buffer,
                 image.image,
-                // imageµ±Ç°µÄlayout
+                // imageå½“å‰çš„layout
                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                 1, &region
             );
@@ -626,7 +626,7 @@ namespace ZXEngine
             VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
-        // Í¬LoadTexture
+        // åŒLoadTexture
         TransitionImageLayout(image.image,
             VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
@@ -636,14 +636,14 @@ namespace ZXEngine
         for (uint32_t i = 0; i < 6; i++)
             stagingBuffers.push_back(CreateBuffer(singleImageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true));
         
-        // °ÑÊı¾İ´ÓstagingBuffer¸´ÖÆµ½image
+        // æŠŠæ•°æ®ä»stagingBufferå¤åˆ¶åˆ°image
         ImmediatelyExecute([=](VkCommandBuffer cmd)
         {
             for (uint32_t i = 0; i < 6; i++)
             {
-                // °ÑÊı¾İ¿½±´µ½stagingBuffer
+                // æŠŠæ•°æ®æ‹·è´åˆ°stagingBuffer
                 void* data;
-                void* pixelsPtr = textureData[i]; // Îªmemcpy×ª»»Ò»ÏÂÖ¸ÕëÀàĞÍ
+                void* pixelsPtr = textureData[i]; // ä¸ºmemcpyè½¬æ¢ä¸€ä¸‹æŒ‡é’ˆç±»å‹
                 vmaMapMemory(vmaAllocator, stagingBuffers[i].allocation, &data);
                 memcpy(data, pixelsPtr, static_cast<size_t>(singleImageSize));
                 vmaUnmapMemory(vmaAllocator, stagingBuffers[i].allocation);
@@ -651,12 +651,12 @@ namespace ZXEngine
                 stbi_image_free(textureData[i]);
 
                 VkBufferImageCopy bufferCopyRegion = {};
-                // ´Óbuffer¶ÁÈ¡Êı¾İµÄÆğÊ¼Æ«ÒÆÁ¿
+                // ä»bufferè¯»å–æ•°æ®çš„èµ·å§‹åç§»é‡
                 bufferCopyRegion.bufferOffset = 0;
-                // ÕâÁ½¸ö²ÎÊıÃ÷È·ÏñËØÔÚÄÚ´æÀïµÄ²¼¾Ö·½Ê½£¬Èç¹ûÎÒÃÇÖ»ÊÇ¼òµ¥µÄ½ôÃÜÅÅÁĞÊı¾İ£¬¾ÍÌî0
+                // è¿™ä¸¤ä¸ªå‚æ•°æ˜ç¡®åƒç´ åœ¨å†…å­˜é‡Œçš„å¸ƒå±€æ–¹å¼ï¼Œå¦‚æœæˆ‘ä»¬åªæ˜¯ç®€å•çš„ç´§å¯†æ’åˆ—æ•°æ®ï¼Œå°±å¡«0
                 bufferCopyRegion.bufferRowLength = 0;
                 bufferCopyRegion.bufferImageHeight = 0;
-                // ÏÂÃæ4¸ö²ÎÊı¶¼ÊÇÔÚÉèÖÃÎÒÃÇÒª°ÑÊı¾İ¿½±´µ½imageµÄÄÄÒ»²¿·Ö
+                // ä¸‹é¢4ä¸ªå‚æ•°éƒ½æ˜¯åœ¨è®¾ç½®æˆ‘ä»¬è¦æŠŠæ•°æ®æ‹·è´åˆ°imageçš„å“ªä¸€éƒ¨åˆ†
                 bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
                 bufferCopyRegion.imageSubresource.mipLevel = 0;
                 bufferCopyRegion.imageSubresource.baseArrayLayer = i;
@@ -667,7 +667,7 @@ namespace ZXEngine
                 vkCmdCopyBufferToImage(cmd,
                     stagingBuffers[i].buffer,
                     image.image,
-                    // imageµ±Ç°µÄlayout
+                    // imageå½“å‰çš„layout
                     VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                     1, &bufferCopyRegion
                 );
@@ -694,9 +694,9 @@ namespace ZXEngine
         VkDeviceSize imageSize = VkDeviceSize(data->width * data->height * 4);
         VulkanBuffer stagingBuffer = CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
 
-        // °ÑÊı¾İ¿½±´µ½stagingBuffer
+        // æŠŠæ•°æ®æ‹·è´åˆ°stagingBuffer
         void* pData;
-        void* pixelsPtr = data->data; // Îªmemcpy×ª»»Ò»ÏÂÖ¸ÕëÀàĞÍ
+        void* pixelsPtr = data->data; // ä¸ºmemcpyè½¬æ¢ä¸€ä¸‹æŒ‡é’ˆç±»å‹
         vmaMapMemory(vmaAllocator, stagingBuffer.allocation, &pData);
         memcpy(pData, pixelsPtr, static_cast<size_t>(imageSize));
         vmaUnmapMemory(vmaAllocator, stagingBuffer.allocation);
@@ -705,38 +705,38 @@ namespace ZXEngine
 
         VulkanImage image = CreateImage(data->width, data->height, mipLevels, 1, VK_SAMPLE_COUNT_1_BIT,
             defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
-            // ÕâÀïÎÒÃÇÒª´ÓÒ»¸östagingBuffer½ÓÊÕÊı¾İ£¬ËùÒÔÒªĞ´Ò»¸öVK_IMAGE_USAGE_TRANSFER_DST_BIT
-            // ÓÖÒòÎªÎÒÃÇÒªÉú³Émipmap£¬ĞèÒª´ÓÕâ¸öÔ­image¶ÁÊı¾İ£¬ËùÒÔÓÖÔÙ¼ÓÒ»¸öVK_IMAGE_USAGE_TRANSFER_SRC_BIT
-            // È»ºóÔÙĞ´Ò»¸öVK_IMAGE_USAGE_SAMPLED_BIT±íÊ¾»áÓÃÓÚshader´úÂë²ÉÑùÎÆÀí
+            // è¿™é‡Œæˆ‘ä»¬è¦ä»ä¸€ä¸ªstagingBufferæ¥æ”¶æ•°æ®ï¼Œæ‰€ä»¥è¦å†™ä¸€ä¸ªVK_IMAGE_USAGE_TRANSFER_DST_BIT
+            // åˆå› ä¸ºæˆ‘ä»¬è¦ç”Ÿæˆmipmapï¼Œéœ€è¦ä»è¿™ä¸ªåŸimageè¯»æ•°æ®ï¼Œæ‰€ä»¥åˆå†åŠ ä¸€ä¸ªVK_IMAGE_USAGE_TRANSFER_SRC_BIT
+            // ç„¶åå†å†™ä¸€ä¸ªVK_IMAGE_USAGE_SAMPLED_BITè¡¨ç¤ºä¼šç”¨äºshaderä»£ç é‡‡æ ·çº¹ç†
             VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
         TransitionImageLayout(image.image,
-            // ´Ó³õÊ¼µÄLayout×ª»»µ½½ÓÊÕstagingBufferÊı¾İµÄLayout
+            // ä»åˆå§‹çš„Layoutè½¬æ¢åˆ°æ¥æ”¶stagingBufferæ•°æ®çš„Layout
             VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-            // ´ÓÓ²ÅÌ¼ÓÔØµÄÍ¼ÏñÄ¬ÈÏ¶¼ÊÇColor
+            // ä»ç¡¬ç›˜åŠ è½½çš„å›¾åƒé»˜è®¤éƒ½æ˜¯Color
             VK_IMAGE_ASPECT_COLOR_BIT,
-            // ×ª»»¿ÉÒÔÖ±½Ó¿ªÊ¼£¬Ã»ÓĞÏŞÖÆ
+            // è½¬æ¢å¯ä»¥ç›´æ¥å¼€å§‹ï¼Œæ²¡æœ‰é™åˆ¶
             VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
-            // Í¼ÏñTransferµÄĞ´Èë²Ù×÷ĞèÒªÔÚÕâ¸ö×ª»»Ö®ºó½øĞĞ
+            // å›¾åƒTransferçš„å†™å…¥æ“ä½œéœ€è¦åœ¨è¿™ä¸ªè½¬æ¢ä¹‹åè¿›è¡Œ
             VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT);
 
-        // °ÑÊı¾İ´ÓstagingBuffer¸´ÖÆµ½image
+        // æŠŠæ•°æ®ä»stagingBufferå¤åˆ¶åˆ°image
         ImmediatelyExecute([=](VkCommandBuffer cmd)
         {
             VkBufferImageCopy region{};
-            // ´Óbuffer¶ÁÈ¡Êı¾İµÄÆğÊ¼Æ«ÒÆÁ¿
+            // ä»bufferè¯»å–æ•°æ®çš„èµ·å§‹åç§»é‡
             region.bufferOffset = 0;
-            // ÕâÁ½¸ö²ÎÊıÃ÷È·ÏñËØÔÚÄÚ´æÀïµÄ²¼¾Ö·½Ê½£¬Èç¹ûÎÒÃÇÖ»ÊÇ¼òµ¥µÄ½ôÃÜÅÅÁĞÊı¾İ£¬¾ÍÌî0
+            // è¿™ä¸¤ä¸ªå‚æ•°æ˜ç¡®åƒç´ åœ¨å†…å­˜é‡Œçš„å¸ƒå±€æ–¹å¼ï¼Œå¦‚æœæˆ‘ä»¬åªæ˜¯ç®€å•çš„ç´§å¯†æ’åˆ—æ•°æ®ï¼Œå°±å¡«0
             region.bufferRowLength = 0;
             region.bufferImageHeight = 0;
-            // ÏÂÃæ4¸ö²ÎÊı¶¼ÊÇÔÚÉèÖÃÎÒÃÇÒª°ÑÊı¾İ¿½±´µ½imageµÄÄÄÒ»²¿·Ö
+            // ä¸‹é¢4ä¸ªå‚æ•°éƒ½æ˜¯åœ¨è®¾ç½®æˆ‘ä»¬è¦æŠŠæ•°æ®æ‹·è´åˆ°imageçš„å“ªä¸€éƒ¨åˆ†
             region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
             region.imageSubresource.mipLevel = 0;
             region.imageSubresource.baseArrayLayer = 0;
             region.imageSubresource.layerCount = 1;
-            // Õâ¸öÒ²ÊÇÔÚÉèÖÃÎÒÃÇÒª°ÑÍ¼Ïñ¿½±´µ½ÄÄÒ»²¿·Ö
-            // Èç¹ûÊÇÕûÕÅÍ¼Æ¬£¬offset¾ÍÈ«ÊÇ0£¬extent¾ÍÖ±½ÓÊÇÍ¼Ïñ¸ß¿í
+            // è¿™ä¸ªä¹Ÿæ˜¯åœ¨è®¾ç½®æˆ‘ä»¬è¦æŠŠå›¾åƒæ‹·è´åˆ°å“ªä¸€éƒ¨åˆ†
+            // å¦‚æœæ˜¯æ•´å¼ å›¾ç‰‡ï¼Œoffsetå°±å…¨æ˜¯0ï¼Œextentå°±ç›´æ¥æ˜¯å›¾åƒé«˜å®½
             region.imageOffset = { 0, 0, 0 };
             region.imageExtent = { (uint32_t)data->width, (uint32_t)data->height, 1 };
 
@@ -744,7 +744,7 @@ namespace ZXEngine
                 cmd,
                 stagingBuffer.buffer,
                 image.image,
-                // imageµ±Ç°µÄlayout
+                // imageå½“å‰çš„layout
                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                 1, &region
             );
@@ -769,7 +769,7 @@ namespace ZXEngine
             VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
-        // Í¬LoadTexture
+        // åŒLoadTexture
         TransitionImageLayout(image.image,
             VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
@@ -779,25 +779,25 @@ namespace ZXEngine
         for (uint32_t i = 0; i < 6; i++)
             stagingBuffers.push_back(CreateBuffer(singleImageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true));
 
-        // °ÑÊı¾İ´ÓstagingBuffer¸´ÖÆµ½image
+        // æŠŠæ•°æ®ä»stagingBufferå¤åˆ¶åˆ°image
         ImmediatelyExecute([=](VkCommandBuffer cmd)
         {
             for (uint32_t i = 0; i < 6; i++)
             {
-                // °ÑÊı¾İ¿½±´µ½stagingBuffer
+                // æŠŠæ•°æ®æ‹·è´åˆ°stagingBuffer
                 void* pData;
-                void* pixelsPtr = data->data[i]; // Îªmemcpy×ª»»Ò»ÏÂÖ¸ÕëÀàĞÍ
+                void* pixelsPtr = data->data[i]; // ä¸ºmemcpyè½¬æ¢ä¸€ä¸‹æŒ‡é’ˆç±»å‹
                 vmaMapMemory(vmaAllocator, stagingBuffers[i].allocation, &pData);
                 memcpy(pData, pixelsPtr, static_cast<size_t>(singleImageSize));
                 vmaUnmapMemory(vmaAllocator, stagingBuffers[i].allocation);
 
                 VkBufferImageCopy bufferCopyRegion = {};
-                // ´Óbuffer¶ÁÈ¡Êı¾İµÄÆğÊ¼Æ«ÒÆÁ¿
+                // ä»bufferè¯»å–æ•°æ®çš„èµ·å§‹åç§»é‡
                 bufferCopyRegion.bufferOffset = 0;
-                // ÕâÁ½¸ö²ÎÊıÃ÷È·ÏñËØÔÚÄÚ´æÀïµÄ²¼¾Ö·½Ê½£¬Èç¹ûÎÒÃÇÖ»ÊÇ¼òµ¥µÄ½ôÃÜÅÅÁĞÊı¾İ£¬¾ÍÌî0
+                // è¿™ä¸¤ä¸ªå‚æ•°æ˜ç¡®åƒç´ åœ¨å†…å­˜é‡Œçš„å¸ƒå±€æ–¹å¼ï¼Œå¦‚æœæˆ‘ä»¬åªæ˜¯ç®€å•çš„ç´§å¯†æ’åˆ—æ•°æ®ï¼Œå°±å¡«0
                 bufferCopyRegion.bufferRowLength = 0;
                 bufferCopyRegion.bufferImageHeight = 0;
-                // ÏÂÃæ4¸ö²ÎÊı¶¼ÊÇÔÚÉèÖÃÎÒÃÇÒª°ÑÊı¾İ¿½±´µ½imageµÄÄÄÒ»²¿·Ö
+                // ä¸‹é¢4ä¸ªå‚æ•°éƒ½æ˜¯åœ¨è®¾ç½®æˆ‘ä»¬è¦æŠŠæ•°æ®æ‹·è´åˆ°imageçš„å“ªä¸€éƒ¨åˆ†
                 bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
                 bufferCopyRegion.imageSubresource.mipLevel = 0;
                 bufferCopyRegion.imageSubresource.baseArrayLayer = i;
@@ -808,7 +808,7 @@ namespace ZXEngine
                 vkCmdCopyBufferToImage(cmd,
                     stagingBuffers[i].buffer,
                     image.image,
-                    // imageµ±Ç°µÄlayout
+                    // imageå½“å‰çš„layout
                     VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                     1, &bufferCopyRegion
                 );
@@ -832,13 +832,13 @@ namespace ZXEngine
 
     unsigned int RenderAPIVulkan::GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data)
     {
-        // Ò»¸öÎÄ±¾ÏñËØ8bit
+        // ä¸€ä¸ªæ–‡æœ¬åƒç´ 8bit
         VkDeviceSize imageSize = VkDeviceSize(width * height);
         if (imageSize == 0)
             throw std::runtime_error("Can't create texture with size 0 !");
         VulkanBuffer stagingBuffer = CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
 
-        // °ÑÊı¾İ¿½±´µ½stagingBuffer
+        // æŠŠæ•°æ®æ‹·è´åˆ°stagingBuffer
         void* ptr;
         vmaMapMemory(vmaAllocator, stagingBuffer.allocation, &ptr);
         memcpy(ptr, data, static_cast<size_t>(imageSize));
@@ -849,7 +849,7 @@ namespace ZXEngine
             VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
-        // Í¬LoadTexture
+        // åŒLoadTexture
         TransitionImageLayout(image.image,
             VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
@@ -932,7 +932,7 @@ namespace ZXEngine
         curMaterialDataIdx = ID;
     }
 
-    // Õâ¸öº¯ÊıÍê³ÉµÄÈÎÎñÊÇÍ¨¹ıshaderReferenceÀïµÄĞÅÏ¢À´ÅäÖÃMaterialData£¬Ò²¾ÍÊÇÓÃvkUpdateDescriptorSets°ÑImageÓëVkPipeline°ó¶¨ÆğÀ´
+    // è¿™ä¸ªå‡½æ•°å®Œæˆçš„ä»»åŠ¡æ˜¯é€šè¿‡shaderReferenceé‡Œçš„ä¿¡æ¯æ¥é…ç½®MaterialDataï¼Œä¹Ÿå°±æ˜¯ç”¨vkUpdateDescriptorSetsæŠŠImageä¸VkPipelineç»‘å®šèµ·æ¥
     void RenderAPIVulkan::SetUpMaterial(Material* material)
     {
         auto shaderReference = material->shader->reference;
@@ -941,7 +941,7 @@ namespace ZXEngine
         auto vulkanMaterialData = GetMaterialDataByIndex(material->data->GetID());
         vulkanMaterialData->descriptorPool = CreateDescriptorPool(shaderReference->shaderInfo);
 
-        // ´´½¨Uniform Buffer
+        // åˆ›å»ºUniform Buffer
         for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
             if (!shaderReference->shaderInfo.vertProperties.baseProperties.empty())
@@ -961,14 +961,14 @@ namespace ZXEngine
             }
         }
 
-        // °ÑUniform Buffer°ó¶¨µ½DescriptorSetÉÏ
+        // æŠŠUniform Bufferç»‘å®šåˆ°DescriptorSetä¸Š
         vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, pipeline->descriptorSetLayout);
         vulkanMaterialData->descriptorSets = CreateDescriptorSets(vulkanMaterialData->descriptorPool, layouts);
         for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
             vector<VkWriteDescriptorSet> writeDescriptorSets;
 
-            // BufferInfoµÄÉùÃ÷Ğ´µ½ÍâÃæ£¬·ñÔò»áÓĞ±äÁ¿×÷ÓÃÓòÎÊÌâ
+            // BufferInfoçš„å£°æ˜å†™åˆ°å¤–é¢ï¼Œå¦åˆ™ä¼šæœ‰å˜é‡ä½œç”¨åŸŸé—®é¢˜
             VkDescriptorBufferInfo vertBufferInfo = {};
             if (!vulkanMaterialData->vertUniformBuffers.empty())
             {
@@ -1026,7 +1026,7 @@ namespace ZXEngine
             vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
         }
 
-        // °ÑÎÆÀí°ó¶¨µ½DescriptorSetÉÏ
+        // æŠŠçº¹ç†ç»‘å®šåˆ°DescriptorSetä¸Š
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
             vector<VkWriteDescriptorSet> writeDescriptorSets;
@@ -1070,7 +1070,7 @@ namespace ZXEngine
             vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
         }
 
-        // ÉèÖÃ²ÄÖÊÊı¾İ
+        // è®¾ç½®æè´¨æ•°æ®
         for (auto& property : material->data->vec2Datas)
             SetShaderVector(material, property.first, property.second, true);
         for (auto& property : material->data->vec3Datas)
@@ -1092,11 +1092,11 @@ namespace ZXEngine
         pipelinesToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT));
     }
 
-    // VulkanÀï²»ÒªÁ¢¿ÌÉ¾³ı²ÄÖÊÊı¾İ£¬ÒòÎªVulkan»áÍ¬Ê±´¦Àí¶àÖ¡£¬µ÷ÓÃÉ¾³ıµÄÊ±ºò¿ÉÄÜ»¹ÓĞÒ»Ö¡ÕıÔÚ²¢ĞĞ´¦Àí
-    // ËùÒÔÕâÀïÖ»ÊÇ°Ñ²ÄÖÊÊı¾İ±ê¼ÇÎªÉ¾³ı£¬µÈµ½Í¬Ê±äÖÈ¾µÄÖ¡È«²¿½áÊøµÄÊ±ºòÔÙÕæÕıÉ¾³ı
+    // Vulkané‡Œä¸è¦ç«‹åˆ»åˆ é™¤æè´¨æ•°æ®ï¼Œå› ä¸ºVulkanä¼šåŒæ—¶å¤„ç†å¤šå¸§ï¼Œè°ƒç”¨åˆ é™¤çš„æ—¶å€™å¯èƒ½è¿˜æœ‰ä¸€å¸§æ­£åœ¨å¹¶è¡Œå¤„ç†
+    // æ‰€ä»¥è¿™é‡Œåªæ˜¯æŠŠæè´¨æ•°æ®æ ‡è®°ä¸ºåˆ é™¤ï¼Œç­‰åˆ°åŒæ—¶æ¸²æŸ“çš„å¸§å…¨éƒ¨ç»“æŸçš„æ—¶å€™å†çœŸæ­£åˆ é™¤
     void RenderAPIVulkan::DeleteMaterialData(uint32_t id)
     {
-        // ÕâÀïµÚ¶ş¸ö²ÎÊıµÄÒâË¼ÊÇÕâ¸ö²ÄÖÊÒªµÈÕâÃ´¶àÖ¡²ÅÄÜÉ¾³ı
+        // è¿™é‡Œç¬¬äºŒä¸ªå‚æ•°çš„æ„æ€æ˜¯è¿™ä¸ªæè´¨è¦ç­‰è¿™ä¹ˆå¤šå¸§æ‰èƒ½åˆ é™¤
         materialDatasToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT ));
     }
 
@@ -1137,8 +1137,8 @@ namespace ZXEngine
 
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
-                // ÕâÀïºÜ¶àAttachmentºóÃæ¶¼¿ÉÄÜ»áÓÃÓÚÆäËüShader²ÉÑù£¬ËùÒÔ¶¼¼ÓÁËVK_IMAGE_USAGE_SAMPLED_BIT
-                // Èç¹ûÈ·¶¨²»»á±»ÓÃ×÷²ÉÑùµÄ£¬¿ÉÒÔ²»¼ÓVK_IMAGE_USAGE_SAMPLED_BIT£¬¸Ä³ÉVK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BITÌá¸ßĞÔÄÜ
+                // è¿™é‡Œå¾ˆå¤šAttachmentåé¢éƒ½å¯èƒ½ä¼šç”¨äºå…¶å®ƒShaderé‡‡æ ·ï¼Œæ‰€ä»¥éƒ½åŠ äº†VK_IMAGE_USAGE_SAMPLED_BIT
+                // å¦‚æœç¡®å®šä¸ä¼šè¢«ç”¨ä½œé‡‡æ ·çš„ï¼Œå¯ä»¥ä¸åŠ VK_IMAGE_USAGE_SAMPLED_BITï¼Œæ”¹æˆVK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BITæé«˜æ€§èƒ½
                 VulkanImage colorImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
                 TransitionImageLayout(colorImage.image,
@@ -1171,7 +1171,7 @@ namespace ZXEngine
 
                 VkFramebufferCreateInfo framebufferInfo{};
                 framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-                // Ö¸¶¨¿ÉÒÔ¼æÈİµÄrender pass(Õâ¸öframe bufferºÍÖ¸¶¨µÄrender passµÄattachmentµÄÊıÁ¿ºÍÀàĞÍĞèÒªÒ»ÖÂ)
+                // æŒ‡å®šå¯ä»¥å…¼å®¹çš„render pass(è¿™ä¸ªframe bufferå’ŒæŒ‡å®šçš„render passçš„attachmentçš„æ•°é‡å’Œç±»å‹éœ€è¦ä¸€è‡´)
                 framebufferInfo.renderPass = GetRenderPass(RenderPassType::Normal);
                 framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
                 framebufferInfo.pAttachments = attachments.data();
@@ -1524,20 +1524,20 @@ namespace ZXEngine
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         renderPassInfo.renderPass = GetRenderPass(curFBO->renderPassType);
         renderPassInfo.framebuffer = curFBO->frameBuffers[GetCurFrameBufferIndex()];
-        // Õâ¸örender area¶¨ÒåÁËshader½«Òª¼ÓÔØºÍ´æ´¢µÄÎ»ÖÃ
+        // è¿™ä¸ªrender areaå®šä¹‰äº†shaderå°†è¦åŠ è½½å’Œå­˜å‚¨çš„ä½ç½®
         renderPassInfo.renderArea.offset = { viewPortInfo.xOffset, viewPortInfo.yOffset };
-        // Ò»°ãÀ´Ëµ´óĞ¡(extend)ÊÇºÍframebufferµÄattachmentÒ»ÖÂµÄ£¬Èç¹ûĞ¡ÁË»áÀË·Ñ£¬´óÁË³¬³öÈ¥µÄ²¿·ÖÊÇÒ»Ğ©Î´¶¨ÒåÊıÖµ
+        // ä¸€èˆ¬æ¥è¯´å¤§å°(extend)æ˜¯å’Œframebufferçš„attachmentä¸€è‡´çš„ï¼Œå¦‚æœå°äº†ä¼šæµªè´¹ï¼Œå¤§äº†è¶…å‡ºå»çš„éƒ¨åˆ†æ˜¯ä¸€äº›æœªå®šä¹‰æ•°å€¼
         renderPassInfo.renderArea.extent = { viewPortInfo.width, viewPortInfo.height };
 
         vector<VkClearValue> clearValues;
         vector<VkClearAttachment> clearAttachments = {};
         if (curFBO->renderPassType == RenderPassType::Normal)
         {
-            // NormalÀàĞÍµÄFBO²»Ò»¶¨Ã¿´Î»æÖÆ¶¼ĞèÒªClear£¬ËùÒÔ²»ÔÚRenderPassBeginÀïClear
-            // ÒòÎªÕâÖÖ·½Ê½ĞèÒªÌáÇ°ÔÚRenderPassÀïĞ´ËÀVK_ATTACHMENT_LOAD_OP_CLEAR£¬Ã¿´Î»æÖÆÒ»¶¨Clear
-            // ËùÒÔÕâÀïÓÃvkCmdClearAttachmentsÀ´Clear£¬ÕâÑù¿ÉÒÔ¸ù¾İĞèÒªÑ¡ÔñClear»òÕß²»Clear
-            // ÕâÖÖ·½Ê½ĞèÒªÔÚRenderPassÀïĞ´VK_ATTACHMENT_LOAD_OP_DONT_CARE»òÕßVK_ATTACHMENT_LOAD_OP_LOAD
-            // ²»¹ı¹Ù·½ËµÕâÖÖ·½Ê½µÄĞÔÄÜÂÔ²îÓÚÔÚRenderPassBeginÀïClear
+            // Normalç±»å‹çš„FBOä¸ä¸€å®šæ¯æ¬¡ç»˜åˆ¶éƒ½éœ€è¦Clearï¼Œæ‰€ä»¥ä¸åœ¨RenderPassBeginé‡ŒClear
+            // å› ä¸ºè¿™ç§æ–¹å¼éœ€è¦æå‰åœ¨RenderPassé‡Œå†™æ­»VK_ATTACHMENT_LOAD_OP_CLEARï¼Œæ¯æ¬¡ç»˜åˆ¶ä¸€å®šClear
+            // æ‰€ä»¥è¿™é‡Œç”¨vkCmdClearAttachmentsæ¥Clearï¼Œè¿™æ ·å¯ä»¥æ ¹æ®éœ€è¦é€‰æ‹©Clearæˆ–è€…ä¸Clear
+            // è¿™ç§æ–¹å¼éœ€è¦åœ¨RenderPassé‡Œå†™VK_ATTACHMENT_LOAD_OP_DONT_CAREæˆ–è€…VK_ATTACHMENT_LOAD_OP_LOAD
+            // ä¸è¿‡å®˜æ–¹è¯´è¿™ç§æ–¹å¼çš„æ€§èƒ½ç•¥å·®äºåœ¨RenderPassBeginé‡ŒClear
             auto& clearInfo = curFBO->clearInfo;
 
             if (curDrawCommandObj->clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
@@ -1674,7 +1674,7 @@ namespace ZXEngine
         waitStages.resize(curWaitSemaphores.size(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
         vector<VkSemaphore> waitSemaphores = curWaitSemaphores;
 #ifndef ZX_EDITOR
-        // AfterEffectÊÇµÚÒ»¸öÖ±½ÓĞ´ÈëPresentBufferµÄ£¬ËùÒÔĞèÒªµÈPresentBuffer¿ÉÓÃ
+        // AfterEffectæ˜¯ç¬¬ä¸€ä¸ªç›´æ¥å†™å…¥PresentBufferçš„ï¼Œæ‰€ä»¥éœ€è¦ç­‰PresentBufferå¯ç”¨
         if (curFBOIdx == presentFBOIdx && curDrawCommandObj->commandType == CommandType::AfterEffectRendering)
         {
             waitStages.push_back(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
@@ -1694,7 +1694,7 @@ namespace ZXEngine
 
         VkFence fence = VK_NULL_HANDLE;
 #ifndef ZX_EDITOR
-        // ÔÚ±à¼­Æ÷Ä£Ê½ÏÂ×îºóÒ»¸öCommand¹Ì¶¨ÊÇ»æÖÆ±à¼­Æ÷UIµÄ£¬ÔÚEditorGUIManagerÀïÌá½»Fence
+        // åœ¨ç¼–è¾‘å™¨æ¨¡å¼ä¸‹æœ€åä¸€ä¸ªCommandå›ºå®šæ˜¯ç»˜åˆ¶ç¼–è¾‘å™¨UIçš„ï¼Œåœ¨EditorGUIManageré‡Œæäº¤Fence
         if (curDrawCommandObj->commandType == CommandType::UIRendering)
             fence = inFlightFences[currentFrame];
 #endif
@@ -1702,7 +1702,7 @@ namespace ZXEngine
         if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, fence) != VK_SUCCESS)
             throw std::runtime_error("failed to submit draw command buffer!");
 
-        // µ±Ç°Õâ¸öÃüÁî¼¤·¢µÄĞÅºÅÁ¿¾ÍÊÇÏÂ¸öÃüÁîĞèÒªµÈ´ıµÄ
+        // å½“å‰è¿™ä¸ªå‘½ä»¤æ¿€å‘çš„ä¿¡å·é‡å°±æ˜¯ä¸‹ä¸ªå‘½ä»¤éœ€è¦ç­‰å¾…çš„
         curWaitSemaphores = curDrawCommand.signalSemaphores;
 
         drawRecords.clear();
@@ -1723,14 +1723,14 @@ namespace ZXEngine
         // ----------------------------------------------- Vertex Buffer -----------------------------------------------
         VkDeviceSize vertexBufferSize = sizeof(Vertex) * vertices.size();
         
-        // ½¨Á¢VertexBuffer
+        // å»ºç«‹VertexBuffer
         VkBufferUsageFlags vertexBufferUsage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
         if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
             vertexBufferUsage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
         
         CreateGPUBuffer(vertexBufferSize, vertexBufferUsage, meshBuffer->vertexBuffer, meshBuffer->vertexBufferAlloc, vertices.data());
 
-        // Èç¹ûÊÇ¹â×·äÖÈ¾¹ÜÏß£¬ĞèÒª»ñÈ¡VertexBufferµÄGPUµØÖ·
+        // å¦‚æœæ˜¯å…‰è¿½æ¸²æŸ“ç®¡çº¿ï¼Œéœ€è¦è·å–VertexBufferçš„GPUåœ°å€
         if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
         {
             VkBufferDeviceAddressInfo addressInfo = {};
@@ -1742,14 +1742,14 @@ namespace ZXEngine
         // ----------------------------------------------- Index Buffer -----------------------------------------------
         VkDeviceSize indexBufferSize = sizeof(uint32_t) * indices.size();
 
-        // ½¨Á¢IndexBuffer
+        // å»ºç«‹IndexBuffer
         VkBufferUsageFlags indexBufferUsage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
         if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
             indexBufferUsage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 
         CreateGPUBuffer(indexBufferSize, indexBufferUsage, meshBuffer->indexBuffer, meshBuffer->indexBufferAlloc, indices.data());
 
-        // Èç¹ûÊÇ¹â×·äÖÈ¾¹ÜÏß£¬ĞèÒª»ñÈ¡IndexBufferµÄGPUµØÖ·
+        // å¦‚æœæ˜¯å…‰è¿½æ¸²æŸ“ç®¡çº¿ï¼Œéœ€è¦è·å–IndexBufferçš„GPUåœ°å€
         if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
         {
             VkBufferDeviceAddressInfo addressInfo = {};
@@ -1758,7 +1758,7 @@ namespace ZXEngine
             meshBuffer->indexBufferDeviceAddress = vkGetBufferDeviceAddress(device, &addressInfo);
         }
 
-        // Èç¹ûÊÇ¹â×·¹ÜÏß£¬»¹Òª´´½¨Ò»¸öBLAS( Bottom Level Acceleration Structure )
+        // å¦‚æœæ˜¯å…‰è¿½ç®¡çº¿ï¼Œè¿˜è¦åˆ›å»ºä¸€ä¸ªBLAS( Bottom Level Acceleration Structure )
         if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
         {
             BuildBottomLevelAccelerationStructure(VAO, true);
@@ -1837,7 +1837,7 @@ namespace ZXEngine
         VulkanRTPipeline* rtPipeline = new VulkanRTPipeline();
         rtPipeline->pipeline.name = "RayTracingPipeline";
 
-        // ´´½¨¹â×·¹ÜÏßµÄDescriptorSetLayout
+        // åˆ›å»ºå…‰è¿½ç®¡çº¿çš„DescriptorSetLayout
         vector<VkDescriptorSetLayoutBinding> bindings = {};
 
         // layout(set = 0, binding = 0) TLAS
@@ -1848,7 +1848,7 @@ namespace ZXEngine
         asBinding.stageFlags = VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
         bindings.push_back(asBinding);
 
-        // layout(set = 0, binding = 1) Êä³öÍ¼Ïñ
+        // layout(set = 0, binding = 1) è¾“å‡ºå›¾åƒ
         VkDescriptorSetLayoutBinding imageBinding = {};
         imageBinding.binding = 1;
         imageBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
@@ -1858,10 +1858,10 @@ namespace ZXEngine
 
         rtPipeline->pipeline.descriptorSetLayout = CreateDescriptorSetLayout(bindings);
 
-        // ´´½¨³¡¾°×ÊÔ´µÄDescriptorSetLayout
+        // åˆ›å»ºåœºæ™¯èµ„æºçš„DescriptorSetLayout
         bindings.clear();
 
-        // layout(set = 1, binding = 0) Êı¾İË÷ÒıBuffer
+        // layout(set = 1, binding = 0) æ•°æ®ç´¢å¼•Buffer
         VkDescriptorSetLayoutBinding dataReferencesBinding = {};
         dataReferencesBinding.binding = 0;
         dataReferencesBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
@@ -1869,25 +1869,25 @@ namespace ZXEngine
         dataReferencesBinding.stageFlags = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
         bindings.push_back(dataReferencesBinding);
 
-        // layout(set = 1, binding = 1) 2DÎÆÀí
+        // layout(set = 1, binding = 1) 2Dçº¹ç†
         VkDescriptorSetLayoutBinding texturesBinding = {};
         texturesBinding.binding = 1;
         texturesBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        texturesBinding.descriptorCount = rtSceneTextureNum; // Todo: Õâ¸öÊıÁ¿Ó¦¸ÃÊÇĞèÒª¶¯Ì¬À©Õ¹µÄ
+        texturesBinding.descriptorCount = rtSceneTextureNum; // Todo: è¿™ä¸ªæ•°é‡åº”è¯¥æ˜¯éœ€è¦åŠ¨æ€æ‰©å±•çš„
         texturesBinding.stageFlags = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
         bindings.push_back(texturesBinding);
 
-        // layout(set = 1, binding = 2) CubeMapÎÆÀí
+        // layout(set = 1, binding = 2) CubeMapçº¹ç†
         VkDescriptorSetLayoutBinding cubeMapBinding = {};
         cubeMapBinding.binding = 2;
         cubeMapBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        cubeMapBinding.descriptorCount = rtSceneCubeMapNum; // Todo: Õâ¸öÊıÁ¿Ó¦¸ÃÊÇĞèÒª¶¯Ì¬À©Õ¹µÄ
+        cubeMapBinding.descriptorCount = rtSceneCubeMapNum; // Todo: è¿™ä¸ªæ•°é‡åº”è¯¥æ˜¯éœ€è¦åŠ¨æ€æ‰©å±•çš„
         cubeMapBinding.stageFlags = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR;
         bindings.push_back(cubeMapBinding);
 
         rtPipeline->pipeline.sceneDescriptorSetLayout = CreateDescriptorSetLayout(bindings);
 
-        // ÉèÖÃPushConstant
+        // è®¾ç½®PushConstant
         vector<VkPushConstantRange> pushConstantRanges = {};
         VkPushConstantRange pushConstantRange = {};
         pushConstantRange.stageFlags = VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR;
@@ -1895,11 +1895,11 @@ namespace ZXEngine
         pushConstantRange.size = sizeof(RayTracingPipelineConstants);
         pushConstantRanges.push_back(pushConstantRange);
 
-        // ´´½¨PipelineLayout
+        // åˆ›å»ºPipelineLayout
         vector<VkDescriptorSetLayout> descriptorSetLayouts = { rtPipeline->pipeline.descriptorSetLayout, rtPipeline->pipeline.sceneDescriptorSetLayout };
         rtPipeline->pipeline.pipelineLayout = CreatePipelineLayout(descriptorSetLayouts, pushConstantRanges);
 
-        // ´´½¨Shader ModuleºÍShader Groups
+        // åˆ›å»ºShader Moduleå’ŒShader Groups
         vector<VkPipelineShaderStageCreateInfo> stages = {};
         vector<VkRayTracingShaderGroupCreateInfoKHR> shaderGroups = {};
 
@@ -1970,7 +1970,7 @@ namespace ZXEngine
 			shaderGroups.push_back(shaderGroupInfo);
         }
 
-        // ´´½¨Pipeline
+        // åˆ›å»ºPipeline
         VkRayTracingPipelineCreateInfoKHR rayPipelineInfo{};
         rayPipelineInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR;
         rayPipelineInfo.stageCount = static_cast<uint32_t>(stages.size());
@@ -1982,49 +1982,49 @@ namespace ZXEngine
         if (vkCreateRayTracingPipelinesKHR(device, VK_NULL_HANDLE, VK_NULL_HANDLE, 1, &rayPipelineInfo, nullptr, &rtPipeline->pipeline.pipeline) != VK_SUCCESS)
 			throw std::runtime_error("Failed to create ray tracing pipeline!");
 
-        // ´´½¨Íê³Éºó£¬Á¢¿ÌÇåÀíShader Module
+        // åˆ›å»ºå®Œæˆåï¼Œç«‹åˆ»æ¸…ç†Shader Module
         for (auto& stage : stages)
 			vkDestroyShaderModule(device, stage.module, nullptr);
 
-        // ¿ªÊ¼´´½¨Shader Binding Table
-        // Ò»¸öSBT¿ÉÒÔ¿´×÷ÊÇ4¸öÊı×é£¬·Ö±ğÊÇRay Gen, Miss, Hit, CallableÕâ4ÖÖÀàĞÍµÄShader GroupÊı×é
+        // å¼€å§‹åˆ›å»ºShader Binding Table
+        // ä¸€ä¸ªSBTå¯ä»¥çœ‹ä½œæ˜¯4ä¸ªæ•°ç»„ï¼Œåˆ†åˆ«æ˜¯Ray Gen, Miss, Hit, Callableè¿™4ç§ç±»å‹çš„Shader Groupæ•°ç»„
 
         uint32_t rGenCount  = static_cast<uint32_t>(rtShaderPathGroup.rGenPaths.size());
         uint32_t rMissCount = static_cast<uint32_t>(rtShaderPathGroup.rMissPaths.size());
         uint32_t rHitCount  = static_cast<uint32_t>(rtShaderPathGroup.rHitGroupPaths.size());
         uint32_t shaderHandleCount = rGenCount + rMissCount + rHitCount;
 
-        // ÕâÊÇÒ»¸öShaderÒıÓÃÔÚSBTÉÏµÄ´óĞ¡
+        // è¿™æ˜¯ä¸€ä¸ªShaderå¼•ç”¨åœ¨SBTä¸Šçš„å¤§å°
         uint32_t shaderHandleSize = rtPhysicalProperties.shaderGroupHandleSize;
-        // ÕâÊÇShaderÒıÓÃÔÚSBTÉÏµÄ¶ÔÆë´óĞ¡£¬×¢ÒâÕâ¸ö¶ÔÆëµÄ´óĞ¡ºÍÊµ¼Ê´óĞ¡¿ÉÄÜ²»Ò»Ñù£¬ËùÒÔÕâÀïÒª°Ñ²éÑ¯µ½µÄÊµ¼Ê´óĞ¡È¥¶ÔÆë²éÑ¯µ½µÄ¶ÔÆë´óĞ¡
-        // ÓĞ¿ÉÄÜ×îºóShaderÒıÓÃÊµ¼Ê´óĞ¡±È¶ÔÆë´óĞ¡¸üĞ¡£¬Õâ»áµ¼ÖÂSBT BufferÉÏÓĞÄÚ´æËéÆ¬£¬¿ÉÒÔ°ÑÕâĞ©ËéÆ¬¿Õ¼äÀûÓÃÆğÀ´´æ·ÅshaderRecordEXTÊı¾İ
-        // ³ıÁËShader GroupÄÚµÄShaderÒıÓÃÒª°´Õâ¸ö¶ÔÆë£¬²»Í¬µÄShader GroupÖ®¼äÒ²Òª°´Õâ¸ö¶ÔÆë
+        // è¿™æ˜¯Shaderå¼•ç”¨åœ¨SBTä¸Šçš„å¯¹é½å¤§å°ï¼Œæ³¨æ„è¿™ä¸ªå¯¹é½çš„å¤§å°å’Œå®é™…å¤§å°å¯èƒ½ä¸ä¸€æ ·ï¼Œæ‰€ä»¥è¿™é‡Œè¦æŠŠæŸ¥è¯¢åˆ°çš„å®é™…å¤§å°å»å¯¹é½æŸ¥è¯¢åˆ°çš„å¯¹é½å¤§å°
+        // æœ‰å¯èƒ½æœ€åShaderå¼•ç”¨å®é™…å¤§å°æ¯”å¯¹é½å¤§å°æ›´å°ï¼Œè¿™ä¼šå¯¼è‡´SBT Bufferä¸Šæœ‰å†…å­˜ç¢ç‰‡ï¼Œå¯ä»¥æŠŠè¿™äº›ç¢ç‰‡ç©ºé—´åˆ©ç”¨èµ·æ¥å­˜æ”¾shaderRecordEXTæ•°æ®
+        // é™¤äº†Shader Groupå†…çš„Shaderå¼•ç”¨è¦æŒ‰è¿™ä¸ªå¯¹é½ï¼Œä¸åŒçš„Shader Groupä¹‹é—´ä¹Ÿè¦æŒ‰è¿™ä¸ªå¯¹é½
         uint32_t shaderHandleAlignment = Math::AlignUp(shaderHandleSize, rtPhysicalProperties.shaderGroupHandleAlignment);
-        // Shader GroupÖ®¼äÒª°´Õâ¸ö´óĞ¡¶ÔÆë
+        // Shader Groupä¹‹é—´è¦æŒ‰è¿™ä¸ªå¤§å°å¯¹é½
         uint32_t shaderGroupAlignment = rtPhysicalProperties.shaderGroupBaseAlignment;
 
-        // Ray Gen±È½ÏÌØÊâ£¬sizeºÍstrideÒªÒ»ÖÂ
+        // Ray Genæ¯”è¾ƒç‰¹æ®Šï¼Œsizeå’Œstrideè¦ä¸€è‡´
         rtPipeline->SBT.raygenRegion.size = static_cast<VkDeviceSize>(Math::AlignUp(shaderHandleAlignment, shaderGroupAlignment));
         rtPipeline->SBT.raygenRegion.stride = rtPipeline->SBT.raygenRegion.size;
-        // Õû¸öShader GroupÒª¶ÔÆëVkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupBaseAlignment
+        // æ•´ä¸ªShader Groupè¦å¯¹é½VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupBaseAlignment
         rtPipeline->SBT.missRegion.size = static_cast<VkDeviceSize>(Math::AlignUp(shaderHandleAlignment * rMissCount, shaderGroupAlignment));
         rtPipeline->SBT.missRegion.stride = shaderHandleAlignment;
         rtPipeline->SBT.hitRegion.size = static_cast<VkDeviceSize>(Math::AlignUp(shaderHandleAlignment * rHitCount, shaderGroupAlignment));
         rtPipeline->SBT.hitRegion.stride = shaderHandleAlignment;
 
-        // »ñÈ¡°ó¶¨µ½¹âÏß×·×ÙVkPipelineÉÏµÄShader Handles
+        // è·å–ç»‘å®šåˆ°å…‰çº¿è¿½è¸ªVkPipelineä¸Šçš„Shader Handles
         uint32_t dataSize = shaderHandleCount * shaderHandleSize;
         vector<uint8_t> handles(dataSize);
         if (vkGetRayTracingShaderGroupHandlesKHR(device, rtPipeline->pipeline.pipeline, 0, shaderHandleCount, dataSize, handles.data()) != VK_SUCCESS)
             throw std::runtime_error("Failed to get shader group handles!");
 
-        // ´´½¨SBT Buffer
+        // åˆ›å»ºSBT Buffer
         VkDeviceSize sbtBufferSize = rtPipeline->SBT.raygenRegion.size + rtPipeline->SBT.missRegion.size + rtPipeline->SBT.hitRegion.size;
         rtPipeline->SBT.buffer = CreateBuffer(sbtBufferSize,
             VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
             VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
 
-        // »ñÈ¡Ã¿¸öShader GroupµÄÆğÊ¼µØÖ·
+        // è·å–æ¯ä¸ªShader Groupçš„èµ·å§‹åœ°å€
         VkBufferDeviceAddressInfo sbtBufferInfo = {};
         sbtBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
         sbtBufferInfo.buffer = rtPipeline->SBT.buffer.buffer;
@@ -2033,54 +2033,54 @@ namespace ZXEngine
         rtPipeline->SBT.missRegion.deviceAddress = sbtBufferAddress + rtPipeline->SBT.raygenRegion.size;
         rtPipeline->SBT.hitRegion.deviceAddress = sbtBufferAddress + rtPipeline->SBT.raygenRegion.size + rtPipeline->SBT.missRegion.size;
 
-        // »ñÈ¡¹ÜÏßÖĞµÄShaderµØÖ·
+        // è·å–ç®¡çº¿ä¸­çš„Shaderåœ°å€
         uint8_t* shaderHandlePtr = handles.data();
-        // »ñÈ¡SBT BufferµÄÓ³ÉäµØÖ·
+        // è·å–SBT Bufferçš„æ˜ å°„åœ°å€
         uint8_t* sbtBufferPtr = static_cast<uint8_t*>(rtPipeline->SBT.buffer.mappedAddress);
-        // SBT BufferµÄÁÙÊ±Ö¸Õë
+        // SBT Bufferçš„ä¸´æ—¶æŒ‡é’ˆ
         uint8_t* tmpPtr = sbtBufferPtr;
-        // °ÑRay Gen Shader¿½±´µ½SBT BufferÉÏ
+        // æŠŠRay Gen Shaderæ‹·è´åˆ°SBT Bufferä¸Š
         memcpy(tmpPtr, shaderHandlePtr, shaderHandleSize);
-        // ÒÆµ½ÏÂÒ»¸öShaderµØÖ·
+        // ç§»åˆ°ä¸‹ä¸€ä¸ªShaderåœ°å€
         shaderHandlePtr += shaderHandleSize;
 
-        // ÒÆµ½ÏÂÒ»¸öShader GroupµØÖ·(Miss)
+        // ç§»åˆ°ä¸‹ä¸€ä¸ªShader Groupåœ°å€(Miss)
         tmpPtr = sbtBufferPtr + rtPipeline->SBT.raygenRegion.size;
-        // ±éÀú¿½±´Miss Shaderµ½SBT BufferÉÏ
+        // éå†æ‹·è´Miss Shaderåˆ°SBT Bufferä¸Š
         for (uint32_t i = 0; i < rMissCount; ++i)
         {
             memcpy(tmpPtr, shaderHandlePtr, shaderHandleSize);
-            // ÒÆµ½ÏÂÒ»¸öShaderµØÖ·
+            // ç§»åˆ°ä¸‹ä¸€ä¸ªShaderåœ°å€
             shaderHandlePtr += shaderHandleSize;
-            // ÒÆµ½µ±Ç°Shader GroupÖĞµÄÏÂÒ»¸öµØÖ·
+            // ç§»åˆ°å½“å‰Shader Groupä¸­çš„ä¸‹ä¸€ä¸ªåœ°å€
             tmpPtr += rtPipeline->SBT.missRegion.stride;
         }
 
-        // ÒÆµ½ÏÂÒ»¸öShader GroupµØÖ·(Hit)
+        // ç§»åˆ°ä¸‹ä¸€ä¸ªShader Groupåœ°å€(Hit)
         tmpPtr = sbtBufferPtr + rtPipeline->SBT.raygenRegion.size + rtPipeline->SBT.missRegion.size;
-        // ±éÀú¿½±´Hit Shaderµ½SBT BufferÉÏ
+        // éå†æ‹·è´Hit Shaderåˆ°SBT Bufferä¸Š
         for (uint32_t i = 0; i < rHitCount; ++i)
         {
             memcpy(tmpPtr, shaderHandlePtr, shaderHandleSize);
-            // ÒÆµ½ÏÂÒ»¸öShaderµØÖ·
+            // ç§»åˆ°ä¸‹ä¸€ä¸ªShaderåœ°å€
             shaderHandlePtr += shaderHandleSize;
-            // ÒÆµ½µ±Ç°Shader GroupÖĞµÄÏÂÒ»¸öµØÖ·
+            // ç§»åˆ°å½“å‰Shader Groupä¸­çš„ä¸‹ä¸€ä¸ªåœ°å€
             tmpPtr += rtPipeline->SBT.hitRegion.stride;
         }
 
         rtPipelines.push_back(rtPipeline);
         uint32_t rtPipelineID = static_cast<uint32_t>(rtPipelines.size() - 1);
 
-        // ´´½¨¹ÜÏßÒªÊ¹ÓÃµÄ¹Ì¶¨DescriptorSet
+        // åˆ›å»ºç®¡çº¿è¦ä½¿ç”¨çš„å›ºå®šDescriptorSet
         CreateRTPipelineData(rtPipelineID);
-        // ³õÊ¼»¯¹â×·³¡¾°×ÊÔ´
+        // åˆå§‹åŒ–å…‰è¿½åœºæ™¯èµ„æº
         CreateRTSceneData(rtPipelineID);
-        // ³õÊ¼»¯TLASÊı×é
+        // åˆå§‹åŒ–TLASæ•°ç»„
         rtPipeline->tlasIdx = GetNextTLASGroupIndex();
         auto tlasGroup = GetTLASGroupByIndex(rtPipeline->tlasIdx);
         tlasGroup->asGroup.resize(MAX_FRAMES_IN_FLIGHT);
         tlasGroup->inUse = true;
-        // ³õÊ¼»¯¹¹½¨TLASµÄÖĞ¼äBuffer
+        // åˆå§‹åŒ–æ„å»ºTLASçš„ä¸­é—´Buffer
         rtTLASStagingBuffers.resize(MAX_FRAMES_IN_FLIGHT);
         rtTLASScratchBuffers.resize(MAX_FRAMES_IN_FLIGHT);
         rtTLASInstanceBuffers.resize(MAX_FRAMES_IN_FLIGHT);
@@ -2121,7 +2121,7 @@ namespace ZXEngine
         {
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
-                // Õâ¸öBuffer¿ÉÄÜÊÇÒ»´ÎĞÔ´´½¨²»ÔÙĞŞ¸ÄµÄ£¬¿ÉÒÔ¿¼ÂÇÓÅ»¯³ÉGPU OnlyµÄ
+                // è¿™ä¸ªBufferå¯èƒ½æ˜¯ä¸€æ¬¡æ€§åˆ›å»ºä¸å†ä¿®æ”¹çš„ï¼Œå¯ä»¥è€ƒè™‘ä¼˜åŒ–æˆGPU Onlyçš„
                 vulkanRTMaterialData->buffers[i] = CreateBuffer(bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VMA_MEMORY_USAGE_AUTO, true, true);
             }
         }
@@ -2145,14 +2145,14 @@ namespace ZXEngine
 
     void RenderAPIVulkan::SetRayTracingSkyBox(uint32_t textureID)
     {
-        // Ìì¿ÕºĞÎÆÀíÄ¬ÈÏÊÇµ±Ç°ÕâÒ»Ö¡µÄµÚÒ»¸öCubeMap
+        // å¤©ç©ºç›’çº¹ç†é»˜è®¤æ˜¯å½“å‰è¿™ä¸€å¸§çš„ç¬¬ä¸€ä¸ªCubeMap
         curRTSceneCubeMapIndexMap[textureID] = 0;
         curRTSceneCubeMapIndexes.push_back(textureID);
     }
 
     void RenderAPIVulkan::PushRayTracingMaterialData(Material* material)
     {
-        // °ÑÕâ¸ö²ÄÖÊÊ¹ÓÃµÄÎÆÀíÌí¼Óµ½µ±Ç°¹â×·³¡¾°ÖĞµÄ×ÜÎÆÀíÁĞ±íÖĞ
+        // æŠŠè¿™ä¸ªæè´¨ä½¿ç”¨çš„çº¹ç†æ·»åŠ åˆ°å½“å‰å…‰è¿½åœºæ™¯ä¸­çš„æ€»çº¹ç†åˆ—è¡¨ä¸­
         for (auto& iter : material->data->textures)
         {
             auto textureID = iter.second->GetID();
@@ -2174,7 +2174,7 @@ namespace ZXEngine
 			}
         }
 
-        // °ÑÕâ¸ö¹â×·²ÄÖÊÌí¼Óµ½µ±Ç°¹â×·³¡¾°ÖĞµÄ×Ü¹â×·²ÄÖÊÁĞ±íÖĞ
+        // æŠŠè¿™ä¸ªå…‰è¿½æè´¨æ·»åŠ åˆ°å½“å‰å…‰è¿½åœºæ™¯ä¸­çš„æ€»å…‰è¿½æè´¨åˆ—è¡¨ä¸­
         auto rtMaterialDataID = material->data->GetRTID();
         if (curRTSceneRTMaterialDataMap.find(rtMaterialDataID) == curRTSceneRTMaterialDataMap.end())
         {
@@ -2182,12 +2182,12 @@ namespace ZXEngine
             curRTSceneRTMaterialDatas.emplace_back(rtMaterialDataID);
 		}
 
-        // ¸üĞÂµ±Ç°Ö¡µÄ¹â×·²ÄÖÊBufferÊı¾İ
+        // æ›´æ–°å½“å‰å¸§çš„å…‰è¿½æè´¨Bufferæ•°æ®
         auto vulkanRTMaterialData = GetRTMaterialDataByIndex(rtMaterialDataID);
         auto& buffer = vulkanRTMaterialData->buffers[currentFrame];
         uint8_t* tmpPtr = static_cast<uint8_t*>(buffer.mappedAddress);
 
-        // ±éÀúÎÆÀí£¬²¢°ÑÒıÓÃË÷ÒıĞ´ÈëBuffer
+        // éå†çº¹ç†ï¼Œå¹¶æŠŠå¼•ç”¨ç´¢å¼•å†™å…¥Buffer
         for (auto& iter : material->data->textures)
         {
             auto textureID = iter.second->GetID();
@@ -2216,7 +2216,7 @@ namespace ZXEngine
     {
         auto rtPipeline = rtPipelines[curRTPipelineID];
 
-        // ¼ÆËã»­Ãæ¾²Ö¹µÄÖ¡Êı£¬ÀÛ»ıÊ½¹â×·äÖÈ¾ĞèÒªÕâ¸öÊı¾İ
+        // è®¡ç®—ç”»é¢é™æ­¢çš„å¸§æ•°ï¼Œç´¯ç§¯å¼å…‰è¿½æ¸²æŸ“éœ€è¦è¿™ä¸ªæ•°æ®
         if (rtConstants.VP != rtVPMatrix[currentFrame])
         {
             rtFrameCount[currentFrame] = 0;
@@ -2224,20 +2224,20 @@ namespace ZXEngine
         }
         uint32_t frameCount = rtFrameCount[currentFrame]++;
 
-        // ÏÈ¸üĞÂµ±Ç°Ö¡ºÍ¹â×·¹ÜÏß°ó¶¨µÄ³¡¾°Êı¾İ
+        // å…ˆæ›´æ–°å½“å‰å¸§å’Œå…‰è¿½ç®¡çº¿ç»‘å®šçš„åœºæ™¯æ•°æ®
         UpdateRTSceneData(curRTPipelineID);
-        // ¸üĞÂµ±Ç°Ö¡ºÍ¹â×·¹ÜÏß°ó¶¨µÄ¹ÜÏßÊı¾İ
+        // æ›´æ–°å½“å‰å¸§å’Œå…‰è¿½ç®¡çº¿ç»‘å®šçš„ç®¡çº¿æ•°æ®
         UpdateRTPipelineData(curRTPipelineID);
 
-        // »ñÈ¡µ±Ç°Ö¡µÄCommand Buffer
+        // è·å–å½“å‰å¸§çš„Command Buffer
 		auto curDrawCommandObj = GetDrawCommandByIndex(commandID);
 		auto& curDrawCommand = curDrawCommandObj->drawCommands[currentFrame];
 		auto commandBuffer = curDrawCommand.commandBuffer;
 
-		// ÖØÖÃCommand Buffer
+		// é‡ç½®Command Buffer
 		vkResetCommandBuffer(commandBuffer, 0);
 
-		// ¿ªÊ¼¼ÇÂ¼Command Buffer
+		// å¼€å§‹è®°å½•Command Buffer
 		VkCommandBufferBeginInfo beginInfo = {};
 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 		beginInfo.flags = 0;
@@ -2245,26 +2245,26 @@ namespace ZXEngine
 		if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
 			throw std::runtime_error("Failed to begin recording command buffer!");
 
-        // »ñÈ¡¹â×·¹ÜÏßÊä³öµÄÄ¿±êÍ¼Ïñ
+        // è·å–å…‰è¿½ç®¡çº¿è¾“å‡ºçš„ç›®æ ‡å›¾åƒ
         auto curFBO = GetFBOByIndex(curFBOIdx);
         uint32_t textureID = GetAttachmentBufferByIndex(curFBO->colorAttachmentIdx)->attachmentBuffers[currentFrame];
         auto texture = GetTextureByIndex(textureID);
 
-        // ×ªÎª¹â×·Êä³ö¸ñÊ½
+        // è½¬ä¸ºå…‰è¿½è¾“å‡ºæ ¼å¼
         TransitionImageLayout(commandBuffer, texture->image.image, 
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_ASPECT_COLOR_BIT, 
             VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_SHADER_READ_BIT,
             VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR, VK_ACCESS_SHADER_WRITE_BIT);
 
-		// °ó¶¨¹â×·¹ÜÏß
+		// ç»‘å®šå…‰è¿½ç®¡çº¿
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, rtPipeline->pipeline.pipeline);
-		// °ó¶¨¹â×·¹ÜÏßÃèÊö·û¼¯
+		// ç»‘å®šå…‰è¿½ç®¡çº¿æè¿°ç¬¦é›†
         vector<VkDescriptorSet> rtSets{ rtPipeline->pipelineData.descriptorSets[currentFrame], rtPipeline->sceneData.descriptorSets[currentFrame] };
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, rtPipeline->pipeline.pipelineLayout,
             0, static_cast<uint32_t>(rtSets.size()), rtSets.data(), 0, nullptr);
 
-        // ×ªÒ»ÏÂPush ConstantsÊı¾İ¸ñÊ½£¬°´std140ÄÚ´æ²¼¾Ö¹æÔò´æ·Å
-        // ÕâÀïÒòÎªÊÇ¹Ì¶¨Êı¾İ£¬¾Í¼òµ¥ÊÖ¶¯´¦ÀíÁË£¬Ã»ÏñUniform BufferÄÇÑùĞ´Ò»¸öÍ¨ÓÃµÄº¯Êı
+        // è½¬ä¸€ä¸‹Push Constantsæ•°æ®æ ¼å¼ï¼ŒæŒ‰std140å†…å­˜å¸ƒå±€è§„åˆ™å­˜æ”¾
+        // è¿™é‡Œå› ä¸ºæ˜¯å›ºå®šæ•°æ®ï¼Œå°±ç®€å•æ‰‹åŠ¨å¤„ç†äº†ï¼Œæ²¡åƒUniform Bufferé‚£æ ·å†™ä¸€ä¸ªé€šç”¨çš„å‡½æ•°
         char* ptr = static_cast<char*>(rtPushConstantBuffer);
         if (ptr != NULL)
         {
@@ -2292,7 +2292,7 @@ namespace ZXEngine
             memcpy(ptr, &rtConstants.time, sizeof(float));
         }
 
-        // °ó¶¨¹â×·¹ÜÏß³£Á¿
+        // ç»‘å®šå…‰è¿½ç®¡çº¿å¸¸é‡
         vkCmdPushConstants(commandBuffer, rtPipeline->pipeline.pipelineLayout, 
             VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR,
             0, sizeof(float) * 52, rtPushConstantBuffer);
@@ -2302,17 +2302,17 @@ namespace ZXEngine
             &rtPipeline->SBT.raygenRegion, &rtPipeline->SBT.missRegion, &rtPipeline->SBT.hitRegion, &rtPipeline->SBT.callableRegion,
             viewPortInfo.width, viewPortInfo.height, 1);
 
-        // ×ªÎªShader¶ÁÈ¡¸ñÊ½
+        // è½¬ä¸ºShaderè¯»å–æ ¼å¼
         TransitionImageLayout(commandBuffer, texture->image.image, 
             VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT, 
             VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR, VK_ACCESS_SHADER_WRITE_BIT,
             VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_SHADER_READ_BIT);
 
-		// ½áÊø¼ÇÂ¼Command Buffer
+		// ç»“æŸè®°å½•Command Buffer
 		if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
 			throw std::runtime_error("Failed to record command buffer!");
 
-        // Ìá½»Command Buffer
+        // æäº¤Command Buffer
         vector<VkPipelineStageFlags> waitStages = {};
         waitStages.resize(curWaitSemaphores.size(), VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR);
         VkSubmitInfo submitInfo = {};
@@ -2329,7 +2329,7 @@ namespace ZXEngine
 
         curWaitSemaphores = curDrawCommand.signalSemaphores;
 
-        // Çå¿Õµ±Ç°Ö¡µÄ³¡¾°Êı¾İ
+        // æ¸…ç©ºå½“å‰å¸§çš„åœºæ™¯æ•°æ®
         asInstanceData.clear();
         curRTSceneTextureIndexes.clear();
         curRTSceneTextureIndexMap.clear();
@@ -2341,16 +2341,16 @@ namespace ZXEngine
 
     void RenderAPIVulkan::BuildTopLevelAccelerationStructure(uint32_t commandID)
     {
-        // »ñÈ¡µ±Ç°Ö¡µÄCommand Buffer
+        // è·å–å½“å‰å¸§çš„Command Buffer
         auto curDrawCommandObj = GetDrawCommandByIndex(commandID);
         auto& curDrawCommand = curDrawCommandObj->drawCommands[currentFrame];
         auto commandBuffer = curDrawCommand.commandBuffer;
 
-        // ÖØÖÃCommand Buffer
+        // é‡ç½®Command Buffer
         if (vkResetCommandBuffer(commandBuffer, 0) != VK_SUCCESS)
             throw std::runtime_error("Failed to reset command buffer!");
 
-        // ¿ªÊ¼¼ÇÂ¼Command Buffer
+        // å¼€å§‹è®°å½•Command Buffer
         VkCommandBufferBeginInfo beginInfo = {};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         beginInfo.flags = 0;
@@ -2361,7 +2361,7 @@ namespace ZXEngine
         auto& curTLAS = GetTLASGroupByIndex(rtPipelines[curRTPipelineID]->tlasIdx)->asGroup[currentFrame];
         const bool isUpdate = curTLAS.isBuilt;
 
-        // ³¡¾°ÖĞÒªäÖÈ¾µÄ¶ÔÏóÊµÀıÊı¾İ
+        // åœºæ™¯ä¸­è¦æ¸²æŸ“çš„å¯¹è±¡å®ä¾‹æ•°æ®
         vector<VkAccelerationStructureInstanceKHR> instances;
 
         for (size_t i = 0; i < asInstanceData.size(); i++)
@@ -2383,27 +2383,27 @@ namespace ZXEngine
         uint32_t insNum = static_cast<uint32_t>(instances.size());
         VkDeviceSize insBufferSize = sizeof(VkAccelerationStructureInstanceKHR) * insNum;
 
-        // ½¨Á¢StagingBuffer
+        // å»ºç«‹StagingBuffer
         if (!isUpdate)
             rtTLASStagingBuffers[currentFrame] = CreateBuffer(insBufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
 
-        // ¿½±´³¡¾°ÊµÀıÊı¾İµ½StagingBuffer
+        // æ‹·è´åœºæ™¯å®ä¾‹æ•°æ®åˆ°StagingBuffer
         memcpy(rtTLASStagingBuffers[currentFrame].mappedAddress, instances.data(), insBufferSize);
 
-        // ´æ·Å³¡¾°ÊµÀıÊı¾İµÄBuffer
+        // å­˜æ”¾åœºæ™¯å®ä¾‹æ•°æ®çš„Buffer
         if (!isUpdate)
             rtTLASInstanceBuffers[currentFrame] = CreateBuffer(insBufferSize, 
                 VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
             	VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE, false, true);
 
-        // °ÑÊı¾İ´ÓstagingBuffer¿½±´µ½instancesBuffer
+        // æŠŠæ•°æ®ä»stagingBufferæ‹·è´åˆ°instancesBuffer
         VkBufferCopy copy = {};
         copy.dstOffset = 0;
         copy.srcOffset = 0;
         copy.size = insBufferSize;
         vkCmdCopyBuffer(commandBuffer, rtTLASStagingBuffers[currentFrame].buffer, rtTLASInstanceBuffers[currentFrame].buffer, 1, &copy);
 
-        // È·±£¹¹½¨TLASÖ®Ç°£¬Êı¾İ¿½±´ÒÑÍê³É
+        // ç¡®ä¿æ„å»ºTLASä¹‹å‰ï¼Œæ•°æ®æ‹·è´å·²å®Œæˆ
         VkMemoryBarrier barrier = {};
         barrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
         barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -2411,7 +2411,7 @@ namespace ZXEngine
         vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
             0, 1, &barrier, 0, nullptr, 0, nullptr);
 
-        // Ìí¼ÓÒ»Ğ©ÃèÊö£¬°ü×°Ò»ÏÂÉÏÃæµÄInstances BufferÊı¾İ£¬ÓÃÓÚ¹¹½¨TLAS
+        // æ·»åŠ ä¸€äº›æè¿°ï¼ŒåŒ…è£…ä¸€ä¸‹ä¸Šé¢çš„Instances Bufferæ•°æ®ï¼Œç”¨äºæ„å»ºTLAS
         VkAccelerationStructureGeometryInstancesDataKHR instancesData = {};
         instancesData.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR;
         instancesData.data.deviceAddress = rtTLASInstanceBuffers[currentFrame].deviceAddress;
@@ -2420,7 +2420,7 @@ namespace ZXEngine
         tlasGeometry.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
         tlasGeometry.geometry.instances = instancesData;
 
-        // ¹¹½¨TLASµÄĞÅÏ¢
+        // æ„å»ºTLASçš„ä¿¡æ¯
         VkAccelerationStructureBuildGeometryInfoKHR buildInfo = {};
         buildInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
         buildInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
@@ -2429,43 +2429,43 @@ namespace ZXEngine
         buildInfo.geometryCount = 1;
         buildInfo.pGeometries = &tlasGeometry;
 
-        // »ñÈ¡TLASµÄ¹¹½¨ËùĞèµÄBuffer´óĞ¡
+        // è·å–TLASçš„æ„å»ºæ‰€éœ€çš„Bufferå¤§å°
         VkAccelerationStructureBuildSizesInfoKHR sizeInfo = {};
         sizeInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR;
         vkGetAccelerationStructureBuildSizesKHR(device, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR, &buildInfo, &insNum, &sizeInfo);
 
-        // ĞÂ½¨TLAS
+        // æ–°å»ºTLAS
         if (!isUpdate)
         {
-            // ´´½¨TLAS Buffer
+            // åˆ›å»ºTLAS Buffer
             curTLAS.buffer = CreateBuffer(sizeInfo.accelerationStructureSize,
                 VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
                 VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE, false, true);
 
-            // ´´½¨TLASµÄĞÅÏ¢(½ö´´½¨£¬²»Ìî³äÊı¾İ£¬ËùÒÔÖ»ĞèÒªBufferºÍSize)
+            // åˆ›å»ºTLASçš„ä¿¡æ¯(ä»…åˆ›å»ºï¼Œä¸å¡«å……æ•°æ®ï¼Œæ‰€ä»¥åªéœ€è¦Bufferå’ŒSize)
             VkAccelerationStructureCreateInfoKHR createInfo = {};
             createInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
             createInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
             createInfo.size = sizeInfo.accelerationStructureSize;
             createInfo.buffer = curTLAS.buffer.buffer;
 
-            // ´´½¨TLAS
+            // åˆ›å»ºTLAS
             if (vkCreateAccelerationStructureKHR(device, &createInfo, nullptr, &curTLAS.as) != VK_SUCCESS)
                 throw std::runtime_error("Create acceleration structure failed!");
         }
 
-        // ´´½¨Scratch Buffer£¬Vulkan¹¹½¨TLASĞèÒªÒ»¸öBufferÀ´·ÅÖĞ¼äÊı¾İ
+        // åˆ›å»ºScratch Bufferï¼ŒVulkanæ„å»ºTLASéœ€è¦ä¸€ä¸ªBufferæ¥æ”¾ä¸­é—´æ•°æ®
         if (!isUpdate)
             rtTLASScratchBuffers[currentFrame] = CreateBuffer(sizeInfo.buildScratchSize,
                 VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR,
                 VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE, false, true);
 
-        // ¼ÌĞøÌî³ä¹¹½¨TLASĞèÒªµÄĞÅÏ¢
+        // ç»§ç»­å¡«å……æ„å»ºTLASéœ€è¦çš„ä¿¡æ¯
         buildInfo.srcAccelerationStructure = isUpdate ? curTLAS.as : VK_NULL_HANDLE;
         buildInfo.dstAccelerationStructure = curTLAS.as;
         buildInfo.scratchData.deviceAddress = rtTLASScratchBuffers[currentFrame].deviceAddress;
 
-        // ±¾´Î¹¹½¨TLASµÄËùĞèµÄÊı¾İ·¶Î§
+        // æœ¬æ¬¡æ„å»ºTLASçš„æ‰€éœ€çš„æ•°æ®èŒƒå›´
         VkAccelerationStructureBuildRangeInfoKHR buildRangeInfo = {};
         buildRangeInfo.firstVertex = 0;
         buildRangeInfo.primitiveCount = insNum;
@@ -2473,15 +2473,15 @@ namespace ZXEngine
         buildRangeInfo.transformOffset = 0;
         const VkAccelerationStructureBuildRangeInfoKHR* pBuildRangeInfo = &buildRangeInfo;
 
-        // ¹¹½¨TLAS
+        // æ„å»ºTLAS
         vkCmdBuildAccelerationStructuresKHR(commandBuffer, 1, &buildInfo, &pBuildRangeInfo);
         curTLAS.isBuilt = true;
 
-        // ½áÊøCommand BufferµÄ¼ÇÂ¼
+        // ç»“æŸCommand Bufferçš„è®°å½•
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
             throw std::runtime_error("failed to record command buffer!");
 
-        // Ìá½»Command Buffer
+        // æäº¤Command Buffer
         vector<VkPipelineStageFlags> waitStages = {};
         waitStages.resize(curWaitSemaphores.size(), VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR);
         VkSubmitInfo submitInfo = {};
@@ -2505,12 +2505,12 @@ namespace ZXEngine
     {
         auto meshBuffer = GetVAOByIndex(VAO);
 
-        // Èı½ÇĞÎĞÅÏ¢ÀïÌîµÄvertexFormat¹Ì¶¨ÎªVK_FORMAT_R32G32B32_SFLOAT£¬Èç¹ûÄ³Ğ©ÌØÊâÉè±¸float²»ÊÇ4×Ö½ÚÕâÀïÖ±½ÓÅ×³öÒì³£
-        // Ã»×öÊÊÅä´¦Àí£¬ÒòÎª¾ø´ó²¿·ÖµÄ»·¾³ÏÂµÄfloat¶¼ÊÇ4×Ö½Ú
+        // ä¸‰è§’å½¢ä¿¡æ¯é‡Œå¡«çš„vertexFormatå›ºå®šä¸ºVK_FORMAT_R32G32B32_SFLOATï¼Œå¦‚æœæŸäº›ç‰¹æ®Šè®¾å¤‡floatä¸æ˜¯4å­—èŠ‚è¿™é‡Œç›´æ¥æŠ›å‡ºå¼‚å¸¸
+        // æ²¡åšé€‚é…å¤„ç†ï¼Œå› ä¸ºç»å¤§éƒ¨åˆ†çš„ç¯å¢ƒä¸‹çš„floatéƒ½æ˜¯4å­—èŠ‚
         if (sizeof(float) != 4)
             throw std::runtime_error("float size is not 4");
 
-        // Èı½ÇĞÎMeshÊı¾İ£¬Ö÷Òª°üº¬ÁË¶¥µãºÍË÷ÒıBufferµØÖ·
+        // ä¸‰è§’å½¢Meshæ•°æ®ï¼Œä¸»è¦åŒ…å«äº†é¡¶ç‚¹å’Œç´¢å¼•Bufferåœ°å€
         VkAccelerationStructureGeometryTrianglesDataKHR triangles = {};
         triangles.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR;
         triangles.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
@@ -2520,55 +2520,55 @@ namespace ZXEngine
         triangles.indexType = VK_INDEX_TYPE_UINT32;
         triangles.indexData.deviceAddress = meshBuffer->indexBufferDeviceAddress;
 
-        // Ä£ĞÍµÄ¼¸ºÎÌåĞÅÏ¢£¬Ö÷ÒªÊÇÒıÓÃÉÏÃæÄÇ¸öÈı½ÇĞÎMeshÊı¾İ
+        // æ¨¡å‹çš„å‡ ä½•ä½“ä¿¡æ¯ï¼Œä¸»è¦æ˜¯å¼•ç”¨ä¸Šé¢é‚£ä¸ªä¸‰è§’å½¢Meshæ•°æ®
         VkAccelerationStructureGeometryKHR geometry = {};
         geometry.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
         geometry.geometryType = VK_GEOMETRY_TYPE_TRIANGLES_KHR;
         geometry.flags = VK_GEOMETRY_OPAQUE_BIT_KHR;
         geometry.geometry.triangles = triangles;
 
-        // Õâ¸öRangeInfoÔÚÃèÊöÎÒÃÇÒª¹¹½¨µÄBLAS£¬ÊÇÓÃµÄÇ°ÃæÒıÓÃµÄ¶¥µãÊı¾İBufferÀïµÄÄÄÒ»¶Î
+        // è¿™ä¸ªRangeInfoåœ¨æè¿°æˆ‘ä»¬è¦æ„å»ºçš„BLASï¼Œæ˜¯ç”¨çš„å‰é¢å¼•ç”¨çš„é¡¶ç‚¹æ•°æ®Bufferé‡Œçš„å“ªä¸€æ®µ
         VkAccelerationStructureBuildRangeInfoKHR rangeInfo = {};
         rangeInfo.firstVertex = 0;
         rangeInfo.primitiveCount = meshBuffer->indexCount / 3;
         rangeInfo.primitiveOffset = 0;
         rangeInfo.transformOffset = 0;
 
-        // ÕâÊÇÒª¹¹½¨Ò»¸öBLASËùĞèÒªµÄĞÅÏ¢
+        // è¿™æ˜¯è¦æ„å»ºä¸€ä¸ªBLASæ‰€éœ€è¦çš„ä¿¡æ¯
         VkAccelerationStructureBuildGeometryInfoKHR buildInfo = {};
         buildInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
-        // Ö¸¶¨´´½¨µÄÊÇBLAS»¹ÊÇTLAS£¬ÕâÀï´´½¨BLAS
+        // æŒ‡å®šåˆ›å»ºçš„æ˜¯BLASè¿˜æ˜¯TLASï¼Œè¿™é‡Œåˆ›å»ºBLAS
         buildInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
-        // ´´½¨È«ĞÂµÄBLAS£¬»¹ÊÇ¸üĞÂÏÖÓĞµÄBLAS
+        // åˆ›å»ºå…¨æ–°çš„BLASï¼Œè¿˜æ˜¯æ›´æ–°ç°æœ‰çš„BLAS
         buildInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
         buildInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
         if (isCompact)
             buildInfo.flags |= VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR;
-        // ÕâÀï´«Ò»¸ö¼¸ºÎÌåÊı×é£¬ÔÊĞí°Ñ¶à¸ö¼¸ºÎÌå·Åµ½Ò»¸öBLASÀï£¬µ«ÊÇÒ»°ãÀ´ËµÄ£ĞÍºÍBLASÊÇÒ»¶ÔÒ»µÄ
+        // è¿™é‡Œä¼ ä¸€ä¸ªå‡ ä½•ä½“æ•°ç»„ï¼Œå…è®¸æŠŠå¤šä¸ªå‡ ä½•ä½“æ”¾åˆ°ä¸€ä¸ªBLASé‡Œï¼Œä½†æ˜¯ä¸€èˆ¬æ¥è¯´æ¨¡å‹å’ŒBLASæ˜¯ä¸€å¯¹ä¸€çš„
         buildInfo.pGeometries = &geometry;
         buildInfo.geometryCount = 1;
 
-        // µ÷ÓÃVulkanµÄ½Ó¿ÚÀ´²éÑ¯µ±Ç°Òª´´½¨µÄBLAS´óĞ¡
-        // µ÷ÓÃÒ»´ÎÕâ¸ö½Ó¿ÚÖ»ÄÜ²éÑ¯Ò»¸öBLASµÄ´óĞ¡£¬ËùÒÔ²ÎÊıÖ»´«µİÒ»¸öVkAccelerationStructureBuildGeometryInfoKHR
-        // µÚ4¸ö²ÎÊıpMaxPrimitiveCounts´«µİµÄÊÇÒ»¸öuint32_tÊı×é£¬Õâ¸öÊı×éÊÇ¶ÔÓ¦ÎÒÃÇ´«ÈëµÄVkAccelerationStructureBuildGeometryInfoKHR
-        // ÀïÃæµÄpGeometries£¬Ã÷È·Ã¿¸ö¼¸ºÎÌåµÄÍ¼ÔªÊıÁ¿
-        // ×îºóÒ»¸ö²ÎÊıÊÇÓÃÀ´·µ»Ø²éÑ¯Êı¾İµÄ
+        // è°ƒç”¨Vulkançš„æ¥å£æ¥æŸ¥è¯¢å½“å‰è¦åˆ›å»ºçš„BLASå¤§å°
+        // è°ƒç”¨ä¸€æ¬¡è¿™ä¸ªæ¥å£åªèƒ½æŸ¥è¯¢ä¸€ä¸ªBLASçš„å¤§å°ï¼Œæ‰€ä»¥å‚æ•°åªä¼ é€’ä¸€ä¸ªVkAccelerationStructureBuildGeometryInfoKHR
+        // ç¬¬4ä¸ªå‚æ•°pMaxPrimitiveCountsä¼ é€’çš„æ˜¯ä¸€ä¸ªuint32_tæ•°ç»„ï¼Œè¿™ä¸ªæ•°ç»„æ˜¯å¯¹åº”æˆ‘ä»¬ä¼ å…¥çš„VkAccelerationStructureBuildGeometryInfoKHR
+        // é‡Œé¢çš„pGeometriesï¼Œæ˜ç¡®æ¯ä¸ªå‡ ä½•ä½“çš„å›¾å…ƒæ•°é‡
+        // æœ€åä¸€ä¸ªå‚æ•°æ˜¯ç”¨æ¥è¿”å›æŸ¥è¯¢æ•°æ®çš„
         vector<uint32_t> maxPrimCount = { rangeInfo.primitiveCount };
         VkAccelerationStructureBuildSizesInfoKHR sizeInfo = {};
         sizeInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR;
         vkGetAccelerationStructureBuildSizesKHR(device, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR, &buildInfo, maxPrimCount.data(), &sizeInfo);
 
-        // ÖØĞÂ¼ÆËãScratch Buffer´óĞ¡£¬ÏÈÏòÉÏ¶ÔÆë²éÑ¯µ½µÄÓ²¼ş×îĞ¡¶ÔÆëÁ¿£¬ÔÙ¼ÓÒ»¸öÕâ¸ö´óĞ¡
-        // Õâ¸ö¼ÆËãÊÇÎªÁËÅäºÏºóÃæÈ¡Scratch BufferµØÖ·Ê±£¬ĞèÒª´¦ÀíµÄÒ»¸öÆæ¹ÖµÄÎÊÌâ£¬ºóÃæÈ¡µØÖ·Ê±ÏêÏ¸½âÊÍ
+        // é‡æ–°è®¡ç®—Scratch Bufferå¤§å°ï¼Œå…ˆå‘ä¸Šå¯¹é½æŸ¥è¯¢åˆ°çš„ç¡¬ä»¶æœ€å°å¯¹é½é‡ï¼Œå†åŠ ä¸€ä¸ªè¿™ä¸ªå¤§å°
+        // è¿™ä¸ªè®¡ç®—æ˜¯ä¸ºäº†é…åˆåé¢å–Scratch Bufferåœ°å€æ—¶ï¼Œéœ€è¦å¤„ç†çš„ä¸€ä¸ªå¥‡æ€ªçš„é—®é¢˜ï¼Œåé¢å–åœ°å€æ—¶è¯¦ç»†è§£é‡Š
         VkDeviceSize realScratchSize = Math::AlignUpPOT(sizeInfo.buildScratchSize, static_cast<VkDeviceSize>(physicalAccelerationStructureProperties.minAccelerationStructureScratchOffsetAlignment));
         realScratchSize += physicalAccelerationStructureProperties.minAccelerationStructureScratchOffsetAlignment;
 
-        // ´´½¨Ò»¸öScratch Buffer£¬Õâ¸öÊÇ¸øVulkan´´½¨BLASÓÃµÄÁÙÊ±Buffer£¬ÒòÎªVulkanÔÚ´´½¨BLASµÄ¹ı³ÌÖĞ»á²úÉúÒ»Ğ©ÖĞ¼äÊı¾İ
-        // ÆäÊµVulkanÍêÈ«¿ÉÒÔ×Ô¼º´´½¨Õâ¸öBufferÓÃÍêÁËÔÙ×Ô¼ºÏú»Ù£¬µ«ÊÇ³öÓÚĞÔÄÜ¿¼ÂÇVulkanÑ¡ÔñÈÃÓÃ»§°ÑScratch Buffer´´½¨ºÃÔÙÌá¹©¸øËü
-        // ÒòÎª¼ÙÉèÒª´´½¨100¸öBLAS£¬¶øVulkanÔÚ½Ó¿ÚÄÚ²¿×Ô¼º´´½¨ºÍÏú»ÙÁÙÊ±Buffer£¬¾ÍÒª×ö100´ÎBuffer´´½¨ºÍÏú»Ù
-        // µ«ÊÇÈç¹û¶ª¸øÓÃ»§´´½¨£¬ÓÃ»§¿ÉÒÔ´´½¨Ò»¸öScratch Buffer£¬È»ºóÓÃÕâÒ»¸öBufferµ÷ÓÃ100´Î´´½¨BLASµÄ½Ó¿Ú£¬ÕâÑùÖ»ĞèÒªÒ»´Î´´½¨ºÍÏú»Ù
-        // ËùÒÔÕâÀïVulkanÆäÊµ¸üÍÆ¼ö¼¯ÖĞ¶à¸öÄ£ĞÍÒ»Æğ´´½¨BLAS£¬ÒòÎªÕâÑù¿ÉÒÔ¹²ÓÃÒ»¸öScratch Buffer£¬¶ø²»ÊÇ´´½¨Ò»¸öÄ£ĞÍ¾ÍÂíÉÏ´´½¨Ò»¸öBLAS
-        // Èç¹ûÒª¼¯ÖĞ´´½¨BLAS¸´ÓÃScratch Buffer£¬ÄÇÕâ¸öScratch BufferµÄ´óĞ¡°´×î´óµÄÄ£ĞÍSizeÀ´´´½¨
+        // åˆ›å»ºä¸€ä¸ªScratch Bufferï¼Œè¿™ä¸ªæ˜¯ç»™Vulkanåˆ›å»ºBLASç”¨çš„ä¸´æ—¶Bufferï¼Œå› ä¸ºVulkanåœ¨åˆ›å»ºBLASçš„è¿‡ç¨‹ä¸­ä¼šäº§ç”Ÿä¸€äº›ä¸­é—´æ•°æ®
+        // å…¶å®Vulkanå®Œå…¨å¯ä»¥è‡ªå·±åˆ›å»ºè¿™ä¸ªBufferç”¨å®Œäº†å†è‡ªå·±é”€æ¯ï¼Œä½†æ˜¯å‡ºäºæ€§èƒ½è€ƒè™‘Vulkané€‰æ‹©è®©ç”¨æˆ·æŠŠScratch Bufferåˆ›å»ºå¥½å†æä¾›ç»™å®ƒ
+        // å› ä¸ºå‡è®¾è¦åˆ›å»º100ä¸ªBLASï¼Œè€ŒVulkanåœ¨æ¥å£å†…éƒ¨è‡ªå·±åˆ›å»ºå’Œé”€æ¯ä¸´æ—¶Bufferï¼Œå°±è¦åš100æ¬¡Bufferåˆ›å»ºå’Œé”€æ¯
+        // ä½†æ˜¯å¦‚æœä¸¢ç»™ç”¨æˆ·åˆ›å»ºï¼Œç”¨æˆ·å¯ä»¥åˆ›å»ºä¸€ä¸ªScratch Bufferï¼Œç„¶åç”¨è¿™ä¸€ä¸ªBufferè°ƒç”¨100æ¬¡åˆ›å»ºBLASçš„æ¥å£ï¼Œè¿™æ ·åªéœ€è¦ä¸€æ¬¡åˆ›å»ºå’Œé”€æ¯
+        // æ‰€ä»¥è¿™é‡ŒVulkanå…¶å®æ›´æ¨èé›†ä¸­å¤šä¸ªæ¨¡å‹ä¸€èµ·åˆ›å»ºBLASï¼Œå› ä¸ºè¿™æ ·å¯ä»¥å…±ç”¨ä¸€ä¸ªScratch Bufferï¼Œè€Œä¸æ˜¯åˆ›å»ºä¸€ä¸ªæ¨¡å‹å°±é©¬ä¸Šåˆ›å»ºä¸€ä¸ªBLAS
+        // å¦‚æœè¦é›†ä¸­åˆ›å»ºBLASå¤ç”¨Scratch Bufferï¼Œé‚£è¿™ä¸ªScratch Bufferçš„å¤§å°æŒ‰æœ€å¤§çš„æ¨¡å‹Sizeæ¥åˆ›å»º
         VulkanBuffer scratchBuffer = CreateBuffer(realScratchSize,
             VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
             VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
@@ -2578,45 +2578,45 @@ namespace ZXEngine
         bufferInfo.pNext = nullptr;
         VkDeviceAddress scratchAddress = vkGetBufferDeviceAddress(device, &bufferInfo);
 
-        // ÕâÀïÈ¡µ½µØÖ·ºó£¬ÏòÉÏ¶ÔÆëVkPhysicalDeviceAccelerationStructurePropertiesKHR::minAccelerationStructureScratchOffsetAlignment
-        // vkCmdBuildAccelerationStructuresKHR ÒªÇó´«ÈëµÄ Scratch Buffer µØÖ·Òª¶ÔÆëÕâ¸ö²éÑ¯µ½µÄ×îĞ¡¶ÔÆëÁ¿
-        // µ«ÊÇvkGetBufferDeviceAddress½Ó¿ÚÄÃµ½µÄµØÖ·²¢²»ÄÜ±£Ö¤Õâ¸ö¶ÔÆë£¬Èç¹ûµØÖ·Ã»Âú×ãÒªÇó£¬¾Í»á±¨´íÖ±½ÓCrash
-        // ÎÒÓöµ½µÄÇé¿öÊÇ£¬Èç¹ûÆô¶¯ÒıÇæ£¬¼ÓÔØµÄµÚÒ»¸ö³¡¾°¾ÍÊÇ¹â×·³¡¾°£¬ÊÇ²»»áÓĞÎÊÌâµÄ£¬µ«ÊÇÈç¹û´ÓÆäËü³¡¾°ÇĞ»»µ½Ò»¸ö¹â×·³¡¾°£¬¾ÍÈİÒ×Óöµ½Õâ¸öÎÊÌâ
-        // ÍøÉÏÃ»ÔõÃ´ËÑµ½Õâ¸öÎÊÌâµÄ´¦Àí·½°¸£¬ÎÒ×Ô¼ºÏëÁËÒ»¸ö´¦Àí·½Ê½£¬¾ÍÊÇ´´½¨ Scratch Buffer µÄÊ±ºò½¨´óÒ»µã
-        // ÒªÖÁÉÙ´óÒ»¸ö×îĞ¡¶ÔÆëÁ¿£¬È»ºóÕâÀï¼ÆËã´«¸ø vkCmdBuildAccelerationStructuresKHR µÄµØÖ·£¬ÏòÉÏ¶ÔÆëÕâ¸ö×îĞ¡¶ÔÆëÁ¿
-        // ÕâÑùÈç¹ûÄÃµ½µÄµØÖ·Ã»¶ÔÆë£¬Ïàµ±ÓÚÊÖ¶¯ÏòºóÆ«ÒÆÒ»µãÈ¥¶ÔÆëÁË
-        // µ«ÊÇÕâÑùµÄ»°BufferÇ°ÃæÒ»Ğ¡¶Î¿Õ¼ä¾ÍÎŞ·¨Ê¹ÓÃÁË£¬Èç¹ûÖ±½Ó°´²éÑ¯µ½µÄ buildScratchSize À´¹¹½¨Buffer£¬È»ºóÓÖÏòºóÆ«ÒÆÁËÒ»µã
-        // ¾ÍÓĞ¿ÉÄÜµ¼ÖÂÊµ¼Ê¿ÉÓÃµÄBuffer¿Õ¼ä²»¹»£¬ËùÒÔÇ°ÃæÖØĞÂ¼ÆËãÁËÊµ¼Ê¹¹½¨ Scratch Buffer µÄ´óĞ¡£¬ÖÁÉÙ´óÒ»¸ö¶ÔÆëÁ¿
-        // ÕâÑù¾ÍÄÜ±£Ö¤¼´Ê¹ÏòºóÆ«ÒÆÁËÒ»Ğ¡¶ÎµØÖ·£¬×ÜµÄBuffer¿Õ¼äÒ²Ò»¶¨ÊÇ¹»ÓÃµÄ
+        // è¿™é‡Œå–åˆ°åœ°å€åï¼Œå‘ä¸Šå¯¹é½VkPhysicalDeviceAccelerationStructurePropertiesKHR::minAccelerationStructureScratchOffsetAlignment
+        // vkCmdBuildAccelerationStructuresKHR è¦æ±‚ä¼ å…¥çš„ Scratch Buffer åœ°å€è¦å¯¹é½è¿™ä¸ªæŸ¥è¯¢åˆ°çš„æœ€å°å¯¹é½é‡
+        // ä½†æ˜¯vkGetBufferDeviceAddressæ¥å£æ‹¿åˆ°çš„åœ°å€å¹¶ä¸èƒ½ä¿è¯è¿™ä¸ªå¯¹é½ï¼Œå¦‚æœåœ°å€æ²¡æ»¡è¶³è¦æ±‚ï¼Œå°±ä¼šæŠ¥é”™ç›´æ¥Crash
+        // æˆ‘é‡åˆ°çš„æƒ…å†µæ˜¯ï¼Œå¦‚æœå¯åŠ¨å¼•æ“ï¼ŒåŠ è½½çš„ç¬¬ä¸€ä¸ªåœºæ™¯å°±æ˜¯å…‰è¿½åœºæ™¯ï¼Œæ˜¯ä¸ä¼šæœ‰é—®é¢˜çš„ï¼Œä½†æ˜¯å¦‚æœä»å…¶å®ƒåœºæ™¯åˆ‡æ¢åˆ°ä¸€ä¸ªå…‰è¿½åœºæ™¯ï¼Œå°±å®¹æ˜“é‡åˆ°è¿™ä¸ªé—®é¢˜
+        // ç½‘ä¸Šæ²¡æ€ä¹ˆæœåˆ°è¿™ä¸ªé—®é¢˜çš„å¤„ç†æ–¹æ¡ˆï¼Œæˆ‘è‡ªå·±æƒ³äº†ä¸€ä¸ªå¤„ç†æ–¹å¼ï¼Œå°±æ˜¯åˆ›å»º Scratch Buffer çš„æ—¶å€™å»ºå¤§ä¸€ç‚¹
+        // è¦è‡³å°‘å¤§ä¸€ä¸ªæœ€å°å¯¹é½é‡ï¼Œç„¶åè¿™é‡Œè®¡ç®—ä¼ ç»™ vkCmdBuildAccelerationStructuresKHR çš„åœ°å€ï¼Œå‘ä¸Šå¯¹é½è¿™ä¸ªæœ€å°å¯¹é½é‡
+        // è¿™æ ·å¦‚æœæ‹¿åˆ°çš„åœ°å€æ²¡å¯¹é½ï¼Œç›¸å½“äºæ‰‹åŠ¨å‘ååç§»ä¸€ç‚¹å»å¯¹é½äº†
+        // ä½†æ˜¯è¿™æ ·çš„è¯Bufferå‰é¢ä¸€å°æ®µç©ºé—´å°±æ— æ³•ä½¿ç”¨äº†ï¼Œå¦‚æœç›´æ¥æŒ‰æŸ¥è¯¢åˆ°çš„ buildScratchSize æ¥æ„å»ºBufferï¼Œç„¶ååˆå‘ååç§»äº†ä¸€ç‚¹
+        // å°±æœ‰å¯èƒ½å¯¼è‡´å®é™…å¯ç”¨çš„Bufferç©ºé—´ä¸å¤Ÿï¼Œæ‰€ä»¥å‰é¢é‡æ–°è®¡ç®—äº†å®é™…æ„å»º Scratch Buffer çš„å¤§å°ï¼Œè‡³å°‘å¤§ä¸€ä¸ªå¯¹é½é‡
+        // è¿™æ ·å°±èƒ½ä¿è¯å³ä½¿å‘ååç§»äº†ä¸€å°æ®µåœ°å€ï¼Œæ€»çš„Bufferç©ºé—´ä¹Ÿä¸€å®šæ˜¯å¤Ÿç”¨çš„
         scratchAddress = Math::AlignUpPOT(scratchAddress, static_cast<VkDeviceAddress>(physicalAccelerationStructureProperties.minAccelerationStructureScratchOffsetAlignment));
 
-        // ´´½¨Ò»¸ö´æ·ÅBLASÊı¾İµÄVkBuffer£¬SizeÎªÇ°Ãæ²éÑ¯µ½µÄ£¬ËùĞèµÄ´óĞ¡
+        // åˆ›å»ºä¸€ä¸ªå­˜æ”¾BLASæ•°æ®çš„VkBufferï¼ŒSizeä¸ºå‰é¢æŸ¥è¯¢åˆ°çš„ï¼Œæ‰€éœ€çš„å¤§å°
         meshBuffer->blas.buffer = CreateBuffer(sizeInfo.accelerationStructureSize,
             VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
             VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
-        // ´´½¨Ò»¸öBLASÒªÓÃµ½µÄĞÅÏ¢£¬Ö÷Òª²ÎÊıÊÇ´æ·ÅBLASµÄBufferºÍSize
+        // åˆ›å»ºä¸€ä¸ªBLASè¦ç”¨åˆ°çš„ä¿¡æ¯ï¼Œä¸»è¦å‚æ•°æ˜¯å­˜æ”¾BLASçš„Bufferå’ŒSize
         VkAccelerationStructureCreateInfoKHR blasInfo = {};
         blasInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
         blasInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
         blasInfo.size = sizeInfo.accelerationStructureSize;
         blasInfo.buffer = meshBuffer->blas.buffer.buffer;
 
-        // ´´½¨BLAS£¬×¢ÒâÕâÀï´´½¨ºÃºóÖ»ÊÇ³õÊ¼»¯×´Ì¬£¬ÕæÕıµÄÊı¾İ»¹ÒªºóĞøÌî³ä
+        // åˆ›å»ºBLASï¼Œæ³¨æ„è¿™é‡Œåˆ›å»ºå¥½ååªæ˜¯åˆå§‹åŒ–çŠ¶æ€ï¼ŒçœŸæ­£çš„æ•°æ®è¿˜è¦åç»­å¡«å……
         if (vkCreateAccelerationStructureKHR(device, &blasInfo, nullptr, &meshBuffer->blas.as) != VK_SUCCESS)
             throw std::runtime_error("Create acceleration structure failed!");
 
-        // ¼ÌĞøÌî³ä¹¹½¨BLASËùĞèµÄĞÅÏ¢
-        // °Ñ¸Õ¸Õ´´½¨µÄ£¬´¦ÓÚ³õÊ¼×´Ì¬µÄBLAS´«¸ødstAccelerationStructure£¬±íÊ¾ÕâÊÇÎÒÃÇËùÒª¹¹½¨µÄBLAS
+        // ç»§ç»­å¡«å……æ„å»ºBLASæ‰€éœ€çš„ä¿¡æ¯
+        // æŠŠåˆšåˆšåˆ›å»ºçš„ï¼Œå¤„äºåˆå§‹çŠ¶æ€çš„BLASä¼ ç»™dstAccelerationStructureï¼Œè¡¨ç¤ºè¿™æ˜¯æˆ‘ä»¬æ‰€è¦æ„å»ºçš„BLAS
         buildInfo.dstAccelerationStructure = meshBuffer->blas.as;
-        // Èç¹ûÎÒÃÇ²»ÊÇ´´½¨Ò»¸öÈ«ĞÂµÄBLAS£¬¶øÊÇÍ¨¹ıÒ»¸öÏÖÓĞµÄBLASÀ´¸üĞÂµ±Ç°µÄÕâ¸öBLAS£¬¾ÍĞèÒªÉèÖÃÕâ¸ö²ÎÊı
+        // å¦‚æœæˆ‘ä»¬ä¸æ˜¯åˆ›å»ºä¸€ä¸ªå…¨æ–°çš„BLASï¼Œè€Œæ˜¯é€šè¿‡ä¸€ä¸ªç°æœ‰çš„BLASæ¥æ›´æ–°å½“å‰çš„è¿™ä¸ªBLASï¼Œå°±éœ€è¦è®¾ç½®è¿™ä¸ªå‚æ•°
         buildInfo.srcAccelerationStructure = VK_NULL_HANDLE;
-        // °ÑÇ°Ãæ´´½¨µÄScratch BufferÌá¹©¸øVulkan
+        // æŠŠå‰é¢åˆ›å»ºçš„Scratch Bufferæä¾›ç»™Vulkan
         buildInfo.scratchData.deviceAddress = scratchAddress;
 
-        // µÈºóÃæÕıÕæ¹¹½¨ÍêBLASºó£¬Êµ¼ÊÕ¼ÓÃµÄÄÚ´æ´óĞ¡¿ÉÄÜ»á±ÈÖ®Ç°¼ÆËãµÄÒªĞ¡£¬ËùÒÔÕâÀï¿ÉÒÔÑ¡ÔñÑ¹ËõÒ»ÏÂBLAS
-        // ¾ÍÊÇ°´Êµ¼ÊÕ¼ÓÃ´óĞ¡ÔÙÖØĞÂ´´½¨Ò»¸öBLAS£¬½ÚÊ¡ÄÚ´æ¿Õ¼ä£¬È»ºóÏú»ÙÖ®Ç°´´½¨µÄBLAS
-        // ²éÑ¯¹¹½¨Íê³ÉºóµÄBLASÕæÊµ´óĞ¡£¬ĞèÒªÓÃµ½VkQueryPool
+        // ç­‰åé¢æ­£çœŸæ„å»ºå®ŒBLASåï¼Œå®é™…å ç”¨çš„å†…å­˜å¤§å°å¯èƒ½ä¼šæ¯”ä¹‹å‰è®¡ç®—çš„è¦å°ï¼Œæ‰€ä»¥è¿™é‡Œå¯ä»¥é€‰æ‹©å‹ç¼©ä¸€ä¸‹BLAS
+        // å°±æ˜¯æŒ‰å®é™…å ç”¨å¤§å°å†é‡æ–°åˆ›å»ºä¸€ä¸ªBLASï¼ŒèŠ‚çœå†…å­˜ç©ºé—´ï¼Œç„¶åé”€æ¯ä¹‹å‰åˆ›å»ºçš„BLAS
+        // æŸ¥è¯¢æ„å»ºå®Œæˆåçš„BLASçœŸå®å¤§å°ï¼Œéœ€è¦ç”¨åˆ°VkQueryPool
         VkQueryPool queryPool = VK_NULL_HANDLE;
         if (isCompact)
         {
@@ -2629,19 +2629,19 @@ namespace ZXEngine
 
         ImmediatelyExecute([=](VkCommandBuffer cmd)
         {
-            // ÓÃÇ°Ãæ×¼±¸µÄ VkAccelerationStructureBuildGeometryInfoKHR ÕıÕæ¹¹½¨BLAS
-            // ²ÎÊı2,3ÊÇ´«µİÒ»¸ö VkAccelerationStructureBuildGeometryInfoKHR Êı×é
-            // ºÍÆäËüVulkan½Ó¿ÚÒ»Ñù£¬ÕâÀï¿ÉÒÔÒ»´Îµ÷ÓÃ´´½¨¶à¸ö£¬ÕâÀïÔİÊ±Ö»´«Ò»¸ö
-            // ÕâÀïµÄ×îºóÒ»¸ö²ÎÊı£¬ÊÇÒ»¸ö VkAccelerationStructureBuildRangeInfoKHR µÄ¶şÎ¬Êı×é
-            // Êı×éµÄµÚÒ»²ã¶ÔÓ¦²ÎÊı2,3µÄ VkAccelerationStructureBuildGeometryInfoKHR Êı×é
-            // Êı×éµÄµÚ¶ş²ã¶ÔÓ¦Ã¿¸ö VkAccelerationStructureBuildGeometryInfoKHR ÀïµÄ pGeometries Êı×é
-            // ËùÒÔ¶şÎ¬Êı×éÀïµÄÃ¿Ò»¸öRangeInfo¶¼×îÖÕ¶ÔÓ¦ÁËÒ»¸ö VkAccelerationStructureGeometryKHR
+            // ç”¨å‰é¢å‡†å¤‡çš„ VkAccelerationStructureBuildGeometryInfoKHR æ­£çœŸæ„å»ºBLAS
+            // å‚æ•°2,3æ˜¯ä¼ é€’ä¸€ä¸ª VkAccelerationStructureBuildGeometryInfoKHR æ•°ç»„
+            // å’Œå…¶å®ƒVulkanæ¥å£ä¸€æ ·ï¼Œè¿™é‡Œå¯ä»¥ä¸€æ¬¡è°ƒç”¨åˆ›å»ºå¤šä¸ªï¼Œè¿™é‡Œæš‚æ—¶åªä¼ ä¸€ä¸ª
+            // è¿™é‡Œçš„æœ€åä¸€ä¸ªå‚æ•°ï¼Œæ˜¯ä¸€ä¸ª VkAccelerationStructureBuildRangeInfoKHR çš„äºŒç»´æ•°ç»„
+            // æ•°ç»„çš„ç¬¬ä¸€å±‚å¯¹åº”å‚æ•°2,3çš„ VkAccelerationStructureBuildGeometryInfoKHR æ•°ç»„
+            // æ•°ç»„çš„ç¬¬äºŒå±‚å¯¹åº”æ¯ä¸ª VkAccelerationStructureBuildGeometryInfoKHR é‡Œçš„ pGeometries æ•°ç»„
+            // æ‰€ä»¥äºŒç»´æ•°ç»„é‡Œçš„æ¯ä¸€ä¸ªRangeInfoéƒ½æœ€ç»ˆå¯¹åº”äº†ä¸€ä¸ª VkAccelerationStructureGeometryKHR
             vector<VkAccelerationStructureBuildRangeInfoKHR> ranges = { rangeInfo };
             const VkAccelerationStructureBuildRangeInfoKHR* ptr = ranges.data();
             vkCmdBuildAccelerationStructuresKHR(cmd, 1, &buildInfo, &ptr);
 
-            // Èç¹ûÒ»´ÎĞÔ´´½¨¶à¸öBLAS£¬È»ºó¹²ÓÃScratch Buffer£¬¿ÉÄÜ»áÓĞ¶ÁĞ´³åÍ»ÎÊÌâ£¬¼Ó¸öBarrier
-            // ²»¹ıÕâÀïÔİÊ±Ò»´ÎÖ»´´½¨Ò»¸ö£¬ÆäÊµÃ»±ØÒª
+            // å¦‚æœä¸€æ¬¡æ€§åˆ›å»ºå¤šä¸ªBLASï¼Œç„¶åå…±ç”¨Scratch Bufferï¼Œå¯èƒ½ä¼šæœ‰è¯»å†™å†²çªé—®é¢˜ï¼ŒåŠ ä¸ªBarrier
+            // ä¸è¿‡è¿™é‡Œæš‚æ—¶ä¸€æ¬¡åªåˆ›å»ºä¸€ä¸ªï¼Œå…¶å®æ²¡å¿…è¦
             VkMemoryBarrier barrier = {};
             barrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
             barrier.srcAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR;
@@ -2652,7 +2652,7 @@ namespace ZXEngine
             if (isCompact)
             {
                 vkResetQueryPool(device, queryPool, 0, 1);
-                // ²éÒ»ÏÂÎÒÃÇ¸Õ¸Õ¹¹½¨ºÃµÄBLASÊµ¼ÊÕ¼ÓÃ´óĞ¡£¬°Ñ½á¹û·Åµ½queryPoolÀï(Õâ¸ö½Ó¿ÚÒ²¿ÉÒÔ´«Êı×éÒ»´ÎĞÔ²é¶à¸öÊı¾İ)
+                // æŸ¥ä¸€ä¸‹æˆ‘ä»¬åˆšåˆšæ„å»ºå¥½çš„BLASå®é™…å ç”¨å¤§å°ï¼ŒæŠŠç»“æœæ”¾åˆ°queryPoolé‡Œ(è¿™ä¸ªæ¥å£ä¹Ÿå¯ä»¥ä¼ æ•°ç»„ä¸€æ¬¡æ€§æŸ¥å¤šä¸ªæ•°æ®)
                 vkCmdWriteAccelerationStructuresPropertiesKHR(cmd, 1, &buildInfo.dstAccelerationStructure,
                     VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR, queryPool, 0);
             }
@@ -2660,32 +2660,32 @@ namespace ZXEngine
 
         if (isCompact)
         {
-            // ´ÓqueryPoolÀï»ñÈ¡ÎÒÃÇ¸Õ¸Õ²éµÄBLASÊµ¼Ê´óĞ¡Êı¾İ
+            // ä»queryPoolé‡Œè·å–æˆ‘ä»¬åˆšåˆšæŸ¥çš„BLASå®é™…å¤§å°æ•°æ®
             vector<VkDeviceSize> compactSizes(1);
             vkGetQueryPoolResults(device, queryPool, 0, static_cast<uint32_t>(compactSizes.size()),
                 compactSizes.size() * sizeof(VkDeviceSize), compactSizes.data(), sizeof(VkDeviceSize), VK_QUERY_RESULT_WAIT_BIT);
             sizeInfo.accelerationStructureSize = compactSizes[0];
 
-            // ÓÃÊµ¼ÊÕ¼ÓÃ´óĞ¡ÖØĞÂ´´½¨Ò»¸öBLAS Buffer
+            // ç”¨å®é™…å ç”¨å¤§å°é‡æ–°åˆ›å»ºä¸€ä¸ªBLAS Buffer
             VulkanBuffer newBLASBuffer = CreateBuffer(sizeInfo.accelerationStructureSize,
                 VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
                 VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
-            // ĞÂµÄÑ¹Ëõ¹ıµÄBufferºÍSizeĞÅÏ¢
+            // æ–°çš„å‹ç¼©è¿‡çš„Bufferå’ŒSizeä¿¡æ¯
             VkAccelerationStructureCreateInfoKHR newBLASInfo = {};
             newBLASInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
             newBLASInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
             newBLASInfo.size = sizeInfo.accelerationStructureSize;
             newBLASInfo.buffer = newBLASBuffer.buffer;
 
-            // ´´½¨ĞÂµÄÑ¹Ëõ¹ıµÄBLAS
+            // åˆ›å»ºæ–°çš„å‹ç¼©è¿‡çš„BLAS
             VkAccelerationStructureKHR newAS = {};
             if (vkCreateAccelerationStructureKHR(device, &newBLASInfo, nullptr, &newAS) != VK_SUCCESS)
                 throw std::runtime_error("Create acceleration structure failed!");
 
             ImmediatelyExecute([=](VkCommandBuffer cmd)
             {
-                // °ÑÖ®Ç°¹¹½¨ºÃµÄBLASÊı¾İ£¬¸´ÖÆµ½ĞÂµÄ£¬´óĞ¡¾«È·²»ÀË·ÑµÄBLASÉÏ
+                // æŠŠä¹‹å‰æ„å»ºå¥½çš„BLASæ•°æ®ï¼Œå¤åˆ¶åˆ°æ–°çš„ï¼Œå¤§å°ç²¾ç¡®ä¸æµªè´¹çš„BLASä¸Š
                 VkCopyAccelerationStructureInfoKHR copyInfo = {};
                 copyInfo.sType = VK_STRUCTURE_TYPE_COPY_ACCELERATION_STRUCTURE_INFO_KHR;
                 copyInfo.src = buildInfo.dstAccelerationStructure;
@@ -2694,23 +2694,23 @@ namespace ZXEngine
                 vkCmdCopyAccelerationStructureKHR(cmd, &copyInfo);
             });
 
-            // Ïú»ÙÖ®Ç°µÄBLAS
+            // é”€æ¯ä¹‹å‰çš„BLAS
             DestroyBuffer(meshBuffer->blas.buffer);
             vkDestroyAccelerationStructureKHR(device, meshBuffer->blas.as, nullptr);
 
-            // °ÑĞÂ´´½¨µÄBLAS¸³Öµ¹ıÀ´
+            // æŠŠæ–°åˆ›å»ºçš„BLASèµ‹å€¼è¿‡æ¥
             meshBuffer->blas.as = newAS;
             meshBuffer->blas.buffer = newBLASBuffer;
         }
 
-        // »ñÈ¡BLASµÄDevice Address
+        // è·å–BLASçš„Device Address
         VkAccelerationStructureDeviceAddressInfoKHR addressInfo = {};
         addressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
         addressInfo.accelerationStructure = meshBuffer->blas.as;
         meshBuffer->blas.deviceAddress = vkGetAccelerationStructureDeviceAddressKHR(device, &addressInfo);
         meshBuffer->blas.isBuilt = true;
 
-        // BLAS´´½¨Íê³ÉºóÁ¢¿ÌÏú»ÙScratch Buffer
+        // BLASåˆ›å»ºå®Œæˆåç«‹åˆ»é”€æ¯Scratch Buffer
         DestroyBuffer(scratchBuffer);
     }
 
@@ -3060,7 +3060,7 @@ namespace ZXEngine
         }
     }
 
-    // Vulkan²»ĞèÒªµÚ4¸ö²ÎÊı
+    // Vulkanä¸éœ€è¦ç¬¬4ä¸ªå‚æ•°
     void RenderAPIVulkan::SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer, bool isBuffer)
     {
         auto vulkanMaterialData = GetMaterialDataByIndex(material->data->GetID());
@@ -3082,7 +3082,7 @@ namespace ZXEngine
                     if (name == textureProperty.name)
                         binding = textureProperty.binding;
 
-                // Ã»ÕÒµ½µÄ»°¼ÌĞø
+                // æ²¡æ‰¾åˆ°çš„è¯ç»§ç»­
                 if (binding == UINT32_MAX)
                     for (auto& textureProperty : material->shader->reference->shaderInfo.fragProperties.textureProperties)
                         if (name == textureProperty.name)
@@ -3127,7 +3127,7 @@ namespace ZXEngine
                 if (name == textureProperty.name)
                     binding = textureProperty.binding;
 
-            // Ã»ÕÒµ½µÄ»°¼ÌĞø
+            // æ²¡æ‰¾åˆ°çš„è¯ç»§ç»­
             if (binding == UINT32_MAX)
                 for (auto& textureProperty : material->shader->reference->shaderInfo.fragProperties.textureProperties)
                     if (name == textureProperty.name)
@@ -3575,12 +3575,12 @@ namespace ZXEngine
     }
 
 
-    // ------------------------------------------½¨Á¢¸÷ÖÖVulkan¶ÔÏó--------------------------------------------
+    // ------------------------------------------å»ºç«‹å„ç§Vulkanå¯¹è±¡--------------------------------------------
 
 
     void RenderAPIVulkan::CreateVkInstance()
     {
-        // ³õÊ¼»¯volk£¬ÓÃÀ´¼ÓÔØVulkan Extensionº¯ÊıÖ¸ÕëµÄ£¬ÀàËÆOpenGLµÄGLAD£¬Ã»ÓĞÕâ¸öÓÃ²»ÁË¹â×·¹ÜÏßµÄÄÇĞ©VulkanÀ©Õ¹º¯Êı
+        // åˆå§‹åŒ–volkï¼Œç”¨æ¥åŠ è½½Vulkan Extensionå‡½æ•°æŒ‡é’ˆçš„ï¼Œç±»ä¼¼OpenGLçš„GLADï¼Œæ²¡æœ‰è¿™ä¸ªç”¨ä¸äº†å…‰è¿½ç®¡çº¿çš„é‚£äº›Vulkanæ‰©å±•å‡½æ•°
         VkResult res = volkInitialize();
         if (res != VK_SUCCESS)
 			Debug::LogError("Could not initialize volk!");
@@ -3588,7 +3588,7 @@ namespace ZXEngine
         if (ProjectSetting::enableGraphicsDebug)
             validationLayersEnabled = CheckValidationLayerSupport();
 
-        // Õâ¸öÊı¾İ¿ÉÒÔ²»Ìî£¬ºÃÏñÕâ¸öÊı¾İ¿ÉÒÔÈÃ¿ª·¢Çı¶¯µÄÓ²¼ş³§ÉÌ£¬±ÈÈçNvidiaÊ²Ã´µÄÊ¶±ğÒ»ÏÂ£¬¸øÒ»Ğ©ÒıÇæ»òÕßÓÎÏ·×ßºóÃÅ×öÌØÊâ´¦ÀíÊ²Ã´µÄ
+        // è¿™ä¸ªæ•°æ®å¯ä»¥ä¸å¡«ï¼Œå¥½åƒè¿™ä¸ªæ•°æ®å¯ä»¥è®©å¼€å‘é©±åŠ¨çš„ç¡¬ä»¶å‚å•†ï¼Œæ¯”å¦‚Nvidiaä»€ä¹ˆçš„è¯†åˆ«ä¸€ä¸‹ï¼Œç»™ä¸€äº›å¼•æ“æˆ–è€…æ¸¸æˆèµ°åé—¨åšç‰¹æ®Šå¤„ç†ä»€ä¹ˆçš„
         VkApplicationInfo appInfo = {};
         appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
         appInfo.pEngineName = "ZXEngine";
@@ -3604,12 +3604,12 @@ namespace ZXEngine
         createInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #endif
 
-        // »ñÈ¡Óë²»Í¬Æ½Ì¨µÄ´°ÌåÏµÍ³½øĞĞ½»»¥µÄÀ©Õ¹ĞÅÏ¢
+        // è·å–ä¸ä¸åŒå¹³å°çš„çª—ä½“ç³»ç»Ÿè¿›è¡Œäº¤äº’çš„æ‰©å±•ä¿¡æ¯
         auto extensions = GetRequiredExtensions();
         createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
         createInfo.ppEnabledExtensionNames = extensions.data();
 
-        // Èç¹û¿ªÁËÑéÖ¤²ã¾ÍÌí¼ÓÒ»ÏÂ
+        // å¦‚æœå¼€äº†éªŒè¯å±‚å°±æ·»åŠ ä¸€ä¸‹
         if (validationLayersEnabled)
         {
             createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
@@ -3623,10 +3623,10 @@ namespace ZXEngine
         if (vkCreateInstance(&createInfo, nullptr, &vkInstance) != VK_SUCCESS)
             throw std::runtime_error("failed to create instance!");
 
-        // ÓÃvolk¼ÓÔØVulkan Instance¼¶±ğµÄº¯ÊıÖ¸Õë
+        // ç”¨volkåŠ è½½Vulkan Instanceçº§åˆ«çš„å‡½æ•°æŒ‡é’ˆ
         volkLoadInstanceOnly(vkInstance);
 
-        // Èç¹û¿ªÁËÑéÖ¤²ã£¬´´½¨Ò»ÏÂ½ÓÊÕDebugĞÅÏ¢µÄ»Øµ÷
+        // å¦‚æœå¼€äº†éªŒè¯å±‚ï¼Œåˆ›å»ºä¸€ä¸‹æ¥æ”¶Debugä¿¡æ¯çš„å›è°ƒ
         if (validationLayersEnabled)
             CreateDebugMessenger();
     }
@@ -3645,18 +3645,18 @@ namespace ZXEngine
 
     void RenderAPIVulkan::CreatePhysicalDevice()
     {
-        // »ñÈ¡µ±Ç°Éè±¸Ö§³ÖVulkanµÄÏÔ¿¨ÊıÁ¿
+        // è·å–å½“å‰è®¾å¤‡æ”¯æŒVulkançš„æ˜¾å¡æ•°é‡
         uint32_t deviceCount = 0;
         vkEnumeratePhysicalDevices(vkInstance, &deviceCount, nullptr);
         if (deviceCount == 0)
             throw std::runtime_error("failed to find GPUs with Vulkan support!");
 
-        // »ñÈ¡ËùÓĞÖ§³ÖVulkanµÄÏÔ¿¨£¬´æ·Åµ½devicesÀï
+        // è·å–æ‰€æœ‰æ”¯æŒVulkançš„æ˜¾å¡ï¼Œå­˜æ”¾åˆ°devicesé‡Œ
         vector<VkPhysicalDevice> devices(deviceCount);
         vkEnumeratePhysicalDevices(vkInstance, &deviceCount, devices.data());
 
-        // ±éÀúËùÓĞÏÔ¿¨£¬ÕÒµ½µÚÒ»¸ö·ûºÏÎÒÃÇĞèÇóµÄ
-        // ÆäÊµ¿ÉÒÔĞ´¸ö¶àÏß³ÌÍ¬Ê±µ÷ÓÃÕâĞ©ÏÔ¿¨£¬²»¹ıÏÖÔÚÏÈËæ±ãÓÃÒ»¸ö
+        // éå†æ‰€æœ‰æ˜¾å¡ï¼Œæ‰¾åˆ°ç¬¬ä¸€ä¸ªç¬¦åˆæˆ‘ä»¬éœ€æ±‚çš„
+        // å…¶å®å¯ä»¥å†™ä¸ªå¤šçº¿ç¨‹åŒæ—¶è°ƒç”¨è¿™äº›æ˜¾å¡ï¼Œä¸è¿‡ç°åœ¨å…ˆéšä¾¿ç”¨ä¸€ä¸ª
         for (const auto& device : devices)
         {
             if (IsPhysicalDeviceSuitable(device))
@@ -3674,64 +3674,64 @@ namespace ZXEngine
 
     void RenderAPIVulkan::CreateLogicalDevice()
     {
-        // »ñÈ¡µ±Ç°ÎïÀíÉè±¸µÄ¶ÓÁĞ´ØË÷Òı
+        // è·å–å½“å‰ç‰©ç†è®¾å¤‡çš„é˜Ÿåˆ—ç°‡ç´¢å¼•
         queueFamilyIndices = GetQueueFamilyIndices(physicalDevice);
 
-        // Âß¼­Éè±¸ĞèÒªÄÄĞ©Queue
+        // é€»è¾‘è®¾å¤‡éœ€è¦å“ªäº›Queue
         vector<VkDeviceQueueCreateInfo> queueCreateInfos;
         float queuePriority = 1.0f;
         set<uint32_t> uniqueQueueFamilies = { queueFamilyIndices.graphics, queueFamilyIndices.present };
-        // ÓĞ¶à¸ö¶ÓÁĞ´Ø£¬±éÀú´´½¨
+        // æœ‰å¤šä¸ªé˜Ÿåˆ—ç°‡ï¼Œéå†åˆ›å»º
         for (uint32_t queueFamily : uniqueQueueFamilies)
         {
             VkDeviceQueueCreateInfo queueCreateInfo = {};
             queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-            // µ±Ç°¶ÓÁĞ´Ø¶ÔÓ¦µÄË÷Òı
+            // å½“å‰é˜Ÿåˆ—ç°‡å¯¹åº”çš„ç´¢å¼•
             queueCreateInfo.queueFamilyIndex = queueFamily;
-            // ¶ÓÁĞ´ØÖĞĞèÒªÉêÇëÊ¹ÓÃµÄ¶ÓÁĞÊıÁ¿
+            // é˜Ÿåˆ—ç°‡ä¸­éœ€è¦ç”³è¯·ä½¿ç”¨çš„é˜Ÿåˆ—æ•°é‡
             queueCreateInfo.queueCount = 1;
-            // VulkanÔÊĞíÊ¹ÓÃ0.0µ½1.0Ö®¼äµÄ¸¡µãÊı·ÖÅä¶ÓÁĞÓÅÏÈ¼¶À´Ó°ÏìÃüÁî»º³åÇøÖ´ĞĞµÄµ÷ÓÃ£¬¼´Ê¹Ö»ÓĞÒ»¸ö¶ÓÁĞÒ²ÊÇ±ØĞëµÄ
+            // Vulkanå…è®¸ä½¿ç”¨0.0åˆ°1.0ä¹‹é—´çš„æµ®ç‚¹æ•°åˆ†é…é˜Ÿåˆ—ä¼˜å…ˆçº§æ¥å½±å“å‘½ä»¤ç¼“å†²åŒºæ‰§è¡Œçš„è°ƒç”¨ï¼Œå³ä½¿åªæœ‰ä¸€ä¸ªé˜Ÿåˆ—ä¹Ÿæ˜¯å¿…é¡»çš„
             queueCreateInfo.pQueuePriorities = &queuePriority;
             queueCreateInfos.push_back(queueCreateInfo);
         }
 
-        // Ìí¼ÓVulkan 1.2µÄÌØĞÔ
+        // æ·»åŠ Vulkan 1.2çš„ç‰¹æ€§
         VkPhysicalDeviceVulkan12Features deviceVulkan12Features = {};
         deviceVulkan12Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
-        // ÆôÓÃ¶ÔDevice AddressµÄÖ§³Ö
+        // å¯ç”¨å¯¹Device Addressçš„æ”¯æŒ
         deviceVulkan12Features.bufferDeviceAddress = VK_TRUE;
         deviceVulkan12Features.runtimeDescriptorArray = VK_TRUE;
         deviceVulkan12Features.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
         deviceVulkan12Features.hostQueryReset = VK_TRUE;
-        // Ö§³Ö´´½¨¹â×·ShaderModuleÊ±£¬ShaderÀïµÄ¶¥µãºÍË÷ÒıµÈBufferµÄÊı¾İ½á¹¹²»¶ÔÆë16×Ö½Ú
+        // æ”¯æŒåˆ›å»ºå…‰è¿½ShaderModuleæ—¶ï¼ŒShaderé‡Œçš„é¡¶ç‚¹å’Œç´¢å¼•ç­‰Bufferçš„æ•°æ®ç»“æ„ä¸å¯¹é½16å­—èŠ‚
         deviceVulkan12Features.scalarBlockLayout = VK_TRUE;
         deviceVulkan12Features.pNext = nullptr;
         
-        // Ìí¼ÓShader¼ÆÊ±Æ÷ĞèÒªµÄÀ©Õ¹(¹â×·ShaderÒªÓÃ)
-        // ¶ÔÓ¦À©Õ¹: VK_KHR_SHADER_CLOCK_EXTENSION_NAME
+        // æ·»åŠ Shaderè®¡æ—¶å™¨éœ€è¦çš„æ‰©å±•(å…‰è¿½Shaderè¦ç”¨)
+        // å¯¹åº”æ‰©å±•: VK_KHR_SHADER_CLOCK_EXTENSION_NAME
         VkPhysicalDeviceShaderClockFeaturesKHR shaderClockFeature = {};
         shaderClockFeature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CLOCK_FEATURES_KHR;
         shaderClockFeature.shaderDeviceClock = VK_TRUE;
         shaderClockFeature.shaderSubgroupClock = VK_TRUE;
         shaderClockFeature.pNext = &deviceVulkan12Features;
 
-        // ¶ÔÓ¦À©Õ¹: VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME
+        // å¯¹åº”æ‰©å±•: VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME
         VkPhysicalDeviceRayTracingPipelineFeaturesKHR rtPipelineFeature = {};
         rtPipelineFeature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
         rtPipelineFeature.rayTracingPipeline = VK_TRUE;
         rtPipelineFeature.pNext = &shaderClockFeature;
 
-        // Ìí¼Ó¹â×·¹ÜÏßĞèÒªµÄÀ©Õ¹ºÍÌØĞÔ
-        // ¶ÔÓ¦À©Õ¹: VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME
+        // æ·»åŠ å…‰è¿½ç®¡çº¿éœ€è¦çš„æ‰©å±•å’Œç‰¹æ€§
+        // å¯¹åº”æ‰©å±•: VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME
         VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationFeature = {};
         accelerationFeature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
         accelerationFeature.accelerationStructure = VK_TRUE;
         accelerationFeature.pNext = &rtPipelineFeature;
 
-        // Ã÷È·Éè±¸ÒªÊ¹ÓÃµÄ¹¦ÄÜÌØĞÔ
+        // æ˜ç¡®è®¾å¤‡è¦ä½¿ç”¨çš„åŠŸèƒ½ç‰¹æ€§
         VkPhysicalDeviceFeatures2 deviceFeatures = {};
         deviceFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-        // ÆôÓÃ¶Ô¸÷ÏòÒìĞÔ²ÉÑùµÄÖ§³Ö
+        // å¯ç”¨å¯¹å„å‘å¼‚æ€§é‡‡æ ·çš„æ”¯æŒ
         deviceFeatures.features.samplerAnisotropy = VK_TRUE;
         deviceFeatures.features.sampleRateShading = VK_TRUE;
         deviceFeatures.features.shaderInt64 = VK_TRUE;
@@ -3742,14 +3742,14 @@ namespace ZXEngine
         deviceFeatures.pNext = &deviceVulkan12Features;
 #endif
 
-        // ´´½¨Âß¼­Éè±¸µÄĞÅÏ¢
+        // åˆ›å»ºé€»è¾‘è®¾å¤‡çš„ä¿¡æ¯
         VkDeviceCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-        // Ê¹ÓÃÇ°ÃæµÄÁ½¸ö½á¹¹ÌåÌî³ä
+        // ä½¿ç”¨å‰é¢çš„ä¸¤ä¸ªç»“æ„ä½“å¡«å……
         createInfo.pQueueCreateInfos = queueCreateInfos.data();
         createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 
-        // Ìí¼ÓVkDevice¼¶±ğµÄÀ©Õ¹ºÍÌØĞÔ
+        // æ·»åŠ VkDeviceçº§åˆ«çš„æ‰©å±•å’Œç‰¹æ€§
         vector<const char*> deviceExtensions(ZXVK_Extension_Base.begin(), ZXVK_Extension_Base.end());
 
         if (ZXVK_IsSupportPortabilitySubset)
@@ -3760,12 +3760,12 @@ namespace ZXEngine
 
         createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
         createInfo.ppEnabledExtensionNames = deviceExtensions.data();
-        // Vulkan 1.1Ö®ºó£¬ÓÃÕâÖÖpNext·½Ê½Ìí¼ÓÌØĞÔ£¬¶ø²»ÊÇpEnabledFeatures
+        // Vulkan 1.1ä¹‹åï¼Œç”¨è¿™ç§pNextæ–¹å¼æ·»åŠ ç‰¹æ€§ï¼Œè€Œä¸æ˜¯pEnabledFeatures
         createInfo.pNext = &deviceFeatures;
         createInfo.pEnabledFeatures = VK_NULL_HANDLE;
 
-        // Ìí¼ÓVkDevice¼¶±ğÑéÖ¤²ã
-        // Èç¹ûÆôÓÃÁËÑéÖ¤²ã£¬°ÑÑéÖ¤²ãĞÅÏ¢Ìí¼Ó½øÈ¥
+        // æ·»åŠ VkDeviceçº§åˆ«éªŒè¯å±‚
+        // å¦‚æœå¯ç”¨äº†éªŒè¯å±‚ï¼ŒæŠŠéªŒè¯å±‚ä¿¡æ¯æ·»åŠ è¿›å»
         if (validationLayersEnabled)
         {
             createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
@@ -3776,24 +3776,24 @@ namespace ZXEngine
             createInfo.enabledLayerCount = 0;
         }
 
-        // µ÷ÓÃvkCreateDeviceº¯ÊıÀ´´´½¨ÊµÀı»¯Âß¼­Éè±¸
-        // Âß¼­Éè±¸²»ÓëVkInstanceÖ±½Ó½»»¥£¬ËùÒÔ²ÎÊıÀïÖ»ÓĞÎïÀíÉè±¸
+        // è°ƒç”¨vkCreateDeviceå‡½æ•°æ¥åˆ›å»ºå®ä¾‹åŒ–é€»è¾‘è®¾å¤‡
+        // é€»è¾‘è®¾å¤‡ä¸ä¸VkInstanceç›´æ¥äº¤äº’ï¼Œæ‰€ä»¥å‚æ•°é‡Œåªæœ‰ç‰©ç†è®¾å¤‡
         if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS)
             throw std::runtime_error("failed to create logical device!");
         
-        // ÓÃvolk¼ÓÔØVulkan Device¼¶±ğµÄº¯ÊıÖ¸Õë
+        // ç”¨volkåŠ è½½Vulkan Deviceçº§åˆ«çš„å‡½æ•°æŒ‡é’ˆ
         volkLoadDevice(device);
 
-        // Âß¼­Éè±¸´´½¨µÄÊ±ºò£¬¶ÓÁĞÒ²Ò»Æğ´´½¨ÁË£¬»ñÈ¡¶ÓÁĞ²¢±£´æÏÂÀ´·½±ãÖ®ºóµ÷ÓÃ
-        // ²ÎÊıÊÇÂß¼­Éè±¸£¬¶ÓÁĞ´Ø£¬¶ÓÁĞË÷ÒıºÍ´æ´¢»ñÈ¡¶ÓÁĞ±äÁ¿¾ä±úµÄÖ¸Õë
-        // ÒòÎªÎÒÃÇÖ»ÊÇ´ÓÕâ¸ö¶ÓÁĞ´Ø´´½¨Ò»¸ö¶ÓÁĞ£¬ËùÒÔĞèÒªÊ¹ÓÃË÷Òı0
+        // é€»è¾‘è®¾å¤‡åˆ›å»ºçš„æ—¶å€™ï¼Œé˜Ÿåˆ—ä¹Ÿä¸€èµ·åˆ›å»ºäº†ï¼Œè·å–é˜Ÿåˆ—å¹¶ä¿å­˜ä¸‹æ¥æ–¹ä¾¿ä¹‹åè°ƒç”¨
+        // å‚æ•°æ˜¯é€»è¾‘è®¾å¤‡ï¼Œé˜Ÿåˆ—ç°‡ï¼Œé˜Ÿåˆ—ç´¢å¼•å’Œå­˜å‚¨è·å–é˜Ÿåˆ—å˜é‡å¥æŸ„çš„æŒ‡é’ˆ
+        // å› ä¸ºæˆ‘ä»¬åªæ˜¯ä»è¿™ä¸ªé˜Ÿåˆ—ç°‡åˆ›å»ºä¸€ä¸ªé˜Ÿåˆ—ï¼Œæ‰€ä»¥éœ€è¦ä½¿ç”¨ç´¢å¼•0
         vkGetDeviceQueue(device, queueFamilyIndices.graphics, 0, &graphicsQueue);
         vkGetDeviceQueue(device, queueFamilyIndices.present, 0, &presentQueue);
     }
 
     void RenderAPIVulkan::CreateMemoryAllocator()
     {
-        // ÒòÎªÓÃvolk¿âÊÖ¶¯¼ÓÔØËùÓĞVulkanº¯ÊıÁË£¬ËùÒÔÕâÀïÒª¸øVMA´«µİ»ñÈ¡º¯ÊıµØÖ·µÄ·½·¨£¬ÈÃVMA¿ÉÒÔÕıÈ·»ñÈ¡Vulkanº¯Êı
+        // å› ä¸ºç”¨volkåº“æ‰‹åŠ¨åŠ è½½æ‰€æœ‰Vulkanå‡½æ•°äº†ï¼Œæ‰€ä»¥è¿™é‡Œè¦ç»™VMAä¼ é€’è·å–å‡½æ•°åœ°å€çš„æ–¹æ³•ï¼Œè®©VMAå¯ä»¥æ­£ç¡®è·å–Vulkanå‡½æ•°
         VmaVulkanFunctions vmaVkFunctions = {};
         vmaVkFunctions.vkGetInstanceProcAddr = vkGetInstanceProcAddr;
         vmaVkFunctions.vkGetDeviceProcAddr = vkGetDeviceProcAddr;
@@ -3804,7 +3804,7 @@ namespace ZXEngine
         vmaInfo.physicalDevice = physicalDevice;
         vmaInfo.device = device;
         vmaInfo.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
-        // Èç¹û²»ÊÖ¶¯¼ÓÔØVulkanº¯Êı£¬ÕâÀï¿ÉÒÔÌîNULL
+        // å¦‚æœä¸æ‰‹åŠ¨åŠ è½½Vulkanå‡½æ•°ï¼Œè¿™é‡Œå¯ä»¥å¡«NULL
         vmaInfo.pVulkanFunctions = &vmaVkFunctions;
 
         vmaCreateAllocator(&vmaInfo, &vmaAllocator);
@@ -3814,12 +3814,12 @@ namespace ZXEngine
     {
         VkCommandPoolCreateInfo poolInfo{};
         poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-        // Õâ¸öflags¿ÉÒª¿É²»Òª£¬Èç¹ûÒª¶à¸öflagsµÄ»°ÓÃ|¼´¿É
-        // VK_COMMAND_POOL_CREATE_TRANSIENT_BIT: ÌáÊ¾ÃüÁî»º³åÇø·Ç³£Æµ·±µÄÖØĞÂ¼ÇÂ¼ĞÂÃüÁî(¿ÉÄÜ»á¸Ä±äÄÚ´æ·ÖÅäĞĞÎª)
-        // VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT: ÔÊĞíÃüÁî»º³åÇøµ¥¶ÀÖØĞÂ¼ÇÂ¼£¬Ã»ÓĞÕâ¸ö±êÖ¾£¬ËùÓĞµÄÃüÁî»º³åÇø¶¼±ØĞëÒ»ÆğÖØÖÃ
+        // è¿™ä¸ªflagså¯è¦å¯ä¸è¦ï¼Œå¦‚æœè¦å¤šä¸ªflagsçš„è¯ç”¨|å³å¯
+        // VK_COMMAND_POOL_CREATE_TRANSIENT_BIT: æç¤ºå‘½ä»¤ç¼“å†²åŒºéå¸¸é¢‘ç¹çš„é‡æ–°è®°å½•æ–°å‘½ä»¤(å¯èƒ½ä¼šæ”¹å˜å†…å­˜åˆ†é…è¡Œä¸º)
+        // VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT: å…è®¸å‘½ä»¤ç¼“å†²åŒºå•ç‹¬é‡æ–°è®°å½•ï¼Œæ²¡æœ‰è¿™ä¸ªæ ‡å¿—ï¼Œæ‰€æœ‰çš„å‘½ä»¤ç¼“å†²åŒºéƒ½å¿…é¡»ä¸€èµ·é‡ç½®
         poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-        // command bufferÊÇÍ¨¹ıÔÚÒ»¸öÉè±¸¶ÓÁĞÉÏÌá½»ËüÃÇÀ´Ö´ĞĞµÄ£¬Ã¿¸öÃüÁî³ØÖ»ÄÜ·ÖÅäÔÚµ¥Ò»ÀàĞÍ¶ÓÁĞÉÏÌá½»µÄÃüÁî»º³åÇø
-        // ÎÒÃÇ½«¼ÇÂ¼ÓÃÓÚ»æÍ¼µÄÃüÁî£¬ËùÒÔÓÃgraphicsFamily
+        // command bufferæ˜¯é€šè¿‡åœ¨ä¸€ä¸ªè®¾å¤‡é˜Ÿåˆ—ä¸Šæäº¤å®ƒä»¬æ¥æ‰§è¡Œçš„ï¼Œæ¯ä¸ªå‘½ä»¤æ± åªèƒ½åˆ†é…åœ¨å•ä¸€ç±»å‹é˜Ÿåˆ—ä¸Šæäº¤çš„å‘½ä»¤ç¼“å†²åŒº
+        // æˆ‘ä»¬å°†è®°å½•ç”¨äºç»˜å›¾çš„å‘½ä»¤ï¼Œæ‰€ä»¥ç”¨graphicsFamily
         poolInfo.queueFamilyIndex = queueFamilyIndices.graphics;
 
         if (vkCreateCommandPool(device, &poolInfo, nullptr, &commandPool) != VK_SUCCESS)
@@ -3827,65 +3827,65 @@ namespace ZXEngine
     }
 
     void RenderAPIVulkan::CreateSurface() {
-        // surfaceµÄ¾ßÌå´´½¨¹ı³ÌÊÇÒªÇø·ÖÆ½Ì¨µÄ£¬ÕâÀïÖ±½ÓÓÃGLFW·â×°ºÃµÄ½Ó¿ÚÀ´´´½¨
+        // surfaceçš„å…·ä½“åˆ›å»ºè¿‡ç¨‹æ˜¯è¦åŒºåˆ†å¹³å°çš„ï¼Œè¿™é‡Œç›´æ¥ç”¨GLFWå°è£…å¥½çš„æ¥å£æ¥åˆ›å»º
         if (glfwCreateWindowSurface(vkInstance, static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), nullptr, &surface) != VK_SUCCESS)
             throw std::runtime_error("failed to create window surface!");
     }
 
     void RenderAPIVulkan::CreateSwapChain()
     {
-        // ²éÑ¯Ó²¼şÖ§³ÖµÄ½»»»Á´ÉèÖÃ
+        // æŸ¥è¯¢ç¡¬ä»¶æ”¯æŒçš„äº¤æ¢é“¾è®¾ç½®
         SwapChainSupportDetails swapChainSupport = GetSwapChainSupportDetails(physicalDevice);
 
-        // Ñ¡ÔñÒ»¸öÍ¼Ïñ¸ñÊ½
+        // é€‰æ‹©ä¸€ä¸ªå›¾åƒæ ¼å¼
         VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
-        // Ñ¡ÔñÒ»¸öpresentÄ£Ê½(¾ÍÊÇÍ¼Ïñ½»»»µÄÄ£Ê½)
+        // é€‰æ‹©ä¸€ä¸ªpresentæ¨¡å¼(å°±æ˜¯å›¾åƒäº¤æ¢çš„æ¨¡å¼)
         VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
-        // Ñ¡ÔñÒ»¸öºÏÊÊµÄÍ¼Ïñ·Ö±æÂÊ
+        // é€‰æ‹©ä¸€ä¸ªåˆé€‚çš„å›¾åƒåˆ†è¾¨ç‡
         VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities);
 
-        // ½»»»Á´ÖĞµÄÍ¼ÏñÊıÁ¿£¬¿ÉÒÔÀí½âÎª½»»»¶ÓÁĞµÄ³¤¶È¡£ËüÖ¸¶¨ÔËĞĞÊ±Í¼ÏñµÄ×îĞ¡ÊıÁ¿£¬ÎÒÃÇ½«³¢ÊÔ´óÓÚ1µÄÍ¼ÏñÊıÁ¿£¬ÒÔÊµÏÖÈıÖØ»º³å¡£
+        // äº¤æ¢é“¾ä¸­çš„å›¾åƒæ•°é‡ï¼Œå¯ä»¥ç†è§£ä¸ºäº¤æ¢é˜Ÿåˆ—çš„é•¿åº¦ã€‚å®ƒæŒ‡å®šè¿è¡Œæ—¶å›¾åƒçš„æœ€å°æ•°é‡ï¼Œæˆ‘ä»¬å°†å°è¯•å¤§äº1çš„å›¾åƒæ•°é‡ï¼Œä»¥å®ç°ä¸‰é‡ç¼“å†²ã€‚
         uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
-        // Èç¹ûmaxImageCountµÈÓÚ0£¬¾Í±íÊ¾Ã»ÓĞÏŞÖÆ¡£Èç¹û´óÓÚ0¾Í±íÊ¾ÓĞÏŞÖÆ£¬ÄÇÃ´ÎÒÃÇ×î´óÖ»ÄÜÉèÖÃµ½maxImageCount
+        // å¦‚æœmaxImageCountç­‰äº0ï¼Œå°±è¡¨ç¤ºæ²¡æœ‰é™åˆ¶ã€‚å¦‚æœå¤§äº0å°±è¡¨ç¤ºæœ‰é™åˆ¶ï¼Œé‚£ä¹ˆæˆ‘ä»¬æœ€å¤§åªèƒ½è®¾ç½®åˆ°maxImageCount
         if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount)
             imageCount = swapChainSupport.capabilities.maxImageCount;
 
-        // ´´½¨½»»»Á´µÄ½á¹¹Ìå
+        // åˆ›å»ºäº¤æ¢é“¾çš„ç»“æ„ä½“
         VkSwapchainCreateInfoKHR createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-        // °ó¶¨ÎÒÃÇµÄsurface
+        // ç»‘å®šæˆ‘ä»¬çš„surface
         createInfo.surface = surface;
-        // °ÑÇ°Ãæ»ñÈ¡µÄÊı¾İÌîÉÏ
+        // æŠŠå‰é¢è·å–çš„æ•°æ®å¡«ä¸Š
         createInfo.minImageCount = imageCount;
         createInfo.imageFormat = surfaceFormat.format;
         createInfo.imageColorSpace = surfaceFormat.colorSpace;
         createInfo.presentMode = presentMode;
         createInfo.imageExtent = extent;
 
-        // imageArrayLayersÖ¸¶¨Ã¿¸öÍ¼ÏñÓĞ¶àÉÙ²ã£¬Ò»°ã¶¼ÊÇ1
+        // imageArrayLayersæŒ‡å®šæ¯ä¸ªå›¾åƒæœ‰å¤šå°‘å±‚ï¼Œä¸€èˆ¬éƒ½æ˜¯1
         createInfo.imageArrayLayers = 1;
-        // Õâ¸ö×Ö¶ÎÖ¸¶¨ÔÚ½»»»Á´ÖĞ¶ÔÍ¼Ïñ½øĞĞµÄ¾ßÌå²Ù×÷
-        // ÎÒÃÇÈç¹ûÖ±½Ó¶ÔËüÃÇ½øĞĞäÖÈ¾£¬ÕâÒâÎ¶×ÅËüÃÇ×÷ÎªÑÕÉ«¸½¼ş
-        // Ò²¿ÉÒÔÊ×ÏÈ½«Í¼ÏñäÖÈ¾Îªµ¥¶ÀµÄÍ¼Ïñ£¬½øĞĞºó´¦Àí²Ù×÷
-        // ÔÚÕâÖÖÇé¿öÏÂ¿ÉÒÔÊ¹ÓÃÏñVK_IMAGE_USAGE_TRANSFER_DST_BITÕâÑùµÄÖµ£¬²¢Ê¹ÓÃÄÚ´æ²Ù×÷½«äÖÈ¾µÄÍ¼Ïñ´«Êäµ½½»»»Á´Í¼Ïñ¶ÓÁĞ
+        // è¿™ä¸ªå­—æ®µæŒ‡å®šåœ¨äº¤æ¢é“¾ä¸­å¯¹å›¾åƒè¿›è¡Œçš„å…·ä½“æ“ä½œ
+        // æˆ‘ä»¬å¦‚æœç›´æ¥å¯¹å®ƒä»¬è¿›è¡Œæ¸²æŸ“ï¼Œè¿™æ„å‘³ç€å®ƒä»¬ä½œä¸ºé¢œè‰²é™„ä»¶
+        // ä¹Ÿå¯ä»¥é¦–å…ˆå°†å›¾åƒæ¸²æŸ“ä¸ºå•ç‹¬çš„å›¾åƒï¼Œè¿›è¡Œåå¤„ç†æ“ä½œ
+        // åœ¨è¿™ç§æƒ…å†µä¸‹å¯ä»¥ä½¿ç”¨åƒVK_IMAGE_USAGE_TRANSFER_DST_BITè¿™æ ·çš„å€¼ï¼Œå¹¶ä½¿ç”¨å†…å­˜æ“ä½œå°†æ¸²æŸ“çš„å›¾åƒä¼ è¾“åˆ°äº¤æ¢é“¾å›¾åƒé˜Ÿåˆ—
         createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-        // Ö¸¶¨ÈçºÎ´¦Àí¿ç¶à¸ö¶ÓÁĞ´ØµÄ½»»»Á´Í¼Ïñ
+        // æŒ‡å®šå¦‚ä½•å¤„ç†è·¨å¤šä¸ªé˜Ÿåˆ—ç°‡çš„äº¤æ¢é“¾å›¾åƒ
         uint32_t tmpQueueFamilyIndices[] = { queueFamilyIndices.graphics, queueFamilyIndices.present };
-        // Èç¹ûgraphics¶ÓÁĞ´ØÓëpresentation¶ÓÁĞ´Ø²»Í¬£¬»á³öÏÖÈçÏÂÇéĞÎ
-        // ÎÒÃÇ½«´Ógraphics¶ÓÁĞÖĞ»æÖÆ½»»»Á´µÄÍ¼Ïñ£¬È»ºóÔÚÁíÒ»¸öpresentation¶ÓÁĞÖĞÌá½»ËûÃÇ
-        // ¶à¶ÓÁĞ´¦ÀíÍ¼ÏñÓĞÁ½ÖÖ·½·¨
-        // VK_SHARING_MODE_EXCLUSIVE: Í¬Ò»Ê±¼äÍ¼ÏñÖ»ÄÜ±»Ò»¸ö¶ÓÁĞ´ØÕ¼ÓÃ£¬Èç¹ûÆäËû¶ÓÁĞ´ØĞèÒªÆäËùÓĞÈ¨ĞèÒªÃ÷È·Ö¸¶¨£¬ÕâÖÖ·½Ê½Ìá¹©ÁË×îºÃµÄĞÔÄÜ
-        // VK_SHARING_MODE_CONCURRENT: Í¼Ïñ¿ÉÒÔ±»¶à¸ö¶ÓÁĞ´Ø·ÃÎÊ£¬²»ĞèÒªÃ÷È·ËùÓĞÈ¨´ÓÊô¹ØÏµ
-        // Èç¹û¶ÓÁĞ´Ø²»Í¬£¬ÔİÊ±Ê¹ÓÃconcurrentÄ£Ê½£¬±ÜÃâ´¦ÀíÍ¼ÏñËùÓĞÈ¨´ÓÊô¹ØÏµµÄÄÚÈİ£¬ÒòÎªÕâĞ©»áÉæ¼°²»ÉÙ¸ÅÄî
+        // å¦‚æœgraphicsé˜Ÿåˆ—ç°‡ä¸presentationé˜Ÿåˆ—ç°‡ä¸åŒï¼Œä¼šå‡ºç°å¦‚ä¸‹æƒ…å½¢
+        // æˆ‘ä»¬å°†ä»graphicsé˜Ÿåˆ—ä¸­ç»˜åˆ¶äº¤æ¢é“¾çš„å›¾åƒï¼Œç„¶ååœ¨å¦ä¸€ä¸ªpresentationé˜Ÿåˆ—ä¸­æäº¤ä»–ä»¬
+        // å¤šé˜Ÿåˆ—å¤„ç†å›¾åƒæœ‰ä¸¤ç§æ–¹æ³•
+        // VK_SHARING_MODE_EXCLUSIVE: åŒä¸€æ—¶é—´å›¾åƒåªèƒ½è¢«ä¸€ä¸ªé˜Ÿåˆ—ç°‡å ç”¨ï¼Œå¦‚æœå…¶ä»–é˜Ÿåˆ—ç°‡éœ€è¦å…¶æ‰€æœ‰æƒéœ€è¦æ˜ç¡®æŒ‡å®šï¼Œè¿™ç§æ–¹å¼æä¾›äº†æœ€å¥½çš„æ€§èƒ½
+        // VK_SHARING_MODE_CONCURRENT: å›¾åƒå¯ä»¥è¢«å¤šä¸ªé˜Ÿåˆ—ç°‡è®¿é—®ï¼Œä¸éœ€è¦æ˜ç¡®æ‰€æœ‰æƒä»å±å…³ç³»
+        // å¦‚æœé˜Ÿåˆ—ç°‡ä¸åŒï¼Œæš‚æ—¶ä½¿ç”¨concurrentæ¨¡å¼ï¼Œé¿å…å¤„ç†å›¾åƒæ‰€æœ‰æƒä»å±å…³ç³»çš„å†…å®¹ï¼Œå› ä¸ºè¿™äº›ä¼šæ¶‰åŠä¸å°‘æ¦‚å¿µ
         if (queueFamilyIndices.graphics != queueFamilyIndices.present)
         {
             createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-            // ConcurrentÄ£Ê½ĞèÒªÔ¤ÏÈÖ¸¶¨¶ÓÁĞ´ØËùÓĞÈ¨´ÓÊô¹ØÏµ£¬Í¨¹ıqueueFamilyIndexCountºÍpQueueFamilyIndices²ÎÊı½øĞĞ¹²Ïí
+            // Concurrentæ¨¡å¼éœ€è¦é¢„å…ˆæŒ‡å®šé˜Ÿåˆ—ç°‡æ‰€æœ‰æƒä»å±å…³ç³»ï¼Œé€šè¿‡queueFamilyIndexCountå’ŒpQueueFamilyIndiceså‚æ•°è¿›è¡Œå…±äº«
             createInfo.queueFamilyIndexCount = 2;
             createInfo.pQueueFamilyIndices = tmpQueueFamilyIndices;
         }
-        // Èç¹ûgraphics¶ÓÁĞ´ØºÍpresentation¶ÓÁĞ´ØÏàÍ¬£¬ÎÒÃÇĞèÒªÊ¹ÓÃexclusiveÄ£Ê½£¬ÒòÎªconcurrentÄ£Ê½ĞèÒªÖÁÉÙÁ½¸ö²»Í¬µÄ¶ÓÁĞ´Ø
+        // å¦‚æœgraphicsé˜Ÿåˆ—ç°‡å’Œpresentationé˜Ÿåˆ—ç°‡ç›¸åŒï¼Œæˆ‘ä»¬éœ€è¦ä½¿ç”¨exclusiveæ¨¡å¼ï¼Œå› ä¸ºconcurrentæ¨¡å¼éœ€è¦è‡³å°‘ä¸¤ä¸ªä¸åŒçš„é˜Ÿåˆ—ç°‡
         else
         {
             createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -3893,35 +3893,35 @@ namespace ZXEngine
             createInfo.pQueueFamilyIndices = nullptr; // Optional
         }
 
-        // Èç¹û½»»»Á´Ö§³Ö(supportedTransforms in capabilities)£¬ÎÒÃÇ¿ÉÒÔÎª½»»»Á´Í¼ÏñÖ¸¶¨Ä³Ğ©×ª»»Âß¼­
-        // ±ÈÈç90¶ÈË³Ê±ÕëĞı×ª»òÕßË®Æ½·´×ª¡£Èç¹û²»ĞèÒªÈÎºÎtransoform²Ù×÷£¬¿ÉÒÔ¼òµ¥µÄÉèÖÃÎªcurrentTransoform
+        // å¦‚æœäº¤æ¢é“¾æ”¯æŒ(supportedTransforms in capabilities)ï¼Œæˆ‘ä»¬å¯ä»¥ä¸ºäº¤æ¢é“¾å›¾åƒæŒ‡å®šæŸäº›è½¬æ¢é€»è¾‘
+        // æ¯”å¦‚90åº¦é¡ºæ—¶é’ˆæ—‹è½¬æˆ–è€…æ°´å¹³åè½¬ã€‚å¦‚æœä¸éœ€è¦ä»»ä½•transoformæ“ä½œï¼Œå¯ä»¥ç®€å•çš„è®¾ç½®ä¸ºcurrentTransoform
         createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
 
-        // compositeAlpha×Ö¶ÎÖ¸¶¨alphaÍ¨µÀÊÇ·ñÓ¦ÓÃÓÚÓëÆäËûµÄ´°ÌåÏµÍ³½øĞĞ»ìºÏ²Ù×÷¡£Èç¹ûºöÂÔ¸Ã¹¦ÄÜ£¬¼òµ¥µÄÌîVK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR
+        // compositeAlphaå­—æ®µæŒ‡å®šalphaé€šé“æ˜¯å¦åº”ç”¨äºä¸å…¶ä»–çš„çª—ä½“ç³»ç»Ÿè¿›è¡Œæ··åˆæ“ä½œã€‚å¦‚æœå¿½ç•¥è¯¥åŠŸèƒ½ï¼Œç®€å•çš„å¡«VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR
         createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 
-        // Èç¹ûclipped³ÉÔ±ÉèÖÃÎªVK_TRUE£¬ÒâÎ¶×ÅÎÒÃÇ²»¹ØĞÄ±»ÕÚ±ÎµÄÏñËØÊı¾İ£¬±ÈÈçÓÉÓÚÆäËûµÄ´°ÌåÖÃÓÚÇ°·½Ê±»òÕßäÖÈ¾µÄ²¿·ÖÄÚÈİ´æÔÚÓÚ¿ÉÊÇÇøÓòÖ®Íâ
-        // ³ı·ÇÕæµÄĞèÒª¶ÁÈ¡ÕâĞ©ÏñËØ»ñÊı¾İ½øĞĞ´¦Àí£¬·ñÔò¿ÉÒÔ¿ªÆô²Ã¼ô»ñµÃ×î¼ÑĞÔÄÜ
+        // å¦‚æœclippedæˆå‘˜è®¾ç½®ä¸ºVK_TRUEï¼Œæ„å‘³ç€æˆ‘ä»¬ä¸å…³å¿ƒè¢«é®è”½çš„åƒç´ æ•°æ®ï¼Œæ¯”å¦‚ç”±äºå…¶ä»–çš„çª—ä½“ç½®äºå‰æ–¹æ—¶æˆ–è€…æ¸²æŸ“çš„éƒ¨åˆ†å†…å®¹å­˜åœ¨äºå¯æ˜¯åŒºåŸŸä¹‹å¤–
+        // é™¤éçœŸçš„éœ€è¦è¯»å–è¿™äº›åƒç´ è·æ•°æ®è¿›è¡Œå¤„ç†ï¼Œå¦åˆ™å¯ä»¥å¼€å¯è£å‰ªè·å¾—æœ€ä½³æ€§èƒ½
         createInfo.clipped = VK_TRUE;
 
-        // VulkanÔËĞĞÊ±£¬½»»»Á´¿ÉÄÜÔÚÄ³Ğ©Ìõ¼şÏÂ±»Ìæ»»£¬±ÈÈç´°¿Úµ÷Õû´óĞ¡»òÕß½»»»Á´ĞèÒªÖØĞÂ·ÖÅä¸ü´óµÄÍ¼Ïñ¶ÓÁĞ
-        // ÔÚÕâÖÖÇé¿öÏÂ£¬½»»»Á´Êµ¼ÊÉÏĞèÒªÖØĞÂ·ÖÅä´´½¨£¬¿ÉÒÔÔÚ´Ë×Ö¶ÎÖĞÖ¸¶¨¶Ô¾ÉµÄÒıÓÃ£¬ÓÃÒÔ»ØÊÕ×ÊÔ´
-        // Ò²¿ÉÒÔ×Ô¼ºÊÖ¶¯Ïú»Ù¾É½»»»Á´ÔÙÖØĞÂ´´½¨£¬²»Ê¹ÓÃÕâ¸ö²ÎÊı
-        // µ«ÊÇÓÃÕâ¸ö²ÎÊı»áºÃÒ»µã£¬ºÃÏñ¿ÉÒÔÔÚ¾É½»»»Á´»¹ÔÚÕ¹Ê¾µÄÊ±ºòÏÈ»æÖÆºóĞøÍ¼Ïñµ½ĞÂ½»»»Á´£¬·ñÔòĞèÒªµÈ¾É½»»»Á´ÈÎÎñÖ´ĞĞÍê£¬ÔÙÏú»Ù£¬´´½¨ĞÂµÄ£¬ÔÙ»æÖÆ
+        // Vulkanè¿è¡Œæ—¶ï¼Œäº¤æ¢é“¾å¯èƒ½åœ¨æŸäº›æ¡ä»¶ä¸‹è¢«æ›¿æ¢ï¼Œæ¯”å¦‚çª—å£è°ƒæ•´å¤§å°æˆ–è€…äº¤æ¢é“¾éœ€è¦é‡æ–°åˆ†é…æ›´å¤§çš„å›¾åƒé˜Ÿåˆ—
+        // åœ¨è¿™ç§æƒ…å†µä¸‹ï¼Œäº¤æ¢é“¾å®é™…ä¸Šéœ€è¦é‡æ–°åˆ†é…åˆ›å»ºï¼Œå¯ä»¥åœ¨æ­¤å­—æ®µä¸­æŒ‡å®šå¯¹æ—§çš„å¼•ç”¨ï¼Œç”¨ä»¥å›æ”¶èµ„æº
+        // ä¹Ÿå¯ä»¥è‡ªå·±æ‰‹åŠ¨é”€æ¯æ—§äº¤æ¢é“¾å†é‡æ–°åˆ›å»ºï¼Œä¸ä½¿ç”¨è¿™ä¸ªå‚æ•°
+        // ä½†æ˜¯ç”¨è¿™ä¸ªå‚æ•°ä¼šå¥½ä¸€ç‚¹ï¼Œå¥½åƒå¯ä»¥åœ¨æ—§äº¤æ¢é“¾è¿˜åœ¨å±•ç¤ºçš„æ—¶å€™å…ˆç»˜åˆ¶åç»­å›¾åƒåˆ°æ–°äº¤æ¢é“¾ï¼Œå¦åˆ™éœ€è¦ç­‰æ—§äº¤æ¢é“¾ä»»åŠ¡æ‰§è¡Œå®Œï¼Œå†é”€æ¯ï¼Œåˆ›å»ºæ–°çš„ï¼Œå†ç»˜åˆ¶
         createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-        // ´´½¨½»»»Á´
+        // åˆ›å»ºäº¤æ¢é“¾
         if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
             throw std::runtime_error("failed to create swap chain!");
         }
 
-        // »ñÈ¡Ò»ÏÂ½»»»Á´ÀïÍ¼ÏñµÄÊıÁ¿£¬Õâ¸öimageCount±äÁ¿×î¿ªÊ¼ÊÇÎÒÃÇÆÚÍûµÄÍ¼ÏñÊıÁ¿£¬µ«ÊÇÊµ¼Ê´´½¨µÄ²»Ò»¶¨ÊÇÕâÃ´¶à£¬ËùÒÔÒªÖØĞÂ»ñÈ¡Ò»ÏÂ
+        // è·å–ä¸€ä¸‹äº¤æ¢é“¾é‡Œå›¾åƒçš„æ•°é‡ï¼Œè¿™ä¸ªimageCountå˜é‡æœ€å¼€å§‹æ˜¯æˆ‘ä»¬æœŸæœ›çš„å›¾åƒæ•°é‡ï¼Œä½†æ˜¯å®é™…åˆ›å»ºçš„ä¸ä¸€å®šæ˜¯è¿™ä¹ˆå¤šï¼Œæ‰€ä»¥è¦é‡æ–°è·å–ä¸€ä¸‹
         vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr);
-        // ¸ù¾İÊµ¼ÊÍ¼ÏñÊıÁ¿ÖØĞÂÉèÖÃvector´óĞ¡
+        // æ ¹æ®å®é™…å›¾åƒæ•°é‡é‡æ–°è®¾ç½®vectorå¤§å°
         swapChainImages.resize(imageCount);
-        // °Ñ½»»»Á´ÉÏµÄÍ¼Ïñ´æ´¢µ½swapChainImagesÖĞ
+        // æŠŠäº¤æ¢é“¾ä¸Šçš„å›¾åƒå­˜å‚¨åˆ°swapChainImagesä¸­
         vkGetSwapchainImagesKHR(device, swapChain, &imageCount, swapChainImages.data());
-        // ´æÒ»ÏÂ½»»»Á´Í¼ÏñµÄ¸ñÊ½ºÍ·Ö±æÂÊ
+        // å­˜ä¸€ä¸‹äº¤æ¢é“¾å›¾åƒçš„æ ¼å¼å’Œåˆ†è¾¨ç‡
         swapChainImageFormat = surfaceFormat.format;
         swapChainExtent = extent;
     }
@@ -3962,7 +3962,7 @@ namespace ZXEngine
             framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
             framebufferInfo.width = swapChainExtent.width;
             framebufferInfo.height = swapChainExtent.height;
-            // layerÊÇÖ¸¶¨Í¼ÏñÊı×éÖĞµÄ²ãÊı£¬½»»»Á´Í¼ÏñÊÇµ¥¸öÍ¼Ïñ£¬Òò´Ë²ãÊıÎª1
+            // layeræ˜¯æŒ‡å®šå›¾åƒæ•°ç»„ä¸­çš„å±‚æ•°ï¼Œäº¤æ¢é“¾å›¾åƒæ˜¯å•ä¸ªå›¾åƒï¼Œå› æ­¤å±‚æ•°ä¸º1
             framebufferInfo.layers = 1;
 
             if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &vulkanFBO->frameBuffers[i]) != VK_SUCCESS)
@@ -3986,20 +3986,20 @@ namespace ZXEngine
     }
 
 
-    // ----------------------------------------½¨Á¢Vulkan¶ÔÏóµÄ¸¨Öúº¯Êı----------------------------------------
+    // ----------------------------------------å»ºç«‹Vulkanå¯¹è±¡çš„è¾…åŠ©å‡½æ•°----------------------------------------
 
 
     bool RenderAPIVulkan::CheckValidationLayerSupport()
     {
-        // »ñÈ¡ËùÓĞ¿ÉÓÃµÄLayerÊıÁ¿
+        // è·å–æ‰€æœ‰å¯ç”¨çš„Layeræ•°é‡
         uint32_t layerCount = 0;
         vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
-        // »ñÈ¡ËùÓĞ¿ÉÓÃLayerµÄÊôĞÔ
+        // è·å–æ‰€æœ‰å¯ç”¨Layerçš„å±æ€§
         vector<VkLayerProperties> availableLayers(layerCount);
         vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
-        // ¼ì²éÎÒÃÇµÄvalidationLayersÖĞµÄËùÓĞlayerÊÇ·ñ´æÔÚÓÚavailableLayersÁĞ±íÖĞ
+        // æ£€æŸ¥æˆ‘ä»¬çš„validationLayersä¸­çš„æ‰€æœ‰layeræ˜¯å¦å­˜åœ¨äºavailableLayersåˆ—è¡¨ä¸­
         for (const char* layerName : validationLayers)
         {
             bool layerFound = false;
@@ -4020,19 +4020,19 @@ namespace ZXEngine
 
     vector<const char*> RenderAPIVulkan::GetRequiredExtensions() const
     {
-        // Vulakn¶ÔÓÚÆ½Ì¨ÌØĞÔÊÇÁãAPIÖ§³ÖµÄ(ÖÁÉÙÔİÊ±ÕâÑù)£¬ÕâÒâÎ¶×ÅĞèÒªÒ»¸öÀ©Õ¹²ÅÄÜÓë²»Í¬Æ½Ì¨µÄ´°ÌåÏµÍ³½øĞĞ½»»¥
-        // GLFWÓĞÒ»¸ö·½±ãµÄÄÚÖÃº¯Êı£¬·µ»ØËüÓĞ¹ØµÄÀ©Õ¹ĞÅÏ¢
+        // Vulaknå¯¹äºå¹³å°ç‰¹æ€§æ˜¯é›¶APIæ”¯æŒçš„(è‡³å°‘æš‚æ—¶è¿™æ ·)ï¼Œè¿™æ„å‘³ç€éœ€è¦ä¸€ä¸ªæ‰©å±•æ‰èƒ½ä¸ä¸åŒå¹³å°çš„çª—ä½“ç³»ç»Ÿè¿›è¡Œäº¤äº’
+        // GLFWæœ‰ä¸€ä¸ªæ–¹ä¾¿çš„å†…ç½®å‡½æ•°ï¼Œè¿”å›å®ƒæœ‰å…³çš„æ‰©å±•ä¿¡æ¯
         uint32_t glfwExtensionCount = 0;
         const char** glfwExtensions;
         glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
         vector<const char*> extensions;
 
-        // Ìí¼ÓGLFW»ñÈ¡µÄÀ©Õ¹
+        // æ·»åŠ GLFWè·å–çš„æ‰©å±•
         for (unsigned int i = 0; i < glfwExtensionCount; i++)
             extensions.push_back(glfwExtensions[i]);
 
-        // Èç¹û¿ªÆôÁËDebug£¬Ìí¼ÓDebugµÄÀ©Õ¹
+        // å¦‚æœå¼€å¯äº†Debugï¼Œæ·»åŠ Debugçš„æ‰©å±•
         if (validationLayersEnabled)
             extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
@@ -4043,9 +4043,9 @@ namespace ZXEngine
         return extensions;
     }
 
-    // VulkanµÄDebugÊÇÀ©Õ¹¹¦ÄÜ£¬ËùÒÔvkCreateDebugUtilsMessengerEXT²¢²»»á×Ô¶¯¼ÓÔØ
-    // Ïëµ÷ÓÃËüĞèÒªÍ¨¹ıvkGetInstanceProcAddrÊÖ¶¯»ñÈ¡º¯ÊıµØÖ·
-    // Õâ¸öº¯Êı¾ÍÊÇ·â×°ÁËÒ»ÏÂ»ñÈ¡vkCreateDebugUtilsMessengerEXTµØÖ·²¢µ÷ÓÃËüµÄ¹ı³Ì
+    // Vulkançš„Debugæ˜¯æ‰©å±•åŠŸèƒ½ï¼Œæ‰€ä»¥vkCreateDebugUtilsMessengerEXTå¹¶ä¸ä¼šè‡ªåŠ¨åŠ è½½
+    // æƒ³è°ƒç”¨å®ƒéœ€è¦é€šè¿‡vkGetInstanceProcAddræ‰‹åŠ¨è·å–å‡½æ•°åœ°å€
+    // è¿™ä¸ªå‡½æ•°å°±æ˜¯å°è£…äº†ä¸€ä¸‹è·å–vkCreateDebugUtilsMessengerEXTåœ°å€å¹¶è°ƒç”¨å®ƒçš„è¿‡ç¨‹
     VkResult RenderAPIVulkan::CreateDebugUtilsMessengerEXT(const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
     {
         auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(vkInstance, "vkCreateDebugUtilsMessengerEXT");
@@ -4055,7 +4055,7 @@ namespace ZXEngine
             return VK_ERROR_EXTENSION_NOT_PRESENT;
     }
 
-    // Èç¹ûÓÃÉÏÃæµÄº¯Êı´´½¨ÁËVkDebugUtilsMessengerEXT±äÁ¿£¬ĞèÒªÊÖ¶¯µ÷ÓÃvkDestroyDebugUtilsMessengerEXTÇåÀí
+    // å¦‚æœç”¨ä¸Šé¢çš„å‡½æ•°åˆ›å»ºäº†VkDebugUtilsMessengerEXTå˜é‡ï¼Œéœ€è¦æ‰‹åŠ¨è°ƒç”¨vkDestroyDebugUtilsMessengerEXTæ¸…ç†
     void RenderAPIVulkan::DestroyDebugUtilsMessengerEXT(VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
     {
         auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(vkInstance, "vkDestroyDebugUtilsMessengerEXT");
@@ -4065,45 +4065,45 @@ namespace ZXEngine
 
     bool RenderAPIVulkan::IsPhysicalDeviceSuitable(VkPhysicalDevice device)
     {
-        // »ñµÃname, typeÒÔ¼°Vulkan°æ±¾µÈ»ù±¾µÄÉè±¸ÊôĞÔ
+        // è·å¾—name, typeä»¥åŠVulkanç‰ˆæœ¬ç­‰åŸºæœ¬çš„è®¾å¤‡å±æ€§
         VkPhysicalDeviceProperties deviceProperties;
         vkGetPhysicalDeviceProperties(device, &deviceProperties);
 
 #ifndef ZX_PLATFORM_MACOS
-        // ĞèÒª¶ÀÏÔ
+        // éœ€è¦ç‹¬æ˜¾
         if (deviceProperties.deviceType != VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
             return false;
 #endif
 
-        // ²éÑ¯¶ÔÎÆÀíÑ¹Ëõ£¬64Î»¸¡µãÊıºÍ¶àÊÓÍ¼äÖÈ¾(VR·Ç³£ÓĞÓÃ)µÈ¿ÉÑ¡¹¦ÄÜµÄÖ§³Ö
+        // æŸ¥è¯¢å¯¹çº¹ç†å‹ç¼©ï¼Œ64ä½æµ®ç‚¹æ•°å’Œå¤šè§†å›¾æ¸²æŸ“(VRéå¸¸æœ‰ç”¨)ç­‰å¯é€‰åŠŸèƒ½çš„æ”¯æŒ
         VkPhysicalDeviceFeatures deviceFeatures;
         vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
-        // ĞèÒªÖ§³Ö¸÷ÏîÒìĞÔ²ÉÑù
+        // éœ€è¦æ”¯æŒå„é¡¹å¼‚æ€§é‡‡æ ·
         if (!deviceFeatures.samplerAnisotropy)
             return false;
 
-        // ²éÑ¯·ûºÏÌõ¼şµÄ¶ÓÁĞ´Ø
+        // æŸ¥è¯¢ç¬¦åˆæ¡ä»¶çš„é˜Ÿåˆ—ç°‡
         QueueFamilyIndices indices = GetQueueFamilyIndices(device);
         if (!indices.isComplete())
             return false;
 
-        // ¼ì²é½»»»Á´ÊÇ·ñÍêÕû
+        // æ£€æŸ¥äº¤æ¢é“¾æ˜¯å¦å®Œæ•´
         SwapChainSupportDetails swapChainSupport = GetSwapChainSupportDetails(device);
-        // ÖÁÉÙÖ§³ÖÒ»¸öÍ¼Ïñ¸ñÊ½ºÍÒ»¸öPresentÄ£Ê½
+        // è‡³å°‘æ”¯æŒä¸€ä¸ªå›¾åƒæ ¼å¼å’Œä¸€ä¸ªPresentæ¨¡å¼
         bool swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
         if (!swapChainAdequate)
             return false;
 
-        // ¼ì²éÊÇ·ñÖ§³ÖËùĞèÒªµÄÀ©Õ¹£¬Í¬Ê±¼ÇÂ¼ËùÖ§³ÖµÄÀ©Õ¹Çé¿ö£¬ĞèÒª×÷Îª¼ì²éµÄ×îºóÒ»²½
+        // æ£€æŸ¥æ˜¯å¦æ”¯æŒæ‰€éœ€è¦çš„æ‰©å±•ï¼ŒåŒæ—¶è®°å½•æ‰€æ”¯æŒçš„æ‰©å±•æƒ…å†µï¼Œéœ€è¦ä½œä¸ºæ£€æŸ¥çš„æœ€åä¸€æ­¥
         if (!CheckDeviceExtensionSupport(device))
             return false;
 
-        // ×ßµ½ÕâÀïÒÑ¾­È·ÈÏÊ¹ÓÃÕâ¸öÎïÀíÉè±¸ÁË£¬ËùÒÔ¿ÉÒÔ°ÑÕâ¸öÎïÀíÉè±¸µÄÒ»Ğ©ĞÅÏ¢±£´æÏÂÀ´
+        // èµ°åˆ°è¿™é‡Œå·²ç»ç¡®è®¤ä½¿ç”¨è¿™ä¸ªç‰©ç†è®¾å¤‡äº†ï¼Œæ‰€ä»¥å¯ä»¥æŠŠè¿™ä¸ªç‰©ç†è®¾å¤‡çš„ä¸€äº›ä¿¡æ¯ä¿å­˜ä¸‹æ¥
         if (deviceFeatures.geometryShader == VK_FALSE)
 			ProjectSetting::isSupportGeometryShader = false;
 
-        // Èç¹ûÓĞºÜ¶àÏÔ¿¨£¬¿ÉÒÔÍ¨¹ı¸ø¸÷ÖÖÓ²¼şÌØĞÔÒ»¸öÈ¨ÖØ£¬È»ºóÓÅÏÈÑ¡Ôñ×îºÏÊÊµÄ
+        // å¦‚æœæœ‰å¾ˆå¤šæ˜¾å¡ï¼Œå¯ä»¥é€šè¿‡ç»™å„ç§ç¡¬ä»¶ç‰¹æ€§ä¸€ä¸ªæƒé‡ï¼Œç„¶åä¼˜å…ˆé€‰æ‹©æœ€åˆé€‚çš„
         return true;
     }
 
@@ -4111,32 +4111,32 @@ namespace ZXEngine
     {
         QueueFamilyIndices indices;
 
-        // »ñÈ¡Éè±¸ÓµÓĞµÄ¶ÓÁĞ´ØÊıÁ¿
+        // è·å–è®¾å¤‡æ‹¥æœ‰çš„é˜Ÿåˆ—ç°‡æ•°é‡
         uint32_t queueFamilyCount = 0;
         vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
 
-        // »ñÈ¡ËùÓĞ¶ÓÁĞ´Ø»ñµÄÊôĞÔ
+        // è·å–æ‰€æœ‰é˜Ÿåˆ—ç°‡è·çš„å±æ€§
         vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
         vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
 
-        // ±éÀú¶ÓÁĞ´Ø£¬»ñÈ¡Ö§³ÖÎÒÃÇĞèÇóµÄ¶ÓÁĞ´Ø
+        // éå†é˜Ÿåˆ—ç°‡ï¼Œè·å–æ”¯æŒæˆ‘ä»¬éœ€æ±‚çš„é˜Ÿåˆ—ç°‡
         uint32_t i = 0;
         for (const auto& queueFamily : queueFamilies)
         {
-            // µ±Ç°¶ÓÁĞ´ØÊÇ·ñÖ§³ÖÍ¼ĞÎ´¦Àí
+            // å½“å‰é˜Ÿåˆ—ç°‡æ˜¯å¦æ”¯æŒå›¾å½¢å¤„ç†
             if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
                 indices.graphics = i;
 
-            // ÊÇ·ñÖ§³ÖVkSurfaceKHR
+            // æ˜¯å¦æ”¯æŒVkSurfaceKHR
             VkBool32 presentSupport = false;
             vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
-            // Ö§³ÖµÄ»°¼ÇÂ¼Ò»ÏÂË÷Òı
+            // æ”¯æŒçš„è¯è®°å½•ä¸€ä¸‹ç´¢å¼•
             if (queueFamily.queueCount > 0 && presentSupport)
                 indices.present = i;
 
-            // ×¢ÒâÕâÀïÖ§³ÖsurfaceºÍgraphicµÄ¶ÓÁĞ´Ø²»Ò»¶¨ÊÇÍ¬Ò»¸ö
-            // ºóĞøÊ¹ÓÃÕâĞ©¶ÓÁĞ´ØµÄÂß¼­£¬ÒªÃ´¹Ì¶¨°´ÕÕÖ§³ÖsurfaceºÍgraphicµÄ¶ÓÁĞ´ØÊÇÁ½¸ö²»Í¬µÄÀ´´¦Àí(ÕâÑùÎŞÂÛÊÇ²»ÊÇÍ¬Ò»¸ö¶¼²»»á³ö´í)
-            // ÒªÃ´ÕâÀï²éÕÒ¶ÓÁĞ´ØµÄÊ±ºò£¬Ã÷È·Ö¸¶¨±ØĞëÍ¬Ê±Ö§³ÖsurfaceºÍgraphic£¬È»ºó±£´æÍ¬Ê±Ö§³ÖÕâÁ½¸öÒªÇóµÄ¶ÓÁĞ´ØË÷Òı(ĞÔÄÜ¿ÉÄÜ»áºÃµã)
+            // æ³¨æ„è¿™é‡Œæ”¯æŒsurfaceå’Œgraphicçš„é˜Ÿåˆ—ç°‡ä¸ä¸€å®šæ˜¯åŒä¸€ä¸ª
+            // åç»­ä½¿ç”¨è¿™äº›é˜Ÿåˆ—ç°‡çš„é€»è¾‘ï¼Œè¦ä¹ˆå›ºå®šæŒ‰ç…§æ”¯æŒsurfaceå’Œgraphicçš„é˜Ÿåˆ—ç°‡æ˜¯ä¸¤ä¸ªä¸åŒçš„æ¥å¤„ç†(è¿™æ ·æ— è®ºæ˜¯ä¸æ˜¯åŒä¸€ä¸ªéƒ½ä¸ä¼šå‡ºé”™)
+            // è¦ä¹ˆè¿™é‡ŒæŸ¥æ‰¾é˜Ÿåˆ—ç°‡çš„æ—¶å€™ï¼Œæ˜ç¡®æŒ‡å®šå¿…é¡»åŒæ—¶æ”¯æŒsurfaceå’Œgraphicï¼Œç„¶åä¿å­˜åŒæ—¶æ”¯æŒè¿™ä¸¤ä¸ªè¦æ±‚çš„é˜Ÿåˆ—ç°‡ç´¢å¼•(æ€§èƒ½å¯èƒ½ä¼šå¥½ç‚¹)
 
             if (indices.isComplete())
                 break;
@@ -4144,25 +4144,25 @@ namespace ZXEngine
             i++;
         }
 
-        // ·µ»Ø¾ß±¸Í¼ĞÎÄÜÁ¦µÄ¶ÓÁĞ
+        // è¿”å›å…·å¤‡å›¾å½¢èƒ½åŠ›çš„é˜Ÿåˆ—
         return indices;
     }
 
     bool RenderAPIVulkan::CheckDeviceExtensionSupport(VkPhysicalDevice device) {
-        // »ñÈ¡ÎïÀíÉè±¸Ö§³ÖµÄÀ©Õ¹ÊıÁ¿
+        // è·å–ç‰©ç†è®¾å¤‡æ”¯æŒçš„æ‰©å±•æ•°é‡
         uint32_t extensionCount;
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
-        // »ñÈ¡ËùÖ§³ÖµÄ¾ßÌåĞÅÏ¢
+        // è·å–æ‰€æ”¯æŒçš„å…·ä½“ä¿¡æ¯
         vector<VkExtensionProperties> availableExtensions(extensionCount);
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
 
-        // °ÑÎÒÃÇ×Ô¶¨ÒåµÄdeviceExtensions×ª»»³ÉsetÊı¾İ½á¹¹(ÎªÁË±ÜÃâºóÃæ2²ãforÑ­»·µÄerase£¬Í¬Ê±Ò²²»¸Ä¶¯Ô­Êı¾İ)
+        // æŠŠæˆ‘ä»¬è‡ªå®šä¹‰çš„deviceExtensionsè½¬æ¢æˆsetæ•°æ®ç»“æ„(ä¸ºäº†é¿å…åé¢2å±‚forå¾ªç¯çš„eraseï¼ŒåŒæ—¶ä¹Ÿä¸æ”¹åŠ¨åŸæ•°æ®)
         set<string> baseExtensions(ZXVK_Extension_Base.begin(), ZXVK_Extension_Base.end());
         set<string> rayTracingExtensions(ZXVK_Extension_RayTracing.begin(), ZXVK_Extension_RayTracing.end());
 
         bool isSupportPortabilitySubset = false;
-        // ±éÀúÎïÀíÉè±¸ËùÖ§³ÖµÄÀ©Õ¹£¬Öğ¸ö´ÓÎÒÃÇĞèÒªµÄÀ©Õ¹¼¯ºÏÖĞÉ¾³ı
+        // éå†ç‰©ç†è®¾å¤‡æ‰€æ”¯æŒçš„æ‰©å±•ï¼Œé€ä¸ªä»æˆ‘ä»¬éœ€è¦çš„æ‰©å±•é›†åˆä¸­åˆ é™¤
         for (const auto& extension : availableExtensions)
         {
             baseExtensions.erase(extension.extensionName);
@@ -4172,7 +4172,7 @@ namespace ZXEngine
 				isSupportPortabilitySubset = true;
         }
 
-        // Èç¹ûÈ«²¿É¾³ıÍêÁË£¬ËµÃ÷ÎÒÃÇËùĞèÒªµÄ»ù±¾À©Õ¹¶¼ÊÇÖ§³ÖµÄ
+        // å¦‚æœå…¨éƒ¨åˆ é™¤å®Œäº†ï¼Œè¯´æ˜æˆ‘ä»¬æ‰€éœ€è¦çš„åŸºæœ¬æ‰©å±•éƒ½æ˜¯æ”¯æŒçš„
         if (baseExtensions.empty())
         {
             ZXVK_IsSupportPortabilitySubset = isSupportPortabilitySubset;
@@ -4189,25 +4189,25 @@ namespace ZXEngine
     {
         SwapChainSupportDetails details;
 
-        // ¸ù¾İVkPhysicalDeviceºÍVkSurfaceKHR»ñÈ¡ËùÖ§³ÖµÄ¾ßÌå¹¦ÄÜ£¬ÕâÁ½¸ö¶ÔÏóÊÇ½»»»Á´µÄºËĞÄ×é¼ş
+        // æ ¹æ®VkPhysicalDeviceå’ŒVkSurfaceKHRè·å–æ‰€æ”¯æŒçš„å…·ä½“åŠŸèƒ½ï¼Œè¿™ä¸¤ä¸ªå¯¹è±¡æ˜¯äº¤æ¢é“¾çš„æ ¸å¿ƒç»„ä»¶
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
 
-        // ²éÑ¯Ö§³ÖµÄsurface¸ñÊ½ÓĞÄÄĞ©
+        // æŸ¥è¯¢æ”¯æŒçš„surfaceæ ¼å¼æœ‰å“ªäº›
         uint32_t formatCount;
         vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
         if (formatCount != 0)
         {
-            // Ìî³ä¸ñÊ½Êı¾İ
+            // å¡«å……æ ¼å¼æ•°æ®
             details.formats.resize(formatCount);
             vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
         }
 
-        // ²éÑ¯Ö§³ÖµÄsurfaceÄ£Ê½ÓĞÄÄĞ©
+        // æŸ¥è¯¢æ”¯æŒçš„surfaceæ¨¡å¼æœ‰å“ªäº›
         uint32_t presentModeCount;
         vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
         if (presentModeCount != 0) {
             details.presentModes.resize(presentModeCount);
-            // Ìî³äÄ£Ê½Êı¾İ
+            // å¡«å……æ¨¡å¼æ•°æ®
             vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data());
         }
 
@@ -4216,7 +4216,7 @@ namespace ZXEngine
 
     void RenderAPIVulkan::GetPhysicalDeviceProperties()
     {
-        // ÎïÀíÉè±¸µÄ¹âÏß×·×ÙÊôĞÔ
+        // ç‰©ç†è®¾å¤‡çš„å…‰çº¿è¿½è¸ªå±æ€§
         rtPhysicalProperties = {};
         rtPhysicalProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR;
 
@@ -4229,7 +4229,7 @@ namespace ZXEngine
         physicalDeviceProperties.pNext = &rtPhysicalProperties;
         vkGetPhysicalDeviceProperties2(physicalDevice, &physicalDeviceProperties);
 
-        // È¡Í¬Ê±Ö§³ÖColorºÍDepthµÄ×î´óÊıÁ¿
+        // å–åŒæ—¶æ”¯æŒColorå’ŒDepthçš„æœ€å¤§æ•°é‡
         VkSampleCountFlags counts = physicalDeviceProperties.properties.limits.framebufferColorSampleCounts & physicalDeviceProperties.properties.limits.framebufferDepthSampleCounts;
         if (counts & VK_SAMPLE_COUNT_64_BIT) { msaaSamplesCount = VK_SAMPLE_COUNT_64_BIT; }
         else if (counts & VK_SAMPLE_COUNT_32_BIT) { msaaSamplesCount = VK_SAMPLE_COUNT_32_BIT; }
@@ -4245,7 +4245,7 @@ namespace ZXEngine
 
     VkSurfaceFormatKHR RenderAPIVulkan::ChooseSwapSurfaceFormat(const vector<VkSurfaceFormatKHR>& availableFormats)
     {
-        // ²éÒ»ÏÂÓĞÃ»ÓĞÎÒÃÇÀíÏëµÄ¸ñÊ½ºÍÉ«²Ê¿Õ¼ä×éºÏ£¬ÓÅÏÈÓÃÕâ¸ö
+        // æŸ¥ä¸€ä¸‹æœ‰æ²¡æœ‰æˆ‘ä»¬ç†æƒ³çš„æ ¼å¼å’Œè‰²å½©ç©ºé—´ç»„åˆï¼Œä¼˜å…ˆç”¨è¿™ä¸ª
         for (const auto& availableFormat : availableFormats)
         {
             if (availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR && (
@@ -4254,23 +4254,23 @@ namespace ZXEngine
                 return availableFormat;
         }
 
-        // Èç¹ûÃ»ÓĞÀíÏëµÄ¸ñÊ½£¬ÎÒÃÇÖ±½ÓÑ¡ÔñµÚÒ»¸ö¸ñÊ½
-        // ÆäÊµÕâ¸öÊ±ºòÎÒÃÇÒ²¿ÉÒÔ±éÀúÒ»ÏÂavailableFormats£¬×Ô¼ºĞ´Ò»¸ö¹æÔòÌôÒ»¸öÏà¶Ô½ÏºÃµÄ³öÀ´
+        // å¦‚æœæ²¡æœ‰ç†æƒ³çš„æ ¼å¼ï¼Œæˆ‘ä»¬ç›´æ¥é€‰æ‹©ç¬¬ä¸€ä¸ªæ ¼å¼
+        // å…¶å®è¿™ä¸ªæ—¶å€™æˆ‘ä»¬ä¹Ÿå¯ä»¥éå†ä¸€ä¸‹availableFormatsï¼Œè‡ªå·±å†™ä¸€ä¸ªè§„åˆ™æŒ‘ä¸€ä¸ªç›¸å¯¹è¾ƒå¥½çš„å‡ºæ¥
         return availableFormats[0];
     }
 
     VkPresentModeKHR RenderAPIVulkan::ChooseSwapPresentMode(const vector<VkPresentModeKHR> availablePresentModes) {
-        // ÔÚVulkanÖĞÓĞËÄ¸öÄ£Ê½¿ÉÒÔÊ¹ÓÃ:
-        // 1£¬VK_PRESENT_MODE_IMMEDIATE_KHR
-        // Ó¦ÓÃ³ÌĞòÌá½»µÄÍ¼Ïñ±»Á¢¼´´«Êäµ½ÆÁÄ»³ÊÏÖ£¬ÕâÖÖÄ£Ê½¿ÉÄÜ»áÔì³ÉËºÁÑĞ§¹û¡£
-        // 2£¬VK_PRESENT_MODE_FIFO_KHR
-        // ½»»»Á´±»¿´×÷Ò»¸ö¶ÓÁĞ£¬µ±ÏÔÊ¾ÄÚÈİĞèÒªË¢ĞÂµÄÊ±ºò£¬ÏÔÊ¾Éè±¸´Ó¶ÓÁĞµÄÇ°Ãæ»ñÈ¡Í¼Ïñ£¬²¢ÇÒ³ÌĞò½«äÖÈ¾Íê³ÉµÄÍ¼Ïñ²åÈë¶ÓÁĞµÄºóÃæ¡£Èç¹û¶ÓÁĞÊÇÂúµÄ³ÌĞò»áµÈ´ı¡£ÕâÖÖ¹æÄ£ÓëÊÓÆµÓÎÏ·µÄ´¹Ö±Í¬²½ºÜÀàËÆ¡£ÏÔÊ¾Éè±¸µÄË¢ĞÂÊ±¿Ì±»³ÆÎª¡°´¹Ö±ÖĞ¶Ï¡±¡£
-        // 3£¬VK_PRESENT_MODE_FIFO_RELAXED_KHR
-        // ¸ÃÄ£Ê½ÓëÉÏÒ»¸öÄ£Ê½ÂÔÓĞ²»Í¬µÄµØ·½Îª£¬Èç¹ûÓ¦ÓÃ³ÌĞò´æÔÚÑÓ³Ù£¬¼´½ÓÊÜ×îºóÒ»¸ö´¹Ö±Í¬²½ĞÅºÅÊ±¶ÓÁĞ¿ÕÁË£¬½«²»»áµÈ´ıÏÂÒ»¸ö´¹Ö±Í¬²½ĞÅºÅ£¬¶øÊÇ½«Í¼ÏñÖ±½Ó´«ËÍ¡£ÕâÑù×ö¿ÉÄÜµ¼ÖÂ¿É¼ûµÄËºÁÑĞ§¹û¡£
-        // 4£¬VK_PRESENT_MODE_MAILBOX_KHR
-        // ÕâÊÇµÚ¶şÖÖÄ£Ê½µÄ±äÖÖ¡£µ±½»»»Á´¶ÓÁĞÂúµÄÊ±ºò£¬Ñ¡ÔñĞÂµÄÌæ»»¾ÉµÄÍ¼Ïñ£¬´Ó¶øÌæ´ú×èÈûÓ¦ÓÃ³ÌĞòµÄÇéĞÎ¡£ÕâÖÖÄ£Ê½Í¨³£ÓÃÀ´ÊµÏÖÈıÖØ»º³åÇø£¬Óë±ê×¼µÄ´¹Ö±Í¬²½Ë«»º³åÏà±È£¬Ëü¿ÉÒÔÓĞĞ§±ÜÃâÑÓ³Ù´øÀ´µÄËºÁÑĞ§¹û¡£
+        // åœ¨Vulkanä¸­æœ‰å››ä¸ªæ¨¡å¼å¯ä»¥ä½¿ç”¨:
+        // 1ï¼ŒVK_PRESENT_MODE_IMMEDIATE_KHR
+        // åº”ç”¨ç¨‹åºæäº¤çš„å›¾åƒè¢«ç«‹å³ä¼ è¾“åˆ°å±å¹•å‘ˆç°ï¼Œè¿™ç§æ¨¡å¼å¯èƒ½ä¼šé€ æˆæ’•è£‚æ•ˆæœã€‚
+        // 2ï¼ŒVK_PRESENT_MODE_FIFO_KHR
+        // äº¤æ¢é“¾è¢«çœ‹ä½œä¸€ä¸ªé˜Ÿåˆ—ï¼Œå½“æ˜¾ç¤ºå†…å®¹éœ€è¦åˆ·æ–°çš„æ—¶å€™ï¼Œæ˜¾ç¤ºè®¾å¤‡ä»é˜Ÿåˆ—çš„å‰é¢è·å–å›¾åƒï¼Œå¹¶ä¸”ç¨‹åºå°†æ¸²æŸ“å®Œæˆçš„å›¾åƒæ’å…¥é˜Ÿåˆ—çš„åé¢ã€‚å¦‚æœé˜Ÿåˆ—æ˜¯æ»¡çš„ç¨‹åºä¼šç­‰å¾…ã€‚è¿™ç§è§„æ¨¡ä¸è§†é¢‘æ¸¸æˆçš„å‚ç›´åŒæ­¥å¾ˆç±»ä¼¼ã€‚æ˜¾ç¤ºè®¾å¤‡çš„åˆ·æ–°æ—¶åˆ»è¢«ç§°ä¸ºâ€œå‚ç›´ä¸­æ–­â€ã€‚
+        // 3ï¼ŒVK_PRESENT_MODE_FIFO_RELAXED_KHR
+        // è¯¥æ¨¡å¼ä¸ä¸Šä¸€ä¸ªæ¨¡å¼ç•¥æœ‰ä¸åŒçš„åœ°æ–¹ä¸ºï¼Œå¦‚æœåº”ç”¨ç¨‹åºå­˜åœ¨å»¶è¿Ÿï¼Œå³æ¥å—æœ€åä¸€ä¸ªå‚ç›´åŒæ­¥ä¿¡å·æ—¶é˜Ÿåˆ—ç©ºäº†ï¼Œå°†ä¸ä¼šç­‰å¾…ä¸‹ä¸€ä¸ªå‚ç›´åŒæ­¥ä¿¡å·ï¼Œè€Œæ˜¯å°†å›¾åƒç›´æ¥ä¼ é€ã€‚è¿™æ ·åšå¯èƒ½å¯¼è‡´å¯è§çš„æ’•è£‚æ•ˆæœã€‚
+        // 4ï¼ŒVK_PRESENT_MODE_MAILBOX_KHR
+        // è¿™æ˜¯ç¬¬äºŒç§æ¨¡å¼çš„å˜ç§ã€‚å½“äº¤æ¢é“¾é˜Ÿåˆ—æ»¡çš„æ—¶å€™ï¼Œé€‰æ‹©æ–°çš„æ›¿æ¢æ—§çš„å›¾åƒï¼Œä»è€Œæ›¿ä»£é˜»å¡åº”ç”¨ç¨‹åºçš„æƒ…å½¢ã€‚è¿™ç§æ¨¡å¼é€šå¸¸ç”¨æ¥å®ç°ä¸‰é‡ç¼“å†²åŒºï¼Œä¸æ ‡å‡†çš„å‚ç›´åŒæ­¥åŒç¼“å†²ç›¸æ¯”ï¼Œå®ƒå¯ä»¥æœ‰æ•ˆé¿å…å»¶è¿Ÿå¸¦æ¥çš„æ’•è£‚æ•ˆæœã€‚
 
-        // Ä¬ÈÏµÄÄ£Ê½
+        // é»˜è®¤çš„æ¨¡å¼
         VkPresentModeKHR bestMode = VK_PRESENT_MODE_FIFO_KHR;
 
         for (const auto& availablePresentMode : availablePresentModes)
@@ -4285,9 +4285,9 @@ namespace ZXEngine
     }
 
     VkExtent2D RenderAPIVulkan::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
-        // Õâ¸öcapabilitiesÊı¾İÊÇÍ¨¹ıvkGetPhysicalDeviceSurfaceCapabilitiesKHR½Ó¿Ú²éÑ¯³öÀ´µÄ
+        // è¿™ä¸ªcapabilitiesæ•°æ®æ˜¯é€šè¿‡vkGetPhysicalDeviceSurfaceCapabilitiesKHRæ¥å£æŸ¥è¯¢å‡ºæ¥çš„
 
-        // currentExtentµÄ¸ß¿íÈç¹ûÊÇÒ»¸öÌØÊâµÄuint32×î´óÖµ£¬¾ÍËµÃ÷ÔÊĞíÎÒÃÇ×Ô¼ºÔÚÒ»¶¨·¶Î§ÄÚ×ÔÓÉÉèÖÃÕâ¸öÖµ
+        // currentExtentçš„é«˜å®½å¦‚æœæ˜¯ä¸€ä¸ªç‰¹æ®Šçš„uint32æœ€å¤§å€¼ï¼Œå°±è¯´æ˜å…è®¸æˆ‘ä»¬è‡ªå·±åœ¨ä¸€å®šèŒƒå›´å†…è‡ªç”±è®¾ç½®è¿™ä¸ªå€¼
         if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
         {
             int width, height;
@@ -4299,13 +4299,13 @@ namespace ZXEngine
                 static_cast<uint32_t>(height)
             };
 
-            // ÊÕÁ²µ½minImageExtentºÍmaxImageExtentÖ®¼ä
+            // æ”¶æ•›åˆ°minImageExtentå’ŒmaxImageExtentä¹‹é—´
             actualExtent.width = Math::Max(capabilities.minImageExtent.width, Math::Min(capabilities.maxImageExtent.width, actualExtent.width));
             actualExtent.height = Math::Max(capabilities.minImageExtent.height, Math::Min(capabilities.maxImageExtent.height, actualExtent.height));
 
             return actualExtent;
         }
-        // ·ñÔòÎÒÃÇÖ»ÄÜÊ¹ÓÃ²éÑ¯µ½µÄcurrentExtent
+        // å¦åˆ™æˆ‘ä»¬åªèƒ½ä½¿ç”¨æŸ¥è¯¢åˆ°çš„currentExtent
         else
         {
             return capabilities.currentExtent;
@@ -4316,14 +4316,14 @@ namespace ZXEngine
     {
         int width = 0, height = 0;
         glfwGetFramebufferSize(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), &width, &height);
-        // Èç¹û´°¿Ú´óĞ¡Îª0(±»×îĞ¡»¯ÁË)£¬ÄÇÃ´³ÌĞò¾ÍÔÚÕâÀïµÈ´ı£¬Ö±µ½´°¿ÚÖØĞÂµ¯³ö
+        // å¦‚æœçª—å£å¤§å°ä¸º0(è¢«æœ€å°åŒ–äº†)ï¼Œé‚£ä¹ˆç¨‹åºå°±åœ¨è¿™é‡Œç­‰å¾…ï¼Œç›´åˆ°çª—å£é‡æ–°å¼¹å‡º
         while (width == 0 || height == 0)
         {
             glfwGetFramebufferSize(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), &width, &height);
             glfwWaitEvents();
         }
 
-        // ÏÈµÈÂß¼­Éè±¸Ö´ĞĞÍêµ±Ç°µÄËùÓĞÖ¸Áî£¬²»ÔÙÕ¼ÓÃ×ÊÔ´
+        // å…ˆç­‰é€»è¾‘è®¾å¤‡æ‰§è¡Œå®Œå½“å‰çš„æ‰€æœ‰æŒ‡ä»¤ï¼Œä¸å†å ç”¨èµ„æº
         vkDeviceWaitIdle(device);
 
 #ifdef ZX_EDITOR
@@ -4333,12 +4333,12 @@ namespace ZXEngine
         GlobalData::srcHeight = newWindowHeight;
 #endif
 
-        // ÇåÀíËùÓĞ½»»»Á´Ïà¹Ø×ÊÔ´£¬È«²¿ÖØĞÂ´´½¨
+        // æ¸…ç†æ‰€æœ‰äº¤æ¢é“¾ç›¸å…³èµ„æºï¼Œå…¨éƒ¨é‡æ–°åˆ›å»º
         CleanUpSwapChain();
         CreateSwapChain();
         CreatePresentFrameBuffer();
 
-        // ÖØĞÂ´´½¨ËùÓĞ´óĞ¡ºÍ´°¿Ú±£³ÖÒ»ÖÂµÄFBO
+        // é‡æ–°åˆ›å»ºæ‰€æœ‰å¤§å°å’Œçª—å£ä¿æŒä¸€è‡´çš„FBO
         FBOManager::GetInstance()->RecreateAllFollowWindowFBO();
 
 #ifdef ZX_EDITOR
@@ -4415,7 +4415,7 @@ namespace ZXEngine
 
     void RenderAPIVulkan::CreateGPUBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer& buffer, VmaAllocation& allocation, const void* data)
     {
-        // ½¨Á¢StagingBuffer
+        // å»ºç«‹StagingBuffer
         VkBufferCreateInfo stagingBufferInfo = {};
         stagingBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
         stagingBufferInfo.size = size;
@@ -4430,7 +4430,7 @@ namespace ZXEngine
         VmaAllocation stagingBufferAlloc;
         vmaCreateBuffer(vmaAllocator, &stagingBufferInfo, &stagingAllocInfo, &stagingBuffer, &stagingBufferAlloc, nullptr);
 
-        // ¿½±´Êı¾İµ½StagingBuffer
+        // æ‹·è´æ•°æ®åˆ°StagingBuffer
         void* pData;
         vmaMapMemory(vmaAllocator, stagingBufferAlloc, &pData);
         memcpy(pData, data, size);
@@ -4440,14 +4440,14 @@ namespace ZXEngine
         bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
         bufferInfo.size = size;
         bufferInfo.usage = usage;
-        bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE; // Ö»ÓĞÒ»¸ö¶ÓÁĞ´ØÊ¹ÓÃ
+        bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE; // åªæœ‰ä¸€ä¸ªé˜Ÿåˆ—ç°‡ä½¿ç”¨
 
         VmaAllocationCreateInfo bufferAllocInfo = {};
         bufferAllocInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 
         vmaCreateBuffer(vmaAllocator, &bufferInfo, &bufferAllocInfo, &buffer, &allocation, nullptr);
 
-        // ´ÓStagingBuffer¿½±´µ½VertexBuffer
+        // ä»StagingBufferæ‹·è´åˆ°VertexBuffer
         ImmediatelyExecute([=](VkCommandBuffer cmd)
         {
             VkBufferCopy copy = {};
@@ -4457,7 +4457,7 @@ namespace ZXEngine
             vkCmdCopyBuffer(cmd, stagingBuffer, buffer, 1, &copy);
         });
 
-        // Ïú»ÙStagingBuffer
+        // é”€æ¯StagingBuffer
         vmaDestroyBuffer(vmaAllocator, stagingBuffer, stagingBufferAlloc);
     }
 
@@ -4481,7 +4481,7 @@ namespace ZXEngine
         }
 
         VkDeviceSize bufferSize = static_cast<VkDeviceSize>(properties[properties.size() - 1].offset + properties[properties.size() - 1].size);
-        // ÈÃUniform BufferµÄ´óĞ¡ºÍminUniformBufferOffsetAlignment¶ÔÆë£¬ÎÒ²»Ì«È·¶¨Õâ¸ö²½ÖèÊÇ²»ÊÇ±ØÒªµÄ
+        // è®©Uniform Bufferçš„å¤§å°å’ŒminUniformBufferOffsetAlignmentå¯¹é½ï¼Œæˆ‘ä¸å¤ªç¡®å®šè¿™ä¸ªæ­¥éª¤æ˜¯ä¸æ˜¯å¿…è¦çš„
         VkDeviceSize remainder = bufferSize % minUniformBufferOffsetAlignment;
         if (remainder > 0)
             bufferSize = bufferSize - remainder + minUniformBufferOffsetAlignment;
@@ -4528,7 +4528,7 @@ namespace ZXEngine
     {
         VkFenceCreateInfo fenceInfo = {};
         fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-        // ´´½¨Ê±Á¢¿ÌÉèÖÃÎªsignaled×´Ì¬(·ñÔòµÚÒ»´ÎµÄvkWaitForFencesÓÀÔ¶µÈ²»µ½½á¹û)
+        // åˆ›å»ºæ—¶ç«‹åˆ»è®¾ç½®ä¸ºsignaledçŠ¶æ€(å¦åˆ™ç¬¬ä¸€æ¬¡çš„vkWaitForFencesæ°¸è¿œç­‰ä¸åˆ°ç»“æœ)
         fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
         if (vkCreateFence(device, &fenceInfo, nullptr, &fence) != VK_SUCCESS)
             throw std::runtime_error("failed to create fence objects!");
@@ -4549,26 +4549,26 @@ namespace ZXEngine
         imageInfo.imageType = VK_IMAGE_TYPE_2D;
         imageInfo.extent.width = width;
         imageInfo.extent.height = height;
-        // ÎÆÀíµÚÈı¸öÎ¬¶ÈµÄÏñËØÊıÁ¿£¬Èç¹û²»ÊÇ3DÎÆÀíÓ¦¸Ã¶¼ÊÇ1
+        // çº¹ç†ç¬¬ä¸‰ä¸ªç»´åº¦çš„åƒç´ æ•°é‡ï¼Œå¦‚æœä¸æ˜¯3Dçº¹ç†åº”è¯¥éƒ½æ˜¯1
         imageInfo.extent.depth = 1;
         imageInfo.mipLevels = mipLevels;
         imageInfo.arrayLayers = layers;
         imageInfo.format = format;
-        // VK_IMAGE_TILING_LINEAR: texelÒÔĞĞÎªÖ÷ĞòÅÅÁĞÎªÊı×é
-        // VK_IMAGE_TILING_OPTIMAL: texel°´ÕÕVulkanµÄ¾ßÌåÊµÏÖÀ´¶¨ÒåµÄÒ»ÖÖË³ĞòÅÅÁĞ£¬ÒÔÊµÏÖ×î¼Ñ·ÃÎÊ
-        // Õâ¸öºÍlayout²»Ò»Ñù£¬Ò»µ©ÉèÖÃÖ®ºóÊÇ¹Ì¶¨µÄ²»ÄÜ¸Ä£¬Èç¹ûCPUĞèÒª¶ÁÈ¡Õâ¸öÊı¾İ£¬¾ÍÉèÖÃÎªVK_IMAGE_TILING_LINEAR
-        // Èç¹ûÖ»ÊÇGPUÊ¹ÓÃ£¬¾ÍÉèÖÃÎªVK_IMAGE_TILING_OPTIMALĞÔÄÜ¸üºÃ
+        // VK_IMAGE_TILING_LINEAR: texelä»¥è¡Œä¸ºä¸»åºæ’åˆ—ä¸ºæ•°ç»„
+        // VK_IMAGE_TILING_OPTIMAL: texelæŒ‰ç…§Vulkançš„å…·ä½“å®ç°æ¥å®šä¹‰çš„ä¸€ç§é¡ºåºæ’åˆ—ï¼Œä»¥å®ç°æœ€ä½³è®¿é—®
+        // è¿™ä¸ªå’Œlayoutä¸ä¸€æ ·ï¼Œä¸€æ—¦è®¾ç½®ä¹‹åæ˜¯å›ºå®šçš„ä¸èƒ½æ”¹ï¼Œå¦‚æœCPUéœ€è¦è¯»å–è¿™ä¸ªæ•°æ®ï¼Œå°±è®¾ç½®ä¸ºVK_IMAGE_TILING_LINEAR
+        // å¦‚æœåªæ˜¯GPUä½¿ç”¨ï¼Œå°±è®¾ç½®ä¸ºVK_IMAGE_TILING_OPTIMALæ€§èƒ½æ›´å¥½
         imageInfo.tiling = tiling;
-        // ÕâÀïÖ»ÄÜÌîVK_IMAGE_LAYOUT_UNDEFINED»òÕßVK_IMAGE_LAYOUT_PREINITIALIZED
-        // VK_IMAGE_LAYOUT_UNDEFINEDÒâÎ¶×ÅµÚÒ»´ÎtransitionÊı¾İµÄÊ±ºòÊı¾İ»á±»¶ªÆú
-        // VK_IMAGE_LAYOUT_PREINITIALIZEDÊÇµÚÒ»´ÎtransitionÊı¾İµÄÊ±ºòÊı¾İ»á±»±£Áô
-        // ²»ÊÇºÜ¶®Õâ¸öÊ²Ã´ÒâË¼£¬Èç¹ûÊÇÒ»¸öÓÃÀ´´ÓCPUĞ´ÈëÊı¾İ£¬È»ºótransferµ½ÆäËüVkImageµÄstagingImage£¬¾ÍÒªÓÃVK_IMAGE_LAYOUT_PREINITIALIZED
+        // è¿™é‡Œåªèƒ½å¡«VK_IMAGE_LAYOUT_UNDEFINEDæˆ–è€…VK_IMAGE_LAYOUT_PREINITIALIZED
+        // VK_IMAGE_LAYOUT_UNDEFINEDæ„å‘³ç€ç¬¬ä¸€æ¬¡transitionæ•°æ®çš„æ—¶å€™æ•°æ®ä¼šè¢«ä¸¢å¼ƒ
+        // VK_IMAGE_LAYOUT_PREINITIALIZEDæ˜¯ç¬¬ä¸€æ¬¡transitionæ•°æ®çš„æ—¶å€™æ•°æ®ä¼šè¢«ä¿ç•™
+        // ä¸æ˜¯å¾ˆæ‡‚è¿™ä¸ªä»€ä¹ˆæ„æ€ï¼Œå¦‚æœæ˜¯ä¸€ä¸ªç”¨æ¥ä»CPUå†™å…¥æ•°æ®ï¼Œç„¶åtransferåˆ°å…¶å®ƒVkImageçš„stagingImageï¼Œå°±è¦ç”¨VK_IMAGE_LAYOUT_PREINITIALIZED
         imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         imageInfo.usage = usage;
         imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-        // Õâ¸öÖ»Ó°Ïìµ±×÷attachmentsÊ¹ÓÃµÄVkImage(×Ô¼º´´½¨µÄframe buffer²ÅÖ§³ÖÕâ¸ö£¬½»»»Á´ÓÃµÄÄÇ¸öÄ¬ÈÏbuffer²»Ö§³Ö)
+        // è¿™ä¸ªåªå½±å“å½“ä½œattachmentsä½¿ç”¨çš„VkImage(è‡ªå·±åˆ›å»ºçš„frame bufferæ‰æ”¯æŒè¿™ä¸ªï¼Œäº¤æ¢é“¾ç”¨çš„é‚£ä¸ªé»˜è®¤bufferä¸æ”¯æŒ)
         imageInfo.samples = numSamples;
-        // ¿ÉÒÔ¼ÓÒ»Ğ©±êÖ¾£¬¸øÌØÊâÓÃÍ¾µÄÍ¼Ïñ×öÓÅ»¯£¬±ÈÈç3DµÄÏ¡Êè(sparse)Í¼Ïñ
+        // å¯ä»¥åŠ ä¸€äº›æ ‡å¿—ï¼Œç»™ç‰¹æ®Šç”¨é€”çš„å›¾åƒåšä¼˜åŒ–ï¼Œæ¯”å¦‚3Dçš„ç¨€ç–(sparse)å›¾åƒ
         imageInfo.flags = layers == 6 ? VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT : 0;
 
         VmaAllocationCreateInfo allocationInfo = {};
@@ -4586,12 +4586,12 @@ namespace ZXEngine
 
     void RenderAPIVulkan::GenerateMipMaps(VkImage image, VkFormat format, int32_t width, int32_t height, uint32_t mipLevels)
     {
-        // Éú³ÉmipmapÓĞ2ÖÖ·½Ê½
-        // Ò»ÖÖÊÇÓÃÒ»Ğ©Íâ²¿µÄ½Ó¿Ú£¬±ÈÈçstb_image_resize£¬È¥Éú³ÉÃ¿Ò»²ãµÄÍ¼ÏñÊı¾İ£¬È»ºó°ÑÃ¿Ò»²ã¶¼µ±Ô­Ê¼Í¼ÏñÄÇÑùÌîÈëÊı¾İ
-        // ÎÒÃÇÕâÀïÓÃÁíÒ»ÖÖ·½Ê½£¬ÓÃvkCmdBlitImageÀ´´¦Àí£¬Õâ¸öÊÇÓÃÓÚ¸´ÖÆ£¬Ëõ·ÅºÍfilterÍ¼ÏñÊı¾İµÄ
-        // ÔÚÒ»¸öÑ­»·Àï£¬°Ñlevel 0(Ô­Í¼)Êı¾İËõĞ¡Ò»±¶blitµ½level 1£¬È»ºó1µ½2£¬2µ½3ÕâÑù
+        // ç”Ÿæˆmipmapæœ‰2ç§æ–¹å¼
+        // ä¸€ç§æ˜¯ç”¨ä¸€äº›å¤–éƒ¨çš„æ¥å£ï¼Œæ¯”å¦‚stb_image_resizeï¼Œå»ç”Ÿæˆæ¯ä¸€å±‚çš„å›¾åƒæ•°æ®ï¼Œç„¶åæŠŠæ¯ä¸€å±‚éƒ½å½“åŸå§‹å›¾åƒé‚£æ ·å¡«å…¥æ•°æ®
+        // æˆ‘ä»¬è¿™é‡Œç”¨å¦ä¸€ç§æ–¹å¼ï¼Œç”¨vkCmdBlitImageæ¥å¤„ç†ï¼Œè¿™ä¸ªæ˜¯ç”¨äºå¤åˆ¶ï¼Œç¼©æ”¾å’Œfilterå›¾åƒæ•°æ®çš„
+        // åœ¨ä¸€ä¸ªå¾ªç¯é‡Œï¼ŒæŠŠlevel 0(åŸå›¾)æ•°æ®ç¼©å°ä¸€å€blitåˆ°level 1ï¼Œç„¶å1åˆ°2ï¼Œ2åˆ°3è¿™æ ·
 
-        // ÏÈ¼ì²éÍ¼Ïñ¸ñÊ½ÊÇ·ñÖ§³Ölinear blitting
+        // å…ˆæ£€æŸ¥å›¾åƒæ ¼å¼æ˜¯å¦æ”¯æŒlinear blitting
         VkFormatProperties formatProperties;
         vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &formatProperties);
         if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
@@ -4611,74 +4611,74 @@ namespace ZXEngine
 
             int32_t mipWidth = width;
             int32_t mipHeight = height;
-            // ×¢ÒâÑ­»·ÊÇ´Ó1¿ªÊ¼µÄ
+            // æ³¨æ„å¾ªç¯æ˜¯ä»1å¼€å§‹çš„
             for (uint32_t i = 1; i < mipLevels; i++)
             {
-                // ÏÈ°ÑµÚi-1¼¶(0ÊÇÔ­Í¼)µÄlayout×ª³ÉTRANSFER_SRC_OPTIMAL
+                // å…ˆæŠŠç¬¬i-1çº§(0æ˜¯åŸå›¾)çš„layoutè½¬æˆTRANSFER_SRC_OPTIMAL
                 barrier.subresourceRange.baseMipLevel = i - 1;
-                // Ô­layout£¬ÆäÊµimageÒ»¿ªÊ¼´´½¨µÄÊ±ºòÃ¿Ò»¼¶mipmap¶¼ÉèÖÃÎªVK_IMAGE_LAYOUT_UNDEFINEDÁË
-                // µ«ÊÇÃ¿Ò»¼¶mipmap»áÏÈ×÷ÎªÄ¿±êÍ¼Ïñ½ÓÊÕÊı¾İ£¬ÔÙ×÷ÎªÔ­Í¼ÏñÏòÏÂÒ»¼¶´«ÊäÊı¾İ
-                // ËùÒÔÕâÀïµÚi-1¼¶mipmap£¬Ïàµ±ÓÚÊÇÕâÒ»´ÎBlit²Ù×÷µÄÔ­Êı¾İ£¬Ò²ÊÇÕâ¸öÑ­»·ÀïÃæµÚ¶ş´Î±»Ê¹ÓÃ(µÚÒ»´Î±»Ê¹ÓÃÊÇ×÷ÎªÄ¿±êÍ¼Ïñ)
-                // ËùÒÔÕâÀïÒª´ÓTRANSFER_DST_OPTIMAL×ª»»µ½TRANSFER_SRC_OPTIMAL
+                // åŸlayoutï¼Œå…¶å®imageä¸€å¼€å§‹åˆ›å»ºçš„æ—¶å€™æ¯ä¸€çº§mipmapéƒ½è®¾ç½®ä¸ºVK_IMAGE_LAYOUT_UNDEFINEDäº†
+                // ä½†æ˜¯æ¯ä¸€çº§mipmapä¼šå…ˆä½œä¸ºç›®æ ‡å›¾åƒæ¥æ”¶æ•°æ®ï¼Œå†ä½œä¸ºåŸå›¾åƒå‘ä¸‹ä¸€çº§ä¼ è¾“æ•°æ®
+                // æ‰€ä»¥è¿™é‡Œç¬¬i-1çº§mipmapï¼Œç›¸å½“äºæ˜¯è¿™ä¸€æ¬¡Blitæ“ä½œçš„åŸæ•°æ®ï¼Œä¹Ÿæ˜¯è¿™ä¸ªå¾ªç¯é‡Œé¢ç¬¬äºŒæ¬¡è¢«ä½¿ç”¨(ç¬¬ä¸€æ¬¡è¢«ä½¿ç”¨æ˜¯ä½œä¸ºç›®æ ‡å›¾åƒ)
+                // æ‰€ä»¥è¿™é‡Œè¦ä»TRANSFER_DST_OPTIMALè½¬æ¢åˆ°TRANSFER_SRC_OPTIMAL
                 barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
                 barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-                // Õâ¸öimageµÄÊı¾İĞ´ÈëÓ¦¸ÃÔÚÕâ¸öBarrierÖ®Ç°Íê³É
+                // è¿™ä¸ªimageçš„æ•°æ®å†™å…¥åº”è¯¥åœ¨è¿™ä¸ªBarrierä¹‹å‰å®Œæˆ
                 barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-                // Õâ¸öBarrierÖ®ºó¾Í¿ÉÒÔ¶ÁÕâ¸öimageµÄÊı¾İÁË
+                // è¿™ä¸ªBarrierä¹‹åå°±å¯ä»¥è¯»è¿™ä¸ªimageçš„æ•°æ®äº†
                 barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 
                 vkCmdPipelineBarrier(cmd,
-                    // Ö¸¶¨Ó¦¸ÃÔÚBarrierÖ®Ç°Íê³ÉµÄ²Ù×÷£¬ÔÚ¹ÜÏßÀïµÄÄÄ¸östage
+                    // æŒ‡å®šåº”è¯¥åœ¨Barrierä¹‹å‰å®Œæˆçš„æ“ä½œï¼Œåœ¨ç®¡çº¿é‡Œçš„å“ªä¸ªstage
                     VK_PIPELINE_STAGE_TRANSFER_BIT,
-                    // Ö¸¶¨Ó¦¸ÃµÈ´ıBarrierµÄ²Ù×÷£¬ÔÚ¹ÜÏßÀïµÄÄÄ¸östage
+                    // æŒ‡å®šåº”è¯¥ç­‰å¾…Barrierçš„æ“ä½œï¼Œåœ¨ç®¡çº¿é‡Œçš„å“ªä¸ªstage
                     VK_PIPELINE_STAGE_TRANSFER_BIT,
                     0, 0, nullptr, 0, nullptr, 1, &barrier
                 );
 
-                // ÅäÖÃBlit²Ù×÷£¬Õû¸öBlit²Ù×÷¾ÍÊÇ°ÑÍ¬Ò»¸öimageµÚi-1¼¶mipmapµÄÊı¾İËõĞ¡Ò»°ë¸´ÖÆµ½µÚi¼¶
+                // é…ç½®Blitæ“ä½œï¼Œæ•´ä¸ªBlitæ“ä½œå°±æ˜¯æŠŠåŒä¸€ä¸ªimageç¬¬i-1çº§mipmapçš„æ•°æ®ç¼©å°ä¸€åŠå¤åˆ¶åˆ°ç¬¬içº§
                 VkImageBlit blit{};
-                // ²Ù×÷Ô­Í¼ÏñµÄ(0,0)µ½(width, height)
+                // æ“ä½œåŸå›¾åƒçš„(0,0)åˆ°(width, height)
                 blit.srcOffsets[0] = { 0, 0, 0 };
                 blit.srcOffsets[1] = { mipWidth, mipHeight, 1 };
-                // ²Ù×÷Ô­Í¼ÏñµÄColor
+                // æ“ä½œåŸå›¾åƒçš„Color
                 blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-                // ²Ù×÷Ô­Í¼ÏñmipmapµÈ¼¶µÄi-1
+                // æ“ä½œåŸå›¾åƒmipmapç­‰çº§çš„i-1
                 blit.srcSubresource.mipLevel = i - 1;
-                // ÔİÊ±Ã»ÓÃ
+                // æš‚æ—¶æ²¡ç”¨
                 blit.srcSubresource.baseArrayLayer = 0;
                 blit.srcSubresource.layerCount = 1;
-                // ¸´ÖÆµ½Ä¿±êÍ¼ÏñµÄ(0,0)µ½(width/2, height/2)£¬Èç¹ûĞ¡ÓÚ1µÄ»°µÈÓÚ1
+                // å¤åˆ¶åˆ°ç›®æ ‡å›¾åƒçš„(0,0)åˆ°(width/2, height/2)ï¼Œå¦‚æœå°äº1çš„è¯ç­‰äº1
                 blit.dstOffsets[0] = { 0, 0, 0 };
                 blit.dstOffsets[1] = { mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1 };
-                // ²Ù×÷Ä¿±êÍ¼ÏñµÄColor
+                // æ“ä½œç›®æ ‡å›¾åƒçš„Color
                 blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-                // ¸´ÖÆµ½Ä¿±êÍ¼ÏñµÄmipmapµÈ¼¶i
+                // å¤åˆ¶åˆ°ç›®æ ‡å›¾åƒçš„mipmapç­‰çº§i
                 blit.dstSubresource.mipLevel = i;
-                // ÔİÊ±Ã»ÓÃ
+                // æš‚æ—¶æ²¡ç”¨
                 blit.dstSubresource.baseArrayLayer = 0;
                 blit.dstSubresource.layerCount = 1;
 
-                // Ìí¼ÓBilt²Ù×÷Ö¸Áî£¬ÕâÀïÔ­Í¼ÏñºÍÄ¿±êÍ¼ÏñÉèÖÃÎªÍ¬Ò»¸ö£¬ÒòÎªÊÇÍ¬Ò»¸öimageµÄ²»Í¬mipmap²ã²Ù×÷
+                // æ·»åŠ Biltæ“ä½œæŒ‡ä»¤ï¼Œè¿™é‡ŒåŸå›¾åƒå’Œç›®æ ‡å›¾åƒè®¾ç½®ä¸ºåŒä¸€ä¸ªï¼Œå› ä¸ºæ˜¯åŒä¸€ä¸ªimageçš„ä¸åŒmipmapå±‚æ“ä½œ
                 vkCmdBlitImage(cmd,
                     image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                     image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                     1, &blit, VK_FILTER_LINEAR
                 );
 
-                // BlitÍêÖ®ºó£¬Õâ¸öBarrierËù¶ÔÓ¦µÄi-1¼¶mipmap¾Í½áÊøÈÎÎñÁË£¬¿ÉÒÔÌá¹©¸øshader¶ÁÈ¡ÁË
-                // ËùÒÔlayout´ÓTRANSFER_SRC_OPTIMAL×ª»»µ½SHADER_READ_ONLY_OPTIMAL
+                // Blitå®Œä¹‹åï¼Œè¿™ä¸ªBarrieræ‰€å¯¹åº”çš„i-1çº§mipmapå°±ç»“æŸä»»åŠ¡äº†ï¼Œå¯ä»¥æä¾›ç»™shaderè¯»å–äº†
+                // æ‰€ä»¥layoutä»TRANSFER_SRC_OPTIMALè½¬æ¢åˆ°SHADER_READ_ONLY_OPTIMAL
                 barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
                 barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                // Õâ¸öimageµÚi-1¼¶mipmapµÄÊı¾İ¶ÁÈ¡²Ù×÷Ó¦¸ÃÔÚÕâ¸öBarrierÖ®Ç°Íê³É
+                // è¿™ä¸ªimageç¬¬i-1çº§mipmapçš„æ•°æ®è¯»å–æ“ä½œåº”è¯¥åœ¨è¿™ä¸ªBarrierä¹‹å‰å®Œæˆ
                 barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
                 barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
                 vkCmdPipelineBarrier(cmd,
-                    // ½áºÏÇ°ÃæµÄsrcAccessMask
-                    // transfer½×¶ÎµÄtransfer¶ÁÈ¡²Ù×÷Ó¦¸ÃÔÚÕâ¸öBarrierÖ®Ç°Ö´ĞĞ
+                    // ç»“åˆå‰é¢çš„srcAccessMask
+                    // transferé˜¶æ®µçš„transferè¯»å–æ“ä½œåº”è¯¥åœ¨è¿™ä¸ªBarrierä¹‹å‰æ‰§è¡Œ
                     VK_PIPELINE_STAGE_TRANSFER_BIT,
-                    // ½áºÏÇ°ÃæµÄdstAccessMask
-                    // fragment shader½×¶ÎµÄshader¶ÁÈ¡²Ù×÷Ó¦¸ÃÔÚÕâ¸öBarrierÖ®ºóÖ´ĞĞ
+                    // ç»“åˆå‰é¢çš„dstAccessMask
+                    // fragment shaderé˜¶æ®µçš„shaderè¯»å–æ“ä½œåº”è¯¥åœ¨è¿™ä¸ªBarrierä¹‹åæ‰§è¡Œ
                     VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
                     0, 0, nullptr, 0, nullptr, 1, &barrier
                 );
@@ -4687,23 +4687,23 @@ namespace ZXEngine
                 if (mipHeight > 1) mipHeight /= 2;
             }
 
-            // Ñ­»·½áÊøºó»¹ÓĞ×îºóÒ»¼¶µÄmipmapĞèÒª´¦Àí
+            // å¾ªç¯ç»“æŸåè¿˜æœ‰æœ€åä¸€çº§çš„mipmapéœ€è¦å¤„ç†
             barrier.subresourceRange.baseMipLevel = mipLevels - 1;
-            // ÒòÎª×îºóÒ»¼¶Ö»½ÓÊÕÊı¾İ£¬²»ĞèÒª´ÓËü¸´ÖÆÊı¾İµ½ÆäËüµØ·½£¬ËùÒÔ×îºóµÄlayout¾ÍÊÇTRANSFER_DST_OPTIMAL
+            // å› ä¸ºæœ€åä¸€çº§åªæ¥æ”¶æ•°æ®ï¼Œä¸éœ€è¦ä»å®ƒå¤åˆ¶æ•°æ®åˆ°å…¶å®ƒåœ°æ–¹ï¼Œæ‰€ä»¥æœ€åçš„layoutå°±æ˜¯TRANSFER_DST_OPTIMAL
             barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-            // ĞèÒª×ª»»³Éshader¶ÁÈ¡ÓÃµÄSHADER_READ_ONLY_OPTIMAL
+            // éœ€è¦è½¬æ¢æˆshaderè¯»å–ç”¨çš„SHADER_READ_ONLY_OPTIMAL
             barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            // Õâ¸öBarrierÖ®Ç°ĞèÒªÍê³É×îºóÒ»¼¶mipmapµÄÊı¾İĞ´Èë
+            // è¿™ä¸ªBarrierä¹‹å‰éœ€è¦å®Œæˆæœ€åä¸€çº§mipmapçš„æ•°æ®å†™å…¥
             barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-            // shader¶ÁÈ¡Êı¾İĞèÒªÔÚÕâ¸öBarrierÖ®ºó²ÅÄÜ¿ªÊ¼
+            // shaderè¯»å–æ•°æ®éœ€è¦åœ¨è¿™ä¸ªBarrierä¹‹åæ‰èƒ½å¼€å§‹
             barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
             
             vkCmdPipelineBarrier(cmd,
-                // ½áºÏÇ°ÃæµÄsrcAccessMask
-                // transfer½×¶ÎµÄtransferĞ´Èë²Ù×÷Ó¦¸ÃÔÚÕâ¸öBarrierÖ®Ç°Ö´ĞĞ
+                // ç»“åˆå‰é¢çš„srcAccessMask
+                // transferé˜¶æ®µçš„transferå†™å…¥æ“ä½œåº”è¯¥åœ¨è¿™ä¸ªBarrierä¹‹å‰æ‰§è¡Œ
                 VK_PIPELINE_STAGE_TRANSFER_BIT,
-                // ½áºÏÇ°ÃæµÄdstAccessMask
-                // fragment shader½×¶ÎµÄ¶ÁÈ¡²Ù×÷ĞèÒªÔÚÕâ¸öBarrierÖ®ºó²ÅÄÜ¿ªÊ¼
+                // ç»“åˆå‰é¢çš„dstAccessMask
+                // fragment shaderé˜¶æ®µçš„è¯»å–æ“ä½œéœ€è¦åœ¨è¿™ä¸ªBarrierä¹‹åæ‰èƒ½å¼€å§‹
                 VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
                 0, 0, nullptr, 0, nullptr, 1, &barrier
             );
@@ -4718,21 +4718,21 @@ namespace ZXEngine
         createInfo.viewType = viewType;
         createInfo.format = format;
 
-        // components×Ö¶ÎÔÊĞíµ÷ÕûÑÕÉ«Í¨µÀµÄ×îÖÕµÄÓ³ÉäÂß¼­
-        // ±ÈÈç£¬ÎÒÃÇ¿ÉÒÔ½«ËùÓĞÑÕÉ«Í¨µÀÓ³ÉäÎªºìÉ«Í¨µÀ£¬ÒÔÊµÏÖµ¥É«ÎÆÀí£¬ÎÒÃÇÒ²¿ÉÒÔ½«Í¨µÀÓ³Éä¾ßÌåµÄ³£Á¿ÊıÖµ0ºÍ1
-        // ÕâÀïÓÃÄ¬ÈÏµÄ
+        // componentså­—æ®µå…è®¸è°ƒæ•´é¢œè‰²é€šé“çš„æœ€ç»ˆçš„æ˜ å°„é€»è¾‘
+        // æ¯”å¦‚ï¼Œæˆ‘ä»¬å¯ä»¥å°†æ‰€æœ‰é¢œè‰²é€šé“æ˜ å°„ä¸ºçº¢è‰²é€šé“ï¼Œä»¥å®ç°å•è‰²çº¹ç†ï¼Œæˆ‘ä»¬ä¹Ÿå¯ä»¥å°†é€šé“æ˜ å°„å…·ä½“çš„å¸¸é‡æ•°å€¼0å’Œ1
+        // è¿™é‡Œç”¨é»˜è®¤çš„
         createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
         createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
         createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
         createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
 
-        // subresourceRangle×Ö¶ÎÓÃÓÚÃèÊöÍ¼ÏñµÄÊ¹ÓÃÄ¿±êÊÇÊ²Ã´£¬ÒÔ¼°¿ÉÒÔ±»·ÃÎÊµÄÓĞĞ§ÇøÓò
-        // Õâ¸öÍ¼ÏñÓÃ×÷Ìî³äcolor»¹ÊÇdepth stencilµÈ
+        // subresourceRangleå­—æ®µç”¨äºæè¿°å›¾åƒçš„ä½¿ç”¨ç›®æ ‡æ˜¯ä»€ä¹ˆï¼Œä»¥åŠå¯ä»¥è¢«è®¿é—®çš„æœ‰æ•ˆåŒºåŸŸ
+        // è¿™ä¸ªå›¾åƒç”¨ä½œå¡«å……colorè¿˜æ˜¯depth stencilç­‰
         createInfo.subresourceRange.aspectMask = aspectFlags;
-        // Ä¬ÈÏ´¦ÀíËùÓĞMipmap
+        // é»˜è®¤å¤„ç†æ‰€æœ‰Mipmap
         createInfo.subresourceRange.baseMipLevel = 0;
         createInfo.subresourceRange.levelCount = VK_REMAINING_MIP_LEVELS;
-        // Ä¬ÈÏ´¦ÀíËùÓĞLayers
+        // é»˜è®¤å¤„ç†æ‰€æœ‰Layers
         createInfo.subresourceRange.baseArrayLayer = 0;
         createInfo.subresourceRange.layerCount = VK_REMAINING_ARRAY_LAYERS;
 
@@ -4756,16 +4756,16 @@ namespace ZXEngine
         samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
         samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
         samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        // ¿ªÆô¸÷ÏòÒìĞÔfilter
+        // å¼€å¯å„å‘å¼‚æ€§filter
         samplerInfo.anisotropyEnable = VK_TRUE;
         samplerInfo.maxAnisotropy = maxSamplerAnisotropy;
         samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-        // ÕâÀïÌîfalse£¬ÎÆÀí²ÉÑù×ø±ê·¶Î§¾ÍÊÇÕı³£µÄ[0, 1)£¬Èç¹ûÌîtrue£¬¾Í»á±ä³É[0, texWidth)ºÍ[0, texHeight)£¬¾ø´ó²¿·ÖÇé¿öÏÂ¶¼ÊÇÓÃ[0, 1)
+        // è¿™é‡Œå¡«falseï¼Œçº¹ç†é‡‡æ ·åæ ‡èŒƒå›´å°±æ˜¯æ­£å¸¸çš„[0, 1)ï¼Œå¦‚æœå¡«trueï¼Œå°±ä¼šå˜æˆ[0, texWidth)å’Œ[0, texHeight)ï¼Œç»å¤§éƒ¨åˆ†æƒ…å†µä¸‹éƒ½æ˜¯ç”¨[0, 1)
         samplerInfo.unnormalizedCoordinates = VK_FALSE;
-        // Ò»°ãÓÃ²»µ½Õâ¸ö£¬Ä³Ğ©³¡¾°£¬±ÈÈçshadow mapµÄpercentage-closer filtering»áÓÃµ½
+        // ä¸€èˆ¬ç”¨ä¸åˆ°è¿™ä¸ªï¼ŒæŸäº›åœºæ™¯ï¼Œæ¯”å¦‚shadow mapçš„percentage-closer filteringä¼šç”¨åˆ°
         samplerInfo.compareEnable = VK_FALSE;
         samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-        // mipmapÉèÖÃ
+        // mipmapè®¾ç½®
         samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
         samplerInfo.mipLodBias = 0.0f;
         samplerInfo.minLod = 0.0f;
@@ -4870,10 +4870,10 @@ namespace ZXEngine
             colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
             colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-            // ÉÏÃæÄÇ¸öÉèÖÃÊÇÓÃÓÚcolorºÍdepthµÄ£¬stencilµÄµ¥¶ÀÒ»¸ö
+            // ä¸Šé¢é‚£ä¸ªè®¾ç½®æ˜¯ç”¨äºcolorå’Œdepthçš„ï¼Œstencilçš„å•ç‹¬ä¸€ä¸ª
             colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-            // äÖÈ¾¿ªÊ¼Ç°ºÍ½áÊøºóLayout¶¼ÊÇ¸øShader¶ÁÈ¡Êı¾İ×¼±¸µÄ£¬Ö»ÔÚäÖÈ¾ÖĞ¸Ä³ÉAttachmentĞèÒªµÄLayout
+            // æ¸²æŸ“å¼€å§‹å‰å’Œç»“æŸåLayoutéƒ½æ˜¯ç»™Shaderè¯»å–æ•°æ®å‡†å¤‡çš„ï¼Œåªåœ¨æ¸²æŸ“ä¸­æ”¹æˆAttachmentéœ€è¦çš„Layout
             colorAttachment.initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
             colorAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
@@ -4897,7 +4897,7 @@ namespace ZXEngine
 
             VkSubpassDescription subpassInfo = {};
             subpassInfo.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-            // Ö¸¶¨color bufferµÄÒıÓÃ£¬Õâ¸öÒıÓÃÒÔ¼°ËüµÄË÷Òı(ÉÏÃæµÄattachment = 0)Ö±½Ó¶ÔÓ¦µ½Æ¬Ôª×ÅÉ«Æ÷ÀïµÄlayout(location = 0) out vec4 outColor
+            // æŒ‡å®šcolor bufferçš„å¼•ç”¨ï¼Œè¿™ä¸ªå¼•ç”¨ä»¥åŠå®ƒçš„ç´¢å¼•(ä¸Šé¢çš„attachment = 0)ç›´æ¥å¯¹åº”åˆ°ç‰‡å…ƒç€è‰²å™¨é‡Œçš„layout(location = 0) out vec4 outColor
             subpassInfo.pColorAttachments = &colorAttachmentRef;
             subpassInfo.colorAttachmentCount = 1;
             subpassInfo.pDepthStencilAttachment = &depthAttachmentRef;
@@ -4921,7 +4921,7 @@ namespace ZXEngine
             array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
             VkRenderPassCreateInfo renderPassInfo{};
             renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-            // Ç°Ãæ´´½¨VkAttachmentReferenceµÄÊ±ºò£¬ÄÇ¸öË÷ÒıattachmentÖ¸µÄ¾ÍÊÇÔÚÕâ¸öpAttachmentsÊı×éÀïµÄË÷Òı
+            // å‰é¢åˆ›å»ºVkAttachmentReferenceçš„æ—¶å€™ï¼Œé‚£ä¸ªç´¢å¼•attachmentæŒ‡çš„å°±æ˜¯åœ¨è¿™ä¸ªpAttachmentsæ•°ç»„é‡Œçš„ç´¢å¼•
             renderPassInfo.pAttachments = attachments.data();
             renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
             renderPassInfo.pSubpasses = &subpassInfo;
@@ -4972,7 +4972,7 @@ namespace ZXEngine
             array<VkAttachmentDescription, 1> attachments = { colorAttachment };
             VkRenderPassCreateInfo renderPassInfo{};
             renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-            // Ç°Ãæ´´½¨VkAttachmentReferenceµÄÊ±ºò£¬ÄÇ¸öË÷ÒıattachmentÖ¸µÄ¾ÍÊÇÔÚÕâ¸öpAttachmentsÊı×éÀïµÄË÷Òı
+            // å‰é¢åˆ›å»ºVkAttachmentReferenceçš„æ—¶å€™ï¼Œé‚£ä¸ªç´¢å¼•attachmentæŒ‡çš„å°±æ˜¯åœ¨è¿™ä¸ªpAttachmentsæ•°ç»„é‡Œçš„ç´¢å¼•
             renderPassInfo.pAttachments = attachments.data();
             renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
             renderPassInfo.pSubpasses = &subpassInfo;
@@ -5022,7 +5022,7 @@ namespace ZXEngine
             array<VkAttachmentDescription, 1> attachments = { depthAttachment };
             VkRenderPassCreateInfo renderPassInfo{};
             renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-            // Ç°Ãæ´´½¨VkAttachmentReferenceµÄÊ±ºò£¬ÄÇ¸öË÷ÒıattachmentÖ¸µÄ¾ÍÊÇÔÚÕâ¸öpAttachmentsÊı×éÀïµÄË÷Òı
+            // å‰é¢åˆ›å»ºVkAttachmentReferenceçš„æ—¶å€™ï¼Œé‚£ä¸ªç´¢å¼•attachmentæŒ‡çš„å°±æ˜¯åœ¨è¿™ä¸ªpAttachmentsæ•°ç»„é‡Œçš„ç´¢å¼•
             renderPassInfo.pAttachments = attachments.data();
             renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
             renderPassInfo.pSubpasses = &subpassInfo;
@@ -5159,10 +5159,10 @@ namespace ZXEngine
             shaderStages.push_back(shaderStageInfo);
         }
 
-        // ÉèÖÃ¶¥µãÊäÈë¸ñÊ½
+        // è®¾ç½®é¡¶ç‚¹è¾“å…¥æ ¼å¼
         vector<VkVertexInputBindingDescription> vertexInputBindingDescriptions;
 
-        // ³£¹æ¶¥µãÊı¾İ
+        // å¸¸è§„é¡¶ç‚¹æ•°æ®
         VkVertexInputBindingDescription bindingDescription = {};
         bindingDescription.binding = 0;
         bindingDescription.stride = sizeof(Vertex);
@@ -5223,26 +5223,26 @@ namespace ZXEngine
         vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
         vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
 
-        // ÉèÖÃÍ¼Ôª
+        // è®¾ç½®å›¾å…ƒ
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo = GetAssemblyInfo(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 
-        // ViewPortĞÅÏ¢£¬ÕâÀï²»Ö±½ÓÉèÖÃ£¬ÏÂÃæÅª³É¶¯Ì¬µÄ
+        // ViewPortä¿¡æ¯ï¼Œè¿™é‡Œä¸ç›´æ¥è®¾ç½®ï¼Œä¸‹é¢å¼„æˆåŠ¨æ€çš„
         VkPipelineViewportStateCreateInfo viewportStateInfo = {};
         viewportStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
         viewportStateInfo.viewportCount = 1;
         viewportStateInfo.scissorCount = 1;
 
-        // View PortºÍScissorÉèÖÃÎª¶¯Ì¬£¬Ã¿Ö¡»æÖÆÊ±¾ö¶¨
+        // View Portå’ŒScissorè®¾ç½®ä¸ºåŠ¨æ€ï¼Œæ¯å¸§ç»˜åˆ¶æ—¶å†³å®š
         vector<VkDynamicState> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
         VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
         dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
         dynamicStateInfo.pDynamicStates = dynamicStates.data();
         dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
 
-        // ÉèÖÃ¹âÕ¤»¯½×¶Î
+        // è®¾ç½®å…‰æ …åŒ–é˜¶æ®µ
         VkPipelineRasterizationStateCreateInfo rasterizationInfo = GetRasterizationInfo(vkFaceCullOptionMap[shaderInfo.stateSet.cull]);
         
-        // ÉèÖÃShader²ÉÑùÎÆÀíµÄMSAA(²»ÊÇÊä³öµ½ÆÁÄ»ÉÏµÄMSAA)£¬ĞèÒª´´½¨Âß¼­Éè±¸µÄÊ±ºò¿ªÆôVkPhysicalDeviceFeaturesÀïµÄsampleRateShading²ÅÄÜÉúĞ§£¬ÔİÊ±¹Ø±Õ
+        // è®¾ç½®Shaderé‡‡æ ·çº¹ç†çš„MSAA(ä¸æ˜¯è¾“å‡ºåˆ°å±å¹•ä¸Šçš„MSAA)ï¼Œéœ€è¦åˆ›å»ºé€»è¾‘è®¾å¤‡çš„æ—¶å€™å¼€å¯VkPhysicalDeviceFeaturesé‡Œçš„sampleRateShadingæ‰èƒ½ç”Ÿæ•ˆï¼Œæš‚æ—¶å…³é—­
         VkPipelineMultisampleStateCreateInfo multisampleInfo = GetPipelineMultisampleInfo(renderPassType == RenderPassType::Present ? msaaSamplesCount : VK_SAMPLE_COUNT_1_BIT);
 
         // Color Blend
@@ -5271,7 +5271,7 @@ namespace ZXEngine
         colorBlending.pAttachments = colorBlendStates.data();
         colorBlending.attachmentCount = static_cast<uint32_t>(colorBlendStates.size());
 
-        // Éî¶ÈºÍÄ£°åÅäÖÃ
+        // æ·±åº¦å’Œæ¨¡æ¿é…ç½®
         VkPipelineDepthStencilStateCreateInfo depthStencilInfo = {};
         depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
         // Depth
@@ -5398,9 +5398,9 @@ namespace ZXEngine
     {
         VkShaderModuleCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        // ÕâÀïĞèÒªÈ·±£Êı¾İÂú×ãuint32_tµÄ¶ÔÆëÒªÇó,´æ´¢ÔÚvectorÖĞ£¬Ä¬ÈÏ·ÖÅäÆ÷ÒÑ¾­È·±£Êı¾İÂú×ã×î²îÇé¿öÏÂµÄ¶ÔÆëÒªÇó
+        // è¿™é‡Œéœ€è¦ç¡®ä¿æ•°æ®æ»¡è¶³uint32_tçš„å¯¹é½è¦æ±‚,å­˜å‚¨åœ¨vectorä¸­ï¼Œé»˜è®¤åˆ†é…å™¨å·²ç»ç¡®ä¿æ•°æ®æ»¡è¶³æœ€å·®æƒ…å†µä¸‹çš„å¯¹é½è¦æ±‚
         createInfo.codeSize = code.size();
-        // ×ª»»ÎªVulkanÒªÇóµÄuint32_tÖ¸Õë
+        // è½¬æ¢ä¸ºVulkanè¦æ±‚çš„uint32_tæŒ‡é’ˆ
         createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
         VkShaderModule shaderModule;
@@ -5443,13 +5443,13 @@ namespace ZXEngine
     {
         vector<uint32_t> deleteList = {};
 
-        // ²ÄÖÊÊı¾İ
+        // æè´¨æ•°æ®
         for (auto& iter : materialDatasToDelete)
         {
-            // Èç¹ûÕâ¸ö²ÄÖÊÊı¾İµÄµÈ´ıÖ¡Êı´óÓÚ0£¬¾Í¼õ1Ö¡
+            // å¦‚æœè¿™ä¸ªæè´¨æ•°æ®çš„ç­‰å¾…å¸§æ•°å¤§äº0ï¼Œå°±å‡1å¸§
             if (iter.second > 0)
                 iter.second--;
-            // ·ñÔò¾ÍÉ¾³ı
+            // å¦åˆ™å°±åˆ é™¤
             else
                 deleteList.push_back(iter.first);
         }
@@ -5459,7 +5459,7 @@ namespace ZXEngine
             materialDatasToDelete.erase(id);
         }
 
-        // ¹â×·²ÄÖÊÊı¾İ
+        // å…‰è¿½æè´¨æ•°æ®
         deleteList.clear();
         for (auto& iter : rtMaterialDatasToDelete)
         {
@@ -5611,7 +5611,7 @@ namespace ZXEngine
     {
         auto rtPipeline = rtPipelines[id];
 
-        // ´´½¨DescriptorPool
+        // åˆ›å»ºDescriptorPool
         vector<VkDescriptorPoolSize> poolSizes = {};
 
         // Top Level Acceleration Structure
@@ -5620,7 +5620,7 @@ namespace ZXEngine
         asPoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
         poolSizes.push_back(asPoolSize);
 
-        // Êä³öäÖÈ¾½á¹ûµÄStorage Image
+        // è¾“å‡ºæ¸²æŸ“ç»“æœçš„Storage Image
         VkDescriptorPoolSize imagePoolSize = {};
         imagePoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
         imagePoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
@@ -5635,7 +5635,7 @@ namespace ZXEngine
         if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &rtPipeline->pipelineData.descriptorPool) != VK_SUCCESS)
             throw std::runtime_error("Failed to create descriptor pool for ray tracing!");
 
-        // ´´½¨DescriptorSet
+        // åˆ›å»ºDescriptorSet
         vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, rtPipeline->pipeline.descriptorSetLayout);
         rtPipeline->pipelineData.descriptorSets = CreateDescriptorSets(rtPipeline->pipelineData.descriptorPool, layouts);
     }
@@ -5645,7 +5645,7 @@ namespace ZXEngine
         auto rtPipeline = rtPipelines[id];
         auto& curTLAS = GetTLASGroupByIndex(rtPipeline->tlasIdx)->asGroup[currentFrame];
 
-        // ¸üĞÂTLAS
+        // æ›´æ–°TLAS
         VkWriteDescriptorSetAccelerationStructureKHR writeASInfo = {};
         writeASInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR;
         writeASInfo.accelerationStructureCount = 1;
@@ -5659,12 +5659,12 @@ namespace ZXEngine
         writeAS.descriptorCount = 1;
         writeAS.pNext = &writeASInfo;
 
-        // »ñÈ¡¹â×·¹ÜÏßÊä³öµÄÄ¿±êÍ¼Ïñ
+        // è·å–å…‰è¿½ç®¡çº¿è¾“å‡ºçš„ç›®æ ‡å›¾åƒ
         auto curFBO = GetFBOByIndex(curFBOIdx);
         uint32_t textureID = GetAttachmentBufferByIndex(curFBO->colorAttachmentIdx)->attachmentBuffers[currentFrame];
         auto texture = GetTextureByIndex(textureID);
 
-        // ¸üĞÂÊä³öÄ¿±êÍ¼Ïñ
+        // æ›´æ–°è¾“å‡ºç›®æ ‡å›¾åƒ
         VkDescriptorImageInfo imageInfo = {};
         imageInfo.imageView = texture->imageView;
         imageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
@@ -5685,25 +5685,25 @@ namespace ZXEngine
     {
         auto rtPipeline = rtPipelines[id];
 
-        // ´´½¨DescriptorPool
+        // åˆ›å»ºDescriptorPool
         vector<VkDescriptorPoolSize> poolSizes = {};
 
-        // ³¡¾°ÖĞ¸÷¶ÔÏóµÄ²ÄÖÊĞÅÏ¢
+        // åœºæ™¯ä¸­å„å¯¹è±¡çš„æè´¨ä¿¡æ¯
         VkDescriptorPoolSize asPoolSize = {};
         asPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
         asPoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
         poolSizes.push_back(asPoolSize);
 
-        // ³¡¾°ÖĞËùÓĞµÄÎÆÀí
+        // åœºæ™¯ä¸­æ‰€æœ‰çš„çº¹ç†
         VkDescriptorPoolSize imagePoolSize = {};
         imagePoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        imagePoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT * rtSceneTextureNum; // Todo: Õâ¸öÊıÁ¿¿ÉÄÜĞèÒª¶¯Ì¬À©Õ¹
+        imagePoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT * rtSceneTextureNum; // Todo: è¿™ä¸ªæ•°é‡å¯èƒ½éœ€è¦åŠ¨æ€æ‰©å±•
         poolSizes.push_back(imagePoolSize);
 
-        // ³¡¾°ÖĞµÄËùÓĞCubeMap
+        // åœºæ™¯ä¸­çš„æ‰€æœ‰CubeMap
         VkDescriptorPoolSize cubeMapPoolSize = {};
         cubeMapPoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        cubeMapPoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT * rtSceneCubeMapNum; // Todo: Õâ¸öÊıÁ¿¿ÉÄÜĞèÒª¶¯Ì¬À©Õ¹
+        cubeMapPoolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT * rtSceneCubeMapNum; // Todo: è¿™ä¸ªæ•°é‡å¯èƒ½éœ€è¦åŠ¨æ€æ‰©å±•
         poolSizes.push_back(cubeMapPoolSize);
 
         VkDescriptorPoolCreateInfo poolInfo = {};
@@ -5715,14 +5715,14 @@ namespace ZXEngine
         if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &rtPipeline->sceneData.descriptorPool) != VK_SUCCESS)
             throw std::runtime_error("Failed to create descriptor pool for ray tracing!");
 
-        // ´´½¨DescriptorSet
+        // åˆ›å»ºDescriptorSet
         vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, rtPipeline->pipeline.sceneDescriptorSetLayout);
         rtPipeline->sceneData.descriptorSets = CreateDescriptorSets(rtPipeline->sceneData.descriptorPool, layouts);
 
-        // ´´½¨äÖÈ¾¶ÔÏóÊı¾İË÷ÒıBuffer
+        // åˆ›å»ºæ¸²æŸ“å¯¹è±¡æ•°æ®ç´¢å¼•Buffer
         vector<VkWriteDescriptorSet> writeDescriptorSets;
         rtPipeline->sceneData.dataReferenceBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-        VkDeviceSize bufferSize = sizeof(VulkanRTRendererDataReference) * rtSceneRenderObjectNum; // Todo: Õâ¸öÊıÁ¿¿ÉÄÜĞèÒª¶¯Ì¬À©Õ¹
+        VkDeviceSize bufferSize = sizeof(VulkanRTRendererDataReference) * rtSceneRenderObjectNum; // Todo: è¿™ä¸ªæ•°é‡å¯èƒ½éœ€è¦åŠ¨æ€æ‰©å±•
         for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
             rtPipeline->sceneData.dataReferenceBuffers[i] = CreateBuffer(bufferSize,
@@ -5742,7 +5742,7 @@ namespace ZXEngine
             writeDescriptorSet.pBufferInfo = &bufferInfo;
             writeDescriptorSets.push_back(writeDescriptorSet);
         }
-        // °Ñ¸Õ¸Õ´´½¨µÄäÖÈ¾¶ÔÏóÊı¾İË÷ÒıBuffer°ó¶¨µ½ÃèÊö·û¼¯ÉÏ
+        // æŠŠåˆšåˆšåˆ›å»ºçš„æ¸²æŸ“å¯¹è±¡æ•°æ®ç´¢å¼•Bufferç»‘å®šåˆ°æè¿°ç¬¦é›†ä¸Š
         vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
     }
 
@@ -5750,10 +5750,10 @@ namespace ZXEngine
     {
         auto rtPipeline = rtPipelines[id];
 
-        // ±éÀú³¡¾°ÖĞµÄËùÓĞÎÆÀí£¬Éú³É¶ÔÓ¦µÄVkDescriptorImageInfo
+        // éå†åœºæ™¯ä¸­çš„æ‰€æœ‰çº¹ç†ï¼Œç”Ÿæˆå¯¹åº”çš„VkDescriptorImageInfo
         vector<VkDescriptorImageInfo> imageInfos = {};
 
-        // ÌîÈë³¡¾°ÖĞµÄÎÆÀí
+        // å¡«å…¥åœºæ™¯ä¸­çš„çº¹ç†
         for (auto textureID : curRTSceneTextureIndexes)
         {
             auto texture = GetTextureByIndex(textureID);
@@ -5766,10 +5766,10 @@ namespace ZXEngine
             imageInfos.push_back(imageInfo);
         }
 
-        // Ëæ±ãÓÃÒ»¸öÎÆÀí²¹Æë´´½¨VkPipelineLayoutÊ±£¬sceneDescriptorSetLayoutÖĞÖ¸¶¨µÄrtSceneTextureNum¸öÎÆÀíÊı×é
-        // Todo: ÆäÊµ×îÀíÏëµÄÇé¿öÊÇ¹ÜÏßÉèÖÃµÄÎÆÀíÊı×éÊıÁ¿£¬ºÍÊµ¼Ê³¡¾°ÖĞµÄÊıÁ¿ÊÇÒ»ÖÂµÄ£¬¾Í²»ÓÃÕâÑù¸ãÁË
-        // µ«ÊÇ³¡¾°ÖĞµÄÎÆÀíÊıÁ¿ÊÇ¶¯Ì¬µÄ£¬¶ø¹ÜÏßÉèÖÃµÄÎÆÀíÊı×éÊıÁ¿ÊÇ¾²Ì¬µÄ£¬Èç¹ûÒª±£³ÖÒ»ÖÂ£¬¸Ğ¾õ¾ÍµÃÖØ½¨¹ÜÏß
-        // ËùÒÔÕâÀïÏÈÓÃÒ»¸öÎÆÀí²¹Æë£¬¸Ğ¾õÕâÑù±ÈÖØ½¨¹ÜÏßºÃµã£¬µ«ÊÇÎÒÒ²²»Ì«Çå³ş×îºÃµÄ·½°¸ÊÇÊ²Ã´
+        // éšä¾¿ç”¨ä¸€ä¸ªçº¹ç†è¡¥é½åˆ›å»ºVkPipelineLayoutæ—¶ï¼ŒsceneDescriptorSetLayoutä¸­æŒ‡å®šçš„rtSceneTextureNumä¸ªçº¹ç†æ•°ç»„
+        // Todo: å…¶å®æœ€ç†æƒ³çš„æƒ…å†µæ˜¯ç®¡çº¿è®¾ç½®çš„çº¹ç†æ•°ç»„æ•°é‡ï¼Œå’Œå®é™…åœºæ™¯ä¸­çš„æ•°é‡æ˜¯ä¸€è‡´çš„ï¼Œå°±ä¸ç”¨è¿™æ ·æäº†
+        // ä½†æ˜¯åœºæ™¯ä¸­çš„çº¹ç†æ•°é‡æ˜¯åŠ¨æ€çš„ï¼Œè€Œç®¡çº¿è®¾ç½®çš„çº¹ç†æ•°ç»„æ•°é‡æ˜¯é™æ€çš„ï¼Œå¦‚æœè¦ä¿æŒä¸€è‡´ï¼Œæ„Ÿè§‰å°±å¾—é‡å»ºç®¡çº¿
+        // æ‰€ä»¥è¿™é‡Œå…ˆç”¨ä¸€ä¸ªçº¹ç†è¡¥é½ï¼Œæ„Ÿè§‰è¿™æ ·æ¯”é‡å»ºç®¡çº¿å¥½ç‚¹ï¼Œä½†æ˜¯æˆ‘ä¹Ÿä¸å¤ªæ¸…æ¥šæœ€å¥½çš„æ–¹æ¡ˆæ˜¯ä»€ä¹ˆ
         for (size_t i = curRTSceneTextureIndexes.size(); i < rtSceneTextureNum; i++)
         {
             auto texture = GetTextureByIndex(curRTSceneTextureIndexes[0]);
@@ -5782,7 +5782,7 @@ namespace ZXEngine
             imageInfos.push_back(imageInfo);
         }
 
-        // ¸üĞÂËùÓĞÎÆÀí°ó¶¨µÄĞ´ÈëĞÅÏ¢
+        // æ›´æ–°æ‰€æœ‰çº¹ç†ç»‘å®šçš„å†™å…¥ä¿¡æ¯
         VkWriteDescriptorSet writeImages = {};
         writeImages.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         writeImages.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -5791,10 +5791,10 @@ namespace ZXEngine
         writeImages.descriptorCount = static_cast<uint32_t>(imageInfos.size());
         writeImages.pImageInfo = imageInfos.data();
 
-        // ËùÓĞµÄCubeMapĞÅÏ¢
+        // æ‰€æœ‰çš„CubeMapä¿¡æ¯
         vector<VkDescriptorImageInfo> cubeMapInfos = {};
 
-        // ÌîÈë³¡¾°ÖĞµÄCubeMap
+        // å¡«å…¥åœºæ™¯ä¸­çš„CubeMap
         for (auto cubeMapID : curRTSceneCubeMapIndexes)
         {
 			auto cubeMap = GetTextureByIndex(cubeMapID);
@@ -5807,7 +5807,7 @@ namespace ZXEngine
 			cubeMapInfos.push_back(cubeMapInfo);
 		}
 
-        // Ëæ±ãÓÃÒ»¸öCubeMap²¹Æë´´½¨VkPipelineLayoutÊ±£¬sceneDescriptorSetLayoutÖĞÖ¸¶¨µÄrtSceneCubeMapNum¸öCubeMapÊı×é
+        // éšä¾¿ç”¨ä¸€ä¸ªCubeMapè¡¥é½åˆ›å»ºVkPipelineLayoutæ—¶ï¼ŒsceneDescriptorSetLayoutä¸­æŒ‡å®šçš„rtSceneCubeMapNumä¸ªCubeMapæ•°ç»„
         for (size_t i = curRTSceneCubeMapIndexes.size(); i < rtSceneCubeMapNum; i++)
         {
             auto cubeMap = GetTextureByIndex(curRTSceneCubeMapIndexes[0]);
@@ -5820,7 +5820,7 @@ namespace ZXEngine
             cubeMapInfos.push_back(cubeMapInfo);
         }
 
-        // ¸üĞÂËùÓĞCubeMap°ó¶¨µÄĞ´ÈëĞÅÏ¢
+        // æ›´æ–°æ‰€æœ‰CubeMapç»‘å®šçš„å†™å…¥ä¿¡æ¯
         VkWriteDescriptorSet writeCubeMaps = {};
         writeCubeMaps.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         writeCubeMaps.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -5829,11 +5829,11 @@ namespace ZXEngine
         writeCubeMaps.descriptorCount = static_cast<uint32_t>(cubeMapInfos.size());
         writeCubeMaps.pImageInfo = cubeMapInfos.data();
 
-        // ÖØĞÂ°ó¶¨ÎÆÀí
+        // é‡æ–°ç»‘å®šçº¹ç†
         vector<VkWriteDescriptorSet> writeDescriptorSets = { writeImages, writeCubeMaps };
         vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
 
-        // ¸üĞÂäÖÈ¾¶ÔÏóµÄÊı¾İÒıÓÃBuffer
+        // æ›´æ–°æ¸²æŸ“å¯¹è±¡çš„æ•°æ®å¼•ç”¨Buffer
         vector<VulkanRTRendererDataReference> dataReferences = {};
         for (auto& iter : asInstanceData)
         {
@@ -5848,7 +5848,7 @@ namespace ZXEngine
             dataReferences.push_back(dataReference);
         }
 
-        // ¸üĞÂµ±Ç°Ö¡µÄäÖÈ¾¶ÔÏóÊı¾İÒıÓÃBuffer
+        // æ›´æ–°å½“å‰å¸§çš„æ¸²æŸ“å¯¹è±¡æ•°æ®å¼•ç”¨Buffer
         auto dataReferencePtr = rtPipeline->sceneData.dataReferenceBuffers[currentFrame].mappedAddress;
         memcpy(dataReferencePtr, dataReferences.data(), sizeof(VulkanRTRendererDataReference) * dataReferences.size());
     }
@@ -5864,10 +5864,10 @@ namespace ZXEngine
 
     uint32_t RenderAPIVulkan::GetMipMapLevels(int width, int height)
     {
-        // ¼ÆËãmipmapµÈ¼¶
-        // Í¨³£°ÑÍ¼Æ¬¸ß¿íËõĞ¡Ò»°ë¾ÍÊÇÒ»¼¶£¬Ö±µ½Ëõ²»¶¯
-        // ÏÈmaxÕÒ³ö¸ß¿íÏñËØÀï±È½Ï´óµÄ£¬È»ºóÓÃlog2¼ÆËã¿ÉÒÔ±»2³ı¼¸´Î£¬ÔÙÏòÏÂÈ¡Õû¾ÍÊÇÕâÕÅÍ¼¿ÉÒÔËõĞ¡¶àÉÙ´ÎÁË
-        // ×îºó¼Ó1ÊÇÒòÎªÔ­Í¼Ò²ÒªÒ»¸öµÈ¼¶
+        // è®¡ç®—mipmapç­‰çº§
+        // é€šå¸¸æŠŠå›¾ç‰‡é«˜å®½ç¼©å°ä¸€åŠå°±æ˜¯ä¸€çº§ï¼Œç›´åˆ°ç¼©ä¸åŠ¨
+        // å…ˆmaxæ‰¾å‡ºé«˜å®½åƒç´ é‡Œæ¯”è¾ƒå¤§çš„ï¼Œç„¶åç”¨log2è®¡ç®—å¯ä»¥è¢«2é™¤å‡ æ¬¡ï¼Œå†å‘ä¸‹å–æ•´å°±æ˜¯è¿™å¼ å›¾å¯ä»¥ç¼©å°å¤šå°‘æ¬¡äº†
+        // æœ€ååŠ 1æ˜¯å› ä¸ºåŸå›¾ä¹Ÿè¦ä¸€ä¸ªç­‰çº§
         return static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
     }
 
@@ -5904,7 +5904,7 @@ namespace ZXEngine
 
         VkFenceCreateInfo fenceInfo{};
         fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-        // ´´½¨Ê±Á¢¿ÌÉèÖÃÎªsignaled×´Ì¬(·ñÔòµÚÒ»´ÎÓÀÔ¶µÈ²»µ½)
+        // åˆ›å»ºæ—¶ç«‹åˆ»è®¾ç½®ä¸ºsignaledçŠ¶æ€(å¦åˆ™ç¬¬ä¸€æ¬¡æ°¸è¿œç­‰ä¸åˆ°)
         fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
         vkCreateFence(device, &fenceInfo, nullptr, &immediateExeFence);
     }
@@ -5939,29 +5939,29 @@ namespace ZXEngine
             barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
             barrier.oldLayout = oldLayout;
             barrier.newLayout = newLayout;
-            // ÕâÁ½¸ö²ÎÊıÊÇÓÃÓÚ×ª»»¶ÓÁĞ´ØËùÓĞÈ¨µÄ£¬Èç¹ûÎÒÃÇ²»×öÕâ¸ö×ª»»£¬Ò»¶¨ÒªÃ÷È·ÌîÈëVK_QUEUE_FAMILY_IGNORED
+            // è¿™ä¸¤ä¸ªå‚æ•°æ˜¯ç”¨äºè½¬æ¢é˜Ÿåˆ—ç°‡æ‰€æœ‰æƒçš„ï¼Œå¦‚æœæˆ‘ä»¬ä¸åšè¿™ä¸ªè½¬æ¢ï¼Œä¸€å®šè¦æ˜ç¡®å¡«å…¥VK_QUEUE_FAMILY_IGNORED
             barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
             barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
             barrier.image = image;
-            // Ä¬ÈÏ´¦ÀíËùÓĞmipmap
+            // é»˜è®¤å¤„ç†æ‰€æœ‰mipmap
             barrier.subresourceRange.baseMipLevel = 0;
             barrier.subresourceRange.levelCount = VK_REMAINING_MIP_LEVELS;
-            // Ä¬ÈÏ´¦ÀíËùÓĞLayer
+            // é»˜è®¤å¤„ç†æ‰€æœ‰Layer
             barrier.subresourceRange.baseArrayLayer = 0;
             barrier.subresourceRange.layerCount = VK_REMAINING_ARRAY_LAYERS;
-            // ImageÓÃÍ¾(Color, Depth, Stencil)
+            // Imageç”¨é€”(Color, Depth, Stencil)
             barrier.subresourceRange.aspectMask = aspectMask;
             barrier.srcAccessMask = srcAccessMask;
             barrier.dstAccessMask = dstAccessMask;
 
             vkCmdPipelineBarrier(cmd, srcStage, dstStage,
-                // Õâ¸ö²ÎÊıÌî0»òÕßVK_DEPENDENCY_BY_REGION_BIT£¬ºóÕßÒâÎ¶×ÅÔÊĞí¶ÁÈ¡µ½Ä¿Ç°ÎªÖ¹ÒÑĞ´ÈëµÄ×ÊÔ´²¿·Ö
+                // è¿™ä¸ªå‚æ•°å¡«0æˆ–è€…VK_DEPENDENCY_BY_REGION_BITï¼Œåè€…æ„å‘³ç€å…è®¸è¯»å–åˆ°ç›®å‰ä¸ºæ­¢å·²å†™å…¥çš„èµ„æºéƒ¨åˆ†
                 0,
-                // VkMemoryBarrierÊı×é
+                // VkMemoryBarrieræ•°ç»„
                 0, nullptr,
-                // VkBufferMemoryBarrierÊı×é
+                // VkBufferMemoryBarrieræ•°ç»„
                 0, nullptr,
-                // VkImageMemoryBarrierÊı×é
+                // VkImageMemoryBarrieræ•°ç»„
                 1, &barrier
             );
         });
@@ -5973,29 +5973,29 @@ namespace ZXEngine
         barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
         barrier.oldLayout = oldLayout;
         barrier.newLayout = newLayout;
-        // ÕâÁ½¸ö²ÎÊıÊÇÓÃÓÚ×ª»»¶ÓÁĞ´ØËùÓĞÈ¨µÄ£¬Èç¹ûÎÒÃÇ²»×öÕâ¸ö×ª»»£¬Ò»¶¨ÒªÃ÷È·ÌîÈëVK_QUEUE_FAMILY_IGNORED
+        // è¿™ä¸¤ä¸ªå‚æ•°æ˜¯ç”¨äºè½¬æ¢é˜Ÿåˆ—ç°‡æ‰€æœ‰æƒçš„ï¼Œå¦‚æœæˆ‘ä»¬ä¸åšè¿™ä¸ªè½¬æ¢ï¼Œä¸€å®šè¦æ˜ç¡®å¡«å…¥VK_QUEUE_FAMILY_IGNORED
         barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
         barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
         barrier.image = image;
-        // Ä¬ÈÏ´¦ÀíËùÓĞmipmap
+        // é»˜è®¤å¤„ç†æ‰€æœ‰mipmap
         barrier.subresourceRange.baseMipLevel = 0;
         barrier.subresourceRange.levelCount = VK_REMAINING_MIP_LEVELS;
-        // Ä¬ÈÏ´¦ÀíËùÓĞLayer
+        // é»˜è®¤å¤„ç†æ‰€æœ‰Layer
         barrier.subresourceRange.baseArrayLayer = 0;
         barrier.subresourceRange.layerCount = VK_REMAINING_ARRAY_LAYERS;
-        // ImageÓÃÍ¾(Color, Depth, Stencil)
+        // Imageç”¨é€”(Color, Depth, Stencil)
         barrier.subresourceRange.aspectMask = aspectMask;
         barrier.srcAccessMask = srcAccessMask;
         barrier.dstAccessMask = dstAccessMask;
 
         vkCmdPipelineBarrier(cmd, srcStage, dstStage,
-            // Õâ¸ö²ÎÊıÌî0»òÕßVK_DEPENDENCY_BY_REGION_BIT£¬ºóÕßÒâÎ¶×ÅÔÊĞí¶ÁÈ¡µ½Ä¿Ç°ÎªÖ¹ÒÑĞ´ÈëµÄ×ÊÔ´²¿·Ö
+            // è¿™ä¸ªå‚æ•°å¡«0æˆ–è€…VK_DEPENDENCY_BY_REGION_BITï¼Œåè€…æ„å‘³ç€å…è®¸è¯»å–åˆ°ç›®å‰ä¸ºæ­¢å·²å†™å…¥çš„èµ„æºéƒ¨åˆ†
             0,
-            // VkMemoryBarrierÊı×é
+            // VkMemoryBarrieræ•°ç»„
             0, nullptr,
-            // VkBufferMemoryBarrierÊı×é
+            // VkBufferMemoryBarrieræ•°ç»„
             0, nullptr,
-            // VkImageMemoryBarrierÊı×é
+            // VkImageMemoryBarrieræ•°ç»„
             1, &barrier
         );
     }
@@ -6013,20 +6013,20 @@ namespace ZXEngine
     {
         VkPipelineRasterizationStateCreateInfo rasterizationInfo = {};
         rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-        // Èç¹ûdepthClampEnableÉèÖÃÎªVK_TRUE£¬³¬¹ıÔ¶½ü²Ã¼ôÃæµÄÆ¬Ôª»á½øĞĞÊÕÁ²£¬¶ø²»ÊÇ¶ªÆúËüÃÇ
+        // å¦‚æœdepthClampEnableè®¾ç½®ä¸ºVK_TRUEï¼Œè¶…è¿‡è¿œè¿‘è£å‰ªé¢çš„ç‰‡å…ƒä¼šè¿›è¡Œæ”¶æ•›ï¼Œè€Œä¸æ˜¯ä¸¢å¼ƒå®ƒä»¬
         rasterizationInfo.depthClampEnable = VK_FALSE;
-        // Èç¹ûrasterizerDiscardEnableÉèÖÃÎªVK_TRUE£¬ÄÇÃ´¼¸ºÎÍ¼ÔªÓÀÔ¶²»»á´«µİµ½¹âÕ¤»¯½×¶Î
-        // ÕâÊÇ½ûÖ¹ÈÎºÎÊı¾İÊä³öµ½framebufferµÄ·½·¨
+        // å¦‚æœrasterizerDiscardEnableè®¾ç½®ä¸ºVK_TRUEï¼Œé‚£ä¹ˆå‡ ä½•å›¾å…ƒæ°¸è¿œä¸ä¼šä¼ é€’åˆ°å…‰æ …åŒ–é˜¶æ®µ
+        // è¿™æ˜¯ç¦æ­¢ä»»ä½•æ•°æ®è¾“å‡ºåˆ°framebufferçš„æ–¹æ³•
         rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
-        // ÉèÖÃÆ¬ÔªÈçºÎ´Ó¼¸ºÎÄ£ĞÍÖĞ²úÉú£¬Èç¹û²»ÊÇFILL£¬ĞèÒª¿ªÆôGPU feature
-        // VK_POLYGON_MODE_FILL: ¶à±ßĞÎÇøÓòÌî³ä
-        // VK_POLYGON_MODE_LINE: ¶à±ßĞÎ±ßÔµÏß¿ò»æÖÆ
-        // VK_POLYGON_MODE_POINT : ¶à±ßĞÎ¶¥µã×÷ÎªÃèµã»æÖÆ
+        // è®¾ç½®ç‰‡å…ƒå¦‚ä½•ä»å‡ ä½•æ¨¡å‹ä¸­äº§ç”Ÿï¼Œå¦‚æœä¸æ˜¯FILLï¼Œéœ€è¦å¼€å¯GPU feature
+        // VK_POLYGON_MODE_FILL: å¤šè¾¹å½¢åŒºåŸŸå¡«å……
+        // VK_POLYGON_MODE_LINE: å¤šè¾¹å½¢è¾¹ç¼˜çº¿æ¡†ç»˜åˆ¶
+        // VK_POLYGON_MODE_POINT : å¤šè¾¹å½¢é¡¶ç‚¹ä½œä¸ºæç‚¹ç»˜åˆ¶
         rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
         rasterizationInfo.lineWidth = 1.0f;
         rasterizationInfo.cullMode = cullMode;
         rasterizationInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-        // äÖÈ¾ÒõÓ°µÄÆ«ÒÆÅäÖÃ
+        // æ¸²æŸ“é˜´å½±çš„åç§»é…ç½®
         rasterizationInfo.depthBiasEnable = VK_FALSE;
         rasterizationInfo.depthBiasConstantFactor = 0.0f;
         rasterizationInfo.depthBiasClamp = 0.0f;
@@ -6040,7 +6040,7 @@ namespace ZXEngine
         multisampleInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
         multisampleInfo.sampleShadingEnable = (rasterizationSamples & VK_SAMPLE_COUNT_1_BIT ? VK_FALSE : VK_TRUE);
         multisampleInfo.rasterizationSamples = rasterizationSamples;
-        // Õâ¸öÊÇµ÷ÕûsampleShadingĞ§¹ûµÄ£¬Ô½½Ó½ü1Ğ§¹ûÔ½Æ½»¬£¬Ô½½Ó½ü0ĞÔÄÜÔ½ºÃ
+        // è¿™ä¸ªæ˜¯è°ƒæ•´sampleShadingæ•ˆæœçš„ï¼Œè¶Šæ¥è¿‘1æ•ˆæœè¶Šå¹³æ»‘ï¼Œè¶Šæ¥è¿‘0æ€§èƒ½è¶Šå¥½
         multisampleInfo.minSampleShading = 1.0f;
         multisampleInfo.pSampleMask = VK_NULL_HANDLE;
         multisampleInfo.alphaToCoverageEnable = VK_FALSE;

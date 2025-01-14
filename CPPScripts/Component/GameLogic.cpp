@@ -49,44 +49,44 @@ namespace ZXEngine
 	void GameLogic::Awake()
 	{
 		lua_State* L = LuaManager::GetInstance()->GetState();
-		// ¼ÇÂ¼µ±Ç°Õ»´óĞ¡
+		// è®°å½•å½“å‰æ ˆå¤§å°
 		int stack_size = lua_gettop(L);
-		// ¼ÓÔØ°ó¶¨µÄlua´úÂë
+		// åŠ è½½ç»‘å®šçš„luaä»£ç 
 		auto& path = GetLuaFullPath();
 		auto suc = luaL_dofile(L, path.c_str());
 		if (suc == LUA_OK)
 		{
-			// ÕâÀïdofile³É¹¦ºó£¬lua´úÂëµÄ×îºóÒ»ĞĞÊÇreturn table£¬´ËÊ±Õ»¶¥ÊÇÒ»¸ötable
-			// °Ñ¼üÖµÈëÕ»
+			// è¿™é‡ŒdofileæˆåŠŸåï¼Œluaä»£ç çš„æœ€åä¸€è¡Œæ˜¯return tableï¼Œæ­¤æ—¶æ ˆé¡¶æ˜¯ä¸€ä¸ªtable
+			// æŠŠé”®å€¼å…¥æ ˆ
 			lua_pushstring(L, "_ID");
-			// ×¼±¸»ñÈ¡lua returnµÄGameLogic._ID£¬ÒòÎª¸ÕÑ¹ÈëÁËÒ»¸ökey£¬ËùÒÔtableÏÖÔÚÔÚ-2µÄÎ»ÖÃ
+			// å‡†å¤‡è·å–lua returnçš„GameLogic._IDï¼Œå› ä¸ºåˆšå‹å…¥äº†ä¸€ä¸ªkeyï¼Œæ‰€ä»¥tableç°åœ¨åœ¨-2çš„ä½ç½®
 			lua_gettable(L, -2);
-			// ÕâÀïÕæÕıµÄ»ñÈ¡µ½GameLogic._ID
+			// è¿™é‡ŒçœŸæ­£çš„è·å–åˆ°GameLogic._ID
 			luaID = (int)lua_tonumber(L, -1);
-			// lua_tonumber²»»á×Ô¶¯³öÕ»£¬ÊÖ¶¯popÒ»ÏÂ£¬table»Øµ½-1Î»ÖÃ
+			// lua_tonumberä¸ä¼šè‡ªåŠ¨å‡ºæ ˆï¼Œæ‰‹åŠ¨popä¸€ä¸‹ï¼Œtableå›åˆ°-1ä½ç½®
 			lua_pop(L, 1);
 
-			// °Ñ"GameLogic"×Ö·û´®ÈëÕ»£¬×¼±¸×÷ÎªLua table·ÃÎÊthis->gameObjectµÄ×Ö¶ÎÃû
+			// æŠŠ"GameLogic"å­—ç¬¦ä¸²å…¥æ ˆï¼Œå‡†å¤‡ä½œä¸ºLua tableè®¿é—®this->gameObjectçš„å­—æ®µå
 			lua_pushstring(L, "gameObject");
-			// ĞÂ½¨Ò»¸öGameObject*µÄuserdata£¬ÈëÕ»£¬×÷Îª·ÃÎÊthis->gameObjectµÄÖ¸Õë
+			// æ–°å»ºä¸€ä¸ªGameObject*çš„userdataï¼Œå…¥æ ˆï¼Œä½œä¸ºè®¿é—®this->gameObjectçš„æŒ‡é’ˆ
 			GameObject** data = (GameObject**)lua_newuserdata(L, sizeof(GameObject*));
-			// °Ñ¸Õ¸ÕĞÂ½¨µÄÖ¸ÕëÖ¸Ïòthis->gameObject
+			// æŠŠåˆšåˆšæ–°å»ºçš„æŒ‡é’ˆæŒ‡å‘this->gameObject
 			*data = this->gameObject;
 
-			// »ñÈ¡GameObject¶ÔÓ¦µÄmetatable£¬ÈëÕ»
+			// è·å–GameObjectå¯¹åº”çš„metatableï¼Œå…¥æ ˆ
 			luaL_getmetatable(L, "ZXEngine.GameObject");
-			// ¸øthis->gameObject(ÏÖÔÚÔÚ-2Î»ÖÃ)ÉèÖÃmeta table£¬Í¬Ê±meta table³öÕ»
+			// ç»™this->gameObject(ç°åœ¨åœ¨-2ä½ç½®)è®¾ç½®meta tableï¼ŒåŒæ—¶meta tableå‡ºæ ˆ
 			lua_setmetatable(L, -2);
 
-			// ´ËÊ±-1Î»ÖÃÊÇthis->gameObject£¬-2Î»ÖÃÊÇ"GameObject"£¬-3Î»ÖÃÊÇ°ó¶¨µÄlua table
-			// ÉèÖÃtable["gameObject"] = this->gameObject
+			// æ­¤æ—¶-1ä½ç½®æ˜¯this->gameObjectï¼Œ-2ä½ç½®æ˜¯"GameObject"ï¼Œ-3ä½ç½®æ˜¯ç»‘å®šçš„lua table
+			// è®¾ç½®table["gameObject"] = this->gameObject
 			lua_settable(L, -3);
 		}
 		else
 		{
 			Debug::Log(lua_tostring(L, -1));
 		}
-		// »Ö¸´Õ»´óĞ¡(PopµôÕâ¶Î´úÂëÔÚÕ»ÉÏ²úÉúµÄÊı¾İ)
+		// æ¢å¤æ ˆå¤§å°(Popæ‰è¿™æ®µä»£ç åœ¨æ ˆä¸Šäº§ç”Ÿçš„æ•°æ®)
 		lua_settop(L, stack_size);
 
 		if (suc == LUA_OK)
@@ -136,22 +136,22 @@ namespace ZXEngine
 	void GameLogic::CallLuaFunction(const char* func)
 	{
 		lua_State* L = LuaManager::GetInstance()->GetState();
-		// ¼ÇÂ¼µ±Ç°Õ»´óĞ¡
+		// è®°å½•å½“å‰æ ˆå¤§å°
 		int stack_size = lua_gettop(L);
-		// ´ËÊ±È«¾Ötable AllGameLogicÔÚ-1Î»ÖÃ
+		// æ­¤æ—¶å…¨å±€table AllGameLogicåœ¨-1ä½ç½®
 		lua_getglobal(L, "AllGameLogic");
-		// ´ËÊ±È«¾Ötable AllGameLogicÔÚ-2Î»ÖÃ
+		// æ­¤æ—¶å…¨å±€table AllGameLogicåœ¨-2ä½ç½®
 		lua_pushnumber(L, luaID);
-		// »ñÈ¡AllGameLogic[luaID]£¬´ËÊ±table AllGameLogic[luaID]ÔÚ-1
+		// è·å–AllGameLogic[luaID]ï¼Œæ­¤æ—¶table AllGameLogic[luaID]åœ¨-1
 		lua_gettable(L, -2);
-		// Ñ¹Èëº¯ÊıÃû£¬´ËÊ±table AllGameLogic[luaID]ÔÚ-2
+		// å‹å…¥å‡½æ•°åï¼Œæ­¤æ—¶table AllGameLogic[luaID]åœ¨-2
 		lua_pushstring(L, func);
-		// »ñÈ¡AllGameLogic[luaID]µÄfuncº¯Êı
+		// è·å–AllGameLogic[luaID]çš„funcå‡½æ•°
 		int type = lua_gettable(L, -2);
-		// ¼ì²éÒ»ÏÂÓĞÃ»ÓĞÕâ¸öº¯Êı
+		// æ£€æŸ¥ä¸€ä¸‹æœ‰æ²¡æœ‰è¿™ä¸ªå‡½æ•°
 		if (type != LUA_TFUNCTION)
 		{
-			// »Ö¸´Õ»´óĞ¡(PopµôÕâ¶Î´úÂëÔÚÕ»ÉÏ²úÉúµÄÊı¾İ)
+			// æ¢å¤æ ˆå¤§å°(Popæ‰è¿™æ®µä»£ç åœ¨æ ˆä¸Šäº§ç”Ÿçš„æ•°æ®)
 			lua_settop(L, stack_size);
 
 			if (std::strcmp(func, "Awake") != 0 &&
@@ -165,34 +165,34 @@ namespace ZXEngine
 
 			return;
 		}
-		// °ÑÎ»ÓÚ-2Î»ÖÃÉÏµÄtable¸´ÖÆÒ»±é£¬ÖØĞÂÈëÕ»£¬×÷Îªµ÷ÓÃfuncµÄ²ÎÊı(¾ÍÊÇself£¬luaÄÇ±ßº¯Êı¶¨ÒåĞ´µÄ:)
+		// æŠŠä½äº-2ä½ç½®ä¸Šçš„tableå¤åˆ¶ä¸€éï¼Œé‡æ–°å…¥æ ˆï¼Œä½œä¸ºè°ƒç”¨funcçš„å‚æ•°(å°±æ˜¯selfï¼Œluaé‚£è¾¹å‡½æ•°å®šä¹‰å†™çš„:)
 		lua_pushvalue(L, -2);
-		// µ÷ÓÃAllGameLogic[luaID]µÄfuncº¯Êı£¬1²ÎÊı£¬0·µ»ØÖµ
+		// è°ƒç”¨AllGameLogic[luaID]çš„funcå‡½æ•°ï¼Œ1å‚æ•°ï¼Œ0è¿”å›å€¼
 		if (lua_pcall(L, 1, 0, 0) != LUA_OK)
 		{
-			// µ÷ÓÃÊ§°Ü´òÓ¡ÈÕÖ¾
+			// è°ƒç”¨å¤±è´¥æ‰“å°æ—¥å¿—
 			Debug::LogError(lua_tostring(L, -1));
 		}
-		// »Ö¸´Õ»´óĞ¡(PopµôÕâ¶Î´úÂëÔÚÕ»ÉÏ²úÉúµÄÊı¾İ)
+		// æ¢å¤æ ˆå¤§å°(Popæ‰è¿™æ®µä»£ç åœ¨æ ˆä¸Šäº§ç”Ÿçš„æ•°æ®)
 		lua_settop(L, stack_size);
 	}
 
 	void GameLogic::SetLuaVariable(const string& name, bool value, bool sync)
 	{
 		lua_State* L = LuaManager::GetInstance()->GetState();
-		// ¼ÇÂ¼µ±Ç°Õ»´óĞ¡
+		// è®°å½•å½“å‰æ ˆå¤§å°
 		int stack_size = lua_gettop(L);
-		// ´ËÊ±È«¾Ötable AllGameLogicÔÚ-1Î»ÖÃ
+		// æ­¤æ—¶å…¨å±€table AllGameLogicåœ¨-1ä½ç½®
 		lua_getglobal(L, "AllGameLogic");
-		// ´ËÊ±È«¾Ötable AllGameLogicÔÚ-2Î»ÖÃ
+		// æ­¤æ—¶å…¨å±€table AllGameLogicåœ¨-2ä½ç½®
 		lua_pushnumber(L, luaID);
-		// »ñÈ¡AllGameLogic[luaID]£¬´ËÊ±table AllGameLogic[luaID]ÔÚ-1
+		// è·å–AllGameLogic[luaID]ï¼Œæ­¤æ—¶table AllGameLogic[luaID]åœ¨-1
 		lua_gettable(L, -2);
-		// Ñ¹Èë±äÁ¿£¬´ËÊ±table AllGameLogic[luaID]ÔÚ-2
+		// å‹å…¥å˜é‡ï¼Œæ­¤æ—¶table AllGameLogic[luaID]åœ¨-2
 		lua_pushboolean(L, value);
-		// ÉèÖÃAllGameLogic[luaID][name] = value
+		// è®¾ç½®AllGameLogic[luaID][name] = value
 		lua_setfield(L, -2, name.c_str());
-		// »Ö¸´Õ»´óĞ¡(PopµôÕâ¶Î´úÂëÔÚÕ»ÉÏ²úÉúµÄÊı¾İ)
+		// æ¢å¤æ ˆå¤§å°(Popæ‰è¿™æ®µä»£ç åœ¨æ ˆä¸Šäº§ç”Ÿçš„æ•°æ®)
 		lua_settop(L, stack_size);
 
 		if (sync) mBoolVariables[name] = value;

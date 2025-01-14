@@ -34,12 +34,12 @@ namespace ZXEngine
 	private:
 		RendererList renderers;
 		BatchMap batches;
-		// ÓÃÓÚºÏÅúµÄÁÙÊ±Renderer£¬Õâ¸öpoolÖ»Ôö²»É¾
-		// ²¢ÇÒ²»¿ÉÒÔ×öÈÎºÎdelete£¬ÒòÎª¶¼ÊÇÒıÓÃµÄÆäËûµØ·½µÄ¶ÔÏóÊµÀı
+		// ç”¨äºåˆæ‰¹çš„ä¸´æ—¶Rendererï¼Œè¿™ä¸ªpoolåªå¢ä¸åˆ 
+		// å¹¶ä¸”ä¸å¯ä»¥åšä»»ä½•deleteï¼Œå› ä¸ºéƒ½æ˜¯å¼•ç”¨çš„å…¶ä»–åœ°æ–¹çš„å¯¹è±¡å®ä¾‹
 		RendererList temporaryRendererPool;
-		// µ±Ç°Ê¹ÓÃÊıÁ¿
+		// å½“å‰ä½¿ç”¨æ•°é‡
 		int rendererPoolIdx = 0;
-		// ¼ÇÂ¼¶¯Ì¬ºÏÅú²úÉúµÄÁÙÊ±Mesh£¬Ã¿Ö¡delete
+		// è®°å½•åŠ¨æ€åˆæ‰¹äº§ç”Ÿçš„ä¸´æ—¶Meshï¼Œæ¯å¸§delete
 		list<StaticMesh*> temporaryMeshPool;
 
 		void DynamicBatch(RendererList& batchRenderers);

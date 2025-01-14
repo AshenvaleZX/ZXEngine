@@ -27,9 +27,9 @@ namespace ZXEngine
 	{
 		string name;
 		string path;
-		string shaderPath;        // ¹âÕ¤»¯¹ÜÏßµÄshaderÂ·¾¶
+		string shaderPath;        // å…‰æ …åŒ–ç®¡çº¿çš„shaderè·¯å¾„
 		string shaderCode;
-		uint32_t hitGroupIdx = 0; // ¹â×·¹ÜÏßµÄhitGroupË÷Òı
+		uint32_t hitGroupIdx = 0; // å…‰è¿½ç®¡çº¿çš„hitGroupç´¢å¼•
 
 		map<string, float> floatDatas;
 		map<string, uint32_t> uintDatas;
@@ -90,14 +90,14 @@ namespace ZXEngine
 
 	class Resources
 	{
-		// -------- Í¬²½½Ó¿Ú --------
+		// -------- åŒæ­¥æ¥å£ --------
 	public:
 		static void SetAssetsPath(const string& path);
-		// »ñÈ¡µ±Ç°¹¤³ÌAssetsÎÄ¼ş¼ĞÂ·¾¶
+		// è·å–å½“å‰å·¥ç¨‹Assetsæ–‡ä»¶å¤¹è·¯å¾„
 		static string GetAssetsPath();
-		// °ÑAssetsÏÂµÄÂ·¾¶×ªÎªÓ²ÅÌÉÏµÄÂ·¾¶
+		// æŠŠAssetsä¸‹çš„è·¯å¾„è½¬ä¸ºç¡¬ç›˜ä¸Šçš„è·¯å¾„
 		static string GetAssetFullPath(const string& path, bool isBuiltIn = false);
-		// °ÑÓ²ÅÌÉÏµÄÂ·¾¶×ªÎªAssetsÏÂµÄÂ·¾¶
+		// æŠŠç¡¬ç›˜ä¸Šçš„è·¯å¾„è½¬ä¸ºAssetsä¸‹çš„è·¯å¾„
 		static string GetAssetLocalPath(const string& path);
 		static string GetAssetName(const string& path);
 		static string GetAssetExtension(const string& path);
@@ -123,7 +123,7 @@ namespace ZXEngine
 		static PrefabStruct* ParsePrefab(json data, bool async = false, bool isBuiltIn = false);
 
 
-		// -------- Òì²½½Ó¿Ú --------
+		// -------- å¼‚æ­¥æ¥å£ --------
 	public:
 		static void CheckAsyncLoad();
 		static void ClearAsyncLoad();

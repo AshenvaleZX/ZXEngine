@@ -140,8 +140,8 @@ namespace ImGui
 
 // ------------------------------------------------------ ZX Engine Define ------------------------------------------------------
 
-// ¼ÓÕâ¸öºê£¬±íÊ¾Òª×Ô¼º¼ÓÔØVulkanº¯Êý
-// ÒòÎªÈç¹ûÒªÊ¹ÓÃVulkan¹â×·£¬¾ÍÒªÆôÓÃÏà¹ØÀ©Õ¹£¬¶øVulkanÀ©Õ¹µÄº¯ÊýËäÈ»ÔÚvulkan.hµÄÍ·ÎÄ¼þÀï£¬µ«ÊÇÕâÐ©º¯Êý²¢Ã»ÓÐÖ±½Ó¼ÓÔØºÃ
-// ÐèÒªÎÒÃÇ×Ô¼ºÈ¥¼ÓÔØº¯Êý(°ó¶¨º¯ÊýÖ¸Õë)£¬ËùÒÔÒò´Ë¼ä½ÓÓ°ÏìÁË»ùÓÚVulkanµÄImGui
-// ËäÈ»»ùÓÚVulkanµÄImGuiäÖÈ¾²¢²»ÐèÒªÈÎºÎÀ©Õ¹£¬µ«ÊÇÒòÎªÎÒÃÇÒª×Ô¼º¼ÓÔØËùÓÐVulkanº¯ÊýÁË£¬¾ÍÒ²ÐèÒª¸øImGui´«µÝÒ»¸öº¯Êý£¬ÈÃImGuiÈ¥ÕÒVulkanº¯ÊýµØÖ·
+// åŠ è¿™ä¸ªå®ï¼Œè¡¨ç¤ºè¦è‡ªå·±åŠ è½½Vulkanå‡½æ•°
+// å› ä¸ºå¦‚æžœè¦ä½¿ç”¨Vulkanå…‰è¿½ï¼Œå°±è¦å¯ç”¨ç›¸å…³æ‰©å±•ï¼Œè€ŒVulkanæ‰©å±•çš„å‡½æ•°è™½ç„¶åœ¨vulkan.hçš„å¤´æ–‡ä»¶é‡Œï¼Œä½†æ˜¯è¿™äº›å‡½æ•°å¹¶æ²¡æœ‰ç›´æŽ¥åŠ è½½å¥½
+// éœ€è¦æˆ‘ä»¬è‡ªå·±åŽ»åŠ è½½å‡½æ•°(ç»‘å®šå‡½æ•°æŒ‡é’ˆ)ï¼Œæ‰€ä»¥å› æ­¤é—´æŽ¥å½±å“äº†åŸºäºŽVulkançš„ImGui
+// è™½ç„¶åŸºäºŽVulkançš„ImGuiæ¸²æŸ“å¹¶ä¸éœ€è¦ä»»ä½•æ‰©å±•ï¼Œä½†æ˜¯å› ä¸ºæˆ‘ä»¬è¦è‡ªå·±åŠ è½½æ‰€æœ‰Vulkanå‡½æ•°äº†ï¼Œå°±ä¹Ÿéœ€è¦ç»™ImGuiä¼ é€’ä¸€ä¸ªå‡½æ•°ï¼Œè®©ImGuiåŽ»æ‰¾Vulkanå‡½æ•°åœ°å€
 #define IMGUI_IMPL_VULKAN_NO_PROTOTYPES

@@ -6,18 +6,18 @@ namespace ZXEngine
 {
 	struct ZXD3D12DescriptorHeap
 	{
-		// µ±Ç°Ê£Óà¿ÉÓÃÃèÊö·ûÊýÁ¿
+		// å½“å‰å‰©ä½™å¯ç”¨æè¿°ç¬¦æ•°é‡
 		UINT availableNum = 0;
-		// ÃèÊö·û¶ÑÖÐµÄÃèÊö·ûÊýÁ¿
+		// æè¿°ç¬¦å †ä¸­çš„æè¿°ç¬¦æ•°é‡
 		UINT descriptorNum = 0;
-		// Ã¿¸öÃèÊö·ûÊÇ·ñÕýÔÚÊ¹ÓÃ
+		// æ¯ä¸ªæè¿°ç¬¦æ˜¯å¦æ­£åœ¨ä½¿ç”¨
 		vector<bool> inUseState;
-		// ÃèÊö·û¶Ñ
+		// æè¿°ç¬¦å †
 		ComPtr<ID3D12DescriptorHeap> descriptorHeap;
 	};
 
 	/// <summary>
-	/// ´ËÀà¸ºÔð¹ÜÀíÀàÐÍÎªmHeapTypeµÄCPUÃèÊö·û¶Ñ£¬ËùÓÐ´ËÀàÐÍµÄCPUÃèÊö·û¶¼ÔÚÕâÀïÍ³Ò»·ÖÅäºÍÏú»Ù
+	/// æ­¤ç±»è´Ÿè´£ç®¡ç†ç±»åž‹ä¸ºmHeapTypeçš„CPUæè¿°ç¬¦å †ï¼Œæ‰€æœ‰æ­¤ç±»åž‹çš„CPUæè¿°ç¬¦éƒ½åœ¨è¿™é‡Œç»Ÿä¸€åˆ†é…å’Œé”€æ¯
 	/// </summary>
 	class ZXD3D12DescriptorAllocator
 	{

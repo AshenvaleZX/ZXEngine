@@ -54,10 +54,10 @@ namespace ZXEngine
 		renderAPI->SetViewPort(GlobalData::srcWidth, GlobalData::srcHeight);
 		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_COLOR_BIT | ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
-		// ¸´ÖÆ Depth Buffer
+		// å¤åˆ¶ Depth Buffer
 		renderAPI->BlitFrameBuffer(mBlitCommandID, "GBuffer", "Deferred", ZX_FRAME_BUFFER_PIECE_DEPTH);
 
-		// äÖÈ¾Ìì¿ÕºÐ
+		// æ¸²æŸ“å¤©ç©ºç›’
 		renderAPI->SetRenderState(skyBoxRenderState);
 		RenderSkyBox(camera);
 
@@ -83,11 +83,11 @@ namespace ZXEngine
 		mDeferredMaterial->SetTexture("ENGINE_G_Buffer_Normal", gBuffer->NormalBuffer, 1, false, true);
 		mDeferredMaterial->SetTexture("ENGINE_G_Buffer_Albedo", gBuffer->ColorBuffer, 2, false, true);
 
-		// ÑÓ³ÙäÖÈ¾»æÖÆ
+		// å»¶è¿Ÿæ¸²æŸ“ç»˜åˆ¶
 		renderAPI->SetRenderState(deferredRenderState);
 		renderAPI->Draw(mScreenQuad->VAO);
 
-		// ÔÙ½ÓÕýÏòäÖÈ¾»æÖÆ
+		// å†æŽ¥æ­£å‘æ¸²æŸ“ç»˜åˆ¶
 		renderAPI->SetRenderState(opaqueRenderState);
 		auto opaqueQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Opaque);
 		opaqueQueue->Sort(camera, RenderSortType::FrontToBack);
@@ -132,7 +132,7 @@ namespace ZXEngine
 
 	void RenderPassDeferredRendering::RenderSkyBox(Camera* camera)
 	{
-		// ÏÈ×ª3x3ÔÙ»Ø4x4£¬°ÑÏà»úÎ»ÒÆÐÅÏ¢È¥³ý
+		// å…ˆè½¬3x3å†å›ž4x4ï¼ŒæŠŠç›¸æœºä½ç§»ä¿¡æ¯åŽ»é™¤
 		Matrix4 mat_V = Matrix4(Matrix3(camera->GetViewMatrix()));
 		Matrix4 mat_P = camera->GetProjectionMatrix();
 

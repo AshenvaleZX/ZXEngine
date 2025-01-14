@@ -40,7 +40,7 @@ namespace ZXEngine
 
 	void ParticleSystemManager::Render(Camera* camera)
 	{
-		// ÇÐ»»Á£×ÓÏµÍ³äÖÈ¾ÉèÖÃ
+		// åˆ‡æ¢ç²’å­ç³»ç»Ÿæ¸²æŸ“è®¾ç½®
 		RenderAPI::GetInstance()->SetRenderState(renderState);
 
 		for (auto particleSystem : allParticleSystem)

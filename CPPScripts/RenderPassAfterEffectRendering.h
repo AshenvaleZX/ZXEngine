@@ -27,19 +27,19 @@ namespace ZXEngine
 		void CreateMaterial(const string& name, const string& path, FrameBufferType type);
 		Material* GetMaterial(const string& name);
 
-		// 提取画面高亮部分
+		// 鎻愬彇鐢婚潰楂樹寒閮ㄥ垎
 		void InitExtractBrightArea();
 		string BlitExtractBrightArea(const string& sourceFBO);
-		// 高斯模糊
+		// 楂樻柉妯＄硦
 		void InitGaussianBlur();
 		string BlitGaussianBlur(const string& sourceFBO, int blurTimes, float texOffset);
-		// Kawase模糊，性能比高斯好
+		// Kawase妯＄硦锛屾�ц兘姣旈珮鏂ソ
 		void InitKawaseBlur();
 		string BlitKawaseBlur(const string& sourceFBO, int blurTimes, float texOffset);
 		// Bloom
 		void InitBloomBlend(bool isFinal = false);
 		string BlitBloomBlend(const string& originFBO, const string& blurFBO, bool isFinal = false);
-		// 简单的图像复制
+		// 绠�鍗曠殑鍥惧儚澶嶅埗
 		void InitCopy(bool isFinal = false);
 		string BlitCopy(const string& targetFBO, const string& sourceFBO, bool isFinal = false);
 	};

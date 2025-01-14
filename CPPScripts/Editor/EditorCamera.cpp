@@ -220,7 +220,7 @@ namespace ZXEngine
 		Vector2 widgetScreenPos;
 		widgetScreenPos.x = std::stof(argList[0]);
 		widgetScreenPos.y = std::stof(argList[1]);
-		// µ±Ç°Ö¡ÍÏ×§WidgetÔÚÆÁÄ»ÉÏ²úÉúµÄÎ»ÒÆ
+		// å½“å‰å¸§æ‹–æ‹½Widgetåœ¨å±å¹•ä¸Šäº§ç”Ÿçš„ä½ç§»
 		Vector2 deltaScreenPos = widgetScreenPos - mLastWidgetScreenPos;
 
 		auto goTrans = go->GetComponent<Transform>();
@@ -238,11 +238,11 @@ namespace ZXEngine
 			Vector2 clockWiseDir(centerDir.y, -centerDir.x);
 			float moveDis = Math::Dot(deltaScreenPos, clockWiseDir);
 
-			// ÕâÀïÖáµÄÕý¸º·½Ïò²»Ó°ÏìÐý×ª²Ù×÷£¬ÒòÎªÏÂÒ»²½»á¸ù¾ÝÏà»úÊÓ½ÇÓëËùÑ¡È¡µÄÖá·½ÏòÀ´µ÷ÕûÐý×ªµÄ·½Ïò
-			// ËùÒÔÕâÀïzÖáÈ¡·´ºóÐý×ª²Ù×÷ÒÀÈ»ÊÇÕýÈ·µÄ£¬ÒòÎªzÖáÈ¡·´ºóÏàµ±ÓÚRoate²ÎÊýµÄaxisºÍangleÍ¬Ê±È¡·´ÁË£¬Õâ¶ÔÓÚÐý×ª²Ù×÷ÊÇµÈÐ§µÄ
-			// Õâ¸öÈ¡·´µÄÒâÒåÊÇÈÃangleµÄÕý¸º·¢Éú±ä»¯£¬½ø¶øÓ°ÏìmRotationRadianÊýÖµµÄÕý¸º
-			// ¶ømRotationRadian»á×÷ÎªShader²ÎÊý£¬Ó°Ïì»æÖÆÐý×ª²Ù×÷×é¼þµÄÒÑÐý×ª½Ç¶ÈÉÈÐÎÇøÓò
-			// Èç¹ûÕâÀï²»È¡·´£¬ÔÚ²Ù×÷zÖáÐý×ªÊ±µÄäÖÈ¾Ð§¹ûºÍ²Ù×÷xyÖáÊ±µÄ¾Í»á²»Ò»ÖÂ
+			// è¿™é‡Œè½´çš„æ­£è´Ÿæ–¹å‘ä¸å½±å“æ—‹è½¬æ“ä½œï¼Œå› ä¸ºä¸‹ä¸€æ­¥ä¼šæ ¹æ®ç›¸æœºè§†è§’ä¸Žæ‰€é€‰å–çš„è½´æ–¹å‘æ¥è°ƒæ•´æ—‹è½¬çš„æ–¹å‘
+			// æ‰€ä»¥è¿™é‡Œzè½´å–ååŽæ—‹è½¬æ“ä½œä¾ç„¶æ˜¯æ­£ç¡®çš„ï¼Œå› ä¸ºzè½´å–ååŽç›¸å½“äºŽRoateå‚æ•°çš„axiså’ŒangleåŒæ—¶å–åäº†ï¼Œè¿™å¯¹äºŽæ—‹è½¬æ“ä½œæ˜¯ç­‰æ•ˆçš„
+			// è¿™ä¸ªå–åçš„æ„ä¹‰æ˜¯è®©angleçš„æ­£è´Ÿå‘ç”Ÿå˜åŒ–ï¼Œè¿›è€Œå½±å“mRotationRadianæ•°å€¼çš„æ­£è´Ÿ
+			// è€ŒmRotationRadianä¼šä½œä¸ºShaderå‚æ•°ï¼Œå½±å“ç»˜åˆ¶æ—‹è½¬æ“ä½œç»„ä»¶çš„å·²æ—‹è½¬è§’åº¦æ‰‡å½¢åŒºåŸŸ
+			// å¦‚æžœè¿™é‡Œä¸å–åï¼Œåœ¨æ“ä½œzè½´æ—‹è½¬æ—¶çš„æ¸²æŸ“æ•ˆæžœå’Œæ“ä½œxyè½´æ—¶çš„å°±ä¼šä¸ä¸€è‡´
 			Vector3 axis;
 			switch (mCurAxis)
 			{
@@ -259,7 +259,7 @@ namespace ZXEngine
 				break;
 			}
 
-			// ¸ù¾ÝÊÓ½Çµ÷ÕûÐý×ª·½Ïò£¬±£Ö¤²Ù×÷Âß¼­µÄÒ»ÖÂÐÔ
+			// æ ¹æ®è§†è§’è°ƒæ•´æ—‹è½¬æ–¹å‘ï¼Œä¿è¯æ“ä½œé€»è¾‘çš„ä¸€è‡´æ€§
 			float angle = moveDis * 0.01f;
 			if (Math::Dot(axis, goDir) > 0.0f)
 				angle = -angle;
@@ -277,14 +277,14 @@ namespace ZXEngine
 			Vector2 headScreenPos = mCamera->WorldToScreenPoint(headPos);
 			Vector2 tailScreenPos = mCamera->WorldToScreenPoint(tailPos);
 
-			// µ±Ç°Ñ¡ÖÐµÄÖáµÄ3D·½ÏòÍ¶Ó°µ½ÆÁÄ»ÉÏºóµÄ2D·½Ïò
+			// å½“å‰é€‰ä¸­çš„è½´çš„3Dæ–¹å‘æŠ•å½±åˆ°å±å¹•ä¸ŠåŽçš„2Dæ–¹å‘
 			Vector2 axisDir = headScreenPos - tailScreenPos;
 			axisDir.Normalize();
 
-			// ½«Êó±êÔÚÆÁÄ»ÉÏµÄÎ»ÒÆ¾àÀëÍ¶Ó°µ½ÖáµÄ·½ÏòÉÏ
+			// å°†é¼ æ ‡åœ¨å±å¹•ä¸Šçš„ä½ç§»è·ç¦»æŠ•å½±åˆ°è½´çš„æ–¹å‘ä¸Š
 			float dis = Math::Dot(deltaScreenPos, axisDir);
 
-			// ÒÆ¶¯ËÙÂÊ£¬Àë¾µÍ·Ô½Ô¶ÒÆ¶¯ËÙÂÊÔ½¿ì
+			// ç§»åŠ¨é€ŸçŽ‡ï¼Œç¦»é•œå¤´è¶Šè¿œç§»åŠ¨é€ŸçŽ‡è¶Šå¿«
 			float transRate = (mCameraTrans->GetPosition() - goTrans->GetPosition()).GetMagnitude();
 
 			if (dataMgr->mCurTransType == TransformType::Position)

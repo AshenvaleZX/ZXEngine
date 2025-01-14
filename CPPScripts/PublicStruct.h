@@ -8,10 +8,10 @@
 #include "PublicEnum.h"
 #include "Debug.h"
 
-// Ò»¸öMeshÖ§³ÖµÄ×î´ó¹Ç÷ÀÊıÁ¿
+// ä¸€ä¸ªMeshæ”¯æŒçš„æœ€å¤§éª¨éª¼æ•°é‡
 constexpr uint32_t MAX_BONE_NUM = 70;
 
-// ¶¥µã×î¶à¹ØÁª4¸ö¹Ç÷À
+// é¡¶ç‚¹æœ€å¤šå…³è”4ä¸ªéª¨éª¼
 constexpr size_t MAX_NUM_BONES_PER_VERTEX = 4;
 
 using std::string;
@@ -26,7 +26,7 @@ namespace ZXEngine
 		Vector2 TexCoords = {};
 		Vector3 Normal    = {};
 		Vector3 Tangent   = {};
-		// ¹Ç÷ÀÃÉÆ¤Êı¾İ
+		// éª¨éª¼è’™çš®æ•°æ®
 		float    Weights[MAX_NUM_BONES_PER_VERTEX] = {};
 		uint32_t BoneIDs[MAX_NUM_BONES_PER_VERTEX] = {};
 
@@ -109,12 +109,12 @@ namespace ZXEngine
 	struct ShaderProperty
 	{
 		string name = "";
-		uint32_t size = 0;        // Õû¸öÊôĞÔ´óĞ¡(Èç¹ûÊÇÊı×éÔò´ú±íÕû¸öÊı×éµÄ´óĞ¡)
-		uint32_t align = 0;       // µ¥¸öÊôĞÔµÄ¶ÔÆë±ê×¼
-		uint32_t offset = 0;      // ÊôĞÔÔÚUniform Buffer(Vulkan)»òConstant Buffer(D3D12)ÖĞµÄÆ«ÒÆÁ¿
-		uint32_t binding = 0;     // ÔÚVulkanÖĞ´ú±íUniform BufferºÍÎÆÀíµÄlayout binding£¬ÔÚD3D12ÖĞ´ú±íÎÆÀíµÄregister(t)Ë÷Òı
-		uint32_t arrayLength = 0; // ÊôĞÔÊı×é³¤¶È
-		uint32_t arrayOffset = 0; // Èç¹ûÊÇÊı×éµÄ»°£¬Ò»¸öÊôĞÔÔÚÊı×éÄÚµÄÆ«ÒÆÁ¿
+		uint32_t size = 0;        // æ•´ä¸ªå±æ€§å¤§å°(å¦‚æœæ˜¯æ•°ç»„åˆ™ä»£è¡¨æ•´ä¸ªæ•°ç»„çš„å¤§å°)
+		uint32_t align = 0;       // å•ä¸ªå±æ€§çš„å¯¹é½æ ‡å‡†
+		uint32_t offset = 0;      // å±æ€§åœ¨Uniform Buffer(Vulkan)æˆ–Constant Buffer(D3D12)ä¸­çš„åç§»é‡
+		uint32_t binding = 0;     // åœ¨Vulkanä¸­ä»£è¡¨Uniform Bufferå’Œçº¹ç†çš„layout bindingï¼Œåœ¨D3D12ä¸­ä»£è¡¨çº¹ç†çš„register(t)ç´¢å¼•
+		uint32_t arrayLength = 0; // å±æ€§æ•°ç»„é•¿åº¦
+		uint32_t arrayOffset = 0; // å¦‚æœæ˜¯æ•°ç»„çš„è¯ï¼Œä¸€ä¸ªå±æ€§åœ¨æ•°ç»„å†…çš„åç§»é‡
 		ShaderPropertyType type = ShaderPropertyType::FLOAT;
 	};
 
@@ -127,11 +127,11 @@ namespace ZXEngine
 	using ShaderSemanticType = std::pair<ShaderPropertyType, string>;
 	struct ShaderInstanceInfo
 	{
-		uint32_t size = 0; // ÒÔVector4Îªµ¥Î»
+		uint32_t size = 0; // ä»¥Vector4ä¸ºå•ä½
 		vector<ShaderSemanticType> attributes;
 	};
 
-	// ShaderÀàÖĞ¼ÇÂ¼ĞÅÏ¢µÄ½á¹¹Ìå
+	// Shaderç±»ä¸­è®°å½•ä¿¡æ¯çš„ç»“æ„ä½“
 	struct ShaderInfo
 	{
 		LightType lightType   = LightType::None;

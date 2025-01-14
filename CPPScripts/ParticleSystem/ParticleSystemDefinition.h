@@ -30,21 +30,21 @@ namespace ZXEngine
 			Line,
 		};
 
-		// Á£×ÓÉú³ÉÆµÂÊ(Ã¿Ãë)
+		// ç²’å­ç”Ÿæˆé¢‘ç‡(æ¯ç§’)
 		float mRate = 10.0f;
-		// Á£×Ó·¢ÉäĞÎ×´
+		// ç²’å­å‘å°„å½¢çŠ¶
 		Shape mShape = Shape::Cone;
-		// Á£×Ó·¢Éä½Ç¶È(½Ç¶ÈÖÆ)
+		// ç²’å­å‘å°„è§’åº¦(è§’åº¦åˆ¶)
 		float mAngle = 30.0f;
-		// Á£×Ó·¢Éä°ë¾¶
+		// ç²’å­å‘å°„åŠå¾„
 		float mRadius = 1.0f;
-		// Á£×Ó·¢ÉäÑÕÉ«
+		// ç²’å­å‘å°„é¢œè‰²
 		Vector4 mColor = Vector4(1.0f);
-		// ÊÇ·ñËæ»úÑÕÉ«
+		// æ˜¯å¦éšæœºé¢œè‰²
 		bool mRandomColor = false;
-		// Á£×Ó·¢ÉäËÙ¶È
+		// ç²’å­å‘å°„é€Ÿåº¦
 		float mSpeed = 1.0f;
-		// Á£×Ó·¢Éä·½ÏòĞı×ª
+		// ç²’å­å‘å°„æ–¹å‘æ—‹è½¬
 		Quaternion mRotation;
 	};
 
@@ -65,22 +65,22 @@ namespace ZXEngine
 
 	struct ParticleSystemState
 	{
-		// ×î´óÁ£×ÓÊıÁ¿
+		// æœ€å¤§ç²’å­æ•°é‡
 		uint32_t mMaxParticleNum = 0;
-		// Á£×ÓÉúÃüÖÜÆÚ
+		// ç²’å­ç”Ÿå‘½å‘¨æœŸ
 		float mLifeTime = 0;
-		// Á£×ÓÒÆ¶¯·½ÏòºÍËÙ¶È
+		// ç²’å­ç§»åŠ¨æ–¹å‘å’Œé€Ÿåº¦
 		Vector3 mVelocity;
-		// Á£×ÓÉú³ÉÎ»ÖÃÆ«ÒÆÁ¿
+		// ç²’å­ç”Ÿæˆä½ç½®åç§»é‡
 		Vector3 mOffset;
-		// Á£×Ó·¢Éä×´Ì¬
+		// ç²’å­å‘å°„çŠ¶æ€
 		ParticleEmissionState mEmissionState;
 
-		// Ëù¹ÒÔØµÄGOµ±Ç°Î»ÖÃ(World Space)
+		// æ‰€æŒ‚è½½çš„GOå½“å‰ä½ç½®(World Space)
 		Vector3 mCurPos;
-		// Ëù¹ÒÔØµÄGOµ±Ç°ÒÆ¶¯·½Ïò(World Space)
+		// æ‰€æŒ‚è½½çš„GOå½“å‰ç§»åŠ¨æ–¹å‘(World Space)
 		Vector3 mMoveDir;
-		// Ëù¹ÒÔØµÄGOµ±Ç°Ğı×ª(Ïà¶ÔÓÚWorld Space)
+		// æ‰€æŒ‚è½½çš„GOå½“å‰æ—‹è½¬(ç›¸å¯¹äºWorld Space)
 		Quaternion mCurRot;
 	};
 

@@ -78,7 +78,7 @@ namespace ZXEngine
 
 		ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&mDXGIFactory)));
 
-		// ÕÒÒ»¸öºÏÊÊµÄÏÔ¿¨Ó²¼ş
+		// æ‰¾ä¸€ä¸ªåˆé€‚çš„æ˜¾å¡ç¡¬ä»¶
 		UINT adapterIndex = 0;
 		UINT bestAdapterIndex = UINT_MAX;
 		IDXGIAdapter1* pAdapter = nullptr;
@@ -87,7 +87,7 @@ namespace ZXEngine
 			DXGI_ADAPTER_DESC1 adapterDesc;
 			pAdapter->GetDesc1(&adapterDesc);
 
-			// 0x8086´ú±íIntel£¬Õâ¸öÅĞ¶ÏÊÇÔÚÕÒÓĞÃ»ÓĞ¶ÀÁ¢ÏÔ¿¨
+			// 0x8086ä»£è¡¨Intelï¼Œè¿™ä¸ªåˆ¤æ–­æ˜¯åœ¨æ‰¾æœ‰æ²¡æœ‰ç‹¬ç«‹æ˜¾å¡
 			if (adapterDesc.VendorId != 0x8086 && !(adapterDesc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE))
 				bestAdapterIndex = adapterIndex;
 
@@ -97,21 +97,21 @@ namespace ZXEngine
 			adapterIndex++;
 		}
 
-		// Èç¹ûÃ»ÕÒµ½ºÏÊÊµÄÏÔ¿¨£¬²»»á½øÕâ¸öif£¬pAdapter»á±£³ÖÎª¿Õ
+		// å¦‚æœæ²¡æ‰¾åˆ°åˆé€‚çš„æ˜¾å¡ï¼Œä¸ä¼šè¿›è¿™ä¸ªifï¼ŒpAdapterä¼šä¿æŒä¸ºç©º
 		if (bestAdapterIndex != UINT_MAX)
 			mDXGIFactory->EnumAdapters1(bestAdapterIndex, &pAdapter);
 
-		// ÓÅÏÈÊ¹ÓÃÓ²¼şÉè±¸£¬Èç¹ûÃ»ÕÒµ½ºÏÊÊµÄÏÔ¿¨£¬pAdapter´ËÊ±Îªnullptr£¬ÕâÀïÔÊĞí¿ÕÖ¸Õë²ÎÊı£¬±íÊ¾×Ô¶¯ÕÒÒ»¸öºÏÊÊµÄ
+		// ä¼˜å…ˆä½¿ç”¨ç¡¬ä»¶è®¾å¤‡ï¼Œå¦‚æœæ²¡æ‰¾åˆ°åˆé€‚çš„æ˜¾å¡ï¼ŒpAdapteræ­¤æ—¶ä¸ºnullptrï¼Œè¿™é‡Œå…è®¸ç©ºæŒ‡é’ˆå‚æ•°ï¼Œè¡¨ç¤ºè‡ªåŠ¨æ‰¾ä¸€ä¸ªåˆé€‚çš„
 		HRESULT hardwareResult = D3D12CreateDevice(pAdapter, D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&mD3D12Device));
 
-		// Èç¹ûÕÒµ½ÁËºÏÊÊµÄÏÔ¿¨£¬ÒªÊÖ¶¯ÊÍ·ÅÒ»ÏÂAdapter
+		// å¦‚æœæ‰¾åˆ°äº†åˆé€‚çš„æ˜¾å¡ï¼Œè¦æ‰‹åŠ¨é‡Šæ”¾ä¸€ä¸‹Adapter
 		if (bestAdapterIndex != UINT_MAX)
 		{
 			pAdapter->Release();
 			pAdapter = nullptr;
 		}
 
-		// Èç¹ûÓ²¼şÌõ¼ş²»Ö§³Ö£¬Ê¹ÓÃWARPÉè±¸(Windows Advanced Rasterization Platform£¬Î¢ÈíÓÃÈí¼şÄ£ÄâµÄ¹âÕ¤»¯Ó²¼şÏÔ¿¨)
+		// å¦‚æœç¡¬ä»¶æ¡ä»¶ä¸æ”¯æŒï¼Œä½¿ç”¨WARPè®¾å¤‡(Windows Advanced Rasterization Platformï¼Œå¾®è½¯ç”¨è½¯ä»¶æ¨¡æ‹Ÿçš„å…‰æ …åŒ–ç¡¬ä»¶æ˜¾å¡)
 		if (FAILED(hardwareResult))
 		{
 			ComPtr<IDXGIAdapter> pWarpAdapter;
@@ -119,14 +119,14 @@ namespace ZXEngine
 			ThrowIfFailed(D3D12CreateDevice(pWarpAdapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&mD3D12Device)));
 		}
 
-		// ÉèÖÃDebugÊä³öÉ¸Ñ¡
+		// è®¾ç½®Debugè¾“å‡ºç­›é€‰
 		if (ProjectSetting::enableGraphicsDebug)
 		{
-			// »ñÈ¡Éè±¸µÄĞÅÏ¢¶ÓÁĞ
+			// è·å–è®¾å¤‡çš„ä¿¡æ¯é˜Ÿåˆ—
 			ComPtr<ID3D12InfoQueue> pInfoQueue;
 			mD3D12Device->QueryInterface(IID_PPV_ARGS(&pInfoQueue));
 			
-			// ÉèÖÃÒªÔÊĞíµÄÏûÏ¢Àà±ğ
+			// è®¾ç½®è¦å…è®¸çš„æ¶ˆæ¯ç±»åˆ«
 			D3D12_MESSAGE_CATEGORY categories[] = 
 			{ 
 				D3D12_MESSAGE_CATEGORY_APPLICATION_DEFINED,
@@ -142,7 +142,7 @@ namespace ZXEngine
 				D3D12_MESSAGE_CATEGORY_SHADER
 			};
 
-			// ÉèÖÃÒªÔÊĞíµÄÏûÏ¢ÑÏÖØĞÔ
+			// è®¾ç½®è¦å…è®¸çš„æ¶ˆæ¯ä¸¥é‡æ€§
 			D3D12_MESSAGE_SEVERITY severities[] = 
 			{ 
 				D3D12_MESSAGE_SEVERITY_CORRUPTION,
@@ -160,21 +160,21 @@ namespace ZXEngine
 
 			pInfoQueue->PushStorageFilter(&filter);
 
-			// ÓĞ´íÎóÊ±Ö±½ÓBreak
+			// æœ‰é”™è¯¯æ—¶ç›´æ¥Break
 			pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
 			pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
 			pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE);
 		}
 
-		// ´´½¨ÃüÁî¶ÓÁĞ
+		// åˆ›å»ºå‘½ä»¤é˜Ÿåˆ—
 		D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 		queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 		ThrowIfFailed(mD3D12Device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue)));
 		
-		// ´´½¨GPUÃèÊö·û¶Ñ£¬Shader VisibleÃèÊö·û¶ÑÔÚÓ²¼şÉÏÓĞÊıÁ¿ÏŞÖÆ£¬¼û: https://learn.microsoft.com/en-us/windows/win32/direct3d12/shader-visible-descriptor-heaps
-		// Î¢ÈíÎÄµµËµÒ»°ãÓ²¼şShader VisibleÃèÊö·û¶Ñ¿ÉÓÃÄÚ´æÔÚ96MB×óÓÒ£¬ A one million member descriptor heap, with 32byte descriptors, would use up 32MB, for example.
-		// ËùÒÔÒ»°ãÀ´Ëµ£¬²î²»¶àÄÜÖ§³Ö300Íò¸öÃèÊö·û£¬²»¹ıÕâÀïÏÈ²»ÓÃÄÇÃ´¶à
+		// åˆ›å»ºGPUæè¿°ç¬¦å †ï¼ŒShader Visibleæè¿°ç¬¦å †åœ¨ç¡¬ä»¶ä¸Šæœ‰æ•°é‡é™åˆ¶ï¼Œè§: https://learn.microsoft.com/en-us/windows/win32/direct3d12/shader-visible-descriptor-heaps
+		// å¾®è½¯æ–‡æ¡£è¯´ä¸€èˆ¬ç¡¬ä»¶Shader Visibleæè¿°ç¬¦å †å¯ç”¨å†…å­˜åœ¨96MBå·¦å³ï¼Œ A one million member descriptor heap, with 32byte descriptors, would use up 32MB, for example.
+		// æ‰€ä»¥ä¸€èˆ¬æ¥è¯´ï¼Œå·®ä¸å¤šèƒ½æ”¯æŒ300ä¸‡ä¸ªæè¿°ç¬¦ï¼Œä¸è¿‡è¿™é‡Œå…ˆä¸ç”¨é‚£ä¹ˆå¤š
 		D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
 		heapDesc.NumDescriptors = 65536;
 		heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -187,7 +187,7 @@ namespace ZXEngine
 			mD3D12Device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&mDynamicDescriptorHeaps[i]));
 		}
 
-		// ³õÊ¼»¯¹â×·Ïà¹Ø¶ÔÏó
+		// åˆå§‹åŒ–å…‰è¿½ç›¸å…³å¯¹è±¡
 		InitDXR();
 	}
 
@@ -197,7 +197,7 @@ namespace ZXEngine
 		mDsvDescriptorSize = mD3D12Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 		mCbvSrvUavDescriptorSize = mD3D12Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-		// »ñÈ¡4X MSAAÖÊÁ¿µÈ¼¶
+		// è·å–4X MSAAè´¨é‡ç­‰çº§
 		D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels = {};
 		msQualityLevels.Format = mPresentBufferFormat;
 		msQualityLevels.SampleCount = 4;
@@ -210,10 +210,10 @@ namespace ZXEngine
 
 	void RenderAPID3D12::CreateSwapChain()
 	{
-		// ÖØĞÂ´´½¨½»»»Á´Ò²»áµ÷Õâ¸öº¯Êı£¬ËùÒÔÏÈReset
+		// é‡æ–°åˆ›å»ºäº¤æ¢é“¾ä¹Ÿä¼šè°ƒè¿™ä¸ªå‡½æ•°ï¼Œæ‰€ä»¥å…ˆReset
 		mSwapChain.Reset();
 
-		// ÕâÀïµÄ´´½¨·½Ê½²Î¿¼ÁËDear ImGui DX12µÄDemoºÍ https://www.3dgep.com/ µÄ½Ì³Ì
+		// è¿™é‡Œçš„åˆ›å»ºæ–¹å¼å‚è€ƒäº†Dear ImGui DX12çš„Demoå’Œ https://www.3dgep.com/ çš„æ•™ç¨‹
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
 		swapChainDesc.Width = ProjectSetting::srcWidth;
 		swapChainDesc.Height = ProjectSetting::srcHeight;
@@ -237,7 +237,7 @@ namespace ZXEngine
 
 	void RenderAPID3D12::CreateSwapChainBuffers()
 	{
-		// ĞÂ´´½¨Ê±ÖØĞÂ¹éÁã£¬Òª´ÓµÚÒ»¸öPresent Buffer¿ªÊ¼Ê¹ÓÃ
+		// æ–°åˆ›å»ºæ—¶é‡æ–°å½’é›¶ï¼Œè¦ä»ç¬¬ä¸€ä¸ªPresent Bufferå¼€å§‹ä½¿ç”¨
 		mCurPresentIdx = 0;
 		mPresentFBOIdx = GetNextFBOIndex();
 		uint32_t colorBufferIdx = GetNextRenderBufferIndex();
@@ -308,14 +308,14 @@ namespace ZXEngine
 
 	void RenderAPID3D12::SetRenderState(RenderStateSetting* state)
 	{
-		// D3D12²»ĞèÒªÊµÏÖÕâ¸ö½Ó¿Ú
+		// D3D12ä¸éœ€è¦å®ç°è¿™ä¸ªæ¥å£
 	}
 
 	void RenderAPID3D12::SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset, unsigned int yOffset)
 	{
 		mViewPortInfo.width = width;
 		mViewPortInfo.height = height;
-		// 0µãÔÚ×óÉÏ½Ç
+		// 0ç‚¹åœ¨å·¦ä¸Šè§’
 		mViewPortInfo.xOffset = xOffset;
 		mViewPortInfo.yOffset = yOffset;
 	}
@@ -336,7 +336,7 @@ namespace ZXEngine
 
 	void RenderAPID3D12::ClearFrameBuffer(FrameBufferClearFlags clearFlags)
 	{
-		// D3D12²»ĞèÒªÊµÏÖÕâ¸ö½Ó¿Ú
+		// D3D12ä¸éœ€è¦å®ç°è¿™ä¸ªæ¥å£
 	}
 
 	void RenderAPID3D12::BlitFrameBuffer(uint32_t cmd, const string& src, const string& dst, FrameBufferPieceFlags flags)
@@ -345,7 +345,7 @@ namespace ZXEngine
 		auto& allocator = drawCommand->allocators[mCurrentFrame];
 		auto& drawCommandList = drawCommand->commandLists[mCurrentFrame];
 
-		// ÖØÖÃCommand List
+		// é‡ç½®Command List
 		ThrowIfFailed(allocator->Reset());
 		ThrowIfFailed(drawCommandList->Reset(allocator.Get(), nullptr));
 
@@ -402,7 +402,7 @@ namespace ZXEngine
 			drawCommandList->ResourceBarrier(1, &dDepthTextureTransitionBack);
 		}
 
-		// ½áÊø²¢Ìá½»Command List
+		// ç»“æŸå¹¶æäº¤Command List
 		ThrowIfFailed(drawCommandList->Close());
 		ID3D12CommandList* cmdsLists[] = { drawCommandList.Get() };
 		mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
@@ -444,7 +444,7 @@ namespace ZXEngine
 
 			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 			{
-				// ´´½¨Color Buffer
+				// åˆ›å»ºColor Buffer
 				CD3DX12_HEAP_PROPERTIES colorBufferProps(D3D12_HEAP_TYPE_DEFAULT);
 
 				D3D12_RESOURCE_DESC colorBufferDesc = {};
@@ -492,7 +492,7 @@ namespace ZXEngine
 
 				colorBuffer->renderBuffers[i] = CreateZXD3D12Texture(colorBufferResource, colorSrvDesc, colorRtvDesc);
 
-				// ´´½¨Depth Buffer
+				// åˆ›å»ºDepth Buffer
 				CD3DX12_HEAP_PROPERTIES depthBufferProps(D3D12_HEAP_TYPE_DEFAULT);
 
 				D3D12_RESOURCE_DESC depthBufferDesc = {};
@@ -556,7 +556,7 @@ namespace ZXEngine
 
 			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 			{
-				// ´´½¨Color Buffer
+				// åˆ›å»ºColor Buffer
 				CD3DX12_HEAP_PROPERTIES colorBufferProps(D3D12_HEAP_TYPE_DEFAULT);
 
 				D3D12_RESOURCE_DESC colorBufferDesc = {};
@@ -622,7 +622,7 @@ namespace ZXEngine
 
 			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 			{
-				// ´´½¨Depth Buffer
+				// åˆ›å»ºDepth Buffer
 				CD3DX12_HEAP_PROPERTIES depthBufferProps(D3D12_HEAP_TYPE_DEFAULT);
 
 				D3D12_RESOURCE_DESC depthBufferDesc = {};
@@ -686,7 +686,7 @@ namespace ZXEngine
 
 			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 			{
-				// ´´½¨Depth Buffer
+				// åˆ›å»ºDepth Buffer
 				CD3DX12_HEAP_PROPERTIES depthBufferProps(D3D12_HEAP_TYPE_DEFAULT);
 
 				D3D12_RESOURCE_DESC depthBufferDesc = {};
@@ -859,7 +859,7 @@ namespace ZXEngine
 
 				normalBuffer->renderBuffers[i] = CreateZXD3D12Texture(normalBufferResource, normalSrvDesc, normalRtvDesc);
 
-				// ´´½¨Color Buffer
+				// åˆ›å»ºColor Buffer
 				CD3DX12_HEAP_PROPERTIES colorBufferProps(D3D12_HEAP_TYPE_DEFAULT);
 
 				D3D12_RESOURCE_DESC colorBufferDesc = {};
@@ -907,7 +907,7 @@ namespace ZXEngine
 
 				colorBuffer->renderBuffers[i] = CreateZXD3D12Texture(colorBufferResource, colorSrvDesc, colorRtvDesc);
 
-				// ´´½¨Depth Buffer
+				// åˆ›å»ºDepth Buffer
 				CD3DX12_HEAP_PROPERTIES depthBufferProps(D3D12_HEAP_TYPE_DEFAULT);
 
 				D3D12_RESOURCE_DESC depthBufferDesc = {};
@@ -971,7 +971,7 @@ namespace ZXEngine
 
 			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 			{
-				// ´´½¨Color Buffer
+				// åˆ›å»ºColor Buffer
 				CD3DX12_HEAP_PROPERTIES colorBufferProps(D3D12_HEAP_TYPE_DEFAULT);
 
 				D3D12_RESOURCE_DESC colorBufferDesc = {};
@@ -1076,7 +1076,7 @@ namespace ZXEngine
 
 	void RenderAPID3D12::SetUpInstanceBufferAttribute(uint32_t VAO, uint32_t instanceBuffer, uint32_t size, uint32_t offset)
 	{
-		// D3D12²»ĞèÒªÊµÏÖÕâ¸ö½Ó¿Ú
+		// D3D12ä¸éœ€è¦å®ç°è¿™ä¸ªæ¥å£
 		return;
 	}
 
@@ -1090,7 +1090,7 @@ namespace ZXEngine
 		int nrComponents;
 		stbi_uc* pixels = stbi_load(path, &width, &height, &nrComponents, STBI_rgb_alpha);
 
-		// ´´½¨ÎÆÀí×ÊÔ´
+		// åˆ›å»ºçº¹ç†èµ„æº
 		CD3DX12_HEAP_PROPERTIES textureProps(D3D12_HEAP_TYPE_DEFAULT);
 		CD3DX12_RESOURCE_DESC textureDesc(CD3DX12_RESOURCE_DESC::Tex2D(mDefaultImageFormat, width, height, 1, 1));
 		ComPtr<ID3D12Resource> textureResource;
@@ -1103,7 +1103,7 @@ namespace ZXEngine
 			IID_PPV_ARGS(&textureResource)
 		));
 
-		// ´´½¨ÎÆÀíÉÏ´«¶Ñ
+		// åˆ›å»ºçº¹ç†ä¸Šä¼ å †
 		UINT64 uploadHeapSize;
 		mD3D12Device->GetCopyableFootprints(&textureDesc, 0, 1, 0, nullptr, nullptr, nullptr, &uploadHeapSize);
 		CD3DX12_HEAP_PROPERTIES uploadHeapProps(D3D12_HEAP_TYPE_UPLOAD);
@@ -1118,7 +1118,7 @@ namespace ZXEngine
 			IID_PPV_ARGS(&uploadHeap)
 		));
 
-		// ÉÏ´«ÎÆÀíÊı¾İ
+		// ä¸Šä¼ çº¹ç†æ•°æ®
 		ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList4> cmdList)
 		{
 			D3D12_SUBRESOURCE_DATA subresourceData = {};
@@ -1131,7 +1131,7 @@ namespace ZXEngine
 				uploadHeap.Get(),
 				0, 0, 1, &subresourceData);
 
-			// ×ª»»ÎÆÀí×´Ì¬
+			// è½¬æ¢çº¹ç†çŠ¶æ€
 			CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 				textureResource.Get(),
 				D3D12_RESOURCE_STATE_COPY_DEST,
@@ -1166,7 +1166,7 @@ namespace ZXEngine
 				Debug::LogError("Failed to load texture file: " + faces[i]);
 		}
 
-		// ´´½¨CubeMap×ÊÔ´
+		// åˆ›å»ºCubeMapèµ„æº
 		CD3DX12_HEAP_PROPERTIES cubeMapHeapProps(D3D12_HEAP_TYPE_DEFAULT);
 
 		D3D12_RESOURCE_DESC cubeMapDesc = {};
@@ -1192,7 +1192,7 @@ namespace ZXEngine
 			IID_PPV_ARGS(&cubeMapResource)
 		));
 
-		// ´´½¨CubeMapÉÏ´«¶Ñ
+		// åˆ›å»ºCubeMapä¸Šä¼ å †
 		UINT64 uploadHeapSize;
 		mD3D12Device->GetCopyableFootprints(&cubeMapDesc, 0, 6, 0, nullptr, nullptr, nullptr, &uploadHeapSize);
 		CD3DX12_HEAP_PROPERTIES uploadHeapProps(D3D12_HEAP_TYPE_UPLOAD);
@@ -1207,7 +1207,7 @@ namespace ZXEngine
 			IID_PPV_ARGS(&uploadHeap)
 		));
 
-		// ÉÏ´«ÎÆÀíÊı¾İ
+		// ä¸Šä¼ çº¹ç†æ•°æ®
 		ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList4> cmdList)
 		{
 			D3D12_SUBRESOURCE_DATA cubeMapData[6] = {};
@@ -1223,7 +1223,7 @@ namespace ZXEngine
 				uploadHeap.Get(),
 				0, 0, 6, cubeMapData);
 
-			// ×ª»»ÎÆÀí×´Ì¬
+			// è½¬æ¢çº¹ç†çŠ¶æ€
 			CD3DX12_RESOURCE_BARRIER copyFinishBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
 				cubeMapResource.Get(), 
 				D3D12_RESOURCE_STATE_COPY_DEST, 
@@ -1250,7 +1250,7 @@ namespace ZXEngine
 
 	unsigned int RenderAPID3D12::CreateTexture(TextureFullData* data)
 	{
-		// ´´½¨ÎÆÀí×ÊÔ´
+		// åˆ›å»ºçº¹ç†èµ„æº
 		CD3DX12_HEAP_PROPERTIES textureProps(D3D12_HEAP_TYPE_DEFAULT);
 		CD3DX12_RESOURCE_DESC textureDesc(CD3DX12_RESOURCE_DESC::Tex2D(mDefaultImageFormat, data->width, data->height, 1, 1));
 		ComPtr<ID3D12Resource> textureResource;
@@ -1263,7 +1263,7 @@ namespace ZXEngine
 			IID_PPV_ARGS(&textureResource)
 		));
 
-		// ´´½¨ÎÆÀíÉÏ´«¶Ñ
+		// åˆ›å»ºçº¹ç†ä¸Šä¼ å †
 		UINT64 uploadHeapSize;
 		mD3D12Device->GetCopyableFootprints(&textureDesc, 0, 1, 0, nullptr, nullptr, nullptr, &uploadHeapSize);
 		CD3DX12_HEAP_PROPERTIES uploadHeapProps(D3D12_HEAP_TYPE_UPLOAD);
@@ -1278,7 +1278,7 @@ namespace ZXEngine
 			IID_PPV_ARGS(&uploadHeap)
 		));
 
-		// ÉÏ´«ÎÆÀíÊı¾İ
+		// ä¸Šä¼ çº¹ç†æ•°æ®
 		ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList4> cmdList)
 		{
 			D3D12_SUBRESOURCE_DATA subresourceData = {};
@@ -1291,7 +1291,7 @@ namespace ZXEngine
 				uploadHeap.Get(),
 				0, 0, 1, &subresourceData);
 
-			// ×ª»»ÎÆÀí×´Ì¬
+			// è½¬æ¢çº¹ç†çŠ¶æ€
 			CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 				textureResource.Get(),
 				D3D12_RESOURCE_STATE_COPY_DEST,
@@ -1314,7 +1314,7 @@ namespace ZXEngine
 
 	unsigned int RenderAPID3D12::CreateCubeMap(CubeMapFullData* data)
 	{
-		// ´´½¨CubeMap×ÊÔ´
+		// åˆ›å»ºCubeMapèµ„æº
 		CD3DX12_HEAP_PROPERTIES cubeMapHeapProps(D3D12_HEAP_TYPE_DEFAULT);
 
 		D3D12_RESOURCE_DESC cubeMapDesc = {};
@@ -1340,7 +1340,7 @@ namespace ZXEngine
 			IID_PPV_ARGS(&cubeMapResource)
 		));
 
-		// ´´½¨CubeMapÉÏ´«¶Ñ
+		// åˆ›å»ºCubeMapä¸Šä¼ å †
 		UINT64 uploadHeapSize;
 		mD3D12Device->GetCopyableFootprints(&cubeMapDesc, 0, 6, 0, nullptr, nullptr, nullptr, &uploadHeapSize);
 		CD3DX12_HEAP_PROPERTIES uploadHeapProps(D3D12_HEAP_TYPE_UPLOAD);
@@ -1355,7 +1355,7 @@ namespace ZXEngine
 			IID_PPV_ARGS(&uploadHeap)
 		));
 
-		// ÉÏ´«ÎÆÀíÊı¾İ
+		// ä¸Šä¼ çº¹ç†æ•°æ®
 		ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList4> cmdList)
 		{
 			D3D12_SUBRESOURCE_DATA cubeMapData[6] = {};
@@ -1371,7 +1371,7 @@ namespace ZXEngine
 				uploadHeap.Get(),
 				0, 0, 6, cubeMapData);
 
-			// ×ª»»ÎÆÀí×´Ì¬
+			// è½¬æ¢çº¹ç†çŠ¶æ€
 			CD3DX12_RESOURCE_BARRIER copyFinishBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
 				cubeMapResource.Get(),
 				D3D12_RESOURCE_STATE_COPY_DEST,
@@ -1394,7 +1394,7 @@ namespace ZXEngine
 
 	unsigned int RenderAPID3D12::GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data)
 	{
-		// ´´½¨ÎÆÀí×ÊÔ´
+		// åˆ›å»ºçº¹ç†èµ„æº
 		CD3DX12_HEAP_PROPERTIES textureProps(D3D12_HEAP_TYPE_DEFAULT);
 		CD3DX12_RESOURCE_DESC textureDesc(CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_R8_UNORM, width, height, 1, 1));
 		ComPtr<ID3D12Resource> textureResource;
@@ -1407,7 +1407,7 @@ namespace ZXEngine
 			IID_PPV_ARGS(&textureResource)
 		));
 
-		// ´´½¨ÎÆÀíÉÏ´«¶Ñ
+		// åˆ›å»ºçº¹ç†ä¸Šä¼ å †
 		UINT64 uploadHeapSize;
 		mD3D12Device->GetCopyableFootprints(&textureDesc, 0, 1, 0, nullptr, nullptr, nullptr, &uploadHeapSize);
 		CD3DX12_HEAP_PROPERTIES uploadHeapProps(D3D12_HEAP_TYPE_UPLOAD);
@@ -1422,7 +1422,7 @@ namespace ZXEngine
 			IID_PPV_ARGS(&uploadHeap)
 		));
 
-		// ÉÏ´«ÎÆÀíÊı¾İ
+		// ä¸Šä¼ çº¹ç†æ•°æ®
 		ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList4> cmdList)
 		{
 			D3D12_SUBRESOURCE_DATA subresourceData = {};
@@ -1435,7 +1435,7 @@ namespace ZXEngine
 				uploadHeap.Get(),
 				0, 0, 1, &subresourceData);
 
-			// ×ª»»ÎÆÀí×´Ì¬
+			// è½¬æ¢çº¹ç†çŠ¶æ€
 			CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 				textureResource.Get(),
 				D3D12_RESOURCE_STATE_COPY_DEST,
@@ -1476,7 +1476,7 @@ namespace ZXEngine
 		if (ProjectSetting::enableGraphicsDebug)
 			compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 
-		// ±àÒëVertex Shader
+		// ç¼–è¯‘Vertex Shader
 		ComPtr<ID3DBlob> vertCode = nullptr;
 		if (shaderInfo.stages & ZX_SHADER_STAGE_VERTEX_BIT)
 		{
@@ -1487,7 +1487,7 @@ namespace ZXEngine
 				Debug::LogError((char*)errors->GetBufferPointer());
 			ThrowIfFailed(res);
 		}
-		// ±àÒëGeometry Shader
+		// ç¼–è¯‘Geometry Shader
 		ComPtr<ID3DBlob> geomCode = nullptr;
 		if (shaderInfo.stages & ZX_SHADER_STAGE_GEOMETRY_BIT)
 		{
@@ -1498,7 +1498,7 @@ namespace ZXEngine
 				Debug::LogError((char*)errors->GetBufferPointer());
 			ThrowIfFailed(res);
 		}
-		// ±àÒëFragment(Pixel) Shader
+		// ç¼–è¯‘Fragment(Pixel) Shader
 		ComPtr<ID3DBlob> fragCode = nullptr;
 		if (shaderInfo.stages & ZX_SHADER_STAGE_FRAGMENT_BIT)
 		{
@@ -1510,19 +1510,19 @@ namespace ZXEngine
 			ThrowIfFailed(res);
 		}
 
-		// ×¼±¸´´½¨D3D12¹ÜÏßÊı¾İ
+		// å‡†å¤‡åˆ›å»ºD3D12ç®¡çº¿æ•°æ®
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineStateDesc = {};
 
-		// Í³¼ÆÎÆÀíÊıÁ¿
+		// ç»Ÿè®¡çº¹ç†æ•°é‡
 		UINT textureNum = static_cast<UINT>(
 			shaderInfo.vertProperties.textureProperties.size() +
 			shaderInfo.geomProperties.textureProperties.size() +
 			shaderInfo.fragProperties.textureProperties.size());
 
-		// ´´½¨¸ùÇ©Ãû
+		// åˆ›å»ºæ ¹ç­¾å
 		ComPtr<ID3D12RootSignature> rootSignature;
 		{
-			// ÉùÃ÷·Åµ½ÍâÃæ£¬±ÜÃâ×÷ÓÃÓòÎÊÌâ
+			// å£°æ˜æ”¾åˆ°å¤–é¢ï¼Œé¿å…ä½œç”¨åŸŸé—®é¢˜
 			CD3DX12_DESCRIPTOR_RANGE descriptorRange = {};
 
 			vector<CD3DX12_ROOT_PARAMETER> rootParameters = {};
@@ -1556,7 +1556,7 @@ namespace ZXEngine
 			pipelineStateDesc.pRootSignature = rootSignature.Get();
 		}
 
-		// Ìî³äShader
+		// å¡«å……Shader
 		if (shaderInfo.stages & ZX_SHADER_STAGE_VERTEX_BIT)
 			pipelineStateDesc.VS = { reinterpret_cast<BYTE*>(vertCode->GetBufferPointer()), vertCode->GetBufferSize() };
 		if (shaderInfo.stages & ZX_SHADER_STAGE_GEOMETRY_BIT)
@@ -1601,7 +1601,7 @@ namespace ZXEngine
 		// Blend Config
 		D3D12_BLEND_DESC blendDesc = {};
 		blendDesc.AlphaToCoverageEnable = FALSE;
-		blendDesc.IndependentBlendEnable = FALSE; // ¶à¸öRender TargetÒª²»Òª·Ö¿ªÅäÖÃ»ìºÏ·½Ê½
+		blendDesc.IndependentBlendEnable = FALSE; // å¤šä¸ªRender Targetè¦ä¸è¦åˆ†å¼€é…ç½®æ··åˆæ–¹å¼
 		blendDesc.RenderTarget[0].BlendEnable = TRUE;
 		blendDesc.RenderTarget[0].LogicOpEnable = FALSE;
 		blendDesc.RenderTarget[0].SrcBlend = dxBlendFactorMap[shaderInfo.stateSet.srcFactor];
@@ -1613,7 +1613,7 @@ namespace ZXEngine
 		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 		pipelineStateDesc.BlendState = blendDesc;
 
-		// ¹âÕ¤»¯½×¶Î
+		// å…‰æ …åŒ–é˜¶æ®µ
 		D3D12_RASTERIZER_DESC rasterizerDesc = {};
 		rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 		rasterizerDesc.CullMode = dxFaceCullOptionMap[shaderInfo.stateSet.cull];
@@ -1655,7 +1655,7 @@ namespace ZXEngine
 		pipelineStateDesc.SampleMask = UINT_MAX;
 		pipelineStateDesc.SampleDesc.Count = 1;
 		pipelineStateDesc.SampleDesc.Quality = 0;
-		pipelineStateDesc.NodeMask = 0; // ¸ø¶àGPUÓÃµÄ£¬ÔİÊ±²»ÓÃ¹Ü
+		pipelineStateDesc.NodeMask = 0; // ç»™å¤šGPUç”¨çš„ï¼Œæš‚æ—¶ä¸ç”¨ç®¡
 		if (type == FrameBufferType::GBuffer)
 		{
 			pipelineStateDesc.NumRenderTargets = 3;
@@ -1669,13 +1669,13 @@ namespace ZXEngine
 			pipelineStateDesc.RTVFormats[0] = mDefaultImageFormat;
 		}
 
-		// Èç¹û²»ÓÃDSV£¬¸ñÊ½ĞèÒªÉèÖÃÎªUNKNOWN
+		// å¦‚æœä¸ç”¨DSVï¼Œæ ¼å¼éœ€è¦è®¾ç½®ä¸ºUNKNOWN
 		if (type == FrameBufferType::Present || type == FrameBufferType::Color)
 			pipelineStateDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
 		else
 			pipelineStateDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 
-		// ´´½¨D3D12¹ÜÏß
+		// åˆ›å»ºD3D12ç®¡çº¿
 		ComPtr<ID3D12PipelineState> PSO;
 		ThrowIfFailed(mD3D12Device->CreateGraphicsPipelineState(&pipelineStateDesc, IID_PPV_ARGS(&PSO)));
 
@@ -1714,7 +1714,7 @@ namespace ZXEngine
 		auto shaderReference = material->shader->reference;
 		auto materialDataZXD3D12 = GetMaterialDataByIndex(material->data->GetID());
 
-		// ¼ÆËãConstant Buffer´óĞ¡
+		// è®¡ç®—Constant Bufferå¤§å°
 		UINT64 bufferSize = 0;
 		if (shaderReference->shaderInfo.fragProperties.baseProperties.size() > 0)
 			bufferSize = static_cast<UINT64>(shaderReference->shaderInfo.fragProperties.baseProperties.back().offset + shaderReference->shaderInfo.fragProperties.baseProperties.back().size);
@@ -1723,11 +1723,11 @@ namespace ZXEngine
 		else if (shaderReference->shaderInfo.vertProperties.baseProperties.size() > 0)
 			bufferSize = static_cast<UINT64>(shaderReference->shaderInfo.vertProperties.baseProperties.back().offset + shaderReference->shaderInfo.vertProperties.baseProperties.back().size);
 
-		// ÏòÉÏÈ¡256ÕûÊı±¶(²»ÊÇ±ØÒª²Ù×÷)
+		// å‘ä¸Šå–256æ•´æ•°å€(ä¸æ˜¯å¿…è¦æ“ä½œ)
 		bufferSize = (bufferSize + 255) & ~255;
 		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 		{
-			// ´´½¨Constant Buffer
+			// åˆ›å»ºConstant Buffer
 			if (bufferSize > 0)
 				materialDataZXD3D12->constantBuffers.push_back(CreateBuffer(bufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, true, true));
 
@@ -1769,7 +1769,7 @@ namespace ZXEngine
 			materialDataZXD3D12->textureSets.push_back(materialTextureSet);
 		}
 
-		// ÉèÖÃ²ÄÖÊÊı¾İ
+		// è®¾ç½®æè´¨æ•°æ®
 		for (auto& property : material->data->vec2Datas)
 			SetShaderVector(material, property.first, property.second, true);
 		for (auto& property : material->data->vec3Datas)
@@ -1813,7 +1813,7 @@ namespace ZXEngine
 			ThrowIfFailed(mD3D12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, drawCmd->allocators[i].Get(), nullptr,
 				IID_PPV_ARGS(drawCmd->commandLists[i].GetAddressOf())));
 
-			// Ê¹ÓÃCommandListµÄÊ±ºò»áÏÈReset£¬ResetÊ±ÒªÇó´¦ÓÚClose×´Ì¬
+			// ä½¿ç”¨CommandListçš„æ—¶å€™ä¼šå…ˆResetï¼ŒResetæ—¶è¦æ±‚å¤„äºCloseçŠ¶æ€
 			drawCmd->commandLists[i]->Close();
 		}
 
@@ -1838,7 +1838,7 @@ namespace ZXEngine
 		auto& allocator = drawCommand->allocators[mCurrentFrame];
 		auto& drawCommandList = drawCommand->commandLists[mCurrentFrame];
 
-		// ÖØÖÃCommand List
+		// é‡ç½®Command List
 		ThrowIfFailed(allocator->Reset());
 		ThrowIfFailed(drawCommandList->Reset(allocator.Get(), nullptr));
 
@@ -1850,11 +1850,11 @@ namespace ZXEngine
 
 		if (curFBO->bufferType == FrameBufferType::Normal)
 		{
-			// »ñÈ¡äÖÈ¾Ä¿±êBuffer
+			// è·å–æ¸²æŸ“ç›®æ ‡Buffer
 			colorBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->colorBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
 			depthBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->depthBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
 			
-			// ÇĞ»»ÎªĞ´Èë×´Ì¬
+			// åˆ‡æ¢ä¸ºå†™å…¥çŠ¶æ€
 			auto colorBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(colorBuffer->texture.Get(),
 				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
 			drawCommandList->ResourceBarrier(1, &colorBufferTransition);
@@ -1862,12 +1862,12 @@ namespace ZXEngine
 				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 			drawCommandList->ResourceBarrier(1, &depthBufferTransition);
 
-			// ÇĞ»»Ä¿±êBuffer
+			// åˆ‡æ¢ç›®æ ‡Buffer
 			auto rtv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(colorBuffer->handleRTV);
 			auto dsv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(depthBuffer->handleDSV);
 			drawCommandList->OMSetRenderTargets(1, &rtv, false, &dsv);
 
-			// ÇåÀí»º³åÇø
+			// æ¸…ç†ç¼“å†²åŒº
 			auto& clearInfo = curFBO->clearInfo;
 			if (drawCommand->clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
 			{
@@ -1971,7 +1971,7 @@ namespace ZXEngine
 			auto dsv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(depthBuffer->handleDSV);
 			drawCommandList->OMSetRenderTargets(1, &rtv, false, &dsv);
 
-			// Deferred BufferµÄÉî¶È»º´æÀ´×ÔG-Buffer£¬²»ÇåÀí
+			// Deferred Bufferçš„æ·±åº¦ç¼“å­˜æ¥è‡ªG-Bufferï¼Œä¸æ¸…ç†
 			if (drawCommand->clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
 			{
 				auto& clearInfo = curFBO->clearInfo;
@@ -1991,7 +1991,7 @@ namespace ZXEngine
 			drawCommandList->OMSetRenderTargets(1, &rtv, false, nullptr);
 		}
 
-		// ÉèÖÃViewport
+		// è®¾ç½®Viewport
 		D3D12_VIEWPORT viewPort = {};
 		viewPort.Width    = static_cast<FLOAT>(mViewPortInfo.width);
 		viewPort.Height   = static_cast<FLOAT>(mViewPortInfo.height);
@@ -2000,7 +2000,7 @@ namespace ZXEngine
 		viewPort.MinDepth = 0.0f;
 		viewPort.MaxDepth = 1.0f;
 		drawCommandList->RSSetViewports(1, &viewPort);
-		// ÉèÖÃScissor
+		// è®¾ç½®Scissor
 		D3D12_RECT scissor = {};
 		scissor.left   = mViewPortInfo.xOffset;
 		scissor.top    = mViewPortInfo.yOffset;
@@ -2008,16 +2008,16 @@ namespace ZXEngine
 		scissor.bottom = mViewPortInfo.yOffset + mViewPortInfo.height;
 		drawCommandList->RSSetScissorRects(1, &scissor);
 
-		// ÉèÖÃÍ¼ÔªÀàĞÍ
+		// è®¾ç½®å›¾å…ƒç±»å‹
 		drawCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		// ÉèÖÃµ±Ç°Ö¡µÄ¶¯Ì¬ÃèÊö·û¶Ñ
+		// è®¾ç½®å½“å‰å¸§çš„åŠ¨æ€æè¿°ç¬¦å †
 		ID3D12DescriptorHeap* curDescriptorHeaps[] = { mDynamicDescriptorHeaps[mCurrentFrame].Get() };
 		drawCommandList->SetDescriptorHeaps(_countof(curDescriptorHeaps), curDescriptorHeaps);
 
-		// »ñÈ¡µ±Ç°Ö¡µÄ¶¯Ì¬ÃèÊö·û¶ÑHandle
+		// è·å–å½“å‰å¸§çš„åŠ¨æ€æè¿°ç¬¦å †Handle
 		CD3DX12_CPU_DESCRIPTOR_HANDLE dynamicDescriptorHandle(mDynamicDescriptorHeaps[mCurrentFrame]->GetCPUDescriptorHandleForHeapStart());
-		// Æ«ÒÆµ½µ±Ç°Î»ÖÃ
+		// åç§»åˆ°å½“å‰ä½ç½®
 		dynamicDescriptorHandle.Offset(mDynamicDescriptorOffsets[mCurrentFrame], mCbvSrvUavDescriptorSize);
 
 		for (auto& iter : mDrawRecords)
@@ -2032,27 +2032,27 @@ namespace ZXEngine
 			if (!materialData->constantBuffers.empty())
 				drawCommandList->SetGraphicsRootConstantBufferView(0, materialData->constantBuffers[mCurrentFrame].gpuAddress);
 
-			// Èç¹ûShaderÓĞÎÆÀí£¬°ó¶¨ÎÆÀí×ÊÔ´
+			// å¦‚æœShaderæœ‰çº¹ç†ï¼Œç»‘å®šçº¹ç†èµ„æº
 			if (pipeline->textureNum > 0)
 			{
-				// µ±Ç°»æÖÆ¶ÔÏóÔÚ¶¯Ì¬ÃèÊö·û¶ÑÖĞµÄÆ«ÒÆÆğµã
+				// å½“å‰ç»˜åˆ¶å¯¹è±¡åœ¨åŠ¨æ€æè¿°ç¬¦å †ä¸­çš„åç§»èµ·ç‚¹
 				UINT curDynamicDescriptorOffset = mDynamicDescriptorOffsets[mCurrentFrame];
-				// ±éÀúÎÆÀí²¢¿½±´µ½¶¯Ì¬ÃèÊö·û¶Ñ
+				// éå†çº¹ç†å¹¶æ‹·è´åˆ°åŠ¨æ€æè¿°ç¬¦å †
 				for (auto& iter2 : materialData->textureSets[mCurrentFrame].textureHandles)
 				{
-					// »ñÈ¡ÎÆÀíµÄCPU Handle
+					// è·å–çº¹ç†çš„CPU Handle
 					auto cpuHandle = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(iter2);
-					// ¿½±´µ½¶¯Ì¬ÃèÊö·û¶Ñ
+					// æ‹·è´åˆ°åŠ¨æ€æè¿°ç¬¦å †
 					mD3D12Device->CopyDescriptorsSimple(1, dynamicDescriptorHandle, cpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-					// ¶¯Ì¬ÃèÊö·û¶ÑHandleºóÒÆÒ»Î»
+					// åŠ¨æ€æè¿°ç¬¦å †Handleåç§»ä¸€ä½
 					dynamicDescriptorHandle.Offset(1, mCbvSrvUavDescriptorSize);
 					mDynamicDescriptorOffsets[mCurrentFrame]++;
 				}
-				// »ñÈ¡¶¯Ì¬ÃèÊö·û¶ÑµÄGPU Handle
+				// è·å–åŠ¨æ€æè¿°ç¬¦å †çš„GPU Handle
 				CD3DX12_GPU_DESCRIPTOR_HANDLE dynamicGPUHandle(mDynamicDescriptorHeaps[mCurrentFrame]->GetGPUDescriptorHandleForHeapStart());
-				// Æ«ÒÆµ½µ±Ç°»æÖÆ¶ÔÏóµÄÆğÊ¼Î»ÖÃ
+				// åç§»åˆ°å½“å‰ç»˜åˆ¶å¯¹è±¡çš„èµ·å§‹ä½ç½®
 				dynamicGPUHandle.Offset(curDynamicDescriptorOffset, mCbvSrvUavDescriptorSize);
-				// ÉèÖÃµ±Ç°»æÖÆ¶ÔÏóµÄ¶¯Ì¬ÃèÊö·û¶Ñ
+				// è®¾ç½®å½“å‰ç»˜åˆ¶å¯¹è±¡çš„åŠ¨æ€æè¿°ç¬¦å †
 				drawCommandList->SetGraphicsRootDescriptorTable(1, dynamicGPUHandle);
 			}
 
@@ -2071,7 +2071,7 @@ namespace ZXEngine
 				drawCommandList->DrawIndexedInstanced(VAO->indexCount, iter.instanceNum, 0, 0, 0);
 		}
 
-		// °Ñ×´Ì¬ÇĞ»ØÈ¥
+		// æŠŠçŠ¶æ€åˆ‡å›å»
 		if (curFBO->bufferType == FrameBufferType::Normal || curFBO->bufferType == FrameBufferType::Deferred)
 		{
 			if (colorBuffer != nullptr)
@@ -2142,7 +2142,7 @@ namespace ZXEngine
 			}
 		}
 
-		// ½áÊø²¢Ìá½»Command List
+		// ç»“æŸå¹¶æäº¤Command List
 		ThrowIfFailed(drawCommandList->Close());
 		ID3D12CommandList* cmdsLists[] = { drawCommandList.Get() };
 		mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
@@ -2162,21 +2162,21 @@ namespace ZXEngine
 		meshBuffer->indexCount = static_cast<UINT>(indices.size());
 		meshBuffer->vertexCount = static_cast<UINT>(vertices.size());
 
-		// ´´½¨Vertex Buffer
+		// åˆ›å»ºVertex Buffer
 		UINT vertexBufferSize = static_cast<UINT>(sizeof(Vertex) * vertices.size());
 		meshBuffer->vertexBuffer = CreateBuffer(vertexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_DEFAULT, false, true, vertices.data());
 		meshBuffer->vertexBufferView.SizeInBytes = vertexBufferSize;
 		meshBuffer->vertexBufferView.StrideInBytes = sizeof(Vertex);
 		meshBuffer->vertexBufferView.BufferLocation = meshBuffer->vertexBuffer.gpuAddress;
 
-		// ´´½¨Index Buffer
+		// åˆ›å»ºIndex Buffer
 		UINT indexBufferSize = static_cast<UINT>(sizeof(uint32_t) * indices.size());
 		meshBuffer->indexBuffer = CreateBuffer(indexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_DEFAULT, false, true, indices.data());
 		meshBuffer->indexBufferView.Format = DXGI_FORMAT_R32_UINT;
 		meshBuffer->indexBufferView.SizeInBytes = indexBufferSize;
 		meshBuffer->indexBufferView.BufferLocation = meshBuffer->indexBuffer.gpuAddress;
 
-		// Èç¹ûÊÇ¹â×·¹ÜÏß£¬»¹Òª´´½¨Ò»¸öBLAS( Bottom Level Acceleration Structure )
+		// å¦‚æœæ˜¯å…‰è¿½ç®¡çº¿ï¼Œè¿˜è¦åˆ›å»ºä¸€ä¸ªBLAS( Bottom Level Acceleration Structure )
 		if (ProjectSetting::renderPipelineType == RenderPipelineType::RayTracing)
 		{
 			BuildBottomLevelAccelerationStructure(VAO, true);
@@ -2192,14 +2192,14 @@ namespace ZXEngine
 		meshBuffer->indexCount = static_cast<UINT>(indexSize);
 		meshBuffer->vertexCount = static_cast<UINT>(vertexSize);
 
-		// ´´½¨¶¯Ì¬Vertex Buffer
+		// åˆ›å»ºåŠ¨æ€Vertex Buffer
 		UINT vertexBufferSize = static_cast<UINT>(sizeof(Vertex) * vertexSize);
 		meshBuffer->vertexBuffer = CreateBuffer(vertexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, true, true, nullptr);
 		meshBuffer->vertexBufferView.SizeInBytes = vertexBufferSize;
 		meshBuffer->vertexBufferView.StrideInBytes = sizeof(Vertex);
 		meshBuffer->vertexBufferView.BufferLocation = meshBuffer->vertexBuffer.gpuAddress;
 
-		// ´´½¨¶¯Ì¬Index Buffer
+		// åˆ›å»ºåŠ¨æ€Index Buffer
 		UINT indexBufferSize = static_cast<UINT>(sizeof(uint32_t) * indexSize);
 		meshBuffer->indexBuffer = CreateBuffer(indexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, true, true, nullptr);
 		meshBuffer->indexBufferView.Format = DXGI_FORMAT_R32_UINT;
@@ -2670,23 +2670,23 @@ namespace ZXEngine
 		mRTPipelines.push_back(rtPipeline);
 		uint32_t rtPipelineID = static_cast<uint32_t>(mRTPipelines.size() - 1);
 
-		// ×¼±¸¸ùÇ©Ãû²ÎÊı
+		// å‡†å¤‡æ ¹ç­¾åå‚æ•°
 		vector<D3D12_DESCRIPTOR_RANGE> dTableParams(ZX_D3D12_RT_ROOT_PARAMETER_NUM);
 		// register(t0, space0) TLAS
 		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_TLAS]				= { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, mRTRootParamOffsetInDescriptorHeapTLAS };
-		// register(u0, space0) Êä³öÍ¼Ïñ
+		// register(u0, space0) è¾“å‡ºå›¾åƒ
 		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_OUTPUT_IMAGE]		= { D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0, 0, mRTRootParamOffsetInDescriptorHeapOutputImage };
-		// register(t0, space1) ¶¥µãË÷ÒıBuffer
+		// register(t0, space1) é¡¶ç‚¹ç´¢å¼•Buffer
 		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_INDEX_BUFFER]		= { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, mRTSceneRenderObjectNum, 0, 1, mRTRootParamOffsetInDescriptorHeapIndexBuffer };
-		// register(t0, space2) ¶¥µãBuffer
+		// register(t0, space2) é¡¶ç‚¹Buffer
 		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_VERTEX_BUFFER]		= { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, mRTSceneRenderObjectNum, 0, 2, mRTRootParamOffsetInDescriptorHeapVertexBuffer };
-		// register(t0, space3) ²ÄÖÊÊı¾İBuffer
+		// register(t0, space3) æè´¨æ•°æ®Buffer
 		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_MATERIAL_DATA]		= { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, mRTSceneRenderObjectNum, 0, 3, mRTRootParamOffsetInDescriptorHeapMaterialData };
-		// register(t0, space4) 2DÎÆÀíÊı×é
+		// register(t0, space4) 2Dçº¹ç†æ•°ç»„
 		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_TEXTURE_2D]			= { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, mRTSceneTextureNum, 0, 4, mRTRootParamOffsetInDescriptorHeapTexture2DArray };
-		// register(t0, space5) CubeMapÎÆÀíÊı×é
+		// register(t0, space5) CubeMapçº¹ç†æ•°ç»„
 		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_TEXTURE_CUBE]		= { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, mRTSceneCubeMapNum, 0, 5, mRTRootParamOffsetInDescriptorHeapTextureCubeArray };
-		// register(b0, space0) ³£Á¿Buffer (Vulkan PushConstants)
+		// register(b0, space0) å¸¸é‡Buffer (Vulkan PushConstants)
 		dTableParams[ZX_D3D12_RT_ROOT_PARAMETER_CONSTANT_BUFFER]	= { D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 0, mRTRootParamOffsetInDescriptorHeapConstantBuffer };
 		
 		vector<CD3DX12_ROOT_PARAMETER> rootParameters(1);
@@ -2697,11 +2697,11 @@ namespace ZXEngine
 		rootSignatureDesc.Init(
 			static_cast<UINT>(rootParameters.size()), rootParameters.data(),
 			static_cast<UINT>(samplers.size()), samplers.data(),
-			// ¹â×·ShaderµÄ¸ùÇ©ÃûÒ»°ãÄ¬ÈÏ¶¼Òª´øÉÏLOCAL±êÖ¾£¬³ı·ÇÒªºÍ¹âÕ¤»òÕß¼ÆËã¹ÜÏß»ìºÏÊ¹ÓÃ
+			// å…‰è¿½Shaderçš„æ ¹ç­¾åä¸€èˆ¬é»˜è®¤éƒ½è¦å¸¦ä¸ŠLOCALæ ‡å¿—ï¼Œé™¤éè¦å’Œå…‰æ …æˆ–è€…è®¡ç®—ç®¡çº¿æ··åˆä½¿ç”¨
 			D3D12_ROOT_SIGNATURE_FLAG_LOCAL_ROOT_SIGNATURE
 		);
 
-		// ĞòÁĞ»¯¸ùÇ©Ãû
+		// åºåˆ—åŒ–æ ¹ç­¾å
 		ComPtr<ID3DBlob> error;
 		ComPtr<ID3DBlob> serializedRootSignature;
 		HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &serializedRootSignature, &error);
@@ -2709,20 +2709,20 @@ namespace ZXEngine
 			Debug::LogError((char*)error->GetBufferPointer());
 		ThrowIfFailed(hr);
 
-		// ´´½¨¸ùÇ©Ãû(ÕâÀïÖ»´´½¨ÁËÒ»¸ö¸ùÇ©Ãû£¬ËùÓĞShader¹²Ïí£¬²»¹ıÒ²¿ÉÒÔ¸øÃ¿¸öShader´´½¨µ¥¶ÀµÄ¸ùÇ©Ãû£¬ÔÚShader¸ù²ÎÊı²îÒìºÜ´óµÄÇé¿öÏÂµ¥¶À´´½¨ĞÔÄÜ¿ÉÄÜ¸üºÃ)
+		// åˆ›å»ºæ ¹ç­¾å(è¿™é‡Œåªåˆ›å»ºäº†ä¸€ä¸ªæ ¹ç­¾åï¼Œæ‰€æœ‰Shaderå…±äº«ï¼Œä¸è¿‡ä¹Ÿå¯ä»¥ç»™æ¯ä¸ªShaderåˆ›å»ºå•ç‹¬çš„æ ¹ç­¾åï¼Œåœ¨Shaderæ ¹å‚æ•°å·®å¼‚å¾ˆå¤§çš„æƒ…å†µä¸‹å•ç‹¬åˆ›å»ºæ€§èƒ½å¯èƒ½æ›´å¥½)
 		ThrowIfFailed(mD3D12Device->CreateRootSignature(0, serializedRootSignature->GetBufferPointer(), serializedRootSignature->GetBufferSize(), IID_PPV_ARGS(&rtPipeline->rootSignature)));
 
-		// ´ÓHLSL´úÂëÀïµ¼³öµÄShader
+		// ä»HLSLä»£ç é‡Œå¯¼å‡ºçš„Shader
 		vector<ZXD3D12ShaderBlob> shaderBlobs;
 		// Hit Groups
 		vector<ZXD3D12HitGroupDesc> hitGroups;
-		// µ¼³öµÄRay Gen£¬MissºÍHit GroupµÄÃû×Ö
+		// å¯¼å‡ºçš„Ray Genï¼ŒMisså’ŒHit Groupçš„åå­—
 		vector<wstring> allExportNames;
-		// ´´½¨DXIL Library
-		// Ò»¸öHLSL´úÂëÎÄ¼ş»á±àÒë³ÉÒ»¸öDXIL Library£¬Ò»¸öDXIL Library¿ÉÒÔ°üº¬¶à¸öShader
-		// ±ÈÈçÒ»¸öRayGen ShaderºÍÒ»¸öMiss Shader£¬»òÕß¶à¸öHit ShaderµÈµÈ
-		// ´´½¨¹ÜÏßµÄÊ±ºòĞèÒª°ÑÒªÓÃµ½µÄShader´ÓDXIL LibraryÀïÃæµ¼³ö£¬·Åµ½D3D12_DXIL_LIBRARY_DESCµÄD3D12_EXPORT_DESC* pExports²ÎÊıÖĞ
-		// ËùÒÔÀíÂÛÉÏÕû¸ö¹â×·¹ÜÏßµÄËùÓĞ´úÂë¿ÉÒÔĞ´µ½Ò»¸öHLSLÎÄ¼şÀïÃæ£¬È»ºó±àÒë³ÉÒ»¸öDXIL Library£¬µ¼³öËùÓĞShader
+		// åˆ›å»ºDXIL Library
+		// ä¸€ä¸ªHLSLä»£ç æ–‡ä»¶ä¼šç¼–è¯‘æˆä¸€ä¸ªDXIL Libraryï¼Œä¸€ä¸ªDXIL Libraryå¯ä»¥åŒ…å«å¤šä¸ªShader
+		// æ¯”å¦‚ä¸€ä¸ªRayGen Shaderå’Œä¸€ä¸ªMiss Shaderï¼Œæˆ–è€…å¤šä¸ªHit Shaderç­‰ç­‰
+		// åˆ›å»ºç®¡çº¿çš„æ—¶å€™éœ€è¦æŠŠè¦ç”¨åˆ°çš„Shaderä»DXIL Libraryé‡Œé¢å¯¼å‡ºï¼Œæ”¾åˆ°D3D12_DXIL_LIBRARY_DESCçš„D3D12_EXPORT_DESC* pExportså‚æ•°ä¸­
+		// æ‰€ä»¥ç†è®ºä¸Šæ•´ä¸ªå…‰è¿½ç®¡çº¿çš„æ‰€æœ‰ä»£ç å¯ä»¥å†™åˆ°ä¸€ä¸ªHLSLæ–‡ä»¶é‡Œé¢ï¼Œç„¶åç¼–è¯‘æˆä¸€ä¸ªDXIL Libraryï¼Œå¯¼å‡ºæ‰€æœ‰Shader
 		vector<ZXD3D12DXILLibraryDesc> dxilLibraries;
 		for (size_t i = 0; i < rtShaderPathGroup.rGenPaths.size(); i++)
 		{
@@ -2798,17 +2798,17 @@ namespace ZXEngine
 				hitGroups.back().desc.IntersectionShaderImport = hitGroups.back().intersectionShaderName.c_str();
 		}
 
-		// D3D12µÄRayTracing¹ÜÏßÊÇÓÉState SubObject¹¹³ÉµÄ£¬°üÀ¨DXIL Library£¬Hit Group£¬Shader Config£¬Root SignatureµÈµÈ
+		// D3D12çš„RayTracingç®¡çº¿æ˜¯ç”±State SubObjectæ„æˆçš„ï¼ŒåŒ…æ‹¬DXIL Libraryï¼ŒHit Groupï¼ŒShader Configï¼ŒRoot Signatureç­‰ç­‰
 		UINT64 subObjectCount = 
 			dxilLibraries.size() +	// DXIL Library
-			hitGroups.size() +		// Hit GroupÉùÃ÷
+			hitGroups.size() +		// Hit Groupå£°æ˜
 			1 +						// Shader Config
 			1 +						// Associate the set of shaders with config
-			2 +						// ¸ùÇ©Ãû¼°Æä¶ÔÓ¦µÄExports Association(Èç¹ûÓĞ¶à¸ö¸ùÇ©Ãû£¬ÕâÀïÎª2*ÊıÁ¿)
+			2 +						// æ ¹ç­¾ååŠå…¶å¯¹åº”çš„Exports Association(å¦‚æœæœ‰å¤šä¸ªæ ¹ç­¾åï¼Œè¿™é‡Œä¸º2*æ•°é‡)
 			2 +						// Empty Global and Local Root Signature
 			1;						// Pipeline Config
 
-		// ´´½¨State SubObject
+		// åˆ›å»ºState SubObject
 		vector<D3D12_STATE_SUBOBJECT> subObjects(subObjectCount);
 		UINT64 index = 0;
 
@@ -2859,8 +2859,8 @@ namespace ZXEngine
 		index++;
 
 		// ------------------------------ Root Signature Association ------------------------------
-		// Ç°ÃæShader ConfigÄÇÀï¹ØÁªµÄÊÇÕû¸ö¹ÜÏßËùÓĞµÄShader£¬ÕâÀï¹ØÁªµÄÊÇµ¥¸ö¸ùÇ©ÃûµÄ
-		// ²»¹ıÔİÊ±Ö»ÓĞÒ»¸öÈ«¾Ö¸ùÇ°Ãæ£¬ËùÒÔÕâÀï¹ØÁªµÄÊÇÒ»ÑùµÄ
+		// å‰é¢Shader Configé‚£é‡Œå…³è”çš„æ˜¯æ•´ä¸ªç®¡çº¿æ‰€æœ‰çš„Shaderï¼Œè¿™é‡Œå…³è”çš„æ˜¯å•ä¸ªæ ¹ç­¾åçš„
+		// ä¸è¿‡æš‚æ—¶åªæœ‰ä¸€ä¸ªå…¨å±€æ ¹å‰é¢ï¼Œæ‰€ä»¥è¿™é‡Œå…³è”çš„æ˜¯ä¸€æ ·çš„
 		vector<wstring> allExportNamesCopy = allExportNames;
 		vector<LPCWSTR> rootSignatureExports;
 		for (auto& exportName : allExportNamesCopy)
@@ -2896,18 +2896,18 @@ namespace ZXEngine
 		subObjects[index].Type = D3D12_STATE_SUBOBJECT_TYPE_RAYTRACING_PIPELINE_CONFIG;
 		subObjects[index].pDesc = &pipelineConfig;
 
-		// ´´½¨¹ÜÏß
+		// åˆ›å»ºç®¡çº¿
 		D3D12_STATE_OBJECT_DESC stateObjectDesc = {};
 		stateObjectDesc.Type = D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE;
 		stateObjectDesc.NumSubobjects = static_cast<UINT>(subObjects.size());
 		stateObjectDesc.pSubobjects = subObjects.data();
 		ThrowIfFailed(mD3D12Device->CreateStateObject(&stateObjectDesc, IID_PPV_ARGS(&rtPipeline->pipeline)));
 
-		// »ñÈ¡¹ÜÏßµÄÊôĞÔ
+		// è·å–ç®¡çº¿çš„å±æ€§
 		ComPtr<ID3D12StateObjectProperties> stateObjectProperties;
 		ThrowIfFailed(rtPipeline->pipeline->QueryInterface(IID_PPV_ARGS(&stateObjectProperties)));
 
-		// ´´½¨¹â×·¹ÜÏßÊı¾İµÄÃèÊö·û¶Ñ
+		// åˆ›å»ºå…‰è¿½ç®¡çº¿æ•°æ®çš„æè¿°ç¬¦å †
 		D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc = {};
 		descriptorHeapDesc.NumDescriptors = mRTRootParamOffsetInDescriptorHeapSize;
 		descriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -2917,31 +2917,31 @@ namespace ZXEngine
 		for (int i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 			ThrowIfFailed(mD3D12Device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&rtPipeline->descriptorHeaps[i])));
 
-		// ¼ÆËãSBT´óĞ¡
-		// SBTµÄEntry°üÀ¨ÁË¹Ì¶¨Ò»¸öShader IdentifierºÍRoot Arguments
-		// µ±Ç°¹ÜÏßËùÓĞShader¶¼ÊÇ¹Ì¶¨rootArgumentsNum¸ö²ÎÊı£¬SBTĞèÒª´æ²ÎÊıµÄ64Î»µØÖ·£¬ËùÒÔÒ»¸ö²ÎÊı´óĞ¡ÊÇ8×Ö½Ú£¬ÕâÀï¾ÍÊÇrootArgumentsNum * 8
+		// è®¡ç®—SBTå¤§å°
+		// SBTçš„EntryåŒ…æ‹¬äº†å›ºå®šä¸€ä¸ªShader Identifierå’ŒRoot Arguments
+		// å½“å‰ç®¡çº¿æ‰€æœ‰Shaderéƒ½æ˜¯å›ºå®šrootArgumentsNumä¸ªå‚æ•°ï¼ŒSBTéœ€è¦å­˜å‚æ•°çš„64ä½åœ°å€ï¼Œæ‰€ä»¥ä¸€ä¸ªå‚æ•°å¤§å°æ˜¯8å­—èŠ‚ï¼Œè¿™é‡Œå°±æ˜¯rootArgumentsNum * 8
 		static const UINT64 rootArgumentsNum = 1;
 		UINT64 rootArgumentsSize = static_cast<UINT64>(rootArgumentsNum * 8);
-		// Èç¹ûÓĞ¶à¸öRay Generation£¬ÕâÀïµÄ²ÎÊı´óĞ¡°´ÕÕ×î´óµÄRay Generation²ÎÊıÊıÁ¿À´Ëã
+		// å¦‚æœæœ‰å¤šä¸ªRay Generationï¼Œè¿™é‡Œçš„å‚æ•°å¤§å°æŒ‰ç…§æœ€å¤§çš„Ray Generationå‚æ•°æ•°é‡æ¥ç®—
 		rtPipeline->SBT.rayGenEntrySize = Math::AlignUpPOT(D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES + rootArgumentsSize, (UINT64)D3D12_RAYTRACING_SHADER_RECORD_BYTE_ALIGNMENT);
 		rtPipeline->SBT.rayGenSectionSize = Math::AlignUpPOT(rtPipeline->SBT.rayGenEntrySize * rtShaderPathGroup.rGenPaths.size(), (UINT64)D3D12_RAYTRACING_SHADER_TABLE_BYTE_ALIGNMENT);
-		// MissºÍHitGroup¼ÆËã·½Ê½Í¬Àí£¬²»¹ıÔÚÕâÀï¶¼ÊÇÒ»Ñù´óµÄ
+		// Misså’ŒHitGroupè®¡ç®—æ–¹å¼åŒç†ï¼Œä¸è¿‡åœ¨è¿™é‡Œéƒ½æ˜¯ä¸€æ ·å¤§çš„
 		rtPipeline->SBT.missEntrySize = Math::AlignUpPOT(D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES + rootArgumentsSize, (UINT64)D3D12_RAYTRACING_SHADER_RECORD_BYTE_ALIGNMENT);
 		rtPipeline->SBT.missSectionSize = Math::AlignUpPOT(rtPipeline->SBT.missEntrySize * rtShaderPathGroup.rMissPaths.size(), (UINT64)D3D12_RAYTRACING_SHADER_TABLE_BYTE_ALIGNMENT);
 		rtPipeline->SBT.hitGroupEntrySize = Math::AlignUpPOT(D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES + rootArgumentsSize, (UINT64)D3D12_RAYTRACING_SHADER_RECORD_BYTE_ALIGNMENT);
 		rtPipeline->SBT.hitGroupSectionSize = Math::AlignUpPOT(rtPipeline->SBT.hitGroupEntrySize * rtShaderPathGroup.rHitGroupPaths.size(), (UINT64)D3D12_RAYTRACING_SHADER_TABLE_BYTE_ALIGNMENT);
 		UINT64 sbtSize = Math::AlignUpPOT(rtPipeline->SBT.rayGenSectionSize + rtPipeline->SBT.missSectionSize + rtPipeline->SBT.hitGroupSectionSize, (UINT64)256);
 
-		// ´´½¨SBT Buffer
+		// åˆ›å»ºSBT Buffer
 		rtPipeline->SBT.buffers.resize(DX_MAX_FRAMES_IN_FLIGHT);
 		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 		{
 			rtPipeline->SBT.buffers[i] = CreateBuffer(sbtSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, true, true);
 		}
 
-		// Ìî³äSBT BufferÊı¾İ
-		// ÕâĞ©Êı¾İ²»ĞèÒªÃ¿Ö¡¸üĞÂ£¬°üÀ¨Root Arguments£¬Èç¹ûÒª¸üĞÂ¸ùÇ©Ãû²ÎÊı£¬Ö»ĞèÒª¸üĞÂÃèÊö·û¶ÑÉÏ¶ÔÓ¦ÃèÊö·û¼´¿É
-		// SBTÉÏµÄÊı¾İÊÇÕâĞ©ÃèÊö·ûµÄµØÖ·£¬ËùÒÔSBTÉÏµÄÃèÊö·ûµØÖ·Êı¾İ±¾Éí²»ĞèÒª¸üĞÂ£¬Ïàµ±ÓÚÖ»ĞèÒª¸üĞÂSBTÉÏ´æµÄµØÖ·Ö¸ÏòµÄÊı¾İ
+		// å¡«å……SBT Bufferæ•°æ®
+		// è¿™äº›æ•°æ®ä¸éœ€è¦æ¯å¸§æ›´æ–°ï¼ŒåŒ…æ‹¬Root Argumentsï¼Œå¦‚æœè¦æ›´æ–°æ ¹ç­¾åå‚æ•°ï¼Œåªéœ€è¦æ›´æ–°æè¿°ç¬¦å †ä¸Šå¯¹åº”æè¿°ç¬¦å³å¯
+		// SBTä¸Šçš„æ•°æ®æ˜¯è¿™äº›æè¿°ç¬¦çš„åœ°å€ï¼Œæ‰€ä»¥SBTä¸Šçš„æè¿°ç¬¦åœ°å€æ•°æ®æœ¬èº«ä¸éœ€è¦æ›´æ–°ï¼Œç›¸å½“äºåªéœ€è¦æ›´æ–°SBTä¸Šå­˜çš„åœ°å€æŒ‡å‘çš„æ•°æ®
 		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 		{
 			// Root Arguments GPU Handle
@@ -2949,10 +2949,10 @@ namespace ZXEngine
 
 			// Root Arguments
 			vector<void*> rootArguments(rootArgumentsNum);
-			// Ò»¸öDescriptor TableËãÒ»¸ö²ÎÊı
+			// ä¸€ä¸ªDescriptor Tableç®—ä¸€ä¸ªå‚æ•°
 			rootArguments[0] = reinterpret_cast<void*>(gpuHandle.ptr);
 
-			// Êı¾İĞ´ÈëÖ¸Õë
+			// æ•°æ®å†™å…¥æŒ‡é’ˆ
 			char* pSBT = static_cast<char*>(rtPipeline->SBT.buffers[i].cpuAddress);
 
 			char* pRayGen = pSBT;
@@ -2998,16 +2998,16 @@ namespace ZXEngine
 			}
 		}
 
-		// ³õÊ¼»¯TLASÊı×é
+		// åˆå§‹åŒ–TLASæ•°ç»„
 		rtPipeline->tlasIdx = GetNextTLASGroupIndex();
 		auto tlasGroup = GetTLASGroupByIndex(rtPipeline->tlasIdx);
 		tlasGroup->asGroup.resize(DX_MAX_FRAMES_IN_FLIGHT);
 		tlasGroup->inUse = true;
-		// ³õÊ¼»¯¹¹½¨TLASµÄÖĞ¼äBuffer
+		// åˆå§‹åŒ–æ„å»ºTLASçš„ä¸­é—´Buffer
 		mTLASScratchBuffers.resize(DX_MAX_FRAMES_IN_FLIGHT);
 		mTLASInstanceBuffers.resize(DX_MAX_FRAMES_IN_FLIGHT);
 
-		// ´´½¨¹â×·¹ÜÏßºÍ³¡¾°Ïà¹ØÊı¾İ×ÊÔ´£¬²¢°ó¶¨
+		// åˆ›å»ºå…‰è¿½ç®¡çº¿å’Œåœºæ™¯ç›¸å…³æ•°æ®èµ„æºï¼Œå¹¶ç»‘å®š
 		CreateRTPipelineData(rtPipelineID);
 		CreateRTSceneData(rtPipelineID);
 
@@ -3047,7 +3047,7 @@ namespace ZXEngine
 		{
 			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
 			{
-				// Õâ¸öBuffer¿ÉÄÜÊÇÒ»´ÎĞÔ´´½¨²»ÔÙĞŞ¸ÄµÄ£¬¿ÉÒÔ¿¼ÂÇÓÅ»¯³ÉD3D12_HEAP_TYPE_DEFAULT
+				// è¿™ä¸ªBufferå¯èƒ½æ˜¯ä¸€æ¬¡æ€§åˆ›å»ºä¸å†ä¿®æ”¹çš„ï¼Œå¯ä»¥è€ƒè™‘ä¼˜åŒ–æˆD3D12_HEAP_TYPE_DEFAULT
 				rtMaterialData->buffers[i] = CreateBuffer(bufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, true, false);
 			}
 		}
@@ -3071,14 +3071,14 @@ namespace ZXEngine
 
 	void RenderAPID3D12::SetRayTracingSkyBox(uint32_t textureID)
 	{
-		// Ìì¿ÕºĞÎÆÀíÄ¬ÈÏÊÇµ±Ç°ÕâÒ»Ö¡µÄµÚÒ»¸öCubeMap
+		// å¤©ç©ºç›’çº¹ç†é»˜è®¤æ˜¯å½“å‰è¿™ä¸€å¸§çš„ç¬¬ä¸€ä¸ªCubeMap
 		mCurRTSceneCubeMapIndexMap[textureID] = 0;
 		mCurRTSceneCubeMapIndexes.push_back(textureID);
 	}
 
 	void RenderAPID3D12::PushRayTracingMaterialData(Material* material)
 	{
-		// °ÑÕâ¸ö²ÄÖÊÊ¹ÓÃµÄÎÆÀíÌí¼Óµ½µ±Ç°¹â×·³¡¾°ÖĞµÄ×ÜÎÆÀíÁĞ±íÖĞ
+		// æŠŠè¿™ä¸ªæè´¨ä½¿ç”¨çš„çº¹ç†æ·»åŠ åˆ°å½“å‰å…‰è¿½åœºæ™¯ä¸­çš„æ€»çº¹ç†åˆ—è¡¨ä¸­
 		for (auto& iter : material->data->textures)
 		{
 			auto textureID = iter.second->GetID();
@@ -3100,7 +3100,7 @@ namespace ZXEngine
 			}
 		}
 
-		// °ÑÕâ¸ö¹â×·²ÄÖÊÌí¼Óµ½µ±Ç°¹â×·³¡¾°ÖĞµÄ×Ü¹â×·²ÄÖÊÁĞ±íÖĞ
+		// æŠŠè¿™ä¸ªå…‰è¿½æè´¨æ·»åŠ åˆ°å½“å‰å…‰è¿½åœºæ™¯ä¸­çš„æ€»å…‰è¿½æè´¨åˆ—è¡¨ä¸­
 		auto rtMaterialDataID = material->data->GetRTID();
 		if (mCurRTSceneRTMaterialDataMap.find(rtMaterialDataID) == mCurRTSceneRTMaterialDataMap.end())
 		{
@@ -3108,7 +3108,7 @@ namespace ZXEngine
 			mCurRTSceneRTMaterialDatas.emplace_back(rtMaterialDataID);
 		}
 
-		// ±éÀúÎÆÀí£¬²¢°ÑÒıÓÃË÷ÒıĞ´ÈëBuffer
+		// éå†çº¹ç†ï¼Œå¹¶æŠŠå¼•ç”¨ç´¢å¼•å†™å…¥Buffer
 		for (auto& iter : material->data->textures)
 		{
 			auto textureID = iter.second->GetID();
@@ -3137,7 +3137,7 @@ namespace ZXEngine
 	{
 		auto rtPipeline = mRTPipelines[mCurRTPipelineID];
 
-		// ¼ÆËã»­Ãæ¾²Ö¹µÄÖ¡Êı£¬ÀÛ»ıÊ½¹â×·äÖÈ¾ĞèÒªÕâ¸öÊı¾İ
+		// è®¡ç®—ç”»é¢é™æ­¢çš„å¸§æ•°ï¼Œç´¯ç§¯å¼å…‰è¿½æ¸²æŸ“éœ€è¦è¿™ä¸ªæ•°æ®
 		if (rtConstants.VP != mRTVPMatrix[mCurrentFrame])
 		{
 			mRTFrameCount[mCurrentFrame] = 0;
@@ -3145,37 +3145,37 @@ namespace ZXEngine
 		}
 		uint32_t frameCount = mRTFrameCount[mCurrentFrame]++;
 
-		// ÏÈ¸üĞÂµ±Ç°Ö¡ºÍ¹â×·¹ÜÏß°ó¶¨µÄ³¡¾°Êı¾İ
+		// å…ˆæ›´æ–°å½“å‰å¸§å’Œå…‰è¿½ç®¡çº¿ç»‘å®šçš„åœºæ™¯æ•°æ®
 		UpdateRTSceneData(mCurRTPipelineID);
-		// ¸üĞÂµ±Ç°Ö¡ºÍ¹â×·¹ÜÏß°ó¶¨µÄ¹ÜÏßÊı¾İ
+		// æ›´æ–°å½“å‰å¸§å’Œå…‰è¿½ç®¡çº¿ç»‘å®šçš„ç®¡çº¿æ•°æ®
 		UpdateRTPipelineData(mCurRTPipelineID);
 
-		// »ñÈ¡µ±Ç°Ö¡µÄCommand
+		// è·å–å½“å‰å¸§çš„Command
 		auto drawCommand = GetDrawCommandByIndex(commandID);
 		auto& allocator = drawCommand->allocators[mCurrentFrame];
 		auto& drawCommandList = drawCommand->commandLists[mCurrentFrame];
 
-		// ÖØÖÃCommand List
+		// é‡ç½®Command List
 		ThrowIfFailed(allocator->Reset());
 		ThrowIfFailed(drawCommandList->Reset(allocator.Get(), nullptr));
 
-		// »ñÈ¡¹â×·¹ÜÏßÊä³öµÄÄ¿±êÍ¼Ïñ
+		// è·å–å…‰è¿½ç®¡çº¿è¾“å‡ºçš„ç›®æ ‡å›¾åƒ
 		auto curFBO = GetFBOByIndex(mCurFBOIdx);
 		uint32_t textureID = GetRenderBufferByIndex(curFBO->colorBufferIdx)->renderBuffers[GetCurFrameBufferIndex()];
 		auto texture = GetTextureByIndex(textureID);
 
-		// ×ªÎª¹â×·Êä³ö¸ñÊ½
+		// è½¬ä¸ºå…‰è¿½è¾“å‡ºæ ¼å¼
 		CD3DX12_RESOURCE_BARRIER transition = CD3DX12_RESOURCE_BARRIER::Transition(
 			texture->texture.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 		drawCommandList->ResourceBarrier(1, &transition);
 
-		// ÉèÖÃ¹â×·¹ÜÏß
+		// è®¾ç½®å…‰è¿½ç®¡çº¿
 		drawCommandList->SetPipelineState1(rtPipeline->pipeline.Get());
-		// ÉèÖÃ¹â×·ÃèÊö·û¶Ñ
+		// è®¾ç½®å…‰è¿½æè¿°ç¬¦å †
 		vector<ID3D12DescriptorHeap*> descriptorHeaps = { rtPipeline->descriptorHeaps[mCurrentFrame].Get() };
 		drawCommandList->SetDescriptorHeaps(static_cast<UINT>(descriptorHeaps.size()), descriptorHeaps.data());
 
-		// Ğ´Èë³£Á¿Êı¾İ
+		// å†™å…¥å¸¸é‡æ•°æ®
 		{
 			char* cBufferPtr = static_cast<char*>(rtPipeline->constantBuffers[mCurrentFrame].cpuAddress);
 
@@ -3215,24 +3215,24 @@ namespace ZXEngine
 		dispatchRaysDesc.HitGroupTable.StartAddress = rtPipeline->SBT.buffers[mCurrentFrame].gpuAddress + rtPipeline->SBT.rayGenSectionSize + rtPipeline->SBT.missSectionSize;
 		dispatchRaysDesc.HitGroupTable.SizeInBytes = rtPipeline->SBT.hitGroupSectionSize;
 		dispatchRaysDesc.HitGroupTable.StrideInBytes = rtPipeline->SBT.hitGroupEntrySize;
-		// Ray Generation ShaderµÄÏß³Ì×éÊıÁ¿(Í¼Ïñ·Ö±æÂÊ)
+		// Ray Generation Shaderçš„çº¿ç¨‹ç»„æ•°é‡(å›¾åƒåˆ†è¾¨ç‡)
 		dispatchRaysDesc.Width = mViewPortInfo.width;
 		dispatchRaysDesc.Height = mViewPortInfo.height;
 		dispatchRaysDesc.Depth = 1;
 		// Ray Trace
 		drawCommandList->DispatchRays(&dispatchRaysDesc);
 
-		// ×ªÎªShader¶ÁÈ¡¸ñÊ½
+		// è½¬ä¸ºShaderè¯»å–æ ¼å¼
 		transition = CD3DX12_RESOURCE_BARRIER::Transition(
 			texture->texture.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ);
 		drawCommandList->ResourceBarrier(1, &transition);
 
-		// ½áÊø²¢Ìá½»Command List
+		// ç»“æŸå¹¶æäº¤Command List
 		ThrowIfFailed(drawCommandList->Close());
 		ID3D12CommandList* cmdsLists[] = { drawCommandList.Get() };
 		mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
-		// Çå¿Õµ±Ç°Ö¡µÄ³¡¾°Êı¾İ
+		// æ¸…ç©ºå½“å‰å¸§çš„åœºæ™¯æ•°æ®
 		mASInstanceData.clear();
 		mCurRTSceneTextureIndexes.clear();
 		mCurRTSceneTextureIndexMap.clear();
@@ -3248,32 +3248,32 @@ namespace ZXEngine
 		auto& allocator = command->allocators[mCurrentFrame];
 		auto& commandList = command->commandLists[mCurrentFrame];
 
-		// ÖØÖÃCommand List
+		// é‡ç½®Command List
 		ThrowIfFailed(allocator->Reset());
 		ThrowIfFailed(commandList->Reset(allocator.Get(), nullptr));
 
-		// »ñÈ¡µ±Ç°Ö¡µÄTLAS
+		// è·å–å½“å‰å¸§çš„TLAS
 		auto& curTLAS = GetTLASGroupByIndex(mRTPipelines[mCurRTPipelineID]->tlasIdx)->asGroup[mCurrentFrame];
 		const bool isUpdate = curTLAS.isBuilt;
 
-		// ¹¹½¨TLASµÄÊäÈë²ÎÊı
+		// æ„å»ºTLASçš„è¾“å…¥å‚æ•°
 		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS inputs = {};
 		inputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
 		inputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
 		inputs.NumDescs = static_cast<UINT>(mASInstanceData.size());
 		inputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
 
-		// ¼ÆËãTLASËùĞèÒªµÄÄÚ´æ´óĞ¡
+		// è®¡ç®—TLASæ‰€éœ€è¦çš„å†…å­˜å¤§å°
 		D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO prebuildInfo = {};
 		mD3D12Device->GetRaytracingAccelerationStructurePrebuildInfo(&inputs, &prebuildInfo);
 
 		// Scratch Buffer
 		UINT64 scratchSizeInBytes = Math::AlignUpPOT(prebuildInfo.ScratchDataSizeInBytes, static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
 		mTLASScratchBuffers[mCurrentFrame] = CreateBuffer(scratchSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COMMON, D3D12_HEAP_TYPE_DEFAULT, false, true);
-		// ¹¹½¨TLASÒªÓÃµÄBLASÊı¾İBuffer
+		// æ„å»ºTLASè¦ç”¨çš„BLASæ•°æ®Buffer
 		UINT64 instanceDescsSizeInBytes = Math::AlignUpPOT(static_cast<UINT64>(sizeof(D3D12_RAYTRACING_INSTANCE_DESC) * mASInstanceData.size()), static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
 		mTLASInstanceBuffers[mCurrentFrame] = CreateBuffer(instanceDescsSizeInBytes, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, false, true);
-		// ´´½¨TLAS Buffer
+		// åˆ›å»ºTLAS Buffer
 		if (!isUpdate)
 		{
 			UINT64 resultSizeInBytes = Math::AlignUpPOT(prebuildInfo.ResultDataMaxSizeInBytes, static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
@@ -3283,23 +3283,23 @@ namespace ZXEngine
 				D3D12_HEAP_TYPE_DEFAULT, false, true);
 		}
 
-		// BLASÊı¾İBufferÖ¸Õë
+		// BLASæ•°æ®BufferæŒ‡é’ˆ
 		D3D12_RAYTRACING_INSTANCE_DESC* instanceDescs = nullptr;
-		// °ÑBufferÓ³Éäµ½Ö¸Õë
+		// æŠŠBufferæ˜ å°„åˆ°æŒ‡é’ˆ
 		mTLASInstanceBuffers[mCurrentFrame].buffer->Map(0, nullptr, reinterpret_cast<void**>(&instanceDescs));
-		// Ó³ÉäÊ§°ÜÖ±½ÓÅ×³öÒì³£
+		// æ˜ å°„å¤±è´¥ç›´æ¥æŠ›å‡ºå¼‚å¸¸
 		if (!instanceDescs)
 			throw std::logic_error("Failed to map instanceDescsBuffer.");
 
-		// BLASÊµÀıÊıÁ¿
+		// BLASå®ä¾‹æ•°é‡
 		UINT instanceCount = static_cast<UINT>(mASInstanceData.size());
 
-		// ĞÂ½¨TLASµÄ»°ÏÈ°ÑBLASÊı¾İBufferÇåÁã
-		// ²»ÖªµÀÕâÒ»²½ÊÇ·ñ±ØÒª£¬NvidiaµÄ¹â×·½Ì³ÌÀïÕâÑùĞ´µÄ£¬Ò²Ã»½âÊÍÎªÊ²Ã´
+		// æ–°å»ºTLASçš„è¯å…ˆæŠŠBLASæ•°æ®Bufferæ¸…é›¶
+		// ä¸çŸ¥é“è¿™ä¸€æ­¥æ˜¯å¦å¿…è¦ï¼ŒNvidiaçš„å…‰è¿½æ•™ç¨‹é‡Œè¿™æ ·å†™çš„ï¼Œä¹Ÿæ²¡è§£é‡Šä¸ºä»€ä¹ˆ
 		if (!isUpdate)
 			memset(instanceDescs, 0, instanceDescsSizeInBytes);
 
-		// Ìî³ä³¡¾°ÖĞÒªäÖÈ¾µÄ¶ÔÏóÊµÀıÊı¾İ
+		// å¡«å……åœºæ™¯ä¸­è¦æ¸²æŸ“çš„å¯¹è±¡å®ä¾‹æ•°æ®
 		for (UINT i = 0; i < instanceCount; i++)
 		{
 			auto& data = mASInstanceData[i];
@@ -3328,14 +3328,14 @@ namespace ZXEngine
 		asDesc.SourceAccelerationStructureData = isUpdate ? curTLAS.as.gpuAddress : NULL;
 		asDesc.ScratchAccelerationStructureData = mTLASScratchBuffers[mCurrentFrame].gpuAddress;
 
-		// ¹¹½¨TLAS
+		// æ„å»ºTLAS
 		commandList->BuildRaytracingAccelerationStructure(&asDesc, 0, nullptr);
 
-		// È·±£TLASÔÚ±»Ê¹ÓÃÖ®Ç°ÒÑ¹¹½¨Íê³É
+		// ç¡®ä¿TLASåœ¨è¢«ä½¿ç”¨ä¹‹å‰å·²æ„å»ºå®Œæˆ
 		auto uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(curTLAS.as.buffer.Get());
 		commandList->ResourceBarrier(1, &uavBarrier);
 
-		// ½áÊø²¢Ìá½»Command List
+		// ç»“æŸå¹¶æäº¤Command List
 		ThrowIfFailed(commandList->Close());
 		ID3D12CommandList* cmdsLists[] = { commandList.Get() };
 		mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
@@ -3349,49 +3349,49 @@ namespace ZXEngine
 		geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
 		geometryDesc.Triangles.VertexBuffer.StartAddress = meshBuffer->vertexBuffer.gpuAddress;
 		geometryDesc.Triangles.VertexBuffer.StrideInBytes = sizeof(Vertex);
-		// ¶¥µã¸ñÊ½£¬BLASÖ»¹ØĞÄ¶¥µãÎ»ÖÃÕâÒ»ÏîÊı¾İ
+		// é¡¶ç‚¹æ ¼å¼ï¼ŒBLASåªå…³å¿ƒé¡¶ç‚¹ä½ç½®è¿™ä¸€é¡¹æ•°æ®
 		geometryDesc.Triangles.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
 		geometryDesc.Triangles.VertexCount = meshBuffer->vertexCount;
 		geometryDesc.Triangles.IndexBuffer = meshBuffer->indexBuffer.gpuAddress;
 		geometryDesc.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT;
 		geometryDesc.Triangles.IndexCount = meshBuffer->indexCount;
-		// ¹¹½¨BLASµÄÊ±ºò¿ÉÒÔ¶ÔÄ£ĞÍÊı¾İ×öÒ»¸ö±ä»»£¬ÔİÊ±²»ĞèÒª
+		// æ„å»ºBLASçš„æ—¶å€™å¯ä»¥å¯¹æ¨¡å‹æ•°æ®åšä¸€ä¸ªå˜æ¢ï¼Œæš‚æ—¶ä¸éœ€è¦
 		geometryDesc.Triangles.Transform3x4 = NULL;
 		geometryDesc.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
 
 		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS inputs = {};
 		inputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL;
 		inputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
-		// ÕâÀï¿ÉÒÔ´«Êı×éÒ»´ÎĞÔ¹¹½¨¶à¸öBLAS£¬ÔİÊ±Ö»´«Ò»¸ö
+		// è¿™é‡Œå¯ä»¥ä¼ æ•°ç»„ä¸€æ¬¡æ€§æ„å»ºå¤šä¸ªBLASï¼Œæš‚æ—¶åªä¼ ä¸€ä¸ª
 		inputs.NumDescs = 1;
 		inputs.pGeometryDescs = &geometryDesc;
-		// Ö¸¶¨PREFER_FAST_TRACE£¬¹¹½¨Ê±¼ä¸ü³¤£¬µ«ÊÇÊµÊ±¹â×·ËÙ¶È¸ü¿ì
+		// æŒ‡å®šPREFER_FAST_TRACEï¼Œæ„å»ºæ—¶é—´æ›´é•¿ï¼Œä½†æ˜¯å®æ—¶å…‰è¿½é€Ÿåº¦æ›´å¿«
 		inputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
 
-		// ¼ÆËãBLASËùĞèÒªµÄÄÚ´æ´óĞ¡
+		// è®¡ç®—BLASæ‰€éœ€è¦çš„å†…å­˜å¤§å°
 		D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO prebuildInfo = {};
 		mD3D12Device->GetRaytracingAccelerationStructurePrebuildInfo(&inputs, &prebuildInfo);
 
 		UINT64 scratchSizeInBytes = Math::AlignUpPOT(prebuildInfo.ScratchDataSizeInBytes, static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
 		UINT64 resultSizeInBytes = Math::AlignUpPOT(prebuildInfo.ResultDataMaxSizeInBytes, static_cast<UINT64>(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
 
-		// ´´½¨BLASµÄscratch buffer
+		// åˆ›å»ºBLASçš„scratch buffer
 		auto scratchBuffer = CreateBuffer(scratchSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COMMON, D3D12_HEAP_TYPE_DEFAULT, false, true);
-		// ´´½¨BLASµÄ½á¹ûbuffer
+		// åˆ›å»ºBLASçš„ç»“æœbuffer
 		meshBuffer->blas.as = CreateBuffer(resultSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, D3D12_HEAP_TYPE_DEFAULT, false, true);
 
 		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC asDesc = {};
 		asDesc.Inputs = inputs;
 		asDesc.DestAccelerationStructureData = meshBuffer->blas.as.gpuAddress;
 		asDesc.ScratchAccelerationStructureData = scratchBuffer.gpuAddress;
-		// Èç¹ûÊÇ¸üĞÂBLASĞèÒªÖ¸¶¨Ö®Ç°µÄBLAS
+		// å¦‚æœæ˜¯æ›´æ–°BLASéœ€è¦æŒ‡å®šä¹‹å‰çš„BLAS
 		asDesc.SourceAccelerationStructureData = NULL;
 
 		ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList4> cmdList)
 		{
-			// ¹¹½¨BLAS
+			// æ„å»ºBLAS
 			cmdList->BuildRaytracingAccelerationStructure(&asDesc, 0, nullptr);
-			// È·±£BLASÔÚ±»Ê¹ÓÃÖ®Ç°ÒÑ¹¹½¨Íê³É
+			// ç¡®ä¿BLASåœ¨è¢«ä½¿ç”¨ä¹‹å‰å·²æ„å»ºå®Œæˆ
 			auto uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(meshBuffer->blas.as.buffer.Get());
 			cmdList->ResourceBarrier(1, &uavBarrier);
 		});
@@ -3706,7 +3706,7 @@ namespace ZXEngine
 			mMaterialDatasToDelete.erase(id);
 		}
 
-		// ¹â×·²ÄÖÊ
+		// å…‰è¿½æè´¨
 		deleteList.clear();
 		for (auto& iter : rtMaterialDatasToDelete)
 		{
@@ -3890,9 +3890,9 @@ namespace ZXEngine
 
 			ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList4> cmdList)
 			{
-				// ÆäÊµ¿ÉÒÔÖ±½ÓÔÚ´´½¨defaultBufferµÄÊ±ºò¾Í°Ñ³õÊ¼×´Ì¬ÉèÖÃÎªD3D12_RESOURCE_STATE_COPY_DEST
-				// Ã»±ØÒª¶àÒ»²½Õâ¸ö×ª»»£¬µ«ÊÇ´´½¨µÄÊ±ºòÈç¹û²»ÊÇÒÔ D3D12_RESOURCE_STATE_COMMON ³õÊ¼»¯£¬Debug Layer¾ÓÈ»»á¸ø¸öWarning
-				// ËùÒÔÎªÁËÃ»ÓĞWarning¸ÉÈÅÅÅ³ıÎÊÌâ£¬ÕâÀï¾ÍÕâÑùĞ´ÁË
+				// å…¶å®å¯ä»¥ç›´æ¥åœ¨åˆ›å»ºdefaultBufferçš„æ—¶å€™å°±æŠŠåˆå§‹çŠ¶æ€è®¾ç½®ä¸ºD3D12_RESOURCE_STATE_COPY_DEST
+				// æ²¡å¿…è¦å¤šä¸€æ­¥è¿™ä¸ªè½¬æ¢ï¼Œä½†æ˜¯åˆ›å»ºçš„æ—¶å€™å¦‚æœä¸æ˜¯ä»¥ D3D12_RESOURCE_STATE_COMMON åˆå§‹åŒ–ï¼ŒDebug Layerå±…ç„¶ä¼šç»™ä¸ªWarning
+				// æ‰€ä»¥ä¸ºäº†æ²¡æœ‰Warningå¹²æ‰°æ’é™¤é—®é¢˜ï¼Œè¿™é‡Œå°±è¿™æ ·å†™äº†
 				CD3DX12_RESOURCE_BARRIER barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(
 					buffer.buffer.Get(),
 					D3D12_RESOURCE_STATE_COMMON,
@@ -4011,20 +4011,20 @@ namespace ZXEngine
 
 	ComPtr<IDxcBlob> RenderAPID3D12::CompileRTShader(const string& path)
 	{
-		// ¶ÁÈ¡HLSL´úÂë
+		// è¯»å–HLSLä»£ç 
 		auto code = Resources::LoadTextFile(Resources::GetAssetFullPath(path) + ".dxr");
 
-		// ´´½¨HLSL´úÂëµÄBlob
+		// åˆ›å»ºHLSLä»£ç çš„Blob
 		ComPtr<IDxcBlobEncoding> shaderBlobEncoding;
 		ThrowIfFailed(mDxcLibrary->CreateBlobWithEncodingFromPinned((LPBYTE)code.c_str(), (UINT32)code.size(), 0, &shaderBlobEncoding));
 
-		// »ñÈ¡Ò»ÏÂ´úÂëÃû×Ö£¬µ÷ÊÔºÍIncludeÓÃ
+		// è·å–ä¸€ä¸‹ä»£ç åå­—ï¼Œè°ƒè¯•å’ŒIncludeç”¨
 		string name = Resources::GetAssetName(path);
 		std::wstringstream wss;
 		wss << std::wstring(name.begin(), name.end());
 		std::wstring wName = wss.str();
 
-		// ±àÒëHLSL´úÂë
+		// ç¼–è¯‘HLSLä»£ç 
 		ComPtr<IDxcOperationResult> operationResult;
 		ThrowIfFailed(mDxcCompiler->Compile(
 			shaderBlobEncoding.Get(),
@@ -4039,7 +4039,7 @@ namespace ZXEngine
 			&operationResult
 		));
 
-		// ¼ì²é±àÒë½á¹û£¬Èç¹ûÓĞ´íÎó¾ÍÊä³ö´íÎóĞÅÏ¢
+		// æ£€æŸ¥ç¼–è¯‘ç»“æœï¼Œå¦‚æœæœ‰é”™è¯¯å°±è¾“å‡ºé”™è¯¯ä¿¡æ¯
 		HRESULT resultCode;
 		ThrowIfFailed(operationResult->GetStatus(&resultCode));
 		if (FAILED(resultCode))
@@ -4057,7 +4057,7 @@ namespace ZXEngine
 			ThrowIfFailed(resultCode);
 		}
 
-		// »ñÈ¡²¢·µ»Ø±àÒë½á¹û
+		// è·å–å¹¶è¿”å›ç¼–è¯‘ç»“æœ
 		ComPtr<IDxcBlob> shaderBlob;
 		ThrowIfFailed(operationResult->GetResult(&shaderBlob));
 		return shaderBlob;
@@ -4098,10 +4098,10 @@ namespace ZXEngine
 		{
 			auto heapAddress = rtPipeline->descriptorHeaps[i]->GetCPUDescriptorHandleForHeapStart();
 
-			// ´´½¨Constant Buffer (ÕâÀïµÄ×÷ÓÃÍ¬ÓÚVulkanÖĞµÄPushConstant)
+			// åˆ›å»ºConstant Buffer (è¿™é‡Œçš„ä½œç”¨åŒäºVulkanä¸­çš„PushConstant)
 			rtPipeline->constantBuffers[i] = CreateBuffer(mRTPipelineConstantBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, true, true);
 
-			// °ó¶¨Constant Buffer
+			// ç»‘å®šConstant Buffer
 			CD3DX12_CPU_DESCRIPTOR_HANDLE cBufferHandle(heapAddress);
 			cBufferHandle.Offset(static_cast<INT>(mRTRootParamOffsetInDescriptorHeapConstantBuffer), mCbvSrvUavDescriptorSize);
 
@@ -4118,7 +4118,7 @@ namespace ZXEngine
 
 		auto heapAddress = rtPipeline->descriptorHeaps[mCurrentFrame]->GetCPUDescriptorHandleForHeapStart();
 
-		// °ó¶¨TLAS
+		// ç»‘å®šTLAS
 		CD3DX12_CPU_DESCRIPTOR_HANDLE tlasHandle(heapAddress);
 		tlasHandle.Offset(static_cast<INT>(mRTRootParamOffsetInDescriptorHeapTLAS), mCbvSrvUavDescriptorSize);
 
@@ -4131,11 +4131,11 @@ namespace ZXEngine
 		srvDesc.RaytracingAccelerationStructure.Location = curTLAS.as.gpuAddress;
 		mD3D12Device->CreateShaderResourceView(nullptr, &srvDesc, tlasHandle);
 
-		// »ñÈ¡¹â×·¹ÜÏßÊä³öµÄÄ¿±êÍ¼Ïñ
+		// è·å–å…‰è¿½ç®¡çº¿è¾“å‡ºçš„ç›®æ ‡å›¾åƒ
 		auto curFBO = GetFBOByIndex(mCurFBOIdx);
 		auto colorBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->colorBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
 
-		// ¸üĞÂÊä³öÍ¼Ïñ
+		// æ›´æ–°è¾“å‡ºå›¾åƒ
 		CD3DX12_CPU_DESCRIPTOR_HANDLE outputHandle(heapAddress);
 		outputHandle.Offset(static_cast<INT>(mRTRootParamOffsetInDescriptorHeapOutputImage), mCbvSrvUavDescriptorSize);
 		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
@@ -4155,7 +4155,7 @@ namespace ZXEngine
 
 		auto heapAddress = rtPipeline->descriptorHeaps[mCurrentFrame]->GetCPUDescriptorHandleForHeapStart();
 
-		// 2DÎÆÀíÊı×é
+		// 2Dçº¹ç†æ•°ç»„
 		CD3DX12_CPU_DESCRIPTOR_HANDLE textureHandle(heapAddress);
 		textureHandle.Offset(static_cast<INT>(mRTRootParamOffsetInDescriptorHeapTexture2DArray), mCbvSrvUavDescriptorSize);
 		for (size_t i = 0; i < mCurRTSceneTextureIndexes.size(); i++)
@@ -4172,7 +4172,7 @@ namespace ZXEngine
 			textureHandle.Offset(1, mCbvSrvUavDescriptorSize);
 		}
 
-		// CubeMapÊı×é
+		// CubeMapæ•°ç»„
 		CD3DX12_CPU_DESCRIPTOR_HANDLE cubeMapHandle(heapAddress);
 		cubeMapHandle.Offset(static_cast<INT>(mRTRootParamOffsetInDescriptorHeapTextureCubeArray), mCbvSrvUavDescriptorSize);
 		for (size_t i = 0; i < mCurRTSceneCubeMapIndexes.size(); i++)
@@ -4189,7 +4189,7 @@ namespace ZXEngine
 			cubeMapHandle.Offset(1, mCbvSrvUavDescriptorSize);
 		}
 
-		// Ä£ĞÍºÍ²ÄÖÊÊı¾İ
+		// æ¨¡å‹å’Œæè´¨æ•°æ®
 		CD3DX12_CPU_DESCRIPTOR_HANDLE indexHandle(heapAddress);
 		indexHandle.Offset(static_cast<INT>(mRTRootParamOffsetInDescriptorHeapIndexBuffer), mCbvSrvUavDescriptorSize);
 		CD3DX12_CPU_DESCRIPTOR_HANDLE vertexHandle(heapAddress);
@@ -4204,8 +4204,8 @@ namespace ZXEngine
 			auto meshData = GetVAOByIndex(data.VAO);
 			auto rtMaterialData = GetRTMaterialDataByIndex(data.rtMaterialDataID);
 
-			// Ë÷Òı£¬¶¥µãºÍ²ÄÖÊÊı¾İÈ«²¿ÒÔByteAddressBufferµÄĞÎÊ½´«Èë£¬Êı¾İ¸ñÊ½ÓÉShader×Ô¼º½âÎö
-			// ByteAddressBufferĞèÒªFormat¹Ì¶¨ÎªDXGI_FORMAT_R32_TYPELESS£¬FlagsÎªD3D12_BUFFER_SRV_FLAG_RAW
+			// ç´¢å¼•ï¼Œé¡¶ç‚¹å’Œæè´¨æ•°æ®å…¨éƒ¨ä»¥ByteAddressBufferçš„å½¢å¼ä¼ å…¥ï¼Œæ•°æ®æ ¼å¼ç”±Shaderè‡ªå·±è§£æ
+			// ByteAddressBufferéœ€è¦Formatå›ºå®šä¸ºDXGI_FORMAT_R32_TYPELESSï¼ŒFlagsä¸ºD3D12_BUFFER_SRV_FLAG_RAW
 			D3D12_SHADER_RESOURCE_VIEW_DESC indexDesc = {};
 			indexDesc.Format = DXGI_FORMAT_R32_TYPELESS;
 			indexDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
@@ -4265,13 +4265,13 @@ namespace ZXEngine
 		GlobalData::srcHeight = mNewWindowHeight;
 #endif
 		
-		// ÊÍ·ÅÔ­Present Buffer
+		// é‡Šæ”¾åŸPresent Buffer
 		DestroyFBOByIndex(mPresentFBOIdx);
-		// ÕâÀï»¹ÓĞ¸öÒıÓÃ£¬ÒªÔÙÊÍ·ÅÒ»ÏÂ£¬È·±£ËùÓĞÒıÓÃ¶¼ÊÍ·ÅÁË
+		// è¿™é‡Œè¿˜æœ‰ä¸ªå¼•ç”¨ï¼Œè¦å†é‡Šæ”¾ä¸€ä¸‹ï¼Œç¡®ä¿æ‰€æœ‰å¼•ç”¨éƒ½é‡Šæ”¾äº†
 		for (UINT i = 0; i < mPresentBufferCount; i++)
 			mPresentBuffers[i].Reset();
 
-		// ÖØĞÂÉèÖÃPresent Buffer´óĞ¡
+		// é‡æ–°è®¾ç½®Present Bufferå¤§å°
 		ThrowIfFailed(mSwapChain->ResizeBuffers(mPresentBufferCount,
 #ifdef ZX_EDITOR
 			ProjectSetting::srcWidth, ProjectSetting::srcHeight,
@@ -4280,10 +4280,10 @@ namespace ZXEngine
 #endif
 			mPresentBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
 
-		// ÖØĞÂ´´½¨Present Buffer
+		// é‡æ–°åˆ›å»ºPresent Buffer
 		CreateSwapChainBuffers();
 
-		// ÖØĞÂ´´½¨ËùÓĞ´óĞ¡ºÍ´°¿Ú±£³ÖÒ»ÖÂµÄFBO
+		// é‡æ–°åˆ›å»ºæ‰€æœ‰å¤§å°å’Œçª—å£ä¿æŒä¸€è‡´çš„FBO
 		FBOManager::GetInstance()->RecreateAllFollowWindowFBO();
 
 #ifdef ZX_EDITOR
@@ -4318,16 +4318,16 @@ namespace ZXEngine
 
 	void RenderAPID3D12::WaitForFence(ZXD3D12Fence* fence)
 	{
-		// Èç¹ûFenceµÄ½ø¶È»¹Ã»µ½ÉÏÒ»´ÎÉèÖÃµÄ½ø¶ÈÖµ¾Í¿ªÊ¼µÈ´ı
-		// ÅĞ¶Ï´óÓÚ0ÊÇ·ÀÖ¹µÈ´ıÃ»ÓĞSignal¹ıµÄFence
+		// å¦‚æœFenceçš„è¿›åº¦è¿˜æ²¡åˆ°ä¸Šä¸€æ¬¡è®¾ç½®çš„è¿›åº¦å€¼å°±å¼€å§‹ç­‰å¾…
+		// åˆ¤æ–­å¤§äº0æ˜¯é˜²æ­¢ç­‰å¾…æ²¡æœ‰Signalè¿‡çš„Fence
 		if (fence->currentFence > 0 && fence->fence->GetCompletedValue() < fence->currentFence)
 		{
-			// ´´½¨Ò»¸ö"½ø¶ÈµÖ´ï¸Õ¸ÕÉèÖÃµÄĞÅºÅÁ¿Öµ"µÄÊÂ¼ş
+			// åˆ›å»ºä¸€ä¸ª"è¿›åº¦æŠµè¾¾åˆšåˆšè®¾ç½®çš„ä¿¡å·é‡å€¼"çš„äº‹ä»¶
 			auto event = CreateEventEx(nullptr, NULL, NULL, EVENT_ALL_ACCESS);
 			if (event)
 			{
 				ThrowIfFailed(fence->fence->SetEventOnCompletion(fence->currentFence, event));
-				// µÈ´ıÊÂ¼ş
+				// ç­‰å¾…äº‹ä»¶
 				WaitForSingleObject(event, INFINITE);
 				CloseHandle(event);
 			}
@@ -4438,28 +4438,28 @@ namespace ZXEngine
 
 	array<const CD3DX12_STATIC_SAMPLER_DESC, 4> RenderAPID3D12::GetStaticSamplersDesc()
 	{
-		// ÏßĞÔ²åÖµ²ÉÑù£¬±ßÔµÖØ¸´
+		// çº¿æ€§æ’å€¼é‡‡æ ·ï¼Œè¾¹ç¼˜é‡å¤
 		const CD3DX12_STATIC_SAMPLER_DESC linearWrap(0,
 			D3D12_FILTER_MIN_MAG_MIP_LINEAR,
 			D3D12_TEXTURE_ADDRESS_MODE_WRAP,  // U
 			D3D12_TEXTURE_ADDRESS_MODE_WRAP,  // V
 			D3D12_TEXTURE_ADDRESS_MODE_WRAP); // W
 
-		// ÏßĞÔ²åÖµ²ÉÑù£¬±ßÔµ½Ø¶Ï
+		// çº¿æ€§æ’å€¼é‡‡æ ·ï¼Œè¾¹ç¼˜æˆªæ–­
 		const CD3DX12_STATIC_SAMPLER_DESC linearClamp(1,
 			D3D12_FILTER_MIN_MAG_MIP_LINEAR,
 			D3D12_TEXTURE_ADDRESS_MODE_CLAMP,  // U
 			D3D12_TEXTURE_ADDRESS_MODE_CLAMP,  // V
 			D3D12_TEXTURE_ADDRESS_MODE_CLAMP); // W
 
-		// ¸÷ÏòÒìĞÔ²ÉÑù£¬±ßÔµÖØ¸´
+		// å„å‘å¼‚æ€§é‡‡æ ·ï¼Œè¾¹ç¼˜é‡å¤
 		const CD3DX12_STATIC_SAMPLER_DESC anisotropicWrap(2,
 			D3D12_FILTER_ANISOTROPIC,
 			D3D12_TEXTURE_ADDRESS_MODE_WRAP,  // U
 			D3D12_TEXTURE_ADDRESS_MODE_WRAP,  // V
 			D3D12_TEXTURE_ADDRESS_MODE_WRAP); // W
 
-		// ¸÷ÏòÒìĞÔ²ÉÑù£¬±ßÔµ½Ø¶Ï
+		// å„å‘å¼‚æ€§é‡‡æ ·ï¼Œè¾¹ç¼˜æˆªæ–­
 		const CD3DX12_STATIC_SAMPLER_DESC anisotropicClamp(3,
 			D3D12_FILTER_ANISOTROPIC,
 			D3D12_TEXTURE_ADDRESS_MODE_CLAMP,  // U
@@ -4483,22 +4483,22 @@ namespace ZXEngine
 
 	void RenderAPID3D12::ImmediatelyExecute(std::function<void(ComPtr<ID3D12GraphicsCommandList4> cmdList)>&& function)
 	{
-		// ÖØÖÃÃüÁî
+		// é‡ç½®å‘½ä»¤
 		ThrowIfFailed(mImmediateExeAllocator->Reset());
 		ThrowIfFailed(mImmediateExeCommandList->Reset(mImmediateExeAllocator.Get(), nullptr));
 
-		// ¼ÇÂ¼ÃüÁî
+		// è®°å½•å‘½ä»¤
 		function(mImmediateExeCommandList);
 
-		// Á¢¿ÌÖ´ĞĞ
+		// ç«‹åˆ»æ‰§è¡Œ
 		ThrowIfFailed(mImmediateExeCommandList->Close());
 		ID3D12CommandList* cmdsLists[] = { mImmediateExeCommandList.Get() };
 		mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
-		// ÉèÖÃFence
+		// è®¾ç½®Fence
 		SignalFence(mImmediateExeFence);
 
-		// µÈ´ıFence
+		// ç­‰å¾…Fence
 		WaitForFence(mImmediateExeFence);
 	}
 }

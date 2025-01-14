@@ -336,7 +336,7 @@ namespace ZXEngine
 
 	enum class EventType
 	{
-		PLACE_HOLDER = 0, // �����һ��ռλ������ΪLuaҲ��һ��EventType��Ҫ��������룬����Lua�±��Ǵ�1��ʼ��
+		PLACE_HOLDER = 0, // 这里加一个占位符，因为Lua也有一份EventType需要和这里对齐，但是Lua下标是从1开始的
 		GAME_START,
 
 		WINDOW_RESIZE,

@@ -13,15 +13,15 @@ namespace ZXEngine
 			virtual void UpdateForce(RigidBody* rigidBody, float duration);
 
 		private:
-			// µ¯»ÉÔÚµ±Ç°¶ÔÏóÉÏµÄÁ¬½Óµã(¶ÔÏóµÄ¾Ö²¿¿Õ¼ä)
+			// å¼¹ç°§åœ¨å½“å‰å¯¹è±¡ä¸Šçš„è¿æ¥ç‚¹(å¯¹è±¡çš„å±€éƒ¨ç©ºé—´)
 			Vector4 mConnectionPoint;
-			// µ¯»ÉÔÚÁíÒ»¸ö¶ÔÏóÉÏµÄÁ¬½Óµã(ÁíÒ»¸ö¶ÔÏóµÄ¾Ö²¿¿Õ¼ä)
+			// å¼¹ç°§åœ¨å¦ä¸€ä¸ªå¯¹è±¡ä¸Šçš„è¿æ¥ç‚¹(å¦ä¸€ä¸ªå¯¹è±¡çš„å±€éƒ¨ç©ºé—´)
 			Vector4 mOtherConnectionPoint;
-			// µ¯»ÉÁíÒ»¶ËµÄ¸ÕÌå
+			// å¼¹ç°§å¦ä¸€ç«¯çš„åˆšä½“
 			RigidBody* mOther;
-			// µ¯»ÉÏµÊı
+			// å¼¹ç°§ç³»æ•°
 			float mSpringConstant;
-			// µ¯»É²»ÊÜÍâÁ¦Ê±µÄ³¤¶È
+			// å¼¹ç°§ä¸å—å¤–åŠ›æ—¶çš„é•¿åº¦
 			float mRestLength;
 		};
 	}

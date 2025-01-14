@@ -14,11 +14,11 @@ namespace ZXEngine
 
 	void EditorConsolePanel::DrawPanel()
 	{
-		// Ãæ°å´óÐ¡ºÍÎ»ÖÃ
+		// é¢æ¿å¤§å°å’Œä½ç½®
 		ImGui::SetNextWindowPos(ImVec2((float)ProjectSetting::projectWidth, (float)ProjectSetting::mainBarHeight + (float)ProjectSetting::hierarchyHeight));
 		ImGui::SetNextWindowSize(ImVec2((float)ProjectSetting::consoleWidth, (float)ProjectSetting::consoleHeight));
 
-		// ÉèÖÃÃæ°å¾ßÌåÄÚÈÝ
+		// è®¾ç½®é¢æ¿å…·ä½“å†…å®¹
 		ImGui::Begin("Console", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 		{
 			auto EditorData = EditorDataManager::GetInstance();
@@ -57,7 +57,7 @@ namespace ZXEngine
 				if (log == nullptr)
 					break;
 			}
-			// Ä¬ÈÏÀ­µ½×îµ×²¿
+			// é»˜è®¤æ‹‰åˆ°æœ€åº•éƒ¨
 			if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
 				ImGui::SetScrollHereY(1.0f);
 			ImGui::EndChild();

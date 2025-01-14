@@ -41,7 +41,7 @@ namespace ZXEngine
 
 	void EditorGUIManagerDirectX12::Init()
 	{
-		// InspectorµÄ»æÖÆÒª·ÅÔÚHierarchyºÍProjectºóÃæ£¬ÒòÎªÕâÁ½¸öÃæ°å»á¾ö¶¨InspectorµÄÄÚÈİ
+		// Inspectorçš„ç»˜åˆ¶è¦æ”¾åœ¨Hierarchyå’ŒProjectåé¢ï¼Œå› ä¸ºè¿™ä¸¤ä¸ªé¢æ¿ä¼šå†³å®šInspectorçš„å†…å®¹
 		allPanels.push_back(new EditorProjectPanel());
 		allPanels.push_back(new EditorMainBarPanel());
 		allPanels.push_back(new EditorHierarchyPanel());
@@ -127,7 +127,7 @@ namespace ZXEngine
 
 		ImGui_ImplWin32_Init(static_cast<HWND>(WindowManager::GetInstance()->GetWindow()));
 
-		// ÕâÀï´´½¨µÄÃèÊö·û¶Ñ£¬µÚÒ»¸öÃèÊö·ûÊÇ¹Ì¶¨¸øImGuiµÄÎÄ±¾TextureÓÃµÄ£¬Ê£ÏÂµÄÊÇ¸øÍ¼Æ¬äÖÈ¾ÓÃµÄ
+		// è¿™é‡Œåˆ›å»ºçš„æè¿°ç¬¦å †ï¼Œç¬¬ä¸€ä¸ªæè¿°ç¬¦æ˜¯å›ºå®šç»™ImGuiçš„æ–‡æœ¬Textureç”¨çš„ï¼Œå‰©ä¸‹çš„æ˜¯ç»™å›¾ç‰‡æ¸²æŸ“ç”¨çš„
 		D3D12_DESCRIPTOR_HEAP_DESC desc = {};
 		desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.NumDescriptors = maxDescriptorNum;

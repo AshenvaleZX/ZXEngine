@@ -7,7 +7,7 @@ namespace ZXEngine
 {
 	class SPIRVCompiler
 	{
-		// Ô¤±àÒë
+		// é¢„ç¼–è¯‘
 	public:
 		static void CompileAllShader(string path);
 		static void CompileShader(const string& path);
@@ -19,9 +19,9 @@ namespace ZXEngine
 		static void GenerateSPIRVFile(const filesystem::path& path, const string& code, ShaderStageFlagBit stage);
 
 
-		// ÔËĞĞÊ±±àÒë
-		// ĞèÒªÓÃµ½Ò»¶ÑGLSLang¿âµÄdll£¬µ«ÊÇÕâĞ©dllµÄDebug°æ±¾Ì«´óÁË£¬¹¤³ÌÀï¾ÍÃ»ÓĞÌí¼Ó£¬ËùÒÔÕâĞ©½Ó¿ÚÎŞ·¨Ö±½ÓÊ¹ÓÃ£¬ĞèÒªÊÖ¶¯°ÑÕâĞ©¿âÁ´½Ó½øÀ´²ÅÄÜÓÃ
-		// ¿ÉÒÔÔÚÕâÀïÕÒ¹Ù·½±àÒëºÃµÄWindows¿â:https://github.com/KhronosGroup/glslang/releases
+		// è¿è¡Œæ—¶ç¼–è¯‘
+		// éœ€è¦ç”¨åˆ°ä¸€å †GLSLangåº“çš„dllï¼Œä½†æ˜¯è¿™äº›dllçš„Debugç‰ˆæœ¬å¤ªå¤§äº†ï¼Œå·¥ç¨‹é‡Œå°±æ²¡æœ‰æ·»åŠ ï¼Œæ‰€ä»¥è¿™äº›æ¥å£æ— æ³•ç›´æ¥ä½¿ç”¨ï¼Œéœ€è¦æ‰‹åŠ¨æŠŠè¿™äº›åº“é“¾æ¥è¿›æ¥æ‰èƒ½ç”¨
+		// å¯ä»¥åœ¨è¿™é‡Œæ‰¾å®˜æ–¹ç¼–è¯‘å¥½çš„Windowsåº“:https://github.com/KhronosGroup/glslang/releases
 		/*
 	public:
 		static void RTInitialize();

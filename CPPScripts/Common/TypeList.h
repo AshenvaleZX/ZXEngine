@@ -11,12 +11,12 @@ namespace ZXEngine
 
     namespace Internal
     {
-        // ½öÉùÃ÷£¬Î´Êµ¼ÊÊ¹ÓÃÄ£°å£¬Ê¡ÂÔÁËT£¬µÈ¼ÛÓÚtemplate <typename T>
+        // ä»…å£°æ˜ï¼Œæœªå®é™…ä½¿ç”¨æ¨¡æ¿ï¼Œçœç•¥äº†Tï¼Œç­‰ä»·äºtemplate <typename T>
         template <typename>
         struct ListSize;
 
-        // template <typename...> ÔÚ ListType µÄ¶¨ÒåÖĞÈ·±£ÁË ListType ÊÇÒ»¸ö½ÓÊÜ¿É±äÊıÁ¿ÀàĞÍ²ÎÊıµÄÄ£°å
-        // Èç¹ûÃ»ÓĞÕâ¸öÔ¼Êø£¬ListType ¿ÉÄÜÖ»ÊÇÒ»¸öÆÕÍ¨µÄÀàĞÍ£¬¶ø²»ÊÇÒ»¸öÄ£°å
+        // template <typename...> åœ¨ ListType çš„å®šä¹‰ä¸­ç¡®ä¿äº† ListType æ˜¯ä¸€ä¸ªæ¥å—å¯å˜æ•°é‡ç±»å‹å‚æ•°çš„æ¨¡æ¿
+        // å¦‚æœæ²¡æœ‰è¿™ä¸ªçº¦æŸï¼ŒListType å¯èƒ½åªæ˜¯ä¸€ä¸ªæ™®é€šçš„ç±»å‹ï¼Œè€Œä¸æ˜¯ä¸€ä¸ªæ¨¡æ¿
         template <template <typename...> typename ListType, typename... Ts>
         struct ListSize<ListType<Ts...>>
         {
@@ -24,7 +24,7 @@ namespace ZXEngine
         };
     }
 
-    // TypeList ×ª std::tuple
+    // TypeList è½¬ std::tuple
     template <typename TypeList>
     struct TypeListToTuple;
 

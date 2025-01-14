@@ -9,9 +9,9 @@ namespace ZXEngine
 		class ContactResolver
 		{
 		public:
-			// µ±Ç°´¦ÀíËÙ¶ÈÒÑ¾­µÄµü´ú¹ıµÄ´ÎÊı
+			// å½“å‰å¤„ç†é€Ÿåº¦å·²ç»çš„è¿­ä»£è¿‡çš„æ¬¡æ•°
 			uint32_t mCurVelocityIterations;
-			// µ±Ç°´¦ÀíÎ»ÖÃÒÑ¾­µÄµü´ú¹ıµÄ´ÎÊı
+			// å½“å‰å¤„ç†ä½ç½®å·²ç»çš„è¿­ä»£è¿‡çš„æ¬¡æ•°
 			uint32_t mCurPositionIterations;
 
 			ContactResolver(uint32_t maxIterations, float velocityEpsilon = 0.01f, float positionEpsilon = 0.01f);
@@ -27,19 +27,19 @@ namespace ZXEngine
 
 		private:
 			float mVelocityEpsilon;
-			// Á½¸ö¶ÔÏóÅö×²Ê±µÄÏà½»Éî¶ÈÈç¹ûĞ¡ÓÚÕâ¸öÖµ£¬ÔòÈÏÎª²»Åö×²
-			// Õâ¸öÖµÈç¹ûÌ«Ğ¡£¬»áµ¼ÖÂ¶¶¶¯£¬Ì«´óÁË»áµ¼ÖÂÈâÑÛ¿É¼ûµÄ¶ÔÏóÏà½»
+			// ä¸¤ä¸ªå¯¹è±¡ç¢°æ’æ—¶çš„ç›¸äº¤æ·±åº¦å¦‚æœå°äºè¿™ä¸ªå€¼ï¼Œåˆ™è®¤ä¸ºä¸ç¢°æ’
+			// è¿™ä¸ªå€¼å¦‚æœå¤ªå°ï¼Œä¼šå¯¼è‡´æŠ–åŠ¨ï¼Œå¤ªå¤§äº†ä¼šå¯¼è‡´è‚‰çœ¼å¯è§çš„å¯¹è±¡ç›¸äº¤
 			float mPositionEpsilon;
-			// ´¦ÀíËÙ¶ÈÊ±µÄ×î´óµü´ú´ÎÊı
+			// å¤„ç†é€Ÿåº¦æ—¶çš„æœ€å¤§è¿­ä»£æ¬¡æ•°
 			uint32_t mMaxVelocityIterations;
-			// ´¦ÀíÎ»ÖÃÊ±µÄ×î´óµü´ú´ÎÊı
+			// å¤„ç†ä½ç½®æ—¶çš„æœ€å¤§è¿­ä»£æ¬¡æ•°
 			uint32_t mMaxPositionIterations;
 
-			// ´¦ÀíÅö×²Ç°ÏÈ¸üĞÂÅö×²Êı¾İ
+			// å¤„ç†ç¢°æ’å‰å…ˆæ›´æ–°ç¢°æ’æ•°æ®
 			void PrepareContacts(Contact* contacts, uint32_t numContacts, float duration);
-			// ´¦ÀíÅö×²Ïà½»
+			// å¤„ç†ç¢°æ’ç›¸äº¤
 			void AdjustPositions(Contact* contacts, uint32_t numContacts, float duration);
-			// ´¦ÀíÅö×²ËÙ¶È±ä»¯
+			// å¤„ç†ç¢°æ’é€Ÿåº¦å˜åŒ–
 			void AdjustVelocities(Contact* contacts, uint32_t numContacts, float duration);
 		};
 	}

@@ -9,7 +9,7 @@ namespace ZXEngine
 	class RenderAPIOpenGL : public RenderAPI
 	{
 		/// <summary>
-		/// ±ê×¼RenderAPI½Ó¿Ú
+		/// æ ‡å‡†RenderAPIæ¥å£
 		/// </summary>
 	public:
 		RenderAPIOpenGL();
@@ -18,7 +18,7 @@ namespace ZXEngine
 		virtual void BeginFrame();
 		virtual void EndFrame();
 
-		// äÖÈ¾×´Ì¬
+		// æ¸²æŸ“çŠ¶æ€
 		virtual void OnWindowSizeChange(uint32_t width, uint32_t height);
 		virtual void OnGameViewSizeChange();
 		virtual void SetRenderState(RenderStateSetting* state);
@@ -41,7 +41,7 @@ namespace ZXEngine
 		virtual void SetUpInstanceBufferAttribute(uint32_t VAO, uint32_t instanceBuffer, uint32_t size, uint32_t offset = 6);
 		virtual void DeleteInstanceBuffer(uint32_t id);
 
-		// ÎÆÀí
+		// çº¹ç†
 		virtual unsigned int LoadTexture(const char* path, int& width, int& height);
 		virtual unsigned int LoadCubeMap(const vector<string>& faces);
 		virtual unsigned int CreateTexture(TextureFullData* data);
@@ -54,7 +54,7 @@ namespace ZXEngine
 		virtual ShaderReference* SetUpShader(const string& path, const string& shaderCode, FrameBufferType type);
 		virtual void DeleteShader(uint32_t id);
 
-		// ²ÄÖÊ
+		// æè´¨
 		virtual uint32_t CreateMaterialData();
 		virtual void SetUpMaterial(Material* material);
 		virtual void UseMaterialData(uint32_t ID);
@@ -73,7 +73,7 @@ namespace ZXEngine
 		virtual void UpdateDynamicMesh(unsigned int VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
 		virtual void GenerateParticleMesh(unsigned int& VAO);
 
-		// Shader²ÎÊı
+		// Shaderå‚æ•°
 		virtual void UseShader(unsigned int ID);
 		virtual void SetShaderScalar(Material* material, const string& name, bool value, bool allBuffer = false);
 		virtual void SetShaderScalar(Material* material, const string& name, float value, bool allBuffer = false);
@@ -96,7 +96,7 @@ namespace ZXEngine
 
 		
 		/// <summary>
-		/// ±ê×¼RayTracing½Ó¿Ú(OpenGL²»Ö§³Ö¹âÏß×·×Ù)
+		/// æ ‡å‡†RayTracingæ¥å£(OpenGLä¸æ”¯æŒå…‰çº¿è¿½è¸ª)
 		/// </summary>
 	public:
 		// Pipeline
@@ -108,7 +108,7 @@ namespace ZXEngine
 		virtual void SetUpRayTracingMaterialData(Material* material) {};
 		virtual void DeleteRayTracingMaterialData(uint32_t id) {};
 
-		// Êı¾İ¸üĞÂ
+		// æ•°æ®æ›´æ–°
 		virtual void SetRayTracingSkyBox(uint32_t textureID) {};
 		virtual void PushRayTracingMaterialData(Material* material) {};
 		virtual void PushAccelerationStructure(uint32_t VAO, uint32_t hitGroupIdx, uint32_t rtMaterialDataID, const Matrix4& transform) {};
@@ -122,7 +122,7 @@ namespace ZXEngine
 
 
 		/// <summary>
-		/// ÊµÏÖ±ê×¼RenderAPI½Ó¿ÚµÄÄÚ²¿½Ó¿ÚÓë±äÁ¿
+		/// å®ç°æ ‡å‡†RenderAPIæ¥å£çš„å†…éƒ¨æ¥å£ä¸å˜é‡
 		/// </summary>
 	private:
 		bool stateDirty = false;

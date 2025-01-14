@@ -6,46 +6,46 @@ namespace ZXEngine
 	class Utils
 	{
 	public:
-		// ×Ö·û´®×ª»»ÎªĞ¡Ğ´
+		// å­—ç¬¦ä¸²è½¬æ¢ä¸ºå°å†™
 		static inline string StringToLower(const string& str);
-		// ×Ö·û´®×ª»»Îª´óĞ´
+		// å­—ç¬¦ä¸²è½¬æ¢ä¸ºå¤§å†™
 		static inline string StringToUpper(const string& str);
-		// ×Ö·û´®·Ö¸î
+		// å­—ç¬¦ä¸²åˆ†å‰²
 		static vector<string> StringSplit(const string& oriStr, char p);
-		// ÌáÈ¡×Ö·û´®ÖĞµÄËùÓĞµ¥´Ê
+		// æå–å­—ç¬¦ä¸²ä¸­çš„æ‰€æœ‰å•è¯
 		static vector<string> ExtractWords(const string& str);
-		// ÊÇ·ñÎªºÏ·¨µ¥´Ê×Ö·û
+		// æ˜¯å¦ä¸ºåˆæ³•å•è¯å­—ç¬¦
 		static bool IsValidWordChar(char c);
-		// ²éÕÒ×Ö·û´®ÖĞÊÇ·ñ´æÔÚÄ³¸öµ¥´Ê£¬²¢·µ»ØÆğÊ¼Î»
+		// æŸ¥æ‰¾å­—ç¬¦ä¸²ä¸­æ˜¯å¦å­˜åœ¨æŸä¸ªå•è¯ï¼Œå¹¶è¿”å›èµ·å§‹ä½
 		static size_t FindWord(const string& str, const string& word, size_t offset);
-		// Ìæ´ú×Ö·û´®ÖĞµÄµ¥´Ê
+		// æ›¿ä»£å­—ç¬¦ä¸²ä¸­çš„å•è¯
 		static void ReplaceAllWord(string& oriStr, const string& srcWord, const string& dstWord);
-		// Ìæ´ú×Ö·û´®ÖĞµÄ×Ö·û´®
+		// æ›¿ä»£å­—ç¬¦ä¸²ä¸­çš„å­—ç¬¦ä¸²
 		static void ReplaceAllString(string& oriStr, const string& srcStr, const string& dstStr);
-		// »ñÈ¡ÓÉsCharºÍeCharÀ¨ÆğÀ´µÄÒ»¶Î×Ö·û´®ÆğÖ¹Î»ÖÃ
+		// è·å–ç”±sCharå’ŒeCharæ‹¬èµ·æ¥çš„ä¸€æ®µå­—ç¬¦ä¸²èµ·æ­¢ä½ç½®
 		static void GetNextStringBlockPos(string& oriStr, size_t offset, char sChar, char eChar, size_t& sPos, size_t& ePos);
-		// ×Ö·û´®Æ´½Ó
+		// å­—ç¬¦ä¸²æ‹¼æ¥
 		static string ConcatenateStrings(const vector<string>& strings);
-		// Â·¾¶×ª»»ÎªWindows¸ñÊ½
+		// è·¯å¾„è½¬æ¢ä¸ºWindowsæ ¼å¼
 		static inline string ConvertPathToWindowsFormat(const string path);
-		// Ïà¶ÔÂ·¾¶×ª»»Îª¾ø¶ÔÂ·¾¶
+		// ç›¸å¯¹è·¯å¾„è½¬æ¢ä¸ºç»å¯¹è·¯å¾„
 		static string RelativePathToAbsolutePath(const string& rPath);
-		// »ñÈ¡ÎÄ¼şÀ©Õ¹Ãû
+		// è·å–æ–‡ä»¶æ‰©å±•å
 		static inline string GetFileExtension(const string& path);
-		// Ê±¼ä(Ãë)×ª»»Îª×Ö·û´®
+		// æ—¶é—´(ç§’)è½¬æ¢ä¸ºå­—ç¬¦ä¸²
 		static string SecondsToString(float seconds);
 		static string SecondsToString(uint32_t seconds);
-		// Ê±¼ä(ºÁÃë)×ª»»Îª×Ö·û´®
+		// æ—¶é—´(æ¯«ç§’)è½¬æ¢ä¸ºå­—ç¬¦ä¸²
 		static string MillisecondsToString(uint32_t milliseconds);
-		// Êı¾İ´óĞ¡(Byte)×ª»»Îª×Ö·û´®
+		// æ•°æ®å¤§å°(Byte)è½¬æ¢ä¸ºå­—ç¬¦ä¸²
 		static string DataSizeToString(uint64_t size);
 
 
-		// »ñÈ¡µ±Ç°¿ÉÖ´ĞĞÎÄ¼ş(ZXEngine)Â·¾¶
+		// è·å–å½“å‰å¯æ‰§è¡Œæ–‡ä»¶(ZXEngine)è·¯å¾„
 		static string GetCurrentExecutableFilePath();
-		// ÓÃÏµÍ³Ä¬ÈÏÓ¦ÓÃ´ò¿ªÎÄ¼ş
+		// ç”¨ç³»ç»Ÿé»˜è®¤åº”ç”¨æ‰“å¼€æ–‡ä»¶
 		static void OpenFileWithDefaultApplication(const string& path);
-		// µ¯³öÏµÍ³ÏûÏ¢¿ò
+		// å¼¹å‡ºç³»ç»Ÿæ¶ˆæ¯æ¡†
 		static void ShowSystemMessageBox(const string& title, const string& message);
 	};
 

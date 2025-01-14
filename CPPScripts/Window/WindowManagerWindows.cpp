@@ -18,7 +18,7 @@ namespace ZXEngine
 
 	WindowManagerWindows::WindowManagerWindows()
 	{
-		// ´¦ÀíÏµÍ³Ëõ·Å
+		// å¤„ç†ç³»ç»Ÿç¼©æ”¾
 		SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
 		WNDCLASSEXW wndClass = {};
@@ -40,7 +40,7 @@ namespace ZXEngine
 		mWindowWidth = ProjectSetting::srcWidth;
 		mWindowHeight = ProjectSetting::srcHeight;
 
-		// CreateWindowW´«ÈëµÄ´°¿Ú´óĞ¡»á°üÀ¨±êÌâÀ¸ºÍ±ß¿ò£¬ĞèÒª¸ù¾İ¿Í»§Çø´óĞ¡À´¼ÆËãÊµ¼Ê´°¿Ú´óĞ¡
+		// CreateWindowWä¼ å…¥çš„çª—å£å¤§å°ä¼šåŒ…æ‹¬æ ‡é¢˜æ å’Œè¾¹æ¡†ï¼Œéœ€è¦æ ¹æ®å®¢æˆ·åŒºå¤§å°æ¥è®¡ç®—å®é™…çª—å£å¤§å°
 		RECT rc = { 0, 0, static_cast<LONG>(mWindowWidth), static_cast<LONG>(mWindowHeight) };
 		AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 		int width = static_cast<int>(rc.right - rc.left);
@@ -79,26 +79,26 @@ namespace ZXEngine
 
 	LRESULT WindowManagerWindows::WindowProcedure(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
-		// ¸øImGui´«µİWin32´°¿ÚÏûÏ¢
+		// ç»™ImGuiä¼ é€’Win32çª—å£æ¶ˆæ¯
 		if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
 			return true;
 
 		switch (msg)
 		{
-		// ´°¿Ú´óĞ¡±ä»¯
+		// çª—å£å¤§å°å˜åŒ–
 		case WM_SIZE:
 			mWindowWidth = static_cast<uint32_t>(LOWORD(lParam));
 			mWindowHeight = static_cast<uint32_t>(HIWORD(lParam));
 			mResized = true;
 
-			// ´°¿Ú×îĞ¡»¯
+			// çª—å£æœ€å°åŒ–
 			if (wParam == SIZE_MINIMIZED)
 			{
 				mAppPaused = true;
 				mMinimized = true;
 				mMaximized = false;
 			}
-			// ´°¿Ú×î´ó»¯
+			// çª—å£æœ€å¤§åŒ–
 			else if (wParam == SIZE_MAXIMIZED)
 			{
 				mAppPaused = false;
@@ -106,30 +106,30 @@ namespace ZXEngine
 				mMaximized = true;
 				OnResize();
 			}
-			// ´°¿Ú´óĞ¡»Ö¸´
+			// çª—å£å¤§å°æ¢å¤
 			else if (wParam == SIZE_RESTORED)
 			{
-				// ´Ó×îĞ¡»¯»Ö¸´
+				// ä»æœ€å°åŒ–æ¢å¤
 				if (mMinimized)
 				{
 					mAppPaused = false;
 					mMinimized = false;
 					OnResize();
 				}
-				// ´Ó×î´ó»¯»Ö¸´
+				// ä»æœ€å¤§åŒ–æ¢å¤
 				else if (mMaximized)
 				{
 					mAppPaused = false;
 					mMaximized = false;
 					OnResize();
 				}
-				// ÓÃ»§ÕıÔÚÍÏ¶¯´°¿Ú±ß¿ò
+				// ç”¨æˆ·æ­£åœ¨æ‹–åŠ¨çª—å£è¾¹æ¡†
 				else if (mResizing)
 				{
-					// ´ËÊ±´°¿Ú´óĞ¡»áÒ»Ö±²»Í£±ä»¯£¬²»×öÏìÓ¦£¬µÈÍÏÍêÁËÔÙ´¦Àí
-					// Ò²¾ÍÊÇÊÕµ½ WM_EXITSIZEMOVE µÄÊ±ºò
+					// æ­¤æ—¶çª—å£å¤§å°ä¼šä¸€ç›´ä¸åœå˜åŒ–ï¼Œä¸åšå“åº”ï¼Œç­‰æ‹–å®Œäº†å†å¤„ç†
+					// ä¹Ÿå°±æ˜¯æ”¶åˆ° WM_EXITSIZEMOVE çš„æ—¶å€™
 				}
-				// Ò»Ğ©ÆäËûÇé¿öµ¼ÖÂµÄ´°¿Ú±ä»¯£¬±ÈÈç SetWindowPos »ò mSwapChain->SetFullscreenState µÈ½Ó¿ÚµÄµ÷ÓÃ
+				// ä¸€äº›å…¶ä»–æƒ…å†µå¯¼è‡´çš„çª—å£å˜åŒ–ï¼Œæ¯”å¦‚ SetWindowPos æˆ– mSwapChain->SetFullscreenState ç­‰æ¥å£çš„è°ƒç”¨
 				else
 				{
 					OnResize();
@@ -137,25 +137,25 @@ namespace ZXEngine
 			}
 			return 0;
 
-		// ÓÃ»§ÔÚÍÏ´°¿Ú±ß¿ò
+		// ç”¨æˆ·åœ¨æ‹–çª—å£è¾¹æ¡†
 		case WM_ENTERSIZEMOVE:
 			mAppPaused = true;
 			mResizing = true;
 			return 0;
 
-		// ÓÃ»§ËÉ¿ªÁË´°¿Ú±ß¿ò
+		// ç”¨æˆ·æ¾å¼€äº†çª—å£è¾¹æ¡†
 		case WM_EXITSIZEMOVE:
 			mAppPaused = false;
 			mResizing = false;
 			OnResize();
 			return 0;
 
-		// Êó±ê¹öÂÖÊÂ¼ş
+		// é¼ æ ‡æ»šè½®äº‹ä»¶
 		case WM_MOUSEWHEEL:
 			OnMouseScroll(GET_WHEEL_DELTA_WPARAM(wParam));
 			return 0;
 
-		// ´°¿Ú¹Ø±Õ
+		// çª—å£å…³é—­
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			return 0;

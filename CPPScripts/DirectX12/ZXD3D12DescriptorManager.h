@@ -6,8 +6,8 @@
 namespace ZXEngine
 {
 	/// <summary>
-	/// 此类负责对外提供描述符创建和释放接口，内部管理了分别对应4种描述符堆类型的4个ZXD3D12DescriptorAllocator
-	/// 内部管理了所有的CPU描述符，GPU描述符只在需要用到的时候从这里的CPU描述符Copy过去
+	/// 姝ょ被璐熻矗瀵瑰鎻愪緵鎻忚堪绗﹀垱寤哄拰閲婃斁鎺ュ彛锛屽唴閮ㄧ鐞嗕簡鍒嗗埆瀵瑰簲4绉嶆弿杩扮鍫嗙被鍨嬬殑4涓猌XD3D12DescriptorAllocator
+	/// 鍐呴儴绠＄悊浜嗘墍鏈夌殑CPU鎻忚堪绗︼紝GPU鎻忚堪绗﹀彧鍦ㄩ渶瑕佺敤鍒扮殑鏃跺�欎粠杩欓噷鐨凜PU鎻忚堪绗opy杩囧幓
 	/// </summary>
 	class ZXD3D12DescriptorManager
 	{

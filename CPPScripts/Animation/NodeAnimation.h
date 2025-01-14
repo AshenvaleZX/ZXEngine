@@ -25,10 +25,10 @@ namespace ZXEngine
 	class NodeAnimation
 	{
 	public:
-		// Óë¹Ç÷ÀµÄÃû×Ö¶ÔÓ¦
+		// ä¸éª¨éª¼çš„åå­—å¯¹åº”
 		string mName;
 
-		// ¹Ø¼üÖ¡Êı¾İ
+		// å…³é”®å¸§æ•°æ®
 		size_t mKeyScaleNum = 0;
 		vector<KeyVector3> mKeyScales;
 		size_t mKeyPositionNum = 0;

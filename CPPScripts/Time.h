@@ -7,35 +7,35 @@ namespace ZXEngine
 	class Time
 	{
 	public:
-		// µ±Ç°ÏµÍ³Ê±¼ä´Á£¨Ãë£©
+		// å½“å‰ç³»ç»Ÿæ—¶é—´æˆ³ï¼ˆç§’ï¼‰
 		static long long curSysTime;
-		// µ±Ç°ÏµÍ³Ê±¼ä´Á£¨Î¢Ãë£©
+		// å½“å‰ç³»ç»Ÿæ—¶é—´æˆ³ï¼ˆå¾®ç§’ï¼‰
 		static long long curSysTime_micro;
-		// µ±Ç°ÏµÍ³Æô¶¯Ê±¼ä´Á£¨Ãë£©
+		// å½“å‰ç³»ç»Ÿå¯åŠ¨æ—¶é—´æˆ³ï¼ˆç§’ï¼‰
 		static long long curSysStartTime;
-		// µ±Ç°ÏµÍ³Æô¶¯Ê±¼ä´Á£¨Î¢Ãë£©
+		// å½“å‰ç³»ç»Ÿå¯åŠ¨æ—¶é—´æˆ³ï¼ˆå¾®ç§’ï¼‰
 		static long long curSysStartTime_micro;
-		// ´ÓÓÎÏ·Æô¶¯µ½µ±Ç°µÄÊ±¼ä£¨Ãë£©
+		// ä»æ¸¸æˆå¯åŠ¨åˆ°å½“å‰çš„æ—¶é—´ï¼ˆç§’ï¼‰
 		static float curTime;
-		// ´ÓÓÎÏ·Æô¶¯µ½µ±Ç°µÄÊ±¼ä£¨Î¢Ãë£©
+		// ä»æ¸¸æˆå¯åŠ¨åˆ°å½“å‰çš„æ—¶é—´ï¼ˆå¾®ç§’ï¼‰
 		static long long curTime_micro;
-		// ´ÓÉÏÒ»Ö¡µ½ÏÖÔÚµÄÊ±¼ä£¨Ãë£©
+		// ä»ä¸Šä¸€å¸§åˆ°ç°åœ¨çš„æ—¶é—´ï¼ˆç§’ï¼‰
 		static float deltaTime;
-		// ´ÓÉÏÒ»Ö¡µ½ÏÖÔÚµÄÊ±¼ä£¨Î¢Ãë£©
+		// ä»ä¸Šä¸€å¸§åˆ°ç°åœ¨çš„æ—¶é—´ï¼ˆå¾®ç§’ï¼‰
 		static long long deltaTime_micro;
-		// ´Ó±à¼­Æ÷Æô¶¯µ½µ±Ç°µÄÊ±¼ä£¨Ãë£©
+		// ä»ç¼–è¾‘å™¨å¯åŠ¨åˆ°å½“å‰çš„æ—¶é—´ï¼ˆç§’ï¼‰
 		static float curEditorTime;
-		// ÓÃÓÚ±à¼­Æ÷µÄdeltaTime£¨Ãë£©
+		// ç”¨äºç¼–è¾‘å™¨çš„deltaTimeï¼ˆç§’ï¼‰
 		static float deltaTimeEditor;
 
-		// ÎïÀíÖ¡ÂÊ
+		// ç‰©ç†å¸§ç‡
 		static const int fixedFrameRate;
-		// ÎïÀíÖ¡Ê±¼ä£¨Ãë£©
+		// ç‰©ç†å¸§æ—¶é—´ï¼ˆç§’ï¼‰
 		static const float fixedDeltaTime;
-		// ÎïÀíÖ¡Ê±¼ä£¨Î¢Ãë£©
+		// ç‰©ç†å¸§æ—¶é—´ï¼ˆå¾®ç§’ï¼‰
 		static const long long fixedDeltaTime_micro;
 
-		// ¸üĞÂÊ±¼ä
+		// æ›´æ–°æ—¶é—´
 		static void Update();
 		static void UpdateCurTime();
 	};

@@ -23,9 +23,9 @@ namespace ZXEngine
 			static uint32_t Detect(const CollisionSphere& sphere, const CollisionPlane& plane, CollisionData* data, bool isHalfSpace = true);
 
 		private:
-			// ÇòÓëÆ½ÃæÅö×²¼ì²â(ÓëÒ»¸öÕæÕıµÄÎŞÌå»ı¶şÎ¬Æ½ÃæÅö×²£¬´ÓÕı·´Á½Ãæ¶¼¿ÉÒÔÅö×²)
+			// çƒä¸å¹³é¢ç¢°æ’æ£€æµ‹(ä¸ä¸€ä¸ªçœŸæ­£çš„æ— ä½“ç§¯äºŒç»´å¹³é¢ç¢°æ’ï¼Œä»æ­£åä¸¤é¢éƒ½å¯ä»¥ç¢°æ’)
 			static uint32_t DetectSphereAndPlane(const CollisionSphere& sphere, const CollisionPlane& plane, CollisionData* data);
-			// ÇòÓëÆ½ÃæÅö×²¼ì²â(°ÑÆ½Ãæµ±×÷Ò»¸ö¿Õ¼ä»®·Ö£¬Ö»ÄÜ´ÓÕıÃæÅö×²£¬Èç¹ûÍêÈ«ÔÚ±³ÃæÊÓÎªÇ¶ÈëÆ½ÃæÄÚ£¬ÒÀÈ»²úÉúÅö×²)
+			// çƒä¸å¹³é¢ç¢°æ’æ£€æµ‹(æŠŠå¹³é¢å½“ä½œä¸€ä¸ªç©ºé—´åˆ’åˆ†ï¼Œåªèƒ½ä»æ­£é¢ç¢°æ’ï¼Œå¦‚æœå®Œå…¨åœ¨èƒŒé¢è§†ä¸ºåµŒå…¥å¹³é¢å†…ï¼Œä¾ç„¶äº§ç”Ÿç¢°æ’)
 			static uint32_t DetectSphereAndHalfSpace(const CollisionSphere& sphere, const CollisionPlane& plane, CollisionData* data);
 		};
 	}

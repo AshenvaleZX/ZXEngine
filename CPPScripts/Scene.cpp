@@ -31,12 +31,12 @@ namespace ZXEngine
 		if (renderPipelineType == RenderPipelineType::RayTracing)
 			rtPipelineID = RenderAPI::GetInstance()->CreateRayTracingPipeline(sceneStruct->rtShaderPathGroup);
 
-		// ÁÙÊ±ÇĞ»»äÖÈ¾¹ÜÏßÀàĞÍ£¬ÒòÎªÓÃÓÚ¹â×·³¡¾°µÄÄ£ĞÍĞèÒªÉú³ÉBLAS£¬µ«ÊÇÄ¿Ç°»áÏÈ¼ÓÔØ³¡¾°ÔÙÇĞ»»³¡¾°
-		// ËùÒÔÕâÀïÏÈÇĞ»»µ½µ±Ç°¼ÓÔØµÄ³¡¾°¶ÔÓ¦µÄ¹ÜÏß£¬¼ÓÔØÍê³¡¾°ÔÙÇĞ»»»ØÈ¥
+		// ä¸´æ—¶åˆ‡æ¢æ¸²æŸ“ç®¡çº¿ç±»å‹ï¼Œå› ä¸ºç”¨äºå…‰è¿½åœºæ™¯çš„æ¨¡å‹éœ€è¦ç”ŸæˆBLASï¼Œä½†æ˜¯ç›®å‰ä¼šå…ˆåŠ è½½åœºæ™¯å†åˆ‡æ¢åœºæ™¯
+		// æ‰€ä»¥è¿™é‡Œå…ˆåˆ‡æ¢åˆ°å½“å‰åŠ è½½çš„åœºæ™¯å¯¹åº”çš„ç®¡çº¿ï¼ŒåŠ è½½å®Œåœºæ™¯å†åˆ‡æ¢å›å»
 		auto curPipelineType = ProjectSetting::renderPipelineType;
 		ProjectSetting::renderPipelineType = renderPipelineType;
 
-		// ÁÙÊ±ÇĞ»»SceneManagerÀïµÄµ±Ç°³¡¾°Îªthis£¬ÒòÎªGameObjectÔÚ¹¹ÔìµÄÊ±ºò¿ÉÄÜ»áĞèÒªÓÃµ½µ±Ç°Õâ¸ö³¡¾°
+		// ä¸´æ—¶åˆ‡æ¢SceneManageré‡Œçš„å½“å‰åœºæ™¯ä¸ºthisï¼Œå› ä¸ºGameObjectåœ¨æ„é€ çš„æ—¶å€™å¯èƒ½ä¼šéœ€è¦ç”¨åˆ°å½“å‰è¿™ä¸ªåœºæ™¯
 		auto tmpScene = new SceneInfo();
 		tmpScene->scene = this;
 		auto curScene = SceneManager::GetInstance()->curScene;
@@ -145,10 +145,10 @@ namespace ZXEngine
 			long long targetFrame = Time::curTime_micro / Time::fixedDeltaTime_micro;
 			long long deltaFrame = targetFrame - mCurPhyFrame;
 
-			// µ±Ç°ÓÎÏ·Ö¡Êı¸ßÓÚÎïÀíÒıÇæµÄÄ¿±êÖ¡Êı£¬Ìø¹ıÕâÒ»Ö¡µÄÎïÀí¸üĞÂ
+			// å½“å‰æ¸¸æˆå¸§æ•°é«˜äºç‰©ç†å¼•æ“çš„ç›®æ ‡å¸§æ•°ï¼Œè·³è¿‡è¿™ä¸€å¸§çš„ç‰©ç†æ›´æ–°
 			if (deltaFrame <= 0)
 				return;
-			// µ±Ç°ÓÎÏ·Ö¡ÊıµÍÓÚÎïÀíÒıÇæµÄÄ¿±êÖ¡Êı£¬ĞèÒª²¹ÎïÀíÖ¡£¬µ«ÊÇ²»ÄÜ²¹Ì«¶à£¬·ñÔò»áµ¼ÖÂÓÎÏ·Ö¡ÂÊ½øÒ»²½½µµÍ£¬¶ñĞÔÑ­»·È»ºó¿¨ËÀ
+			// å½“å‰æ¸¸æˆå¸§æ•°ä½äºç‰©ç†å¼•æ“çš„ç›®æ ‡å¸§æ•°ï¼Œéœ€è¦è¡¥ç‰©ç†å¸§ï¼Œä½†æ˜¯ä¸èƒ½è¡¥å¤ªå¤šï¼Œå¦åˆ™ä¼šå¯¼è‡´æ¸¸æˆå¸§ç‡è¿›ä¸€æ­¥é™ä½ï¼Œæ¶æ€§å¾ªç¯ç„¶åå¡æ­»
 			else if (deltaFrame > 10)
 				deltaFrame = 10;
 
@@ -160,7 +160,7 @@ namespace ZXEngine
 				mPhyScene->EndFrame();
 			}
 
-			// ÎŞÂÛÓĞÃ»ÓĞ²¹Ö¡£¬»òÕß²¹ÁË¶àÉÙÖ¡£¬¶¼µ±×÷ÒÑ¾­×·ÉÏÁËÄ¿±êÖ¡Êı
+			// æ— è®ºæœ‰æ²¡æœ‰è¡¥å¸§ï¼Œæˆ–è€…è¡¥äº†å¤šå°‘å¸§ï¼Œéƒ½å½“ä½œå·²ç»è¿½ä¸Šäº†ç›®æ ‡å¸§æ•°
 			mCurPhyFrame = targetFrame;
 		}
 		else

@@ -26,7 +26,7 @@ namespace ZXEngine
 
 	void ParticleSystem::Update()
 	{
-		// ¸üÐÂµ±Ç°Î»ÖÃºÍÒÆ¶¯·½Ïò
+		// æ›´æ–°å½“å‰ä½ç½®å’Œç§»åŠ¨æ–¹å‘
 		Vector3 pos = GetTransform()->GetPosition();
 		mState.mMoveDir = (pos - mState.mCurPos).GetNormalized();
 		mState.mCurPos = std::move(pos);

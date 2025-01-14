@@ -161,7 +161,7 @@ namespace ZXEngine
 			ComponentSpawner spawner;
 			spawner.ID = TypeIDAllocator<World::ComponentPool>::Get<T>();
 
-			// ÕâÀïÈç¹ûcomponentÊÇÒÔ×óÖµ´«ÈëµÄ£¬»á²úÉú¸´ÖÆ¿ªÏú£¬ËùÒÔÔÚµ÷ÓÃÊ±¾¡¿ÉÄÜµÄÊ¹ÓÃÓÒÖµ´«Èë
+			// è¿™é‡Œå¦‚æœcomponentæ˜¯ä»¥å·¦å€¼ä¼ å…¥çš„ï¼Œä¼šäº§ç”Ÿå¤åˆ¶å¼€é”€ï¼Œæ‰€ä»¥åœ¨è°ƒç”¨æ—¶å°½å¯èƒ½çš„ä½¿ç”¨å³å€¼ä¼ å…¥
 			spawner.Assign = [capturedComponent = std::forward<T>(component)](void* ptr)mutable->void
 			{
 				*(static_cast<T*>(ptr)) = std::move(capturedComponent);

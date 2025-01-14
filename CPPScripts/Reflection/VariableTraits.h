@@ -5,25 +5,25 @@ namespace ZXEngine
 {
 	namespace Reflection
 	{
-		// »ñÈ¡±äÁ¿ÀàĞÍĞÅÏ¢
+		// è·å–å˜é‡ç±»å‹ä¿¡æ¯
 		template <typename T>
 		struct VariableType
 		{
 			using Type = T;
 		};
 
-		// »ñÈ¡³ÉÔ±±äÁ¿ÀàĞÍĞÅÏ¢
+		// è·å–æˆå‘˜å˜é‡ç±»å‹ä¿¡æ¯
 		template <typename Class, typename T>
 		struct VariableType<T Class::*>
 		{
 			using Type = T;
 		};
 
-		// ×Ô¶¯Æ¥Åä»ñÈ¡±äÁ¿ÀàĞÍĞÅÏ¢
+		// è‡ªåŠ¨åŒ¹é…è·å–å˜é‡ç±»å‹ä¿¡æ¯
 		template <typename T>
 		using VariableType_T = typename VariableType<T>::Type;
 
-		// ÒÔ¡°Î²ÖÃ·µ»ØÀàĞÍ¡±µÄĞÎÊ½ÉùÃ÷º¯Êı£¬Í¨¹ıÕâÖÖ·½Ê½°şÀëÖ¸Õë
+		// ä»¥â€œå°¾ç½®è¿”å›ç±»å‹â€çš„å½¢å¼å£°æ˜å‡½æ•°ï¼Œé€šè¿‡è¿™ç§æ–¹å¼å‰¥ç¦»æŒ‡é’ˆ
 		namespace Internal
 		{
 			template <typename T>
@@ -33,7 +33,7 @@ namespace ZXEngine
 			auto VariablePointerToType(T Class::*) -> T {};
 		}
 
-		// »ñÈ¡Ö¸ÕëÀàĞÍÊı¾İµÄÀàĞÍĞÅÏ¢
+		// è·å–æŒ‡é’ˆç±»å‹æ•°æ®çš„ç±»å‹ä¿¡æ¯
 		template <auto T>
 		using VariablePointerToType_T = decltype(Internal::VariablePointerToType(T));
 

@@ -15,7 +15,7 @@ namespace ZXEngine
 
 		bool IntersectionDetector::Detect(const Ray& ray, const CollisionBox& box, RayHitInfo& hit)
 		{
-			// ½«ÉäÏß×ª»»µ½BoxµÄ¾Ö²¿¿Õ¼ä
+			// å°†å°„çº¿è½¬æ¢åˆ°Boxçš„å±€éƒ¨ç©ºé—´
 			Matrix4 transform = Math::Inverse(box.mTransform);
 			Ray localRay = Ray(transform * ray.mOrigin.ToPosVec4(), transform * ray.mDirection.ToDirVec4());
 			return Detect(localRay, box.mHalfSize, hit);
@@ -23,14 +23,14 @@ namespace ZXEngine
 
 		bool IntersectionDetector::Detect(const Ray& localRay, const Vector3& boxHalfSize, RayHitInfo& hit)
 		{
-			// ÉäÏß¾àÀëµÄ×îĞ¡×î´óÖµ
+			// å°„çº¿è·ç¦»çš„æœ€å°æœ€å¤§å€¼
 			float tMin = 0.0f;
 			float tMax = FLT_MAX;
 
-			// ÉäÏß·½ÏòµÄµ¹Êı
+			// å°„çº¿æ–¹å‘çš„å€’æ•°
 			Vector3 inverseDirection = Vector3(1.0f / localRay.mDirection.x, 1.0f / localRay.mDirection.y, 1.0f / localRay.mDirection.z);
 
-			// BoxµÄ×îĞ¡×î´óÖµ
+			// Boxçš„æœ€å°æœ€å¤§å€¼
 			Vector3 bMin = -boxHalfSize;
 			Vector3 bMax =  boxHalfSize;
 
@@ -38,7 +38,7 @@ namespace ZXEngine
 			{
 				if (fabsf(localRay.mDirection[i]) < 0.0001f)
 				{
-					// ÓëBoxµÄÄ³¸öÃæÆ½ĞĞ£¬ÇÒÆğµã²»ÔÚBoxÄÚ£¬Ôò²»Ïà½»
+					// ä¸Boxçš„æŸä¸ªé¢å¹³è¡Œï¼Œä¸”èµ·ç‚¹ä¸åœ¨Boxå†…ï¼Œåˆ™ä¸ç›¸äº¤
 					if (localRay.mOrigin[i] < bMin[i] || localRay.mOrigin[i] > bMax[i])
 					{
 						return false;
@@ -75,13 +75,13 @@ namespace ZXEngine
 		bool IntersectionDetector::Detect(const Ray& ray, const CollisionPlane& plane)
 		{
 			Matrix4 iTrans = Math::Inverse(plane.mTransform);
-			// ±ä»¯ÉäÏßµÄ·½ÏòÏòÁ¿²»Í¬ÓÚ±ä»¯·¨Ïß£¬Ö±½ÓÓÃºÍ±ä»¯¶¥µãÏàÍ¬µÄ¾ØÕó¼´¿É
+			// å˜åŒ–å°„çº¿çš„æ–¹å‘å‘é‡ä¸åŒäºå˜åŒ–æ³•çº¿ï¼Œç›´æ¥ç”¨å’Œå˜åŒ–é¡¶ç‚¹ç›¸åŒçš„çŸ©é˜µå³å¯
 			Ray localRay = Ray(iTrans * ray.mOrigin.ToPosVec4(), iTrans * ray.mDirection.ToDirVec4());
 
-			// ÉäÏßÆğµãÔÚÆ½ÃæµÄÄÄÒ»±ß
+			// å°„çº¿èµ·ç‚¹åœ¨å¹³é¢çš„å“ªä¸€è¾¹
 			float pSide = Math::Dot(localRay.mOrigin, plane.mLocalNormal);
 
-			// ÉäÏß·½ÏòºÍÆ½Ãæ·¨ÏßÊÇ·ñÍ¬Ïò
+			// å°„çº¿æ–¹å‘å’Œå¹³é¢æ³•çº¿æ˜¯å¦åŒå‘
 			float rDotN = Math::Dot(localRay.mDirection, plane.mLocalNormal);
 
 			if ((pSide > 0.0f && rDotN > 0.0f) || (pSide < 0.0f && rDotN < 0.0f))
@@ -100,7 +100,7 @@ namespace ZXEngine
 			float b = Math::Dot(m, ray.mDirection);
 			float c = Math::Dot(m, m) - sphere.mRadius * sphere.mRadius;
 
-			// ÉäÏßÆğµãÔÚÇòÍâÇÒ·½ÏòÓëµ½ÇòĞÄÏà·´
+			// å°„çº¿èµ·ç‚¹åœ¨çƒå¤–ä¸”æ–¹å‘ä¸åˆ°çƒå¿ƒç›¸å
 			if (c > 0.0f && b > 0.0f)
 			{
 				return false;
@@ -117,7 +117,7 @@ namespace ZXEngine
 			// t^2 + (2 * b) * t + c = 0
 
 			// y = ax^2 + bx + c
-			// Ò»Ôª¶ş´Î·½³ÌÅĞ±ğÊ½: b^2 - 4ac
+			// ä¸€å…ƒäºŒæ¬¡æ–¹ç¨‹åˆ¤åˆ«å¼: b^2 - 4ac
 			// (2 * b)^2 - 4 * c
 			// b^2 - c
 
@@ -139,13 +139,13 @@ namespace ZXEngine
 		bool IntersectionDetector::Detect(const Ray& ray, const CollisionCircle2D& circle, RayHitInfo& hit)
 		{
 			Matrix4 iTrans = Math::Inverse(circle.mTransform);
-			// ±ä»¯ÉäÏßµÄ·½ÏòÏòÁ¿²»Í¬ÓÚ±ä»¯·¨Ïß£¬Ö±½ÓÓÃºÍ±ä»¯¶¥µãÏàÍ¬µÄ¾ØÕó¼´¿É
+			// å˜åŒ–å°„çº¿çš„æ–¹å‘å‘é‡ä¸åŒäºå˜åŒ–æ³•çº¿ï¼Œç›´æ¥ç”¨å’Œå˜åŒ–é¡¶ç‚¹ç›¸åŒçš„çŸ©é˜µå³å¯
 			Ray localRay = Ray(iTrans * ray.mOrigin.ToPosVec4(), iTrans * ray.mDirection.ToDirVec4());
 
-			// ÉäÏßÆğµãÔÚÆ½ÃæµÄÄÄÒ»±ß
+			// å°„çº¿èµ·ç‚¹åœ¨å¹³é¢çš„å“ªä¸€è¾¹
 			float pSide = Math::Dot(localRay.mOrigin, circle.mLocalNormal);
 
-			// ÉäÏß·½ÏòºÍÆ½Ãæ·¨ÏßÊÇ·ñÍ¬Ïò
+			// å°„çº¿æ–¹å‘å’Œå¹³é¢æ³•çº¿æ˜¯å¦åŒå‘
 			float rDotN = Math::Dot(localRay.mDirection, circle.mLocalNormal);
 
 			if ((pSide > 0.0f && rDotN > 0.0f) || (pSide < 0.0f && rDotN < 0.0f))
@@ -169,7 +169,7 @@ namespace ZXEngine
 			Vector3 p = Math::Cross(ray.mDirection, e2);
 			float det = Math::Dot(e1, p);
 
-			// Æ½ĞĞ
+			// å¹³è¡Œ
 			if (det > -0.0001f && det < 0.0001f)
 			{
 				return false;
@@ -235,7 +235,7 @@ namespace ZXEngine
 		{
 			Vector3 centerLine = box1.mTransform.GetColumn(3) - box2.mTransform.GetColumn(3);
 
-			// ·ÖÀëÖá¶¨Àí(ÈôÁ½¸öÍ¹ÃæÌå²»Ïà½»£¬ÔòÒ»¶¨ÖÁÉÙ´æÔÚÒ»¸ùÖá£¬Ê¹ÕâÁ½¸öÍ¹ÃæÌåÍ¶Ó°µ½Õâ¸ùÖáÉÏºóÃ»ÓĞÖØµş)
+			// åˆ†ç¦»è½´å®šç†(è‹¥ä¸¤ä¸ªå‡¸é¢ä½“ä¸ç›¸äº¤ï¼Œåˆ™ä¸€å®šè‡³å°‘å­˜åœ¨ä¸€æ ¹è½´ï¼Œä½¿è¿™ä¸¤ä¸ªå‡¸é¢ä½“æŠ•å½±åˆ°è¿™æ ¹è½´ä¸Šåæ²¡æœ‰é‡å )
 			return 
 				IsOverlapOnAxis(box1, box2, box1.mTransform.GetColumn(0), centerLine) &&
 				IsOverlapOnAxis(box1, box2, box1.mTransform.GetColumn(1), centerLine) &&
@@ -274,9 +274,9 @@ namespace ZXEngine
 
 		bool IntersectionDetector::DetectBoxAndHalfSpace(const CollisionBox& box, const CollisionPlane& plane)
 		{
-			// ¼ÆËãBoxÔÚÆ½Ãæ·¨ÏßÉÏµÄÍ¶Ó°³¤¶È
+			// è®¡ç®—Boxåœ¨å¹³é¢æ³•çº¿ä¸Šçš„æŠ•å½±é•¿åº¦
 			float projectedLength = box.GetHalfProjectedLength(plane.mNormal);
-			// Boxµ½Æ½ÃæµÄ¾àÀë
+			// Boxåˆ°å¹³é¢çš„è·ç¦»
 			float distance = Math::Dot(plane.mNormal, Vector3(box.mTransform.GetColumn(3))) - projectedLength;
 			return distance <= plane.mDistance;
 		}
@@ -312,35 +312,35 @@ namespace ZXEngine
 			const Vector3& midPoint2, const Vector3& dir2, float halfLength2,
 			Vector3& contactPoint, bool useOne)
 		{
-			// Á½ÌõÏß¶Î·½Ïò³¤¶ÈµÄÆ½·½
+			// ä¸¤æ¡çº¿æ®µæ–¹å‘é•¿åº¦çš„å¹³æ–¹
 			float squaredLength1 = dir1.GetMagnitudeSquared();
 			float squaredLength2 = dir2.GetMagnitudeSquared();
-			// Á½ÌõÏß¶Î·½ÏòµÄµã»ı
+			// ä¸¤æ¡çº¿æ®µæ–¹å‘çš„ç‚¹ç§¯
 			float dot_d1_d2 = Math::Dot(dir1, dir2);
 
 			float denominator = squaredLength1 * squaredLength2 - dot_d1_d2 * dot_d1_d2;
 
-			// Èç¹ûÁ½ÌõÏß¶ÎÆ½ĞĞ£¬ÄÇÃ´dot_d1_d2µÄÖµ¾ÍÓ¦¸ÃÊÇÕı(¼Ğ½Ç0)»ò¸º(¼Ğ½Ç180)dir1³¤¶È*dir2³¤¶È
-			// ÄÇÃ´(squaredLength1 * squaredLength2)ºÍ(dot_d1_d2 * dot_d1_d2)¶¼µÈ¼ÛÓÚ((dir1³¤¶È*dir2³¤¶È)^2)
-			// ËùÒÔÈç¹ûdenominatorµÄÖµºÜĞ¡£¬¾ÍÈÏÎªÁ½ÌõÏß¶ÎÆ½ĞĞ£¬·µ»ØÎŞ½»²æ
+			// å¦‚æœä¸¤æ¡çº¿æ®µå¹³è¡Œï¼Œé‚£ä¹ˆdot_d1_d2çš„å€¼å°±åº”è¯¥æ˜¯æ­£(å¤¹è§’0)æˆ–è´Ÿ(å¤¹è§’180)dir1é•¿åº¦*dir2é•¿åº¦
+			// é‚£ä¹ˆ(squaredLength1 * squaredLength2)å’Œ(dot_d1_d2 * dot_d1_d2)éƒ½ç­‰ä»·äº((dir1é•¿åº¦*dir2é•¿åº¦)^2)
+			// æ‰€ä»¥å¦‚æœdenominatorçš„å€¼å¾ˆå°ï¼Œå°±è®¤ä¸ºä¸¤æ¡çº¿æ®µå¹³è¡Œï¼Œè¿”å›æ— äº¤å‰
 			if (fabsf(denominator) < 0.0001f)
 			{
 				contactPoint = useOne ? midPoint1 : midPoint2;
 				return false;
 			}
 
-			// µã2µ½µã1µÄÏòÁ¿
+			// ç‚¹2åˆ°ç‚¹1çš„å‘é‡
 			Vector3 p2top1 = midPoint1 - midPoint2;
-			// µã2µ½µã1µÄÏòÁ¿ºÍÁ½ÌõÏß¶Î·½ÏòµÄµã»ı
+			// ç‚¹2åˆ°ç‚¹1çš„å‘é‡å’Œä¸¤æ¡çº¿æ®µæ–¹å‘çš„ç‚¹ç§¯
 			float dot_2to1_d1 = Math::Dot(p2top1, dir1);
 			float dot_2to1_d2 = Math::Dot(p2top1, dir2);
 
-			// ½»µãµ½Ïß¶Î1ÖĞµãµÄ¾àÀë
+			// äº¤ç‚¹åˆ°çº¿æ®µ1ä¸­ç‚¹çš„è·ç¦»
 			float distance1 = (dot_d1_d2 * dot_2to1_d2 - squaredLength2 * dot_2to1_d1) / denominator;
-			// ½»µãµ½Ïß¶Î2ÖĞµãµÄ¾àÀë
+			// äº¤ç‚¹åˆ°çº¿æ®µ2ä¸­ç‚¹çš„è·ç¦»
 			float distance2 = (squaredLength1 * dot_2to1_d2 - dot_d1_d2 * dot_2to1_d1) / denominator;
 
-			// Èç¹û½»µãÃ»ÓĞÍ¬Ê±ÔÚÁ½ÌõÏß¶ÎÉÏÔò²»Ïà½»
+			// å¦‚æœäº¤ç‚¹æ²¡æœ‰åŒæ—¶åœ¨ä¸¤æ¡çº¿æ®µä¸Šåˆ™ä¸ç›¸äº¤
 			if (distance1 > halfLength1 || distance1 < -halfLength1 || distance2 > halfLength2 || distance2 < -halfLength2)
 			{
 				contactPoint = useOne ? midPoint1 : midPoint2;
@@ -348,11 +348,11 @@ namespace ZXEngine
 			}
 			else
 			{
-				// Í¨¹ıÏß¶Î1¼ÆËã½»µã
+				// é€šè¿‡çº¿æ®µ1è®¡ç®—äº¤ç‚¹
 				Vector3 contactPos1 = midPoint1 + dir1 * distance1;
-				// Í¨¹ıÏß¶Î2¼ÆËã½»µã
+				// é€šè¿‡çº¿æ®µ2è®¡ç®—äº¤ç‚¹
 				Vector3 contactPos2 = midPoint2 + dir2 * distance2;
-				// Á½¸ö½»µãµÄÆ½¾ùÖµ(ÀíÏëÇé¿öÏÂÕâÁ½¸öµãÓ¦¸ÃÊÇÍêÈ«ÖØºÏµÄ£¬µ«ÊÇÊµ¼ÊÔËËãÖĞ»ù±¾²»¿ÉÄÜ£¬ËùÒÔÈ¡Æ½¾ù)
+				// ä¸¤ä¸ªäº¤ç‚¹çš„å¹³å‡å€¼(ç†æƒ³æƒ…å†µä¸‹è¿™ä¸¤ä¸ªç‚¹åº”è¯¥æ˜¯å®Œå…¨é‡åˆçš„ï¼Œä½†æ˜¯å®é™…è¿ç®—ä¸­åŸºæœ¬ä¸å¯èƒ½ï¼Œæ‰€ä»¥å–å¹³å‡)
 				contactPoint = (contactPos1 + contactPos2) * 0.5f;
 				return true;
 			}

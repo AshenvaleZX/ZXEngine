@@ -27,11 +27,11 @@ namespace ZXEngine
 
 	void EditorMainBarPanel::DrawPanel()
 	{
-		// Ãæ°å´óĞ¡ºÍÎ»ÖÃ
+		// é¢æ¿å¤§å°å’Œä½ç½®
 		ImGui::SetNextWindowPos(ImVec2(0, 0));
 		ImGui::SetNextWindowSize(ImVec2((float)ProjectSetting::mainBarWidth, (float)ProjectSetting::mainBarHeight));
 
-		// ÉèÖÃÃæ°å¾ßÌåÄÚÈİ
+		// è®¾ç½®é¢æ¿å…·ä½“å†…å®¹
 		if (ImGui::Begin("ZXEngine", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_MenuBar))
 		{
 			if (ImGui::BeginMenuBar())
@@ -111,11 +111,11 @@ namespace ZXEngine
 				ImGui::EndMenuBar();
 			}
 
-			// 3¸ö°´Å¥´Ó×óµ½ÓÒµÄ¿í¶È
+			// 3ä¸ªæŒ‰é’®ä»å·¦åˆ°å³çš„å®½åº¦
 			float threeButtonSize = 80.0f;
 			float avail = ImGui::GetContentRegionAvail().x;
 			float offset = (avail - threeButtonSize) * 0.5f;
-			// ¼ÆËã3¸ö°´Å¥Òª¾ÓÖĞµÄ»°£¬µÚÒ»¸ö°´Å¥µÄÆğÊ¼Î»ÖÃ
+			// è®¡ç®—3ä¸ªæŒ‰é’®è¦å±…ä¸­çš„è¯ï¼Œç¬¬ä¸€ä¸ªæŒ‰é’®çš„èµ·å§‹ä½ç½®
 			float midBtnPosX = ImGui::GetCursorPosX() + offset;
 
 			bool isPop = false;
@@ -182,7 +182,7 @@ namespace ZXEngine
 			}
 			if (ImGui::Button(">>", buttonSize))
 			{
-				// ¹ØµôÓÎÏ·ÔËĞĞµÄÊ±ºò£¬ÖØÖÃÔİÍ£°´Å¥
+				// å…³æ‰æ¸¸æˆè¿è¡Œçš„æ—¶å€™ï¼Œé‡ç½®æš‚åœæŒ‰é’®
 				if (EditorDataManager::isGameStart)
 				{
 					Time::curTime = 0.0f;

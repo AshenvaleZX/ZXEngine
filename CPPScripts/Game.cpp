@@ -59,14 +59,14 @@ namespace ZXEngine
 	{
 		while (!RenderEngine::GetInstance()->WindowShouldClose())
 		{
-			// Âß¼­
+			// é€»è¾‘
 			Update();
 
-			// äÖÈ¾
+			// æ¸²æŸ“
 			Render();
 
 #ifdef ZX_DEBUG
-			// µ÷ÊÔ
+			// è°ƒè¯•
 			Debug::Update();
 #endif
 		}

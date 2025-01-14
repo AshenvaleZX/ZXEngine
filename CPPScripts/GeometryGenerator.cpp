@@ -75,9 +75,9 @@ namespace ZXEngine
 		vector<Vertex> vertices;
 		vector<uint32_t> indices;
 
-		// ¶¥²¿¶¥µã
+		// é¡¶éƒ¨é¡¶ç‚¹
 		Vertex topVertex = { .Position = { 0.0f, +radius, 0.0f }, .TexCoords = { 0.0f, 0.0f }, .Normal = { 0.0f, +1.0f, 0.0f }, .Tangent = { 1.0f, 0.0f, 0.0f } };
-		// µ×²¿¶¥µã
+		// åº•éƒ¨é¡¶ç‚¹
 		Vertex bottomVertex = { .Position = { 0.0f, -radius, 0.0f }, .TexCoords = { 0.0f, 1.0f }, .Normal = { 0.0f, -1.0f, 0.0f }, .Tangent = { 1.0f, 0.0f, 0.0f } };
 
 		float phiStep = Math::PI / stackCount;
@@ -85,27 +85,27 @@ namespace ZXEngine
 
 		vertices.push_back(topVertex);
 
-		// ±éÀúÇòµÄÃ¿Ò»²ã
+		// éå†çƒçš„æ¯ä¸€å±‚
 		for (uint32_t i = 1; i < stackCount; i++)
 		{
 			float phi = i * phiStep;
 
-			// ¼ÆËãµ±Ç°ÕâÒ»²ãÔ²È¦µÄ¶¥µã
+			// è®¡ç®—å½“å‰è¿™ä¸€å±‚åœ†åœˆçš„é¡¶ç‚¹
 			for (uint32_t j = 0; j <= sliceCount; j++)
 			{
 				float theta = j * thetaStep;
 
 				Vertex v;
 
-				// ´ÓÇò×ø±êÏµ×ªµ½µÑ¿¨¶û×ø±êÏµ
+				// ä»çƒåæ ‡ç³»è½¬åˆ°ç¬›å¡å°”åæ ‡ç³»
 				v.Position.x = radius * sinf(phi) * cosf(theta);
 				v.Position.y = radius * cosf(phi);
 				v.Position.z = radius * sinf(phi) * sinf(theta);
 
-				// ÒòÎªÊÇÇò£¬ÇòĞÄÓÖÔÚ×ø±êÏµÔ­µã£¬ËùÒÔ×ø±êÖ±½ÓNormalize¾ÍÊÇ·¨Ïß
+				// å› ä¸ºæ˜¯çƒï¼Œçƒå¿ƒåˆåœ¨åæ ‡ç³»åŸç‚¹ï¼Œæ‰€ä»¥åæ ‡ç›´æ¥Normalizeå°±æ˜¯æ³•çº¿
 				v.Normal = v.Position.GetNormalized();
 
-				// ÖØĞÂÍÆµ¼ÇĞÏß
+				// é‡æ–°æ¨å¯¼åˆ‡çº¿
 				v.Tangent.x = -radius * sinf(phi) * sinf(theta);
 				v.Tangent.y = 0.0f;
 				v.Tangent.z = +radius * sinf(phi) * cosf(theta);
@@ -120,7 +120,7 @@ namespace ZXEngine
 
 		vertices.push_back(bottomVertex);
 
-		// ¼ÆËãµÚÒ»È¦¶¥µã£¬µÚÒ»È¦ÊÇ¹Ì¶¨ºÍ¶¥²¿¶¥µãÏàÁ¬µÄ
+		// è®¡ç®—ç¬¬ä¸€åœˆé¡¶ç‚¹ï¼Œç¬¬ä¸€åœˆæ˜¯å›ºå®šå’Œé¡¶éƒ¨é¡¶ç‚¹ç›¸è¿çš„
 		for (uint32_t i = 1; i <= sliceCount; i++)
 		{
 			indices.push_back(0);
@@ -128,9 +128,9 @@ namespace ZXEngine
 			indices.push_back(i + 1);
 		}
 
-		// ¼ÆËãÔÚÖĞ¼äµÄ¸÷È¦¶¥µã
-		uint32_t baseIndex = 1; // Ìø¹ıµÚÒ»¸ö¶¥µã(¶¥²¿¶¥µã)
-		uint32_t ringVertexCount = sliceCount + 1; // Ã¿Ò»È¦µÄ¶¥µãÊı
+		// è®¡ç®—åœ¨ä¸­é—´çš„å„åœˆé¡¶ç‚¹
+		uint32_t baseIndex = 1; // è·³è¿‡ç¬¬ä¸€ä¸ªé¡¶ç‚¹(é¡¶éƒ¨é¡¶ç‚¹)
+		uint32_t ringVertexCount = sliceCount + 1; // æ¯ä¸€åœˆçš„é¡¶ç‚¹æ•°
 		for (uint32_t i = 0; i < stackCount - 2; i++)
 		{
 			for (uint32_t j = 0; j < sliceCount; j++)
@@ -145,11 +145,11 @@ namespace ZXEngine
 			}
 		}
 
-		// µ×²¿¶¥µã£¬Ò²¾ÍÊÇ×îºóÒ»¸ö
+		// åº•éƒ¨é¡¶ç‚¹ï¼Œä¹Ÿå°±æ˜¯æœ€åä¸€ä¸ª
 		uint32_t bottomIndex = static_cast<uint32_t>(vertices.size()) - 1;
-		// ¼ÆËã×îºóÒ»È¦¶¥µãµÄÆğµãË÷Òı
+		// è®¡ç®—æœ€åä¸€åœˆé¡¶ç‚¹çš„èµ·ç‚¹ç´¢å¼•
 		baseIndex = bottomIndex - ringVertexCount;
-		// ×îºóÒ»È¦¶¥µãºÍµ×²¿¶¥µãÏàÁ¬
+		// æœ€åä¸€åœˆé¡¶ç‚¹å’Œåº•éƒ¨é¡¶ç‚¹ç›¸è¿
 		for (uint32_t i = 0; i < sliceCount; i++)
 		{
 			indices.push_back(bottomIndex);
@@ -162,7 +162,7 @@ namespace ZXEngine
 
 	StaticMesh* GeometryGenerator::CreateSphereTessellation(float radius, uint32_t subdivisionNum)
 	{
-		// ÏÈÊÖĞ´Ò»¸öÕı20ÃæÌå
+		// å…ˆæ‰‹å†™ä¸€ä¸ªæ­£20é¢ä½“
 		const float X = 0.525731f;
 		const float Z = 0.850651f;
 
@@ -192,33 +192,33 @@ namespace ZXEngine
 			10,6,1,  11,9,0,  2,9,11,  5,9,2,   11,7,2
 		};
 
-		// Ï¸·ÖN´Î
+		// ç»†åˆ†Næ¬¡
 		for (uint32_t i = 0; i < subdivisionNum; i++)
 			Subdivide(vertices, indices);
 
-		// ¼ÆËãÖØĞÂÏ¸·ÖºóµÄ¶¥µãÊôĞÔ
+		// è®¡ç®—é‡æ–°ç»†åˆ†åçš„é¡¶ç‚¹å±æ€§
 		for (size_t i = 0; i < vertices.size(); ++i)
 		{
-			// µ÷Õû·¨Ïß
+			// è°ƒæ•´æ³•çº¿
 			Vector3 n = vertices[i].Position.GetNormalized();
-			// ¸ù¾İ·¨ÏßºÍ°ë¾¶ÖØĞÂ¼ÆËãÎ»ÖÃ
+			// æ ¹æ®æ³•çº¿å’ŒåŠå¾„é‡æ–°è®¡ç®—ä½ç½®
 			Vector3 p = radius * n;
 
 			vertices[i].Normal = n;
 			vertices[i].Position = p;
 
-			// °ÑÎ»ÖÃ×ª»»»Ø½Ç¶È
+			// æŠŠä½ç½®è½¬æ¢å›è§’åº¦
 			float theta = atan2f(vertices[i].Position.z, vertices[i].Position.x);
-			// ÏŞÖÆµ½0µ½2 PIÖ®¼ä
+			// é™åˆ¶åˆ°0åˆ°2 PIä¹‹é—´
 			if (theta < 0.0f)
 				theta += Math::PIx2;
 			float phi = acosf(vertices[i].Position.y / radius);
 
-			// ¸ù¾İ½Ç¶È¼ÆËãUV
+			// æ ¹æ®è§’åº¦è®¡ç®—UV
 			vertices[i].TexCoords.x = theta / Math::PIx2;
 			vertices[i].TexCoords.y = phi / Math::PI;
 
-			// ÖØĞÂÍÆµ¼ÇĞÏß
+			// é‡æ–°æ¨å¯¼åˆ‡çº¿
 			vertices[i].Tangent.x = -radius * sinf(phi) * sinf(theta);
 			vertices[i].Tangent.y = 0.0f;
 			vertices[i].Tangent.z = +radius * sinf(phi) * cosf(theta);
@@ -273,7 +273,7 @@ namespace ZXEngine
 		float dTheta = Math::PIx2 / sliceCount;
 		Vector3 topVertexPos = { 0.0f, 0.5f * height, 0.0f };
 
-		// ¼ÆËã¶¥²¿¶¥µã(Î»ÖÃÏàÍ¬£¬·¨Ïß²»Í¬£¬·ñÔò¹âÕÕĞ§¹û²»Ì«Õı³£)
+		// è®¡ç®—é¡¶éƒ¨é¡¶ç‚¹(ä½ç½®ç›¸åŒï¼Œæ³•çº¿ä¸åŒï¼Œå¦åˆ™å…‰ç…§æ•ˆæœä¸å¤ªæ­£å¸¸)
 		for (uint32_t i = 0; i < sliceCount; i++)
 		{
 			float x1 = radius * cosf(i * dTheta);
@@ -298,7 +298,7 @@ namespace ZXEngine
 			vertices.push_back(v);
 		}
 
-		// ¼ÆËãµ×²¿Ô²µÄ¶¥µã(µÚÒ»È¦£¬ÓÃÓÚ²à±ß)
+		// è®¡ç®—åº•éƒ¨åœ†çš„é¡¶ç‚¹(ç¬¬ä¸€åœˆï¼Œç”¨äºä¾§è¾¹)
 		for (uint32_t i = 0; i <= sliceCount; i++)
 		{
 			float x = cosf(i * dTheta);
@@ -319,7 +319,7 @@ namespace ZXEngine
 			vertices.push_back(v);
 		}
 
-		// ¼ÆËãµ×²¿Ô²µÄ¶¥µã(µÚ¶şÈ¦£¬ÓÃÓÚµ×²¿)
+		// è®¡ç®—åº•éƒ¨åœ†çš„é¡¶ç‚¹(ç¬¬äºŒåœˆï¼Œç”¨äºåº•éƒ¨)
 		for (uint32_t i = 0; i <= sliceCount; i++)
 		{
 			float x = cosf(i * dTheta);
@@ -338,7 +338,7 @@ namespace ZXEngine
 			vertices.push_back(v);
 		}
 
-		// ²àÃæµÄË÷Òı
+		// ä¾§é¢çš„ç´¢å¼•
 		for (uint32_t i = 1; i <= sliceCount; i++)
 		{
 			indices.push_back(i);
@@ -346,7 +346,7 @@ namespace ZXEngine
 			indices.push_back(i + sliceCount + 1);
 		}
 
-		// µ×²¿Ô²µÄË÷Òı
+		// åº•éƒ¨åœ†çš„ç´¢å¼•
 		uint32_t baseIndex = 2 * sliceCount + 2;
 		for (uint32_t i = 0; i < sliceCount; i++)
 		{
@@ -363,29 +363,29 @@ namespace ZXEngine
 		vector<Vertex> vertices;
 		vector<uint32_t> indices;
 
-		// Ô²ÖùÉÏµÄ¶¥µãÈ¦Êı
+		// åœ†æŸ±ä¸Šçš„é¡¶ç‚¹åœˆæ•°
 		uint32_t ringCount = stackCount + 1;
-		// Ô²ÖùÉÏÃ¿Ò»²ãµÄ¸ß¶È
+		// åœ†æŸ±ä¸Šæ¯ä¸€å±‚çš„é«˜åº¦
 		float stackHeight = height / stackCount;
-		// Ã¿Ò»²ãµÄ°ë¾¶ÔöÁ¿
+		// æ¯ä¸€å±‚çš„åŠå¾„å¢é‡
 		float radiusStep = (topRadius - bottomRadius) / stackCount;
-		// XZÆ½ÃæÉÏÃ¿Ò»È¦µÄ»¡¶ÈÔöÁ¿
+		// XZå¹³é¢ä¸Šæ¯ä¸€åœˆçš„å¼§åº¦å¢é‡
 		float dTheta = Math::PIx2 / sliceCount;
 
-		// ÁÙÊ±±äÁ¿£¬ÓÃÓÚ¼ÆËãÇĞÏß
+		// ä¸´æ—¶å˜é‡ï¼Œç”¨äºè®¡ç®—åˆ‡çº¿
 		Vector3 bitangent;
-		// ´ÓÏÂµ½ÉÏ¼ÆËãÃ¿Ò»È¦µÄ¶¥µã
+		// ä»ä¸‹åˆ°ä¸Šè®¡ç®—æ¯ä¸€åœˆçš„é¡¶ç‚¹
 		for (uint32_t i = 0; i < ringCount; i++)
 		{
 			float y = -0.5f * height + i * stackHeight;
 			float r = bottomRadius + i * radiusStep;
 
-			// ¼ÆËãµ±Ç°ÕâÒ»È¦µÄ¶¥µã
+			// è®¡ç®—å½“å‰è¿™ä¸€åœˆçš„é¡¶ç‚¹
 			for (uint32_t j = 0; j <= sliceCount; j++)
 			{
 				Vertex vertex;
 
-				// ¸ù¾İÈı½Çº¯Êı¼ÆËã¸÷ÖÖ¶¥µãĞÅÏ¢£¬ÎÄ×Ö²»Ì«ºÃÃèÊö¾Í²»½âÊÍÁË
+				// æ ¹æ®ä¸‰è§’å‡½æ•°è®¡ç®—å„ç§é¡¶ç‚¹ä¿¡æ¯ï¼Œæ–‡å­—ä¸å¤ªå¥½æè¿°å°±ä¸è§£é‡Šäº†
 				float c = cosf(j * dTheta);
 				float s = sinf(j * dTheta);
 
@@ -405,10 +405,10 @@ namespace ZXEngine
 			}
 		}
 
-		// Ã¿Ò»È¦µÄ¶¥µãÊıÁ¿(ÆğµãºÍÖĞµãÔÚÍ¬Ò»¸öÎ»ÖÃ£¬µ«ÊÇUV²»Í¬£¬ËùÒÔÊÇ2¸öµã£¬ÕâÀïÒª+1)
+		// æ¯ä¸€åœˆçš„é¡¶ç‚¹æ•°é‡(èµ·ç‚¹å’Œä¸­ç‚¹åœ¨åŒä¸€ä¸ªä½ç½®ï¼Œä½†æ˜¯UVä¸åŒï¼Œæ‰€ä»¥æ˜¯2ä¸ªç‚¹ï¼Œè¿™é‡Œè¦+1)
 		uint32_t ringVertexCount = sliceCount + 1;
 
-		// Îª¸Õ¸ÕÄÇĞ©¶¥µã¼ÆËãË÷Òı£¬¹¹³ÉÈı½ÇĞÎ
+		// ä¸ºåˆšåˆšé‚£äº›é¡¶ç‚¹è®¡ç®—ç´¢å¼•ï¼Œæ„æˆä¸‰è§’å½¢
 		for (uint32_t i = 0; i < stackCount; i++)
 		{
 			for (uint32_t j = 0; j < sliceCount; j++)
@@ -423,10 +423,10 @@ namespace ZXEngine
 			}
 		}
 
-		// ¿ªÊ¼Éú³ÉÔ²Öù¶¥²¿µÄÔ²
-		// ¼ÇÂ¼µ±Ç°Ë÷Òı£¬×÷Îª¶¥²¿Ô²µÄÆğÊ¼Ë÷Òı
+		// å¼€å§‹ç”Ÿæˆåœ†æŸ±é¡¶éƒ¨çš„åœ†
+		// è®°å½•å½“å‰ç´¢å¼•ï¼Œä½œä¸ºé¡¶éƒ¨åœ†çš„èµ·å§‹ç´¢å¼•
 		uint32_t baseIndex = static_cast<uint32_t>(vertices.size());
-		// ËäÈ»×î¶¥²¿Ò»È¦¶¥µã¸Õ¸ÕÒÑ¾­Ëã¹ıÁË£¬µ«ÊÇÎªÁË¶¥²¿Ô²È¦µÄUVÕıÈ·£¬ÕâÀïĞèÒªÖØ¸´Éú³ÉÒ»È¦UV²»Í¬µÄ¶¥µã
+		// è™½ç„¶æœ€é¡¶éƒ¨ä¸€åœˆé¡¶ç‚¹åˆšåˆšå·²ç»ç®—è¿‡äº†ï¼Œä½†æ˜¯ä¸ºäº†é¡¶éƒ¨åœ†åœˆçš„UVæ­£ç¡®ï¼Œè¿™é‡Œéœ€è¦é‡å¤ç”Ÿæˆä¸€åœˆUVä¸åŒçš„é¡¶ç‚¹
 		float topY = 0.5f * height;
 		for (uint32_t i = 0; i <= sliceCount; i++)
 		{
@@ -447,7 +447,7 @@ namespace ZXEngine
 			});
 		}
 
-		// ¶¥²¿ÖĞĞÄ¶¥µã
+		// é¡¶éƒ¨ä¸­å¿ƒé¡¶ç‚¹
 		vertices.push_back({
 			.Position = { 0.0f, topY, 0.0f },
 			.TexCoords = { 0.5f, 0.5f },
@@ -455,7 +455,7 @@ namespace ZXEngine
 			.Tangent = { 1.0f, 0.0f, 0.0f }
 		});
 
-		// ¶¥²¿ÖĞĞÄ¶¥µãË÷Òı
+		// é¡¶éƒ¨ä¸­å¿ƒé¡¶ç‚¹ç´¢å¼•
 		uint32_t topCenterIndex = static_cast<uint32_t>(vertices.size()) - 1;
 
 		for (uint32_t i = 0; i < sliceCount; i++)
@@ -465,7 +465,7 @@ namespace ZXEngine
 			indices.push_back(baseIndex + i + 1);
 		}
 
-		// ¿ªÊ¼Éú³ÉÔ²Öùµ×²¿µÄÔ²£¬²½ÖèºÍÉú³É¶¥²¿Ô²Ò»ÖÂ
+		// å¼€å§‹ç”Ÿæˆåœ†æŸ±åº•éƒ¨çš„åœ†ï¼Œæ­¥éª¤å’Œç”Ÿæˆé¡¶éƒ¨åœ†ä¸€è‡´
 		baseIndex = static_cast<uint32_t>(vertices.size());
 
 		float bottomY = -0.5f * height;
@@ -532,11 +532,11 @@ namespace ZXEngine
 		float dv = 1.0f / (zSplit - 1);
 
 		vertices.resize(vertexCount);
-		// ´ÓºóÏòÇ°
+		// ä»åå‘å‰
 		for (size_t i = 0; i < zSplit; i++)
 		{
 			float z = halfDepth - i * dz;
-			// ´Ó×óÏòÓÒ
+			// ä»å·¦å‘å³
 			for (size_t j = 0; j < xSplit; j++)
 			{
 				float x = -halfWidth + j * dx;
@@ -565,7 +565,7 @@ namespace ZXEngine
 				indices[k + 4] = (i + 1) * xSplit + j + 1;
 				indices[k + 5] = i * xSplit + j + 1;
 
-				// ÒÆµ½ÏÂ¸öËÄ±ßĞÎ
+				// ç§»åˆ°ä¸‹ä¸ªå››è¾¹å½¢
 				k += 6;
 			}
 		}
@@ -596,18 +596,18 @@ namespace ZXEngine
 	StaticMesh* GeometryGenerator::CreateScreenQuad()
 	{
 		/*
-		´Ëº¯ÊıÉú³ÉÒ»¸ö¸²¸ÇÆÁÄ»µÄËÄ±ßĞÎMesh£¬ÎŞĞèMVP±ä»»£¬Ö±½ÓÊÖĞ´µÄNDC¶¥µãÊı¾İ£¬ËùÒÔĞèÒª¸ñÍâ×¢Òâ²»Í¬APIµÄNDC²îÒì
-		¸÷APIµÄNDC×ø±êÏµÈçÏÂ(ÕâÀï²»ÓÃ¿¼ÂÇZÖá)£º
+		æ­¤å‡½æ•°ç”Ÿæˆä¸€ä¸ªè¦†ç›–å±å¹•çš„å››è¾¹å½¢Meshï¼Œæ— éœ€MVPå˜æ¢ï¼Œç›´æ¥æ‰‹å†™çš„NDCé¡¶ç‚¹æ•°æ®ï¼Œæ‰€ä»¥éœ€è¦æ ¼å¤–æ³¨æ„ä¸åŒAPIçš„NDCå·®å¼‚
+		å„APIçš„NDCåæ ‡ç³»å¦‚ä¸‹(è¿™é‡Œä¸ç”¨è€ƒè™‘Zè½´)ï¼š
 		|-----------------------------|
-		| OpenGL  | XÖáÏòÓÒ | YÖáÏòÉÏ |
+		| OpenGL  | Xè½´å‘å³ | Yè½´å‘ä¸Š |
 		|---------|---------|---------|
-		| Vulkan  | XÖáÏòÓÒ | YÖáÏòÏÂ |
+		| Vulkan  | Xè½´å‘å³ | Yè½´å‘ä¸‹ |
 		|---------|---------|---------|
-		| DirectX | XÖáÏòÓÒ | YÖáÏòÉÏ |
+		| DirectX | Xè½´å‘å³ | Yè½´å‘ä¸Š |
 		|-----------------------------|
 		*/
 
-		// ËÄ±ßĞÎ4¸ö¶¥µã×ø±ê£¬Î»ÓÚDNC£¬Óë·Ö±æÂÊÎŞ¹Ø£¬Ò²ÓëÍ¼ĞÎAPIÎŞ¹Ø£¬×ø±ê·¶Î§¶¼ÊÇ[-1, 1]
+		// å››è¾¹å½¢4ä¸ªé¡¶ç‚¹åæ ‡ï¼Œä½äºDNCï¼Œä¸åˆ†è¾¨ç‡æ— å…³ï¼Œä¹Ÿä¸å›¾å½¢APIæ— å…³ï¼Œåæ ‡èŒƒå›´éƒ½æ˜¯[-1, 1]
 		Vector3 points[4] =
 		{
 			Vector3( 1,  1, 0),
@@ -618,16 +618,16 @@ namespace ZXEngine
 
 		/*
 		|---------------------------------------------|
-		| OpenGL  | NDC YÖáÏòÉÏ | FrameBuffer YÖáÏòÉÏ |
+		| OpenGL  | NDC Yè½´å‘ä¸Š | FrameBuffer Yè½´å‘ä¸Š |
 		|---------|-------------|---------------------|
-		| Vulkan  | NDC YÖáÏòÏÂ | FrameBuffer YÖáÏòÏÂ |
+		| Vulkan  | NDC Yè½´å‘ä¸‹ | FrameBuffer Yè½´å‘ä¸‹ |
 		|---------|-------------|---------------------|
-		| DirectX | NDC YÖáÏòÉÏ | FrameBuffer YÖáÏòÏÂ |
+		| DirectX | NDC Yè½´å‘ä¸Š | FrameBuffer Yè½´å‘ä¸‹ |
 		|---------------------------------------------|
 		
-		OpenGLºÍVulkanµÄNDCºÍFrameBufferÔÚYÖáÊÇÍ¬ÏòµÄ£¬¶øDirectXµÄNDCºÍFrameBufferÔÚYÖáÊÇ·´ÏòµÄ
-		ËùÒÔÔÚOpenGLºÍVulkanÖĞµÄ¶¥µã×ø±êºÍUVÔÚYÖáÊÇ¶ÔÓ¦µÄ£¬¼´1¶ÔÓ¦1£¬-1¶ÔÓ¦0
-		¶øÔÚDirectXÖĞ¶¥µã×ø±êºÍUVÔÚYÖá¾ÍÊÇ·´µÄ£¬¼´1¶ÔÓ¦0£¬-1¶ÔÓ¦1
+		OpenGLå’ŒVulkançš„NDCå’ŒFrameBufferåœ¨Yè½´æ˜¯åŒå‘çš„ï¼Œè€ŒDirectXçš„NDCå’ŒFrameBufferåœ¨Yè½´æ˜¯åå‘çš„
+		æ‰€ä»¥åœ¨OpenGLå’ŒVulkanä¸­çš„é¡¶ç‚¹åæ ‡å’ŒUVåœ¨Yè½´æ˜¯å¯¹åº”çš„ï¼Œå³1å¯¹åº”1ï¼Œ-1å¯¹åº”0
+		è€Œåœ¨DirectXä¸­é¡¶ç‚¹åæ ‡å’ŒUVåœ¨Yè½´å°±æ˜¯åçš„ï¼Œå³1å¯¹åº”0ï¼Œ-1å¯¹åº”1
 		*/
 		Vector2 coords[4] =
 		{
@@ -644,9 +644,9 @@ namespace ZXEngine
 #endif
 		};
 
-		// ÕâÀïµÄ¶¥µãË÷ÒıË³Ğò¾ö¶¨ÁËÕı·´Ãæ£¬Ä¿Ç°¹¤³ÌÀï¶¼ÊÇÒÔÄæÊ±ÕëÎªÍ¼ÔªÕıÃæ
-		// ¸²¸ÇÆÁÄ»µÄËÄ±ßĞÎÖ»¿¼ÂÇXY×ø±ê£¬¶øOpenGLºÍDirectXµÄXYÖá³¯ÏòÊÇÒ»ÖÂµÄ£¬ËùÒÔ¶¥µãË÷ÒıË³ĞòÊÇÒ»ÖÂµÄ
-		// VulkanµÄYÖáºÍÆäËüÀ´¸öAPIÏà·´£¬ËùÒÔ¶¥µãË÷ÒıË³ĞòÊÇÄæĞòµÄ
+		// è¿™é‡Œçš„é¡¶ç‚¹ç´¢å¼•é¡ºåºå†³å®šäº†æ­£åé¢ï¼Œç›®å‰å·¥ç¨‹é‡Œéƒ½æ˜¯ä»¥é€†æ—¶é’ˆä¸ºå›¾å…ƒæ­£é¢
+		// è¦†ç›–å±å¹•çš„å››è¾¹å½¢åªè€ƒè™‘XYåæ ‡ï¼Œè€ŒOpenGLå’ŒDirectXçš„XYè½´æœå‘æ˜¯ä¸€è‡´çš„ï¼Œæ‰€ä»¥é¡¶ç‚¹ç´¢å¼•é¡ºåºæ˜¯ä¸€è‡´çš„
+		// Vulkançš„Yè½´å’Œå…¶å®ƒæ¥ä¸ªAPIç›¸åï¼Œæ‰€ä»¥é¡¶ç‚¹ç´¢å¼•é¡ºåºæ˜¯é€†åºçš„
 		vector<uint32_t> indices =
 		{
 #if defined(ZX_API_OPENGL) || defined(ZX_API_D3D12)
@@ -686,22 +686,22 @@ namespace ZXEngine
 
 		vector<uint32_t> indices =
 		{
-			// Ç°
+			// å‰
 			7,5,1,
 			3,7,1,
-			// ÓÒ
+			// å³
 			3,1,0,
 			2,3,0,
-			// ºó
+			// å
 			0,4,6,
 			2,0,6,
-			// ×ó
+			// å·¦
 			5,7,4,
 			7,6,4,
-			// ÉÏ
+			// ä¸Š
 			1,5,0,
 			5,4,0,
-			// ÏÂ
+			// ä¸‹
 			7,3,2,
 			2,6,7
 		};
@@ -766,8 +766,8 @@ namespace ZXEngine
 		// *-----*-----*
 		// v0    m2     v2
 		// 
-		// Õâ¸öº¯ÊıÖ»»á°´ÕâÖÖ·½Ê½°ÑÈı½ÇĞÎÏ¸·Ö£¬µ«ÊÇÏ¸·ÖÍê»¹ÊÇÔÚÔ­À´µÄÃæÉÏ
-		// Èç¹ûĞèÒª½«Æ½Ãæ±äĞÎ£¬ĞèÒª°´²»Í¬¼¸ºÎÄ£ĞÍ½á¹¹£¬ÔÚµ÷ÓÃÕâ¸öº¯Êıºó×ÔĞĞ¼ÆËã
+		// è¿™ä¸ªå‡½æ•°åªä¼šæŒ‰è¿™ç§æ–¹å¼æŠŠä¸‰è§’å½¢ç»†åˆ†ï¼Œä½†æ˜¯ç»†åˆ†å®Œè¿˜æ˜¯åœ¨åŸæ¥çš„é¢ä¸Š
+		// å¦‚æœéœ€è¦å°†å¹³é¢å˜å½¢ï¼Œéœ€è¦æŒ‰ä¸åŒå‡ ä½•æ¨¡å‹ç»“æ„ï¼Œåœ¨è°ƒç”¨è¿™ä¸ªå‡½æ•°åè‡ªè¡Œè®¡ç®—
 
 		vector<Vertex> verticesCopy = vertices;
 		vector<uint32_t> indicesCopy = indices;

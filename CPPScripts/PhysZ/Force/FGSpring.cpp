@@ -17,20 +17,20 @@ namespace ZXEngine
 
         void FGSpring::UpdateForce(RigidBody* rigidBody, float duration)
         {
-            // µ¯»ÉÁ´½ÓµÄÁ½¶ËÔÚÊÀ½ç×ø±êÏµÏÂµÄÎ»ÖÃ
+            // å¼¹ç°§é“¾æŽ¥çš„ä¸¤ç«¯åœ¨ä¸–ç•Œåæ ‡ç³»ä¸‹çš„ä½ç½®
             Vector3 lws = rigidBody->GetTransform() * mConnectionPoint;
             Vector3 ows = mOther->GetTransform() * mOtherConnectionPoint;
-            // ¼ä¾à
+            // é—´è·
             Vector3 dis = lws - ows;
-            // µ¯»Éµ±Ç°³¤¶È
+            // å¼¹ç°§å½“å‰é•¿åº¦
             float length = dis.GetMagnitude();
-            // µ¯»ÉÉìËõ³¤¶È
+            // å¼¹ç°§ä¼¸ç¼©é•¿åº¦
             float delta = length - mRestLength;
-            // µ¯Á¦´óÐ¡
+            // å¼¹åŠ›å¤§å°
             float forceScalar = delta * mSpringConstant;
-            // µ¯Á¦ÏòÁ¿
+            // å¼¹åŠ›å‘é‡
             Vector3 force = -forceScalar * dis.GetNormalized();
-            // Ê©¼Óµ½µ±Ç°¸ÕÌåÉÏ
+            // æ–½åŠ åˆ°å½“å‰åˆšä½“ä¸Š
             rigidBody->AddForceAtPoint(force, lws);
         }
 	}

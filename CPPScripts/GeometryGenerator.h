@@ -17,9 +17,9 @@ namespace ZXEngine
 		static StaticMesh* CreateCylinder(float topRadius, float bottomRadius, float height, uint32_t sliceCount, uint32_t stackCount);
 		static StaticMesh* CreatePlane(float xLength, float zLength, uint32_t xSplit, uint32_t zSplit);
 		static StaticMesh* CreateQuad(float xLength, float yLength);
-		// ¸²¸ÇÆÁÄ»µÄ¾ØĞÎ(Î»ÓÚNDC)
+		// è¦†ç›–å±å¹•çš„çŸ©å½¢(ä½äºNDC)
 		static StaticMesh* CreateScreenQuad();
-		// Ãæ³¯ÄÚ²¿µÄµ¥Î»Á¢·½Ìå
+		// é¢æœå†…éƒ¨çš„å•ä½ç«‹æ–¹ä½“
 		static StaticMesh* CreateSimpleInwardBox();
 
 		static DynamicMesh* CreateDynamicPlane(float xLength, float zLength, uint32_t xSplit, uint32_t zSplit);

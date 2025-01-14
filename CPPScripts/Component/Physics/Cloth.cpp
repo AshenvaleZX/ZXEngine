@@ -44,55 +44,55 @@ namespace ZXEngine
 			mParticles.push_back(pair(body, sphere));
 		}
 
-		// ĞĞÊı(Z)
+		// è¡Œæ•°(Z)
 		uint32_t row = 11;
-		// ÁĞÊı(X)
+		// åˆ—æ•°(X)
 		uint32_t col = 11;
-		// ´ÓºóÏòÇ°
+		// ä»åå‘å‰
 		for (uint32_t i = 0; i < row; i++)
 		{
-			// ´Ó×óÏòÓÒ
+			// ä»å·¦å‘å³
 			for (uint32_t j = 0; j < col; j++)
 			{
 				uint32_t otherIdx = 0;
 				uint32_t curIdx = i * col + j;
 
-				// ÓÒ±ßÒ»¸ö
+				// å³è¾¹ä¸€ä¸ª
 				if (j < col - 1)
 				{
 					otherIdx = curIdx + 1;
 					AddInternalSpring(curIdx, otherIdx, mStretchStiffness);
 				}
 
-				// ÏÂ±ßÒ»¸ö
+				// ä¸‹è¾¹ä¸€ä¸ª
 				if (i < row - 1)
 				{
 					otherIdx = curIdx + col;
 					AddInternalSpring(curIdx, otherIdx, mStretchStiffness);
 				}
 
-				// ÓÒÏÂ½ÇÒ»¸ö
+				// å³ä¸‹è§’ä¸€ä¸ª
 				if (i < row - 1 && j < col - 1)
 				{
 					otherIdx = curIdx + col + 1;
 					AddInternalSpring(curIdx, otherIdx, mStretchStiffness);
 				}
 
-				// ×óÏÂ½ÇÒ»¸ö
+				// å·¦ä¸‹è§’ä¸€ä¸ª
 				if (i < row - 1 && j > 0)
 				{
 					otherIdx = curIdx + col - 1;
 					AddInternalSpring(curIdx, otherIdx, mStretchStiffness);
 				}
 
-				// ÓÒ±ß¸ôÒ»¸ö
+				// å³è¾¹éš”ä¸€ä¸ª
 				if (j < col - 2)
 				{
 					otherIdx = curIdx + 2;
 					AddInternalSpring(curIdx, otherIdx, mBendStiffness);
 				}
 
-				// ÏÂ±ß¸ôÒ»¸ö
+				// ä¸‹è¾¹éš”ä¸€ä¸ª
 				if (i < row - 2)
 				{
 					otherIdx = curIdx + col * 2;

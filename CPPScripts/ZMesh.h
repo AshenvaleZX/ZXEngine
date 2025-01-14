@@ -18,16 +18,16 @@ namespace ZXEngine
 		vector<Vertex> mVertices;
 		vector<uint32_t> mIndices;
 
-		// �Ӱ�����Mesh���ݵĽڵ㵽ģ�͸��ڵ�ı任����(����ģ�Ͱ������νṹʱ��Ч)
+		// 从包含此Mesh数据的节点到模型根节点的变换矩阵(仅在模型包含树形结构时有效)
 		Matrix4 mRootTrans;
-		// ����ƫ��������
+		// 骨骼偏移量数组
 		vector<Matrix4> mBonesOffset;
-		// �������ձ任��������(�����򣬻�ֱ�Ӵ����Դ湩Shaderʹ��)
+		// 骨骼最终变换矩阵数组(列主序，会直接传给显存供Shader使用)
 		vector<Matrix4> mBonesFinalTransform;
-		// �������ֵ�����������ӳ��
+		// 骨骼名字到数组索引的映射
 		unordered_map<string, uint32_t> mBoneNameToIndexMap;
 
-		// ��xyz��������Զ�ĵ㣬0-5�ֱ��Ӧ+x, -x, +y, -y, +z, -z
+		// 在xyz方向上最远的点，0-5分别对应+x, -x, +y, -y, +z, -z
 		array<Vertex, 6> mExtremeVertices;
 
 		Vector3 mAABBSize = Vector3::Zero;

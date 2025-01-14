@@ -19,7 +19,7 @@ namespace ZXEngine
 		map<string, Vector4> colorDatas;
 		vector<pair<string, Texture*>> textures;
 
-		// ¹â×·²ÄÖÊµÄÊı¾İĞÅÏ¢
+		// å…‰è¿½æè´¨çš„æ•°æ®ä¿¡æ¯
 		uint32_t rtMaterialDataSize = 0;
 		vector<ShaderProperty> rtMaterialProperties;
 

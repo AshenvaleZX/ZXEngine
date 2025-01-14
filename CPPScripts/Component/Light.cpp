@@ -33,7 +33,7 @@ namespace ZXEngine
 
 	Matrix4 Light::GetLightMatrix()
 	{
-		// Óë Camera::GetViewMatrix Í¬Àí
+		// ä¸Ž Camera::GetViewMatrix åŒç†
 		Matrix4 model = GetTransform()->GetModelMatrix();
 		return Math::Inverse(model);
 	}

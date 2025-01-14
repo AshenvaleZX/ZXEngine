@@ -1,14 +1,14 @@
 #pragma once
 #include "../pubh.h"
-// Ìí¼Óvolk¿â£¬Õâ¸ö¿âÀàËÆOpenGLµÄGLAD¿â£¬ÊÇÓÃÀ´¼ÓÔØVulkanº¯ÊıµÄ
-// µ«ÊÇÕâ¸öºÍOpenGL²»Ò»Ñù£¬Õâ¸ö²»ÊÇ±ØĞëµÄ£¬Èç¹ûÖ»ÊÇ×ö¹âÕ¤»¯¹ÜÏßµÄäÖÈ¾£¬¾Í²»ĞèÒªÆôÓÃVulkanµÄÀ©Õ¹£¬¾Í¿ÉÒÔ²»×öÕâ¸ö¼ÓÔØ
-// µ«ÊÇVulkanµÄ¹âÏß×·×ÙäÖÈ¾Ä£¿éÔÚVulkanÀ©Õ¹Àï£¬¶øVulkanÀ©Õ¹ÀïµÄº¯ÊıÈ«²¿ĞèÒªÎÒÃÇÊÖ¶¯¼ÓÔØ£¬ËùÒÔĞèÒªÓÃÕâ¸ö¿âÀ´¼ÓÔØËùÓĞVulkanº¯Êı
+// æ·»åŠ volkåº“ï¼Œè¿™ä¸ªåº“ç±»ä¼¼OpenGLçš„GLADåº“ï¼Œæ˜¯ç”¨æ¥åŠ è½½Vulkanå‡½æ•°çš„
+// ä½†æ˜¯è¿™ä¸ªå’ŒOpenGLä¸ä¸€æ ·ï¼Œè¿™ä¸ªä¸æ˜¯å¿…é¡»çš„ï¼Œå¦‚æœåªæ˜¯åšå…‰æ …åŒ–ç®¡çº¿çš„æ¸²æŸ“ï¼Œå°±ä¸éœ€è¦å¯ç”¨Vulkançš„æ‰©å±•ï¼Œå°±å¯ä»¥ä¸åšè¿™ä¸ªåŠ è½½
+// ä½†æ˜¯Vulkançš„å…‰çº¿è¿½è¸ªæ¸²æŸ“æ¨¡å—åœ¨Vulkanæ‰©å±•é‡Œï¼Œè€ŒVulkanæ‰©å±•é‡Œçš„å‡½æ•°å…¨éƒ¨éœ€è¦æˆ‘ä»¬æ‰‹åŠ¨åŠ è½½ï¼Œæ‰€ä»¥éœ€è¦ç”¨è¿™ä¸ªåº“æ¥åŠ è½½æ‰€æœ‰Vulkanå‡½æ•°
 #define VK_NO_PROTOTYPES
 #include <volk.h>
-// ÓÃGLFWµÄ»°ÕâÀï¾Í²»Òª×Ô¼ºÈ¥include VulkanµÄÍ·ÎÄ¼ş£¬ÓÃÕâ¸öºê¶¨Òå£¬ÈÃGLFW×Ô¼ºÈ¥´¦Àí£¬²»È»ÓĞĞ©½Ó¿ÚÓĞÎÊÌâ
+// ç”¨GLFWçš„è¯è¿™é‡Œå°±ä¸è¦è‡ªå·±å»include Vulkançš„å¤´æ–‡ä»¶ï¼Œç”¨è¿™ä¸ªå®å®šä¹‰ï¼Œè®©GLFWè‡ªå·±å»å¤„ç†ï¼Œä¸ç„¶æœ‰äº›æ¥å£æœ‰é—®é¢˜
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-// AMDĞ´µÄVulkanÄÚ´æ·ÖÅäÆ÷
+// AMDå†™çš„Vulkanå†…å­˜åˆ†é…å™¨
 #include <vk_mem_alloc.h>
 #include <vulkan/vulkan_beta.h>
 #include "../PublicStruct.h"
@@ -23,35 +23,35 @@
 
 namespace ZXEngine
 {
-    // ÔÚGPUäÖÈ¾»­ÃæµÄÊ±ºò£¬CPU¿ÉÒÔ´¦ÀíµÄÖ¡Êı
+    // åœ¨GPUæ¸²æŸ“ç”»é¢çš„æ—¶å€™ï¼ŒCPUå¯ä»¥å¤„ç†çš„å¸§æ•°
     const uint32_t MAX_FRAMES_IN_FLIGHT = 1;
 
-    // Èç¹ûÉè±¸Ö§³Ö VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME £¬Ôò±ØĞëÆôÓÃ´ËÀ©Õ¹(±ÈÈçMac)
+    // å¦‚æœè®¾å¤‡æ”¯æŒ VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME ï¼Œåˆ™å¿…é¡»å¯ç”¨æ­¤æ‰©å±•(æ¯”å¦‚Mac)
     // https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_portability_subset.html
     extern bool ZXVK_IsSupportPortabilitySubset;
 
-    // ĞèÒªµÄÑéÖ¤²ã
+    // éœ€è¦çš„éªŒè¯å±‚
     const vector<const char*> validationLayers =
     {
-        // Vulkan SDKÍ¨¹ıÇëÇóVK_LAYER_KHRONOS_validation²ã£¬À´ÒşÊ½µÄ¿ªÆôÓĞËù¹ØÓÚÕï¶ÏµÄlayers£¬´Ó¶ø±ÜÃâÃ÷È·µÄÖ¸¶¨ËùÓĞµÄÃ÷È·µÄÕï¶Ï²ã
+        // Vulkan SDKé€šè¿‡è¯·æ±‚VK_LAYER_KHRONOS_validationå±‚ï¼Œæ¥éšå¼çš„å¼€å¯æœ‰æ‰€å…³äºè¯Šæ–­çš„layersï¼Œä»è€Œé¿å…æ˜ç¡®çš„æŒ‡å®šæ‰€æœ‰çš„æ˜ç¡®çš„è¯Šæ–­å±‚
         "VK_LAYER_KHRONOS_validation"
     };
 
-    // ±ØĞëÂú×ãµÄÀ©Õ¹
+    // å¿…é¡»æ»¡è¶³çš„æ‰©å±•
     const array<const char*, 1> ZXVK_Extension_Base =
     {
-        // ½»»»Á´À©Õ¹£¬´ú±íÁËÊÇ·ñÖ§³Ö½«Í¼Ïñ»æÖÆµ½ÏÔÊ¾Æ÷ÉÏ(²»ÊÇËùÓĞGPU¶¼¿ÉÒÔÄÃÀ´»æÍ¼)
+        // äº¤æ¢é“¾æ‰©å±•ï¼Œä»£è¡¨äº†æ˜¯å¦æ”¯æŒå°†å›¾åƒç»˜åˆ¶åˆ°æ˜¾ç¤ºå™¨ä¸Š(ä¸æ˜¯æ‰€æœ‰GPUéƒ½å¯ä»¥æ‹¿æ¥ç»˜å›¾)
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
 	};
 
-    // ¹â×·ĞèÒªµÄÀ©Õ¹
+    // å…‰è¿½éœ€è¦çš„æ‰©å±•
     const array<const char*, 4> ZXVK_Extension_RayTracing =
     {
-        // ¹â×·À©Õ¹
+        // å…‰è¿½æ‰©å±•
         VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME,
 		VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
 		VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
-        // Shader¼ÆÊ±Æ÷À©Õ¹
+        // Shaderè®¡æ—¶å™¨æ‰©å±•
         VK_KHR_SHADER_CLOCK_EXTENSION_NAME
 	};
 
@@ -75,14 +75,14 @@ namespace ZXEngine
         bool isComplete() const { return present != UINT32_MAX && graphics != UINT32_MAX; }
     };
 
-    // ½»»»Á´µÄÈı´óÀàÊôĞÔÉèÖÃ
+    // äº¤æ¢é“¾çš„ä¸‰å¤§ç±»å±æ€§è®¾ç½®
     struct SwapChainSupportDetails
     {
-        // »ù±¾µÄsurface¹¦ÄÜÊôĞÔ(min/max number of images in swap chain, min/max width and height of images)
+        // åŸºæœ¬çš„surfaceåŠŸèƒ½å±æ€§(min/max number of images in swap chain, min/max width and height of images)
         VkSurfaceCapabilitiesKHR capabilities = {};
-        // Surface¸ñÊ½(pixel format, color space)
+        // Surfaceæ ¼å¼(pixel format, color space)
         vector<VkSurfaceFormatKHR> formats;
-        // ÓĞĞ§µÄpresentationÄ£Ê½
+        // æœ‰æ•ˆçš„presentationæ¨¡å¼
         vector<VkPresentModeKHR> presentModes;
     };
 
@@ -144,7 +144,7 @@ namespace ZXEngine
         uint32_t instanceNum = 0;
         uint32_t instanceBuffer = UINT32_MAX;
 
-        // ±ØĞëÏÔÊ¾ÉùÃ÷¹¹Ôìº¯Êı£¬·ñÔòÔÚMacOSÉÏÎŞ·¨Ê¹ÓÃemplace²Ù×÷ÔÚÒ»Ğ©ÈİÆ÷ÖĞÖ±½Ó¹¹Ôì
+        // å¿…é¡»æ˜¾ç¤ºå£°æ˜æ„é€ å‡½æ•°ï¼Œå¦åˆ™åœ¨MacOSä¸Šæ— æ³•ä½¿ç”¨emplaceæ“ä½œåœ¨ä¸€äº›å®¹å™¨ä¸­ç›´æ¥æ„é€ 
         VulkanDrawRecord(uint32_t vao, uint32_t pipelineID, uint32_t materialDataID, uint32_t instanceNum, uint32_t instanceBuffer) :
             VAO(vao), pipelineID(pipelineID), materialDataID(materialDataID), instanceNum(instanceNum), instanceBuffer(instanceBuffer)
         {}
@@ -189,13 +189,13 @@ namespace ZXEngine
 
     struct VulkanVAO
     {
-        uint32_t indexCount = 0; // Ë÷ÒıÊıÁ¿
+        uint32_t indexCount = 0; // ç´¢å¼•æ•°é‡
         VkBuffer indexBuffer = VK_NULL_HANDLE;
         VmaAllocation indexBufferAlloc = VK_NULL_HANDLE;
         void* indexBufferAddress = nullptr; // Only for dynamic mesh
         VkDeviceAddress indexBufferDeviceAddress = 0; // Only for ray tracing
 
-        uint32_t vertexCount = 0; // ¶¥µãÊıÁ¿
+        uint32_t vertexCount = 0; // é¡¶ç‚¹æ•°é‡
         VkBuffer vertexBuffer = VK_NULL_HANDLE;
         VmaAllocation vertexBufferAlloc = VK_NULL_HANDLE;
         void* vertexBufferAddress = nullptr; // Only for dynamic mesh

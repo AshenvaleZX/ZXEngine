@@ -75,7 +75,7 @@ namespace ZXEngine
 		multimap<ComponentType, Component*> components = {};
 		vector<std::function<void()>> mConstructionCallBacks;
 
-		// 通用解析器，使用反序列化接口自动解析
+		// 閫氱敤瑙ｆ瀽鍣紝浣跨敤鍙嶅簭鍒楀寲鎺ュ彛鑷姩瑙ｆ瀽
 		template<class T>
 		void Parse(json data)
 		{

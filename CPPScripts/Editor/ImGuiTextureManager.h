@@ -1,7 +1,7 @@
 #pragma once
 #include "../pubh.h"
 #include "../External/ImGui/imgui.h"
-// ImGuiÍ¼ÏñäÖÈ¾: https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
+// ImGuiå›¾åƒæ¸²æŸ“: https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
 
 namespace ZXEngine
 {

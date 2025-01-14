@@ -11,7 +11,7 @@ namespace ZXEngine
         friend class EditorGUIManagerVulkan;
         friend class ImGuiTextureManagerVulkan;
         /// <summary>
-        /// ±ê×¼RenderAPI½Ó¿Ú
+        /// æ ‡å‡†RenderAPIæ¥å£
         /// </summary>
     public:
         RenderAPIVulkan();
@@ -20,7 +20,7 @@ namespace ZXEngine
         virtual void BeginFrame();
         virtual void EndFrame();
 
-        // äÖÈ¾×´Ì¬
+        // æ¸²æŸ“çŠ¶æ€
         virtual void OnWindowSizeChange(uint32_t width, uint32_t height);
         virtual void OnGameViewSizeChange();
         virtual void SetRenderState(RenderStateSetting* state);
@@ -43,7 +43,7 @@ namespace ZXEngine
         virtual void SetUpInstanceBufferAttribute(uint32_t VAO, uint32_t instanceBuffer, uint32_t size, uint32_t offset = 6);
         virtual void DeleteInstanceBuffer(uint32_t id);
 
-        // ÎÆÀí
+        // çº¹ç†
         virtual unsigned int LoadTexture(const char* path, int& width, int& height);
         virtual unsigned int LoadCubeMap(const vector<string>& faces);
         virtual unsigned int CreateTexture(TextureFullData* data);
@@ -56,7 +56,7 @@ namespace ZXEngine
         virtual ShaderReference* SetUpShader(const string& path, const string& shaderCode, FrameBufferType type);
         virtual void DeleteShader(uint32_t id);
 
-        // ²ÄÖÊ
+        // æè´¨
         virtual uint32_t CreateMaterialData();
         virtual void SetUpMaterial(Material* material);
         virtual void UseMaterialData(uint32_t ID);
@@ -75,7 +75,7 @@ namespace ZXEngine
         virtual void UpdateDynamicMesh(unsigned int VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
         virtual void GenerateParticleMesh(unsigned int& VAO);
 
-        // Shader²ÎÊı
+        // Shaderå‚æ•°
         virtual void UseShader(unsigned int ID);
         virtual void SetShaderScalar(Material* material, const string& name, bool value, bool allBuffer = false);
         virtual void SetShaderScalar(Material* material, const string& name, float value, bool allBuffer = false);
@@ -98,7 +98,7 @@ namespace ZXEngine
 
 
         /// <summary>
-        /// ±ê×¼RayTracing½Ó¿Ú
+        /// æ ‡å‡†RayTracingæ¥å£
         /// </summary>
     public:
         // Pipeline
@@ -110,7 +110,7 @@ namespace ZXEngine
         virtual void SetUpRayTracingMaterialData(Material* material);
         virtual void DeleteRayTracingMaterialData(uint32_t id);
 
-        // Êı¾İ¸üĞÂ
+        // æ•°æ®æ›´æ–°
         virtual void SetRayTracingSkyBox(uint32_t textureID);
         virtual void PushRayTracingMaterialData(Material* material);
         virtual void PushAccelerationStructure(uint32_t VAO, uint32_t hitGroupIdx, uint32_t rtMaterialDataID, const Matrix4& transform);
@@ -124,64 +124,64 @@ namespace ZXEngine
 
 
         /// <summary>
-        /// ½öÆô¶¯Ê±Ò»´ÎĞÔ³õÊ¼»¯µÄºËĞÄVulkan×é¼ş¼°Ïà¹Ø±äÁ¿
+        /// ä»…å¯åŠ¨æ—¶ä¸€æ¬¡æ€§åˆå§‹åŒ–çš„æ ¸å¿ƒVulkanç»„ä»¶åŠç›¸å…³å˜é‡
         /// </summary>
     private:
-        // Ä¬ÈÏµÄÎÆÀíºÍFrameBufferÉ«²Ê¿Õ¼ä
+        // é»˜è®¤çš„çº¹ç†å’ŒFrameBufferè‰²å½©ç©ºé—´
         const VkFormat defaultImageFormat = VK_FORMAT_R8G8B8A8_UNORM;
-        // ÊÇ·ñ¿ªÆôÑéÖ¤²ã
+        // æ˜¯å¦å¼€å¯éªŒè¯å±‚
         bool validationLayersEnabled = false;
-        // MSAA²ÉÑùµãÊıÁ¿
+        // MSAAé‡‡æ ·ç‚¹æ•°é‡
         VkSampleCountFlagBits msaaSamplesCount = VK_SAMPLE_COUNT_1_BIT;
-        // Ó²¼şÖ§³Ö¶àÉÙ±¶µÄ¸÷ÏîÒìĞÔ²ÉÑù
+        // ç¡¬ä»¶æ”¯æŒå¤šå°‘å€çš„å„é¡¹å¼‚æ€§é‡‡æ ·
         float maxSamplerAnisotropy = 1.0f;
-        // µ±Ç°ÊÇMAX_FRAMES_IN_FLIGHTÖĞµÄµÚ¼¸Ö¡
+        // å½“å‰æ˜¯MAX_FRAMES_IN_FLIGHTä¸­çš„ç¬¬å‡ å¸§
         uint32_t currentFrame = 0;
-        // ×îĞ¡UBO¶ÔÆëÆ«ÒÆÁ¿
+        // æœ€å°UBOå¯¹é½åç§»é‡
         VkDeviceSize minUniformBufferOffsetAlignment = 8;
 
-        // VulkanÊµÀı
+        // Vulkanå®ä¾‹
         VkInstance vkInstance = VK_NULL_HANDLE;
-        // Debug¹¤¾ß
+        // Debugå·¥å…·
         VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
-        // ÎïÀíÉè±¸
+        // ç‰©ç†è®¾å¤‡
         VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-        // Âß¼­Éè±¸
+        // é€»è¾‘è®¾å¤‡
         VkDevice device = VK_NULL_HANDLE;
-        // Vulkan Memory Allocator(À´×ÔAMDµÄGPUOpenÍÅ¶Ó:https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator)
+        // Vulkan Memory Allocator(æ¥è‡ªAMDçš„GPUOpenå›¢é˜Ÿ:https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator)
         VmaAllocator vmaAllocator;
         // Surface
         VkSurfaceKHR surface = VK_NULL_HANDLE;
-        // Í¼ĞÎ¶ÓÁĞ
+        // å›¾å½¢é˜Ÿåˆ—
         VkQueue graphicsQueue = VK_NULL_HANDLE;
-        // Õ¹Ê¾¶ÓÁĞ
+        // å±•ç¤ºé˜Ÿåˆ—
         VkQueue presentQueue = VK_NULL_HANDLE;
-        // ¶ÓÁĞ´ØID¼ÇÂ¼
+        // é˜Ÿåˆ—ç°‡IDè®°å½•
         QueueFamilyIndices queueFamilyIndices;
-        // Ìá¹©¸ø½»»»Á´ÏÔÊ¾»­ÃæµÄFrame Buffer
+        // æä¾›ç»™äº¤æ¢é“¾æ˜¾ç¤ºç”»é¢çš„Frame Buffer
         uint32_t presentFBOIdx = 0;
 
-        // ½»»»Á´
+        // äº¤æ¢é“¾
         VkSwapchainKHR swapChain = VK_NULL_HANDLE;
-        // ½»»»Á´Image(´´½¨½»»»Á´µÄÊ±ºò×Ô¶¯´´½¨£¬Ïú»Ù½»»»Á´µÄÊ±ºò×Ô¶¯Ïú»Ù)
+        // äº¤æ¢é“¾Image(åˆ›å»ºäº¤æ¢é“¾çš„æ—¶å€™è‡ªåŠ¨åˆ›å»ºï¼Œé”€æ¯äº¤æ¢é“¾çš„æ—¶å€™è‡ªåŠ¨é”€æ¯)
         vector<VkImage> swapChainImages;
-        // ½»»»Á´ImageView£¬ÊÖ¶¯´´½¨£¬ÊÖ¶¯Ïú»Ù
+        // äº¤æ¢é“¾ImageViewï¼Œæ‰‹åŠ¨åˆ›å»ºï¼Œæ‰‹åŠ¨é”€æ¯
         vector<VkImageView> swapChainImageViews;
-        // ½»»»Á´ÉÏÍ¼ÏñµÄ¸ñÊ½
+        // äº¤æ¢é“¾ä¸Šå›¾åƒçš„æ ¼å¼
         VkFormat swapChainImageFormat;
-        // ½»»»Á´ÉÏÍ¼ÏñµÄ´óĞ¡
+        // äº¤æ¢é“¾ä¸Šå›¾åƒçš„å¤§å°
         VkExtent2D swapChainExtent;
-        // µ±Ç°ÕâÒ»Ö¡ËùÓÃµÄImageÔÚ½»»»Á´ÀïµÄË÷Òı
+        // å½“å‰è¿™ä¸€å¸§æ‰€ç”¨çš„Imageåœ¨äº¤æ¢é“¾é‡Œçš„ç´¢å¼•
         uint32_t curPresentImageIdx = 0;
-        // ½»»»Á´Image¿ÉÓÃµÄĞÅºÅÁ¿
+        // äº¤æ¢é“¾Imageå¯ç”¨çš„ä¿¡å·é‡
         vector<VkSemaphore> presentImageAvailableSemaphores;
-        // Ò»Ö¡»æÖÆ½áÊøµÄFence
+        // ä¸€å¸§ç»˜åˆ¶ç»“æŸçš„Fence
         vector<VkFence> inFlightFences;
 
-        // ÃüÁî³Ø
+        // å‘½ä»¤æ± 
         VkCommandPool commandPool = VK_NULL_HANDLE;
 
-        // ------------------------------------------½¨Á¢¸÷ÖÖVulkan¶ÔÏó--------------------------------------------
+        // ------------------------------------------å»ºç«‹å„ç§Vulkanå¯¹è±¡--------------------------------------------
 
         void CreateVkInstance();
         void CreateDebugMessenger();
@@ -193,43 +193,43 @@ namespace ZXEngine
         void CreateSwapChain();
         void CreatePresentFrameBuffer();
 
-        // ----------------------------------------½¨Á¢Vulkan¶ÔÏóµÄ¸¨Öúº¯Êı----------------------------------------
+        // ----------------------------------------å»ºç«‹Vulkanå¯¹è±¡çš„è¾…åŠ©å‡½æ•°----------------------------------------
 
         bool CheckValidationLayerSupport();
         vector<const char*> GetRequiredExtensions() const;
-        // ´´½¨µ÷ÊÔÓÃµÄVkDebugUtilsMessenger
+        // åˆ›å»ºè°ƒè¯•ç”¨çš„VkDebugUtilsMessenger
         VkResult CreateDebugUtilsMessengerEXT(const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
-        // Ïú»ÙVkDebugUtilsMessenger
+        // é”€æ¯VkDebugUtilsMessenger
         void DestroyDebugUtilsMessengerEXT(VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
-        // ¼ì²éÎïÀíÉè±¸ÊÇ·ñ·ûºÏĞèÇó
+        // æ£€æŸ¥ç‰©ç†è®¾å¤‡æ˜¯å¦ç¬¦åˆéœ€æ±‚
         bool IsPhysicalDeviceSuitable(VkPhysicalDevice device);
-        // »ñÈ¡ÎïÀíÉè±¸¶ÓÁĞ´ØË÷Òı
+        // è·å–ç‰©ç†è®¾å¤‡é˜Ÿåˆ—ç°‡ç´¢å¼•
         QueueFamilyIndices GetQueueFamilyIndices(VkPhysicalDevice device);
-        // ¼ì²éÎïÀíÉè±¸ÊÇ·ñÖ§³ÖËùĞèÒªµÄÀ©Õ¹
+        // æ£€æŸ¥ç‰©ç†è®¾å¤‡æ˜¯å¦æ”¯æŒæ‰€éœ€è¦çš„æ‰©å±•
         bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
-        // »ñÈ¡ÎïÀíÉè±¸ËùÖ§³ÖµÄ½»»»Á´ĞÅÏ¢
+        // è·å–ç‰©ç†è®¾å¤‡æ‰€æ”¯æŒçš„äº¤æ¢é“¾ä¿¡æ¯
         SwapChainSupportDetails GetSwapChainSupportDetails(VkPhysicalDevice device);
-        // »ñÈ¡Ó²¼şÉè±¸ÊôĞÔ
+        // è·å–ç¡¬ä»¶è®¾å¤‡å±æ€§
         void GetPhysicalDeviceProperties();
-        // Ñ¡Ôñ½»»»Á´Í¼Ïñ¸ñÊ½ºÍÉ«²Ê¿Õ¼ä
+        // é€‰æ‹©äº¤æ¢é“¾å›¾åƒæ ¼å¼å’Œè‰²å½©ç©ºé—´
         VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const vector<VkSurfaceFormatKHR>& availableFormats);
-        // Ñ¡Ôñ½»»»Á´µÄÕ¹Ê¾Ä£Ê½
+        // é€‰æ‹©äº¤æ¢é“¾çš„å±•ç¤ºæ¨¡å¼
         VkPresentModeKHR ChooseSwapPresentMode(const vector<VkPresentModeKHR> availablePresentModes);
-        // Ñ¡Ôñ½»»»Á´Í¼Ïñ·Ö±æÂÊ
+        // é€‰æ‹©äº¤æ¢é“¾å›¾åƒåˆ†è¾¨ç‡
         VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
-        // ÖØĞÂ´´½¨½»»»Á´
+        // é‡æ–°åˆ›å»ºäº¤æ¢é“¾
         void RecreateSwapChain();
-        // ÖØĞÂ´´½¨ËæGameView´óĞ¡±ä»¯µÄBuffer
+        // é‡æ–°åˆ›å»ºéšGameViewå¤§å°å˜åŒ–çš„Buffer
         void DoGameViewSizeChange();
-        // ÇåÀí½»»»Á´Ïà¹Ø×ÊÔ´
+        // æ¸…ç†äº¤æ¢é“¾ç›¸å…³èµ„æº
         void CleanUpSwapChain();
-        // Ïú»ÙPresentBuffer
+        // é”€æ¯PresentBuffer
         void DestroyPresentFrameBuffer();
 
 
         /// <summary>
-        /// Vulkan×ÊÔ´´´½¨Ïà¹Ø½Ó¿Ú(ÕâĞ©½Ó¿ÚCreate³öÀ´µÄĞèÒªÊÖ¶¯Destroy)
+        /// Vulkanèµ„æºåˆ›å»ºç›¸å…³æ¥å£(è¿™äº›æ¥å£Createå‡ºæ¥çš„éœ€è¦æ‰‹åŠ¨Destroy)
         /// </summary>
     private:
         vector<VulkanVAO*> VulkanVAOArray;
@@ -325,66 +325,66 @@ namespace ZXEngine
         ShaderModuleSet CreateShaderModules(const string& path, const ShaderInfo& info);
         void DestroyShaderModules(ShaderModuleSet shaderModules);
 
-        // ¼ì²éÊÇ·ñÓĞĞèÒªÑÓ³ÙĞ¶ÔØµÄ×ÊÔ´
+        // æ£€æŸ¥æ˜¯å¦æœ‰éœ€è¦å»¶è¿Ÿå¸è½½çš„èµ„æº
         void CheckDeleteData();
 
 
         /// <summary>
-        /// Vulkan¹âÏß×·×ÙÏà¹Ø×ÊÔ´ºÍ½Ó¿Ú
+        /// Vulkanå…‰çº¿è¿½è¸ªç›¸å…³èµ„æºå’Œæ¥å£
         /// </summary>
     private:
-        // GPUÓ²¼ş¹â×·ÊôĞÔ
+        // GPUç¡¬ä»¶å…‰è¿½å±æ€§
         VkPhysicalDeviceRayTracingPipelinePropertiesKHR rtPhysicalProperties;
-        // GPUÓ²¼şAcceleration StructureĞÅÏ¢
+        // GPUç¡¬ä»¶Acceleration Structureä¿¡æ¯
         VkPhysicalDeviceAccelerationStructurePropertiesKHR physicalAccelerationStructureProperties;
 
-        // µ±Ç°Ê¹ÓÃµÄTLASGroupË÷Òı
+        // å½“å‰ä½¿ç”¨çš„TLASGroupç´¢å¼•
         uint32_t curTLASGroupIdx = 0;
-        // µ±Ç°µÄ¹âÏß×·×Ù¹ÜÏßID
+        // å½“å‰çš„å…‰çº¿è¿½è¸ªç®¡çº¿ID
         uint32_t curRTPipelineID = 0;
-        // ¹âÏß×·×Ù¹ÜÏß
+        // å…‰çº¿è¿½è¸ªç®¡çº¿
         vector<VulkanRTPipeline*> rtPipelines;
-        // ¹¹½¨TLASµÄÖĞ¼äBuffer
+        // æ„å»ºTLASçš„ä¸­é—´Buffer
         vector<VulkanBuffer> rtTLASStagingBuffers;
         vector<VulkanBuffer> rtTLASScratchBuffers;
         vector<VulkanBuffer> rtTLASInstanceBuffers;
 
-        // ´æ·ÅPushConstantÊı¾İµÄÁÙÊ±Buffer
+        // å­˜æ”¾PushConstantæ•°æ®çš„ä¸´æ—¶Buffer
         void* rtPushConstantBuffer = nullptr;
-        // ´æ·ÅPushConstantÊı¾İµÄÁÙÊ±BufferµÄ´óĞ¡(64¸ö32Î»Êı¾İ)
+        // å­˜æ”¾PushConstantæ•°æ®çš„ä¸´æ—¶Bufferçš„å¤§å°(64ä¸ª32ä½æ•°æ®)
         uint32_t rtPushConstantBufferSize = 256;
 
-        // ÔÚÀÛ»ıÊ½¹â×·³¡¾°ÖĞ£¬ÓÃÀ´ÅĞ¶Ï»­ÃæË¢ĞÂµÄÊı¾İ
+        // åœ¨ç´¯ç§¯å¼å…‰è¿½åœºæ™¯ä¸­ï¼Œç”¨æ¥åˆ¤æ–­ç”»é¢åˆ·æ–°çš„æ•°æ®
         vector<Matrix4> rtVPMatrix;
         vector<uint32_t> rtFrameCount;
 
-        // ³¡¾°ÖĞµÄÎÆÀíÊıÁ¿
+        // åœºæ™¯ä¸­çš„çº¹ç†æ•°é‡
         uint32_t rtSceneTextureNum = 100;
-        // ³¡¾°ÖĞµÄCubeMapÊıÁ¿
+        // åœºæ™¯ä¸­çš„CubeMapæ•°é‡
         uint32_t rtSceneCubeMapNum = 10;
-        // ³¡¾°ÖĞµÄäÖÈ¾¶ÔÏóÊıÁ¿
+        // åœºæ™¯ä¸­çš„æ¸²æŸ“å¯¹è±¡æ•°é‡
         uint32_t rtSceneRenderObjectNum = 100;
 
-        // µ±Ç°ÕâÒ»Ö¡Òª»æÖÆµÄ¶ÔÏóĞÅÏ¢Êı×é
+        // å½“å‰è¿™ä¸€å¸§è¦ç»˜åˆ¶çš„å¯¹è±¡ä¿¡æ¯æ•°ç»„
         vector<VulkanASInstanceData> asInstanceData;
-        // µ±Ç°³¡¾°ÖĞËùÓĞÎÆÀíË÷ÒıÊı×é
+        // å½“å‰åœºæ™¯ä¸­æ‰€æœ‰çº¹ç†ç´¢å¼•æ•°ç»„
         vector<uint32_t> curRTSceneTextureIndexes;
-        // µ±Ç°³¡¾°ÖĞËùÓĞÎÆÀíµÄË÷ÒıÓëÎÆÀíÊı×éÏÂ±êµÄÓ³Éä±í
+        // å½“å‰åœºæ™¯ä¸­æ‰€æœ‰çº¹ç†çš„ç´¢å¼•ä¸çº¹ç†æ•°ç»„ä¸‹æ ‡çš„æ˜ å°„è¡¨
         unordered_map<uint32_t, uint32_t> curRTSceneTextureIndexMap;
-        // µ±Ç°³¡¾°ÖĞËùÓĞCubeMapË÷ÒıÊı×é
+        // å½“å‰åœºæ™¯ä¸­æ‰€æœ‰CubeMapç´¢å¼•æ•°ç»„
         vector<uint32_t> curRTSceneCubeMapIndexes;
-        // µ±Ç°³¡¾°ÖĞËùÓĞCubeMapµÄË÷ÒıÓëCubeMapÊı×éÏÂ±êµÄÓ³Éä±í
+        // å½“å‰åœºæ™¯ä¸­æ‰€æœ‰CubeMapçš„ç´¢å¼•ä¸CubeMapæ•°ç»„ä¸‹æ ‡çš„æ˜ å°„è¡¨
         unordered_map<uint32_t, uint32_t> curRTSceneCubeMapIndexMap;
-        // µ±Ç°³¡¾°ÖĞËùÓĞ¹â×·²ÄÖÊË÷ÒıÊı×é
+        // å½“å‰åœºæ™¯ä¸­æ‰€æœ‰å…‰è¿½æè´¨ç´¢å¼•æ•°ç»„
         vector<uint32_t> curRTSceneRTMaterialDatas;
-        // µ±Ç°³¡¾°ÖĞËùÓĞ¹â×·²ÄÖÊµÄË÷ÒıÓë¹â×·²ÄÖÊÊı×éÏÂ±êµÄÓ³Éä±í
+        // å½“å‰åœºæ™¯ä¸­æ‰€æœ‰å…‰è¿½æè´¨çš„ç´¢å¼•ä¸å…‰è¿½æè´¨æ•°ç»„ä¸‹æ ‡çš„æ˜ å°„è¡¨
         unordered_map<uint32_t, uint32_t> curRTSceneRTMaterialDataMap;
 
-        // TLAS Group£¬Ò»¸ö³¡¾°ÓĞÒ»¸öTLAS Group
+        // TLAS Groupï¼Œä¸€ä¸ªåœºæ™¯æœ‰ä¸€ä¸ªTLAS Group
         vector<VulkanASGroup*> VulkanTLASGroupArray;
-        // ËùÓĞµÄ¹â×·²ÄÖÊÊı×é£¬ÆäÖĞ¿ÉÄÜ°üÀ¨ÒÑÏú»ÙµÄ£¬Î´ÔÚ³¡¾°ÖĞµÄ
+        // æ‰€æœ‰çš„å…‰è¿½æè´¨æ•°ç»„ï¼Œå…¶ä¸­å¯èƒ½åŒ…æ‹¬å·²é”€æ¯çš„ï¼Œæœªåœ¨åœºæ™¯ä¸­çš„
         vector<VulkanRTMaterialData*> VulkanRTMaterialDataArray;
-        // ×¼±¸ÏûºÄµÄ¹â×·²ÄÖÊ
+        // å‡†å¤‡æ¶ˆè€—çš„å…‰è¿½æè´¨
         map<uint32_t, uint32_t> rtMaterialDatasToDelete;
 
         uint32_t GetNextTLASGroupIndex();
@@ -407,7 +407,7 @@ namespace ZXEngine
 
 
         /// <summary>
-        /// ÆäËü¸¨Öú½Ó¿Ú
+        /// å…¶å®ƒè¾…åŠ©æ¥å£
         /// </summary>
     private:
         bool windowResized = false;

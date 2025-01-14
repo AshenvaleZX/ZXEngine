@@ -12,11 +12,11 @@ namespace ZXEngine
 
 		void FGGravity::UpdateForce(RigidBody* rigidBody, float duration)
 		{
-			// 如果质量无限大表示不受力
+			// 濡傛灉璐ㄩ噺鏃犻檺澶ц〃绀轰笉鍙楀姏
 			if (rigidBody->IsInfiniteMass()) 
 				return;
 
-			// 添加重力
+			// 娣诲姞閲嶅姏
 			rigidBody->AddForce(mGravity * rigidBody->GetMass());
 		}
 	}

@@ -94,7 +94,7 @@ namespace ZXEngine
 
 	float Matrix4::GetDeterminant() const
 	{
-		// 代数余子式法
+		// 浠ｆ暟浣欏瓙寮忔硶
 		float a00 =  (m00 * m11 * m22) + (m01 * m12 * m20) + (m02 * m10 * m21) - (m02 * m11 * m20) - (m00 * m12 * m21) - (m01 * m10 * m22);
 		float a01 = -(m10 * m22 * m33) + (m12 * m23 * m30) + (m13 * m20 * m32) - (m13 * m22 * m30) - (m10 * m23 * m32) - (m12 * m20 * m33);
 		float a02 =  (m10 * m21 * m33) + (m11 * m23 * m30) + (m13 * m20 * m31) - (m13 * m21 * m30) - (m10 * m23 * m31) - (m11 * m20 * m33);

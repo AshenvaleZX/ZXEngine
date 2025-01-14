@@ -68,8 +68,8 @@ namespace ZXEngine
 
 	Matrix3::Matrix3(const Vector3& axis, float angle)
 	{
-		// 此算法先是参考的Unity 4.3，发现Unity 4.3又是参考的Mesa OpenGL
-		// 同时GPT给出的算法也是这样的
+		// 姝ょ畻娉曞厛鏄弬鑰冪殑Unity 4.3锛屽彂鐜癠nity 4.3鍙堟槸鍙傝�冪殑Mesa OpenGL
+		// 鍚屾椂GPT缁欏嚭鐨勭畻娉曚篃鏄繖鏍风殑
 		float c = cosf(angle);
 		float s = sinf(angle);
 		float t = 1.0f - c;

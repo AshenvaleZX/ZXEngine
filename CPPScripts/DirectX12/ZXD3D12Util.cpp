@@ -24,7 +24,7 @@ namespace ZXEngine
 		string hlslPath = TranslateShaderToHLSL(path, stageFlags);
 		string outputPath = hlslPath.substr(0, hlslPath.length() - 5);
 
-		// ÓÃÎ¢ÈíµÄ¹¤¾ßÔ¤±àÒëhlsl´úÂë
+		// ç”¨å¾®è½¯çš„å·¥å…·é¢„ç¼–è¯‘hlslä»£ç 
 		// VS
 		string command = "..\\..\\..\\Tools\\fxc.exe /T vs_5_1 /E VS /Fo " + Utils::ConvertPathToWindowsFormat(outputPath + ".vert.fxc") + " " + Utils::ConvertPathToWindowsFormat(hlslPath);
 		int ret = std::system(command.c_str());
@@ -46,7 +46,7 @@ namespace ZXEngine
 				Debug::LogError("Compile geometry shader failed: " + path.string());
 		}
 
-		// É¾³ıÁÙÊ±ÎÄ¼ş
+		// åˆ é™¤ä¸´æ—¶æ–‡ä»¶
 		if (!ProjectSetting::preserveIntermediateShader)
 			if (!(std::remove(hlslPath.c_str()) == 0))
 				Debug::LogError("Remove temporary HLSL file failed: " + path.string());

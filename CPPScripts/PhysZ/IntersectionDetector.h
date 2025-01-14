@@ -29,11 +29,11 @@ namespace ZXEngine
 			static bool Detect(const CollisionBox& box, const CollisionPlane& plane);
 			static bool Detect(const CollisionSphere& sphere, const CollisionPlane& plane);
 
-			// ÅĞ¶ÏÁ½¸öBoxÍ¶Ó°µ½Ä³¸öÖáÉÏ»á²»»áÓĞÖØµş
+			// åˆ¤æ–­ä¸¤ä¸ªBoxæŠ•å½±åˆ°æŸä¸ªè½´ä¸Šä¼šä¸ä¼šæœ‰é‡å 
 			static bool IsOverlapOnAxis(const CollisionBox& box1, const CollisionBox& box2, const Vector3& axis, const Vector3& centerLine);
-			// »ñÈ¡Á½¸öBoxÍ¶Ó°µ½Ä³¸öÖáÉÏµÄÖØµş³¤¶È(·µ»ØÖµ´óÓÚ0±íÊ¾ÖØµş£¬Ğ¡ÓÚ0±íÊ¾Î´ÖØµş)
+			// è·å–ä¸¤ä¸ªBoxæŠ•å½±åˆ°æŸä¸ªè½´ä¸Šçš„é‡å é•¿åº¦(è¿”å›å€¼å¤§äº0è¡¨ç¤ºé‡å ï¼Œå°äº0è¡¨ç¤ºæœªé‡å )
 			static float GetPenetrationOnAxis(const CollisionBox& box1, const CollisionBox& box2, const Vector3& axis, const Vector3& centerLine);
-			// ¼ì²âÁ½ÌõÏß¶ÎÊÇ·ñÏà½»(½»µãÍ¨¹ıµÚ7¸ö²ÎÊı»ñÈ¡)
+			// æ£€æµ‹ä¸¤æ¡çº¿æ®µæ˜¯å¦ç›¸äº¤(äº¤ç‚¹é€šè¿‡ç¬¬7ä¸ªå‚æ•°è·å–)
 			static bool DetectLineSegmentContact(const Vector3& midPoint1, const Vector3& dir1, float halfLength1, const Vector3& midPoint2, const Vector3& dir2, float halfLength2, Vector3& contactPoint, bool useOne = true);
 
 		private:

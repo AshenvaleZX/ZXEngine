@@ -17,7 +17,7 @@ namespace ZXEngine
 		MaterialType type = MaterialType::Forward;
 
 		Material(MaterialStruct* matStruct);
-		// ×¢Òâ: ´Ë¹¹Ôìº¯Êı½öÓÃÓÚ¹âÕ¤»¯äÖÈ¾¹ÜÏß²ÄÖÊ
+		// æ³¨æ„: æ­¤æ„é€ å‡½æ•°ä»…ç”¨äºå…‰æ …åŒ–æ¸²æŸ“ç®¡çº¿æè´¨
 		Material(Shader* shader);
 		~Material();
 
@@ -47,7 +47,7 @@ namespace ZXEngine
 		void SetCubeMap(const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
 
 	private:
-		// Õâ¸ö²ÄÖÊÒıÓÃµÄShaderÊÇ»¹ÓĞÆäËûµØ·½ÒıÓÃ£¬»áÓ°Ïì²ÄÖÊÏú»ÙÁ÷³Ì
+		// è¿™ä¸ªæè´¨å¼•ç”¨çš„Shaderæ˜¯è¿˜æœ‰å…¶ä»–åœ°æ–¹å¼•ç”¨ï¼Œä¼šå½±å“æè´¨é”€æ¯æµç¨‹
 		bool isShareShader;
 		uint32_t textureIdx = 0;
 		int renderQueue = 0;

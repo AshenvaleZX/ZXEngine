@@ -123,7 +123,7 @@ namespace ZXEngine
 			Debug::LogError("Generate SPIR-V file failed: " + path.string());
 		}
 
-		// ÓÃVulkan¹¤¾ßÉú³ÉSPIR-VÎÄ¼ş
+		// ç”¨Vulkanå·¥å…·ç”ŸæˆSPIR-Væ–‡ä»¶
 #if defined(ZX_PLATFORM_WINDOWS)
 		string command = "..\\..\\..\\Tools\\glslangValidator.exe -V " + Utils::ConvertPathToWindowsFormat(writeTempPath) + " -o " + Utils::ConvertPathToWindowsFormat(outputFinalPath);
 #elif defined(ZX_PLATFORM_MACOS)
@@ -135,7 +135,7 @@ namespace ZXEngine
 		if (ret != 0)
 			Debug::LogError("Generate SPIR-V file failed: " + path.string());
 
-		// É¾³ıÁÙÊ±ÎÄ¼ş
+		// åˆ é™¤ä¸´æ—¶æ–‡ä»¶
 		if (!ProjectSetting::preserveIntermediateShader)
 			if (!(std::remove(writeTempPath.c_str()) == 0))
 				Debug::LogError("Remove temporary SPIR-V file failed: " + path.string());
@@ -307,7 +307,7 @@ namespace ZXEngine
 
 		VkShaderModuleCreateInfo createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		// ÕâÀïµÄcodeSizeÊÇÒÔbytes¼ÆËãµÄ£¬spirv.size()ÊÇuint32_tµÄÊıÁ¿£¬Ò»¸ö32Î»intÕ¼4×Ö½Ú
+		// è¿™é‡Œçš„codeSizeæ˜¯ä»¥bytesè®¡ç®—çš„ï¼Œspirv.size()æ˜¯uint32_tçš„æ•°é‡ï¼Œä¸€ä¸ª32ä½intå 4å­—èŠ‚
 		createInfo.codeSize = spirv.size() * 4;
 		createInfo.pCode = spirv.data();
 

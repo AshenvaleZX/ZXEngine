@@ -21,14 +21,14 @@ namespace ZXEngine
 
 	TextCharactersManager::TextCharactersManager()
 	{
-        // ´´½¨×Ö·ûäÖÈ¾Shader
+        // åˆ›å»ºå­—ç¬¦æ¸²æŸ“Shader
 #ifdef ZX_EDITOR
         textShader = new Shader(Resources::GetAssetFullPath("Shaders/TextRenderer.zxshader", true), FrameBufferType::Normal);
 #else
         textShader = new Shader(Resources::GetAssetFullPath("Shaders/TextRenderer.zxshader", true), FrameBufferType::Present);
 #endif
 
-        // ¼ÓÔØ×Ö·û
+        // åŠ è½½å­—ç¬¦
         LoadCharacters();
 	}
 
@@ -80,7 +80,7 @@ namespace ZXEngine
                 static_cast<unsigned int>(face->glyph->advance.x)
             };
 
-            // Ö»Éú³ÉÓĞÊµ¼ÊÍ¼ÏñµÄ×Ö·ûÎÆÀí
+            // åªç”Ÿæˆæœ‰å®é™…å›¾åƒçš„å­—ç¬¦çº¹ç†
             if (face->glyph->bitmap.width > 0 && face->glyph->bitmap.rows > 0)
                 character.TextureID = RenderAPI::GetInstance()->GenerateTextTexture(face->glyph->bitmap.width, face->glyph->bitmap.rows, face->glyph->bitmap.buffer);
 

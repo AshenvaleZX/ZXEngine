@@ -23,7 +23,7 @@ namespace ZXEngine
 	private:
 		vector<ParticleInstanceData> mInstanceData;
 		uint32_t mInstanceBuffer = UINT32_MAX;
-		uint32_t mInstanceDataSize = 0; // “‘Vector4Œ™µ•Œª
+		uint32_t mInstanceDataSize = 0; // ‰ª•Vector4‰∏∫Âçï‰Ωç
 		uint32_t mInstanceActiveNum = 0;
 
 		uint32_t mVAO = UINT32_MAX;

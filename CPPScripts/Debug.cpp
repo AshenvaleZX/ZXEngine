@@ -7,7 +7,7 @@
 namespace ZXEngine
 {
 	/// <summary>
-	/// ÈÕÖ¾Ä£¿é
+	/// æ—¥å¿—æ¨¡å—
 	/// </summary>
 	
 	std::mutex Debug::mWriteMutex;
@@ -89,7 +89,7 @@ namespace ZXEngine
 	}
 	
 	/// <summary>
-	/// ¼ÆÊ±Æ÷Ä£¿é
+	/// è®¡æ—¶å™¨æ¨¡å—
 	/// </summary>
 	
 	size_t Debug::mTimerStackTop = 0;
@@ -118,8 +118,8 @@ namespace ZXEngine
 
 		auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - mTimerStack[--mTimerStackTop]).count();
 
-		// Ã»ÓĞÓÃLog£¬ÒòÎªLogËÙ¶ÈÂıÒ»±¶£¬»áÓ°Ïì¼ÆÊ±£¬Èç¹ûÓĞĞèÒªĞ´ÈëÎÄ¼şÔÙÓÃLog
-		// ÏÈÆ´½ÓÔÙÊä³ö£¬Ğ§ÂÊ±ÈÖ±½ÓÓÃ<<¸ß
+		// æ²¡æœ‰ç”¨Logï¼Œå› ä¸ºLogé€Ÿåº¦æ…¢ä¸€å€ï¼Œä¼šå½±å“è®¡æ—¶ï¼Œå¦‚æœæœ‰éœ€è¦å†™å…¥æ–‡ä»¶å†ç”¨Log
+		// å…ˆæ‹¼æ¥å†è¾“å‡ºï¼Œæ•ˆç‡æ¯”ç›´æ¥ç”¨<<é«˜
 		std::cout << (name + " : " + std::to_string(duration) + " ns") << std::endl;
 	}
 

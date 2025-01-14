@@ -281,13 +281,13 @@ static const luaL_Reg GameObject_Funcs_Meta[] =
 
 LUAMOD_API int luaopen_GameObject(lua_State* L) 
 {
-	// ´´½¨Ôª±í
+	// åˆ›å»ºå…ƒè¡¨
 	luaL_newmetatable(L, "ZXEngine.GameObject");
-	// ¸´ÖÆÔª±í£¬ÎªÏÂÒ»ĞĞ´úÂëµ÷ÓÃ×¼±¸²ÎÊı
+	// å¤åˆ¶å…ƒè¡¨ï¼Œä¸ºä¸‹ä¸€è¡Œä»£ç è°ƒç”¨å‡†å¤‡å‚æ•°
 	lua_pushvalue(L, -1);
-	// mt.__index = mt °Ñ-2Î»ÖÃÉÏµÄmt±í(µÚÒ»ĞĞnewmetatableµÄ)µÄ__index×Ö¶ÎÉèÖÃÎªmt(µÚ¶şĞĞpushvalue¸´ÖÆµÄ)
+	// mt.__index = mt æŠŠ-2ä½ç½®ä¸Šçš„mtè¡¨(ç¬¬ä¸€è¡Œnewmetatableçš„)çš„__indexå­—æ®µè®¾ç½®ä¸ºmt(ç¬¬äºŒè¡Œpushvalueå¤åˆ¶çš„)
 	lua_setfield(L, -2, "__index");
-	// ×¢²áÔª·½·¨
+	// æ³¨å†Œå…ƒæ–¹æ³•
 	luaL_setfuncs(L, GameObject_Funcs_Meta, 0);
 
 	luaL_newlib(L, GameObject_Funcs);

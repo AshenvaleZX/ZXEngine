@@ -52,12 +52,12 @@ namespace ZXEngine
 
 		uint32_t shadowMap = 0;
 		Texture* emptyShadowMap;
-		// true: ShadowMapÊÇÒ»¸öRender Buffer, false: ShadowMapÊÇÒ»¸öÎÆÀí
+		// true: ShadowMapæ˜¯ä¸€ä¸ªRender Buffer, false: ShadowMapæ˜¯ä¸€ä¸ªçº¹ç†
 		bool isShadowMapBuffer = true;
 
 		uint32_t shadowCubeMap = 0;
 		CubeMap* emptyShadowCubeMap;
-		// true: ShadowCubeMapÊÇÒ»¸öRender Buffer, false: ShadowCubeMapÊÇÒ»¸öÎÆÀí
+		// true: ShadowCubeMapæ˜¯ä¸€ä¸ªRender Buffer, false: ShadowCubeMapæ˜¯ä¸€ä¸ªçº¹ç†
 		bool isShadowCubeMapBuffer = true;
 	};
 }

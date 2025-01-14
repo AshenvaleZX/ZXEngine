@@ -128,11 +128,11 @@ namespace ZXEngine
 		ShaderInfo info;
 		info.stateSet = GetShaderStateSet(code);
 
-		// ÕâÀïÊı×ÖÀàĞÍÓÃµÄÊÇstring¿âÀïµÄ×¨ÓÃÀàĞÍ£¬ÒòÎªstring¿âµÄfind£¬substrµÈ²Ù×÷·µ»ØµÄÕâĞ©Êı¾İÀàĞÍºÍ¾ßÌå±àÒë»·¾³ÓĞ¹Ø
-		// ÌØ±ğÊÇfind£¬ÍøÉÏºÜ¶àµØ·½ËµÃ»ÕÒµ½¾Í»á·µ»Ø-1£¬ÆäÊµÕâ¸öËµ·¨²»×¼È·£¬ÒòÎªfindµÄº¯Êı¶¨Òå·µ»ØµÄÀàĞÍÊÇsize_t
-		// ¶øsize_tÊÇÒ»¸öÎŞ·ûºÅÕûÊı(¾ßÌå¶àÉÙÎ»È¡¾öÓÚ±àÒë»·¾³)£¬Ò»¸öÎŞ·ûºÅÕûÊı±ä³É-1£¬ÊÇÒòÎªÒç³öÁË£¬Êµ¼ÊÉÏÃ»ÕÒµ½µÄÊ±ºòÕæÕı·µ»ØµÄÊÇnpos
-		// ÆäÊµÖ±½ÓÓÃintÀ´´¦ÀíÒ²ĞĞ£¬»á×Ô¶¯ÒşÊ½×ª»»£¬Ò²¿ÉÒÔÓÃ-1À´ÅĞ¶ÏÊÇ·ñÕÒµ½£¬µ«ÊÇÕâÑù»áÓĞ±àÒëµÄWarning
-		// ÎªÁËÔÚ¸÷ÖÖ±àÒë»·¾³ÏÂ²»³ö´í£¬ÕâÀïÖ±½Ó²ÉÓÃÔ­¶¨ÒåÖĞµÄstring::size_typeºÍstring::nposÊÇ×î±£ÏÕµÄ£¬²¢ÇÒ²»»áÓĞWarning
+		// è¿™é‡Œæ•°å­—ç±»å‹ç”¨çš„æ˜¯stringåº“é‡Œçš„ä¸“ç”¨ç±»å‹ï¼Œå› ä¸ºstringåº“çš„findï¼Œsubstrç­‰æ“ä½œè¿”å›çš„è¿™äº›æ•°æ®ç±»å‹å’Œå…·ä½“ç¼–è¯‘ç¯å¢ƒæœ‰å…³
+		// ç‰¹åˆ«æ˜¯findï¼Œç½‘ä¸Šå¾ˆå¤šåœ°æ–¹è¯´æ²¡æ‰¾åˆ°å°±ä¼šè¿”å›-1ï¼Œå…¶å®è¿™ä¸ªè¯´æ³•ä¸å‡†ç¡®ï¼Œå› ä¸ºfindçš„å‡½æ•°å®šä¹‰è¿”å›çš„ç±»å‹æ˜¯size_t
+		// è€Œsize_tæ˜¯ä¸€ä¸ªæ— ç¬¦å·æ•´æ•°(å…·ä½“å¤šå°‘ä½å–å†³äºç¼–è¯‘ç¯å¢ƒ)ï¼Œä¸€ä¸ªæ— ç¬¦å·æ•´æ•°å˜æˆ-1ï¼Œæ˜¯å› ä¸ºæº¢å‡ºäº†ï¼Œå®é™…ä¸Šæ²¡æ‰¾åˆ°çš„æ—¶å€™çœŸæ­£è¿”å›çš„æ˜¯npos
+		// å…¶å®ç›´æ¥ç”¨intæ¥å¤„ç†ä¹Ÿè¡Œï¼Œä¼šè‡ªåŠ¨éšå¼è½¬æ¢ï¼Œä¹Ÿå¯ä»¥ç”¨-1æ¥åˆ¤æ–­æ˜¯å¦æ‰¾åˆ°ï¼Œä½†æ˜¯è¿™æ ·ä¼šæœ‰ç¼–è¯‘çš„Warning
+		// ä¸ºäº†åœ¨å„ç§ç¼–è¯‘ç¯å¢ƒä¸‹ä¸å‡ºé”™ï¼Œè¿™é‡Œç›´æ¥é‡‡ç”¨åŸå®šä¹‰ä¸­çš„string::size_typeå’Œstring::nposæ˜¯æœ€ä¿é™©çš„ï¼Œå¹¶ä¸”ä¸ä¼šæœ‰Warning
 		string::size_type hasDirLight = code.find("ENGINE_Light_Dir");
 		string::size_type hasPointLight = code.find("ENGINE_Light_Pos");
 		if (hasDirLight != string::npos)
@@ -182,8 +182,8 @@ namespace ZXEngine
 
 	PropertyAlignInfo ShaderParser::GetPropertyAlignInfoStd140(ShaderPropertyType type, uint32_t arrayLength)
 	{
-		// ÕâÀïÒª×¢ÒâVulkanµÄÄÚ´æ¶ÔÆë¹æ·¶: https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap15.html#interfaces-resources-layout
-		// ÕâÀïÊÇ°´ÕÕstd140±ê×¼ÊµÏÖµÄÄÚ´æ¶ÔÆë
+		// è¿™é‡Œè¦æ³¨æ„Vulkançš„å†…å­˜å¯¹é½è§„èŒƒ: https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap15.html#interfaces-resources-layout
+		// è¿™é‡Œæ˜¯æŒ‰ç…§std140æ ‡å‡†å®ç°çš„å†…å­˜å¯¹é½
 
 		uint32_t std_size = sizeof(float);
 		if (type == ShaderPropertyType::BOOL || type == ShaderPropertyType::INT || type == ShaderPropertyType::UINT
@@ -368,18 +368,18 @@ namespace ZXEngine
 		lines = Utils::StringSplit(programCode, '\n');
 		for (auto& line : lines)
 		{
-			// ´¦Àí¾ØÕó³Ë·¨
+			// å¤„ç†çŸ©é˜µä¹˜æ³•
 			size_t pos = 0;
 			if ((pos = Utils::FindWord(line, "mul", pos)) != string::npos)
 			{
 				size_t sPos = string::npos;
 				size_t ePos = string::npos;
 				Utils::GetNextStringBlockPos(line, pos, '(', ')', sPos, ePos);
-				// É¾³ı mul º¯ÊıºÍÀ¨ºÅ
+				// åˆ é™¤ mul å‡½æ•°å’Œæ‹¬å·
 				line.replace(pos, ePos - pos + 1, line.substr(sPos + 1, ePos - sPos - 1));
 			}
 
-			// ´¦ÀíGetTextureSizeº¯Êı
+			// å¤„ç†GetTextureSizeå‡½æ•°
 			pos = 0;
 			if ((pos = Utils::FindWord(line, "GetTextureSize", pos)) != string::npos)
 			{
@@ -396,7 +396,7 @@ namespace ZXEngine
 			glCode += line + "\n";
 		}
 
-		// ´¦ÀíÊı×éÉùÃ÷
+		// å¤„ç†æ•°ç»„å£°æ˜
 		size_t pos = 0;
 		while ((pos = Utils::FindWord(glCode, "array", pos)) != string::npos)
 		{
@@ -519,7 +519,7 @@ namespace ZXEngine
 		}
 		vkCode += "\n";
 
-		// ´¦ÀíUBO±äÁ¿ÃüÃû
+		// å¤„ç†UBOå˜é‡å‘½å
 		string programBlock = GetCodeBlock(preprocessedCode, "Program");
 		if (!info.baseProperties.empty())
 		{
@@ -530,18 +530,18 @@ namespace ZXEngine
 		lines = Utils::StringSplit(programBlock, '\n');
 		for (auto& line : lines)
 		{
-			// ´¦Àí¾ØÕó³Ë·¨
+			// å¤„ç†çŸ©é˜µä¹˜æ³•
 			size_t pos = 0;
 			if ((pos = Utils::FindWord(line, "mul", pos)) != string::npos)
 			{
 				size_t sPos = string::npos;
 				size_t ePos = string::npos;
 				Utils::GetNextStringBlockPos(line, pos, '(', ')', sPos, ePos);
-				// É¾³ı mul º¯ÊıºÍÀ¨ºÅ
+				// åˆ é™¤ mul å‡½æ•°å’Œæ‹¬å·
 				line.replace(pos, ePos - pos + 1, line.substr(sPos + 1, ePos - sPos - 1));
 			}
 
-			// ´¦ÀíGetTextureSizeº¯Êı
+			// å¤„ç†GetTextureSizeå‡½æ•°
 			pos = 0;
 			if ((pos = Utils::FindWord(line, "GetTextureSize", pos)) != string::npos)
 			{
@@ -558,7 +558,7 @@ namespace ZXEngine
 			vkCode += line + "\n";
 		}
 
-		// ´¦ÀíÊı×éÉùÃ÷
+		// å¤„ç†æ•°ç»„å£°æ˜
 		size_t pos = 0;
 		while ((pos = Utils::FindWord(vkCode, "array", pos)) != string::npos)
 		{
@@ -616,10 +616,10 @@ namespace ZXEngine
 		string geomCode = GetCodeBlock(preprocessedCode, "Geometry");
 		string fragCode = GetCodeBlock(preprocessedCode, "Fragment");
 
-		// °ÑHLSLÄ¬ÈÏµÄĞĞÖ÷Ğò¾ØÕó¸ÄÎªÁĞÖ÷Ğò
+		// æŠŠHLSLé»˜è®¤çš„è¡Œä¸»åºçŸ©é˜µæ”¹ä¸ºåˆ—ä¸»åº
 		string dxCode = "#pragma pack_matrix(column_major)\n\n";
 
-		// ¶¥µã×ÅÉ«Æ÷ÊäÈë½á¹¹Ìå
+		// é¡¶ç‚¹ç€è‰²å™¨è¾“å…¥ç»“æ„ä½“
 		dxCode += "struct VertexInput\n{\n";
 		string vertInputBlock = GetCodeBlock(vertCode, "Input");
 		vector<string> vertInputVariables;
@@ -653,7 +653,7 @@ namespace ZXEngine
 			dxCode += "};\n\n";
 		}
 
-		// ¶¥µã×ÅÉ«Æ÷Êä³ö½á¹¹Ìå
+		// é¡¶ç‚¹ç€è‰²å™¨è¾“å‡ºç»“æ„ä½“
 		dxCode += "struct VertexOutput\n{\n";
 		string vertOutputBlock = GetCodeBlock(vertCode, "Output");
 		vector<string> vertOutputVariables;
@@ -701,7 +701,7 @@ namespace ZXEngine
 			dxCode += "};\n\n";
 		}
 
-		// Æ¬Ôª(ÏñËØ)×ÅÉ«Æ÷Êä³ö½á¹¹Ìå
+		// ç‰‡å…ƒ(åƒç´ )ç€è‰²å™¨è¾“å‡ºç»“æ„ä½“
 		bool writeToDepth = fragCode.find("ZX_Depth") != string::npos;
 		dxCode += "struct PixelOutput\n{\n";
 		string fragOutputBlock = GetCodeBlock(fragCode, "Output");
@@ -720,7 +720,7 @@ namespace ZXEngine
 			dxCode += "    float ZX_Depth : SV_Depth;\n";
 		dxCode += "};\n\n";
 
-		// CPU¶Ë³£Á¿Buffer
+		// CPUç«¯å¸¸é‡Buffer
 		dxCode += "cbuffer constantBuffer : register(b0)\n{\n";
 		for (auto& property : shaderInfo.vertProperties.baseProperties)
 		{
@@ -745,7 +745,7 @@ namespace ZXEngine
 		}
 		dxCode += "};\n\n";
 
-		// ÎÆÀí
+		// çº¹ç†
 		uint32_t textureIdx = 0;
 		for (auto& property : shaderInfo.vertProperties.textureProperties)
 		{
@@ -773,19 +773,19 @@ namespace ZXEngine
 		}
 		dxCode += "\n";
 
-		// ²ÉÑùÆ÷
+		// é‡‡æ ·å™¨
 		dxCode += "SamplerState _SampleLinearWrap       : register(s0);\n";
 		dxCode += "SamplerState _SampleLinearClamp      : register(s1);\n";
 		dxCode += "SamplerState _SampleAnisotropicWrap  : register(s2);\n";
 		dxCode += "SamplerState _SampleAnisotropicClamp : register(s3);\n\n";
 
-		// ¶¥µã×ÅÉ«Æ÷
+		// é¡¶ç‚¹ç€è‰²å™¨
 		string vertProgramBlock = GetCodeBlock(vertCode, "Program");
 		lines = Utils::StringSplit(vertProgramBlock, '\n');
-		// ÖğĞĞ¼ì²âĞèÒª´¦ÀíµÄÓï·¨
+		// é€è¡Œæ£€æµ‹éœ€è¦å¤„ç†çš„è¯­æ³•
 		for (auto& line : lines)
 		{
-			// ´¦Àí¾ØÕó³Ë·¨
+			// å¤„ç†çŸ©é˜µä¹˜æ³•
 			size_t pos = Utils::FindWord(line, "mul", 0);
 			if (pos != string::npos)
 			{
@@ -804,11 +804,11 @@ namespace ZXEngine
 
 					multipliers.push_back("mul(" + leftMul + ", " + rightMul + ")");
 				}
-				// É¾³ı mul º¯ÊıºÍÀ¨ºÅ
+				// åˆ é™¤ mul å‡½æ•°å’Œæ‹¬å·
 				line.replace(pos, ePos - pos + 1, multipliers[0]);
 			}
 
-			// ´¦ÀíGetTextureSizeº¯Êı
+			// å¤„ç†GetTextureSizeå‡½æ•°
 			pos = 0;
 			if ((pos = Utils::FindWord(line, "GetTextureSize", pos)) != string::npos)
 			{
@@ -825,14 +825,14 @@ namespace ZXEngine
 			line += "\n";
 		}
 		vertProgramBlock = Utils::ConcatenateStrings(lines);
-		// È¥µômainº¯Êı
+		// å»æ‰mainå‡½æ•°
 		for (auto& line : lines)
 		{
 			if (line.find("main") != string::npos)
 				break;
 			dxCode += line;
 		}
-		// ÖØĞÂÉú³ÉVS mainº¯Êı
+		// é‡æ–°ç”ŸæˆVS mainå‡½æ•°
 		string vertMainBlock = GetCodeBlock(vertProgramBlock, "main");
 		Utils::ReplaceAllWord(vertMainBlock, "ZX_Position", "output.ZX_Pos");
 		for (auto& varName : vertInputVariables)
@@ -853,15 +853,15 @@ namespace ZXEngine
 		dxCode += "    return output;\n";
 		dxCode += "}\n\n";
 
-		// ¼¸ºÎ×ÅÉ«Æ÷
+		// å‡ ä½•ç€è‰²å™¨
 		if (shaderInfo.stages & ZX_SHADER_STAGE_GEOMETRY_BIT)
 		{
 			string geomProgramBlock = GetCodeBlock(geomCode, "Program");
 			lines = Utils::StringSplit(geomProgramBlock, '\n');
-			// ÖğĞĞ¼ì²âĞèÒª´¦ÀíµÄÓï·¨
+			// é€è¡Œæ£€æµ‹éœ€è¦å¤„ç†çš„è¯­æ³•
 			for (auto& line : lines)
 			{
-				// ´¦Àí¾ØÕó³Ë·¨
+				// å¤„ç†çŸ©é˜µä¹˜æ³•
 				size_t pos = Utils::FindWord(line, "mul", 0);
 				if (pos != string::npos)
 				{
@@ -880,11 +880,11 @@ namespace ZXEngine
 
 						multipliers.push_back("mul(" + leftMul + ", " + rightMul + ")");
 					}
-					// É¾³ı mul º¯ÊıºÍÀ¨ºÅ
+					// åˆ é™¤ mul å‡½æ•°å’Œæ‹¬å·
 					line.replace(pos, ePos - pos + 1, multipliers[0]);
 				}
 
-				// ´¦ÀíGetTextureSizeº¯Êı
+				// å¤„ç†GetTextureSizeå‡½æ•°
 				pos = 0;
 				if ((pos = Utils::FindWord(line, "GetTextureSize", pos)) != string::npos)
 				{
@@ -901,14 +901,14 @@ namespace ZXEngine
 				line += "\n";
 			}
 			geomProgramBlock = Utils::ConcatenateStrings(lines);
-			// È¥µômainº¯Êı
+			// å»æ‰mainå‡½æ•°
 			for (auto& line : lines)
 			{
 				if (line.find("main") != string::npos)
 					break;
 				dxCode += line;
 			}
-			// ÖØĞÂÉú³ÉGS mainº¯Êı
+			// é‡æ–°ç”ŸæˆGS mainå‡½æ•°
 			string geomMainBlock = GetCodeBlock(geomProgramBlock, "main");
 			Utils::ReplaceAllWord(geomMainBlock, "ZX_Position", "output.ZX_Pos");
 			Utils::ReplaceAllWord(geomMainBlock, "GS_IN_Position", "ZX_Pos");
@@ -926,13 +926,13 @@ namespace ZXEngine
 			dxCode += "}\n\n";
 		}
 
-		// Æ¬Ôª(ÏñËØ)×ÅÉ«Æ÷
+		// ç‰‡å…ƒ(åƒç´ )ç€è‰²å™¨
 		string fragProgramBlock = GetCodeBlock(fragCode, "Program");
 		lines = Utils::StringSplit(fragProgramBlock, '\n');
-		// ÖğĞĞ¼ì²âĞèÒª´¦ÀíµÄÓï·¨
+		// é€è¡Œæ£€æµ‹éœ€è¦å¤„ç†çš„è¯­æ³•
 		for (auto& line : lines)
 		{
-			// ´¦Àí¾ØÕó³Ë·¨
+			// å¤„ç†çŸ©é˜µä¹˜æ³•
 			size_t pos = Utils::FindWord(line, "mul", 0);
 			if (pos != string::npos)
 			{
@@ -951,11 +951,11 @@ namespace ZXEngine
 
 					multipliers.push_back("mul(" + leftMul + ", " + rightMul + ")");
 				}
-				// É¾³ı mul º¯ÊıºÍÀ¨ºÅ
+				// åˆ é™¤ mul å‡½æ•°å’Œæ‹¬å·
 				line.replace(pos, ePos - pos + 1, multipliers[0]);
 			}
 
-			// ´¦ÀíGetTextureSizeº¯Êı
+			// å¤„ç†GetTextureSizeå‡½æ•°
 			pos = 0;
 			if ((pos = Utils::FindWord(line, "GetTextureSize", pos)) != string::npos)
 			{
@@ -972,14 +972,14 @@ namespace ZXEngine
 			line += "\n";
 		}
 		fragProgramBlock = Utils::ConcatenateStrings(lines);
-		// È¥µômainº¯Êı
+		// å»æ‰mainå‡½æ•°
 		for (auto& line : lines)
 		{
 			if (line.find("main") != string::npos)
 				break;
 			dxCode += line;
 		}
-		// ÖØĞÂÉú³ÉPS mainº¯Êı
+		// é‡æ–°ç”ŸæˆPS mainå‡½æ•°
 		string fragMainBlock = GetCodeBlock(fragProgramBlock, "main");
 		for (auto& varName : fragOutputVariables)
 			Utils::ReplaceAllWord(fragMainBlock, varName, "output." + varName);
@@ -1003,7 +1003,7 @@ namespace ZXEngine
 		dxCode += "    return output;\n";
 		dxCode += "}\n";
 
-		// Ìæ»»ÎÆÀí²ÉÑùÓï·¨
+		// æ›¿æ¢çº¹ç†é‡‡æ ·è¯­æ³•
 		size_t pos = 0;
 		while ((pos = Utils::FindWord(dxCode, "texture", pos)) != string::npos)
 		{
@@ -1022,7 +1022,7 @@ namespace ZXEngine
 			pos += newSentence.length();
 		}
 
-		// ´¦ÀíÊı×éÉùÃ÷
+		// å¤„ç†æ•°ç»„å£°æ˜
 		pos = 0;
 		while ((pos = Utils::FindWord(dxCode, "array", pos)) != string::npos)
 		{
@@ -1052,7 +1052,7 @@ namespace ZXEngine
 			pos += newSentence.length();
 		}
 
-		// ´¦Àí¾ØÕó¹¹½¨£¬ÒòÎªHLSLºÍGLSLµÄ¾ØÕóÄ¬ÈÏÖ÷Ğò²»Ò»ÖÂ£¬ÕâÀïĞèÒª×ªÖÃÒ»ÏÂ
+		// å¤„ç†çŸ©é˜µæ„å»ºï¼Œå› ä¸ºHLSLå’ŒGLSLçš„çŸ©é˜µé»˜è®¤ä¸»åºä¸ä¸€è‡´ï¼Œè¿™é‡Œéœ€è¦è½¬ç½®ä¸€ä¸‹
 		pos = 0;
 		while ((pos = Utils::FindWord(dxCode, "build_mat3", pos)) != string::npos)
 		{
@@ -1084,12 +1084,12 @@ namespace ZXEngine
 			pos += newSentence.length();
 		}
 
-		// Ç¿ÖÆÀàĞÍ×ª»»
+		// å¼ºåˆ¶ç±»å‹è½¬æ¢
 		Utils::ReplaceAllWord(dxCode, "to_vec2", "(float2)");
 		Utils::ReplaceAllWord(dxCode, "to_vec3", "(float3)");
 		Utils::ReplaceAllWord(dxCode, "to_mat3", "(float3x3)");
 
-		// Ìæ»»±äÁ¿ÀàĞÍÃû³Æ
+		// æ›¿æ¢å˜é‡ç±»å‹åç§°
 		Utils::ReplaceAllWord(dxCode, "vec2", "float2");
 		Utils::ReplaceAllWord(dxCode, "vec3", "float3");
 		Utils::ReplaceAllWord(dxCode, "vec4", "float4");
@@ -1102,11 +1102,11 @@ namespace ZXEngine
 		Utils::ReplaceAllWord(dxCode, "mat3", "float3x3");
 		Utils::ReplaceAllWord(dxCode, "mat4", "float4x4");
 
-		// Ìæ»»ÄÚÖÃº¯ÊıÃû³Æ
+		// æ›¿æ¢å†…ç½®å‡½æ•°åç§°
 		Utils::ReplaceAllWord(dxCode, "fract", "frac");
 		Utils::ReplaceAllWord(dxCode, "mod", "fmod");
 
-		// ÌØÊâ´¦Àí£¬ÓÉÓÚDirectX 12ºÍOpenGL/VulkanµÄ×ø±êÏµ(NDC or ÎÆÀí²ÉÑù×ø±êÏµ?)ÔÚYÖáÉÏÊÇ·´µÄ£¬´úÂëÊÇÒÔGLSLµÄÂß¼­Ğ´µÄ£¬ËùÒÔÕâÀïÒªÈ¡·´²ÅÕıÈ·
+		// ç‰¹æ®Šå¤„ç†ï¼Œç”±äºDirectX 12å’ŒOpenGL/Vulkançš„åæ ‡ç³»(NDC or çº¹ç†é‡‡æ ·åæ ‡ç³»?)åœ¨Yè½´ä¸Šæ˜¯åçš„ï¼Œä»£ç æ˜¯ä»¥GLSLçš„é€»è¾‘å†™çš„ï¼Œæ‰€ä»¥è¿™é‡Œè¦å–åæ‰æ­£ç¡®
 		Utils::ReplaceAllWord(dxCode, "ddy", " -ddy");
 
 		return dxCode;
@@ -1197,7 +1197,7 @@ namespace ZXEngine
 		if (begin == string::npos)
 			return "";
 
-		// BlockName±ØĞëÊÇÒ»¸öµ¥¶ÀµÄ´Ê£¬²»ÊÇÆäËüº¯ÊıÃû»òÕß±äÁ¿µÄÒ»²¿·Ö
+		// BlockNameå¿…é¡»æ˜¯ä¸€ä¸ªå•ç‹¬çš„è¯ï¼Œä¸æ˜¯å…¶å®ƒå‡½æ•°åæˆ–è€…å˜é‡çš„ä¸€éƒ¨åˆ†
 		if ((begin > 0 && isalnum(code[begin - 1])) || (begin + blockName.size() < code.size() && isalnum(code[begin + blockName.size()])))
 			return "";
 
@@ -1239,7 +1239,7 @@ namespace ZXEngine
 				e = i;
 		}
 
-		// ²»ÊÇÊı×é±äÁ¿
+		// ä¸æ˜¯æ•°ç»„å˜é‡
 		if (s == 0 || e == 0)
 		{
 			name = propertyStr;
@@ -1301,7 +1301,7 @@ namespace ZXEngine
 
 	void ShaderParser::SetUpPropertiesStd140(ShaderInfo& info)
 	{
-		// ÕâÀïÊÇ°´ÕÕstd140±ê×¼ÊµÏÖµÄÄÚ´æ¶ÔÆë
+		// è¿™é‡Œæ˜¯æŒ‰ç…§std140æ ‡å‡†å®ç°çš„å†…å­˜å¯¹é½
 		uint32_t binding = 0;
 
 		if (!info.vertProperties.baseProperties.empty())
@@ -1385,12 +1385,12 @@ namespace ZXEngine
 
 	void ShaderParser::SetUpPropertiesHLSL(ShaderInfo& info)
 	{
-		// ÕâÀïÊÇ°´ÕÕ HLSL Packing Rule À´ÊµÏÖµÄ
-		// Î¢Èí¹ÙÍøÎÄµµÁ´½Ó: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-packing-rules
-		// Î¢ÈíGithubÎÄµµÁ´½Ó: https://github.com/microsoft/DirectXShaderCompiler/wiki/Buffer-Packing
-		// ÖªºõÎÄµµÁ´½Ó: https://zhuanlan.zhihu.com/p/560076693
+		// è¿™é‡Œæ˜¯æŒ‰ç…§ HLSL Packing Rule æ¥å®ç°çš„
+		// å¾®è½¯å®˜ç½‘æ–‡æ¡£é“¾æ¥: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-packing-rules
+		// å¾®è½¯Githubæ–‡æ¡£é“¾æ¥: https://github.com/microsoft/DirectXShaderCompiler/wiki/Buffer-Packing
+		// çŸ¥ä¹æ–‡æ¡£é“¾æ¥: https://zhuanlan.zhihu.com/p/560076693
 
-		// Ä¿Ç°µÄZXEngineÀïÒ»¸öHLSL ShaderÖ»ÓĞÒ»¸öConstant Buffer£¬ËùÓĞ±äÁ¿ÑÏ¸ñ°´ÕÕVS£¬GS£¬PSÀïµÄPropertiesÉùÃ÷Ë³ĞòÅÅÁĞ
+		// ç›®å‰çš„ZXEngineé‡Œä¸€ä¸ªHLSL Shaderåªæœ‰ä¸€ä¸ªConstant Bufferï¼Œæ‰€æœ‰å˜é‡ä¸¥æ ¼æŒ‰ç…§VSï¼ŒGSï¼ŒPSé‡Œçš„Propertieså£°æ˜é¡ºåºæ’åˆ—
 		uint32_t offset = 0;
 		if (!info.vertProperties.baseProperties.empty())
 		{
@@ -1400,17 +1400,17 @@ namespace ZXEngine
 				property.size = alignInfo.size;
 				property.align = alignInfo.align;
 				property.arrayOffset = alignInfo.arrayOffset;
-				// µ±Ç°µÄ16×Ö½Ú¼Ä´æÆ÷»¹Ê£¼¸¸ö×Ö½Ú
+				// å½“å‰çš„16å­—èŠ‚å¯„å­˜å™¨è¿˜å‰©å‡ ä¸ªå­—èŠ‚
 				uint32_t remainder = 16 - (offset % 16);
-				// ÅĞ¶ÏÒ»ÏÂÊ£µÄÕâ¼¸¸ö×Ö½Ú¹»²»¹»×°ÏÂÒ»¸öÊı¾İ£¬ÏÂÒ»¸öÊı¾İÈç¹ûÊÇ¾ØÕó»òÕßÊı×éµÄ»°¾ÍÊÇ¿´¹»²»¹»×°Ò»¸öÔªËØ£¬¶ø¾ØÕó»òÊı×éµÄÒ»¸öÔªËØ±Ø¶¨ĞèÒª16×Ö½Ú¶ÔÆë
+				// åˆ¤æ–­ä¸€ä¸‹å‰©çš„è¿™å‡ ä¸ªå­—èŠ‚å¤Ÿä¸å¤Ÿè£…ä¸‹ä¸€ä¸ªæ•°æ®ï¼Œä¸‹ä¸€ä¸ªæ•°æ®å¦‚æœæ˜¯çŸ©é˜µæˆ–è€…æ•°ç»„çš„è¯å°±æ˜¯çœ‹å¤Ÿä¸å¤Ÿè£…ä¸€ä¸ªå…ƒç´ ï¼Œè€ŒçŸ©é˜µæˆ–æ•°ç»„çš„ä¸€ä¸ªå…ƒç´ å¿…å®šéœ€è¦16å­—èŠ‚å¯¹é½
 				if (remainder >= alignInfo.align)
-					// Èç¹û¹»×°µÄ»°£¬¾ÍÖ±½Ó·Å½øÈ¥£¬Ò²¾ÍÊÇoffsetÖ±½ÓÊÇµ±Ç°Êµ¼ÊÕ¼ÓÃµÄoffset
+					// å¦‚æœå¤Ÿè£…çš„è¯ï¼Œå°±ç›´æ¥æ”¾è¿›å»ï¼Œä¹Ÿå°±æ˜¯offsetç›´æ¥æ˜¯å½“å‰å®é™…å ç”¨çš„offset
 					property.offset = offset;
 				else
-					// Èç¹û²»¹»×°µÄ»°£¬¾ÍĞèÒªÌø¹ıÕâ¸ö16×Ö½Ú¼Ä´æÆ÷£¬ÓÃÏÂÒ»¸ö16×Ö½Ú¼Ä´æÆ÷£¬Ò²¾ÍÊÇoffsetĞèÒª¼ÓÉÏremainderÀ´²¹Æëµ½ÏÂÒ»¸ö¶ÔÆë16×Ö½ÚµÄÎ»ÖÃ
+					// å¦‚æœä¸å¤Ÿè£…çš„è¯ï¼Œå°±éœ€è¦è·³è¿‡è¿™ä¸ª16å­—èŠ‚å¯„å­˜å™¨ï¼Œç”¨ä¸‹ä¸€ä¸ª16å­—èŠ‚å¯„å­˜å™¨ï¼Œä¹Ÿå°±æ˜¯offsetéœ€è¦åŠ ä¸Šremainderæ¥è¡¥é½åˆ°ä¸‹ä¸€ä¸ªå¯¹é½16å­—èŠ‚çš„ä½ç½®
 					property.offset = offset + remainder;
 
-				// offset¸ù¾İÊı¾İÊµ¼ÊÕ¼ÓÃ´óĞ¡½øĞĞÆ«ÒÆ
+				// offsetæ ¹æ®æ•°æ®å®é™…å ç”¨å¤§å°è¿›è¡Œåç§»
 				offset = property.offset + property.size;
 			}
 		}
@@ -1449,7 +1449,7 @@ namespace ZXEngine
 			}
 		}
 
-		// ÕâÀïµÄbindingÊÇÖ¸ÎÆÀíÔÚHLSLÀïµÄregister(t)Ë÷Òı£¬ÑÏ¸ñ°´ÕÕVS£¬GS£¬PSÀïµÄÎÆÀíÉùÃ÷Ë³ĞòÅÅÁĞ
+		// è¿™é‡Œçš„bindingæ˜¯æŒ‡çº¹ç†åœ¨HLSLé‡Œçš„register(t)ç´¢å¼•ï¼Œä¸¥æ ¼æŒ‰ç…§VSï¼ŒGSï¼ŒPSé‡Œçš„çº¹ç†å£°æ˜é¡ºåºæ’åˆ—
 		uint32_t binding = 0;
 		for (auto& property : info.vertProperties.textureProperties)
 		{

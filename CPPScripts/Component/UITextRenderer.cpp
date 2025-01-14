@@ -37,7 +37,7 @@ namespace ZXEngine
 
     void UITextRenderer::Render(const Matrix4& matVP)
     {
-        // Èç¹ûÎÄ±¾·¢ÉúÁË±ä»¯£¬ÖØÐÂÉú³ÉäÖÈ¾Êý¾Ý
+        // å¦‚æžœæ–‡æœ¬å‘ç”Ÿäº†å˜åŒ–ï¼Œé‡æ–°ç”Ÿæˆæ¸²æŸ“æ•°æ®
         if (dirty)
         {
             for (auto material : textMaterials)
@@ -145,20 +145,20 @@ namespace ZXEngine
         {
             const Character& ch = characterMgr->Characters[*c];
 
-            // Èç¹ûÓöµ½¿Õ¸ñµÈÎÞÊµ¼ÊÍ¼ÏñµÄ×Ö·û£¬Ö±½ÓºóÒÆÒ»¶Î¾àÀë¿Õ³öÀ´£¬²»×öÊµ¼ÊäÖÈ¾
+            // å¦‚æžœé‡åˆ°ç©ºæ ¼ç­‰æ— å®žé™…å›¾åƒçš„å­—ç¬¦ï¼Œç›´æŽ¥åŽç§»ä¸€æ®µè·ç¦»ç©ºå‡ºæ¥ï¼Œä¸åšå®žé™…æ¸²æŸ“
             if (ch.TextureID == UINT32_MAX)
             {
                 tmpX += (ch.Advance >> 6) * size;
                 continue;
             }
 
-            // ¼ÆËã×Ö·ûÎ»ÖÃºÍ´óÐ¡
+            // è®¡ç®—å­—ç¬¦ä½ç½®å’Œå¤§å°
             float xpos = tmpX + ch.Bearing[0] * size;
             float ypos = tmpY - (ch.Size[1] - ch.Bearing[1]) * size;
             float w = ch.Size[0] * size;
             float h = ch.Size[1] * size;
 
-            // ÉèÖÃ×Ö·û¶¥µãÊý¾Ý
+            // è®¾ç½®å­—ç¬¦é¡¶ç‚¹æ•°æ®
             Vector3 points[4] =
             {
                 Vector3(xpos,     ypos,     0),
@@ -175,7 +175,7 @@ namespace ZXEngine
                 vertices.push_back(vertex);
             }
 
-            // ¸üÐÂ×Ö·ûMesh
+            // æ›´æ–°å­—ç¬¦Mesh
             if (length >= textMeshes.size())
             {
                 auto charMesh = new DynamicMesh(4, 6);
@@ -187,7 +187,7 @@ namespace ZXEngine
                 textMeshes[length]->UpdateData(std::move(vertices), GlyphIndices);
             }
 
-            // ×Ö·û²ÄÖÊ
+            // å­—ç¬¦æè´¨
             auto charMaterial = new Material(characterMgr->textShader);
             charMaterial->Use();
             charMaterial->SetVector("_TextColor", color, true);

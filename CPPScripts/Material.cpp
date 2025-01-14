@@ -34,7 +34,7 @@ namespace ZXEngine
 		else if (type == MaterialType::RayTracing)
 		{
 			hitGroupIdx = matStruct->hitGroupIdx;
-			// ¹â×·¹ÜÏßÔÝÊ±²»ÐèÒªÇø·Ö¶ÓÁÐ£¬ÓÃÒ»¸öÄ¬ÈÏµÄOpaque¶ÓÁÐ
+			// å…‰è¿½ç®¡çº¿æš‚æ—¶ä¸éœ€è¦åŒºåˆ†é˜Ÿåˆ—ï¼Œç”¨ä¸€ä¸ªé»˜è®¤çš„Opaqueé˜Ÿåˆ—
 			renderQueue = (int)RenderQueueType::Opaque;
 			renderQueueType = RenderQueueType::Opaque;
 			RenderAPI::GetInstance()->SetUpRayTracingMaterialData(this);
@@ -43,14 +43,14 @@ namespace ZXEngine
 
 	Material::Material(Shader* shader)
 	{
-		// ÕâÀïÒª×¢ÒâÒ»¸öÎÊÌâ£¬Èç¹ûµ÷ÓÃÕâ¸ö¹¹Ôìº¯ÊýÊ±£¬ÊÇÖ±½Ó°Ñnew ShaderÐ´ÔÚ²ÎÊýÀïµÄ£¬Èç:
+		// è¿™é‡Œè¦æ³¨æ„ä¸€ä¸ªé—®é¢˜ï¼Œå¦‚æžœè°ƒç”¨è¿™ä¸ªæž„é€ å‡½æ•°æ—¶ï¼Œæ˜¯ç›´æŽ¥æŠŠnew Shaderå†™åœ¨å‚æ•°é‡Œçš„ï¼Œå¦‚:
 		// new Material(new Shader(...))
-		// ÄÇÃ´»áÓÐÒ»¸öÎÊÌâ£¬newµÄÊ±ºòÃ»ÓÐ±£´æÒýÓÃ£¬×îÖÕ»áÉÙÒ»¸ödelete£¬µ¼ÖÂreferenceCountÖÁÉÙ´óÓÚ1£¬Õâ¸öshaderÓÀÔ¶²»»á±»ÕýÕæÏú»Ù
+		// é‚£ä¹ˆä¼šæœ‰ä¸€ä¸ªé—®é¢˜ï¼Œnewçš„æ—¶å€™æ²¡æœ‰ä¿å­˜å¼•ç”¨ï¼Œæœ€ç»ˆä¼šå°‘ä¸€ä¸ªdeleteï¼Œå¯¼è‡´referenceCountè‡³å°‘å¤§äºŽ1ï¼Œè¿™ä¸ªshaderæ°¸è¿œä¸ä¼šè¢«æ­£çœŸé”€æ¯
 		isShareShader = true;
 		shader->reference->referenceCount++;
 		this->shader = shader;
 		renderQueue = (int)shader->reference->shaderInfo.stateSet.renderQueue;
-		// Í¨¹ýÕâ¸ö¹¹Ôìº¯Êý³õÊ¼»¯µÄ²ÄÖÊ£¬Ä¬ÈÏÎª¹âÕ¤»¯äÖÈ¾¹ÜÏßµÄ²ÄÖÊ
+		// é€šè¿‡è¿™ä¸ªæž„é€ å‡½æ•°åˆå§‹åŒ–çš„æè´¨ï¼Œé»˜è®¤ä¸ºå…‰æ …åŒ–æ¸²æŸ“ç®¡çº¿çš„æè´¨
 		type = MaterialType::Forward;
 		data = new MaterialData(type);
 		RenderAPI::GetInstance()->SetUpMaterial(this);
@@ -141,7 +141,7 @@ namespace ZXEngine
 		}
 		else if (type == ShaderPropertyType::ENGINE_SHADOW_CUBE_MAP)
 		{
-			// ÏÈÉèÖÃSetMaterialProperties»ñµÃÒýÇæÎÆÀíµÄ³õÊ¼textureIdx£¬È»ºó++
+			// å…ˆè®¾ç½®SetMaterialPropertiesèŽ·å¾—å¼•æ“Žçº¹ç†çš„åˆå§‹textureIdxï¼Œç„¶åŽ++
 			SetCubeMap(name, engineProperties->shadowCubeMap, textureIdx, false, engineProperties->isShadowCubeMapBuffer);
 			textureIdx++;
 		}

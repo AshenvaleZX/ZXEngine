@@ -15,10 +15,10 @@ namespace ZXEngine
             float distance = centreOffset.GetMagnitudeSquared();
             float radiusDiff = bs2.mRadius - bs1.mRadius;
 
-            // Èç¹û°ë¾¶²î´óÓÚÇòĞÄ¾àÀë£¬ËµÃ÷Ò»¸öÇòÍêÈ«¸²¸ÇÁËÁíÒ»¸öÇò
+            // å¦‚æœåŠå¾„å·®å¤§äºçƒå¿ƒè·ç¦»ï¼Œè¯´æ˜ä¸€ä¸ªçƒå®Œå…¨è¦†ç›–äº†å¦ä¸€ä¸ªçƒ
             if (radiusDiff * radiusDiff >= distance)
             {
-                // Ö±½ÓÓÃ°ë¾¶´óµÄÇò×÷Îª°üÎ§Çò
+                // ç›´æ¥ç”¨åŠå¾„å¤§çš„çƒä½œä¸ºåŒ…å›´çƒ
                 if (bs1.mRadius > bs2.mRadius)
                 {
                     mCenter = bs1.mCenter;
@@ -30,14 +30,14 @@ namespace ZXEngine
                     mRadius = bs2.mRadius;
                 }
             }
-            // Á½¸öÇò²¿·ÖÏà½»»òÍêÈ«²»Ïà½»
+            // ä¸¤ä¸ªçƒéƒ¨åˆ†ç›¸äº¤æˆ–å®Œå…¨ä¸ç›¸äº¤
             else
             {
                 distance = sqrt(distance);
                 mRadius = (distance + bs1.mRadius + bs2.mRadius) * 0.5f;
 
-                // ĞÂµÄÇòĞÄÎ»ÖÃÊÇ´ÓÔ­À´µÄÒ»¸öÇòĞÄ³ö·¢£¬ÏòÁíÒ»¸öÇòÇòĞÄµÄ·½ÏòÒÆ¶¯Ò»¶Î¾àÀë
-                // ¾àÀëÎªĞÂÇò°ë¾¶¼õÈ¥³ö·¢Çò°ë¾¶
+                // æ–°çš„çƒå¿ƒä½ç½®æ˜¯ä»åŸæ¥çš„ä¸€ä¸ªçƒå¿ƒå‡ºå‘ï¼Œå‘å¦ä¸€ä¸ªçƒçƒå¿ƒçš„æ–¹å‘ç§»åŠ¨ä¸€æ®µè·ç¦»
+                // è·ç¦»ä¸ºæ–°çƒåŠå¾„å‡å»å‡ºå‘çƒåŠå¾„
                 if (distance > 0)
                     mCenter = bs1.mCenter + (centreOffset / distance) * (mRadius - bs1.mRadius);
                 else
@@ -57,9 +57,9 @@ namespace ZXEngine
 
         float BoundingSphere::GetGrowth(const BoundingSphere& other) const
         {
-            // Ö±½Ó¹¹ÔìÒ»¸ö°üÎ§ÕâÁ½¸öÇòµÄĞÂ°üÎ§Çò
+            // ç›´æ¥æ„é€ ä¸€ä¸ªåŒ…å›´è¿™ä¸¤ä¸ªçƒçš„æ–°åŒ…å›´çƒ
             BoundingSphere tmpSphere(*this, other);
-            // ÓÃ°ë¾¶Æ½·½µÄÔö³¤À´±íÊ¾Ôö³¤·ù¶È(Ä³Ğ©Ëã·¨»áÓÃ±íÃæ»ı£¬ÈçGoldsmith-SalmonËã·¨)
+            // ç”¨åŠå¾„å¹³æ–¹çš„å¢é•¿æ¥è¡¨ç¤ºå¢é•¿å¹…åº¦(æŸäº›ç®—æ³•ä¼šç”¨è¡¨é¢ç§¯ï¼Œå¦‚Goldsmith-Salmonç®—æ³•)
             return tmpSphere.mRadius * tmpSphere.mRadius - mRadius * mRadius;
         }
     }

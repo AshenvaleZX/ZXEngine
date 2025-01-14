@@ -28,13 +28,13 @@ namespace ZXEngine
 		size_t mTrianglesNum = 0;
 		vector<shared_ptr<Mesh>> mMeshes;
 
-		// ÔÚxyz·½ÏòÉÏ×îÔ¶µÄµã£¬0-5·Ö±ğ¶ÔÓ¦+x, -x, +y, -y, +z, -z
+		// åœ¨xyzæ–¹å‘ä¸Šæœ€è¿œçš„ç‚¹ï¼Œ0-5åˆ†åˆ«å¯¹åº”+x, -x, +y, -y, +z, -z
 		array<Vertex, 6> mExtremeVertices;
-		// Ä£ĞÍÔÚXÖáÉÏµÄ³¤¶È
+		// æ¨¡å‹åœ¨Xè½´ä¸Šçš„é•¿åº¦
 		float mAABBSizeX = 0.0f;
-		// Ä£ĞÍÔÚYÖáÉÏµÄ³¤¶È
+		// æ¨¡å‹åœ¨Yè½´ä¸Šçš„é•¿åº¦
 		float mAABBSizeY = 0.0f;
-		// Ä£ĞÍÔÚZÖáÉÏµÄ³¤¶È
+		// æ¨¡å‹åœ¨Zè½´ä¸Šçš„é•¿åº¦
 		float mAABBSizeZ = 0.0f;
 
 		MeshRenderer();

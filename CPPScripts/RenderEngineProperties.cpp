@@ -55,7 +55,7 @@ namespace ZXEngine
 			return;
 
 		lightPos = lights[0]->GetTransform()->GetPosition();
-		// 光源方向是指向光源的，所以要取反
+		// 鍏夋簮鏂瑰悜鏄寚鍚戝厜婧愮殑锛屾墍浠ヨ鍙栧弽
 		lightDir = -lights[0]->GetTransform()->GetForward();
 		lightColor = lights[0]->color;
 		lightIntensity = lights[0]->intensity;
@@ -101,7 +101,7 @@ namespace ZXEngine
 
 	void RenderEngineProperties::SetShadowCubeMap(uint32_t id, bool isBuffer)
 	{
-		// 支持Geometry Shader才会实际渲染ShadowCubeMap
+		// 鏀寔Geometry Shader鎵嶄細瀹為檯娓叉煋ShadowCubeMap
 		if (ProjectSetting::isSupportGeometryShader)
 		{
 			shadowCubeMap = id;

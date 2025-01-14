@@ -69,8 +69,8 @@ namespace ZXEngine
 			return 0;
 		}
 
-		// ÓÃÓÚ¸¨ÖúBoxºÍBoxµÄÅö×²¼ì²â
-		// »ùÓÚ·ÖÀëÖáËã·¨£¬·µ»ØÔÚÄ³¸öÖáÉÏÊÇ·ñÖØµş£¬²¢¸üĞÂ×îĞ¡ÖØµş´óĞ¡ºÍ¶ÔÓ¦µÄ·ÖÀëÖáË÷Òı
+		// ç”¨äºè¾…åŠ©Boxå’ŒBoxçš„ç¢°æ’æ£€æµ‹
+		// åŸºäºåˆ†ç¦»è½´ç®—æ³•ï¼Œè¿”å›åœ¨æŸä¸ªè½´ä¸Šæ˜¯å¦é‡å ï¼Œå¹¶æ›´æ–°æœ€å°é‡å å¤§å°å’Œå¯¹åº”çš„åˆ†ç¦»è½´ç´¢å¼•
 		static inline bool TryAxis(
 			const CollisionBox& box1, 
 			const CollisionBox& box2, 
@@ -80,21 +80,21 @@ namespace ZXEngine
 			float& smallestPenetration, 
 			uint32_t& smallestCase)
 		{
-			// Èç¹ûµ±Ç°¼ì²âµÄ·ÖÀëÖáµÄÄ£³¤½Ó½ü0£¬ËµÃ÷ÊÇÓÉÁ½¸öBoxµÄÁ½ÌõÖá(×Ô¼º¾Ö²¿×ø±êÏµµÄXYZÖáÖ®Ò»)²æ³Ë³öÀ´µÄ·ÖÀëÖá
-			// ²¢ÇÒÕâÁ½ÌõÖá¼¸ºõÆ½ĞĞ£¬Ìø¹ıÕâÖÖ·ÖÀëÖá²»¼ì²â
+			// å¦‚æœå½“å‰æ£€æµ‹çš„åˆ†ç¦»è½´çš„æ¨¡é•¿æ¥è¿‘0ï¼Œè¯´æ˜æ˜¯ç”±ä¸¤ä¸ªBoxçš„ä¸¤æ¡è½´(è‡ªå·±å±€éƒ¨åæ ‡ç³»çš„XYZè½´ä¹‹ä¸€)å‰ä¹˜å‡ºæ¥çš„åˆ†ç¦»è½´
+			// å¹¶ä¸”è¿™ä¸¤æ¡è½´å‡ ä¹å¹³è¡Œï¼Œè·³è¿‡è¿™ç§åˆ†ç¦»è½´ä¸æ£€æµ‹
 			if (axis.GetMagnitudeSquared() < 0.0001f)
 				return true;
 
 			axis.Normalize();
 
-			// ¼ÆËãÁ½¸öBoxÔÚaxisÉÏµÄÖØµş³¤¶È
+			// è®¡ç®—ä¸¤ä¸ªBoxåœ¨axisä¸Šçš„é‡å é•¿åº¦
 			float penetration = IntersectionDetector::GetPenetrationOnAxis(box1, box2, axis, centerLine);
 
-			// Èç¹ûÖØµş³¤¶ÈĞ¡ÓÚ0£¬ËµÃ÷Á½¸öBoxÔÚaxisÉÏÃ»ÓĞÖØµş£¬²»Ïà½»
+			// å¦‚æœé‡å é•¿åº¦å°äº0ï¼Œè¯´æ˜ä¸¤ä¸ªBoxåœ¨axisä¸Šæ²¡æœ‰é‡å ï¼Œä¸ç›¸äº¤
 			if (penetration < 0.0f)
 				return false;
 
-			// ¼ÇÂ¼×îĞ¡ÖØµş³¤¶ÈºÍ·ÖÀëÖáË÷Òı
+			// è®°å½•æœ€å°é‡å é•¿åº¦å’Œåˆ†ç¦»è½´ç´¢å¼•
 			if (penetration < smallestPenetration)
 			{
 				smallestPenetration = penetration;
@@ -104,8 +104,8 @@ namespace ZXEngine
 			return true;
 		}
 
-		// ÓÃÓÚ¸¨ÖúBoxºÍBoxµÄÅö×²¼ì²â
-		// µ±Box2µÄÒ»¸ö¶¥µãÔÚBox1µÄÄÚ²¿Ê±£¬Ìí¼ÓÒ»¸öµãÃæÅö×²
+		// ç”¨äºè¾…åŠ©Boxå’ŒBoxçš„ç¢°æ’æ£€æµ‹
+		// å½“Box2çš„ä¸€ä¸ªé¡¶ç‚¹åœ¨Box1çš„å†…éƒ¨æ—¶ï¼Œæ·»åŠ ä¸€ä¸ªç‚¹é¢ç¢°æ’
 		static void FillPointFaceContact(
 			const CollisionBox& box1,
 			const CollisionBox& box2,
@@ -114,31 +114,31 @@ namespace ZXEngine
 			uint32_t axisIdx,
 			float penetration)
 		{
-			// Åö×²·¨ÏßÎªBox1¶ÔÓ¦ÃæµÄ·¨Ïß
+			// ç¢°æ’æ³•çº¿ä¸ºBox1å¯¹åº”é¢çš„æ³•çº¿
 			Vector3 normal = box1.mTransform.GetColumn(axisIdx);
-			// ÕâÀïÊÇÈÃÅö×²·¨Ïß·½ÏòÊ¼ÖÕÊÇ´ÓBox2µ½Box1µÄ
+			// è¿™é‡Œæ˜¯è®©ç¢°æ’æ³•çº¿æ–¹å‘å§‹ç»ˆæ˜¯ä»Box2åˆ°Box1çš„
 			if (Math::Dot(normal, centerLine) > 0.0f)
 				normal = normal * -1.0f;
 
-			// ¼ÆËã¾ßÌåÊÇBox2µÄÄÄ¸ö¶¥µã·¢ÉúÁËÅö×²
+			// è®¡ç®—å…·ä½“æ˜¯Box2çš„å“ªä¸ªé¡¶ç‚¹å‘ç”Ÿäº†ç¢°æ’
 			Vector3 vertex = box2.mHalfSize;
-			// Èç¹ûBox2ÔÚBox1µÄ×ó²à£¬ÄÇÃ´Box2µÄ¶¥µãµÄX×ø±êÎªBox2µÄ°ë³¤
+			// å¦‚æœBox2åœ¨Box1çš„å·¦ä¾§ï¼Œé‚£ä¹ˆBox2çš„é¡¶ç‚¹çš„Xåæ ‡ä¸ºBox2çš„åŠé•¿
 			if (Math::Dot(Vector3(box2.mTransform.GetColumn(0)), normal) < 0.0f)
 				vertex.x = -vertex.x;
-			// Èç¹ûBox2ÔÚBox1µÄÏÂ²à£¬ÄÇÃ´Box2µÄ¶¥µãµÄY×ø±êÎªBox2µÄ°ë¿í
+			// å¦‚æœBox2åœ¨Box1çš„ä¸‹ä¾§ï¼Œé‚£ä¹ˆBox2çš„é¡¶ç‚¹çš„Yåæ ‡ä¸ºBox2çš„åŠå®½
 			if (Math::Dot(Vector3(box2.mTransform.GetColumn(1)), normal) < 0.0f)
 				vertex.y = -vertex.y;
-			// Èç¹ûBox2ÔÚBox1µÄºó²à£¬ÄÇÃ´Box2µÄ¶¥µãµÄZ×ø±êÎªBox2µÄ°ë¸ß
+			// å¦‚æœBox2åœ¨Box1çš„åä¾§ï¼Œé‚£ä¹ˆBox2çš„é¡¶ç‚¹çš„Zåæ ‡ä¸ºBox2çš„åŠé«˜
 			if (Math::Dot(Vector3(box2.mTransform.GetColumn(2)), normal) < 0.0f)
 				vertex.z = -vertex.z;
 
-			// µ±Ç°ÒªĞ´ÈëµÄÅö×²
+			// å½“å‰è¦å†™å…¥çš„ç¢°æ’
 			Contact* contact = data->mCurContact;
-			// Åö×²·¨Ïß
+			// ç¢°æ’æ³•çº¿
 			contact->mContactNormal = normal;
-			// Åö×²µã(Box2¶¥µã±ä»»µ½ÊÀ½ç×ø±êÏµ)
+			// ç¢°æ’ç‚¹(Box2é¡¶ç‚¹å˜æ¢åˆ°ä¸–ç•Œåæ ‡ç³»)
 			contact->mContactPoint = box2.mTransform * vertex;
-			// Åö×²Éî¶È
+			// ç¢°æ’æ·±åº¦
 			contact->mPenetration = penetration;
 			contact->SetRigidBodies(box1.mRigidBody, box2.mRigidBody);
 		}
@@ -149,11 +149,11 @@ namespace ZXEngine
 		{
 			Vector3 centerLine = box2.mTransform.GetColumn(3) - box1.mTransform.GetColumn(3);
 
-			// ÓÃÓÚ¼ÇÂ¼×îĞ¡ÖØµş³¤¶ÈºÍ¶ÔÓ¦µÄ·ÖÀëÖáË÷Òı
+			// ç”¨äºè®°å½•æœ€å°é‡å é•¿åº¦å’Œå¯¹åº”çš„åˆ†ç¦»è½´ç´¢å¼•
 			float penetration = FLT_MAX;
 			uint32_t axisIdx = 0xFF;
 
-			// ·Ö±ğ¼ì²âÁ½¸öBoxµÄÈıÌõÖá
+			// åˆ†åˆ«æ£€æµ‹ä¸¤ä¸ªBoxçš„ä¸‰æ¡è½´
 			CHECK_OVERLAP(box1.mTransform.GetColumn(0), 0);
 			CHECK_OVERLAP(box1.mTransform.GetColumn(1), 1);
 			CHECK_OVERLAP(box1.mTransform.GetColumn(2), 2);
@@ -162,7 +162,7 @@ namespace ZXEngine
 			CHECK_OVERLAP(box2.mTransform.GetColumn(1), 4);
 			CHECK_OVERLAP(box2.mTransform.GetColumn(2), 5);
 
-			// ¼ÆËãÁ½¸öBoxµÄÈıÌõÖáµÄ²æ³ËÖá
+			// è®¡ç®—ä¸¤ä¸ªBoxçš„ä¸‰æ¡è½´çš„å‰ä¹˜è½´
 			CHECK_OVERLAP(Math::Cross(box1.mTransform.GetColumn(0), box2.mTransform.GetColumn(0)), 6);
 			CHECK_OVERLAP(Math::Cross(box1.mTransform.GetColumn(0), box2.mTransform.GetColumn(1)), 7);
 			CHECK_OVERLAP(Math::Cross(box1.mTransform.GetColumn(0), box2.mTransform.GetColumn(2)), 8);
@@ -179,25 +179,25 @@ namespace ZXEngine
 				return 0;
 			}
 
-			// Box2µÄÒ»¸ö¶¥µãÅö×²µ½Box1µÄÒ»¸öÃæ
+			// Box2çš„ä¸€ä¸ªé¡¶ç‚¹ç¢°æ’åˆ°Box1çš„ä¸€ä¸ªé¢
 			if (axisIdx < 3)
 			{
 				FillPointFaceContact(box1, box2, centerLine, data, axisIdx, penetration);
 				data->AddContacts(1);
 				return 1;
 			}
-			// Box1µÄÒ»¸ö¶¥µãÅö×²µ½Box2µÄÒ»¸öÃæ
+			// Box1çš„ä¸€ä¸ªé¡¶ç‚¹ç¢°æ’åˆ°Box2çš„ä¸€ä¸ªé¢
 			else if (axisIdx < 6)
 			{
-				// ½»»»Box1ºÍBox2£¬centerLineÈ¡·´
+				// äº¤æ¢Box1å’ŒBox2ï¼ŒcenterLineå–å
 				FillPointFaceContact(box2, box1, centerLine * -1.0f, data, axisIdx - 3, penetration);
 				data->AddContacts(1);
 				return 1;
 			}
-			// Box1ºÍBox2µÄÒ»¸ö±ßÅö×²µ½¶Ô·½µÄÒ»¸ö±ß
+			// Box1å’ŒBox2çš„ä¸€ä¸ªè¾¹ç¢°æ’åˆ°å¯¹æ–¹çš„ä¸€ä¸ªè¾¹
 			else
 			{
-				// »ñÈ¡·ÖÀëÖá
+				// è·å–åˆ†ç¦»è½´
 				axisIdx -= 6;
 				uint32_t box1AxisIdx = axisIdx / 3;
 				uint32_t box2AxisIdx = axisIdx % 3;
@@ -206,12 +206,12 @@ namespace ZXEngine
 				Vector3 axis = Math::Cross(axis1, axis2);
 				axis.Normalize();
 
-				// È·±£·ÖÀëÖá´ÓBox1Ö¸ÏòBox2
+				// ç¡®ä¿åˆ†ç¦»è½´ä»Box1æŒ‡å‘Box2
 				if (Math::Dot(axis, centerLine) > 0.0f)
 					axis = axis * -1.0f;
 
-				// Box1ºÍBox2ÉÏ¸÷×ÔÓĞ4Ìõ±ßºÍ·ÖÀëÖá´¹Ö±£¬ĞèÒª¶¨Î»Ïà½»µÄ2Ìõ±ß
-				// ÕâÀïÏÈ¼ÆËã¸÷×Ô4Ìõ±ßµÄÖĞµãÀï£¬ÀëÁíÒ»¸öBox×î½üµÄ
+				// Box1å’ŒBox2ä¸Šå„è‡ªæœ‰4æ¡è¾¹å’Œåˆ†ç¦»è½´å‚ç›´ï¼Œéœ€è¦å®šä½ç›¸äº¤çš„2æ¡è¾¹
+				// è¿™é‡Œå…ˆè®¡ç®—å„è‡ª4æ¡è¾¹çš„ä¸­ç‚¹é‡Œï¼Œç¦»å¦ä¸€ä¸ªBoxæœ€è¿‘çš„
 				Vector3 midPoint1 = box1.mHalfSize;
 				Vector3 midPoint2 = box2.mHalfSize;
 				for (uint32_t i = 0; i < 3; ++i)
@@ -227,24 +227,24 @@ namespace ZXEngine
 						midPoint2[i] = -midPoint2[i];
 				}
 
-				// °ÑÕâÁ½¸öÖĞµã×ª»»µ½ÊÀ½ç×ø±êÏµÏÂ
+				// æŠŠè¿™ä¸¤ä¸ªä¸­ç‚¹è½¬æ¢åˆ°ä¸–ç•Œåæ ‡ç³»ä¸‹
 				midPoint1 = box1.mTransform * Vector4(midPoint1, 1.0f);
 				midPoint2 = box2.mTransform * Vector4(midPoint2, 1.0f);
 
-				// »ñÈ¡Á½ÌõÏß¶ÎµÄ½»µã
+				// è·å–ä¸¤æ¡çº¿æ®µçš„äº¤ç‚¹
 				Vector3 contactPoint;
 				IntersectionDetector::DetectLineSegmentContact(
 					midPoint1, axis1, box1.mHalfSize[box1AxisIdx], 
 					midPoint2, axis2, box2.mHalfSize[box2AxisIdx],
 					contactPoint, axisIdx > 2);
 
-				// µ±Ç°ÒªĞ´ÈëµÄÅö×²
+				// å½“å‰è¦å†™å…¥çš„ç¢°æ’
 				Contact* contact = data->mCurContact;
-				// Åö×²·¨Ïß
+				// ç¢°æ’æ³•çº¿
 				contact->mContactNormal = axis;
-				// Åö×²µã
+				// ç¢°æ’ç‚¹
 				contact->mContactPoint = contactPoint;
-				// Åö×²Éî¶È
+				// ç¢°æ’æ·±åº¦
 				contact->mPenetration = penetration;
 				contact->SetRigidBodies(box1.mRigidBody, box2.mRigidBody);
 
@@ -255,16 +255,16 @@ namespace ZXEngine
 
 		uint32_t CollisionDetector::Detect(const CollisionBox& box, const CollisionSphere& sphere, CollisionData* data)
 		{
-			// »¹ÓĞÊ£ÓàÅö×²ĞèÒª¼ì²â²Å¼ÌĞø
+			// è¿˜æœ‰å‰©ä½™ç¢°æ’éœ€è¦æ£€æµ‹æ‰ç»§ç»­
 			if (data->IsFull()) 
 				return 0;
 
-			// ÊÀ½ç×ø±êÏµÏÂµÄÇòĞÄ
+			// ä¸–ç•Œåæ ‡ç³»ä¸‹çš„çƒå¿ƒ
 			Vector3 gSphereCenter = sphere.mTransform.GetColumn(3);
-			// Box×ø±êÏµÏÂµÄÇòĞÄ
+			// Boxåæ ‡ç³»ä¸‹çš„çƒå¿ƒ
 			Vector3 lSphereCenter = Math::Inverse(box.mTransform) * Vector4(gSphereCenter, 1.0f);
 
-			// ´ÖÂÔÅĞ¶ÏÊÇ·ñÏà½»(Ä¿µÄÊÇÌá¸ßĞÔÄÜ£¬ËùÒÔÃ»±ØÒª×ö¾«È·µÄÏà½»¼ì²â)
+			// ç²—ç•¥åˆ¤æ–­æ˜¯å¦ç›¸äº¤(ç›®çš„æ˜¯æé«˜æ€§èƒ½ï¼Œæ‰€ä»¥æ²¡å¿…è¦åšç²¾ç¡®çš„ç›¸äº¤æ£€æµ‹)
 			if (fabsf(lSphereCenter.x) - sphere.mRadius > box.mHalfSize.x ||
 				fabsf(lSphereCenter.y) - sphere.mRadius > box.mHalfSize.y ||
 				fabsf(lSphereCenter.z) - sphere.mRadius > box.mHalfSize.z)
@@ -272,12 +272,12 @@ namespace ZXEngine
 				return 0;
 			}
 
-			// BoxÉÏÀëÇòĞÄ×î½üµÄµã
+			// Boxä¸Šç¦»çƒå¿ƒæœ€è¿‘çš„ç‚¹
 			Vector3 closestPoint(0.0f, 0.0f, 0.0f);
-			// ÁÙÊ±±äÁ¿
+			// ä¸´æ—¶å˜é‡
 			float distance;
 
-			// ·ÖÖá¼ÆËã×î½üµã
+			// åˆ†è½´è®¡ç®—æœ€è¿‘ç‚¹
 			distance = lSphereCenter.x;
 			if (distance >  box.mHalfSize.x) distance =  box.mHalfSize.x;
 			if (distance < -box.mHalfSize.x) distance = -box.mHalfSize.x;
@@ -293,21 +293,21 @@ namespace ZXEngine
 			if (distance < -box.mHalfSize.z) distance = -box.mHalfSize.z;
 			closestPoint.z = distance;
 
-			// ÅĞ¶ÏÊÇ·ñÏà½»
+			// åˆ¤æ–­æ˜¯å¦ç›¸äº¤
 			distance = (closestPoint - lSphereCenter).GetMagnitudeSquared();
 			if (distance > sphere.mRadius * sphere.mRadius)
 				return 0;
 
-			// ±ä»»µ½ÊÀ½ç×ø±êÏµ
+			// å˜æ¢åˆ°ä¸–ç•Œåæ ‡ç³»
 			closestPoint = box.mTransform * Vector4(closestPoint, 1.0f);
 
-			// µ±Ç°ÒªĞ´ÈëµÄÅö×²
+			// å½“å‰è¦å†™å…¥çš„ç¢°æ’
 			Contact* contact = data->mCurContact;
-			// Åö×²·¨Ïß
+			// ç¢°æ’æ³•çº¿
 			contact->mContactNormal = (closestPoint - gSphereCenter).GetNormalized();
-			// Åö×²µã
+			// ç¢°æ’ç‚¹
 			contact->mContactPoint = closestPoint;
-			// Åö×²Éî¶È
+			// ç¢°æ’æ·±åº¦
 			contact->mPenetration = sphere.mRadius - sqrtf(distance);
 			contact->SetRigidBodies(box.mRigidBody, sphere.mRigidBody);
 
@@ -317,30 +317,30 @@ namespace ZXEngine
 
 		uint32_t CollisionDetector::Detect(const CollisionSphere& sphere1, const CollisionSphere& sphere2, CollisionData* data)
 		{
-			// »¹ÓĞÊ£ÓàÅö×²ĞèÒª¼ì²â²Å¼ÌĞø
+			// è¿˜æœ‰å‰©ä½™ç¢°æ’éœ€è¦æ£€æµ‹æ‰ç»§ç»­
 			if (data->IsFull()) 
 				return 0;
 
-			// Á½¸öÅö×²ÇòµÄÎ»ÖÃ
+			// ä¸¤ä¸ªç¢°æ’çƒçš„ä½ç½®
 			Vector3 pos1 = sphere1.mTransform.GetColumn(3);
 			Vector3 pos2 = sphere2.mTransform.GetColumn(3);
 
 			Vector3 centerLine = pos1 - pos2;
 			float distance = centerLine.GetMagnitude();
 
-			// Á½¸öÅö×²ÇòµÄ¾àÀë´óÓÚÁ½Õß°ë¾¶Ö®ºÍÔò²»Åö×²
+			// ä¸¤ä¸ªç¢°æ’çƒçš„è·ç¦»å¤§äºä¸¤è€…åŠå¾„ä¹‹å’Œåˆ™ä¸ç¢°æ’
 			if (distance <= 0.0f || distance >= sphere1.mRadius + sphere2.mRadius)
 			{
 				return 0;
 			}
 
-			// µ±Ç°ÒªĞ´ÈëµÄÅö×²
+			// å½“å‰è¦å†™å…¥çš„ç¢°æ’
 			Contact* contact = data->mCurContact;
-			// Åö×²·¨Ïß
+			// ç¢°æ’æ³•çº¿
 			contact->mContactNormal = centerLine.GetNormalized();
-			// Åö×²µã(µÚÒ»¸öÇòµÄÇòÃæºÍÇòĞÄÁ¬Ïß½»µã)
+			// ç¢°æ’ç‚¹(ç¬¬ä¸€ä¸ªçƒçš„çƒé¢å’Œçƒå¿ƒè¿çº¿äº¤ç‚¹)
 			contact->mContactPoint = pos1 - contact->mContactNormal * sphere1.mRadius;
-			// Åö×²Éî¶È
+			// ç¢°æ’æ·±åº¦
 			contact->mPenetration = (sphere1.mRadius + sphere2.mRadius) - distance;
 			contact->SetRigidBodies(sphere1.mRigidBody, sphere2.mRigidBody);
 
@@ -355,11 +355,11 @@ namespace ZXEngine
 		};
 		uint32_t CollisionDetector::Detect(const CollisionBox& box, const CollisionPlane& plane, CollisionData* data, bool isHalfSpace)
 		{
-			// »¹ÓĞÊ£ÓàÅö×²ĞèÒª¼ì²â²Å¼ÌĞø
+			// è¿˜æœ‰å‰©ä½™ç¢°æ’éœ€è¦æ£€æµ‹æ‰ç»§ç»­
 			if (data->IsFull())
 				return 0;
 
-			// ÏÈ×öÒ»¸öÏà½»²âÊÔ
+			// å…ˆåšä¸€ä¸ªç›¸äº¤æµ‹è¯•
 			if (!IntersectionDetector::Detect(box, plane))
 				return 0;
 
@@ -367,26 +367,26 @@ namespace ZXEngine
 			uint32_t contactNum = 0;
 			for (size_t i = 0; i < 8; i++)
 			{
-				// ÊÀ½ç×ø±êÏµÏÂµÄBox¶¥µã
+				// ä¸–ç•Œåæ ‡ç³»ä¸‹çš„Boxé¡¶ç‚¹
 				Vector3 vertexPos = box.mTransform * Vector4(boxVertex[i] * box.mHalfSize, 1.0f);
-				// ¶¥µãÑØÆ½Ãæ·¨Ïß·½Ïòµ½ÊÀ½ç×ø±êÏµÔ­µãµÄ¾àÀë
+				// é¡¶ç‚¹æ²¿å¹³é¢æ³•çº¿æ–¹å‘åˆ°ä¸–ç•Œåæ ‡ç³»åŸç‚¹çš„è·ç¦»
 				float distance = Math::Dot(vertexPos, plane.mNormal);
 
 				if (distance <= plane.mDistance)
 				{
-					// Åö×²·¨ÏßÖ±½ÓÓÃÆ½Ãæ·¨Ïß
+					// ç¢°æ’æ³•çº¿ç›´æ¥ç”¨å¹³é¢æ³•çº¿
 					contact->mContactNormal = plane.mNormal;
-					// Åö×²µã(ÔÚÆ½ÃæÉÏ)
+					// ç¢°æ’ç‚¹(åœ¨å¹³é¢ä¸Š)
 					contact->mContactPoint = vertexPos + plane.mNormal * (plane.mDistance - distance);
-					// Åö×²Éî¶È(Åö×²µãµ½Æ½ÃæµÄ¾àÀë)
+					// ç¢°æ’æ·±åº¦(ç¢°æ’ç‚¹åˆ°å¹³é¢çš„è·ç¦»)
 					contact->mPenetration = plane.mDistance - distance;
 					contact->SetRigidBodies(box.mRigidBody, nullptr);
 					
-					// Ö¸ÕëºóÒÆ
+					// æŒ‡é’ˆåç§»
 					contact++;
 					contactNum++;
 
-					// Åö×²Êı¾İÒÑ¾­ÂúÁË£¬Ö±½Ó·µ»Ø
+					// ç¢°æ’æ•°æ®å·²ç»æ»¡äº†ï¼Œç›´æ¥è¿”å›
 					if (contactNum == data->mContactsLeft)
 					{
 						data->AddContacts(contactNum);
@@ -409,23 +409,23 @@ namespace ZXEngine
 
 		uint32_t CollisionDetector::DetectSphereAndPlane(const CollisionSphere& sphere, const CollisionPlane& plane, CollisionData* data)
 		{
-			// »¹ÓĞÊ£ÓàÅö×²ĞèÒª¼ì²â²Å¼ÌĞø
+			// è¿˜æœ‰å‰©ä½™ç¢°æ’éœ€è¦æ£€æµ‹æ‰ç»§ç»­
 			if (data->IsFull())
 				return 0;
 
-			// Åö×²ÇòµÄÎ»ÖÃ
+			// ç¢°æ’çƒçš„ä½ç½®
 			Vector3 pos = sphere.mTransform.GetColumn(3);
 
-			// Åö×²ÇòÇòĞÄµ½Åö×²Æ½ÃæµÄ¾àÀë
+			// ç¢°æ’çƒçƒå¿ƒåˆ°ç¢°æ’å¹³é¢çš„è·ç¦»
 			float distance = Math::Dot(plane.mNormal, pos) - plane.mDistance;
 
-			// Åö×²ÇòÇòĞÄÓëÅö×²Æ½ÃæµÄ¾àÀë´óÓÚÅö×²Çò°ë¾¶Ôò²»Åö×²
+			// ç¢°æ’çƒçƒå¿ƒä¸ç¢°æ’å¹³é¢çš„è·ç¦»å¤§äºç¢°æ’çƒåŠå¾„åˆ™ä¸ç¢°æ’
 			if (abs(distance) >= sphere.mRadius)
 				return 0;
 
 			Vector3 normal = plane.mNormal;
 			float penetration = -distance;
-			// ¾àÀëÎª¸ºËµÃ÷ÇòÔÚÆ½ÃæµÄ±³Ãæ£¬Êı¾İÈ¡·´
+			// è·ç¦»ä¸ºè´Ÿè¯´æ˜çƒåœ¨å¹³é¢çš„èƒŒé¢ï¼Œæ•°æ®å–å
 			if (distance < 0.0f)
 			{
 				normal *= -1.0f;
@@ -433,13 +433,13 @@ namespace ZXEngine
 			}
 			penetration += sphere.mRadius;
 
-			// µ±Ç°ÒªĞ´ÈëµÄÅö×²
+			// å½“å‰è¦å†™å…¥çš„ç¢°æ’
 			Contact* contact = data->mCurContact;
-			// Åö×²·¨Ïß
+			// ç¢°æ’æ³•çº¿
 			contact->mContactNormal = normal;
-			// Åö×²µã(ÔÚÆ½ÃæÉÏ)
+			// ç¢°æ’ç‚¹(åœ¨å¹³é¢ä¸Š)
 			contact->mContactPoint = pos - plane.mNormal * distance;
-			// Åö×²Éî¶È(Åö×²µãµ½Æ½ÃæµÄ¾àÀë)
+			// ç¢°æ’æ·±åº¦(ç¢°æ’ç‚¹åˆ°å¹³é¢çš„è·ç¦»)
 			contact->mPenetration = penetration;
 			contact->SetRigidBodies(sphere.mRigidBody, nullptr);
 
@@ -449,27 +449,27 @@ namespace ZXEngine
 
 		uint32_t CollisionDetector::DetectSphereAndHalfSpace(const CollisionSphere& sphere, const CollisionPlane& plane, CollisionData* data)
 		{
-			// »¹ÓĞÊ£ÓàÅö×²ĞèÒª¼ì²â²Å¼ÌĞø
+			// è¿˜æœ‰å‰©ä½™ç¢°æ’éœ€è¦æ£€æµ‹æ‰ç»§ç»­
 			if (data->IsFull())
 				return 0;
 
-			// Åö×²ÇòµÄÎ»ÖÃ
+			// ç¢°æ’çƒçš„ä½ç½®
 			Vector3 pos = sphere.mTransform.GetColumn(3);
 
-			// Åö×²Çòµ½Åö×²Æ½ÃæµÄ¾àÀë
+			// ç¢°æ’çƒåˆ°ç¢°æ’å¹³é¢çš„è·ç¦»
 			float distance = Math::Dot(plane.mNormal, pos) - sphere.mRadius - plane.mDistance;
 
-			// Åö×²ÇòÓëÅö×²Æ½ÃæµÄ¾àÀë´óÓÚ0Ôò²»Åö×²
+			// ç¢°æ’çƒä¸ç¢°æ’å¹³é¢çš„è·ç¦»å¤§äº0åˆ™ä¸ç¢°æ’
 			if (distance >= 0.0f)
 				return 0;
 
-			// µ±Ç°ÒªĞ´ÈëµÄÅö×²
+			// å½“å‰è¦å†™å…¥çš„ç¢°æ’
 			Contact* contact = data->mCurContact;
-			// Åö×²·¨Ïß
+			// ç¢°æ’æ³•çº¿
 			contact->mContactNormal = plane.mNormal;
-			// Åö×²µã(ÔÚÆ½ÃæÉÏ)
+			// ç¢°æ’ç‚¹(åœ¨å¹³é¢ä¸Š)
 			contact->mContactPoint = pos - plane.mNormal * (distance + sphere.mRadius);
-			// Åö×²Éî¶È(Åö×²µãµ½Æ½ÃæµÄ¾àÀë)
+			// ç¢°æ’æ·±åº¦(ç¢°æ’ç‚¹åˆ°å¹³é¢çš„è·ç¦»)
 			contact->mPenetration = -distance;
 			contact->SetRigidBodies(sphere.mRigidBody, nullptr);
 

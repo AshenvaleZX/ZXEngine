@@ -65,7 +65,7 @@ namespace ZXEngine
 			if (mData.mBoneNameToIndexMaps[i].find(nodeName) != mData.mBoneNameToIndexMaps[i].end())
 			{
 				uint32_t index = mData.mBoneNameToIndexMaps[i][nodeName];
-				// ´Ë´¦µÄ¾ØÕóÊÇ¸øShaderÓÃµÄ£¬ÐèÒª×ªÖÃÎªÁÐÖ÷Ðò
+				// æ­¤å¤„çš„çŸ©é˜µæ˜¯ç»™Shaderç”¨çš„ï¼Œéœ€è¦è½¬ç½®ä¸ºåˆ—ä¸»åº
 				mData.mBonesFinalTransforms[i][index] = Math::Transpose(globalTransform * mData.mBonesOffsets[i][index]);
 			}
 		}
@@ -104,10 +104,10 @@ namespace ZXEngine
 			{
 				mBlendFactor = mBlendTime / mBlendDuration;
 
-				// »ìºÏ¶¯»­Ê±³¤
+				// æ··åˆåŠ¨ç”»æ—¶é•¿
 				float blendAnimDuration = Math::Lerp(mCurAnimation->mDuration, mTargetAnimation->mDuration, mBlendFactor);
 
-				// »ìºÏ¶¯»­²¥·Å½ø¶È
+				// æ··åˆåŠ¨ç”»æ’­æ”¾è¿›åº¦
 				float curAnimProgressDelta = Time::deltaTime / mCurAnimation->mDuration;
 				float targetAnimProgressDelta = Time::deltaTime / mTargetAnimation->mDuration;
 				float blendAnimProgressDelta = Math::Lerp(curAnimProgressDelta, targetAnimProgressDelta, mBlendFactor);
@@ -122,7 +122,7 @@ namespace ZXEngine
 				}
 				float blendAnimProgress = mCurBlendAnimTime / blendAnimDuration;
 
-				// »ìºÏ¶¯»­µÄ²¥·Å½ø¶È×ª»»³Étick
+				// æ··åˆåŠ¨ç”»çš„æ’­æ”¾è¿›åº¦è½¬æ¢æˆtick
 				float curAnimTicks = blendAnimProgress * mCurAnimation->mFullTick;
 				float targetAnimTicks = blendAnimProgress * mTargetAnimation->mFullTick;
 
@@ -232,7 +232,7 @@ namespace ZXEngine
 	{
 		if (mAnimations.find(name) != mAnimations.end())
 		{
-			// Õâ¸ö½Ó¿Ú»áÖ±½ÓÍ£Ö¹µ±Ç°ÕýÔÚ²¥·ÅµÄ¶¯»­
+			// è¿™ä¸ªæŽ¥å£ä¼šç›´æŽ¥åœæ­¢å½“å‰æ­£åœ¨æ’­æ”¾çš„åŠ¨ç”»
 			if (mCurAnimation)
 			{
 				mCurAnimation->Stop();
@@ -251,10 +251,10 @@ namespace ZXEngine
 	{
 		if (mAnimations.find(name) != mAnimations.end())
 		{
-			// µ±Ç°ÓÐ¶¯»­ÕýÔÚ²¥·Å²Å×ß»ìºÏÇÐ»»Âß¼­
+			// å½“å‰æœ‰åŠ¨ç”»æ­£åœ¨æ’­æ”¾æ‰èµ°æ··åˆåˆ‡æ¢é€»è¾‘
 			if (mCurAnimation && mCurAnimation->IsPlaying())
 			{
-				// Èç¹ûµ±Ç°¶¯»­ºÍÒªÇÐ»»µÄ¶¯»­ÊÇÍ¬Ò»¸ö¾Í²»ÓÃÇÐ»»ÁË
+				// å¦‚æžœå½“å‰åŠ¨ç”»å’Œè¦åˆ‡æ¢çš„åŠ¨ç”»æ˜¯åŒä¸€ä¸ªå°±ä¸ç”¨åˆ‡æ¢äº†
 				if (mCurAnimation->mName == name)
 				{
 					return;
@@ -263,13 +263,13 @@ namespace ZXEngine
 				mBlendTime = 0.0f;
 				mBlendDuration = time;
 				mIsBlending = true;
-				// »ìºÏ¸Õ¿ªÊ¼µÄÊ±ºòÖ±½ÓÒÔµ±Ç°¶¯»­µÄ²¥·Å½ø¶È×÷Îª»ìºÏ¶¯»­µÄ²¥·Å½ø¶È
+				// æ··åˆåˆšå¼€å§‹çš„æ—¶å€™ç›´æŽ¥ä»¥å½“å‰åŠ¨ç”»çš„æ’­æ”¾è¿›åº¦ä½œä¸ºæ··åˆåŠ¨ç”»çš„æ’­æ”¾è¿›åº¦
 				mCurBlendAnimTime = mCurAnimation->mCurTick / mCurAnimation->mTicksPerSecond;
 
 				mTargetAnimation = mAnimations[name];
 				mTargetAnimation->Play();
 			}
-			// µ±Ç°Ã»ÓÐÕýÔÚ²¥·ÅµÄ¶¯»­¾ÍÖ±½Ó²¥ÐÂ¶¯»­
+			// å½“å‰æ²¡æœ‰æ­£åœ¨æ’­æ”¾çš„åŠ¨ç”»å°±ç›´æŽ¥æ’­æ–°åŠ¨ç”»
 			else
 			{
 				mCurAnimation = mAnimations[name];
@@ -319,7 +319,7 @@ namespace ZXEngine
 			if (pMesh->mBoneNameToIndexMap.find(nodeName) != pMesh->mBoneNameToIndexMap.end())
 			{
 				uint32_t index = pMesh->mBoneNameToIndexMap[nodeName];
-				// ´Ë´¦µÄ¾ØÕóÊÇ¸øShaderÓÃµÄ£¬ÐèÒª×ªÖÃÎªÁÐÖ÷Ðò
+				// æ­¤å¤„çš„çŸ©é˜µæ˜¯ç»™Shaderç”¨çš„ï¼Œéœ€è¦è½¬ç½®ä¸ºåˆ—ä¸»åº
 				pMesh->mBonesFinalTransform[index] = Math::Transpose(globalTransform * pMesh->mBonesOffset[index]);
 			}
 		}

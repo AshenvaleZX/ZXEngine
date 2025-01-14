@@ -10,15 +10,15 @@ namespace ZXEngine
 		{
 			friend class ContactResolver;
 		public:
-			// Åö×²µã×ø±ê
+			// ç¢°æ’ç‚¹åæ ‡
 			Vector3 mContactPoint;
-			// Åö×²·¨Ïß
+			// ç¢°æ’æ³•çº¿
 			Vector3 mContactNormal;
-			// Åö×²Éî¶È(ÓĞÅö×²»òÏà½»Ê±ÊÇÕıÊı)
+			// ç¢°æ’æ·±åº¦(æœ‰ç¢°æ’æˆ–ç›¸äº¤æ—¶æ˜¯æ­£æ•°)
 			float mPenetration = 0.0f;
-			// »Ö¸´ÏµÊı
+			// æ¢å¤ç³»æ•°
 			float mRestitution = 0.0f;
-			// Ä¦²ÁÏµÊı
+			// æ‘©æ“¦ç³»æ•°
 			float mFriction = 0.0f;
 
 			Contact(RigidBody* rigidBody1 = nullptr, RigidBody* rigidBody2 = nullptr);
@@ -26,45 +26,45 @@ namespace ZXEngine
 			void SetRigidBodies(RigidBody* rigidBody1, RigidBody* rigidBody2);
 
 		private:
-			// Åö×²Ëù¶ÔÓ¦µÄ¸ÕÌå
+			// ç¢°æ’æ‰€å¯¹åº”çš„åˆšä½“
 			RigidBody* mRigidBodies[2];
-			// ´ÓÅö×²×ø±êÏµµ½ÊÀ½ç×ø±êÏµµÄĞı×ª¾ØÕó
+			// ä»ç¢°æ’åæ ‡ç³»åˆ°ä¸–ç•Œåæ ‡ç³»çš„æ—‹è½¬çŸ©é˜µ
 			Matrix3 mContactToWorld;
 
-			// Åö×²µãÏà¶ÔÓÚÁ½¸ö¸ÕÌåµÄÎ»ÖÃ
+			// ç¢°æ’ç‚¹ç›¸å¯¹äºä¸¤ä¸ªåˆšä½“çš„ä½ç½®
 			Vector3 mRelativeContactPosition[2];
-			// Åö×²µãµÄ±ÕºÏËÙ¶È(¼´Á½¸ö¶ÔÏóÏà»¥½Ó½üµÄËÙ¶È£¬Åö×²¿Õ¼ä)
+			// ç¢°æ’ç‚¹çš„é—­åˆé€Ÿåº¦(å³ä¸¤ä¸ªå¯¹è±¡ç›¸äº’æ¥è¿‘çš„é€Ÿåº¦ï¼Œç¢°æ’ç©ºé—´)
 			Vector3 mContactVelocity;
-			// µ±Ç°Åö×²Ëù²úÉúµÄÆÚÍûËÙ¶È±ä»¯Á¿(±ÕºÏËÙ¶ÈÔÚÅö×²·¨ÏßÉÏµÄ±ä»¯Á¿)
+			// å½“å‰ç¢°æ’æ‰€äº§ç”Ÿçš„æœŸæœ›é€Ÿåº¦å˜åŒ–é‡(é—­åˆé€Ÿåº¦åœ¨ç¢°æ’æ³•çº¿ä¸Šçš„å˜åŒ–é‡)
 			float mDesiredDeltaVelocity = 0.0f;
 
-			// ¸üĞÂÄ¦²ÁÏµÊıºÍ»Ö¸´ÏµÊı
+			// æ›´æ–°æ‘©æ“¦ç³»æ•°å’Œæ¢å¤ç³»æ•°
 			void UpdateCoefficient();
-			// ½»»»Á½¸ö¸ÕÌå£¬Í¬Ê±½«Åö×²·¨ÏßÈ¡·´(µ«ÊÇ²»»á¸üĞÂÆäËüÏà¹Ø±äÁ¿£¬Èç¹ûĞèÒª¸üĞÂÊÖ¶¯µ÷ÓÃUpdateInternalDatas)
+			// äº¤æ¢ä¸¤ä¸ªåˆšä½“ï¼ŒåŒæ—¶å°†ç¢°æ’æ³•çº¿å–å(ä½†æ˜¯ä¸ä¼šæ›´æ–°å…¶å®ƒç›¸å…³å˜é‡ï¼Œå¦‚æœéœ€è¦æ›´æ–°æ‰‹åŠ¨è°ƒç”¨UpdateInternalDatas)
 			void SwapRigidBodies();
-			// ¸üĞÂÅö×²ÖĞµÄ¸ÕÌå×´Ì¬£¬Èç¹ûÆäÖĞÒ»¸ö¸ÕÌåÊÇAwake£¬ÁíÒ»¸öÒ²±ØĞëAwake
+			// æ›´æ–°ç¢°æ’ä¸­çš„åˆšä½“çŠ¶æ€ï¼Œå¦‚æœå…¶ä¸­ä¸€ä¸ªåˆšä½“æ˜¯Awakeï¼Œå¦ä¸€ä¸ªä¹Ÿå¿…é¡»Awake
 			void MatchAwakeState();
 
-			// ´¦ÀíÅö×²´©Í¸£¬Í¨¹ıÒÆ¶¯ºÍĞı×ªÁ½¸ö¸ÕÌå£¬¾¡Á¿ÈÃÁ½¸ö¶ÔÏó²»½»²æ
-			// È»ºóÍ¨¹ıÇ°Á½¸öÖ¸Õë²ÎÊı·µ»Ø´¦ÀíĞÅÏ¢
-			// PS: ´Ëº¯ÊıËäÈ»ÊÇÔÚ´¦ÀíÏà½»£¬Ò²»á¸Ä±ä¸ÕÌåµÄÎ»ÖÃºÍĞı×ª×´Ì¬£¬µ«ÊÇ²¢²»»áÖ±½Ó¸Ä±ämPenetration£¬¶øÊÇÓÉµ÷ÓÃµÄµØ·½È¥µ÷ÕûmPenetration
+			// å¤„ç†ç¢°æ’ç©¿é€ï¼Œé€šè¿‡ç§»åŠ¨å’Œæ—‹è½¬ä¸¤ä¸ªåˆšä½“ï¼Œå°½é‡è®©ä¸¤ä¸ªå¯¹è±¡ä¸äº¤å‰
+			// ç„¶åé€šè¿‡å‰ä¸¤ä¸ªæŒ‡é’ˆå‚æ•°è¿”å›å¤„ç†ä¿¡æ¯
+			// PS: æ­¤å‡½æ•°è™½ç„¶æ˜¯åœ¨å¤„ç†ç›¸äº¤ï¼Œä¹Ÿä¼šæ”¹å˜åˆšä½“çš„ä½ç½®å’Œæ—‹è½¬çŠ¶æ€ï¼Œä½†æ˜¯å¹¶ä¸ä¼šç›´æ¥æ”¹å˜mPenetrationï¼Œè€Œæ˜¯ç”±è°ƒç”¨çš„åœ°æ–¹å»è°ƒæ•´mPenetration
 			void ResolvePenetration(Vector3 linearChange[2], Vector3 angularChange[2], float penetration);
-			// ´¦ÀíÅö×²ÖĞµÄËÙ¶È±ä»¯£¬¼ÆËãÁ½¸ö¸ÕÌåµÄËÙ¶È±ä»¯Á¿£¬È»ºóÍ¨¹ı²ÎÊı·µ»Ø
+			// å¤„ç†ç¢°æ’ä¸­çš„é€Ÿåº¦å˜åŒ–ï¼Œè®¡ç®—ä¸¤ä¸ªåˆšä½“çš„é€Ÿåº¦å˜åŒ–é‡ï¼Œç„¶åé€šè¿‡å‚æ•°è¿”å›
 			void ResolveVelocityChange(Vector3 linearVelocityChange[2], Vector3 angularVelocityChange[2]);
 
-			// ¼ÆËãÓĞÄ¦²ÁÁ¦Çé¿öÏÂµÄ³åÁ¿
+			// è®¡ç®—æœ‰æ‘©æ“¦åŠ›æƒ…å†µä¸‹çš„å†²é‡
 			Vector3 CalculateFrictionImpulse(Matrix3* inverseInertiaTensor);
-			// ¼ÆËãÎŞÄ¦²ÁÁ¦Çé¿öÏÂµÄ³åÁ¿
+			// è®¡ç®—æ— æ‘©æ“¦åŠ›æƒ…å†µä¸‹çš„å†²é‡
 			Vector3 CalculateFrictionlessImpulse(Matrix3* inverseInertiaTensor);
 
-			// ¸üĞÂµ±Ç°Åö×²µãµÄ¸÷ÏîÄÚ²¿Êı¾İ
+			// æ›´æ–°å½“å‰ç¢°æ’ç‚¹çš„å„é¡¹å†…éƒ¨æ•°æ®
 			void UpdateInternalDatas(float duration);
-			// ¸üĞÂÅö×²×ø±êÏµµ½ÊÀ½ç×ø±êÏµµÄĞı×ª¾ØÕó
+			// æ›´æ–°ç¢°æ’åæ ‡ç³»åˆ°ä¸–ç•Œåæ ‡ç³»çš„æ—‹è½¬çŸ©é˜µ
 			void UpdateOrthogonalBasis();
-			// ¼ÆËãµ±Ç°Åö×²Ëù²úÉúµÄÆÚÍûËÙ¶È±ä»¯Á¿(±ÕºÏËÙ¶È)
+			// è®¡ç®—å½“å‰ç¢°æ’æ‰€äº§ç”Ÿçš„æœŸæœ›é€Ÿåº¦å˜åŒ–é‡(é—­åˆé€Ÿåº¦)
 			void UpdateDesiredDeltaVelocity(float duration);
 			
-			// ¼ÆËãµÚindex¸ö¸ÕÌåÏà¶ÔÓÚÅö×²µãµÄËÙ¶È
+			// è®¡ç®—ç¬¬indexä¸ªåˆšä½“ç›¸å¯¹äºç¢°æ’ç‚¹çš„é€Ÿåº¦
 			Vector3 CalculateLocalVelocity(uint32_t index, float duration);
 		};
 	}

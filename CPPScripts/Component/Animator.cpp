@@ -2,8 +2,8 @@
 #include "MeshRenderer.h"
 #include "../Animation/AnimationController.h"
 
-// ����ϵͳ�첽���µĿ��أ���ʱ�ȹر�
-// �������ò������쳣�����������Ż�Ч����������
+// 动画系统异步更新的开关，暂时先关闭
+// 能正常用不会有异常，但是性能优化效果并不理想
 // #define ENABLE_ASYNC_ANIMATION
 
 namespace ZXEngine

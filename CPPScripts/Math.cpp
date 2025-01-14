@@ -21,12 +21,12 @@ namespace ZXEngine
 
 		float dot = Dot(v1, v2) / (v1Mag * v2Mag);
 
-		// Á½¸öÏòÁ¿¼¸ºõÒ»ÖÂ
+		// ä¸¤ä¸ªå‘é‡å‡ ä¹ä¸€è‡´
 		if (dot > 0.99999f)
 		{
 			return Lerp(v1, v2, t);
 		}
-		// Á½¸öÏòÁ¿¼¸ºõÏà·´
+		// ä¸¤ä¸ªå‘é‡å‡ ä¹ç›¸å
 		else if (dot < -0.99999f)
 		{
 			Vector3 v1Normalized = v1 / v1Mag;
@@ -34,7 +34,7 @@ namespace ZXEngine
 			Matrix3 m(axis, PI * t);
 			return m * v1Normalized * lerpMag;
 		}
-		// Ò»°ãÇé¿ö
+		// ä¸€èˆ¬æƒ…å†µ
 		else
 		{
 			float theta = acos(dot) * t;
@@ -61,7 +61,7 @@ namespace ZXEngine
 		}
 
 		float p1, p2;
-		// Èç¹ûÁ½¸öËÄÔªÊı·Ç³£½Ó½ü£¬ÄÇÃ´Ö±½ÓÏßĞÔ²åÖµ¼´¿É
+		// å¦‚æœä¸¤ä¸ªå››å…ƒæ•°éå¸¸æ¥è¿‘ï¼Œé‚£ä¹ˆç›´æ¥çº¿æ€§æ’å€¼å³å¯
 		if (cosTheta > 0.95f)
 		{
 			p1 = 1.0f - t;
@@ -85,40 +85,40 @@ namespace ZXEngine
 
 	Matrix4 Math::Perspective(float fov, float aspect, float nearClip, float farClip)
 	{
-		// Ä¬ÈÏÓÃ×óÊÖ×ø±êÏµµÄ
+		// é»˜è®¤ç”¨å·¦æ‰‹åæ ‡ç³»çš„
 		return PerspectiveLHNO(fov, aspect, nearClip, farClip);
 	}
 
 	Matrix4 Math::PerspectiveLHNO(float fov, float aspect, float nearClip, float farClip)
 	{
-		// ²Î¿¼£ºhttps://www.ogldev.org/www/tutorial12/tutorial12.html
+		// å‚è€ƒï¼šhttps://www.ogldev.org/www/tutorial12/tutorial12.html
 
-		// µÚÒ»ĞĞ
+		// ç¬¬ä¸€è¡Œ
 		float m00 = 1 / (aspect * tan(fov * 0.5f));
 		float m01 = 0;
 		float m02 = 0;
 		float m03 = 0;
 
-		// µÚ¶şĞĞ
+		// ç¬¬äºŒè¡Œ
 		float m10 = 0;
 		float m11 = 1 / tan(fov * 0.5f);
 		float m12 = 0;
 		float m13 = 0;
 
-		// µÚÈıĞĞ
+		// ç¬¬ä¸‰è¡Œ
 		float m20 = 0;
 		float m21 = 0;
 		float m22 = (farClip + nearClip) / (farClip - nearClip);
 		float m23 = (2 * farClip * nearClip) / (nearClip - farClip);
 
-		// µÚËÄĞĞ
+		// ç¬¬å››è¡Œ
 		float m30 = 0;
 		float m31 = 0;
 		float m32 = 1;
 		float m33 = 0;
 
 #ifdef ZX_API_VULKAN
-		// VulkanµÄYÖáÒª·´×ªÒ»ÏÂ£¬·ñÔò»­Ãæ»áµßµ¹
+		// Vulkançš„Yè½´è¦åè½¬ä¸€ä¸‹ï¼Œå¦åˆ™ç”»é¢ä¼šé¢ å€’
 		m11 *= -1;
 #endif
 
@@ -131,32 +131,32 @@ namespace ZXEngine
 
 	Matrix4 Math::PerspectiveLHZO(float fov, float aspect, float nearClip, float farClip)
 	{
-		// µÚÒ»ĞĞ
+		// ç¬¬ä¸€è¡Œ
 		float m00 = 1 / (aspect * tan(fov * 0.5f));
 		float m01 = 0;
 		float m02 = 0;
 		float m03 = 0;
 
-		// µÚ¶şĞĞ
+		// ç¬¬äºŒè¡Œ
 		float m10 = 0;
 		float m11 = 1 / tan(fov * 0.5f);
 		float m12 = 0;
 		float m13 = 0;
 
-		// µÚÈıĞĞ
+		// ç¬¬ä¸‰è¡Œ
 		float m20 = 0;
 		float m21 = 0;
 		float m22 = farClip / (farClip - nearClip);
 		float m23 = (farClip * nearClip) / (nearClip - farClip);
 
-		// µÚËÄĞĞ
+		// ç¬¬å››è¡Œ
 		float m30 = 0;
 		float m31 = 0;
 		float m32 = 1;
 		float m33 = 0;
 
 #ifdef ZX_API_VULKAN
-		// VulkanµÄYÖáÒª·´×ªÒ»ÏÂ£¬·ñÔò»­Ãæ»áµßµ¹
+		// Vulkançš„Yè½´è¦åè½¬ä¸€ä¸‹ï¼Œå¦åˆ™ç”»é¢ä¼šé¢ å€’
 		m11 *= -1;
 #endif
 
@@ -169,25 +169,25 @@ namespace ZXEngine
 
 	Matrix4 Math::PerspectiveRHNO(float fov, float aspect, float nearClip, float farClip)
 	{
-		// µÚÒ»ĞĞ
+		// ç¬¬ä¸€è¡Œ
 		float m00 = 1 / (aspect * tan(fov * 0.5f));
 		float m01 = 0;
 		float m02 = 0;
 		float m03 = 0;
 
-		// µÚ¶şĞĞ
+		// ç¬¬äºŒè¡Œ
 		float m10 = 0;
 		float m11 = 1 / tan(fov * 0.5f);
 		float m12 = 0;
 		float m13 = 0;
 
-		// µÚÈıĞĞ
+		// ç¬¬ä¸‰è¡Œ
 		float m20 = 0;
 		float m21 = 0;
 		float m22 = (farClip + nearClip) / (nearClip - farClip);
 		float m23 = (2 * farClip * nearClip) / (nearClip - farClip);
 
-		// µÚËÄĞĞ
+		// ç¬¬å››è¡Œ
 		float m30 = 0;
 		float m31 = 0;
 		float m32 = -1;
@@ -202,25 +202,25 @@ namespace ZXEngine
 
 	Matrix4 Math::PerspectiveRHZO(float fov, float aspect, float nearClip, float farClip)
 	{
-		// µÚÒ»ĞĞ
+		// ç¬¬ä¸€è¡Œ
 		float m00 = 1 / (aspect * tan(fov * 0.5f));
 		float m01 = 0;
 		float m02 = 0;
 		float m03 = 0;
 
-		// µÚ¶şĞĞ
+		// ç¬¬äºŒè¡Œ
 		float m10 = 0;
 		float m11 = 1 / tan(fov * 0.5f);
 		float m12 = 0;
 		float m13 = 0;
 
-		// µÚÈıĞĞ
+		// ç¬¬ä¸‰è¡Œ
 		float m20 = 0;
 		float m21 = 0;
 		float m22 = farClip / (nearClip - farClip);
 		float m23 = (farClip * nearClip) / (nearClip - farClip);
 
-		// µÚËÄĞĞ
+		// ç¬¬å››è¡Œ
 		float m30 = 0;
 		float m31 = 0;
 		float m32 = -1;
@@ -243,7 +243,7 @@ namespace ZXEngine
 		resMat.m13 = (top + bottom) / (bottom - top);
 
 #ifdef ZX_API_VULKAN
-		// VulkanµÄYÖáÒª·´×ªÒ»ÏÂ£¬·ñÔò»­Ãæ»áµßµ¹
+		// Vulkançš„Yè½´è¦åè½¬ä¸€ä¸‹ï¼Œå¦åˆ™ç”»é¢ä¼šé¢ å€’
 		resMat.m11 *= -1;
 #endif
 
@@ -252,7 +252,7 @@ namespace ZXEngine
 
 	Matrix4 Math::Orthographic(float left, float right, float bottom, float top, float zNear, float zFar)
 	{
-		// Ä¬ÈÏÓÃ×óÊÖ×ø±êÏµµÄ
+		// é»˜è®¤ç”¨å·¦æ‰‹åæ ‡ç³»çš„
 		return OrthographicLHZO(left, right, bottom, top, zNear, zFar);
 	}
 
@@ -267,7 +267,7 @@ namespace ZXEngine
 		resMat.m23 = (zFar + zNear) / (zNear - zFar);
 
 #ifdef ZX_API_VULKAN
-		// VulkanµÄYÖáÒª·´×ªÒ»ÏÂ£¬·ñÔò»­Ãæ»áµßµ¹
+		// Vulkançš„Yè½´è¦åè½¬ä¸€ä¸‹ï¼Œå¦åˆ™ç”»é¢ä¼šé¢ å€’
 		resMat.m11 *= -1;
 #endif
 
@@ -285,7 +285,7 @@ namespace ZXEngine
 		resMat.m23 = zNear / (zNear - zFar);
 
 #ifdef ZX_API_VULKAN
-		// VulkanµÄYÖáÒª·´×ªÒ»ÏÂ£¬·ñÔò»­Ãæ»áµßµ¹
+		// Vulkançš„Yè½´è¦åè½¬ä¸€ä¸‹ï¼Œå¦åˆ™ç”»é¢ä¼šé¢ å€’
 		resMat.m11 *= -1;
 #endif
 
@@ -385,7 +385,7 @@ namespace ZXEngine
 
 	Matrix3 Math::Inverse(const Matrix3& mat)
 	{
-		// °éËæ¾ØÕó·¨
+		// ä¼´éšçŸ©é˜µæ³•
 		float oneOverDeterminant = 1.0f / mat.GetDeterminant();
 
 		Matrix3 resMat = Matrix3();
@@ -406,7 +406,7 @@ namespace ZXEngine
 
 	Matrix4 Math::Inverse(const Matrix4& mat)
 	{
-		// °éËæ¾ØÕó·¨
+		// ä¼´éšçŸ©é˜µæ³•
 		float inv00, inv01, inv02, inv03, inv10, inv11, inv12, inv13, inv20, inv21, inv22, inv23, inv30, inv31, inv32, inv33;
 		inv00 =  mat.m11 * mat.m22 * mat.m33 - mat.m11 * mat.m23 * mat.m32 - mat.m21 * mat.m12 * mat.m33 + mat.m21 * mat.m13 * mat.m32 + mat.m31 * mat.m12 * mat.m23 - mat.m31 * mat.m13 * mat.m22;
 		inv10 = -mat.m10 * mat.m22 * mat.m33 + mat.m10 * mat.m23 * mat.m32 + mat.m20 * mat.m12 * mat.m33 - mat.m20 * mat.m13 * mat.m32 - mat.m30 * mat.m12 * mat.m23 + mat.m30 * mat.m13 * mat.m22;
@@ -436,7 +436,7 @@ namespace ZXEngine
 
 	Matrix4 Math::InverseTest(const Matrix4& mat)
 	{
-		// ²Î¿¼GLM¿â×öµÄ°éËæ¾ØÕó·¨ÓÅ»¯£¬µ«ÊÇÊµ²âºÃÏñÊÇ¸ºÓÅ»¯
+		// å‚è€ƒGLMåº“åšçš„ä¼´éšçŸ©é˜µæ³•ä¼˜åŒ–ï¼Œä½†æ˜¯å®æµ‹å¥½åƒæ˜¯è´Ÿä¼˜åŒ–
 		float c00 = mat.m22 * mat.m33 - mat.m23 * mat.m32;
 		float c02 = mat.m21 * mat.m33 - mat.m23 * mat.m31;
 		float c03 = mat.m21 * mat.m32 - mat.m22 * mat.m31;
@@ -567,14 +567,14 @@ namespace ZXEngine
 		{
 			float a = v.y * v.y + v.z * v.z;
 			float k = 1.0f / sqrtf(a);
-			// YZÆ½Ãæ
+			// YZå¹³é¢
 			return Vector3(0.0f, -v.z * k, v.y * k);
 		}
 		else
 		{
 			float a = v.x * v.x + v.y * v.y;
 			float k = 1.0f / sqrtf(a);
-			// XYÆ½Ãæ
+			// XYå¹³é¢
 			return Vector3(-v.y * k, v.x * k, 0.0f);
 		}
 	}
@@ -631,10 +631,10 @@ namespace ZXEngine
 
 	Matrix4 Math::GetLookToMatrix(const Vector3& pos, const Vector3& forward, const Vector3& up)
 	{
-		// Ñ§UnityÓÃµÄ×óÊÖ×ø±êÏµ£¬up²æ³ËforwardµÃµ½right£¬ÓÒÊÖ×ø±êÏµµÃ·´¹ıÀ´
+		// å­¦Unityç”¨çš„å·¦æ‰‹åæ ‡ç³»ï¼Œupå‰ä¹˜forwardå¾—åˆ°rightï¼Œå³æ‰‹åæ ‡ç³»å¾—åè¿‡æ¥
 		Vector3 right = Cross(up, forward);
 
-		// »ùÓÚ×óÊÖ×ø±êÏµ¹¹½¨View¾ØÕóÕâÀïµÄforwardÓ¦¸ÃÊÇÕıµÄ£¬ÓÒÊÖ×ø±êÏµÊÇ¸ºµÄ
+		// åŸºäºå·¦æ‰‹åæ ‡ç³»æ„å»ºViewçŸ©é˜µè¿™é‡Œçš„forwardåº”è¯¥æ˜¯æ­£çš„ï¼Œå³æ‰‹åæ ‡ç³»æ˜¯è´Ÿçš„
 		Matrix4 viewMat = Matrix4(
 			right.x  , right.y  , right.z  , 0,
 			up.x     , up.y     , up.z     , 0,

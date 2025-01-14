@@ -16,7 +16,7 @@ static int UIButton_SetClickCallBack(lua_State* L)
 
 	// -1: table
 	// -2: function
-	// luaL_checktype¼ì²éºó»áµ¯³ö£¬ËùÒÔ·´×ÅÀ´£¬ÏÈ¼ì²éµÚ¶þ¸ö²ÎÊý£¬ÔÙ¼ì²éµÚÒ»¸ö²ÎÊý
+	// luaL_checktypeæ£€æŸ¥åŽä¼šå¼¹å‡ºï¼Œæ‰€ä»¥åç€æ¥ï¼Œå…ˆæ£€æŸ¥ç¬¬äºŒä¸ªå‚æ•°ï¼Œå†æ£€æŸ¥ç¬¬ä¸€ä¸ªå‚æ•°
 	luaL_checktype(L, -1, LUA_TTABLE);
 	(*self)->mClickCallBack.table = luaL_ref(L, LUA_REGISTRYINDEX);
 

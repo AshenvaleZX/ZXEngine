@@ -45,7 +45,7 @@ namespace ZXEngine
 		if (Light::GetAllLights().empty())
 			return;
 
-		// äÖÈ¾ÒõÓ°µÄ¹âÔ´
+		// æ¸²æŸ“é˜´å½±çš„å…‰æº
 		Light* light = Light::GetAllLights()[0];
 
 		if (light->type == LightType::Directional)
@@ -61,24 +61,24 @@ namespace ZXEngine
 	void RenderPassShadowGeneration::RenderShadowMap(Light* light)
 	{
 		auto renderAPI = RenderAPI::GetInstance();
-		// ÇÐ»»µ½shadow FBO
+		// åˆ‡æ¢åˆ°shadow FBO
 		FBOManager::GetInstance()->SwitchFBO("ShadowMap");
-		// ViewPort¸Ä³ÉäÖÈ¾ShadowMapµÄÕý·½ÐÎ
+		// ViewPortæ”¹æˆæ¸²æŸ“ShadowMapçš„æ­£æ–¹å½¢
 		renderAPI->SetViewPort(GlobalData::depthMapWidth, GlobalData::depthMapWidth);
-		// ÇÐ»»µ½ÒõÓ°äÖÈ¾ÉèÖÃ
+		// åˆ‡æ¢åˆ°é˜´å½±æ¸²æŸ“è®¾ç½®
 		renderAPI->SetRenderState(renderState);
-		// ÇåÀíÉÏÒ»Ö¡Êý¾Ý
+		// æ¸…ç†ä¸Šä¸€å¸§æ•°æ®
 		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
-		// ÀàËÆÏà»úµÄVP¾ØÕó
+		// ç±»ä¼¼ç›¸æœºçš„VPçŸ©é˜µ
 		Matrix4 shadowTransform = light->GetProjectionMatrix() * light->GetLightMatrix();
 		RenderEngineProperties::GetInstance()->SetLightMatrix(shadowTransform);
 
-		// äÖÈ¾Í¶ÉäÒõÓ°µÄÎïÌå
+		// æ¸²æŸ“æŠ•å°„é˜´å½±çš„ç‰©ä½“
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Opaque);
 		for (auto renderer : renderQueue->GetRenderers())
 		{
-			// Ìø¹ý²»Í¶ÉäÒõÓ°µÄÎïÌå
+			// è·³è¿‡ä¸æŠ•å°„é˜´å½±çš„ç‰©ä½“
 			if (!renderer->mCastShadow)
 				continue;
 
@@ -107,16 +107,16 @@ namespace ZXEngine
 			return;
 
 		auto renderAPI = RenderAPI::GetInstance();
-		// ÇÐ»»µ½shadow FBO
+		// åˆ‡æ¢åˆ°shadow FBO
 		FBOManager::GetInstance()->SwitchFBO("ShadowCubeMap");
-		// ViewPort¸Ä³ÉäÖÈ¾CubeMapµÄÕý·½ÐÎ
+		// ViewPortæ”¹æˆæ¸²æŸ“CubeMapçš„æ­£æ–¹å½¢
 		renderAPI->SetViewPort(GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
-		// ÇÐ»»µ½ÒõÓ°äÖÈ¾ÉèÖÃ
+		// åˆ‡æ¢åˆ°é˜´å½±æ¸²æŸ“è®¾ç½®
 		renderAPI->SetRenderState(renderState);
-		// ÇåÀíÉÏÒ»Ö¡Êý¾Ý
+		// æ¸…ç†ä¸Šä¸€å¸§æ•°æ®
 		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
-		// »ùÓÚ×óÊÖ×ø±êÏµ¹¹½¨6¸ö·½ÏòÉÏµÄVP¾ØÕó
+		// åŸºäºŽå·¦æ‰‹åæ ‡ç³»æž„å»º6ä¸ªæ–¹å‘ä¸Šçš„VPçŸ©é˜µ
 		Vector3 lightPos = light->GetTransform()->GetPosition();
 #if defined(ZX_API_OPENGL) || defined(ZX_API_VULKAN)
 		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3(-1.0f,  0.0f,  0.0f), Vector3(0.0f, -1.0f,  0.0f)));
@@ -134,11 +134,11 @@ namespace ZXEngine
 		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3( 0.0f,  0.0f, -1.0f), Vector3(0.0f,  1.0f,  0.0f)));
 #endif
 
-		// äÖÈ¾Í¶ÉäÒõÓ°µÄÎïÌå
+		// æ¸²æŸ“æŠ•å°„é˜´å½±çš„ç‰©ä½“
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Opaque);
 		for (auto renderer : renderQueue->GetRenderers())
 		{
-			// Ìø¹ý²»Í¶ÉäÒõÓ°µÄÎïÌå
+			// è·³è¿‡ä¸æŠ•å°„é˜´å½±çš„ç‰©ä½“
 			if (!renderer->mCastShadow)
 				continue;
 
@@ -161,7 +161,7 @@ namespace ZXEngine
 			renderer->DrawShadow();
 		}
 
-		// ÓÃÍêÁ¢¿ÌÇå³ý£¬ÏÂÒ»Ö¡»¹»áÉú³É
+		// ç”¨å®Œç«‹åˆ»æ¸…é™¤ï¼Œä¸‹ä¸€å¸§è¿˜ä¼šç”Ÿæˆ
 		shadowTransforms.clear();
 
 		renderAPI->GenerateDrawCommand(drawCommandID);

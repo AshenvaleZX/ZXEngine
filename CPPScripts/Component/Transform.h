@@ -68,7 +68,7 @@ namespace ZXEngine
 		Vector3 localScale = Vector3(1.0f);
 
 #ifdef ZX_EDITOR
-		// 用于编辑器的Inspector面板
+		// 鐢ㄤ簬缂栬緫鍣ㄧ殑Inspector闈㈡澘
 		mutable Vector3 localEulerAnglesHint;
 #endif
 	};

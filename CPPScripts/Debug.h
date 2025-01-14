@@ -4,7 +4,7 @@
 #include <chrono>
 #include <unordered_map>
 
-// Ìõ¼ş±àÒëµ÷ÊÔ´úÂë¿ª¹Ø
+// æ¡ä»¶ç¼–è¯‘è°ƒè¯•ä»£ç å¼€å…³
 // #define ZX_DEBUG
 
 namespace ZXEngine
@@ -12,7 +12,7 @@ namespace ZXEngine
 	class Debug
 	{
 	/// <summary>
-	/// ÈÕÖ¾Ä£¿é
+	/// æ—¥å¿—æ¨¡å—
 	/// </summary>
 	public:
 		static void Log(const std::string& message);
@@ -47,7 +47,7 @@ namespace ZXEngine
 
 
 	/// <summary>
-	/// ¼ÆÊ±Æ÷Ä£¿é
+	/// è®¡æ—¶å™¨æ¨¡å—
 	/// </summary>
 	public:
 		static void PushTimer();
@@ -64,7 +64,7 @@ namespace ZXEngine
 		static std::unordered_map<std::string, std::chrono::steady_clock::time_point> mTimerMap;
 	};
 
-	// »ù±¾Ä£°åº¯Êı(¸÷ÖÖÌØ»¯°æ±¾¶¼Æ¥Åä²»ÉÏµÄÊ±ºò¾Í»áÓÃÕâ¸ö)
+	// åŸºæœ¬æ¨¡æ¿å‡½æ•°(å„ç§ç‰¹åŒ–ç‰ˆæœ¬éƒ½åŒ¹é…ä¸ä¸Šçš„æ—¶å€™å°±ä¼šç”¨è¿™ä¸ª)
 	template<typename T, typename = void>
 	struct ToStringHelper 
 	{
@@ -74,7 +74,7 @@ namespace ZXEngine
 		}
 	};
 
-	// ÌØ»¯°æ±¾£¬ÓÃÓÚ´¦ÀíÓĞToString³ÉÔ±º¯ÊıµÄÀàĞÍ
+	// ç‰¹åŒ–ç‰ˆæœ¬ï¼Œç”¨äºå¤„ç†æœ‰ToStringæˆå‘˜å‡½æ•°çš„ç±»å‹
 	template<typename T>
 	struct ToStringHelper<T, std::void_t<decltype(std::declval<T>().ToString())>> 
 	{
@@ -84,7 +84,7 @@ namespace ZXEngine
 		}
 	};
 
-	// ÌØ»¯°æ±¾£¬ÓÃÓÚ´¦Àí¿ÉÒÔÓÃstd::to_string×ª»»µÄÀàĞÍ
+	// ç‰¹åŒ–ç‰ˆæœ¬ï¼Œç”¨äºå¤„ç†å¯ä»¥ç”¨std::to_stringè½¬æ¢çš„ç±»å‹
 	template<typename T>
 	struct ToStringHelper<T, std::enable_if_t<std::is_arithmetic_v<T>>> 
 	{
@@ -94,7 +94,7 @@ namespace ZXEngine
 		}
 	};
 
-	// ÌØ»¯°æ±¾£¬ÓÃÓÚ´¦ÀíenumºÍenum class
+	// ç‰¹åŒ–ç‰ˆæœ¬ï¼Œç”¨äºå¤„ç†enumå’Œenum class
 	template<typename T>
 	struct ToStringHelper<T, std::enable_if_t<std::is_enum_v<T>>>
 	{
@@ -104,7 +104,7 @@ namespace ZXEngine
 		}
 	};
 
-	// ÌØ»¯°æ±¾£¬ÓÃÓÚ´¦Àístring
+	// ç‰¹åŒ–ç‰ˆæœ¬ï¼Œç”¨äºå¤„ç†string
 	template<>
 	struct ToStringHelper<std::string>
 	{
@@ -114,7 +114,7 @@ namespace ZXEngine
 		}
 	};
 
-	// ÌØ»¯°æ±¾£¬ÓÃÓÚ´¦Àístd::string_view
+	// ç‰¹åŒ–ç‰ˆæœ¬ï¼Œç”¨äºå¤„ç†std::string_view
 	template<>
 	struct ToStringHelper<std::string_view>
 	{
@@ -124,7 +124,7 @@ namespace ZXEngine
 		}
 	};
 
-	// ÌØ»¯°æ±¾£¬ÓÃÓÚ´¦Àíchar*
+	// ç‰¹åŒ–ç‰ˆæœ¬ï¼Œç”¨äºå¤„ç†char*
 	template<>
 	struct ToStringHelper<const char*>
 	{
@@ -164,8 +164,8 @@ namespace ZXEngine
 		return ToStringHelper<T>::Convert(t);
 	}
 
-	// ÖØÔØ°æ±¾£¬ÓÃÓÚ´¦Àíconst char[N]ÀàĞÍ
-	// Èç¹ûĞ´Ò»¸öconst char[N]ÌØ»¯°æ±¾µÄToStringHelper»á±»»ù±¾Ä£°åÏÈÆ¥Åä£¬ËùÒÔÕâÖÖÇé¿öÖ»ÄÜÖØÔØToStringº¯Êı¶ø²»ÊÇĞÂÔöÌØ»¯°æ±¾µÄToStringHelper
+	// é‡è½½ç‰ˆæœ¬ï¼Œç”¨äºå¤„ç†const char[N]ç±»å‹
+	// å¦‚æœå†™ä¸€ä¸ªconst char[N]ç‰¹åŒ–ç‰ˆæœ¬çš„ToStringHelperä¼šè¢«åŸºæœ¬æ¨¡æ¿å…ˆåŒ¹é…ï¼Œæ‰€ä»¥è¿™ç§æƒ…å†µåªèƒ½é‡è½½ToStringå‡½æ•°è€Œä¸æ˜¯æ–°å¢ç‰¹åŒ–ç‰ˆæœ¬çš„ToStringHelper
 	template<std::size_t N>
 	std::string Debug::ToString(const char(&value)[N])
 	{

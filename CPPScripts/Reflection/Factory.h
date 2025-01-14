@@ -70,7 +70,7 @@ namespace ZXEngine
 			private:
 				VoidType mTypeInfo;
 
-				// ²»ÔÊĞí´ÓÍâ²¿¹¹ÔìºÍÏú»Ù
+				// ä¸å…è®¸ä»å¤–éƒ¨æ„é€ å’Œé”€æ¯
 				VoidFactory() = default;
 				~VoidFactory() = default;
 
@@ -112,7 +112,7 @@ namespace ZXEngine
 			private:
 				NumericType mTypeInfo;
 
-				// ²»ÔÊĞí´ÓÍâ²¿¹¹ÔìºÍÏú»Ù
+				// ä¸å…è®¸ä»å¤–éƒ¨æ„é€ å’Œé”€æ¯
 				NumericFactory() = default;
 				~NumericFactory() = default;
 
@@ -169,7 +169,7 @@ namespace ZXEngine
 			private:
 				EnumType mTypeInfo;
 
-				// ²»ÔÊĞí´ÓÍâ²¿¹¹ÔìºÍÏú»Ù
+				// ä¸å…è®¸ä»å¤–éƒ¨æ„é€ å’Œé”€æ¯
 				EnumFactory() = default;
 				~EnumFactory() = default;
 
@@ -208,7 +208,7 @@ namespace ZXEngine
 				friend class ClassFactory;
 
 			public:
-				// Àà³ÉÔ±±äÁ¿µØÖ·
+				// ç±»æˆå‘˜å˜é‡åœ°å€
 				MemberVariableType mAddr = nullptr;
 				using VariableType = typename VariableTraits<MemberVariableType>::Type;
 
@@ -248,7 +248,7 @@ namespace ZXEngine
 				static unique_ptr<MemberFunction> Create(const string& name);
 
 			private:
-				// ´ÓÄ£°åÀàĞÍÁĞ±í×ª»»ÎªTypeInfoÖ¸ÕëvectorÊı×é
+				// ä»æ¨¡æ¿ç±»å‹åˆ—è¡¨è½¬æ¢ä¸ºTypeInfoæŒ‡é’ˆvectoræ•°ç»„
 				template <typename Params, size_t... I>
 				static vector<const TypeInfo*> GetParamTypes(std::index_sequence<I...>);
 			};
@@ -354,7 +354,7 @@ namespace ZXEngine
 			private:
 				ClassType mTypeInfo;
 
-				// ²»ÔÊĞí´ÓÍâ²¿¹¹ÔìºÍÏú»Ù
+				// ä¸å…è®¸ä»å¤–éƒ¨æ„é€ å’Œé”€æ¯
 				ClassFactory() = default;
 				~ClassFactory() = default;
 
@@ -447,9 +447,9 @@ namespace ZXEngine
 			template <typename Params, size_t... I>
 			vector<const TypeInfo*> MemberFunction::GetParamTypes(std::index_sequence<I...>)
 			{
-				// ½«TypeList×ª»»ÎªTuple
+				// å°†TypeListè½¬æ¢ä¸ºTuple
 				using TupleType = typename TypeListToTuple<Params>::type;
-				// ²»¶¨²ÎÊıÄ£°åÕ¹¿ª
+				// ä¸å®šå‚æ•°æ¨¡æ¿å±•å¼€
 				return { GetTypeInfo<typename std::tuple_element<I, TupleType>::type>()... };
 			}
 			

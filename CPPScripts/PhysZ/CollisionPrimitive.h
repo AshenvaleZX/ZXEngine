@@ -10,53 +10,53 @@ namespace ZXEngine
 		class CollisionPrimitive
 		{
 		public:
-			// Åö×²ÌåËù¶ÔÓ¦µÄ¸ÕÌå
+			// ç¢°æ’ä½“æ‰€å¯¹åº”çš„åˆšä½“
 			RigidBody* mRigidBody = nullptr;
-			// Åö×²ÌåÏà¶ÔÓÚ¸ÕÌåµÄÆ«ÒÆ(Èô¶şÕßÍêÈ«¶ÔÆëÔòÊ¹ÓÃµ¥Î»¾ØÕó¼´¿É)
+			// ç¢°æ’ä½“ç›¸å¯¹äºåˆšä½“çš„åç§»(è‹¥äºŒè€…å®Œå…¨å¯¹é½åˆ™ä½¿ç”¨å•ä½çŸ©é˜µå³å¯)
 			Matrix4 mOffset;
-			// Åö×²ÌåÏà¶ÔÓÚÊÀ½çµÄ±ä»»¾ØÕó
+			// ç¢°æ’ä½“ç›¸å¯¹äºä¸–ç•Œçš„å˜æ¢çŸ©é˜µ
 			Matrix4 mTransform;
-			// Ä¦²ÁÏµÊı
+			// æ‘©æ“¦ç³»æ•°
 			float mFriction = 0.4f;
-			// »Øµ¯ÏµÊı
+			// å›å¼¹ç³»æ•°
 			float mBounciness = 0.0f;
-			// Ä¦²ÁÏµÊı×éºÏ·½Ê½
+			// æ‘©æ“¦ç³»æ•°ç»„åˆæ–¹å¼
 			CombineType mFrictionCombine = CombineType::Average;
-			// »Øµ¯ÏµÊı×éºÏ·½Ê½
+			// å›å¼¹ç³»æ•°ç»„åˆæ–¹å¼
 			CombineType mBounceCombine = CombineType::Average;
 
 			virtual ~CollisionPrimitive();
 
 			virtual void SynchronizeTransform(const Matrix4& transform);
 
-			// »ñÈ¡Åö×²ÌåÀàĞÍ
+			// è·å–ç¢°æ’ä½“ç±»å‹
 			virtual ColliderType GetType() const = 0;
-			// Éú³É¶ÔÓ¦ĞÎ×´µÄ¾ùÖÊ¹ßĞÔÕÅÁ¿
+			// ç”Ÿæˆå¯¹åº”å½¢çŠ¶çš„å‡è´¨æƒ¯æ€§å¼ é‡
 			virtual Matrix3 GetInertiaTensor(float mass) const = 0;
 		};
 
 		class CollisionBox : public CollisionPrimitive
 		{
 		public:
-			// BoxÔÚ3¸öÖáÉÏµÄ³¤¶È°ë¾¶
+			// Boxåœ¨3ä¸ªè½´ä¸Šçš„é•¿åº¦åŠå¾„
 			Vector3 mHalfSize;
 
 			virtual ColliderType GetType() const;
 			virtual Matrix3 GetInertiaTensor(float mass) const;
 
-			// »ñÈ¡BoxÍ¶Ó°µ½Ä³¸öÖáÉÏµÄ³¤¶ÈµÄÒ»°ë
+			// è·å–BoxæŠ•å½±åˆ°æŸä¸ªè½´ä¸Šçš„é•¿åº¦çš„ä¸€åŠ
 			float GetHalfProjectedLength(const Vector3& axis) const;
 		};
 
-		// Åö×²Æ½Ãæ(Í¨³£±íÊ¾³¡¾°ÖĞÒ»¸ö²»¿ÉÒÆ¶¯µÄÇ½»òµØÃæ£¬¶ø²»ÊÇ¸ÕÌå)
+		// ç¢°æ’å¹³é¢(é€šå¸¸è¡¨ç¤ºåœºæ™¯ä¸­ä¸€ä¸ªä¸å¯ç§»åŠ¨çš„å¢™æˆ–åœ°é¢ï¼Œè€Œä¸æ˜¯åˆšä½“)
 		class CollisionPlane : public CollisionPrimitive
 		{
 		public:
-			// Åö×²Æ½Ãæ·¨Ïß(World)
+			// ç¢°æ’å¹³é¢æ³•çº¿(World)
 			Vector3 mNormal;
-			// Åö×²Æ½Ãæ·¨Ïß(Local)
+			// ç¢°æ’å¹³é¢æ³•çº¿(Local)
 			Vector3 mLocalNormal;
-			// Åö×²Æ½Ãæµ½Ô­µãµÄ¾àÀë
+			// ç¢°æ’å¹³é¢åˆ°åŸç‚¹çš„è·ç¦»
 			float mDistance;
 
 			virtual void SynchronizeTransform(const Matrix4& transform);
@@ -68,7 +68,7 @@ namespace ZXEngine
 		class CollisionSphere : public CollisionPrimitive
 		{
 		public:
-			// Åö×²Çò°ë¾¶
+			// ç¢°æ’çƒåŠå¾„
 			float mRadius;
 
 			virtual ColliderType GetType() const;
@@ -77,9 +77,9 @@ namespace ZXEngine
 
 		struct CollisionVolume
 		{
-			// Åö×²ÌåÀàĞÍ
+			// ç¢°æ’ä½“ç±»å‹
 			ColliderType mType;
-			// Åö×²ÌåÖ¸Õë
+			// ç¢°æ’ä½“æŒ‡é’ˆ
 			union
 			{
 				CollisionBox* mBox;

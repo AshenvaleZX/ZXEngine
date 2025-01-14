@@ -46,7 +46,7 @@ namespace ZXEngine
 			return;
 		}
 
-		// »ñÈ¡µ±Ç°OpenGL°æ±¾²¢Êä³ö
+		// è·å–å½“å‰OpenGLç‰ˆæœ¬å¹¶è¾“å‡º
 		int majorVersion;
 		int minorVersion;
 		glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
@@ -105,7 +105,7 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::WaitForRenderFinish()
 	{
-		// OpenGLµÄËùÓĞĞĞÎª¶¼ÊÇµ¥Ïß³ÌµÄ£¬Í¬²½µÄ£¬ËùÒÔ²»ĞèÒªÊµÏÖÕâ¸ö½Ó¿Ú
+		// OpenGLçš„æ‰€æœ‰è¡Œä¸ºéƒ½æ˜¯å•çº¿ç¨‹çš„ï¼ŒåŒæ­¥çš„ï¼Œæ‰€ä»¥ä¸éœ€è¦å®ç°è¿™ä¸ªæ¥å£
 	}
 
 	void RenderAPIOpenGL::SwitchFrameBuffer(uint32_t id)
@@ -125,7 +125,7 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset, unsigned int yOffset)
 	{
-		// 0µãÔÚ×óÏÂ½Ç
+		// 0ç‚¹åœ¨å·¦ä¸‹è§’
 		glViewport(xOffset, yOffset, width, height);
 		CheckError();
 	}
@@ -164,7 +164,7 @@ namespace ZXEngine
 			curRealState->clearDepth = depth;
 			stateDirty = true;
 		}
-		// Clear DepthÖ®Ç°±ØĞë¿ªÆôÉî¶È²âÊÔºÍĞ´Èë
+		// Clear Depthä¹‹å‰å¿…é¡»å¼€å¯æ·±åº¦æµ‹è¯•å’Œå†™å…¥
 		if (!curRealState->depthTest)
 		{
 			glEnable(GL_DEPTH_TEST);
@@ -206,7 +206,7 @@ namespace ZXEngine
 		if (flags & ZX_FRAME_BUFFER_PIECE_DEPTH)
 			glBlitFramebuffer(0, 0, sFBO->width, sFBO->height, 0, 0, dFBO->width, dFBO->height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
-		// ÇĞ»ØÔ­À´µÄFBO
+		// åˆ‡å›åŸæ¥çš„FBO
 		glBindFramebuffer(GL_FRAMEBUFFER, curFBOID);
 	}
 
@@ -320,7 +320,7 @@ namespace ZXEngine
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE); // ÎÆÀíµÄµÚÈı¸öÖá£¬ÀàËÆÆÕÍ¨µã×ø±êµÄz£¬ÒòÎªcubemapÊÇ3DµÄÎÆÀí
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE); // çº¹ç†çš„ç¬¬ä¸‰ä¸ªè½´ï¼Œç±»ä¼¼æ™®é€šç‚¹åæ ‡çš„zï¼Œå› ä¸ºcubemapæ˜¯3Dçš„çº¹ç†
 		
 		CheckError();
 
@@ -376,7 +376,7 @@ namespace ZXEngine
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE); // ÎÆÀíµÄµÚÈı¸öÖá£¬ÀàËÆÆÕÍ¨µã×ø±êµÄz£¬ÒòÎªcubemapÊÇ3DµÄÎÆÀí
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE); // çº¹ç†çš„ç¬¬ä¸‰ä¸ªè½´ï¼Œç±»ä¼¼æ™®é€šç‚¹åæ ‡çš„zï¼Œå› ä¸ºcubemapæ˜¯3Dçš„çº¹ç†
 
 		CheckError();
 
@@ -385,13 +385,13 @@ namespace ZXEngine
 
 	unsigned int RenderAPIOpenGL::GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data)
 	{
-		// Í¨¹ı×ÖĞÎÉú³ÉµÄÎ»Í¼ÊÇÒ»¸ö8Î»»Ò¶ÈÍ¼£¬ËüµÄÃ¿Ò»¸öÑÕÉ«¶¼ÓÉÒ»¸ö×Ö½ÚÀ´±íÊ¾¡£Òò´ËÎÒÃÇĞèÒª½«Î»Í¼»º³åµÄÃ¿Ò»×Ö½Ú¶¼×÷ÎªÎÆÀíµÄÑÕÉ«Öµ¡£
-		// Õâ¸öÎÆÀíµÄÃ¿Ò»×Ö½Ú¶¼¶ÔÓ¦×ÅÎÆÀíÑÕÉ«µÄºìÉ«·ÖÁ¿(ÑÕÉ«ÏòÁ¿µÄµÚÒ»¸ö×Ö½Ú)£¬¼´ÎÒÃÇÊ¹ÓÃÒ»¸ö×Ö½ÚÀ´±íÊ¾ÎÆÀíµÄÑÕÉ«¡£
-		// µ«ÊÇOpenGLÄ¬ÈÏËùÓĞµÄÎÆÀí¶¼ÊÇ4×Ö½Ú¶ÔÆëµÄ£¬¼´ÎÆÀíµÄ´óĞ¡ÓÀÔ¶ÊÇ4×Ö½ÚµÄ±¶Êı£¬ÒòÎª´ó²¿·ÖÎÆÀíµÄ¿í¶È¶¼Îª4µÄ±¶Êı²¢/»òÃ¿ÏñËØÊ¹ÓÃ4¸ö×Ö½Ú¡£
-		// µ«ÊÇÏÖÔÚÎÒÃÇÃ¿¸öÏñËØÖ»ÓÃÁËÒ»¸ö×Ö½Ú£¬Ëü¿ÉÒÔÊÇÈÎÒâµÄ¿í¶È£¬ËùÒÔĞèÒª½«ÎÆÀí½âÑ¹¶ÔÆë²ÎÊıÉèÎª1£¬ÕâÑù²ÅÄÜÈ·±£²»»áÓĞ¶ÔÆëÎÊÌâ¡£
+		// é€šè¿‡å­—å½¢ç”Ÿæˆçš„ä½å›¾æ˜¯ä¸€ä¸ª8ä½ç°åº¦å›¾ï¼Œå®ƒçš„æ¯ä¸€ä¸ªé¢œè‰²éƒ½ç”±ä¸€ä¸ªå­—èŠ‚æ¥è¡¨ç¤ºã€‚å› æ­¤æˆ‘ä»¬éœ€è¦å°†ä½å›¾ç¼“å†²çš„æ¯ä¸€å­—èŠ‚éƒ½ä½œä¸ºçº¹ç†çš„é¢œè‰²å€¼ã€‚
+		// è¿™ä¸ªçº¹ç†çš„æ¯ä¸€å­—èŠ‚éƒ½å¯¹åº”ç€çº¹ç†é¢œè‰²çš„çº¢è‰²åˆ†é‡(é¢œè‰²å‘é‡çš„ç¬¬ä¸€ä¸ªå­—èŠ‚)ï¼Œå³æˆ‘ä»¬ä½¿ç”¨ä¸€ä¸ªå­—èŠ‚æ¥è¡¨ç¤ºçº¹ç†çš„é¢œè‰²ã€‚
+		// ä½†æ˜¯OpenGLé»˜è®¤æ‰€æœ‰çš„çº¹ç†éƒ½æ˜¯4å­—èŠ‚å¯¹é½çš„ï¼Œå³çº¹ç†çš„å¤§å°æ°¸è¿œæ˜¯4å­—èŠ‚çš„å€æ•°ï¼Œå› ä¸ºå¤§éƒ¨åˆ†çº¹ç†çš„å®½åº¦éƒ½ä¸º4çš„å€æ•°å¹¶/æˆ–æ¯åƒç´ ä½¿ç”¨4ä¸ªå­—èŠ‚ã€‚
+		// ä½†æ˜¯ç°åœ¨æˆ‘ä»¬æ¯ä¸ªåƒç´ åªç”¨äº†ä¸€ä¸ªå­—èŠ‚ï¼Œå®ƒå¯ä»¥æ˜¯ä»»æ„çš„å®½åº¦ï¼Œæ‰€ä»¥éœ€è¦å°†çº¹ç†è§£å‹å¯¹é½å‚æ•°è®¾ä¸º1ï¼Œè¿™æ ·æ‰èƒ½ç¡®ä¿ä¸ä¼šæœ‰å¯¹é½é—®é¢˜ã€‚
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-		// ÅäÖÃÎÆÀí
+		// é…ç½®çº¹ç†
 		unsigned int textureID;
 		glGenTextures(1, &textureID);
 		glBindTexture(GL_TEXTURE_2D, textureID);
@@ -401,7 +401,7 @@ namespace ZXEngine
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		// »¹Ô­Ä¬ÈÏÉèÖÃ
+		// è¿˜åŸé»˜è®¤è®¾ç½®
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
 		CheckError();
@@ -497,7 +497,7 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::SetUpMaterial(Material* material)
 	{
-		// ÉèÖÃ²ÄÖÊÊı¾İ
+		// è®¾ç½®æè´¨æ•°æ®
 		for (auto& property : material->data->vec2Datas)
 			SetShaderVector(material, property.first, property.second, true);
 		for (auto& property : material->data->vec3Datas)
@@ -583,7 +583,7 @@ namespace ZXEngine
 			unsigned int FBO_ID;
 			glGenFramebuffers(1, &FBO_ID);
 
-			// ´´½¨ColorBuffer
+			// åˆ›å»ºColorBuffer
 			unsigned int colorBuffer;
 			glGenTextures(1, &colorBuffer);
 			glBindTexture(GL_TEXTURE_2D, colorBuffer);
@@ -591,12 +591,12 @@ namespace ZXEngine
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-			// ´´½¨DepthBuffer
+			// åˆ›å»ºDepthBuffer
 			unsigned int depthBuffer;
 #ifdef ZX_PLATFORM_MACOS
 			if (type == FrameBufferType::Normal)
 			{
-				// ÔÚMacÉÏÊ¹ÓÃOpenGL 4.1£¬²»Ö§³Ö°ÑRenderbuffer¸´ÖÆµ½Texture£¬¶øÄ¿Ç°ÕıÏòäÖÈ¾¹ÜÏßÀïĞèÒªÕâ¸ö²Ù×÷
+				// åœ¨Macä¸Šä½¿ç”¨OpenGL 4.1ï¼Œä¸æ”¯æŒæŠŠRenderbufferå¤åˆ¶åˆ°Textureï¼Œè€Œç›®å‰æ­£å‘æ¸²æŸ“ç®¡çº¿é‡Œéœ€è¦è¿™ä¸ªæ“ä½œ
 				glGenTextures(1, &depthBuffer);
 				glBindTexture(GL_TEXTURE_2D, depthBuffer);
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -612,13 +612,13 @@ namespace ZXEngine
 				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 			}
 #else
-			// ÓÃµÄRenderbuffer¶ø²»ÊÇTexture£¬RenderbufferÒ»°ãÓÃÓÚ²»¶ÁÈ¡£¬Ö»Ğ´Èë»òÕß¸´ÖÆµÄbuffer£¬ËùÒÔÉî¶È»º³åÇø¸üÊÊºÏÓÃRenderbuffer
+			// ç”¨çš„Renderbufferè€Œä¸æ˜¯Textureï¼ŒRenderbufferä¸€èˆ¬ç”¨äºä¸è¯»å–ï¼Œåªå†™å…¥æˆ–è€…å¤åˆ¶çš„bufferï¼Œæ‰€ä»¥æ·±åº¦ç¼“å†²åŒºæ›´é€‚åˆç”¨Renderbuffer
 			glGenRenderbuffers(1, &depthBuffer);
 			glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 #endif
 
-			// °ÑColorBufferºÍDepthBuffer°ó¶¨µ½FBOÉÏ
+			// æŠŠColorBufferå’ŒDepthBufferç»‘å®šåˆ°FBOä¸Š
 			glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
 #ifdef ZX_PLATFORM_MACOS
@@ -633,10 +633,10 @@ namespace ZXEngine
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 				Debug::LogError("Framebuffer Normal not complete!");
 
-			// »Ö¸´Ä¬ÈÏ×´Ì¬
+			// æ¢å¤é»˜è®¤çŠ¶æ€
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-			// ¶ÔFBO¶ÔÏó¸³Öµ
+			// å¯¹FBOå¯¹è±¡èµ‹å€¼
 			FBO->ID = FBO_ID;
 			FBO->ColorBuffer = colorBuffer;
 			FBO->DepthBuffer = depthBuffer;
@@ -646,7 +646,7 @@ namespace ZXEngine
 			unsigned int FBO_ID;
 			glGenFramebuffers(1, &FBO_ID);
 
-			// ´´½¨¸ß¾«¶È(¸¡µã)ColorBuffer
+			// åˆ›å»ºé«˜ç²¾åº¦(æµ®ç‚¹)ColorBuffer
 			unsigned int colorBuffer;
 			glGenTextures(1, &colorBuffer);
 			glBindTexture(GL_TEXTURE_2D, colorBuffer);
@@ -654,14 +654,14 @@ namespace ZXEngine
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-			// ´´½¨DepthBuffer
-			// (ÓÃµÄRenderbuffer¶ø²»ÊÇTexture£¬RenderbufferÒ»°ãÓÃÓÚ²»¶ÁÈ¡£¬Ö»Ğ´Èë»òÕß¸´ÖÆµÄbuffer£¬ËùÒÔÉî¶È»º³åÇø¸üÊÊºÏÓÃRenderbuffer)
+			// åˆ›å»ºDepthBuffer
+			// (ç”¨çš„Renderbufferè€Œä¸æ˜¯Textureï¼ŒRenderbufferä¸€èˆ¬ç”¨äºä¸è¯»å–ï¼Œåªå†™å…¥æˆ–è€…å¤åˆ¶çš„bufferï¼Œæ‰€ä»¥æ·±åº¦ç¼“å†²åŒºæ›´é€‚åˆç”¨Renderbuffer)
 			unsigned int depthBuffer;
 			glGenRenderbuffers(1, &depthBuffer);
 			glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 
-			// °ÑColorBufferºÍDepthBuffer°ó¶¨µ½FBOÉÏ
+			// æŠŠColorBufferå’ŒDepthBufferç»‘å®šåˆ°FBOä¸Š
 			glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
 			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
@@ -669,10 +669,10 @@ namespace ZXEngine
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 				Debug::LogError("Framebuffer HigthPrecision not complete!");
 
-			// »Ö¸´Ä¬ÈÏ×´Ì¬
+			// æ¢å¤é»˜è®¤çŠ¶æ€
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-			// ¶ÔFBO¶ÔÏó¸³Öµ
+			// å¯¹FBOå¯¹è±¡èµ‹å€¼
 			FBO->ID = FBO_ID;
 			FBO->ColorBuffer = colorBuffer;
 			FBO->DepthBuffer = depthBuffer;
@@ -682,7 +682,7 @@ namespace ZXEngine
 			unsigned int FBO_ID;
 			glGenFramebuffers(1, &FBO_ID);
 
-			// ´´½¨ColorBuffer
+			// åˆ›å»ºColorBuffer
 			unsigned int colorBuffer;
 			glGenTextures(1, &colorBuffer);
 			glBindTexture(GL_TEXTURE_2D, colorBuffer);
@@ -690,17 +690,17 @@ namespace ZXEngine
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-			// °ÑColorBuffer°ó¶¨µ½FBOÉÏ
+			// æŠŠColorBufferç»‘å®šåˆ°FBOä¸Š
 			glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
 
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 				Debug::LogError("Framebuffer Color not complete!");
 
-			// »Ö¸´Ä¬ÈÏ×´Ì¬
+			// æ¢å¤é»˜è®¤çŠ¶æ€
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-			// ¶ÔFBO¶ÔÏó¸³Öµ
+			// å¯¹FBOå¯¹è±¡èµ‹å€¼
 			FBO->ID = FBO_ID;
 			FBO->ColorBuffer = colorBuffer;
 			FBO->DepthBuffer = UINT32_MAX;
@@ -710,7 +710,7 @@ namespace ZXEngine
 			unsigned int FBO_ID;
 			glGenFramebuffers(1, &FBO_ID);
 
-			// ´´½¨Éî¶ÈMap
+			// åˆ›å»ºæ·±åº¦Map
 			unsigned int depthMap;
 			glGenTextures(1, &depthMap);
 			glBindTexture(GL_TEXTURE_2D, depthMap);
@@ -722,21 +722,21 @@ namespace ZXEngine
 			float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 			glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
-			// °ÑÉî¶ÈMap°ó¶¨µ½FBO
+			// æŠŠæ·±åº¦Mapç»‘å®šåˆ°FBO
 			glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
 
-			// Ã÷È·¸æËßOpenGLÕâ¸öFBO²»»áäÖÈ¾µ½Color Buffer
+			// æ˜ç¡®å‘Šè¯‰OpenGLè¿™ä¸ªFBOä¸ä¼šæ¸²æŸ“åˆ°Color Buffer
 			glDrawBuffer(GL_NONE);
 			glReadBuffer(GL_NONE);
 
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 				Debug::LogError("Framebuffer ShadowMap not complete!");
 
-			// »Ö¸´Ä¬ÈÏ×´Ì¬
+			// æ¢å¤é»˜è®¤çŠ¶æ€
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-			// ¶ÔFBO¶ÔÏó¸³Öµ
+			// å¯¹FBOå¯¹è±¡èµ‹å€¼
 			FBO->ID = FBO_ID;
 			FBO->ColorBuffer = UINT32_MAX;
 			FBO->DepthBuffer = depthMap;
@@ -746,7 +746,7 @@ namespace ZXEngine
 			unsigned int FBO_ID;
 			glGenFramebuffers(1, &FBO_ID);
 
-			// ´´½¨Éî¶ÈCubeMap
+			// åˆ›å»ºæ·±åº¦CubeMap
 			unsigned int depthCubeMap;
 			glGenTextures(1, &depthCubeMap);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubeMap);
@@ -758,21 +758,21 @@ namespace ZXEngine
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-			// °ÑÉî¶ÈCubeMap°ó¶¨µ½FBO
+			// æŠŠæ·±åº¦CubeMapç»‘å®šåˆ°FBO
 			glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
 			glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubeMap, 0);
 
-			// Ã÷È·¸æËßOpenGLÕâ¸öFBO²»»áäÖÈ¾µ½Color Buffer
+			// æ˜ç¡®å‘Šè¯‰OpenGLè¿™ä¸ªFBOä¸ä¼šæ¸²æŸ“åˆ°Color Buffer
 			glDrawBuffer(GL_NONE);
 			glReadBuffer(GL_NONE);
 
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 				Debug::LogError("Framebuffer ShadowCubeMap not complete!");
 
-			// »Ö¸´Ä¬ÈÏ×´Ì¬
+			// æ¢å¤é»˜è®¤çŠ¶æ€
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-			// ¶ÔFBO¶ÔÏó¸³Öµ
+			// å¯¹FBOå¯¹è±¡èµ‹å€¼
 			FBO->ID = FBO_ID;
 			FBO->ColorBuffer = UINT32_MAX;
 			FBO->DepthBuffer = depthCubeMap;
@@ -782,7 +782,7 @@ namespace ZXEngine
 			unsigned int FBO_ID;
 			glGenFramebuffers(1, &FBO_ID);
 
-			// ´´½¨Position Buffer
+			// åˆ›å»ºPosition Buffer
 			unsigned int posBuffer;
 			glGenTextures(1, &posBuffer);
 			glBindTexture(GL_TEXTURE_2D, posBuffer);
@@ -790,7 +790,7 @@ namespace ZXEngine
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-			// ´´½¨Normal Buffer
+			// åˆ›å»ºNormal Buffer
 			unsigned int normalBuffer;
 			glGenTextures(1, &normalBuffer);
 			glBindTexture(GL_TEXTURE_2D, normalBuffer);
@@ -798,7 +798,7 @@ namespace ZXEngine
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-			// ´´½¨Color Buffer
+			// åˆ›å»ºColor Buffer
 			unsigned int colorBuffer;
 			glGenTextures(1, &colorBuffer);
 			glBindTexture(GL_TEXTURE_2D, colorBuffer);
@@ -806,30 +806,30 @@ namespace ZXEngine
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-			// ´´½¨Depth Buffer
+			// åˆ›å»ºDepth Buffer
 			unsigned int depthBuffer;
 			glGenRenderbuffers(1, &depthBuffer);
 			glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 
-			// °ó¶¨µ½FBOÉÏ
+			// ç»‘å®šåˆ°FBOä¸Š
 			glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, posBuffer, 0);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalBuffer, 0);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, colorBuffer, 0);
 			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
 
-			// 3¸öRender Target
+			// 3ä¸ªRender Target
 			unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 			glDrawBuffers(3, attachments);
 
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 				Debug::LogError("Framebuffer GBuffer not complete!");
 
-			// »Ö¸´Ä¬ÈÏ×´Ì¬
+			// æ¢å¤é»˜è®¤çŠ¶æ€
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-			// ¶ÔFBO¶ÔÏó¸³Öµ
+			// å¯¹FBOå¯¹è±¡èµ‹å€¼
 			FBO->ID = FBO_ID;
 			FBO->ColorBuffer = colorBuffer;
 			FBO->DepthBuffer = depthBuffer;
@@ -838,7 +838,7 @@ namespace ZXEngine
 		}
 		else if (type == FrameBufferType::RayTracing)
 		{
-			// OpenGL²»Ö§³Ö¹âÏß×·×Ù
+			// OpenGLä¸æ”¯æŒå…‰çº¿è¿½è¸ª
 		}
 		else
 		{
@@ -957,7 +957,7 @@ namespace ZXEngine
 
 	uint32_t RenderAPIOpenGL::AllocateDrawCommand(CommandType commandType, FrameBufferClearFlags clearFlags)
 	{
-		// OpenGL²»ĞèÒªÕâ¸ö½Ó¿Ú
+		// OpenGLä¸éœ€è¦è¿™ä¸ªæ¥å£
 		return 0;
 	}
 
@@ -975,7 +975,7 @@ namespace ZXEngine
 		else
 			glDrawArrays(GL_TRIANGLES, 0, meshBuffer->size);
 
-		// »æÖÆÍêÖØÖÃÒ»ÏÂ(²»ÖØÖÃÒ²ĞĞ£¬²»¹ı¼°Ê±ÖØÖÃ±ÜÃâ³öÎÊÌâ)
+		// ç»˜åˆ¶å®Œé‡ç½®ä¸€ä¸‹(ä¸é‡ç½®ä¹Ÿè¡Œï¼Œä¸è¿‡åŠæ—¶é‡ç½®é¿å…å‡ºé—®é¢˜)
 		glBindVertexArray(0);
 
 		CheckError();
@@ -1000,7 +1000,7 @@ namespace ZXEngine
 		else
 			glDrawArraysInstanced(GL_TRIANGLES, 0, meshBuffer->size, instanceNum);
 
-		// »æÖÆÍêÖØÖÃÒ»ÏÂ(²»ÖØÖÃÒ²ĞĞ£¬²»¹ı¼°Ê±ÖØÖÃ±ÜÃâ³öÎÊÌâ)
+		// ç»˜åˆ¶å®Œé‡ç½®ä¸€ä¸‹(ä¸é‡ç½®ä¹Ÿè¡Œï¼Œä¸è¿‡åŠæ—¶é‡ç½®é¿å…å‡ºé—®é¢˜)
 		glBindVertexArray(0);
 
 		CheckError();
@@ -1011,7 +1011,7 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::GenerateDrawCommand(uint32_t id)
 	{
-		// OpenGL²»ĞèÒªÕâ¸ö½Ó¿Ú
+		// OpenGLä¸éœ€è¦è¿™ä¸ªæ¥å£
 	}
 
 	void RenderAPIOpenGL::DeleteMesh(unsigned int VAO)
@@ -1070,7 +1070,7 @@ namespace ZXEngine
 		glEnableVertexAttribArray(5);
 		glVertexAttribIPointer(5, 4, GL_UNSIGNED_INT, sizeof(Vertex), (void*)offsetof(Vertex, BoneIDs));
 
-		// ÉèÖÃÍê¼ÇµÃ»¹Ô­Ò»ÏÂ
+		// è®¾ç½®å®Œè®°å¾—è¿˜åŸä¸€ä¸‹
 		glBindVertexArray(0);
 
 		meshBuffer->inUse = true;
@@ -1091,7 +1091,7 @@ namespace ZXEngine
 
 		glBindVertexArray(meshBuffer->VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, meshBuffer->VBO);
-		// ÉèÖÃÎªGL_DYNAMIC_DRAW£¬ÕâÀïÔİÊ±²»³õÊ¼»¯Êı¾İ£¬ºóÃæÍ¨¹ıUpdateDynamicMesh¸üĞÂÊı¾İ
+		// è®¾ç½®ä¸ºGL_DYNAMIC_DRAWï¼Œè¿™é‡Œæš‚æ—¶ä¸åˆå§‹åŒ–æ•°æ®ï¼Œåé¢é€šè¿‡UpdateDynamicMeshæ›´æ–°æ•°æ®
 		glBufferData(GL_ARRAY_BUFFER, vertexSize * sizeof(Vertex), NULL, GL_DYNAMIC_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshBuffer->EBO);
@@ -1121,18 +1121,18 @@ namespace ZXEngine
 	{
 		auto meshBuffer = GetVAOByIndex(VAO);
 
-		// ÇĞ»»µ½Ö¸¶¨VAO
+		// åˆ‡æ¢åˆ°æŒ‡å®šVAO
 		glBindVertexArray(meshBuffer->VAO);
 
-		// ¸üĞÂVBOÊı¾İ
+		// æ›´æ–°VBOæ•°æ®
 		glBindBuffer(GL_ARRAY_BUFFER, meshBuffer->VBO);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), &vertices[0]);
 
-		// ¸üĞÂEBOÊı¾İ
+		// æ›´æ–°EBOæ•°æ®
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshBuffer->EBO);
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indices.size() * sizeof(unsigned int), &indices[0]);
 
-		// »¹Ô­
+		// è¿˜åŸ
 		glBindVertexArray(0);
 
 		CheckError();
@@ -1518,7 +1518,7 @@ namespace ZXEngine
 			RealSetShaderMatrix(iter.first, iter.second.first, iter.second.second);
 		}
 
-		// OpenGLÀïglActiveTextureºÍglBindTextureÊÇÈ«¾Ö²Ù×÷£¬»áÓ°ÏìËùÓĞShader£¬ËùÒÔÕâÀïĞèÒªÃ¿´Î¶¼×öÒ»ÏÂ
+		// OpenGLé‡ŒglActiveTextureå’ŒglBindTextureæ˜¯å…¨å±€æ“ä½œï¼Œä¼šå½±å“æ‰€æœ‰Shaderï¼Œæ‰€ä»¥è¿™é‡Œéœ€è¦æ¯æ¬¡éƒ½åšä¸€ä¸‹
 		for (auto& iter : materialData->textures)
 			RealSetShaderTexture(iter.first, iter.second[0], iter.second[1]);
 		for (auto& iter : materialData->cubeMaps)

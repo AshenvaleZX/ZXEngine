@@ -18,35 +18,35 @@ namespace ZXEngine
 		{
 			if (mParent != nullptr)
 			{
-				// ÏÈÕÒµ½ÐÖµÜ½Úµã
+				// å…ˆæ‰¾åˆ°å…„å¼ŸèŠ‚ç‚¹
 				BVHNode* sibling = (mParent->mChildren[0] == this) ? mParent->mChildren[1] : mParent->mChildren[0];
 
-				// °ÑÐÖµÜ½ÚµãµÄÊý¾Ý¸´ÖÆµ½¸¸½Úµã
+				// æŠŠå…„å¼ŸèŠ‚ç‚¹çš„æ•°æ®å¤åˆ¶åˆ°çˆ¶èŠ‚ç‚¹
 				mParent->mRigidBody = sibling->mRigidBody;
 				mParent->mChildren[0] = sibling->mChildren[0];
 				mParent->mChildren[1] = sibling->mChildren[1];
 				mParent->mBoundingVolume = sibling->mBoundingVolume;
 
-				// Èç¹û¸¸½ÚµãÓÐ¸ÕÌå£¬Í¬²½¸üÐÂ¸ÕÌåµÄBVHNodeÖ¸Õë
+				// å¦‚æžœçˆ¶èŠ‚ç‚¹æœ‰åˆšä½“ï¼ŒåŒæ­¥æ›´æ–°åˆšä½“çš„BVHNodeæŒ‡é’ˆ
 				if (mParent->mRigidBody)
 					mParent->mRigidBody->mBVHNode = mParent;
 
-				// È»ºó°ÑÐÖµÜ½ÚµãÉ¾³ý
+				// ç„¶åŽæŠŠå…„å¼ŸèŠ‚ç‚¹åˆ é™¤
 				sibling->mParent = nullptr;
 				sibling->mRigidBody = nullptr;
 				sibling->mChildren[0] = nullptr;
 				sibling->mChildren[1] = nullptr;
 				delete sibling;
 
-				// ×îºóÖØÐÂ¼ÆËã¸¸½ÚµãµÄBV
+				// æœ€åŽé‡æ–°è®¡ç®—çˆ¶èŠ‚ç‚¹çš„BV
 				mParent->UpdateBoundingVolume();
 			}
 
-			// Èç¹ûÓÐ¸ÕÌå£¬²¢ÇÒÒýÓÃÁËµ±Ç°½Úµã£¬¾ÍÏû³ýÒýÓÃ±ÜÃâÒ°Ö¸Õë
+			// å¦‚æžœæœ‰åˆšä½“ï¼Œå¹¶ä¸”å¼•ç”¨äº†å½“å‰èŠ‚ç‚¹ï¼Œå°±æ¶ˆé™¤å¼•ç”¨é¿å…é‡ŽæŒ‡é’ˆ
 			if (mRigidBody && mRigidBody->mBVHNode == this)
 				mRigidBody->mBVHNode = nullptr;
 
-			// µÝ¹éÉ¾³ý×Ó½Úµã£¬É¾Ö®Ç°ÏÈ°Ñ¸¸½ÚµãÒýÓÃÇå¿Õ£¬ÕâÑù×Ó½ÚµãÉ¾³ýÊ±ÎÞÐèÔÙ´¦ÀíÐÖµÜ½Úµã
+			// é€’å½’åˆ é™¤å­èŠ‚ç‚¹ï¼Œåˆ ä¹‹å‰å…ˆæŠŠçˆ¶èŠ‚ç‚¹å¼•ç”¨æ¸…ç©ºï¼Œè¿™æ ·å­èŠ‚ç‚¹åˆ é™¤æ—¶æ— éœ€å†å¤„ç†å…„å¼ŸèŠ‚ç‚¹
 			if (mChildren[0] != nullptr)
 			{
 				mChildren[0]->mParent = nullptr;
@@ -66,34 +66,34 @@ namespace ZXEngine
 
 		void BVHNode::UpdateBoundingVolume(bool recurse)
 		{
-			// Ò¶×Ó½ÚµãÖ»°üº¬Ò»¸ö¸ÕÌå£¬Ä¿Ç°µÄÎïÀíÏµÍ³Ä¬ÈÏ¸ÕÌå²»»á±ä£¬ËùÒÔÎÞÐèÖØÐÂ¼ÆËãBV´óÐ¡
+			// å¶å­èŠ‚ç‚¹åªåŒ…å«ä¸€ä¸ªåˆšä½“ï¼Œç›®å‰çš„ç‰©ç†ç³»ç»Ÿé»˜è®¤åˆšä½“ä¸ä¼šå˜ï¼Œæ‰€ä»¥æ— éœ€é‡æ–°è®¡ç®—BVå¤§å°
 			if (!IsLeaf())
 				mBoundingVolume = BoundingSphere(mChildren[0]->mBoundingVolume, mChildren[1]->mBoundingVolume);
 
-			// Èç¹ûÐèÒªµÝ¹é£¬¾ÍµÝ¹é¸üÐÂ¸¸½ÚµãµÄBV
+			// å¦‚æžœéœ€è¦é€’å½’ï¼Œå°±é€’å½’æ›´æ–°çˆ¶èŠ‚ç‚¹çš„BV
 			if (mParent != nullptr && recurse)
 				mParent->UpdateBoundingVolume(true);
 		}
 
 		void BVHNode::Insert(const BoundingSphere& volume, RigidBody* body)
 		{
-			// Èç¹ûÊÇÒ¶×Ó½Úµã£¬¾ÍÉý¼¶Îª¸¸½Úµã
+			// å¦‚æžœæ˜¯å¶å­èŠ‚ç‚¹ï¼Œå°±å‡çº§ä¸ºçˆ¶èŠ‚ç‚¹
 			if (IsLeaf())
 			{
-				// ÓÃµ±Ç°½ÚµãÊý¾ÝÉú³ÉÒ»¸ö×Ó½Úµã
+				// ç”¨å½“å‰èŠ‚ç‚¹æ•°æ®ç”Ÿæˆä¸€ä¸ªå­èŠ‚ç‚¹
 				mChildren[0] = new BVHNode(this, mBoundingVolume, mRigidBody);
-				// ÓÃÐÂÊý¾ÝÉú³ÉÁíÒ»¸ö×Ó½Úµã
+				// ç”¨æ–°æ•°æ®ç”Ÿæˆå¦ä¸€ä¸ªå­èŠ‚ç‚¹
 				mChildren[1] = new BVHNode(this, volume, body);
 
-				// É¾µôµ±Ç°½ÚµãµÄ¸ÕÌå
+				// åˆ æŽ‰å½“å‰èŠ‚ç‚¹çš„åˆšä½“
 				mRigidBody = nullptr;
-				// ÖØÐÂÉú³Éµ±Ç°½ÚµãºÍËùÓÐ¸¸½ÚµãµÄBV
+				// é‡æ–°ç”Ÿæˆå½“å‰èŠ‚ç‚¹å’Œæ‰€æœ‰çˆ¶èŠ‚ç‚¹çš„BV
 				UpdateBoundingVolume();
 			}
-			// Èç¹û²»ÊÇÒ¶×Ó½Úµã£¬¾ÍÏòÏÂ²éÕÒÒ¶×Ó½ÚµãÈ»ºó²åÈë
+			// å¦‚æžœä¸æ˜¯å¶å­èŠ‚ç‚¹ï¼Œå°±å‘ä¸‹æŸ¥æ‰¾å¶å­èŠ‚ç‚¹ç„¶åŽæ’å…¥
 			else
 			{
-				// ±È½Ï²åÈëµ½Á½¸ö×Ó½ÚµãºóµÄBVÔö³¤Á¿£¬²åÈëÔö³¤Á¿¸üÐ¡µÄÄÇ¸ö
+				// æ¯”è¾ƒæ’å…¥åˆ°ä¸¤ä¸ªå­èŠ‚ç‚¹åŽçš„BVå¢žé•¿é‡ï¼Œæ’å…¥å¢žé•¿é‡æ›´å°çš„é‚£ä¸ª
 				if (mChildren[0]->mBoundingVolume.GetGrowth(volume) < mChildren[1]->mBoundingVolume.GetGrowth(volume))
 					mChildren[0]->Insert(volume, body);
 				else
@@ -119,12 +119,12 @@ namespace ZXEngine
 
 		uint32_t BVHNode::GetPotentialContactsWith(const BVHNode* other, PotentialContact* contacts, uint32_t limit) const
 		{
-			// Èç¹ûÃ»ÓÐÖØµþ»òÕß³¬¹ý¼ì²âÏÞÖÆ£¬·µ»Ø0
+			// å¦‚æžœæ²¡æœ‰é‡å æˆ–è€…è¶…è¿‡æ£€æµ‹é™åˆ¶ï¼Œè¿”å›ž0
 			if (!IsOverlapWith(other) || limit == 0)
 				return 0;
 
-			// ´úÂë×ßµ½ÕâÀï¾Í±íÊ¾Á½¸ö½ÚµãµÄBVÊÇÏà½»µÄ
-			// Èç¹ûÁ½¸ö½Úµã¶¼ÊÇ×Ó½Úµã£¬ÄÇÃ´¾ÍÓÐ¿ÉÄÜ²úÉúÒ»¸öÊµ¼ÊÅö×²
+			// ä»£ç èµ°åˆ°è¿™é‡Œå°±è¡¨ç¤ºä¸¤ä¸ªèŠ‚ç‚¹çš„BVæ˜¯ç›¸äº¤çš„
+			// å¦‚æžœä¸¤ä¸ªèŠ‚ç‚¹éƒ½æ˜¯å­èŠ‚ç‚¹ï¼Œé‚£ä¹ˆå°±æœ‰å¯èƒ½äº§ç”Ÿä¸€ä¸ªå®žé™…ç¢°æ’ž
 			if (IsLeaf() && other->IsLeaf())
 			{
 				contacts->mRigidBodies[0] = mRigidBody;
@@ -132,27 +132,27 @@ namespace ZXEngine
 				return 1;
 			}
 
-			// Èç¹ûÁíÍâÒ»¸öBVÊÇÒ¶×Ó½Úµã(ËµÃ÷µ±Ç°Õâ¸ö½Úµã²»ÊÇÒ¶×Ó½Úµã)
-			// »òÕßËµÈç¹ûÁ½¸ö¶¼²»ÊÇÒ¶×Ó½Úµã£¬µ«ÊÇµ±Ç°Õâ¸öBVÌå»ý¸ü´ó
-			// ¾ÍÄÃµ±Ç°Õâ¸ö½ÚµãµÄÁ½¸ö×Ó½ÚµãÔÙÈ¥ºÍÁíÒ»¸ö½Úµã¼ì²âÊÇ·ñ´æÔÚ¿ÉÄÜ·¢ÉúµÄÅö×²
+			// å¦‚æžœå¦å¤–ä¸€ä¸ªBVæ˜¯å¶å­èŠ‚ç‚¹(è¯´æ˜Žå½“å‰è¿™ä¸ªèŠ‚ç‚¹ä¸æ˜¯å¶å­èŠ‚ç‚¹)
+			// æˆ–è€…è¯´å¦‚æžœä¸¤ä¸ªéƒ½ä¸æ˜¯å¶å­èŠ‚ç‚¹ï¼Œä½†æ˜¯å½“å‰è¿™ä¸ªBVä½“ç§¯æ›´å¤§
+			// å°±æ‹¿å½“å‰è¿™ä¸ªèŠ‚ç‚¹çš„ä¸¤ä¸ªå­èŠ‚ç‚¹å†åŽ»å’Œå¦ä¸€ä¸ªèŠ‚ç‚¹æ£€æµ‹æ˜¯å¦å­˜åœ¨å¯èƒ½å‘ç”Ÿçš„ç¢°æ’ž
 			if (other->IsLeaf() || (!IsLeaf() && mBoundingVolume.GetVolume() >= other->mBoundingVolume.GetVolume()))
 			{
-				// µÝ¹é¼ì²â×Ó½Úµã
+				// é€’å½’æ£€æµ‹å­èŠ‚ç‚¹
 				uint32_t count = mChildren[0]->GetPotentialContactsWith(other, contacts, limit);
-				// Èç¹ûÒÑ¾­¼ì²âµ½×ã¹»¶àµÄÅö×²£¬¾Í²»ÔÙ¼ì²âÁíÒ»¸ö×Ó½ÚµãÁË
+				// å¦‚æžœå·²ç»æ£€æµ‹åˆ°è¶³å¤Ÿå¤šçš„ç¢°æ’žï¼Œå°±ä¸å†æ£€æµ‹å¦ä¸€ä¸ªå­èŠ‚ç‚¹äº†
 				if (limit > count)
 					return count + mChildren[1]->GetPotentialContactsWith(other, contacts + count, limit - count);
 				else
 					return count;
 			}
-			// Èç¹ûµ±Ç°Õâ¸öBVÊÇÒ¶×Ó½Úµã(ËµÃ÷ÁíÒ»¸ö½Úµã²»ÊÇÒ¶×Ó½Úµã)
-			// »òÕßËµÈç¹ûÁ½¸ö¶¼²»ÊÇÒ¶×Ó½Úµã£¬µ«ÊÇÁíÒ»¸öBVÌå»ý¸ü´ó
-			// ¾ÍÄÃÁíÒ»¸ö½ÚµãµÄÁ½¸ö×Ó½ÚµãÔÙÈ¥ºÍµ±Ç°Õâ¸ö½Úµã¼ì²âÊÇ·ñ´æÔÚ¿ÉÄÜ·¢ÉúµÄÅö×²
+			// å¦‚æžœå½“å‰è¿™ä¸ªBVæ˜¯å¶å­èŠ‚ç‚¹(è¯´æ˜Žå¦ä¸€ä¸ªèŠ‚ç‚¹ä¸æ˜¯å¶å­èŠ‚ç‚¹)
+			// æˆ–è€…è¯´å¦‚æžœä¸¤ä¸ªéƒ½ä¸æ˜¯å¶å­èŠ‚ç‚¹ï¼Œä½†æ˜¯å¦ä¸€ä¸ªBVä½“ç§¯æ›´å¤§
+			// å°±æ‹¿å¦ä¸€ä¸ªèŠ‚ç‚¹çš„ä¸¤ä¸ªå­èŠ‚ç‚¹å†åŽ»å’Œå½“å‰è¿™ä¸ªèŠ‚ç‚¹æ£€æµ‹æ˜¯å¦å­˜åœ¨å¯èƒ½å‘ç”Ÿçš„ç¢°æ’ž
 			else
 			{
-				// µÝ¹é¼ì²â×Ó½Úµã
+				// é€’å½’æ£€æµ‹å­èŠ‚ç‚¹
 				uint32_t count = GetPotentialContactsWith(other->mChildren[0], contacts, limit);
-				// Èç¹ûÒÑ¾­¼ì²âµ½×ã¹»¶àµÄÅö×²£¬¾Í²»ÔÙ¼ì²âÁíÒ»¸ö×Ó½ÚµãÁË
+				// å¦‚æžœå·²ç»æ£€æµ‹åˆ°è¶³å¤Ÿå¤šçš„ç¢°æ’žï¼Œå°±ä¸å†æ£€æµ‹å¦ä¸€ä¸ªå­èŠ‚ç‚¹äº†
 				if (limit > count)
 					return count + GetPotentialContactsWith(other->mChildren[1], contacts + count, limit - count);
 				else

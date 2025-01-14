@@ -33,52 +33,52 @@ namespace ZXEngine
 			if (!mIsAwake)
 				return;
 
-			// ¼ÆËãµ±Ç°×÷ÓÃÁ¦Éú³ÉÆ÷µÄºÏÁ¦
+			// è®¡ç®—å½“å‰ä½œç”¨åŠ›ç”Ÿæˆå™¨çš„åˆåŠ›
 			IntegrateForceGenerators(duration);
 
-			// Í¨¹ıºÏÁ¦¼ÆËã¼ÓËÙ¶È
+			// é€šè¿‡åˆåŠ›è®¡ç®—åŠ é€Ÿåº¦
 			mLastAcceleration = mAcceleration;
 			mLastAcceleration += mForceAccum * mInverseMass;
 
-			// Í¨¹ıºÏÁ¦¾Ø¼ÆËã½Ç¼ÓËÙ¶È
+			// é€šè¿‡åˆåŠ›çŸ©è®¡ç®—è§’åŠ é€Ÿåº¦
 			Vector3 angularAcceleration = mWorldInverseInertiaTensor * mTorqueAccum;
 
-			// ¸ù¾İ¼ÓËÙ¶È¸üĞÂËÙ¶È
+			// æ ¹æ®åŠ é€Ÿåº¦æ›´æ–°é€Ÿåº¦
 			mVelocity += mLastAcceleration * duration;
 
-			// ¸ù¾İ½Ç¼ÓËÙ¶È¸üĞÂ½ÇËÙ¶È
+			// æ ¹æ®è§’åŠ é€Ÿåº¦æ›´æ–°è§’é€Ÿåº¦
 			mAngularVelocity += angularAcceleration * duration;
 
-			// Ê©¼Ó×èÄáĞ§¹û
+			// æ–½åŠ é˜»å°¼æ•ˆæœ
 			mVelocity *= pow(mLinearDamping, duration);
 			mAngularVelocity *= pow(mAngularDamping, duration);
 
-			// ¸ù¾İËÙ¶ÈÒÆ¶¯Î»ÖÃ
+			// æ ¹æ®é€Ÿåº¦ç§»åŠ¨ä½ç½®
 			mPosition += mVelocity * duration;
 
-			// ¸ù¾İ½ÇËÙ¶È¸üĞÂĞı×ª×´Ì¬
+			// æ ¹æ®è§’é€Ÿåº¦æ›´æ–°æ—‹è½¬çŠ¶æ€
 			mRotation.Rotate(mAngularVelocity, duration);
 
-			// ¸üĞÂÆäËüÊı¾İ
+			// æ›´æ–°å…¶å®ƒæ•°æ®
 			CalculateDerivedData();
 
-			// Çå³ıÀÛ»ıµÄ×÷ÓÃÁ¦ºÍÁ¦¾Ø
+			// æ¸…é™¤ç´¯ç§¯çš„ä½œç”¨åŠ›å’ŒåŠ›çŸ©
 			ClearAccumulators();
 
 			if (mCanSleep)
 			{
-				// ¼ÆËãµ±Ç°µÄÔË¶¯Öµ
+				// è®¡ç®—å½“å‰çš„è¿åŠ¨å€¼
 				float currentMotion = Math::Dot(mVelocity, mVelocity) + Math::Dot(mAngularVelocity, mAngularVelocity);
 
-				// ÓëÖ®Ç°µÄÖ¡µÄÔË¶¯ÖµÊı¾İ×öÀÛ¼ÆÆ½¾ù
+				// ä¸ä¹‹å‰çš„å¸§çš„è¿åŠ¨å€¼æ•°æ®åšç´¯è®¡å¹³å‡
 				float bias = powf(0.5f, duration);
 				mMotion = bias * mMotion + (1 - bias) * currentMotion;
 
-				// Èç¹ûÀÛ¼ÆÆ½¾ùÔË¶¯ÖµÌ«Ğ¡ÁË¾Íµ±×÷¾²Ì¬¶ÔÏó£¬½øÈëĞİÃß×´Ì¬£¬½ÚÔ¼²»±ØÒªµÄÎïÀí¼ÆËã
+				// å¦‚æœç´¯è®¡å¹³å‡è¿åŠ¨å€¼å¤ªå°äº†å°±å½“ä½œé™æ€å¯¹è±¡ï¼Œè¿›å…¥ä¼‘çœ çŠ¶æ€ï¼ŒèŠ‚çº¦ä¸å¿…è¦çš„ç‰©ç†è®¡ç®—
 				if (mMotion < SleepMotionEpsilon)
 					SetAwake(false);
-				// ¶ÔÀÛ¼ÆÔË¶¯Öµ×öÒ»¸ö×î´óÖµÏŞÖÆ£¬Èç¹ûÒ»¸ö¸ßËÙÒÆ¶¯ÎïÌåÍ»È»Í£ÏÂÀ´£¬»áµ¼ÖÂmMotionºÜ´ó£¬È»ºóĞèÒªºÜ¶àÖ¡²ÅÄÜ°ÑÊı¾İÆ½¾ùÖµÀ­ÏÂÀ´
-				// µ¼ÖÂÒ»¸öÊµ¼ÊÒÑ¾­¾²Ö¹µÄÎïÌåÒªµÈºÜ¾Ã²ÅÄÜ½øÈëĞİÃß×´Ì¬£¬ËùÒÔÕâÀïÈç¹ûÖµÌ«´óÁË½øĞĞÏŞÖÆ
+				// å¯¹ç´¯è®¡è¿åŠ¨å€¼åšä¸€ä¸ªæœ€å¤§å€¼é™åˆ¶ï¼Œå¦‚æœä¸€ä¸ªé«˜é€Ÿç§»åŠ¨ç‰©ä½“çªç„¶åœä¸‹æ¥ï¼Œä¼šå¯¼è‡´mMotionå¾ˆå¤§ï¼Œç„¶åéœ€è¦å¾ˆå¤šå¸§æ‰èƒ½æŠŠæ•°æ®å¹³å‡å€¼æ‹‰ä¸‹æ¥
+				// å¯¼è‡´ä¸€ä¸ªå®é™…å·²ç»é™æ­¢çš„ç‰©ä½“è¦ç­‰å¾ˆä¹…æ‰èƒ½è¿›å…¥ä¼‘çœ çŠ¶æ€ï¼Œæ‰€ä»¥è¿™é‡Œå¦‚æœå€¼å¤ªå¤§äº†è¿›è¡Œé™åˆ¶
 				else if (mMotion > 10 * SleepMotionEpsilon)
 					mMotion = 10 * SleepMotionEpsilon;
 			}
@@ -95,16 +95,16 @@ namespace ZXEngine
 			mTransform = mRotation.ToMatrix4();
 			mTransform = Math::Translate(mTransform, mPosition);
 
-			// Èç¹ûÓĞÅö×²Ìå£¬Í¬²½Åö×²ÌåµÄTransform
+			// å¦‚æœæœ‰ç¢°æ’ä½“ï¼ŒåŒæ­¥ç¢°æ’ä½“çš„Transform
 			if (mCollisionVolume)
 				mCollisionVolume->mTransform = mTransform;
 		}
 
 		void RigidBody::UpdateWorldInertiaTensor()
 		{
-			// ¸ù¾İµ±Ç°µÄtransformĞÅÏ¢£¬ÖØĞÂ¼ÆËãÊÀ½ç×ø±êÏµÏÂµÄ¹ßĞÔÕÅÁ¿
+			// æ ¹æ®å½“å‰çš„transformä¿¡æ¯ï¼Œé‡æ–°è®¡ç®—ä¸–ç•Œåæ ‡ç³»ä¸‹çš„æƒ¯æ€§å¼ é‡
 			Matrix3 rot(mTransform);
-			// ¹ßĞÔÕÅÁ¿µÄ±ä»»¹«Ê½Îª: I' = R * I * R^T£¬Ö»ĞèÒª¿¼ÂÇĞı×ª±ä»»¼´¿É
+			// æƒ¯æ€§å¼ é‡çš„å˜æ¢å…¬å¼ä¸º: I' = R * I * R^Tï¼Œåªéœ€è¦è€ƒè™‘æ—‹è½¬å˜æ¢å³å¯
 			mWorldInverseInertiaTensor = rot * mLocalInverseInertiaTensor * Math::Transpose(rot);
 		}
 
@@ -116,7 +116,7 @@ namespace ZXEngine
 
 		void RigidBody::AddForceAtPoint(const Vector3& force, const Vector3& point)
 		{
-			// Ïà¶ÔÓÚÖÊĞÄµÄÎ»ÖÃ
+			// ç›¸å¯¹äºè´¨å¿ƒçš„ä½ç½®
 			auto pos = point - mPosition;
 
 			mForceAccum += force;
@@ -153,14 +153,14 @@ namespace ZXEngine
 			{
 				mIsAwake = true;
 
-				// »½ĞÑºóÌí¼ÓÒ»µãÔË¶¯Á¿£¬·ÀÖ¹ÓÖÁ¢¿Ì½øÈëË¯Ãß×´Ì¬
+				// å”¤é†’åæ·»åŠ ä¸€ç‚¹è¿åŠ¨é‡ï¼Œé˜²æ­¢åˆç«‹åˆ»è¿›å…¥ç¡çœ çŠ¶æ€
 				mMotion = SleepMotionEpsilon * 2.0f;
 			}
 			else
 			{
 				mIsAwake = false;
 
-				// ĞİÃß×´Ì¬µÄ¸ÕÌå²»Ó¦¸ÃÓĞÈÎºÎËÙ¶È
+				// ä¼‘çœ çŠ¶æ€çš„åˆšä½“ä¸åº”è¯¥æœ‰ä»»ä½•é€Ÿåº¦
 				mVelocity.Clear();
 				mAngularVelocity.Clear();
 			}
@@ -206,7 +206,7 @@ namespace ZXEngine
 		{
 			if (mass <= 0.0f)
 			{
-				// ÖÊÁ¿±ØĞë´óÓÚ0£¬·ñÔòÊä³öÒì³£²¢½«ÖÊÁ¿ÉèÖÃÎªÎŞÇî´ó
+				// è´¨é‡å¿…é¡»å¤§äº0ï¼Œå¦åˆ™è¾“å‡ºå¼‚å¸¸å¹¶å°†è´¨é‡è®¾ç½®ä¸ºæ— ç©·å¤§
 				Debug::LogError("Mass must be greater than zero.");
 				mInverseMass = 0.0f;
 			}

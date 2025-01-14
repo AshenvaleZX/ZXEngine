@@ -20,7 +20,7 @@ namespace ZXEngine
 		void CloseWindow(const string& args);
 		int WindowShouldClose();
 
-		// »æÖÆ
+		// ç»˜åˆ¶
 		void BeginRender();
 		void Render(Camera* camera);
 		void EndRender();

@@ -31,7 +31,7 @@ namespace ZXEngine
 
 		if (CheckCurMousePos() == EditorAreaType::AssetPreview)
 		{
-			// PreviewÇøÓò°´ÏÂÊó±ê×ó¼ü½øÈë±à¼­Æ÷µÄÍÏ×§×´Ì¬
+			// PreviewåŒºåŸŸæŒ‰ä¸‹é¼ æ ‡å·¦é”®è¿›å…¥ç¼–è¾‘å™¨çš„æ‹–æ‹½çŠ¶æ€
 			if (ImGui::IsMouseDown(0))
 				isDragging = true;
 		}
@@ -39,10 +39,10 @@ namespace ZXEngine
 		if (isDragging)
 		{
 			ImGuiIO& io = ImGui::GetIO();
-			// ÍÏ×§×´Ì¬ÏÂÐý×ªÔ¤ÀÀÄ£ÐÍ
+			// æ‹–æ‹½çŠ¶æ€ä¸‹æ—‹è½¬é¢„è§ˆæ¨¡åž‹
 			EditorGUIManager::GetInstance()->assetPreviewer->UpdateModelRotation(io.MouseDelta.x, io.MouseDelta.y);
 
-			// ÍÏ×§×´Ì¬ÏÂËÉ¿ªÊó±ê×ó¼üÍË³öÍÏ×§×´Ì¬
+			// æ‹–æ‹½çŠ¶æ€ä¸‹æ¾å¼€é¼ æ ‡å·¦é”®é€€å‡ºæ‹–æ‹½çŠ¶æ€
 			if (!ImGui::IsMouseDown(0))
 				isDragging = false;
 		}
@@ -77,19 +77,19 @@ namespace ZXEngine
 
 	bool EditorInputManager::IsProcessGameKeyInput()
 	{
-		// ÓÎÏ·ÄÚµÄ¼üÅÌÊäÈëÄ¬ÈÏ¶¼Òª´¦Àí
+		// æ¸¸æˆå†…çš„é”®ç›˜è¾“å…¥é»˜è®¤éƒ½è¦å¤„ç†
 		return true;
 	}
 
 	bool EditorInputManager::IsProcessGameMouseInput()
 	{
-		// Èç¹ûµ±Ç°Î´´¦ÓÚ±à¼­Æ÷ÍÏ×§×´Ì¬£¬²¢ÇÒÊó±ê±»ÓÎÏ·²¶»ñ»òÕßµ±Ç°Î»ÖÃÔÚÓÎÏ·»­ÃæÇøÓòÄÚ£¬ÔòÐèÒª´¦ÀíÓÎÏ·µÄÊó±êÊäÈë
+		// å¦‚æžœå½“å‰æœªå¤„äºŽç¼–è¾‘å™¨æ‹–æ‹½çŠ¶æ€ï¼Œå¹¶ä¸”é¼ æ ‡è¢«æ¸¸æˆæ•èŽ·æˆ–è€…å½“å‰ä½ç½®åœ¨æ¸¸æˆç”»é¢åŒºåŸŸå†…ï¼Œåˆ™éœ€è¦å¤„ç†æ¸¸æˆçš„é¼ æ ‡è¾“å…¥
 		return !isDragging && (!InputManager::GetInstance()->IsShowCursor() || CheckCurMousePos() == EditorAreaType::Game);
 	}
 
 	void EditorInputManager::UpdateMouseScroll(float xOffset, float yOffset)
 	{
-		// ±¾À´±à¼­Æ÷µÄÊäÈëÊÇÏëÍ³Ò»ÓÃImGuiIOµÄ£¬µ«ÊÇImGuiIOµÄMouseWheel±ØÐëÒªÔÚImGui::BeginºÍEndÖ®¼äµ÷ÓÃ²ÅÄÜÉúÐ§
+		// æœ¬æ¥ç¼–è¾‘å™¨çš„è¾“å…¥æ˜¯æƒ³ç»Ÿä¸€ç”¨ImGuiIOçš„ï¼Œä½†æ˜¯ImGuiIOçš„MouseWheelå¿…é¡»è¦åœ¨ImGui::Beginå’ŒEndä¹‹é—´è°ƒç”¨æ‰èƒ½ç”Ÿæ•ˆ
 		if (CheckCurMousePos() == EditorAreaType::AssetPreview)
 			EditorGUIManager::GetInstance()->assetPreviewer->UpdateModelScale(yOffset);
 	}

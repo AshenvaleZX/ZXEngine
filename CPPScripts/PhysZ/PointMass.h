@@ -11,13 +11,13 @@ namespace ZXEngine
 			PointMass() {};
 			~PointMass() {};
 
-			// Ä£Äâ»ı·ÖÔËËã¸üĞÂÖÊµã×´Ì¬
+			// æ¨¡æ‹Ÿç§¯åˆ†è¿ç®—æ›´æ–°è´¨ç‚¹çŠ¶æ€
 			void Integrate(float duration);
-			// Ìí¼ÓÒ»¸ö×÷ÓÃÁ¦
+			// æ·»åŠ ä¸€ä¸ªä½œç”¨åŠ›
 			void AddForce(const Vector3& force);
-			// Çå³ıµ±Ç°µÄºÏÁ¦
+			// æ¸…é™¤å½“å‰çš„åˆåŠ›
 			void ClearForce();
-			// ÅĞ¶ÏÖÊÁ¿ÊÇ·ñÎªÎŞÇî´ó
+			// åˆ¤æ–­è´¨é‡æ˜¯å¦ä¸ºæ— ç©·å¤§
 			bool IsInfiniteMass() const;
 
 			void SetMass(float mass);
@@ -44,18 +44,18 @@ namespace ZXEngine
 			Vector3 GetAcceleration() const;
 
 		protected:
-			// ÖÊÁ¿µÄµ¹Êı
-			// 0´ú±íÖÊÁ¿ÎŞÇî´ó£¬ÎŞÊÓÈÎºÎ×÷ÓÃÁ¦
+			// è´¨é‡çš„å€’æ•°
+			// 0ä»£è¡¨è´¨é‡æ— ç©·å¤§ï¼Œæ— è§†ä»»ä½•ä½œç”¨åŠ›
 			float mInverseMass = 1.0f;
-			// ×èÄáÏµÊı£¬1±íÊ¾ÎŞ×èÄá
+			// é˜»å°¼ç³»æ•°ï¼Œ1è¡¨ç¤ºæ— é˜»å°¼
 			float mDamping = 1.0f;
-			// Î»ÖÃ
+			// ä½ç½®
 			Vector3 mPosition;
-			// ËÙ¶È
+			// é€Ÿåº¦
 			Vector3 mVelocity;
-			// ¼ÓËÙ¶È
+			// åŠ é€Ÿåº¦
 			Vector3 mAcceleration;
-			// ºÏÁ¦
+			// åˆåŠ›
 			Vector3 mForceAccum;
 		};
 	}

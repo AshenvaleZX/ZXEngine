@@ -7,7 +7,7 @@ namespace ZXEngine
 {
 	vector<ShaderReference*> Shader::loadedShaders;
 
-	// µÚ¶þ¸ö²ÎÊýÊÇÒòÎªVulkan´´½¨PipelineµÄÊ±ºòÐèÒªÉèÖÃºÏÊÊµÄRenderPass£¬Èç¹ûÖ®ºóVulkan¸Ä³ÉÁËDynamic Rendering£¬Õâ¸ö²ÎÊý¾Í¿ÉÒÔÈ¥µôÁË
+	// ç¬¬äºŒä¸ªå‚æ•°æ˜¯å› ä¸ºVulkanåˆ›å»ºPipelineçš„æ—¶å€™éœ€è¦è®¾ç½®åˆé€‚çš„RenderPassï¼Œå¦‚æžœä¹‹åŽVulkanæ”¹æˆäº†Dynamic Renderingï¼Œè¿™ä¸ªå‚æ•°å°±å¯ä»¥åŽ»æŽ‰äº†
 	Shader::Shader(const string& path, FrameBufferType type)
 	{
 		name = Resources::GetAssetName(path);
@@ -16,14 +16,14 @@ namespace ZXEngine
 		{
 			if (path == shaderReference->path && type == shaderReference->targetFrameBufferType)
 			{
-				// Èç¹ûÒÑ¼ÓÔØ¹ý£¬Ö±½ÓÒýÓÃ
+				// å¦‚æžœå·²åŠ è½½è¿‡ï¼Œç›´æŽ¥å¼•ç”¨
 				reference = shaderReference;
-				// ÒýÓÃ¼ÆÊý+1
+				// å¼•ç”¨è®¡æ•°+1
 				reference->referenceCount++;
 				break;
 			}
 		}
-		// Èç¹ûÃ»ÓÐ¼ÓÔØ¹ý£¬Ö´ÐÐÕæÕýµÄ¼ÓÔØºÍ±àÒë
+		// å¦‚æžœæ²¡æœ‰åŠ è½½è¿‡ï¼Œæ‰§è¡ŒçœŸæ­£çš„åŠ è½½å’Œç¼–è¯‘
 		if (reference == nullptr)
 		{
 			reference = RenderAPI::GetInstance()->LoadAndSetUpShader(path, type);
@@ -56,7 +56,7 @@ namespace ZXEngine
 	Shader::~Shader()
 	{
 		reference->referenceCount--;
-		// ÒýÓÃ¼ÆÊý¹éÁãºóÖ´ÐÐÕæÕýµÄÉ¾³ý²Ù×÷
+		// å¼•ç”¨è®¡æ•°å½’é›¶åŽæ‰§è¡ŒçœŸæ­£çš„åˆ é™¤æ“ä½œ
 		if (reference->referenceCount == 0)
 		{
 			size_t pos = SIZE_MAX;
@@ -70,7 +70,7 @@ namespace ZXEngine
 			}
 			if (pos != SIZE_MAX)
 			{
-				// Ö´ÐÐÇåÀí²Ù×÷
+				// æ‰§è¡Œæ¸…ç†æ“ä½œ
 				loadedShaders.erase(loadedShaders.begin() + pos);
 				RenderAPI::GetInstance()->DeleteShader(reference->ID);
 				delete reference;

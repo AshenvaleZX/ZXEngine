@@ -114,7 +114,7 @@ namespace ZXEngine
 	string Resources::JsonStrToString(const json& data)
 	{
 		string p = to_string(data);
-		// Õâ¸öjson×Ö·û´®È¡³öÀ´Ç°ºó»áÓĞË«ÒıºÅ£¬ĞèÒªÈ¥µôÔÙÓÃ
+		// è¿™ä¸ªjsonå­—ç¬¦ä¸²å–å‡ºæ¥å‰åä¼šæœ‰åŒå¼•å·ï¼Œéœ€è¦å»æ‰å†ç”¨
 		p = p.substr(1, p.length() - 2);
 		return p;
 	}
@@ -165,16 +165,16 @@ namespace ZXEngine
 
 	bool Resources::LoadBinaryFile(vector<char>& data, const string& path)
 	{
-		// ate:ÔÚÎÄ¼şÄ©Î²¿ªÊ¼¶ÁÈ¡£¬´ÓÎÄ¼şÄ©Î²¿ªÊ¼¶ÁÈ¡µÄÓÅµãÊÇÎÒÃÇ¿ÉÒÔÊ¹ÓÃ¶ÁÈ¡Î»ÖÃÀ´È·¶¨ÎÄ¼şµÄ´óĞ¡²¢·ÖÅä»º³åÇø
+		// ate:åœ¨æ–‡ä»¶æœ«å°¾å¼€å§‹è¯»å–ï¼Œä»æ–‡ä»¶æœ«å°¾å¼€å§‹è¯»å–çš„ä¼˜ç‚¹æ˜¯æˆ‘ä»¬å¯ä»¥ä½¿ç”¨è¯»å–ä½ç½®æ¥ç¡®å®šæ–‡ä»¶çš„å¤§å°å¹¶åˆ†é…ç¼“å†²åŒº
 		ifstream file(path, std::ios::ate | std::ios::binary);
 		if (!file.is_open())
 			return false;
 
-		// Ê¹ÓÃ¶ÁÈ¡Î»ÖÃÀ´È·¶¨ÎÄ¼şµÄ´óĞ¡²¢·ÖÅä»º³åÇø
+		// ä½¿ç”¨è¯»å–ä½ç½®æ¥ç¡®å®šæ–‡ä»¶çš„å¤§å°å¹¶åˆ†é…ç¼“å†²åŒº
 		size_t fileSize = (size_t)file.tellg();
 		data.resize(fileSize);
 
-		// ·µ»ØÎÄ¼ş¿ªÍ·£¬ÕæÕı¶ÁÈ¡ÄÚÈİ
+		// è¿”å›æ–‡ä»¶å¼€å¤´ï¼ŒçœŸæ­£è¯»å–å†…å®¹
 		file.seekg(0);
 		file.read(data.data(), fileSize);
 		file.close();
@@ -218,7 +218,7 @@ namespace ZXEngine
 			return scene;
 #endif
 
-		// ÁÙÊ±ÇĞ»»Ò»ÏÂäÖÈ¾¹ÜÏßÀàĞÍ£¬¼ÓÔØÍêprefabºóÔÙÇĞ»ØÀ´
+		// ä¸´æ—¶åˆ‡æ¢ä¸€ä¸‹æ¸²æŸ“ç®¡çº¿ç±»å‹ï¼ŒåŠ è½½å®Œprefabåå†åˆ‡å›æ¥
 		auto curPipelineType = ProjectSetting::renderPipelineType;
 		ProjectSetting::renderPipelineType = scene->renderPipelineType;
 		for (size_t i = 0; i < data["GameObjects"].size(); i++)
@@ -282,11 +282,11 @@ namespace ZXEngine
 
 			if (component["Type"] == "MeshRenderer")
 			{
-				// ²ÄÖÊ
+				// æè´¨
 				string p = Resources::JsonStrToString(component["Material"]);
 				prefab->material = Resources::LoadMaterial(p, isBuiltIn);
 
-				// Ä£ĞÍ
+				// æ¨¡å‹
 				if (!component["Mesh"].is_null())
 				{
 					p = Resources::JsonStrToString(component["Mesh"]);
@@ -461,7 +461,7 @@ namespace ZXEngine
 			{
 				PrefabStruct* prefab = mPrefabLoadHandles[i].future.get();
 				mPrefabLoadHandles[i].callback(prefab);
-				// TODO: ¼ì²éÄÚ´æĞ¹Â©
+				// TODO: æ£€æŸ¥å†…å­˜æ³„æ¼
 				delete prefab;
 				mPrefabLoadHandles.erase(mPrefabLoadHandles.begin() + i);
 				i--;

@@ -89,9 +89,9 @@ namespace ZXEngine
 
 			struct ComponentData
 			{
-				// 实际存放Component的数据池
+				// 瀹為檯瀛樻斁Component鐨勬暟鎹睜
 				ComponentPool mPool;
-				// 拥有此类型Component的所有Entity
+				// 鎷ユ湁姝ょ被鍨婥omponent鐨勬墍鏈塃ntity
 				SparseNaturalSet<Entity, 32> mEntitySet;
 
 				ComponentData() = default;
@@ -101,9 +101,9 @@ namespace ZXEngine
 				ComponentData& operator=(const ComponentData&) = delete;
 			};
 
-			// 所有的Entity和各自拥有的Component
+			// 鎵�鏈夌殑Entity鍜屽悇鑷嫢鏈夌殑Component
 			unordered_map<Entity, ComponentContainer> mEntities;
-			// 所有的Component数据，按ComponentTypeID归类
+			// 鎵�鏈夌殑Component鏁版嵁锛屾寜ComponentTypeID褰掔被
 			unordered_map<ComponentTypeID_T, ComponentData> mComponents;
 
 			struct Singleton
