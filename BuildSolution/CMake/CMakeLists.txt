@@ -12,6 +12,10 @@ if(WIN32)
     message("${CMAKE_VS_PLATFORM_NAME} architecture in use")
 endif()
 
+if(MSVC)
+    add_compile_options("/source-charset:utf-8" "/execution-charset:utf-8")
+endif()
+
 ################################################################################
 # Global configuration types
 ################################################################################
@@ -40,4 +44,3 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Sub-projects
 ################################################################################
 add_subdirectory(ZXEngine)
-
