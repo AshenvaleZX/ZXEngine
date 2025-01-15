@@ -1,9 +1,13 @@
 #include "WindowManager.h"
-#if defined(ZX_API_OPENGL) || defined(ZX_API_VULKAN)
-#include "WindowManagerGLFW.h"
-#endif
-#ifdef ZX_API_D3D12
-#include "WindowManagerWindows.h"
+
+#if defined(ZX_PLATFORM_DESKTOP)
+#	if defined(ZX_API_OPENGL) || defined(ZX_API_VULKAN)
+#		include "WindowManagerGLFW.h"
+#	elif defined(ZX_API_D3D12)
+#		include "WindowManagerWindows.h"
+#	endif
+#elif defined(ZX_PLATFORM_ANDROID)
+#	include "WindowManagerAndroid.h"
 #endif
 
 namespace ZXEngine
@@ -12,12 +16,15 @@ namespace ZXEngine
 
 	void WindowManager::Creat()
 	{
-#if defined(ZX_API_OPENGL) || defined(ZX_API_VULKAN)
+#if defined(ZX_PLATFORM_DESKTOP)
+#	if defined(ZX_API_OPENGL) || defined(ZX_API_VULKAN)
 		mInstance = new WindowManagerGLFW();
-#endif
-#ifdef ZX_API_D3D12
+#	elif defined(ZX_API_D3D12)
 		mInstance = new WindowManagerWindows();
 		static_cast<WindowManagerWindows*>(mInstance)->Show();
+#	endif
+#elif defined(ZX_PLATFORM_ANDROID)
+		mInstance = new WindowManagerAndroid();
 #endif
 	}
 
