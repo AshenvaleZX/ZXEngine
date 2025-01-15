@@ -254,29 +254,30 @@ namespace ZXEngine
 
     string Utils::GetCurrentExecutableFilePath()
     {
-#if defined(ZX_PLATFORM_WINDOWS)
+#if defined(ZX_PLATFORM_DESKTOP)
+#   if defined(ZX_PLATFORM_WINDOWS)
         char buffer[MAX_PATH];
         GetModuleFileNameA(NULL, buffer, MAX_PATH);
-#elif defined(ZX_PLATFORM_MACOS)
+#   elif defined(ZX_PLATFORM_MACOS)
         char buffer[PATH_MAX];
         uint32_t size = sizeof(buffer);
         if (_NSGetExecutablePath(buffer, &size) != 0)
             return "";
-#elif defined(ZX_PLATFORM_LINUX)
+#   elif defined(ZX_PLATFORM_LINUX)
         char buffer[PATH_MAX];
         ssize_t count = readlink("/proc/self/exe", buffer, sizeof(buffer));
         if (count == -1)
             return "";
         buffer[count] = '\0';
-#else
-        return "";
-#endif
-
+#   endif
         filesystem::path path(buffer);
         if (filesystem::is_directory(path))
 			return path.string();
 		else
 			return path.parent_path().string();
+#else
+        return "";
+#endif
 	}
 
     void Utils::OpenFileWithDefaultApplication(const string& path)
