@@ -11,14 +11,14 @@
 |  License: GPL-3.0
 */
 
-#if defined(__linux__)
+#if defined(__ANDROID__)
+#define ZX_PLATFORM_ANDROID
+#elif defined(__linux__)
 #define ZX_PLATFORM_LINUX
 #elif defined(__APPLE__)
 #define ZX_PLATFORM_MACOS
 #elif defined(_WIN32) || defined(_WIN64)
 #define ZX_PLATFORM_WINDOWS
-#elif defined(__ANDROID__)
-#define ZX_PLATFORM_ANDROID
 #endif
 
 #if defined(ZX_PLATFORM_WINDOWS) || defined(ZX_PLATFORM_MACOS) || defined(ZX_PLATFORM_LINUX)
@@ -78,6 +78,10 @@
 #include <atomic>
 #include <future>
 #include <nlohmann/json.hpp>
+
+#ifdef ZX_PLATFORM_ANDROID
+#include <game-activity/native_app_glue/android_native_app_glue.h>
+#endif
 
 using std::string; 
 using std::wstring;
