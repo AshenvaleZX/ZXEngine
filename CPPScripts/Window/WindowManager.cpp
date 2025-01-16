@@ -25,6 +25,7 @@ namespace ZXEngine
 #	endif
 #elif defined(ZX_PLATFORM_ANDROID)
 		mInstance = new WindowManagerAndroid();
+		static_cast<WindowManagerAndroid*>(mInstance)->Init();
 #endif
 	}
 

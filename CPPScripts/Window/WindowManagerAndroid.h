@@ -13,7 +13,12 @@ namespace ZXEngine
 		virtual void CloseWindow(string args);
 		virtual bool WindowShouldClose();
 
+	public:
+		void Init();
+
 	private:
 		android_app* mApp = nullptr;
+
+		void CheckEvents();
 	};
 }
