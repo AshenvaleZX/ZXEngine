@@ -5,9 +5,16 @@
 // 但是Vulkan的光线追踪渲染模块在Vulkan扩展里，而Vulkan扩展里的函数全部需要我们手动加载，所以需要用这个库来加载所有Vulkan函数
 #define VK_NO_PROTOTYPES
 #include <volk.h>
+
+#if defined(ZX_PLATFORM_DESKTOP)
 // 用GLFW的话这里就不要自己去include Vulkan的头文件，用这个宏定义，让GLFW自己去处理，不然有些接口有问题
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+#elif defined(ZX_PLATFORM_ANDROID)
+#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_android.h>
+#endif
+
 // AMD写的Vulkan内存分配器
 #include <vk_mem_alloc.h>
 #include <vulkan/vulkan_beta.h>
@@ -38,11 +45,14 @@ namespace ZXEngine
     };
 
     // 必须满足的扩展
-    const array<const char*, 1> ZXVK_Extension_Base =
+    const vector<const char*> ZXVK_Extension_Base =
     {
         // 交换链扩展，代表了是否支持将图像绘制到显示器上(不是所有GPU都可以拿来绘图)
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME
-	};
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+#ifdef ZX_PLATFORM_ANDROID
+        VK_KHR_ANDROID_SURFACE_EXTENSION_NAME,
+#endif
+    };
 
     // 光追需要的扩展
     const array<const char*, 4> ZXVK_Extension_RayTracing =

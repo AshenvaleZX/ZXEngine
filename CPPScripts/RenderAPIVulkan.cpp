@@ -11,7 +11,10 @@
 #include "FBOManager.h"
 #include "Window/WindowManager.h"
 #include "EventManager.h"
+
+#ifdef ZX_PLATFORM_DESKTOP
 #include "Vulkan/SPIRVCompiler.h"
+#endif
 
 #ifdef ZX_EDITOR
 #include "Editor/EditorGUIManager.h"
@@ -3827,9 +3830,19 @@ namespace ZXEngine
     }
 
     void RenderAPIVulkan::CreateSurface() {
+#if defined(ZX_PLATFORM_DESKTOP)
         // surface的具体创建过程是要区分平台的，这里直接用GLFW封装好的接口来创建
         if (glfwCreateWindowSurface(vkInstance, static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), nullptr, &surface) != VK_SUCCESS)
             throw std::runtime_error("failed to create window surface!");
+#elif defined(ZX_PLATFORM_ANDROID)
+        VkAndroidSurfaceCreateInfoKHR createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
+        createInfo.window = static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow());
+
+        auto func = reinterpret_cast<PFN_vkCreateAndroidSurfaceKHR>(vkGetInstanceProcAddr(vkInstance, "vkCreateAndroidSurfaceKHR"));
+        if (func(vkInstance, &createInfo, nullptr, &surface) != VK_SUCCESS)
+            throw std::runtime_error("failed to create window surface!");
+#endif
     }
 
     void RenderAPIVulkan::CreateSwapChain()
@@ -4020,17 +4033,19 @@ namespace ZXEngine
 
     vector<const char*> RenderAPIVulkan::GetRequiredExtensions() const
     {
+        vector<const char*> extensions;
+
+#ifdef ZX_PLATFORM_DESKTOP
         // Vulakn对于平台特性是零API支持的(至少暂时这样)，这意味着需要一个扩展才能与不同平台的窗体系统进行交互
         // GLFW有一个方便的内置函数，返回它有关的扩展信息
         uint32_t glfwExtensionCount = 0;
         const char** glfwExtensions;
         glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-        vector<const char*> extensions;
-
         // 添加GLFW获取的扩展
         for (unsigned int i = 0; i < glfwExtensionCount; i++)
             extensions.push_back(glfwExtensions[i]);
+#endif
 
         // 如果开启了Debug，添加Debug的扩展
         if (validationLayersEnabled)
@@ -4291,7 +4306,12 @@ namespace ZXEngine
         if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
         {
             int width, height;
+#if defined(ZX_PLATFORM_DESKTOP)
             glfwGetFramebufferSize(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), &width, &height);
+#elif defined(ZX_PLATFORM_ANDROID)
+            width = ANativeWindow_getWidth(static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow()));
+            height = ANativeWindow_getHeight(static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow()));
+#endif
 
             VkExtent2D actualExtent =
             {
@@ -4315,12 +4335,22 @@ namespace ZXEngine
     void RenderAPIVulkan::RecreateSwapChain()
     {
         int width = 0, height = 0;
+#if defined(ZX_PLATFORM_DESKTOP)
         glfwGetFramebufferSize(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), &width, &height);
+#elif defined(ZX_PLATFORM_ANDROID)
+        width = ANativeWindow_getWidth(static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow()));
+        height = ANativeWindow_getHeight(static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow()));
+#endif
         // 如果窗口大小为0(被最小化了)，那么程序就在这里等待，直到窗口重新弹出
         while (width == 0 || height == 0)
         {
+#if defined(ZX_PLATFORM_DESKTOP)
             glfwGetFramebufferSize(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), &width, &height);
             glfwWaitEvents();
+#elif defined(ZX_PLATFORM_ANDROID)
+            width = ANativeWindow_getWidth(static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow()));
+            height = ANativeWindow_getHeight(static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow()));
+#endif
         }
 
         // 先等逻辑设备执行完当前的所有指令，不再占用资源
@@ -6172,6 +6202,7 @@ namespace ZXEngine
         vector<char> shader;
         bool suc = Resources::LoadBinaryFile(shader, fullPath);
 
+#ifdef ZX_PLATFORM_DESKTOP
         if (!suc)
         {
             if (isRasterization)
@@ -6181,6 +6212,7 @@ namespace ZXEngine
 
             suc = Resources::LoadBinaryFile(shader, fullPath);
         }
+#endif
 
         if (!suc) throw std::runtime_error("Failed to load shader!");
 
