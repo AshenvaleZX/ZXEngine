@@ -9,7 +9,7 @@ namespace ZXEngine
 		InputManagerAndroid() = default;
 		~InputManagerAndroid() = default;
 
-		virtual void Update() {};
+		virtual void Update();
 		virtual void UpdateMousePos(float xPos, float yPos) {};
 		virtual void UpdateMouseScroll(float xOffset, float yOffset) {};
 		virtual bool IsShowCursor() { return false; };
