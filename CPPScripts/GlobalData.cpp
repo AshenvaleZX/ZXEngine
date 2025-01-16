@@ -12,4 +12,8 @@ namespace ZXEngine
 	uint32_t GlobalData::depthCubeMapWidth = 1024;
 	float GlobalData::shadowCubeMapFarPlane = 100.0f;
 	float GlobalData::shadowCubeMapNearPlane = 1.0f;
+
+#ifdef ZX_PLATFORM_ANDROID
+	android_app* GlobalData::app = nullptr;
+#endif
 }

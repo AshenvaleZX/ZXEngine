@@ -16,5 +16,9 @@ namespace ZXEngine
 		static uint32_t depthCubeMapWidth;
 		static float shadowCubeMapFarPlane;
 		static float shadowCubeMapNearPlane;
+
+#ifdef ZX_PLATFORM_ANDROID
+		static android_app* app;
+#endif
 	};
 }
