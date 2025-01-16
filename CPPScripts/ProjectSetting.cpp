@@ -21,6 +21,10 @@ namespace ZXEngine
 	const string ProjectSetting::OpenGLVersion = "450";
 	const int ProjectSetting::OpenGLVersionMajor = 4;
 	const int ProjectSetting::OpenGLVersionMinor = 5;
+#elif defined(ZX_PLATFORM_ANDROID)
+	const string ProjectSetting::OpenGLVersion = "300 es";
+	const int ProjectSetting::OpenGLVersionMajor = 3;
+	const int ProjectSetting::OpenGLVersionMinor = 0;
 #endif
 
 	bool ProjectSetting::isSupportRayTracing = true;
@@ -69,8 +73,14 @@ namespace ZXEngine
 		if (data == NULL)
 			return false;
 
+#if defined(ZX_PLATFORM_DESKTOP)
 		GlobalData::srcWidth = data["WindowSize"][0];
 		GlobalData::srcHeight = data["WindowSize"][1];
+#elif defined(ZX_PLATFORM_ANDROID)
+		GlobalData::srcWidth = ANativeWindow_getWidth(GlobalData::app->window);
+		GlobalData::srcHeight = ANativeWindow_getHeight(GlobalData::app->window);
+#endif
+
 		defaultScene = Resources::JsonStrToString(data["DefaultScene"]);
 		enableDynamicBatch = data["DynamicBatch"];
 		preserveIntermediateShader = data["PreserveIntermediateShader"];
