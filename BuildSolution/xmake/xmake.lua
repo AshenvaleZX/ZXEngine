@@ -83,6 +83,8 @@ if is_plat("macosx", "linux") then
 end
 
 if is_plat("macosx", "linux", "windows") then
+    remove_files("../../CPPScripts/Android/**")
+    remove_files("../../CPPScripts/Input/InputManagerAndroid.cpp")
     remove_files("../../CPPScripts/Window/WindowManagerAndroid.cpp")
 end
 
