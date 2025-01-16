@@ -13,6 +13,7 @@
 #include "Game.h"
 #include "Utils.h"
 
+#if defined(ZX_PLATFORM_DESKTOP)
 int main(int argc, char* argv[])
 {
 	string path = ZXEngine::Utils::GetCurrentExecutableFilePath() + "/../../../ExampleProject";
@@ -26,3 +27,17 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
+#elif defined(ZX_PLATFORM_ANDROID)
+#include "GlobalData.h"
+
+void android_main(struct android_app* app)
+{
+	ZXEngine::GlobalData::app = app;
+	
+	if (ZXEngine::Game::Launch(""))
+	{
+		ZXEngine::Game::Run();
+		ZXEngine::Game::Shutdown();
+	}
+}
+#endif
