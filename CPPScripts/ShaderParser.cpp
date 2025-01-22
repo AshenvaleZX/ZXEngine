@@ -261,25 +261,42 @@ namespace ZXEngine
 				continue;
 			else if (words[0] == "using")
 			{
-				auto type = shaderPropertyMap[words[1]];
-				ShaderProperty property = {};
-				property.name = words[1];
-				property.type = type;
-				if (IsBasePropertyType(type))
-					propertiesInfo.baseProperties.push_back(property);
+				Utils::RemoveCRLF(words[1]);
+				auto iter = shaderPropertyMap.find(words[1]);
+				if (iter == shaderPropertyMap.end())
+				{
+					Debug::LogError("Invalid shader property type of property: %s", words[1]);
+				}
 				else
-					propertiesInfo.textureProperties.push_back(property);
+				{
+					auto type = iter->second;
+					ShaderProperty property = {};
+					property.name = words[1];
+					property.type = type;
+					if (IsBasePropertyType(type))
+						propertiesInfo.baseProperties.push_back(property);
+					else
+						propertiesInfo.textureProperties.push_back(property);
+				}
 			}
 			else
 			{
-				auto type = shaderPropertyMap[words[0]];
-				ShaderProperty property = {};
-				GetPropertyNameAndArrayLength(words[1], property.name, property.arrayLength);
-				property.type = type;
-				if (IsBasePropertyType(type))
-					propertiesInfo.baseProperties.push_back(property);
+				auto iter = shaderPropertyMap.find(words[0]);
+				if (iter == shaderPropertyMap.end())
+				{
+					Debug::LogError("Invalid shader property type of property: %s", words[0]);
+				}
 				else
-					propertiesInfo.textureProperties.push_back(property);
+				{
+					auto type = iter->second;
+					ShaderProperty property = {};
+					GetPropertyNameAndArrayLength(words[1], property.name, property.arrayLength);
+					property.type = type;
+					if (IsBasePropertyType(type))
+						propertiesInfo.baseProperties.push_back(property);
+					else
+						propertiesInfo.textureProperties.push_back(property);
+				}
 			}
 		}
 
@@ -1243,6 +1260,7 @@ namespace ZXEngine
 		if (s == 0 || e == 0)
 		{
 			name = propertyStr;
+			Utils::RemoveCRLF(name);
 			return;
 		}
 
