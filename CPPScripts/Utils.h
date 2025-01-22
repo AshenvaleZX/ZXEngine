@@ -14,6 +14,8 @@ namespace ZXEngine
 		static vector<string> StringSplit(const string& oriStr, char p);
 		// 提取字符串中的所有单词
 		static vector<string> ExtractWords(const string& str);
+		// 移除回车符(13)和换行符(10)
+		static void RemoveCRLF(string& str);
 		// 是否为合法单词字符
 		static bool IsValidWordChar(char c);
 		// 查找字符串中是否存在某个单词，并返回起始位

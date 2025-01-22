@@ -61,6 +61,12 @@ namespace ZXEngine
         return words;
     }
 
+    void Utils::RemoveCRLF(string& str)
+    {
+        str.erase(std::remove(str.begin(), str.end(), '\r'), str.end());
+        str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
+    }
+
     bool Utils::IsValidWordChar(char c)
     {
         return isalnum(c) or c == '_';
