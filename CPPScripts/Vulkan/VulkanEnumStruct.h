@@ -22,7 +22,9 @@
 
 #define ShaderModuleSet map<VkShaderStageFlagBits, VkShaderModule>
 
-#ifdef ZX_PLATFORM_MACOS
+#if defined(ZX_PLATFORM_ANDROID)
+#define ZX_VK_API_VERSION VK_API_VERSION_1_1
+#elif defined(ZX_PLATFORM_MACOS)
 #define ZX_VK_API_VERSION VK_API_VERSION_1_2
 #else
 #define ZX_VK_API_VERSION VK_API_VERSION_1_3
@@ -49,9 +51,6 @@ namespace ZXEngine
     {
         // 交换链扩展，代表了是否支持将图像绘制到显示器上(不是所有GPU都可以拿来绘图)
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-#ifdef ZX_PLATFORM_ANDROID
-        VK_KHR_ANDROID_SURFACE_EXTENSION_NAME,
-#endif
     };
 
     // 光追需要的扩展

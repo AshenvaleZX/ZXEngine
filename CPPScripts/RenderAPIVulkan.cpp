@@ -1,6 +1,5 @@
 #include "RenderAPIVulkan.h"
 #include "GlobalData.h"
-#include <stb_image.h>
 #include "ShaderParser.h"
 #include "Resources.h"
 #include "Texture.h"
@@ -32,9 +31,19 @@
     VkResult vResult = (func);                                                   \
     if (vResult != VK_SUCCESS)                                                   \
     {                                                                            \
-        std::cerr << "VkResult: " << vResult << ", Error: " << msg << std::endl; \
+        zOutError << "VkResult: " << vResult << ", Error: " << msg << std::endl; \
         throw std::runtime_error(msg);                                           \
     }                                                                            \
+}
+
+#define CHECK_VK_CONDITION(condition, msg)          \
+{                                                   \
+    bool res = (condition);                         \
+    if (res)                                        \
+    {                                               \
+        zOutError << "Error: " << msg << std::endl; \
+        throw std::runtime_error(msg);              \
+    }                                               \
 }
 
 namespace ZXEngine
@@ -542,7 +551,7 @@ namespace ZXEngine
     unsigned int RenderAPIVulkan::LoadTexture(const char* path, int& width, int& height)
     {
         int nrComponents;
-        unsigned char* pixels = stbi_load(path, &width, &height, &nrComponents, STBI_rgb_alpha);
+        unsigned char* pixels = Resources::LoadTexture(path, &width, &height, &nrComponents, STBI_rgb_alpha);
 
         VkDeviceSize imageSize = VkDeviceSize(width * height * 4);
         VulkanBuffer stagingBuffer = CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, true);
@@ -554,7 +563,7 @@ namespace ZXEngine
         memcpy(data, pixelsPtr, static_cast<size_t>(imageSize));
         vmaUnmapMemory(vmaAllocator, stagingBuffer.allocation);
 
-        stbi_image_free(pixels);
+        Resources::DeleteTexture(pixels);
 
         uint32_t mipLevels = GetMipMapLevels(width, height);
 
@@ -620,7 +629,7 @@ namespace ZXEngine
         array<stbi_uc*, 6> textureData = {};
         int texWidth = 0, texHeight = 0, texChannels = 0;
         for (size_t i = 0; i < faces.size(); i++)
-            textureData[i] = stbi_load(faces[i].c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+            textureData[i] = Resources::LoadTexture(faces[i], &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 
         VkDeviceSize singleImageSize = VkDeviceSize(texWidth * texHeight * 4);
 
@@ -651,7 +660,7 @@ namespace ZXEngine
                 memcpy(data, pixelsPtr, static_cast<size_t>(singleImageSize));
                 vmaUnmapMemory(vmaAllocator, stagingBuffers[i].allocation);
 
-                stbi_image_free(textureData[i]);
+                Resources::DeleteTexture(textureData[i]);
 
                 VkBufferImageCopy bufferCopyRegion = {};
                 // 从buffer读取数据的起始偏移量
@@ -2496,7 +2505,8 @@ namespace ZXEngine
         submitInfo.waitSemaphoreCount = static_cast<uint32_t>(curWaitSemaphores.size());
         submitInfo.pSignalSemaphores = curDrawCommand.signalSemaphores.data();
         submitInfo.signalSemaphoreCount = static_cast<uint32_t>(curDrawCommand.signalSemaphores.size());
-        CHECK_VK_SUCCESS(
+        CHECK_VK_SUCCESS
+        (
             vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE),
             "Failed to submit draw command buffer!"
         );
@@ -3623,8 +3633,11 @@ namespace ZXEngine
             createInfo.enabledLayerCount = 0;
         }
 
-        if (vkCreateInstance(&createInfo, nullptr, &vkInstance) != VK_SUCCESS)
-            throw std::runtime_error("failed to create instance!");
+        CHECK_VK_SUCCESS
+        (
+            vkCreateInstance(&createInfo, nullptr, &vkInstance),
+            "Failed to create instance!"
+        );
 
         // 用volk加载Vulkan Instance级别的函数指针
         volkLoadInstanceOnly(vkInstance);
@@ -3651,13 +3664,17 @@ namespace ZXEngine
         // 获取当前设备支持Vulkan的显卡数量
         uint32_t deviceCount = 0;
         vkEnumeratePhysicalDevices(vkInstance, &deviceCount, nullptr);
-        if (deviceCount == 0)
-            throw std::runtime_error("failed to find GPUs with Vulkan support!");
+        CHECK_VK_CONDITION
+        (
+            deviceCount == 0,
+            "Failed to find GPUs with Vulkan support!"
+        );
 
         // 获取所有支持Vulkan的显卡，存放到devices里
         vector<VkPhysicalDevice> devices(deviceCount);
         vkEnumeratePhysicalDevices(vkInstance, &deviceCount, devices.data());
 
+#if defined(ZX_PLATFORM_DESKTOP)
         // 遍历所有显卡，找到第一个符合我们需求的
         // 其实可以写个多线程同时调用这些显卡，不过现在先随便用一个
         for (const auto& device : devices)
@@ -3668,9 +3685,21 @@ namespace ZXEngine
                 break;
             }
         }
+#elif defined(ZX_PLATFORM_ANDROID)
+        // 现在的安卓设备都只有一个GPU，直接用第一个就行
+        physicalDevice = devices[0];
+        CHECK_VK_CONDITION
+        (
+            !CheckDeviceExtensionSupport(physicalDevice),
+            "Failed to find a suitable GPU!"
+        );
+#endif
 
-        if (physicalDevice == VK_NULL_HANDLE)
-            throw std::runtime_error("failed to find a suitable GPU!");
+        CHECK_VK_CONDITION
+        (
+            physicalDevice == VK_NULL_HANDLE,
+            "Failed to find a suitable GPU!"
+        );
 
         GetPhysicalDeviceProperties();
     }
@@ -3737,12 +3766,16 @@ namespace ZXEngine
         // 启用对各向异性采样的支持
         deviceFeatures.features.samplerAnisotropy = VK_TRUE;
         deviceFeatures.features.sampleRateShading = VK_TRUE;
+#ifndef ZX_PLATFORM_ANDROID
         deviceFeatures.features.shaderInt64 = VK_TRUE;
+#endif
         deviceFeatures.features.geometryShader = ProjectSetting::isSupportGeometryShader ? VK_TRUE : VK_FALSE;
-#ifndef ZX_PLATFORM_MACOS
-        deviceFeatures.pNext = &accelerationFeature;
-#else
+#if defined(ZX_PLATFORM_ANDROID)
+        deviceFeatures.pNext = nullptr;
+#elif defined(ZX_PLATFORM_MACOS)
         deviceFeatures.pNext = &deviceVulkan12Features;
+#else
+        deviceFeatures.pNext = &accelerationFeature;
 #endif
 
         // 创建逻辑设备的信息
@@ -3781,8 +3814,11 @@ namespace ZXEngine
 
         // 调用vkCreateDevice函数来创建实例化逻辑设备
         // 逻辑设备不与VkInstance直接交互，所以参数里只有物理设备
-        if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS)
-            throw std::runtime_error("failed to create logical device!");
+        CHECK_VK_SUCCESS
+        (
+            vkCreateDevice(physicalDevice, &createInfo, nullptr, &device),
+            "Failed to create logical device!"
+        );
         
         // 用volk加载Vulkan Device级别的函数指针
         volkLoadDevice(device);
@@ -3840,8 +3876,11 @@ namespace ZXEngine
         createInfo.window = static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow());
 
         auto func = reinterpret_cast<PFN_vkCreateAndroidSurfaceKHR>(vkGetInstanceProcAddr(vkInstance, "vkCreateAndroidSurfaceKHR"));
-        if (func(vkInstance, &createInfo, nullptr, &surface) != VK_SUCCESS)
-            throw std::runtime_error("failed to create window surface!");
+        CHECK_VK_SUCCESS
+        (
+            func(vkInstance, &createInfo, nullptr, &surface), 
+            "Failed to create window surface!"
+        );
 #endif
     }
 
@@ -4035,7 +4074,7 @@ namespace ZXEngine
     {
         vector<const char*> extensions;
 
-#ifdef ZX_PLATFORM_DESKTOP
+#if defined(ZX_PLATFORM_DESKTOP)
         // Vulakn对于平台特性是零API支持的(至少暂时这样)，这意味着需要一个扩展才能与不同平台的窗体系统进行交互
         // GLFW有一个方便的内置函数，返回它有关的扩展信息
         uint32_t glfwExtensionCount = 0;
@@ -4044,7 +4083,12 @@ namespace ZXEngine
 
         // 添加GLFW获取的扩展
         for (unsigned int i = 0; i < glfwExtensionCount; i++)
+        {
             extensions.push_back(glfwExtensions[i]);
+        }
+#elif defined(ZX_PLATFORM_ANDROID)
+        extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
+        extensions.push_back(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
 #endif
 
         // 如果开启了Debug，添加Debug的扩展
@@ -4309,8 +4353,8 @@ namespace ZXEngine
 #if defined(ZX_PLATFORM_DESKTOP)
             glfwGetFramebufferSize(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), &width, &height);
 #elif defined(ZX_PLATFORM_ANDROID)
-            width = ANativeWindow_getWidth(static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow()));
-            height = ANativeWindow_getHeight(static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow()));
+            width = static_cast<int>(ANativeWindow_getWidth(static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow())));
+            height = static_cast<int>(ANativeWindow_getHeight(static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow())));
 #endif
 
             VkExtent2D actualExtent =
@@ -4338,8 +4382,8 @@ namespace ZXEngine
 #if defined(ZX_PLATFORM_DESKTOP)
         glfwGetFramebufferSize(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), &width, &height);
 #elif defined(ZX_PLATFORM_ANDROID)
-        width = ANativeWindow_getWidth(static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow()));
-        height = ANativeWindow_getHeight(static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow()));
+        width = static_cast<int>(ANativeWindow_getWidth(static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow())));
+        height = static_cast<int>(ANativeWindow_getHeight(static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow())));
 #endif
         // 如果窗口大小为0(被最小化了)，那么程序就在这里等待，直到窗口重新弹出
         while (width == 0 || height == 0)
@@ -4348,8 +4392,8 @@ namespace ZXEngine
             glfwGetFramebufferSize(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), &width, &height);
             glfwWaitEvents();
 #elif defined(ZX_PLATFORM_ANDROID)
-            width = ANativeWindow_getWidth(static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow()));
-            height = ANativeWindow_getHeight(static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow()));
+            width = static_cast<int>(ANativeWindow_getWidth(static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow())));
+            height = static_cast<int>(ANativeWindow_getHeight(static_cast<ANativeWindow*>(WindowManager::GetInstance()->GetWindow())));
 #endif
         }
 
@@ -5338,8 +5382,11 @@ namespace ZXEngine
         pipelineInfo.basePipelineIndex = -1;
 
         VkPipeline pipeLine;
-        if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeLine) != VK_SUCCESS)
-            throw std::runtime_error("failed to create graphics pipeline!");
+        CHECK_VK_SUCCESS
+        (
+            vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeLine),
+            "Failed to create graphics pipeline!"
+        );
 
         DestroyShaderModules(shaderModules);
 
