@@ -60,6 +60,8 @@ namespace ZXEngine
 	bool ProjectSetting::InitSetting(const string& path)
 	{
 		projectPath = path;
+
+#if defined(ZX_PLATFORM_DESKTOP)
 		Resources::SetAssetsPath(path + "/Assets/");
 
 		string curExePath = Utils::GetCurrentExecutableFilePath();
@@ -69,6 +71,12 @@ namespace ZXEngine
 			mBuiltInAssetsPath = curExePath + "/../../../BuiltInAssets/";
 
 		json data = Resources::LoadJson(path + "/ProjectSetting.zxprjcfg");
+#elif defined(ZX_PLATFORM_ANDROID)
+		Resources::SetAssetsPath("Assets/");
+		mBuiltInAssetsPath = "BuiltInAssets/";
+
+		json data = Resources::LoadJson("ProjectSetting.zxprjcfg");
+#endif
 
 		if (data == NULL)
 			return false;
@@ -77,8 +85,8 @@ namespace ZXEngine
 		GlobalData::srcWidth = data["WindowSize"][0];
 		GlobalData::srcHeight = data["WindowSize"][1];
 #elif defined(ZX_PLATFORM_ANDROID)
-		GlobalData::srcWidth = ANativeWindow_getWidth(GlobalData::app->window);
-		GlobalData::srcHeight = ANativeWindow_getHeight(GlobalData::app->window);
+		GlobalData::srcWidth = 0;
+		GlobalData::srcHeight = 0;
 #endif
 
 		defaultScene = Resources::JsonStrToString(data["DefaultScene"]);

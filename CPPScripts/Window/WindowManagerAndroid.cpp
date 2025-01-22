@@ -77,6 +77,9 @@ namespace ZXEngine
             // Wait for the window to be initialized
             CheckEvents();
         }
+        
+		GlobalData::srcWidth = static_cast<uint32_t>(ANativeWindow_getWidth(GlobalData::app->window));
+		GlobalData::srcHeight = static_cast<uint32_t>(ANativeWindow_getHeight(GlobalData::app->window));
     }
 
     void WindowManagerAndroid::CheckEvents()
