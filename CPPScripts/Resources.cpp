@@ -2,6 +2,11 @@
 #include "ModelUtil.h"
 #include "ProjectSetting.h"
 
+#ifdef ZX_PLATFORM_ANDROID
+#include "GlobalData.h"
+#include <android/asset_manager.h>
+#endif
+
 namespace ZXEngine
 {
 	string Resources::mAssetsPath;
@@ -18,8 +23,8 @@ namespace ZXEngine
 	vector<ModelDataLoadHandle> Resources::mDiscardedEditorModelDataLoadHandles;
 #endif
 
-	static const vector<string> mBuiltInSkyBoxPath = 
-	{ 
+	static const vector<string> mBuiltInSkyBoxPath =
+	{
 		"Textures/BrightSky/right.png",
 		"Textures/BrightSky/left.png",
 		"Textures/BrightSky/up.png",
@@ -69,7 +74,7 @@ namespace ZXEngine
 	{
 		mAssetsPath = path;
 	}
-	
+
 	string Resources::GetAssetsPath()
 	{
 		return mAssetsPath;
@@ -121,13 +126,16 @@ namespace ZXEngine
 
 	json Resources::LoadJson(const string& path)
 	{
+		json data;
+
+#if defined(ZX_PLATFORM_DESKTOP)
 		std::ifstream f(path);
 		if (!f.is_open())
 		{
 			Debug::LogError("Load asset failed: " + path);
 			return NULL;
 		}
-		json data;
+
 		try
 		{
 			data = json::parse(f);
@@ -138,12 +146,43 @@ namespace ZXEngine
 			string msg = e.what();
 			Debug::LogError("Error detail: " + msg);
 		}
+#elif defined(ZX_PLATFORM_ANDROID)
+		AAssetManager* assetManager = GlobalData::app->activity->assetManager;
+		AAsset* asset = AAssetManager_open(assetManager, path.c_str(), AASSET_MODE_BUFFER);
+		if (!asset)
+		{
+			Debug::LogError("Load asset failed: " + path);
+			return NULL;
+		}
+
+		off_t size = AAsset_getLength(asset);
+		char* buffer = new char[size + 1];
+		AAsset_read(asset, buffer, size);
+		buffer[size] = '\0';
+		AAsset_close(asset);
+
+		try
+		{
+			data = json::parse(buffer);
+		}
+		catch (json::exception& e)
+		{
+			Debug::LogError("Asset format error: " + path);
+			string msg = e.what();
+			Debug::LogError("Error detail: " + msg);
+		}
+
+		delete[] buffer;
+#endif
+
 		return data;
 	}
 
 	string Resources::LoadTextFile(const string& path)
 	{
 		string text = "";
+
+#if defined(ZX_PLATFORM_DESKTOP)
 		ifstream file;
 		file.exceptions(ifstream::failbit | ifstream::badbit);
 
@@ -159,12 +198,31 @@ namespace ZXEngine
 		{
 			Debug::LogError("Failed to load text file: " + path);
 		}
+#elif defined(ZX_PLATFORM_ANDROID)
+		AAssetManager* assetManager = GlobalData::app->activity->assetManager;
+		AAsset* asset = AAssetManager_open(assetManager, path.c_str(), AASSET_MODE_BUFFER);
+		if (!asset)
+		{
+			Debug::LogError("Load asset failed: " + path);
+			return "";
+		}
+
+		off_t size = AAsset_getLength(asset);
+		char* buffer = new char[size + 1];
+		AAsset_read(asset, buffer, size);
+		buffer[size] = '\0';
+		AAsset_close(asset);
+
+		text = buffer;
+		delete[] buffer;
+#endif
 
 		return text;
 	}
 
 	bool Resources::LoadBinaryFile(vector<char>& data, const string& path)
 	{
+#if defined(ZX_PLATFORM_DESKTOP)
 		// ate:在文件末尾开始读取，从文件末尾开始读取的优点是我们可以使用读取位置来确定文件的大小并分配缓冲区
 		ifstream file(path, std::ios::ate | std::ios::binary);
 		if (!file.is_open())
@@ -180,6 +238,42 @@ namespace ZXEngine
 		file.close();
 
 		return true;
+#elif defined(ZX_PLATFORM_ANDROID)
+		AAssetManager* assetManager = GlobalData::app->activity->assetManager;
+		AAsset* asset = AAssetManager_open(assetManager, path.c_str(), AASSET_MODE_BUFFER);
+		if (!asset)
+		{
+			Debug::LogError("Load asset failed: " + path);
+			return false;
+		}
+
+		off_t size = AAsset_getLength(asset);
+		data.resize(size);
+		AAsset_read(asset, data.data(), size);
+		AAsset_close(asset);
+
+		return true;
+#endif
+	}
+
+	unsigned char* Resources::LoadTexture(const string& path, int* width, int* height, int* components, int channels)
+	{
+#ifdef ZX_PLATFORM_DESKTOP
+		return stbi_load(path.c_str(), width, height, components, channels);
+#else
+		vector<char> textureData;
+		Resources::LoadBinaryFile(textureData, path);
+		return stbi_load_from_memory(
+			reinterpret_cast<unsigned char*>(textureData.data()),
+			static_cast<int>(textureData.size()),
+			width, height, components, channels
+		);
+#endif
+	}
+
+	void Resources::DeleteTexture(unsigned char* data)
+	{
+		stbi_image_free(data);
 	}
 
 	json Resources::GetAssetData(const string& path, bool isBuiltIn)
@@ -423,9 +517,9 @@ namespace ZXEngine
 
 		textureFullData->path = path;
 #ifdef ZX_API_OPENGL
-		textureFullData->data = stbi_load(path.c_str(), &textureFullData->width, &textureFullData->height, &textureFullData->numChannel, 0);
+		textureFullData->data = LoadTexture(path.c_str(), &textureFullData->width, &textureFullData->height, &textureFullData->numChannel, 0);
 #else
-		textureFullData->data = stbi_load(path.c_str(), &textureFullData->width, &textureFullData->height, &textureFullData->numChannel, STBI_rgb_alpha);
+		textureFullData->data = LoadTexture(path.c_str(), &textureFullData->width, &textureFullData->height, &textureFullData->numChannel, STBI_rgb_alpha);
 #endif
 
 		if (!textureFullData->data)
@@ -441,9 +535,9 @@ namespace ZXEngine
 		for (size_t i = 0; i < paths.size(); i++)
 		{
 #ifdef ZX_API_OPENGL
-			cubeMapFullData->data[i] = stbi_load(paths[i].c_str(), &cubeMapFullData->width, &cubeMapFullData->height, &cubeMapFullData->numChannel, 0);
+			cubeMapFullData->data[i] = LoadTexture(paths[i].c_str(), &cubeMapFullData->width, &cubeMapFullData->height, &cubeMapFullData->numChannel, 0);
 #else
-			cubeMapFullData->data[i] = stbi_load(paths[i].c_str(), &cubeMapFullData->width, &cubeMapFullData->height, &cubeMapFullData->numChannel, STBI_rgb_alpha);
+			cubeMapFullData->data[i] = LoadTexture(paths[i].c_str(), &cubeMapFullData->width, &cubeMapFullData->height, &cubeMapFullData->numChannel, STBI_rgb_alpha);
 #endif
 
 			if (!cubeMapFullData->data[i])
