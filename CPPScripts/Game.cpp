@@ -30,12 +30,12 @@ namespace ZXEngine
 
 		if (!ProjectSetting::InitSetting(path))
 		{
-			std::cerr << "Invalid project path: " << Utils::RelativePathToAbsolutePath(path) << std::endl;
+			zOutError << "Invalid project path: " << Utils::RelativePathToAbsolutePath(path) << std::endl;
 			return false;
 		}
 		else
 		{
-			std::cout << "ZXEngine launch project: " << path << std::endl;
+			zOut << "ZXEngine launch project: " << path << std::endl;
 		}
 
 		ECS::World::Create();

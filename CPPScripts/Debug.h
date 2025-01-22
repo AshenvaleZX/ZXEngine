@@ -7,6 +7,10 @@
 // 条件编译调试代码开关
 // #define ZX_DEBUG
 
+extern std::ostream& zOut;
+extern std::ostream& zOutWarning;
+extern std::ostream& zOutError;
+
 namespace ZXEngine
 {
 	class Debug

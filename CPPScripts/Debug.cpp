@@ -6,9 +6,13 @@
 
 #ifdef __ANDROID__
 #include "Android/AndroidOut.h"
-std::ostream& zout = aout;
+std::ostream& zOut        = aOut;
+std::ostream& zOutWarning = aOutWarn;
+std::ostream& zOutError   = aOutError;
 #else
-std::ostream& zout = std::cout;
+std::ostream& zOut        = std::cout;
+std::ostream& zOutWarning = std::cout;
+std::ostream& zOutError   = std::cout;
 #endif
 
 namespace ZXEngine
@@ -21,7 +25,7 @@ namespace ZXEngine
 
 	void Debug::Log(const std::string& message)
 	{
-		zout << "Log:     " << message << std::endl;
+		zOut << "Log:     " << message << std::endl;
 
 		if (ProjectSetting::logToFile)
 		{
@@ -35,7 +39,7 @@ namespace ZXEngine
 
 	void Debug::LogWarning(const std::string& message)
 	{
-		zout << "Warning: " << message << std::endl;
+		zOutWarning << "Warning: " << message << std::endl;
 
 		if (ProjectSetting::logToFile)
 		{
@@ -49,7 +53,7 @@ namespace ZXEngine
 
 	void Debug::LogError(const std::string& message)
 	{
-		zout << "Error:   " << message << std::endl;
+		zOutError << "Error:   " << message << std::endl;
 
 		if (ProjectSetting::logToFile)
 		{
@@ -127,7 +131,7 @@ namespace ZXEngine
 
 		// 没有用Log，因为Log速度慢一倍，会影响计时，如果有需要写入文件再用Log
 		// 先拼接再输出，效率比直接用<<高
-		zout << (name + " : " + std::to_string(duration) + " ns") << std::endl;
+		zOut << (name + " : " + std::to_string(duration) + " ns") << std::endl;
 	}
 
 	void Debug::StartTimer(const std::string& name)
@@ -139,6 +143,6 @@ namespace ZXEngine
 	{
 		auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - mTimerMap[name]).count();
 
-		zout << (name + " : " + std::to_string(duration) + " ns") << std::endl;
+		zOut << (name + " : " + std::to_string(duration) + " ns") << std::endl;
 	}
 }
