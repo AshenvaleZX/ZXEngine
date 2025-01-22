@@ -34,8 +34,6 @@ namespace ZXEngine
 
     void TextCharactersManager::LoadCharacters()
     {
-        // FreeType
-        // --------
         FT_Library ft;
         // All functions return a value different than 0 whenever an error occurred
         if (FT_Init_FreeType(&ft))
@@ -44,7 +42,6 @@ namespace ZXEngine
             return;
         }
 
-        // find path to font
         string fontPath = Resources::GetAssetFullPath("Fonts/arial.ttf", true);
         if (fontPath.empty())
         {
@@ -52,9 +49,12 @@ namespace ZXEngine
             return;
         }
 
-        // load font as face
+        vector<char> fontFile;
+        Resources::LoadBinaryFile(fontFile, fontPath);
+
         FT_Face face;
-        if (FT_New_Face(ft, fontPath.c_str(), 0, &face)) {
+        if (FT_New_Memory_Face(ft, reinterpret_cast<const FT_Byte*>(fontFile.data()), fontFile.size(), 0, &face))
+        {
             Debug::LogError("ERROR::FREETYPE: Failed to load font");
             return;
         }
