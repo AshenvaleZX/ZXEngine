@@ -58,6 +58,9 @@ namespace ZXEngine
             }
         }
 
+        for (auto& word : words)
+            RemoveCRLF(word);
+
         return words;
     }
 

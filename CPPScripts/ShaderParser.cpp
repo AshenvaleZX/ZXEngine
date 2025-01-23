@@ -261,7 +261,6 @@ namespace ZXEngine
 				continue;
 			else if (words[0] == "using")
 			{
-				Utils::RemoveCRLF(words[1]);
 				auto iter = shaderPropertyMap.find(words[1]);
 				if (iter == shaderPropertyMap.end())
 				{
@@ -1260,7 +1259,6 @@ namespace ZXEngine
 		if (s == 0 || e == 0)
 		{
 			name = propertyStr;
-			Utils::RemoveCRLF(name);
 			return;
 		}
 
