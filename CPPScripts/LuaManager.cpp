@@ -131,16 +131,16 @@ namespace ZXEngine
 		lua_pop(L, 1);
 
 		// Search for the module in the built-in assets
-		string code = Resources::LoadTextFile(Resources::GetAssetFullPath("Scripts/" + modname + ".lua"));
+		string code = Resources::LoadTextFile(Resources::GetAssetFullPath("Scripts/" + modname + ".lua"), false);
 		if (code.empty())
 		{
 			// Search for the module in the Scripts folder of project assets
-			code = Resources::LoadTextFile(Resources::GetAssetFullPath("Scripts/" + modname + ".lua", true));
+			code = Resources::LoadTextFile(Resources::GetAssetFullPath("Scripts/" + modname + ".lua", true), false);
 
 			if (code.empty())
 			{
 				// Search for the module in the project assets
-				code = Resources::LoadTextFile(Resources::GetAssetFullPath(modname + ".lua"));
+				code = Resources::LoadTextFile(Resources::GetAssetFullPath(modname + ".lua"), false);
 				if (code.empty())
 				{
 					Debug::LogError("Can't find lua module: " + modname);

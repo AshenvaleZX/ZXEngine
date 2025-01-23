@@ -178,7 +178,7 @@ namespace ZXEngine
 		return data;
 	}
 
-	string Resources::LoadTextFile(const string& path)
+	string Resources::LoadTextFile(const string& path, bool logError)
 	{
 		string text = "";
 
@@ -196,14 +196,16 @@ namespace ZXEngine
 		}
 		catch (ifstream::failure e)
 		{
-			Debug::LogError("Failed to load text file: " + path);
+			if (logError)
+				Debug::LogError("Failed to load text file: " + path);
 		}
 #elif defined(ZX_PLATFORM_ANDROID)
 		AAssetManager* assetManager = GlobalData::app->activity->assetManager;
 		AAsset* asset = AAssetManager_open(assetManager, path.c_str(), AASSET_MODE_BUFFER);
 		if (!asset)
 		{
-			Debug::LogError("Load asset failed: " + path);
+			if (logError)
+				Debug::LogError("Load asset failed: " + path);
 			return "";
 		}
 
