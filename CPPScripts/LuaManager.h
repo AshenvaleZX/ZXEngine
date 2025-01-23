@@ -28,6 +28,7 @@ namespace ZXEngine
 		lua_State* GetState();
 		void InitLuaState();
 		void RestartLuaState();
+		void CustomRequire(const string& modname);
 		void Unref(int ref);
 		void CallFunction(int table, int func);
 		void CallFunction(const char* table, const char* func, const char* msg, bool self = true);

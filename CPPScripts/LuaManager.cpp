@@ -115,6 +115,68 @@ namespace ZXEngine
 		InitLuaState();
 	}
 
+	void LuaManager::CustomRequire(const string& modname)
+	{
+		// Check if the module is already loaded
+		lua_getfield(L, LUA_REGISTRYINDEX, LUA_LOADED_TABLE);
+		lua_getfield(L, -1, modname.c_str());
+		if (lua_toboolean(L, -1))
+		{
+			// Module is already loaded, pop loaded table and module
+			lua_pop(L, 2);
+			return;
+		}
+		// Pop nil
+		lua_pop(L, 1);
+
+		// Search for the module in the built-in assets
+		string code = Resources::LoadTextFile(Resources::GetAssetFullPath("Scripts/" + modname + ".lua"));
+		if (code.empty())
+		{
+			// Search for the module in the Scripts folder of project assets
+			code = Resources::LoadTextFile(Resources::GetAssetFullPath("Scripts/" + modname + ".lua", true));
+
+			if (code.empty())
+			{
+				// Search for the module in the project assets
+				code = Resources::LoadTextFile(Resources::GetAssetFullPath(modname + ".lua"));
+				if (code.empty())
+				{
+					Debug::LogError("Can't find lua module: " + modname);
+					// Pop loaded table
+					lua_pop(L, 1);
+					return;
+				}
+			}
+		}
+
+		if (luaL_loadbuffer(L, code.c_str(), code.size(), modname.c_str()) == LUA_OK)
+		{
+			if (lua_pcall(L, 0, LUA_MULTRET, 0) == LUA_OK)
+			{
+				// Store the result in package.loaded[modname]
+				lua_getfield(L, LUA_REGISTRYINDEX, LUA_LOADED_TABLE);
+				// Push the result of pcall
+				lua_pushvalue(L, -2);
+				lua_setfield(L, -2, modname.c_str());
+				// Pop loaded table
+				lua_pop(L, 1);
+			}
+			else
+			{
+				Debug::LogError(lua_tostring(L, -1));
+				// Pop loaded table and error message
+				lua_pop(L, 2);
+			}
+		}
+		else
+		{
+			Debug::LogError(lua_tostring(L, -1));
+			// Pop loaded table and error message
+			lua_pop(L, 2);
+		}
+	}
+
 	void LuaManager::Unref(int ref)
 	{
 		luaL_unref(L, LUA_REGISTRYINDEX, ref);
