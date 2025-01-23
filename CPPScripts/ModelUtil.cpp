@@ -2,6 +2,7 @@
 #include "PublicStruct.h"
 #include "StaticMesh.h"
 #include "DynamicMesh.h"
+#include "Resources.h"
 #include "GeometryGenerator.h"
 #include "Animation/Animation.h"
 #include "Animation/NodeAnimation.h"
@@ -183,10 +184,14 @@ namespace ZXEngine
     {
         ModelData* pModelData = new ModelData();
 
+        vector<unsigned char> buffer;
+        Resources::LoadBinaryFile(buffer, path);
+
         // 用ASSIMP加载模型文件
         Assimp::Importer importer;
-        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace 
-            | aiProcess_FixInfacingNormals | aiProcess_FlipWindingOrder | aiProcess_LimitBoneWeights);
+        const aiScene* scene = importer.ReadFileFromMemory(buffer.data(), buffer.size(),
+            aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_FixInfacingNormals
+            | aiProcess_FlipWindingOrder | aiProcess_LimitBoneWeights, Resources::GetAssetExtension(path).c_str());
         
         // 检查异常
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
