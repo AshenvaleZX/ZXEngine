@@ -18,6 +18,7 @@
 #include "Lua_UIButton.h"
 
 #include "Lua_GlobalData.h"
+#include "Lua_GlobalFunction.h"
 
 static const luaL_Reg myLibs[] = 
 {
@@ -52,4 +53,5 @@ LUALIB_API void luaL_openMyLibs(lua_State* L)
     }
 
     luaopen_GlobalData(L);
+    luaopen_GlobalFunction(L);
 }

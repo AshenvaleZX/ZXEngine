@@ -298,6 +298,7 @@ set(LuaWrap
     "../../../CPPScripts/LuaWrap/Lua_GameLogic.h"
     "../../../CPPScripts/LuaWrap/Lua_GameObject.h"
     "../../../CPPScripts/LuaWrap/Lua_GlobalData.h"
+    "../../../CPPScripts/LuaWrap/Lua_GlobalFunction.h"
     "../../../CPPScripts/LuaWrap/Lua_InputManager.h"
     "../../../CPPScripts/LuaWrap/Lua_Material.h"
     "../../../CPPScripts/LuaWrap/Lua_MeshRenderer.h"

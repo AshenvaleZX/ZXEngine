@@ -1385,5 +1385,8 @@
     <ClInclude Include="..\..\..\CPPScripts\Component\Physics\Circle2DCollider.h">
       <Filter>Component\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_GlobalFunction.h">
+      <Filter>LuaWrap</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
