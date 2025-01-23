@@ -220,7 +220,7 @@ namespace ZXEngine
 		return text;
 	}
 
-	bool Resources::LoadBinaryFile(vector<char>& data, const string& path)
+	bool Resources::LoadBinaryFile(vector<unsigned char>& data, const string& path)
 	{
 #if defined(ZX_PLATFORM_DESKTOP)
 		// ate:在文件末尾开始读取，从文件末尾开始读取的优点是我们可以使用读取位置来确定文件的大小并分配缓冲区
@@ -234,7 +234,7 @@ namespace ZXEngine
 
 		// 返回文件开头，真正读取内容
 		file.seekg(0);
-		file.read(data.data(), fileSize);
+		file.read(reinterpret_cast<char*>(data.data()), fileSize);
 		file.close();
 
 		return true;
@@ -261,10 +261,9 @@ namespace ZXEngine
 #ifdef ZX_PLATFORM_DESKTOP
 		return stbi_load(path.c_str(), width, height, components, channels);
 #else
-		vector<char> textureData;
+		vector<unsigned char> textureData;
 		Resources::LoadBinaryFile(textureData, path);
-		return stbi_load_from_memory(
-			reinterpret_cast<unsigned char*>(textureData.data()),
+		return stbi_load_from_memory(textureData.data(),
 			static_cast<int>(textureData.size()),
 			width, height, components, channels
 		);

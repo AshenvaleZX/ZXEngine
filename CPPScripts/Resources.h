@@ -106,7 +106,7 @@ namespace ZXEngine
 		static json LoadJson(const string& path);
 		static string JsonStrToString(const json& data);
 		static string LoadTextFile(const string& path);
-		static bool LoadBinaryFile(vector<char>& data, const string& path);
+		static bool LoadBinaryFile(vector<unsigned char>& data, const string& path);
 		static unsigned char* LoadTexture(const string& path, int* width, int* height, int* components, int channels);
 		static void DeleteTexture(unsigned char* data);
 

@@ -49,7 +49,7 @@ namespace ZXEngine
             return;
         }
 
-        vector<char> fontFile;
+        vector<unsigned char> fontFile;
         Resources::LoadBinaryFile(fontFile, fontPath);
 
         FT_Face face;

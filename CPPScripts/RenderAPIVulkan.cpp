@@ -5471,7 +5471,7 @@ namespace ZXEngine
         return descriptorSets;
     }
 
-    VkShaderModule RenderAPIVulkan::CreateShaderModule(const vector<char>& code)
+    VkShaderModule RenderAPIVulkan::CreateShaderModule(const vector<unsigned char>& code)
     {
         VkShaderModuleCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -6220,7 +6220,7 @@ namespace ZXEngine
         return pipelineLayout;
     }
 
-    vector<char> RenderAPIVulkan::GetSPIRVShader(const string& path, ShaderStageFlagBit stage)
+    vector<unsigned char> RenderAPIVulkan::GetSPIRVShader(const string& path, ShaderStageFlagBit stage)
     {
         bool isRasterization = stage & ZX_SHADER_STAGE_VERTEX_BIT || stage & ZX_SHADER_STAGE_GEOMETRY_BIT || stage & ZX_SHADER_STAGE_FRAGMENT_BIT;
 
@@ -6246,7 +6246,7 @@ namespace ZXEngine
 
         string fullPath = isRasterization ? path + extension + ".spv" : path + ".spv";
 
-        vector<char> shader;
+        vector<unsigned char> shader;
         bool suc = Resources::LoadBinaryFile(shader, fullPath);
 
 #ifdef ZX_PLATFORM_DESKTOP
