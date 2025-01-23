@@ -103,10 +103,11 @@ namespace ZXEngine
 		lua_pop(L, 1);                       /* 弹出package库 */
 
 		// 执行Lua启动脚本
-		auto suc = luaL_dofile(L, Resources::GetAssetFullPath("Scripts/Init.lua", true).c_str());
-		// 输出错误日志
-		if (suc != LUA_OK)
+		string initCode = Resources::LoadTextFile(Resources::GetAssetFullPath("Scripts/Init.lua", true));
+		if (luaL_dostring(L, initCode.c_str()) != LUA_OK)
+		{
 			Debug::LogError(lua_tostring(L, -1));
+		}
 	}
 
 	void LuaManager::RestartLuaState()

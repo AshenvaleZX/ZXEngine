@@ -52,8 +52,8 @@ namespace ZXEngine
 		// 记录当前栈大小
 		int stack_size = lua_gettop(L);
 		// 加载绑定的lua代码
-		auto& path = GetLuaFullPath();
-		auto suc = luaL_dofile(L, path.c_str());
+		string code = Resources::LoadTextFile(GetLuaFullPath());
+		auto suc = luaL_dostring(L, code.c_str());
 		if (suc == LUA_OK)
 		{
 			// 这里dofile成功后，lua代码的最后一行是return table，此时栈顶是一个table
@@ -84,7 +84,7 @@ namespace ZXEngine
 		}
 		else
 		{
-			Debug::Log(lua_tostring(L, -1));
+			Debug::LogError(lua_tostring(L, -1));
 		}
 		// 恢复栈大小(Pop掉这段代码在栈上产生的数据)
 		lua_settop(L, stack_size);
