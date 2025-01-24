@@ -2,7 +2,7 @@
 
 | Graphics API | Platform |
 | :----------: | :------: |
-| ![Vulkan](Documents/Badges/Vulkan-Supported.svg) ![DirectX 12](Documents/Badges/DirectX_12-Supported.svg) ![OpenGL](Documents/Badges/OpenGL-Supported.svg) | ![Windows](Documents/Badges/Windows-Supported-blue.svg) ![macOS](Documents/Badges/macOS-Supported-blue.svg) ![Linux](Documents/Badges/Linux-Supported-blue.svg) |
+| ![Vulkan](Documents/Badges/Vulkan-Supported.svg) ![DirectX 12](Documents/Badges/DirectX_12-Supported.svg) ![OpenGL](Documents/Badges/OpenGL-Supported.svg) | ![Windows](Documents/Badges/Windows-Supported-blue.svg) ![macOS](Documents/Badges/macOS-Supported-blue.svg) ![Linux](Documents/Badges/Linux-Supported-blue.svg) ![Android](Documents/Badges/Android-Experimental-red.svg) |
 
 这是我自己开发的游戏引擎项目，创建这个项目的主要目的是为了我自己学习和实践游戏引擎技术，不过也希望这个项目能对你有所帮助。
 
@@ -50,9 +50,9 @@ This project aims at a game engine, not just graphics and rendering (although th
 
 ## 引擎简介 (Engine Introduction)
 
-本引擎目前同时支持Vulkan，DirectX 12和OpenGL，支持Windows，macOS和Linux。使用自创的zxshader语言来编写shader，支持前面三种图形API，可一次编写3种环境运行。本引擎同时也支持基于Vulkan和DirectX12的光线追踪渲染管线。
+本引擎目前同时支持Vulkan，DirectX 12和OpenGL，支持Windows，macOS，Linuxh和Android。使用自创的zxshader语言来编写shader，支持前面三种图形API，编写一次即可在3种图形API和4种平台运行。本引擎同时也支持基于Vulkan和DirectX12的光线追踪渲染管线。
 
-This engine currently supports Vulkan, DirectX 12 and OpenGL, supports Windows, macOS and Linux. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs. This engine also supports ray tracing rendering pipeline based on Vulkan and DirectX12.
+This engine currently supports Vulkan, DirectX 12 and OpenGL, supports Windows, macOS, Linux and Android. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs and four platforms. This engine also supports ray tracing rendering pipeline based on Vulkan and DirectX12.
 
 本引擎内置了我写的物理引擎PhysZ(看了一些书和别人的项目之后的学习成果，详见后文)，支持基本的刚体力学模拟和布料模拟。同时我也开发了简单的骨骼蒙皮动画系统，粒子系统，UI系统，JobSystem等。文档后面会有这些系统的图片展示。
 
@@ -775,6 +775,40 @@ Since I don't have a Linux device that meets the requirements for running Vulkan
 Linux版本众多，环境复杂，而我只有一个Linux测试环境，所以我不确定本项目是否在所有的Linux环境下都能正常运行。还有由于本项目依赖的第三方库，主要是Assimp和FreeType需要自己编译，而我的Linux是安装在使用x86_64架构的设备上的，我也没有ARM架构的Linux设备，所以我只提供了x86_64版本的Linux依赖库。如果需要在ARM架构的Linux设备上运行只能自己编译一下依赖库了。
 
 There are many Linux distributions and different hardware, and I only have one Linux environment, so I‘m not sure whether this project can run successfully in all Linux environments. Also, since the third-party libraries that this project relies on, mainly Assimp and FreeType, need to be compiled by myself, and my Linux is installed on a x86_64 device, and I don't have an ARM architecture Linux device, so I only provide the x86_64 version of the Linux library. If you need to run it on an ARM architecture Linux device, you need to compile the libraries yourself.
+
+### Android
+
+目前ZXEngine的代码已经完成了对安卓平台的适配，我也使用ZXEngine成功构建过安卓包并在我的安卓手机上成功测试运行过了。但是由于安卓出包比较复杂，本项目尚未提供一个完整的安卓包自动化构建流程。目前ZXEngine在安卓平台使用Vulkan进行渲染，暂未考虑支持OpenGL ES。
+
+The code of ZXEngine has been adapted to the android platform, and I have successfully built android apk with ZXEngine and successfully tested and ran them on my Android device. However, due to the complexity of android apk building, this project has not provided a complete automated building process for android. Currently, ZXEngine uses Vulkan for rendering on the Android platform and has not yet considered supporting OpenGL ES.
+
+如果需要构建安卓平台的ZXEngine应用，可以参考以下步骤手动构建：
+
+If you want to build ZXEngine applications for android platform, you can follow the following steps to build manually:
+
+#### 1,
+
+打开BuildSolution/AndroidStudio里的Android Studio模板工程，将本项目依赖的两个第三方库[assimp](https://github.com/assimp/assimp/releases)和[freetype](https://freetype.org/download.html)下载到本地，把文件夹名字改成assimp和freetype，放置于app/src/main/cpp文件夹下，与CMakeLists.txt同级。
+
+Open the Android Studio template project in BuildSolution/AndroidStudio. Then download the two third-party libraries [assimp](https://github.com/assimp/assimp/releases) and [freetype](https://freetype.org/download.html) that this project relies on to local, and change the folder name to assimp and freetype. Place them in the app/src/main/cpp folder, in the same path as CMakeLists.txt.
+
+#### 2,
+
+把要构建的游戏项目先在桌面平台上以编辑器模式打开，然后点一下引擎编辑器的“Assets/Compile All Shader for Vulkan”按钮，完成Shader代码的预编译工作。
+
+Open the game project to be built in editor mode on the desktop platform first, then click the "Assets/Compile All Shader for Vulkan" button in the engine editor to complete the pre-compilation of the shader code.
+
+#### 3,
+
+把BuiltInAssets文件夹整个复制粘贴到安卓工程的asset目录下，再把你要打包的那个工程的Assets文件夹和项目配置文件一起复制粘贴到asset目录下，最后安卓工程的asset目录下应该有这三个内容：Assets，BuiltInAssets，ProjectSetting.zxprjcfg
+
+Copy and paste the entire BuiltInAssets folder into the asset directory of the Android Studio project. Then copy and paste the Assets folder and project configuration file of the project you want to package into the asset directory. Finally, the asset directory of the Android Studio project should have these three contents: Assets, BuiltInAssets, ProjectSetting.zxprjcfg
+
+#### 4,
+
+上述步骤都完成后，在Android Studio里点击构建即可。
+
+After completing the above steps, click Build in Android Studio to complete the build.
 
 ## 注意事项 (Precautions)
 
