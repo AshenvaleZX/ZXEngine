@@ -82,7 +82,7 @@ namespace ZXEngine
 
 		if (!f.is_open())
 		{
-			std::cerr << "Open log file failed !" << std::endl;
+			zOutError << "Open log file failed !" << std::endl;
 		}
 
 		f << message << std::endl;
