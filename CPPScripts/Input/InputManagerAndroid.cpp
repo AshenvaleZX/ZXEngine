@@ -5,6 +5,12 @@ namespace ZXEngine
 {
     void InputManagerAndroid::Update()
     {
+        // 移除所有已经结束的触摸事件
+        mTouches.remove_if([](const Touch& touch)
+        {
+            return touch.phase == TouchPhase::Ended;
+        });
+
         // handle all queued inputs
         auto inputBuffer = android_app_swap_input_buffers(GlobalData::app);
         if (!inputBuffer)
@@ -12,6 +18,9 @@ namespace ZXEngine
             // no inputs yet.
             return;
         }
+
+        // 当前帧的Down操作，不要被Move操作覆盖了
+        vector<int32_t> downTouches;
 
         // handle motion events (motionEventsCounts can be 0).
         for (auto i = 0; i < inputBuffer->motionEventsCount; i++)
@@ -21,8 +30,6 @@ namespace ZXEngine
 
             // Find the pointer index, mask and bitshift to turn it into a readable value.
             auto pointerIndex = (action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
-
-            string log = "Pointer(s): ";
 
             // get the x and y position of this event if it is not ACTION_MOVE.
             auto &pointer = motionEvent.pointers[pointerIndex];
@@ -34,38 +41,60 @@ namespace ZXEngine
             {
                 case AMOTION_EVENT_ACTION_DOWN:
                 case AMOTION_EVENT_ACTION_POINTER_DOWN:
-                    log += ("(" + to_string(pointer.id) + ", " + to_string(x) + ", " + to_string(y) + ") " + "Pointer Down");
+                {
+                    mTouches.push_back(Touch{pointer.id, x, y, TouchPhase::Began});
                     break;
-
+                }
                 case AMOTION_EVENT_ACTION_CANCEL:
                     // treat the CANCEL as an UP event: doing nothing in the app, except
                     // removing the pointer from the cache if pointers are locally saved.
                     // code pass through on purpose.
                 case AMOTION_EVENT_ACTION_UP:
                 case AMOTION_EVENT_ACTION_POINTER_UP:
-                    log += ("(" + to_string(pointer.id) + ", " + to_string(x) + ", " + to_string(y) + ") " + "Pointer Up");
-                    break;
+                {
+                    auto it = std::find_if(mTouches.begin(), mTouches.end(), [pointer](const Touch& touch)
+                    {
+                        return touch.id == pointer.id;
+                    });
 
+                    if (it != mTouches.end())
+                    {
+                        it->phase = TouchPhase::Ended;
+                    }
+                    break;
+                }
                 case AMOTION_EVENT_ACTION_MOVE:
+                {
                     // There is no pointer index for ACTION_MOVE, only a snapshot of
                     // all active pointers; app needs to cache previous active pointers
                     // to figure out which ones are actually moved.
                     for (auto index = 0; index < motionEvent.pointerCount; index++)
                     {
                         pointer = motionEvent.pointers[index];
-                        x = GameActivityPointerAxes_getX(&pointer);
-                        y = GameActivityPointerAxes_getY(&pointer);
-                        log += ("(" + to_string(pointer.id) + ", " + to_string(x) + ", " + to_string(y) + ")");
 
-                        if (index != (motionEvent.pointerCount - 1)) log += ",";
-                        log += " ";
+                        if (std::find(downTouches.begin(), downTouches.end(), pointer.id) == downTouches.end())
+                        {
+                            x = GameActivityPointerAxes_getX(&pointer);
+                            y = GameActivityPointerAxes_getY(&pointer);
+
+                            auto it = std::find_if(mTouches.begin(), mTouches.end(), [pointer](const Touch& touch)
+                            {
+                                return touch.id == pointer.id;
+                            });
+
+                            if (it != mTouches.end())
+                            {
+                                it->x = x;
+                                it->y = y;
+                                it->phase = TouchPhase::Moved;
+                            }
+                        }
                     }
-                    log += "Pointer Move";
                     break;
+                }
                 default:
-                    log += "Unknown MotionEvent Action: " + to_string(action);
+                    break;
             }
-            Debug::Log(log);
         }
 
         // clear the motion input count in this buffer for main thread to re-use.
@@ -96,5 +125,15 @@ namespace ZXEngine
 
         // clear the key input count too.
         android_app_clear_key_events(inputBuffer);
+    }
+
+	uint32_t InputManagerAndroid::GetTouchCount()
+    {
+        return static_cast<uint32_t>(mTouches.size());
+    }
+	
+    Touch InputManagerAndroid::GetTouch(uint32_t index)
+    {
+        return *std::next(mTouches.begin(), index);
     }
 }
