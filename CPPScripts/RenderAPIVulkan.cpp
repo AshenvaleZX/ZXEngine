@@ -4885,7 +4885,7 @@ namespace ZXEngine
             VkAttachmentDescription colorAttachment = {};
             colorAttachment.format = swapChainImageFormat;
             colorAttachment.samples = msaaSamplesCount;
-            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -4895,7 +4895,7 @@ namespace ZXEngine
             VkAttachmentDescription colorAttachmentResolve = {};
             colorAttachmentResolve.format = swapChainImageFormat;
             colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
-            colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
