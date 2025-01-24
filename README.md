@@ -689,13 +689,13 @@ This repository contains demos of actual game projects developed with the ZXEngi
 
 ## 构建与跨平台 (Build And Cross-Platform)
 
-本项目支持Windows，macOS和Linux，提供了三种构建工具，分别是xmake，CMake和Visual Studio 2022，放到了BuildSolution文件夹中。
+本项目支持Windows，macOS，Linux和Android，提供了四种构建工具，分别是xmake，CMake，Visual Studio 2022和Android Studio，放到了BuildSolution文件夹中。
 
-This project supports Windows, macOS and Linux, provides three build tools: xmake, CMake and Visual Studio 2022, which are placed in the BuildSolution folder.
+This project supports Windows, macOS, Linux and Android, provides four build tools: xmake, CMake, Visual Studio 2022 and Android Studio, which are placed in the BuildSolution folder.
 
-本项目在Windows平台支持Vulkan，DirectX 12和OpenGL，在macOS平台支持Vulkan和OpenGL，在Linux平台支持OpenGL。在Linux上的Vulkan应该也是能支持的，但是由于我缺少符合条件的硬件设备，所以暂时还没有在Linux上调试运行过Vulkan版的ZXEngine。
+本项目在Windows平台支持Vulkan，DirectX 12和OpenGL，在macOS平台支持Vulkan和OpenGL，在Linux平台支持OpenGL，在Android平台支持Vulkan。在Linux上的Vulkan应该也是能支持的，但是由于我缺少符合条件的硬件设备，所以暂时还没有在Linux上调试运行过Vulkan版的ZXEngine。
 
-This project supports Vulkan, DirectX 12 and OpenGL on Windows, Vulkan and OpenGL on macOS, and OpenGL on Linux. Vulkan on Linux is also supposed to be supported, but I haven't debugged and test the Vulkan version of ZXEngine on Linux yet because I don't have the device that meets the requirements.
+This project supports Vulkan, DirectX 12 and OpenGL on Windows, Vulkan and OpenGL on macOS, OpenGL on Linux and Vulkan on Android. Vulkan on Linux is also supposed to be supported, but I haven't debugged and test the Vulkan version of ZXEngine on Linux yet because I don't have the device that meets the requirements.
 
 ### Windows
 
