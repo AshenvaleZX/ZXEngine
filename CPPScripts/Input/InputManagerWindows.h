@@ -13,6 +13,8 @@ namespace ZXEngine
 		virtual void UpdateMousePos(float xPos, float yPos);
 		virtual void UpdateMouseScroll(float xOffset, float yOffset);
 		virtual bool IsShowCursor();
+		virtual uint32_t GetTouchCount() { return 0; };
+		virtual Touch GetTouch(uint32_t index) { return Touch{}; };
 
 		// To lua
 		virtual void ShowCursor(bool show);
