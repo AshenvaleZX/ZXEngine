@@ -260,16 +260,12 @@ namespace ZXEngine
 
 	unsigned char* Resources::LoadTexture(const string& path, int* width, int* height, int* components, int channels)
 	{
-#ifdef ZX_PLATFORM_DESKTOP
-		return stbi_load(path.c_str(), width, height, components, channels);
-#else
 		vector<unsigned char> textureData;
 		Resources::LoadBinaryFile(textureData, path);
 		return stbi_load_from_memory(textureData.data(),
 			static_cast<int>(textureData.size()),
 			width, height, components, channels
 		);
-#endif
 	}
 
 	void Resources::DeleteTexture(unsigned char* data)
