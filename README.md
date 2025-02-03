@@ -10,7 +10,7 @@ This is a game engine project. The main purpose that I created this project is t
 
 本项目以游戏引擎为目标，而并非只关注图形渲染（不过图形渲染也是一个重要模块）。引擎基本外观如下图，具体内容请看图示后面的目录。
 
-This project aims at a game engine, not just graphics and rendering (although this is also an important contents). The appearance of the engine is shown in the figure below. For specific content, please see the table of contents behind the figure.
+This project aimed at the game engine, not only focus on the graphics and rendering (although this is also an important contents). The appearance of the engine is shown in the figure below. For specific content, please see the table of contents below the figure.
 
 ![](Documents/Images/EngineShow0.jpg)
 
@@ -50,21 +50,21 @@ This project aims at a game engine, not just graphics and rendering (although th
 
 ## 引擎简介 (Engine Introduction)
 
-本引擎目前同时支持Vulkan，DirectX 12和OpenGL，支持Windows，macOS，Linuxh和Android。使用自创的zxshader语言来编写shader，支持前面三种图形API，编写一次即可在3种图形API和4种平台运行。本引擎同时也支持基于Vulkan和DirectX12的光线追踪渲染管线。
+本引擎目前同时支持Vulkan，DirectX 12和OpenGL，支持Windows，macOS，Linux和Android。使用自创的zxshader语言来编写shader，支持前面三种图形API，编写一次即可在3种图形API和4种平台运行。本引擎同时也支持基于Vulkan和DirectX12的光线追踪渲染管线。
 
-This engine currently supports Vulkan, DirectX 12 and OpenGL, supports Windows, macOS, Linux and Android. The engine uses the self-created zxshader language to write shaders. It also supports Vulkan, DirectX 12 and OpenGL. You only need to write it once and it can work in all three graphics APIs and four platforms. This engine also supports ray tracing rendering pipeline based on Vulkan and DirectX12.
+This engine currently supports Vulkan, DirectX 12 and OpenGL, supports Windows, macOS, Linux and Android. The engine uses the self-created zxshader language to write shaders. You only need to write zxshader once and it can work in all three graphics APIs and four platforms. This engine also supports ray tracing rendering pipeline based on Vulkan or DirectX12.
 
-本引擎内置了我写的物理引擎PhysZ(看了一些书和别人的项目之后的学习成果，详见后文)，支持基本的刚体力学模拟和布料模拟。同时我也开发了简单的骨骼蒙皮动画系统，粒子系统，UI系统，JobSystem等。文档后面会有这些系统的图片展示。
+本引擎内置了我写的物理引擎PhysZ(看了一些书和别人的项目之后的学习成果，详见后文)，支持基本的刚体力学模拟和弹簧，布料模拟。同时我也开发了简单的骨骼蒙皮动画系统，材质系统，粒子系统，UI系统，JobSystem等。
 
-This engine has a built-in physics engine written by myself, which I called it PhysZ (It is the learning result after reading some books and other people’s projects), supports rigid body mechanics simulation and cloth simulation. And I also developed a simple skeletal animation system, particle system, UI system, JobSystem, etc. Images of these systems are shown later in this document.
+This engine has a built-in physics engine written by myself, which I called it PhysZ (It is the learning result after reading some books and other people’s projects), supports rigid body mechanics simulation spring simulation and cloth simulation. And I also developed a simple skeletal animation system, material system, particle system, UI system, JobSystem, etc. 
 
-引擎本身用C++开发，GamePlay层使用Lua语言，引擎层封装部分C++接口给GamePlay层的Lua调用。使用方式类似Unity的XLua，通过一个GameLogic组件把Lua代码绑定到GameObject上，接收所挂载对象上来自引擎的Start和Update调用，并通过self访问GameObject对象(具体示例看后面)。
+引擎本身用C++开发，GamePlay层使用Lua语言，引擎层封装部分C++接口给GamePlay层的Lua调用。使用方式类似Unity的XLua，通过一个GameLogic组件把Lua代码绑定到GameObject上，接收来自引擎的Start和Update调用，并通过self访问所挂载的GameObject对象(具体示例看后面)。
 
-The engine is developed with C++, the GamePlay layer uses Lua language, and the engine encapsulates part of the C++ interface to the Lua call of the GamePlay layer. The usage is similar to Unity's XLua, you can bind the Lua code to the GameObject through a GameLogic component, receive Start and Update calls from the engine on the mounted object, and access the GameObject object through self (see later for specific examples).
+The engine itself is developed in C++, the GamePlay layer uses Lua language, and the engine provides part of the C++ interface to Lua for the GamePlay layer. This is similar to Unity's XLua, you can bind the Lua code to the GameObject through a GameLogic component, receive Start and Update calls from the engine, and access the binding GameObject object through "self" (see later for specific examples).
 
-项目目前已经完成了引擎所需的基本的场景，预制体，材质系统，shader文件系统等等的开发。引擎场景中的对象都是Unity式的 GameObject - Component 结构，也有一个类Unity的引擎编辑器页面。不过编辑功能还不完善，只有一部分 Component 能够被编辑，其它的主要是展示当前的运行时状态。
+引擎场景中的对象都是Unity式的 GameObject - Component 结构，也有一个类似Unity的引擎编辑器页面。不过编辑功能还不完善，只有一部分 Component 能够被编辑，其它的主要是展示当前的运行时状态。
 
-The project has now completed the development of the basic scenes, prefabs, materials system, shader file systems and so on that the engine need. The objects in the scene of this engine are all Unity-style GameObject - Component structures, and there is also a Unity-like engine editor. However, the editing function is not complete yet, only some Components can be edited, and the others just display the current runtime status.
+The objects in the scene of this engine are all Unity-style GameObject - Component structures, and there is also a Unity-like engine editor. However, the editing function is not complete yet, only some Components can be edited, and the others just display the current runtime status.
 
 ## 引擎编辑器和更多演示 (Engine Editor And More Demonstration)
 
@@ -108,13 +108,13 @@ Click zxshader and Lua to preview the code in the Inspector:
 
 ## 多套内置渲染管线 (Multiple Built-in Rendering Pipelines)
 
-本引擎有3套内置渲染管线，分别是正向渲染管线，延迟渲染管线和光线追踪渲染管线。其中前两种属于光栅化渲染。
+本引擎有3套内置渲染管线，分别是正向渲染管线，延迟渲染管线和光线追踪渲染管线。
 
-ZXEngine has three built-in rendering pipelines, which are forward rendering pipeline, deferred rendering pipeline and ray tracing rendering pipeline. The first two of these belong to the rasterization rendering.
+ZXEngine has three built-in rendering pipelines, which are forward rendering pipeline, deferred rendering pipeline and ray tracing rendering pipeline.
 
 引擎的场景文件中保存了渲染管线信息，在切换场景的时候引擎会直接无缝切换渲染管线。所以想运行哪套渲染管线，直接在引擎编辑器中双击对应的场景文件切换即可。
 
-The rendering pipeline information is saved in the scene file of the engine, and the engine seamlessly switches the rendering pipeline directly when switching scenes. So if you want to run which rendering pipeline, just double-click the corresponding scene file in the engine editor to switch.
+The rendering pipeline information is saved in the scene file, and the engine seamlessly switches the rendering pipeline when switching scenes. So if you want to run which rendering pipeline, just double-click the corresponding scene file in the engine editor to switch.
 
 使用正向渲染管线和光追渲染管线的场景已经在前面演示过了，这里再补充一个延迟渲染管线的演示场景：
 
@@ -130,9 +130,9 @@ Here is a GIF of the simulation of rigid mechanics and cloth in PhysZ (the size 
 
 ![](Documents/Images/PhysZ0.gif)
 
-使用基本的PhysZ物理引擎只需要关心两个Component，Collider和Rigidbody。其中Collider目前提供了三种类型：BoxCollider，PlaneCollider和SphereCollider。下面是这两个Component在引擎里编辑器里的截图：
+使用基本的PhysZ物理引擎只需要关心两个Component：Collider和Rigidbody。其中Collider目前提供了三种类型：BoxCollider，PlaneCollider和SphereCollider。下面是这两个Component在引擎里编辑器里的截图：
 
-Using the PhysZ engine involves only two Components, Collider and Rigidbody. Collider currently provides three types: BoxCollider, PlaneCollider and SphereCollider. The following are screenshots of these two Components in the editor in the engine:
+Using the PhysZ engine involves only two Components: Collider and Rigidbody. Collider currently provides three types: BoxCollider, PlaneCollider and SphereCollider. The following are screenshots of these two Components in the editor in the engine:
 
 ![](Documents/Images/PhysZ1.png)
 
@@ -160,17 +160,17 @@ The PhysZ engine is the result of me studying Ian Millington's "Game Physics Eng
 
 ZXShader是专门给ZXEngine用的一套Shader系统，因为ZXEngine同时支持Vulkan/DirectX12/OpenGL，所以也需要一个统一的Shader语言才能支撑后面的材质系统。ZXShader目前暂时只支持光栅渲染管线，光追渲染管线的Shader是在VK和DX下独立写的。ZXShader语言本身并不复杂，对GLSL，HLSL或者Unity ShaderLab比较熟悉的人应该都能很快看懂，代码示例在ExampleProject\Assets\Shaders中。
 
-ZXShader is a shader system specially used for ZXEngine. Because ZXEngine supports Vulkan/DirectX12/OpenGL, a unified shader language is needed to support the material system. ZXShader currently only supports the rasterization rendering pipeline. The Shader of the raytracing rendering pipeline is written independently under VK and DX. The ZXShader language itself is not complicated. People who are familiar with GLSL, HLSL or Unity ShaderLab should be able to understand it quickly. The code examples are in ExampleProject\Assets\Shaders.
+ZXShader is a shader system for ZXEngine. Because ZXEngine supports Vulkan/DirectX12/OpenGL, a unified shader language is needed to support the material system. ZXShader currently only supports the rasterization rendering pipeline. The Shader of the raytracing rendering pipeline is written independently under VK and DX. The ZXShader language itself is not complicated. People who are familiar with GLSL, HLSL or Unity ShaderLab should be able to understand it quickly. The code examples are in ExampleProject\Assets\Shaders.
 
-材质系统和Unity的比较类似，就是挂一个Shader，然后可以在编辑器面板上看到这个Shader暴露给引擎的参数。并且可以通过引擎编辑器调整参数数值，然后实时看到渲染结果的动态反馈。直接调整正在运行的场景中的材质：
+材质系统和Unity的比较类似，就是挂一个Shader，然后可以在编辑器面板上看到这个材质暴露给引擎的参数。并且可以通过引擎编辑器调整参数数值，然后实时看到渲染结果的动态反馈。如图，直接调整正在运行的场景中的材质：
 
-The material system is similar to Unity's. Select a Shader, and then you can see the parameters exposed by this shader to the engine on the editor panel. And you can adjust parameter values through the engine editor, and then see the feedback of the rendering results in real time. For example, adjust the materials in the running scene:
+The material system is similar to Unity. Select a render object, and then you can see the parameters exposed by the material to the engine editor. And you can adjust parameter values through the engine editor, and then see the feedback of the rendering results in real time. For example, adjust the materials in the running scene:
 
 ![](Documents/Images/Material1.gif)
 
-选中Asset中的材质后，直接调整材质参数，在材质球上预览变化：
+选中Asset中的材质文件后，直接调整材质参数，在材质球上预览变化：
 
-This is after selecting the material in the Asset, adjusting the material parameters, and previewing the changes on the material ball:
+This is after selecting the material file in the Asset, adjusting the material parameters, and previewing the changes on the material ball:
 
 ![](Documents/Images/Material2.gif)
 
@@ -178,21 +178,17 @@ This is after selecting the material in the Asset, adjusting the material parame
 
 切换到AnimDemo场景，点击运行按钮后，可以看到骨骼蒙皮动画的展示:
 
-Switch to the AnimDemo scene and click Play button to see the skeletal animation display:
+Switch to the AnimDemo scene and click Play button to see the skeletal animation demonstration:
 
 ![](Documents/Images/Anim.gif)
 
 本引擎的动画系统支持动画混合，所以这里除了能看到单个动画播放外，还能看到人物从走路状态进入跑步状态时，两个动画之间流畅的过渡。
 
-The animation system of this engine supports animation blending, so in addition to the individual animation playback, you can also see the smooth transition between the two animations when the character enters the running state from the walking state.
+The animation system supports animation blending, so in addition to the individual animation play, you can also see the smooth transition between the two animations when the character enters the running state from the walking state.
 
-这个动画系统也使用了引擎内置的JobSystem来优化性能。
+这里动画的播放代码属于业务逻辑层而不是引擎，所以是写在Lua代码中的，通过GameLogic组件绑定到对应的GameObject上。
 
-This animation system also uses the engine's built-in JobSystem to optimize performance.
-
-这里动画的播放代码属于业务逻辑模块而不是引擎，所以是写在Lua代码中的，通过GameLogic组件绑定到对应的GameObject上。
-
-The code to play the animation belongs to the GamePlay rather than the engine, so it‘s written in the Lua code and bound to the GameObject through the GameLogic component.
+The code to play the animation belongs to the GamePlay rather than the engine, so it‘s written in the Lua code and bound to the character GameObject through the GameLogic component.
 
 ## 粒子系统 (Particle System)
 
@@ -218,7 +214,7 @@ This engine provides a simple game UI system, an example is shown below (see the
 
 这里的UI主要有2类：一类是基于屏幕空间的UI，也就是常规的覆盖到屏幕上的，如图中点击地块后出现的弹窗。第二类是基于世界空间的UI，也就是存在于三维空间中的UI，如图中地块上的名牌。
 
-There are two types of UI here: one is the screen-space UI, which is overlaid on the screen, such as the pop-up window that appears when you click on the tile in the picture. The second type is the world-space UI, which is the UI that draw in three-dimensional space, such as the nameplate on the tile in the picture.
+There are two types of UI here: one is the screen-space UI, which is overlaid on the screen, such as the pop-up window that appears when you click on the tile. The second type is the world-space UI, which is the UI that draw in three-dimensional space, such as the nameplate on the tile.
 
 目前有四个基本的UI组件，分别是RectTransform，UITextRenderer，UITextureRenderer和UIButton。
 
@@ -234,7 +230,7 @@ RectTransform is a special Transform for screen-space based UI that makes adjust
 
 比如我有一个UI组件希望定位到画面左上角，则Vertical Anchor选择Top，Horizontal Anchor选择Left，X和Y填写相对屏幕左上角的偏移量即可。如果是UI系统中的子对象，锚点就会基于父节点位置和Size来定位子对象。
 
-For example, if I want to position a UI component in the upper left corner of the screen, I can select Top for Vertical Anchor, Left for Horizontal Anchor, and set X and Y to the offset relative to the upper left corner of the screen. If it‘s a child object in the UI system, the anchor will position the child object based on the parent node position and size.
+For example, if I want to put a UI component in the upper left corner of the screen, I can select Top for Vertical Anchor, Left for Horizontal Anchor, and set X and Y to the offset relative to the upper left corner of the screen. If it‘s a child object in the UI system, the anchor will position the child object based on the parent node position and size.
 
 如果不使用RectTransform而是使用Transform，就相当于直接把UI放到了场景中，会以3D的形式去绘制。
 
@@ -284,15 +280,15 @@ end
 
 本引擎的GamePlay层使用Lua语言，引擎将需要提供给GamePlay层的C++接口都Wrap到了Lua，开发方式有点类似于Unity中的XLua。不过目前Wrap到Lua的接口还不是特别多，以后逐步完善。这里只简单演示一下Lua脚本系统和引擎的Lua接口，更多更详细的演示请看后面的实际游戏项目演示。
 
-The GamePlay layer of this engine uses Lua language. The engine wraps all the C++ interfaces that need to be provided to the GamePlay layer into Lua. The development way is similar to XLua in Unity. However, there are not many interfaces that have been wrapped to Lua at present, and they will be gradually added in the future. Here we only briefly demonstrate the Lua scripting system and the Lua interface of the engine. For more detailed demonstrations, please see the actual game project demonstration in the following document.
+The GamePlay layer of this engine uses Lua language. The engine wraps all the C++ interfaces that need to be provided to the GamePlay layer into Lua. The development way is similar to XLua in Unity. However, only part of interfaces have been wrapped to Lua at now, and they will be gradually added in the future. Here we only briefly demonstrate the Lua scripting system and the Lua interface of the engine. For more detailed demonstrations, please see the actual game project demonstration in the following document.
 
 使用方式是直接创建一个Lua代码，然后用GameLogic组件把Lua代码挂载到一个GameObject对象上，然后这个Lua代码就可以接收来自引擎的Awake，Start，Update和FixedUpdate等接口的调用了。也可以通过self来访问自己所挂载的GameObject对象，获取Component，调用引擎接口等等。
 
-The way to use lua in ZXEngine is to create a Lua code, and then use the GameLogic component to load the Lua code to a GameObject. Then the Lua code can receive calls from the engine's Awake, Start, Update and FixedUpdate. You can also use self to access the GameObject you bound, obtain components, call the engine interface, etc.
+The way to use lua in ZXEngine is to create a Lua code, and then use the GameLogic component to bind the Lua code to a GameObject. Then the Lua code can receive calls from the engine's Awake, Start, Update and FixedUpdate. You can also use "self" to access the GameObject you bound, obtain components, call the engine interface, etc.
 
 以控制GameObject移动和旋转为例，可以写一个ObjectMove.lua脚本，然后挂到一个GameObject上。这里我们可以暴露一些Lua脚本中的变量到编辑器面板上，以便在引擎编辑器中直接修改Lua变量的值，方便调试，也方便同一个脚本挂到不同GameObject上时使用不同的参数。这些变量的值会保存到zxprefab文件中，运行时在Awake之前完成初始化。比如我们的ObjectMove.lua脚本暴露了一个speed变量来控制物体移动速度：
 
-Take controlling the movement and rotation of GameObject as an example. Write an ObjectMove.lua and bind it to a GameObject. Here we can expose some variables from the Lua script to the editor panel so that the values of the Lua variables can be modified in the engine editor for debugging purposes and for using different parameters when the same script is bound to different GameObjects. The values of these variables are stored in a zxprefab file and will be initialized at runtime before Awake. For example, our ObjectMove.lua script exposes a speed variable to control how fast objects move:
+Take controlling the movement and rotation of GameObject as an example. Write an ObjectMove.lua and bind it to a GameObject. Here we can expose some variables from the Lua script to the editor panel so that the values of the Lua variables can be modified in the engine editor for debugging purposes and can set different parameters when the same script is bound to different GameObjects. The values of these variables are stored in a zxprefab file and will be initialized at runtime before Awake. For example, our ObjectMove.lua script exposes a speed variable to control how fast objects move:
 
 ![](Documents/Images/GameLogic.png)
 
@@ -487,7 +483,7 @@ If you need to use JobSystem to process some complex data, it's better to use it
 
 由于引擎的GamePlay层使用的语言为Lua，而Lua解释器并不支持多线程解释执行代码，所以这套JobSystem目前只能在引擎内部使用，并未暴露给GamePlay层。
 
-Because the language of the GamePlay layer of the engine is Lua, and the Lua interpreter does not support multi-threaded interpretation of the Lua code, the JobSystem can only be used in the C++ engine at present, and is not exposed to the GamePlay layer.
+Because the language of the GamePlay layer of this engine is Lua, and the Lua interpreter does not support multi-threaded interpretation of the Lua code, the JobSystem can only be used in the C++ engine at present, and is not exposed to the GamePlay layer.
 
 ## C++反射与序列化 (C++ Reflection And Serialization)
 
@@ -627,19 +623,19 @@ For more reflection interfaces, use way and serialization tool demonstration, et
 
 ### *.zxscene
 
-场景文件，包含GameObjects，天空盒等。如果是光线追踪场景，还包含了光追管线的Shader。
+场景文件，包含GameObjects，天空盒等。如果是光追场景，还包含了光追管线的Shader。
 
-Scene files, containing GameObjects, skyboxes, etc. If it is a ray tracing scene, it also includes the Shader of the light tracing pipeline.
+Scene files, containing GameObjects, skyboxes, etc. If it is a ray tracing scene, it also includes the Shader of the ray tracing pipeline.
 
 ### *.zxshader
 
 这是本引擎自己的shader语言文件，不过目前zxshader仅支持DirectX 12，Vulkan和OpenGL的光栅化渲染管线。示例代码可以在ExampleProject\Assets\Shaders中找到。
 
-This is ZXEngine's own shader language file, but currently zxshader only supports the rasterization rendering pipeline of DirectX 12, Vulkan and OpenGL. Example code can be found in ExampleProject\Assets\Shaders.
+This is ZXEngine's shader language file, but currently zxshader only supports the rasterization rendering pipeline of DirectX 12, Vulkan and OpenGL. Example code can be found in ExampleProject\Assets\Shaders.
 
 ### *.vkr  *.dxr
 
-这两个后缀分别对应Vulkan和DirectX12的光线追踪Shader代码文件。目前暂未像光栅化管线Shader那样搞一个引擎专用的Shader语言。
+这两个后缀分别对应Vulkan和DirectX12的光线追踪Shader代码文件。目前暂未像光栅管线Shader那样搞一个引擎专用的Shader语言。
 
 These two extension correspond to the ray tracing Shader code files of Vulkan and DirectX12 respectively. For now, there is no engine-specific ray tracing shader language like ZXShader in the rasterization pipeline.
 
@@ -677,7 +673,7 @@ To better demonstrate how to use ZXEngine for real development, and to better de
 
 这个仓库里面存放了一些用ZXEngine开发的实际游戏项目Demo。除了用于演示外，开发这些Demo也是在用实际需求检验ZXEngine，从而发现引擎不完善的地方并进行扩展和优化。目前有两个Demo：
 
-This repository contains demos of actual game projects developed with the ZXEngine.In addition to being used for demonstrations, these demos are also being developed to test ZXEngine with real requirements, to find out where the engine falls short and to extend and optimize it. There are currently two demos:
+This repository contains some actual game project demos developed with ZXEngine. Except for demonstration, developing these demos is also a way to test ZXEngine against real requirements, to find out where the engine falls short and to extend and optimize it. There are currently two demos:
 
 ### SLG Demo:
 
@@ -695,13 +691,13 @@ This project supports Windows, macOS, Linux and Android, provides four build too
 
 本项目在Windows平台支持Vulkan，DirectX 12和OpenGL，在macOS平台支持Vulkan和OpenGL，在Linux平台支持OpenGL，在Android平台支持Vulkan。在Linux上的Vulkan应该也是能支持的，但是由于我缺少符合条件的硬件设备，所以暂时还没有在Linux上调试运行过Vulkan版的ZXEngine。
 
-This project supports Vulkan, DirectX 12 and OpenGL on Windows, Vulkan and OpenGL on macOS, OpenGL on Linux and Vulkan on Android. Vulkan on Linux is also supposed to be supported, but I haven't debugged and test the Vulkan version of ZXEngine on Linux yet because I don't have the device that meets the requirements.
+This project supports Vulkan, DirectX 12 and OpenGL on Windows, Vulkan and OpenGL on macOS, OpenGL on Linux and Vulkan on Android. Vulkan on Linux is also supposed to be supported, but I haven't tested and debugged the Vulkan version of ZXEngine on Linux yet because I don't have the device that meets the requirements.
 
 ### Windows
 
-在Windows平台下三种构建工具都可以使用。喜欢用VS的直接用VS 2022打开BuildSolution\VisualStudio\ZXEngine.sln构建即可。如果不想用VS，可以使用xmake，使用方式如下：
+在Windows平台下可以使用VS 2022，xmake和CMake。喜欢用VS的直接用VS 2022打开BuildSolution\VisualStudio\ZXEngine.sln构建即可。如果不想用VS，可以使用xmake，使用方式如下：
 
-All three build tools can work on the Windows platform. If you like to use VS, just use VS 2022 to open BuildSolution\VisualStudio\ZXEngine.sln to build. If you don’t want to use VS, you can use xmake as follows:
+On the Windows platform you can use VS 2022，xmake and CMake. If you want to use VS, just use VS 2022 to open BuildSolution\VisualStudio\ZXEngine.sln to build. If you don’t want to use VS, you can use xmake as follows:
 
 ```shell
 cd BuildSolution\xmake
@@ -745,13 +741,13 @@ When running on macOS, if there is a display misalignment between the engine edi
 
 还有一个问题是Mac的芯片可能不支持Vulkan的几何着色器，比如我这台M1芯片的Mac就不支持。我也不知道为什么用OpenGL都支持，但是用Vulkan就不支持。由于本引擎的Shadow Cube Map是使用几何着色器渲染的，所以在不支持几何着色器的设备上运行时，在使用点光源的场景中阴影系统会失效。
 
-Another problem is that the Apple Silicon may not support Vulkan's geometry shader. For example, my M1 Mac does not support it. I don't know why it is supported with OpenGL but not supported with Vulkan. Since the shadow cube map of this engine is rendered using a geometry shader, when running on a device that does not support geometry shader, the shadow system will not work in a scene using point light.
+Another problem is that the Macbook may not support Vulkan's geometry shader. For example, my M1 Mac does not support it. I don't know why it is supported with OpenGL but not supported with Vulkan. Since the shadow cube map of this engine is rendered using a geometry shader, when running on a device that does not support geometry shader, the shadow system will not work in a scene using point light.
 
 ### Linux
 
 本项目在Linux平台也提供了xmake和CMake，xmake的使用方式还是一样：
 
-This project also provides xmake and CMake on the Linux. The usage of xmake is still the same:
+This project also provides xmake and CMake for Linux. The usage of xmake is still the same:
 
 ```shell
 cd BuildSolution/xmake
@@ -786,25 +782,25 @@ The code of ZXEngine has been adapted to the android platform, and I have succes
 
 If you want to build ZXEngine applications for android platform, you can follow the following steps to build manually:
 
-#### 1,
+#### 1.
 
 打开BuildSolution/AndroidStudio里的Android Studio模板工程，将本项目依赖的两个第三方库[assimp](https://github.com/assimp/assimp/releases)和[freetype](https://freetype.org/download.html)下载到本地，把文件夹名字改成assimp和freetype，放置于app/src/main/cpp文件夹下，与CMakeLists.txt同级。
 
 Open the Android Studio template project in BuildSolution/AndroidStudio. Then download the two third-party libraries [assimp](https://github.com/assimp/assimp/releases) and [freetype](https://freetype.org/download.html) that this project relies on to local, and change the folder name to assimp and freetype. Place them in the app/src/main/cpp folder, in the same path as CMakeLists.txt.
 
-#### 2,
+#### 2.
 
 把要构建的游戏项目先在桌面平台上以编辑器模式打开，然后点一下引擎编辑器的“Assets/Compile All Shader for Vulkan”按钮，完成Shader代码的预编译工作。
 
 Open the game project to be built in editor mode on the desktop platform first, then click the "Assets/Compile All Shader for Vulkan" button in the engine editor to complete the pre-compilation of the shader code.
 
-#### 3,
+#### 3.
 
 把BuiltInAssets文件夹整个复制粘贴到安卓工程的asset目录下，再把你要打包的那个工程的Assets文件夹和项目配置文件一起复制粘贴到asset目录下，最后安卓工程的asset目录下应该有这三个内容：Assets，BuiltInAssets，ProjectSetting.zxprjcfg
 
 Copy and paste the entire BuiltInAssets folder into the asset directory of the Android Studio project. Then copy and paste the Assets folder and project configuration file of the project you want to package into the asset directory. Finally, the asset directory of the Android Studio project should have these three contents: Assets, BuiltInAssets, ProjectSetting.zxprjcfg
 
-#### 4,
+#### 4.
 
 上述步骤都完成后，在Android Studio里点击构建即可。
 
@@ -816,13 +812,13 @@ After completing the above steps, click Build in Android Studio to complete the 
 
 Currently, zxshaders are read from the source code at runtime and compiled in real time under DirectX 12 and OpenGL, but precompiled by external tools under Vulkan.Although Vulkan can also do real-time compilation through the shader source code, but it is more troublesome to write, and needs to introduce additional runtime libraries, so it did not do Vulkan shader real-time compilation. When loading a shader under Vulkan, the engine checks if there is a pre-compiled spv file, and if not, it immediately calls an external tool to compile and read it again. So, if it's the first time to open a project, or the first time to open a scene, the speed will be slower under Vulkan, because you need to wait for shaders to complete a pre-compilation first. However, you can complete All shader precompilation in advance by clicking the "Assets/Compile All Shader for Vulkan" button in the engine menu bar. Another thing under Vulkan is to update the shader code. Because under Vulkan the engine directly read the shader precompiled into the spv file, rather than the source code, so after the shader source code is modified, it needs to be recompiled to take effect. In this case, you also need to manually click the "Assets/Compile All Shader for Vulkan" button.
 
-切换图形API的方式是在pubh.h文件中修改宏定义。有3个宏定义ZX_API_VULKAN，ZX_API_D3D12和ZX_API_OPENGL，分别对应引擎支持的3个图形API。开启其中一个宏定义，并注释掉其它2个宏定义，重新编译引擎，就完成了对图形API的切换。
+切换图形API的方式是在pubh.h文件中修改宏定义。有一个叫ZX_API_SWITCH的宏定义就是用来控制图形API切换的。具体怎么操作请到pubh.h头文件中查看ZX_API_SWITCH的注释。
 
-The way to switch the graphics API is to modify the macro definition in the pubh.h file. There are 3 macro definitions ZX_API_VULKAN, ZX_API_D3D12 and ZX_API_OPENGL, corresponding to the 3 graphics APIs supported by the engine. Open one of the macro definitions, comment out the other two macro definitions, and recompile the engine to complete the switching of the graphics API.
+The way to switch the graphics API is to modify the macro definition in the pubh.h file. There is a macro definition ZX_API_SWITCH that controls the graphical API switching. See the ZX_API_SWITCH comments in the pubh.h header file for details.
 
 作为一个个人项目，本项目还没有在各种不同设备环境下进行过严格的测试，所以不排除在某些设备下会出现异常。当然也有可能在我不停更新本项目的过程中写出一些我没发现的BUG。所以如果你在编译或者运行项目的过程中遇到了异常，欢迎向我提出。如果你有什么疑问，或者有什么想和我讨论的，可以通过我Github主页的邮箱联系我，或者通过我的知乎主页私信我。
 
-As a personal project, this project has not been rigorously tested in various environments, so it cannot be ruled out that exceptions may occur under certain devices. Of course, it's also possible that I may write some bugs that I have not discovered as I continue to update this project. So if you encounter an exception when compiling or running the project, you can report it to me. If you have any questions or want to discuss anything with me, you can contact me through the email on my Github homepage, or send me a message through my Zhihu homepage.
+As a personal project, this project has not been rigorously tested in various environments, so exceptions may occur when running with some certain devices. It's also possible that I may write some bugs that I haven't noticed in the process of updating this project. So if you encounter an exception when compiling or running the project, you can report it to me. If you have any questions or want to discuss anything with me, you can contact me through the email on my Github homepage, or send me a message through my Zhihu homepage.
 
 ## 一些废话 (Some mumbles)
 
