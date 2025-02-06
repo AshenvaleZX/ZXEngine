@@ -16,6 +16,8 @@ namespace ZXEngine
 		float x;
 		float y;
 		TouchPhase phase;
+		float startX;
+		float startY;
 	};
 
 	class InputManager

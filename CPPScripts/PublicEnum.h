@@ -486,5 +486,7 @@ namespace ZXEngine
 		KEY_UP_PRESS,
 		KEY_UP_DOWN,
 		KEY_UP_UP,
+
+		TOUCH_CLICK,
 	};
 }

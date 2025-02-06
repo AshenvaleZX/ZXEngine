@@ -1,5 +1,6 @@
 #include "InputManagerAndroid.h"
 #include "../GlobalData.h"
+#include "../EventManager.h"
 
 namespace ZXEngine
 {
@@ -42,7 +43,7 @@ namespace ZXEngine
                 case AMOTION_EVENT_ACTION_DOWN:
                 case AMOTION_EVENT_ACTION_POINTER_DOWN:
                 {
-                    mTouches.push_back(Touch{pointer.id, x, y, TouchPhase::Began});
+                    mTouches.push_back(Touch{pointer.id, x, y, TouchPhase::Began, x, y});
                     break;
                 }
                 case AMOTION_EVENT_ACTION_CANCEL:
@@ -60,6 +61,10 @@ namespace ZXEngine
                     if (it != mTouches.end())
                     {
                         it->phase = TouchPhase::Ended;
+                        if (abs(it->startX - x) < 5.0f && abs(it->startY - y) < 5.0f)
+                        {
+                            EventManager::GetInstance()->FireEvent(EventType::TOUCH_CLICK, to_string(x) + "|" + to_string(y));
+                        }
                     }
                     break;
                 }

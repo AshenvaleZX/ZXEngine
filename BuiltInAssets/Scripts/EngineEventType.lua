@@ -153,6 +153,8 @@ EngineEventType_NumToStr =
     "KEY_UP_PRESS",
     "KEY_UP_DOWN",
     "KEY_UP_UP",
+
+    "TOUCH_CLICK",
 }
 
 -- 这里再生成字符串为key，id为value的table，和C++的Enum对齐。
