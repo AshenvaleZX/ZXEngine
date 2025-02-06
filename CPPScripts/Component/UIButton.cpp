@@ -21,6 +21,7 @@ namespace ZXEngine
 	{
 		mUpCallBackKey = EventManager::GetInstance()->AddEventHandler(EventType::MOUSE_BUTTON_1_UP, std::bind(&UIButton::BtnUpCallBack, this, std::placeholders::_1));
 		mDownCallBackKey = EventManager::GetInstance()->AddEventHandler(EventType::MOUSE_BUTTON_1_DOWN, std::bind(&UIButton::BtnDownCallBack, this, std::placeholders::_1));
+		mTouchClickCallBackKey = EventManager::GetInstance()->AddEventHandler(EventType::TOUCH_CLICK, std::bind(&UIButton::TouchClickCallBack, this, std::placeholders::_1));
 	}
 
 	UIButton::~UIButton()
@@ -28,6 +29,7 @@ namespace ZXEngine
 		UnregisterCallBack();
 		EventManager::GetInstance()->RemoveEventHandler(EventType::MOUSE_BUTTON_1_UP, mUpCallBackKey);
 		EventManager::GetInstance()->RemoveEventHandler(EventType::MOUSE_BUTTON_1_DOWN, mDownCallBackKey);
+		EventManager::GetInstance()->RemoveEventHandler(EventType::TOUCH_CLICK, mTouchClickCallBackKey);
 	}
 
 	void UIButton::UnregisterCallBack()
@@ -98,5 +100,19 @@ namespace ZXEngine
 
 		mClickX = std::stof(argsVec[0]);
 		mClickY = std::stof(argsVec[1]);
+	}
+
+	void UIButton::TouchClickCallBack(const string& args)
+	{
+		if (IsActive() == false)
+			return;
+
+		auto argsVec = Utils::StringSplit(args, '|');
+
+		mClickX = std::stof(argsVec[0]);
+		mClickY = std::stof(argsVec[1]);
+
+		CheckScale();
+		CheckClick();
 	}
 }

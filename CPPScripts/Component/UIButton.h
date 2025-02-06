@@ -34,10 +34,12 @@ namespace ZXEngine
 		float mClickY = 0.0f;
 		uint32_t mUpCallBackKey = 0;
 		uint32_t mDownCallBackKey = 0;
+		uint32_t mTouchClickCallBackKey = 0;
 
 		void CheckScale();
 		void CheckClick() const;
 		void BtnUpCallBack(const string& args);
 		void BtnDownCallBack(const string& args);
+		void TouchClickCallBack(const string& args);
 	};
 }
