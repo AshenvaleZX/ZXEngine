@@ -15,11 +15,6 @@
 #include "Audio/AudioEngine.h"
 #include "ZMesh.h"
 
-#ifdef ZX_EDITOR
-#include "Editor/EditorCamera.h"
-#include "Editor/EditorDataManager.h"
-#endif
-
 namespace ZXEngine
 {
 	Scene::Scene(SceneStruct* sceneStruct)
@@ -89,20 +84,12 @@ namespace ZXEngine
 		ParticleSystemManager::GetInstance()->Update();
 	}
 	
-	void Scene::Render()
+	void Scene::RenderPrepare()
 	{
 		for (auto gameObject : gameObjects)
 		{
 			RenderQueueManager::GetInstance()->AddGameObject(gameObject);
 		}
-
-#ifdef ZX_EDITOR
-		auto camera = EditorDataManager::GetInstance()->isGameView ? Camera::GetMainCamera() : EditorCamera::GetInstance()->mCamera;
-#else
-		auto camera = Camera::GetMainCamera();
-#endif
-
-		RenderEngine::GetInstance()->Render(camera);
 	}
 
 	GameObject* Scene::Pick(const PhysZ::Ray& ray)

@@ -14,6 +14,11 @@
 #include "RenderEngineProperties.h"
 #include "Window/WindowManager.h"
 
+#ifdef ZX_EDITOR
+#include "Editor/EditorCamera.h"
+#include "Editor/EditorDataManager.h"
+#endif
+
 namespace ZXEngine
 {
 	RenderEngine* RenderEngine::mInstance = nullptr;
@@ -54,8 +59,16 @@ namespace ZXEngine
 		RenderAPI::GetInstance()->BeginFrame();
 	}
 
-	void RenderEngine::Render(Camera* camera)
+	void RenderEngine::Render()
 	{
+		SceneManager::GetInstance()->GetCurScene()->RenderPrepare();
+
+#ifdef ZX_EDITOR
+		auto camera = EditorDataManager::GetInstance()->isGameView ? Camera::GetMainCamera() : EditorCamera::GetInstance()->mCamera;
+#else
+		auto camera = Camera::GetMainCamera();
+#endif
+
 		auto renderPassMgr = RenderPassManager::GetInstance();
 		for (auto pass : renderPassMgr->curPasses)
 		{

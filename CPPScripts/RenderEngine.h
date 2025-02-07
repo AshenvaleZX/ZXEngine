@@ -3,7 +3,6 @@
 
 namespace ZXEngine
 {
-	class Camera;
 	class RenderEngine
 	{
 	public:
@@ -22,7 +21,7 @@ namespace ZXEngine
 
 		// 绘制
 		void BeginRender();
-		void Render(Camera* camera);
+		void Render();
 		void EndRender();
 	};
 }

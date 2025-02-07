@@ -103,7 +103,7 @@ namespace ZXEngine
 	{
 		RenderEngine::GetInstance()->BeginRender();
 
-		SceneManager::GetInstance()->GetCurScene()->Render();
+		RenderEngine::GetInstance()->Render();
 
 #ifdef ZX_EDITOR
 		EditorGUIManager::GetInstance()->Render();

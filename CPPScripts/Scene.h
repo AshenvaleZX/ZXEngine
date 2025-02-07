@@ -27,7 +27,7 @@ namespace ZXEngine
 		~Scene();
 
 		void Update();
-		void Render();
+		void RenderPrepare();
 		GameObject* Pick(const PhysZ::Ray& ray);
 		// 添加到场景根节点
 		void AddGameObject(GameObject* gameObject);
