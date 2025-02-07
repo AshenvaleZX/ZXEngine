@@ -92,7 +92,7 @@ namespace ZXEngine
     {
         if (isScreenSpace)
         {
-            Matrix4 mat_P = Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
+            Matrix4 mat_P = Math::OrthographicUI(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
             for (auto material : textMaterials)
             {
 				material->SetMatrix("ENGINE_Projection", mat_P, true);
@@ -106,7 +106,7 @@ namespace ZXEngine
 
         Matrix4 mat_P;
         if (isScreenSpace)
-			mat_P = Math::Orthographic(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
+			mat_P = Math::OrthographicUI(-static_cast<float>(GlobalData::srcWidth) / 2.0f, static_cast<float>(GlobalData::srcWidth) / 2.0f, -static_cast<float>(GlobalData::srcHeight) / 2.0f, static_cast<float>(GlobalData::srcHeight) / 2.0f);
 
         auto characterMgr = TextCharactersManager::GetInstance();
 

@@ -61,10 +61,19 @@ namespace ZXEngine
 
 	Matrix4 Camera::GetProjectionMatrix() const
 	{
-		if (mAspect == 0.0f)
-			return Math::Perspective(Math::Deg2Rad(mFOV), static_cast<float>(GlobalData::srcWidth) / static_cast<float>(GlobalData::srcHeight), mNearClipDis, mFarClipDis);
-		else
-			return Math::Perspective(Math::Deg2Rad(mFOV), mAspect, mNearClipDis, mFarClipDis);
+		float aspect = mAspect == 0.0f ? static_cast<float>(GlobalData::srcWidth) / static_cast<float>(GlobalData::srcHeight) : mAspect;
+		auto res = Math::Perspective(Math::Deg2Rad(mFOV), aspect, mNearClipDis, mFarClipDis);
+
+#if defined(ZX_PLATFORM_ANDROID)
+		if (GlobalData::screenRotation == ScreenRotation::Rotate90)
+			res = Math::Rotate(res, Math::PI * 0.5f, Vector3(0.0f, 0.0f, 1.0f));
+		else if (GlobalData::screenRotation == ScreenRotation::Rotate180)
+			res = Math::Rotate(res, Math::PI, Vector3(0.0f, 0.0f, 1.0f));
+		else if (GlobalData::screenRotation == ScreenRotation::Rotate270)
+			res = Math::Rotate(res, Math::PI * 1.5f, Vector3(0.0f, 0.0f, 1.0f));
+#endif
+
+		return res;
 	}
 
 	Matrix4 Camera::GetProjectionMatrixInverse() const
@@ -73,12 +82,33 @@ namespace ZXEngine
 		return Math::Inverse(projection);
 	}
 
-	Vector2 Camera::WorldToScreenPoint(const Vector3& point) const
+	Vector2 Camera::WorldToScreenPoint(const Vector3& wPos) const
 	{
-		Vector4 pos = GetProjectionMatrix() * GetViewMatrix() * point.ToPosVec4();
+		Vector4 pos = GetProjectionMatrix() * GetViewMatrix() * wPos.ToPosVec4();
 		pos = pos / pos.w;
 
-		return Vector2(
+#ifdef ZX_PLATFORM_ANDROID
+		float x = pos.x;
+		float y = pos.y;
+		if (GlobalData::screenRotation == ScreenRotation::Rotate90)
+		{
+			pos.x = y;
+			pos.y = -x;
+		}
+		else if (GlobalData::screenRotation == ScreenRotation::Rotate180)
+		{
+			pos.x = -x;
+			pos.y = -y;
+		}
+		else if (GlobalData::screenRotation == ScreenRotation::Rotate270)
+		{
+			pos.x = -y;
+			pos.y = x;
+		}
+#endif
+
+		return Vector2
+		(
 			(pos.x + 1.0f) * 0.5f * static_cast<float>(GlobalData::srcWidth),
 #ifdef ZX_API_VULKAN
 			(pos.y + 1.0f) * 0.5f * static_cast<float>(GlobalData::srcHeight)
@@ -100,6 +130,26 @@ namespace ZXEngine
 #endif
 			-1.0f, 1.0f
 		};
+
+#ifdef ZX_PLATFORM_ANDROID
+		float x = pos.x;
+		float y = pos.y;
+		if (GlobalData::screenRotation == ScreenRotation::Rotate90)
+		{
+			pos.x = -y;
+			pos.y = x;
+		}
+		else if (GlobalData::screenRotation == ScreenRotation::Rotate180)
+		{
+			pos.x = -x;
+			pos.y = -y;
+		}
+		else if (GlobalData::screenRotation == ScreenRotation::Rotate270)
+		{
+			pos.x = y;
+			pos.y = -x;
+		}
+#endif
 
 		pos = GetProjectionMatrixInverse() * pos;
 		pos = pos / pos.w;

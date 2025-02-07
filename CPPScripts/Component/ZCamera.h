@@ -35,7 +35,7 @@ namespace ZXEngine
         Matrix4 GetProjectionMatrix() const;
         Matrix4 GetProjectionMatrixInverse() const;
 
-        Vector2 WorldToScreenPoint(const Vector3& point) const;
+        Vector2 WorldToScreenPoint(const Vector3& wPos) const;
         PhysZ::Ray ScreenPointToRay(const Vector2& point) const;
 	};
 
