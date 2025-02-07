@@ -1,8 +1,10 @@
 #include "WindowManagerAndroid.h"
 #include "../GlobalData.h"
+#include "../RenderAPIVulkan.h"
 
 namespace ZXEngine
 {
+    static bool isPause = false;
     static bool isAndroidWindowInitialized = false;
 
     /*!
@@ -16,13 +18,22 @@ namespace ZXEngine
         {
             case APP_CMD_INIT_WINDOW:
                 // 安卓窗口初始化完成，必须等到这个CMD才能获取到窗口继续后面的步骤
-                isAndroidWindowInitialized = true;
+                if (!isAndroidWindowInitialized)
+                {
+                    isAndroidWindowInitialized = true;
+                }
+                else
+                {
+                    auto renderAPI = dynamic_cast<RenderAPIVulkan*>(RenderAPI::GetInstance());
+                    renderAPI->RecreateSwapChain(true);
+                    isPause = false;
+                }
                 break;
             case APP_CMD_TERM_WINDOW:
-                // The window is being destroyed. Use this to clean up your userData to avoid leaking
-                // resources.
+                isPause = true;
                 break;
             default:
+                Debug::Log("Unhandled android cmd: %s", cmd);
                 break;
         }
     }
@@ -56,6 +67,10 @@ namespace ZXEngine
     bool WindowManagerAndroid::WindowShouldClose()
     {
         CheckEvents();
+        while(isPause)
+        {
+            CheckEvents();
+        }
         return mApp->destroyRequested;
     }
 
