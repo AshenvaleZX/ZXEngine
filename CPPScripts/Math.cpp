@@ -1,6 +1,7 @@
 #include "pubh.h"
 #include "Math.h"
 #include "Debug.h"
+#include "GlobalData.h"
 
 namespace ZXEngine
 {
@@ -248,6 +249,20 @@ namespace ZXEngine
 #endif
 
 		return resMat;
+	}
+
+	Matrix4 Math::OrthographicUI(float left, float right, float bottom, float top)
+	{
+		auto res = Orthographic(left, right, bottom, top);
+#if defined(ZX_PLATFORM_ANDROID)
+		if (GlobalData::screenRotation == ScreenRotation::Rotate90)
+			res = Math::Rotate(res, Math::PI * 0.5f, Vector3(0.0f, 0.0f, 1.0f));
+		else if (GlobalData::screenRotation == ScreenRotation::Rotate180)
+			res = Math::Rotate(res, Math::PI, Vector3(0.0f, 0.0f, 1.0f));
+		else if (GlobalData::screenRotation == ScreenRotation::Rotate270)
+			res = Math::Rotate(res, Math::PI * 1.5f, Vector3(0.0f, 0.0f, 1.0f));
+#endif
+		return res;
 	}
 
 	Matrix4 Math::Orthographic(float left, float right, float bottom, float top, float zNear, float zFar)

@@ -64,6 +64,7 @@ namespace ZXEngine
 
 		// 计算正交投影矩阵
 		static Matrix4 Orthographic(float left, float right, float bottom, float top);
+		static Matrix4 OrthographicUI(float left, float right, float bottom, float top);
 		static Matrix4 Orthographic(float left, float right, float bottom, float top, float zNear, float zFar);
 		// 左手坐标系，Z范围[-1, 1]
 		static Matrix4 OrthographicLHNO(float left, float right, float bottom, float top, float zNear, float zFar);
