@@ -187,6 +187,14 @@ namespace ZXEngine
 		Circle2DCollider,
 	};
 
+	enum class ScreenRotation
+	{
+		Rotate0,
+		Rotate90,
+		Rotate180,
+		Rotate270,
+	};
+
 	enum class FaceCullOption
 	{
 		None,

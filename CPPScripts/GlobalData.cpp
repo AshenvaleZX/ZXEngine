@@ -13,6 +13,8 @@ namespace ZXEngine
 	float GlobalData::shadowCubeMapFarPlane = 100.0f;
 	float GlobalData::shadowCubeMapNearPlane = 1.0f;
 
+	ScreenRotation GlobalData::screenRotation = ScreenRotation::Rotate0;
+
 #ifdef ZX_PLATFORM_ANDROID
 	android_app* GlobalData::app = nullptr;
 #endif

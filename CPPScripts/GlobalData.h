@@ -17,6 +17,8 @@ namespace ZXEngine
 		static float shadowCubeMapFarPlane;
 		static float shadowCubeMapNearPlane;
 
+		static ScreenRotation screenRotation;
+
 #ifdef ZX_PLATFORM_ANDROID
 		static android_app* app;
 #endif

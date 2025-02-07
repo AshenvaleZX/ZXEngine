@@ -138,12 +138,22 @@ namespace ZXEngine
         // 这里写在刚刚WaitForFence之后，可以保证CommandBuffer此时的状态是满足have completed execution要求的
         CheckDeleteData();
 
+        if (swapChainExpired)
+        {
+            RecreateSwapChain();
+        }
+
         VkResult result = vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, presentImageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &curPresentImageIdx);
         // 交换链和Surface已经不兼容了，不能继续用了，一般是窗口大小变化导致的
         if (result == VK_ERROR_OUT_OF_DATE_KHR)
+        {
             RecreateSwapChain();
+        }
         else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-            throw std::runtime_error("failed to acquire swap chain image!");
+        {
+            zOutError << "vkAcquireNextImageKHR result: " << result << std::endl;
+            throw std::runtime_error("Failed to acquire swap chain image!");
+        }
 
         vkResetFences(device, 1, &inFlightFences[currentFrame]);
     }
@@ -163,8 +173,8 @@ namespace ZXEngine
         VkResult result = vkQueuePresentKHR(presentQueue, &presentInfo);
         // VK_ERROR_OUT_OF_DATE_KHR表示交换链和Surface已经不兼容了，不能继续用了，必须重新创建交换链
         // VK_SUBOPTIMAL_KHR表示交换链还是可以继续用，但是和Surface的某些属性匹配得不是很好，不重新创建也行
-        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || windowResized) 
-            RecreateSwapChain();
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+            swapChainExpired = true;
         else if (result != VK_SUCCESS)
             throw std::runtime_error("failed to present swap chain image!");
 
@@ -179,7 +189,7 @@ namespace ZXEngine
     {
         newWindowWidth = width;
         newWindowHeight = height;
-        windowResized = true;
+        swapChainExpired = true;
     }
 
     void RenderAPIVulkan::OnGameViewSizeChange()
@@ -3914,6 +3924,19 @@ namespace ZXEngine
         createInfo.presentMode = presentMode;
         createInfo.imageExtent = extent;
 
+#if defined(ZX_PLATFORM_ANDROID)
+        createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
+
+        if (swapChainSupport.capabilities.currentTransform & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR)
+            GlobalData::screenRotation = ScreenRotation::Rotate0;
+        else if (swapChainSupport.capabilities.currentTransform & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR)
+            GlobalData::screenRotation = ScreenRotation::Rotate90;
+        else if (swapChainSupport.capabilities.currentTransform & VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR)
+            GlobalData::screenRotation = ScreenRotation::Rotate180;
+        else if (swapChainSupport.capabilities.currentTransform & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR)
+            GlobalData::screenRotation = ScreenRotation::Rotate270;
+#endif
+
         // imageArrayLayers指定每个图像有多少层，一般都是1
         createInfo.imageArrayLayers = 1;
         // 这个字段指定在交换链中对图像进行的具体操作
@@ -4376,7 +4399,7 @@ namespace ZXEngine
         }
     }
 
-    void RenderAPIVulkan::RecreateSwapChain()
+    void RenderAPIVulkan::RecreateSwapChain(bool recreateSurface)
     {
         int width = 0, height = 0;
 #if defined(ZX_PLATFORM_DESKTOP)
@@ -4403,12 +4426,17 @@ namespace ZXEngine
 #ifdef ZX_EDITOR
         ProjectSetting::SetWindowSize(newWindowWidth, newWindowHeight);
 #else
-        GlobalData::srcWidth = newWindowWidth;
-        GlobalData::srcHeight = newWindowHeight;
+        GlobalData::srcWidth = width;
+        GlobalData::srcHeight = height;
 #endif
 
         // 清理所有交换链相关资源，全部重新创建
         CleanUpSwapChain();
+        if (recreateSurface)
+        {
+            vkDestroySurfaceKHR(vkInstance, surface, nullptr);
+            CreateSurface();
+        }
         CreateSwapChain();
         CreatePresentFrameBuffer();
 
@@ -4421,7 +4449,7 @@ namespace ZXEngine
         
         EventManager::GetInstance()->FireEvent(EventType::WINDOW_RESIZE, "");
 
-        windowResized = false;
+        swapChainExpired = false;
     }
 
     void RenderAPIVulkan::DoGameViewSizeChange()

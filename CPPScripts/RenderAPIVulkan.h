@@ -218,8 +218,10 @@ namespace ZXEngine
         // 选择交换链图像分辨率
         VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
+    public:
         // 重新创建交换链
-        void RecreateSwapChain();
+        void RecreateSwapChain(bool recreateSurface = false);
+    private:
         // 重新创建随GameView大小变化的Buffer
         void DoGameViewSizeChange();
         // 清理交换链相关资源
@@ -410,8 +412,8 @@ namespace ZXEngine
         /// 其它辅助接口
         /// </summary>
     private:
-        bool windowResized = false;
         bool gameViewResized = false;
+        bool swapChainExpired = false;
         uint32_t newWindowWidth = 0;
         uint32_t newWindowHeight = 0;
 
