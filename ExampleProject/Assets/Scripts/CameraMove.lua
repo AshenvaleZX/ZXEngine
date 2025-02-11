@@ -14,7 +14,9 @@ function CameraMove:Start()
 end
 
 function CameraMove:Update()
-    self:UpdateTouch()
+    if GlobalData.Platform == PlatformType.Android then
+        self:UpdateTouch()
+    end
 end
 
 function CameraMove:RegisterCameraControl()
