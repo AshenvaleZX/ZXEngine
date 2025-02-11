@@ -46,6 +46,14 @@ namespace ZXEngine
 		D3D12
 	};
 
+	enum class PlatformType
+	{
+		Windows,
+		MacOS,
+		Linux,
+		Android,
+	};
+
 	enum class RenderPipelineType
 	{
 		Forward,

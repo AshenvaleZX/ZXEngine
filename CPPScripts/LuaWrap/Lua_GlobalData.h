@@ -20,6 +20,18 @@ static int GetGlobalData(lua_State* L)
 	{
 		lua_pushnumber(L, ZXEngine::GlobalData::srcHeight);
 	}
+	else if (strcmp(key, "Platform") == 0)
+	{
+#if defined(ZX_PLATFORM_ANDROID)
+		lua_pushinteger(L, (int)ZXEngine::PlatformType::Android);
+#elif defined(ZX_PLATFORM_LINUX)
+		lua_pushinteger(L, (int)ZXEngine::PlatformType::Linux);
+#elif defined(ZX_PLATFORM_MACOS)
+		lua_pushinteger(L, (int)ZXEngine::PlatformType::MacOS);
+#elif defined(ZX_PLATFORM_WINDOWS)
+		lua_pushinteger(L, (int)ZXEngine::PlatformType::Windows);
+#endif
+	}
 	else
 	{
 		lua_pushnil(L);
