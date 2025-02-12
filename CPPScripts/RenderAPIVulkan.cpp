@@ -83,10 +83,10 @@ namespace ZXEngine
 
     map<FrameBufferType, RenderPassType> vkFrameBufferTypeToRenderPassTypeMap =
     {
-        { FrameBufferType::Present,   RenderPassType::Present   }, { FrameBufferType::Normal,        RenderPassType::Normal       },
-        { FrameBufferType::Color,     RenderPassType::Color     }, { FrameBufferType::ShadowCubeMap, RenderPassType::ShadowCubeMap},
-        { FrameBufferType::ShadowMap, RenderPassType::ShadowMap }, { FrameBufferType::GBuffer,       RenderPassType::GBuffer      },
-        { FrameBufferType::Deferred,  RenderPassType::Deferred  },
+        { FrameBufferType::Present,   RenderPassType::Present   }, { FrameBufferType::Normal,            RenderPassType::Normal            },
+        { FrameBufferType::Color,     RenderPassType::Color     }, { FrameBufferType::ShadowCubeMap,     RenderPassType::ShadowCubeMap     },
+        { FrameBufferType::ShadowMap, RenderPassType::ShadowMap }, { FrameBufferType::GBuffer,           RenderPassType::GBuffer           },
+        { FrameBufferType::Deferred,  RenderPassType::Deferred  }, { FrameBufferType::PresentOverspread, RenderPassType::PresentOverspread },
     };
 
     // 自定义的Debug回调函数，VKAPI_ATTR和VKAPI_CALL确保了正确的函数签名，从而被Vulkan调用
@@ -1544,7 +1544,10 @@ namespace ZXEngine
         auto curFBO = GetFBOByIndex(curFBOIdx);
         VkRenderPassBeginInfo renderPassInfo = {};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassInfo.renderPass = GetRenderPass(curFBO->renderPassType);
+        if (curFBO->renderPassType == RenderPassType::Present && curDrawCommandObj->commandType == CommandType::AfterEffectRendering)
+            renderPassInfo.renderPass = GetRenderPass(RenderPassType::PresentOverspread);
+        else
+            renderPassInfo.renderPass = GetRenderPass(curFBO->renderPassType);
         renderPassInfo.framebuffer = curFBO->frameBuffers[GetCurFrameBufferIndex()];
         // 这个render area定义了shader将要加载和存储的位置
         renderPassInfo.renderArea.offset = { viewPortInfo.xOffset, viewPortInfo.yOffset };
@@ -4895,40 +4898,41 @@ namespace ZXEngine
     {
         allVulkanRenderPass.resize((size_t)RenderPassType::MAX);
 
-        allVulkanRenderPass[(size_t)RenderPassType::Present]       = CreateRenderPass(RenderPassType::Present);
-        allVulkanRenderPass[(size_t)RenderPassType::Normal]        = CreateRenderPass(RenderPassType::Normal);
-        allVulkanRenderPass[(size_t)RenderPassType::Color]         = CreateRenderPass(RenderPassType::Color);
-        allVulkanRenderPass[(size_t)RenderPassType::ShadowMap]     = CreateRenderPass(RenderPassType::ShadowMap);
-        allVulkanRenderPass[(size_t)RenderPassType::ShadowCubeMap] = CreateRenderPass(RenderPassType::ShadowCubeMap);
-        allVulkanRenderPass[(size_t)RenderPassType::GBuffer]       = CreateRenderPass(RenderPassType::GBuffer);
-        allVulkanRenderPass[(size_t)RenderPassType::Deferred]      = CreateRenderPass(RenderPassType::Deferred);
+        allVulkanRenderPass[(size_t)RenderPassType::Present]           = CreateRenderPass(RenderPassType::Present);
+        allVulkanRenderPass[(size_t)RenderPassType::PresentOverspread] = CreateRenderPass(RenderPassType::PresentOverspread);
+        allVulkanRenderPass[(size_t)RenderPassType::Normal]            = CreateRenderPass(RenderPassType::Normal);
+        allVulkanRenderPass[(size_t)RenderPassType::Color]             = CreateRenderPass(RenderPassType::Color);
+        allVulkanRenderPass[(size_t)RenderPassType::ShadowMap]         = CreateRenderPass(RenderPassType::ShadowMap);
+        allVulkanRenderPass[(size_t)RenderPassType::ShadowCubeMap]     = CreateRenderPass(RenderPassType::ShadowCubeMap);
+        allVulkanRenderPass[(size_t)RenderPassType::GBuffer]           = CreateRenderPass(RenderPassType::GBuffer);
+        allVulkanRenderPass[(size_t)RenderPassType::Deferred]          = CreateRenderPass(RenderPassType::Deferred);
     }
 
     VkRenderPass RenderAPIVulkan::CreateRenderPass(RenderPassType type)
     {
         VkRenderPass renderPass = {};
 
-        if (type == RenderPassType::Present)
+        if (type == RenderPassType::Present || type == RenderPassType::PresentOverspread)
         {
             VkAttachmentDescription colorAttachment = {};
             colorAttachment.format = swapChainImageFormat;
             colorAttachment.samples = msaaSamplesCount;
-            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+            colorAttachment.loadOp = type == RenderPassType::Present ? VK_ATTACHMENT_LOAD_OP_LOAD : VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-            colorAttachment.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            colorAttachment.initialLayout = type == RenderPassType::Present ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_UNDEFINED;
             colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
             VkAttachmentDescription colorAttachmentResolve = {};
             colorAttachmentResolve.format = swapChainImageFormat;
             colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
-            colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+            colorAttachmentResolve.loadOp = type == RenderPassType::Present ? VK_ATTACHMENT_LOAD_OP_LOAD : VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-            colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-            colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+            colorAttachmentResolve.initialLayout = type == RenderPassType::Present ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_UNDEFINED;
+            colorAttachmentResolve.finalLayout = type == RenderPassType::Present ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
             VkAttachmentReference colorAttachmentRef{};
             colorAttachmentRef.attachment = 0;
@@ -5345,7 +5349,9 @@ namespace ZXEngine
         VkPipelineRasterizationStateCreateInfo rasterizationInfo = GetRasterizationInfo(vkFaceCullOptionMap[shaderInfo.stateSet.cull]);
         
         // 设置Shader采样纹理的MSAA(不是输出到屏幕上的MSAA)，需要创建逻辑设备的时候开启VkPhysicalDeviceFeatures里的sampleRateShading才能生效，暂时关闭
-        VkPipelineMultisampleStateCreateInfo multisampleInfo = GetPipelineMultisampleInfo(renderPassType == RenderPassType::Present ? msaaSamplesCount : VK_SAMPLE_COUNT_1_BIT);
+        VkPipelineMultisampleStateCreateInfo multisampleInfo = GetPipelineMultisampleInfo(
+            (renderPassType == RenderPassType::Present || renderPassType == RenderPassType::PresentOverspread) ? msaaSamplesCount : VK_SAMPLE_COUNT_1_BIT
+        );
 
         // Color Blend
         vector<VkPipelineColorBlendAttachmentState> colorBlendStates;

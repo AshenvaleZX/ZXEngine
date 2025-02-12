@@ -206,7 +206,7 @@ namespace ZXEngine
 #ifdef ZX_EDITOR
 		CreateMaterial(BloomBlend, "Shaders/PostProcess/BloomBlend.zxshader", FrameBufferType::Normal);
 #else
-		CreateMaterial(BloomBlend, "Shaders/PostProcess/BloomBlend.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
+		CreateMaterial(BloomBlend, "Shaders/PostProcess/BloomBlend.zxshader", isFinal ? FrameBufferType::PresentOverspread : FrameBufferType::Color);
 #endif
 		if (!isFinal)
 			FBOManager::GetInstance()->CreateFBO(BloomBlend, FrameBufferType::Color);
@@ -230,7 +230,7 @@ namespace ZXEngine
 #ifdef ZX_EDITOR
 		CreateMaterial(CopyTexture, "Shaders/RenderTexture.zxshader", FrameBufferType::Normal);
 #else
-		CreateMaterial(CopyTexture, "Shaders/RenderTexture.zxshader", isFinal ? FrameBufferType::Present : FrameBufferType::Color);
+		CreateMaterial(CopyTexture, "Shaders/RenderTexture.zxshader", isFinal ? FrameBufferType::PresentOverspread : FrameBufferType::Color);
 #endif
 	}
 

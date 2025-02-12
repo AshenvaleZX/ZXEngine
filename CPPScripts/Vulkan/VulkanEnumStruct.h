@@ -66,7 +66,10 @@ namespace ZXEngine
 
     enum class RenderPassType
     {
-        Present, // For swap chain
+        Present,
+        PresentOverspread,
+        // 两个Present的区别参考enum class ZXEngine::FrameBufferType的注释
+
         Normal,
         Color,
         ShadowMap,

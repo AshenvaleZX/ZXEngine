@@ -1630,7 +1630,7 @@ namespace ZXEngine
 
 		// Depth Stencil Config
 		D3D12_DEPTH_STENCIL_DESC depthStencilDesc = {};
-		if (shaderInfo.stateSet.depthCompareOp == CompareOption::ALWAYS || type == FrameBufferType::Present || type == FrameBufferType::Color)
+		if (shaderInfo.stateSet.depthCompareOp == CompareOption::ALWAYS || type == FrameBufferType::Present || type == FrameBufferType::PresentOverspread || type == FrameBufferType::Color)
 			depthStencilDesc.DepthEnable = FALSE;
 		else
 			depthStencilDesc.DepthEnable = TRUE;
@@ -1670,7 +1670,7 @@ namespace ZXEngine
 		}
 
 		// 如果不用DSV，格式需要设置为UNKNOWN
-		if (type == FrameBufferType::Present || type == FrameBufferType::Color)
+		if (type == FrameBufferType::Present || type == FrameBufferType::PresentOverspread || type == FrameBufferType::Color)
 			pipelineStateDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
 		else
 			pipelineStateDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
@@ -1979,7 +1979,7 @@ namespace ZXEngine
 				drawCommandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
 			}
 		}
-		else if (curFBO->bufferType == FrameBufferType::Present)
+		else if (curFBO->bufferType == FrameBufferType::Present || curFBO->bufferType == FrameBufferType::PresentOverspread)
 		{
 			colorBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->colorBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
 
@@ -2132,7 +2132,7 @@ namespace ZXEngine
 				drawCommandList->ResourceBarrier(1, &depthBufferTransition);
 			}
 		}
-		else if (curFBO->bufferType == FrameBufferType::Present)
+		else if (curFBO->bufferType == FrameBufferType::Present || curFBO->bufferType == FrameBufferType::PresentOverspread)
 		{
 			if (colorBuffer != nullptr)
 			{
