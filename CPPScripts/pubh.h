@@ -34,11 +34,12 @@
 #endif
 
 /*
-| Graphics API Switch
-| Manually set a ZX_API_SWITCH value instead of ZX_API_DEFAULT to switch the graphics API.
-| 0: OpenGL
-| 1: Vulkan
-| 2: D3D12
+|  Graphics API Switch
+|  Manually set a ZX_API_SWITCH value instead of ZX_API_DEFAULT to switch the graphics API.
+|
+|  0: OpenGL
+|  1: Vulkan
+|  2: D3D12
 */
 #define ZX_API_SWITCH ZX_API_DEFAULT
 
@@ -49,12 +50,28 @@
 #elif ZX_API_SWITCH == 2
 #define ZX_API_D3D12
 #else
-#error "No Graphics API"
+#error "Error Graphics API Definition"
 #endif
 
 /*
-| Editor Mode Switch
-| Comment the definition of ZX_EDITOR to disable the editor mode.
+|  Graphics API Compatibility Check
+|
+|  Windows : OpenGL, Vulkan, D3D12
+|  MacOS   : OpenGL, Vulkan
+|  Linux   : OpenGL, Vulkan(Unverified)
+|  Android : Vulkan
+*/
+#if defined(ZX_PLATFORM_ANDROID) && (defined(ZX_API_OPENGL) || defined(ZX_API_D3D12))
+#error "Unsupported Graphics API"
+#elif defined(ZX_PLATFORM_LINUX) && defined(ZX_API_D3D12)
+#error "Unsupported Graphics API"
+#elif defined(ZX_PLATFORM_MACOS) && defined(ZX_API_D3D12)
+#error "Unsupported Graphics API"
+#endif
+
+/*
+|  Editor Mode Switch
+|  Comment the definition of ZX_EDITOR to disable the editor mode.
 */
 #if defined(ZX_PLATFORM_DESKTOP)
 #define ZX_EDITOR
