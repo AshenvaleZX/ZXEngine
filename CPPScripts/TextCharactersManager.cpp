@@ -53,7 +53,7 @@ namespace ZXEngine
         Resources::LoadBinaryFile(fontFile, fontPath);
 
         FT_Face face;
-        if (FT_New_Memory_Face(ft, reinterpret_cast<const FT_Byte*>(fontFile.data()), fontFile.size(), 0, &face))
+        if (FT_New_Memory_Face(ft, reinterpret_cast<const FT_Byte*>(fontFile.data()), static_cast<FT_Long>(fontFile.size()), 0, &face))
         {
             Debug::LogError("ERROR::FREETYPE: Failed to load font");
             return;

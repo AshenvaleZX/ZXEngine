@@ -23,8 +23,8 @@ static int InputManager_GetTouchCount(lua_State* L)
 
 static int InputManager_GetTouch(lua_State* L)
 {
-	uint32_t index = lua_tointeger(L, -1);
-	ZXEngine::Touch touch = ZXEngine::InputManager::GetInstance()->GetTouch(index);
+	lua_Integer index = lua_tointeger(L, -1);
+	ZXEngine::Touch touch = ZXEngine::InputManager::GetInstance()->GetTouch(static_cast<uint32_t>(index));
 	lua_newtable(L);
 	lua_pushinteger(L, touch.id);
 	lua_setfield(L, -2, "id");
