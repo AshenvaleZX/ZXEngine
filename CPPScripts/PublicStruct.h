@@ -22,10 +22,10 @@ namespace ZXEngine
 {
 	struct Vertex 
 	{
-		Vector3 Position  = {};
-		Vector2 TexCoords = {};
-		Vector3 Normal    = {};
-		Vector3 Tangent   = {};
+		Vector4 Position  = {};
+		Vector4 TexCoords = {};
+		Vector4 Normal    = {};
+		Vector4 Tangent   = {};
 		// 骨骼蒙皮数据
 		float    Weights[MAX_NUM_BONES_PER_VERTEX] = {};
 		uint32_t BoneIDs[MAX_NUM_BONES_PER_VERTEX] = {};

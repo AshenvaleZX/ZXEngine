@@ -298,15 +298,13 @@ namespace ZXEngine
             // Texture Coords
             if (mesh->mTextureCoords[0])
             {
-                Vector2 vec;
                 // 一个顶点最多可以包含8个不同的纹理坐标，但是暂时默认只使用第一个
-                vec.x = mesh->mTextureCoords[0][i].x;
-                vec.y = mesh->mTextureCoords[0][i].y;
-                vertex.TexCoords = vec;
+                vertex.TexCoords.x = mesh->mTextureCoords[0][i].x;
+                vertex.TexCoords.y = mesh->mTextureCoords[0][i].y;
             }
             else
             {
-                vertex.TexCoords = Vector2(0.0f, 0.0f);
+                vertex.TexCoords = Vector4::Zero;
             }
 
             // Tangent & Bitangent

@@ -171,7 +171,8 @@ namespace ZXEngine
             {
                 Vertex vertex;
                 vertex.Position = points[i];
-                vertex.TexCoords = GlyphCoords[i];
+                vertex.TexCoords.x = GlyphCoords[i].x;
+                vertex.TexCoords.y = GlyphCoords[i].y;
                 vertices.push_back(vertex);
             }
 
