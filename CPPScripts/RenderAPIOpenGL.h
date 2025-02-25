@@ -62,6 +62,7 @@ namespace ZXEngine
 
 		// Draw
 		virtual uint32_t AllocateDrawCommand(CommandType commandType, FrameBufferClearFlags clearFlags);
+		virtual void FreeDrawCommand(uint32_t commandID);
 		virtual void Draw(uint32_t VAO);
 		virtual void DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer);
 		virtual void GenerateDrawCommand(uint32_t id);

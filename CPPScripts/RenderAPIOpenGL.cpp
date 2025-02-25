@@ -961,6 +961,11 @@ namespace ZXEngine
 		return 0;
 	}
 
+	void RenderAPIOpenGL::FreeDrawCommand(uint32_t commandID)
+	{
+		// OpenGL不需要这个接口
+	}
+
 	void RenderAPIOpenGL::Draw(uint32_t VAO)
 	{
 		UpdateRenderState();

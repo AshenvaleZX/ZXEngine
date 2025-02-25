@@ -64,6 +64,7 @@ namespace ZXEngine
 
         // Draw
         virtual uint32_t AllocateDrawCommand(CommandType commandType, FrameBufferClearFlags clearFlags);
+        virtual void FreeDrawCommand(uint32_t commandID);
         virtual void Draw(uint32_t VAO);
         virtual void DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer);
         virtual void GenerateDrawCommand(uint32_t id);
@@ -249,6 +250,7 @@ namespace ZXEngine
         unordered_map<uint32_t, uint32_t> materialDatasToDelete;
         unordered_map<uint32_t, uint32_t> pipelinesToDelete;
         unordered_map<uint32_t, uint32_t> instanceBuffersToDelete;
+		unordered_map<uint32_t, uint32_t> drawCommandsToDelete;
 
         uint32_t GetNextVAOIndex();
         VulkanVAO* GetVAOByIndex(uint32_t idx);
@@ -280,6 +282,7 @@ namespace ZXEngine
 
         uint32_t GetNextDrawCommandIndex();
         VulkanDrawCommand* GetDrawCommandByIndex(uint32_t idx);
+		void DestroyDrawCommandByIndex(uint32_t idx);
 
         void* GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
         vector<void*> GetShaderPropertyAddressAllBuffer(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);

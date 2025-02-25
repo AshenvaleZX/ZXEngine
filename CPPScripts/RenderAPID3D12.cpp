@@ -1803,23 +1803,14 @@ namespace ZXEngine
 		drawCmd->clearFlags = clearFlags;
 		drawCmd->commandType = commandType;
 
-		drawCmd->allocators.resize(DX_MAX_FRAMES_IN_FLIGHT);
-		drawCmd->commandLists.resize(DX_MAX_FRAMES_IN_FLIGHT);
-		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
-		{
-			ThrowIfFailed(mD3D12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
-				IID_PPV_ARGS(drawCmd->allocators[i].GetAddressOf())));
-
-			ThrowIfFailed(mD3D12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, drawCmd->allocators[i].Get(), nullptr,
-				IID_PPV_ARGS(drawCmd->commandLists[i].GetAddressOf())));
-
-			// 使用CommandList的时候会先Reset，Reset时要求处于Close状态
-			drawCmd->commandLists[i]->Close();
-		}
-
 		drawCmd->inUse = true;
 
 		return idx;
+	}
+
+	void RenderAPID3D12::FreeDrawCommand(uint32_t commandID)
+	{
+		mDrawCommandsToDelete.insert(pair(commandID, DX_MAX_FRAMES_IN_FLIGHT));
 	}
 
 	void RenderAPID3D12::Draw(uint32_t VAO)
@@ -3678,7 +3669,23 @@ namespace ZXEngine
 				return i;
 		}
 
-		mDrawCommandArray.push_back(new ZXD3D12DrawCommand());
+		auto drawCmd = new ZXD3D12DrawCommand();
+
+		drawCmd->allocators.resize(DX_MAX_FRAMES_IN_FLIGHT);
+		drawCmd->commandLists.resize(DX_MAX_FRAMES_IN_FLIGHT);
+		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			ThrowIfFailed(mD3D12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
+				IID_PPV_ARGS(drawCmd->allocators[i].GetAddressOf())));
+
+			ThrowIfFailed(mD3D12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, drawCmd->allocators[i].Get(), nullptr,
+				IID_PPV_ARGS(drawCmd->commandLists[i].GetAddressOf())));
+
+			// 使用CommandList的时候会先Reset，Reset时要求处于Close状态
+			drawCmd->commandLists[i]->Close();
+		}
+
+		mDrawCommandArray.push_back(drawCmd);
 
 		return length;
 	}
@@ -3686,6 +3693,22 @@ namespace ZXEngine
 	ZXD3D12DrawCommand* RenderAPID3D12::GetDrawCommandByIndex(uint32_t idx)
 	{
 		return mDrawCommandArray[idx];
+	}
+
+	void RenderAPID3D12::DestroyDrawCommandByIndex(uint32_t idx)
+	{
+		auto drawCommand = mDrawCommandArray[idx];
+
+		drawCommand->commandType = CommandType::NotCare;
+		drawCommand->clearFlags = ZX_CLEAR_FRAME_BUFFER_NONE_BIT;
+
+		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			drawCommand->allocators[i]->Reset();
+			drawCommand->commandLists[i]->Reset(drawCommand->allocators[i].Get(), nullptr);
+		}
+
+		drawCommand->inUse = false;
 	}
 
 	void RenderAPID3D12::CheckDeleteData()
@@ -3779,6 +3802,21 @@ namespace ZXEngine
 		{
 			DestroyInstanceBufferByIndex(id);
 			mInstanceBuffersToDelete.erase(id);
+		}
+
+		// Draw Command
+		deleteList.clear();
+		for (auto& iter : mDrawCommandsToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroyDrawCommandByIndex(id);
+			mDrawCommandsToDelete.erase(id);
 		}
 	}
 

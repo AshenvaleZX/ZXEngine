@@ -63,6 +63,7 @@ namespace ZXEngine
 
 		// Draw
 		virtual uint32_t AllocateDrawCommand(CommandType commandType, FrameBufferClearFlags clearFlags);
+		virtual void FreeDrawCommand(uint32_t commandID);
 		virtual void Draw(uint32_t VAO);
 		virtual void DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer);
 		virtual void GenerateDrawCommand(uint32_t id);
@@ -188,6 +189,7 @@ namespace ZXEngine
 		unordered_map<uint32_t, uint32_t> mMaterialDatasToDelete;
 		unordered_map<uint32_t, uint32_t> mShadersToDelete;
 		unordered_map<uint32_t, uint32_t> mInstanceBuffersToDelete;
+		unordered_map<uint32_t, uint32_t> mDrawCommandsToDelete;
 
 		uint32_t GetNextVAOIndex();
 		ZXD3D12VAO* GetVAOByIndex(uint32_t idx);
@@ -219,6 +221,7 @@ namespace ZXEngine
 
 		uint32_t GetNextDrawCommandIndex();
 		ZXD3D12DrawCommand* GetDrawCommandByIndex(uint32_t idx);
+		void DestroyDrawCommandByIndex(uint32_t idx);
 
 		void CheckDeleteData();
 

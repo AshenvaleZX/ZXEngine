@@ -1516,6 +1516,11 @@ namespace ZXEngine
         return idx;
     }
 
+    void RenderAPIVulkan::FreeDrawCommand(uint32_t commandID)
+    {
+		drawCommandsToDelete.insert(pair(commandID, MAX_FRAMES_IN_FLIGHT));
+    }
+
     void RenderAPIVulkan::Draw(uint32_t VAO)
     {
         drawRecords.emplace_back(VAO, curPipeLineIdx, curMaterialDataIdx, 0, UINT32_MAX);
@@ -3353,6 +3358,26 @@ namespace ZXEngine
     {
         return VulkanDrawCommandArray[idx];
     }
+
+	void RenderAPIVulkan::DestroyDrawCommandByIndex(uint32_t idx)
+	{
+		auto drawCommand = VulkanDrawCommandArray[idx];
+
+        drawCommand->commandType = CommandType::NotCare;
+        drawCommand->clearFlags = ZX_CLEAR_FRAME_BUFFER_NONE_BIT;
+
+        for (auto& command : drawCommand->drawCommands)
+        {
+            for (auto semaphore : command.signalSemaphores)
+            {
+				if (semaphore != VK_NULL_HANDLE)
+					vkDestroySemaphore(device, semaphore, VK_NULL_HANDLE);
+			}
+			command.signalSemaphores.clear();
+        }
+
+		drawCommand->inUse = false;
+	}
 
     uint32_t RenderAPIVulkan::GetNextTextureIndex()
     {
@@ -5643,6 +5668,21 @@ namespace ZXEngine
         {
 			DestroyInstanceBufferByIndex(id);
 			instanceBuffersToDelete.erase(id);
+		}
+
+		// Draw Command
+		deleteList.clear();
+		for (auto& iter : drawCommandsToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroyDrawCommandByIndex(id);
+			drawCommandsToDelete.erase(id);
 		}
     }
 
