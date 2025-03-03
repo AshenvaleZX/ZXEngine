@@ -31,6 +31,7 @@ namespace ZXEngine
 		uint32_t BoneIDs[MAX_NUM_BONES_PER_VERTEX] = {};
 
 		void AddBoneData(uint32_t boneID, float weight);
+		void NormalizeWeights();
 	};
 
 	struct BoneNode

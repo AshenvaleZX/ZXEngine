@@ -360,6 +360,11 @@ namespace ZXEngine
 					vertices[vertexID].AddBoneData(i, weight);
 				}
             }
+
+			for (auto& vertex : vertices)
+            {
+				vertex.NormalizeWeights();
+			}
         }
 
         // 遍历Face(三角形图元)

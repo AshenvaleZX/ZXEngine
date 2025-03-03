@@ -17,6 +17,18 @@ namespace ZXEngine
 		Debug::LogWarning("Vertex has more than %s bones!", MAX_NUM_BONES_PER_VERTEX);
 	}
 
+	void Vertex::NormalizeWeights()
+	{
+		float totalWeight = 0.0f;
+		for (uint32_t i = 0; i < MAX_NUM_BONES_PER_VERTEX; i++)
+			totalWeight += Weights[i];
+
+		if (totalWeight == 0.0f) return;
+
+		for (uint32_t i = 0; i < MAX_NUM_BONES_PER_VERTEX; i++)
+			Weights[i] /= totalWeight;
+	}
+
 	BoneNode::~BoneNode()
 	{ 
 		for (auto child : children)
