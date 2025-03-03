@@ -291,7 +291,7 @@ namespace ZXEngine
         void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, VulkanBuffer& newBuffer, bool cpuAddress = false, bool gpuAddress = false);
         VulkanBuffer CreateGPUBuffer(VkDeviceSize size, VkBufferUsageFlags usage, const void* data);
         void CreateGPUBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer& buffer, VmaAllocation& allocation, const void* data);
-        void DestroyBuffer(VulkanBuffer buffer);
+        void DestroyBuffer(VulkanBuffer& buffer);
 
         UniformBuffer CreateUniformBuffer(const vector<ShaderProperty>& properties);
         void DestroyUniformBuffer(const UniformBuffer& uniformBuffer);

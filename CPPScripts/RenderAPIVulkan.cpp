@@ -4591,7 +4591,7 @@ namespace ZXEngine
         vmaDestroyBuffer(vmaAllocator, stagingBuffer, stagingBufferAlloc);
     }
 
-    void RenderAPIVulkan::DestroyBuffer(VulkanBuffer buffer)
+    void RenderAPIVulkan::DestroyBuffer(VulkanBuffer& buffer)
     {
         if (buffer.mappedAddress != nullptr)
         {
