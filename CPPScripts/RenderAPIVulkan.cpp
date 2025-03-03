@@ -1518,7 +1518,7 @@ namespace ZXEngine
 
     void RenderAPIVulkan::FreeDrawCommand(uint32_t commandID)
     {
-		drawCommandsToDelete.insert(pair(commandID, MAX_FRAMES_IN_FLIGHT));
+        drawCommandsToDelete.insert(pair(commandID, MAX_FRAMES_IN_FLIGHT));
     }
 
     void RenderAPIVulkan::Draw(uint32_t VAO)
@@ -3359,10 +3359,10 @@ namespace ZXEngine
         return VulkanDrawCommandArray[idx];
     }
 
-	void RenderAPIVulkan::DestroyDrawCommandByIndex(uint32_t idx)
-	{
-		auto drawCommand = VulkanDrawCommandArray[idx];
-
+    void RenderAPIVulkan::DestroyDrawCommandByIndex(uint32_t idx)
+    {
+        auto drawCommand = VulkanDrawCommandArray[idx];
+        
         drawCommand->commandType = CommandType::NotCare;
         drawCommand->clearFlags = ZX_CLEAR_FRAME_BUFFER_NONE_BIT;
 
@@ -3370,14 +3370,14 @@ namespace ZXEngine
         {
             for (auto semaphore : command.signalSemaphores)
             {
-				if (semaphore != VK_NULL_HANDLE)
-					vkDestroySemaphore(device, semaphore, VK_NULL_HANDLE);
-			}
-			command.signalSemaphores.clear();
+                if (semaphore != VK_NULL_HANDLE)
+                    vkDestroySemaphore(device, semaphore, VK_NULL_HANDLE);
+            }
+            command.signalSemaphores.clear();
         }
 
-		drawCommand->inUse = false;
-	}
+        drawCommand->inUse = false;
+    }
 
     uint32_t RenderAPIVulkan::GetNextTextureIndex()
     {
@@ -5658,32 +5658,32 @@ namespace ZXEngine
         // Instance Buffer
         deleteList.clear();
         for (auto& iter : instanceBuffersToDelete)
-		{
-			if (iter.second > 0)
-				iter.second--;
-			else
-				deleteList.push_back(iter.first);
-		}
+        {
+            if (iter.second > 0)
+                iter.second--;
+            else
+                deleteList.push_back(iter.first);
+        }
         for (auto id : deleteList)
         {
-			DestroyInstanceBufferByIndex(id);
-			instanceBuffersToDelete.erase(id);
-		}
+            DestroyInstanceBufferByIndex(id);
+            instanceBuffersToDelete.erase(id);
+        }
 
 		// Draw Command
-		deleteList.clear();
-		for (auto& iter : drawCommandsToDelete)
-		{
-			if (iter.second > 0)
-				iter.second--;
-			else
-				deleteList.push_back(iter.first);
-		}
-		for (auto id : deleteList)
-		{
-			DestroyDrawCommandByIndex(id);
-			drawCommandsToDelete.erase(id);
-		}
+        deleteList.clear();
+        for (auto& iter : drawCommandsToDelete)
+        {
+            if (iter.second > 0)
+                iter.second--;
+            else
+                deleteList.push_back(iter.first);
+        }
+        for (auto id : deleteList)
+        {
+            DestroyDrawCommandByIndex(id);
+            drawCommandsToDelete.erase(id);
+        }
     }
 
 

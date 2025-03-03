@@ -361,10 +361,10 @@ namespace ZXEngine
 				}
             }
 
-			for (auto& vertex : vertices)
+            for (auto& vertex : vertices)
             {
-				vertex.NormalizeWeights();
-			}
+                vertex.NormalizeWeights();
+            }
         }
 
         // 遍历Face(三角形图元)

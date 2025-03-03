@@ -250,7 +250,7 @@ namespace ZXEngine
         unordered_map<uint32_t, uint32_t> materialDatasToDelete;
         unordered_map<uint32_t, uint32_t> pipelinesToDelete;
         unordered_map<uint32_t, uint32_t> instanceBuffersToDelete;
-		unordered_map<uint32_t, uint32_t> drawCommandsToDelete;
+        unordered_map<uint32_t, uint32_t> drawCommandsToDelete;
 
         uint32_t GetNextVAOIndex();
         VulkanVAO* GetVAOByIndex(uint32_t idx);
@@ -282,7 +282,7 @@ namespace ZXEngine
 
         uint32_t GetNextDrawCommandIndex();
         VulkanDrawCommand* GetDrawCommandByIndex(uint32_t idx);
-		void DestroyDrawCommandByIndex(uint32_t idx);
+        void DestroyDrawCommandByIndex(uint32_t idx);
 
         void* GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
         vector<void*> GetShaderPropertyAddressAllBuffer(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
