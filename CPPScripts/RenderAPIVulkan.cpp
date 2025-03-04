@@ -4500,14 +4500,14 @@ namespace ZXEngine
     }
 
 
-    VulkanBuffer RenderAPIVulkan::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool cpuAddress, bool gpuAddress)
+    VulkanBuffer RenderAPIVulkan::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool cpuAddress, bool gpuAddress, const void* data)
     {
         VulkanBuffer newBuffer;
-        CreateBuffer(size, usage, memoryUsage, newBuffer, cpuAddress, gpuAddress);
+        CreateBuffer(size, usage, memoryUsage, newBuffer, cpuAddress, gpuAddress, data);
         return newBuffer;
     }
 
-    void RenderAPIVulkan::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, VulkanBuffer& newBuffer, bool cpuAddress, bool gpuAddress)
+    void RenderAPIVulkan::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, VulkanBuffer& newBuffer, bool cpuAddress, bool gpuAddress, const void* data)
     {
         if (gpuAddress)
             usage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
@@ -4525,7 +4525,11 @@ namespace ZXEngine
         vmaCreateBuffer(vmaAllocator, &bufferInfo, &allocationInfo, &newBuffer.buffer, &newBuffer.allocation, nullptr);
 
         if (cpuAddress)
+        {
             vmaMapMemory(vmaAllocator, newBuffer.allocation, &newBuffer.mappedAddress);
+            if (data)
+                memcpy(newBuffer.mappedAddress, data, static_cast<size_t>(size));
+        }
 
         if (gpuAddress)
         {

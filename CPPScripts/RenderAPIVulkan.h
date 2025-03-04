@@ -287,8 +287,8 @@ namespace ZXEngine
         void* GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
         vector<void*> GetShaderPropertyAddressAllBuffer(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
 
-        VulkanBuffer CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool cpuAddress = false, bool gpuAddress = false);
-        void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, VulkanBuffer& newBuffer, bool cpuAddress = false, bool gpuAddress = false);
+        VulkanBuffer CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool cpuAddress = false, bool gpuAddress = false, const void* data = nullptr);
+        void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, VulkanBuffer& newBuffer, bool cpuAddress = false, bool gpuAddress = false, const void* data = nullptr);
         VulkanBuffer CreateGPUBuffer(VkDeviceSize size, VkBufferUsageFlags usage, const void* data);
         void CreateGPUBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer& buffer, VmaAllocation& allocation, const void* data);
         void DestroyBuffer(VulkanBuffer& buffer);
