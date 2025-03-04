@@ -4624,7 +4624,7 @@ namespace ZXEngine
         return uniformBuffer;
     }
 
-    void RenderAPIVulkan::DestroyUniformBuffer(const UniformBuffer& uniformBuffer)
+    void RenderAPIVulkan::DestroyUniformBuffer(UniformBuffer& uniformBuffer)
     {
         vmaUnmapMemory(vmaAllocator, uniformBuffer.buffer.allocation);
         DestroyBuffer(uniformBuffer.buffer);

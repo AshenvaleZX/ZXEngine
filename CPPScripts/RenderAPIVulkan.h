@@ -294,7 +294,7 @@ namespace ZXEngine
         void DestroyBuffer(VulkanBuffer& buffer);
 
         UniformBuffer CreateUniformBuffer(const vector<ShaderProperty>& properties);
-        void DestroyUniformBuffer(const UniformBuffer& uniformBuffer);
+        void DestroyUniformBuffer(UniformBuffer& uniformBuffer);
 
         void AllocateCommandBuffer(VkCommandBuffer& commandBuffers);
         void AllocateCommandBuffers(vector<VkCommandBuffer>& commandBuffers);
