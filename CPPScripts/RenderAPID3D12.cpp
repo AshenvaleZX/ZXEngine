@@ -3908,43 +3908,53 @@ namespace ZXEngine
 		if (gpuAddress)
 			buffer.gpuAddress = buffer.buffer->GetGPUVirtualAddress();
 
+		// 有需要立刻填充的初始化数据
 		if (data)
 		{
-			CD3DX12_HEAP_PROPERTIES uploadBufferProps(D3D12_HEAP_TYPE_UPLOAD);
-			CD3DX12_RESOURCE_DESC uploadBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(size);
-			ComPtr<ID3D12Resource> uploadBuffer;
-			ThrowIfFailed(mD3D12Device->CreateCommittedResource(
-				&uploadBufferProps,
-				D3D12_HEAP_FLAG_NONE,
-				&uploadBufferDesc,
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				nullptr,
-				IID_PPV_ARGS(uploadBuffer.GetAddressOf())));
-
-			D3D12_SUBRESOURCE_DATA subResourceData = {};
-			subResourceData.pData = data;
-			subResourceData.RowPitch = size;
-			subResourceData.SlicePitch = subResourceData.RowPitch;
-
-			ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList4> cmdList)
+			if (cpuAddress)
 			{
-				// 其实可以直接在创建defaultBuffer的时候就把初始状态设置为D3D12_RESOURCE_STATE_COPY_DEST
-				// 没必要多一步这个转换，但是创建的时候如果不是以 D3D12_RESOURCE_STATE_COMMON 初始化，Debug Layer居然会给个Warning
-				// 所以为了没有Warning干扰排除问题，这里就这样写了
-				CD3DX12_RESOURCE_BARRIER barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(
-					buffer.buffer.Get(),
-					D3D12_RESOURCE_STATE_COMMON,
-					D3D12_RESOURCE_STATE_COPY_DEST);
-				cmdList->ResourceBarrier(1, &barrier1);
+				// 如果有CPU地址，说明这不是纯用于GPU的Buffer，直接拷贝数据
+				memcpy(buffer.cpuAddress, data, size);
+			}
+			else
+			{
+				// 如果没有CPU地址，说明这是一个纯GPU Buffer，需要用Upload Buffer来拷贝数据
+				CD3DX12_HEAP_PROPERTIES uploadBufferProps(D3D12_HEAP_TYPE_UPLOAD);
+				CD3DX12_RESOURCE_DESC uploadBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(size);
+				ComPtr<ID3D12Resource> uploadBuffer;
+				ThrowIfFailed(mD3D12Device->CreateCommittedResource(
+					&uploadBufferProps,
+					D3D12_HEAP_FLAG_NONE,
+					&uploadBufferDesc,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					nullptr,
+					IID_PPV_ARGS(uploadBuffer.GetAddressOf())));
 
-				UpdateSubresources<1>(cmdList.Get(), buffer.buffer.Get(), uploadBuffer.Get(), 0, 0, 1, &subResourceData);
+				D3D12_SUBRESOURCE_DATA subResourceData = {};
+				subResourceData.pData = data;
+				subResourceData.RowPitch = size;
+				subResourceData.SlicePitch = subResourceData.RowPitch;
 
-				CD3DX12_RESOURCE_BARRIER barrier2 = CD3DX12_RESOURCE_BARRIER::Transition(
-					buffer.buffer.Get(),
-					D3D12_RESOURCE_STATE_COPY_DEST,
-					initState);
-				cmdList->ResourceBarrier(1, &barrier2);
-			});
+				ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList4> cmdList)
+				{
+					// 其实可以直接在创建defaultBuffer的时候就把初始状态设置为D3D12_RESOURCE_STATE_COPY_DEST
+					// 没必要多一步这个转换，但是创建的时候如果不是以 D3D12_RESOURCE_STATE_COMMON 初始化，Debug Layer居然会给个Warning
+					// 所以为了没有Warning干扰排除问题，这里就这样写了
+					CD3DX12_RESOURCE_BARRIER barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(
+						buffer.buffer.Get(),
+						D3D12_RESOURCE_STATE_COMMON,
+						D3D12_RESOURCE_STATE_COPY_DEST);
+					cmdList->ResourceBarrier(1, &barrier1);
+
+					UpdateSubresources<1>(cmdList.Get(), buffer.buffer.Get(), uploadBuffer.Get(), 0, 0, 1, &subResourceData);
+
+					CD3DX12_RESOURCE_BARRIER barrier2 = CD3DX12_RESOURCE_BARRIER::Transition(
+						buffer.buffer.Get(),
+						D3D12_RESOURCE_STATE_COPY_DEST,
+						initState);
+					cmdList->ResourceBarrier(1, &barrier2);
+				});
+			}
 		}
 
 		return buffer;
