@@ -3301,6 +3301,40 @@ namespace ZXEngine
         vulkanFBO->inUse = false;
     }
 
+    uint32_t RenderAPIVulkan::GetNextSSBOIndex()
+    {
+        uint32_t length = static_cast<uint32_t>(VulkanSSBOArray.size());
+        
+        for (uint32_t i = 0; i < length; i++)
+        {
+            if (!VulkanSSBOArray[i]->inUse)
+                return i;
+        }
+
+        auto ssbo = new VulkanSSBO();
+
+        ssbo->buffers.resize(MAX_FRAMES_IN_FLIGHT);
+
+        VulkanSSBOArray.push_back(ssbo);
+
+        return length;
+    }
+
+    VulkanSSBO* RenderAPIVulkan::GetSSBOByIndex(uint32_t idx)
+    {
+        return VulkanSSBOArray[idx];
+    }
+
+    void RenderAPIVulkan::DestroySSBOByIndex(uint32_t idx)
+    {
+        auto ssbo = VulkanSSBOArray[idx];
+
+        for (auto& buffer : ssbo->buffers)
+            DestroyBuffer(buffer);
+
+        ssbo->inUse = false;
+    }
+
     uint32_t RenderAPIVulkan::GetNextAttachmentBufferIndex()
     {
         uint32_t length = (uint32_t)VulkanAttachmentBufferArray.size();
@@ -5696,6 +5730,21 @@ namespace ZXEngine
         {
             DestroyVAOByIndex(id);
             meshsToDelete.erase(id);
+        }
+
+        // SSBO
+        deleteList.clear();
+        for (auto& iter : ssbosToDelete)
+        {
+            if (iter.second > 0)
+                iter.second--;
+            else
+                deleteList.push_back(iter.first);
+        }
+        for (auto id : deleteList)
+        {
+            DestroySSBOByIndex(id);
+            ssbosToDelete.erase(id);
         }
 
         // Shader

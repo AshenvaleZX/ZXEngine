@@ -239,6 +239,7 @@ namespace ZXEngine
     private:
         vector<VulkanVAO*> VulkanVAOArray;
         vector<VulkanFBO*> VulkanFBOArray;
+        vector<VulkanSSBO*> VulkanSSBOArray;
         vector<VulkanAttachmentBuffer*> VulkanAttachmentBufferArray;
         vector<VulkanTexture*> VulkanTextureArray;
         vector<VulkanPipeline*> VulkanPipelineArray;
@@ -248,6 +249,7 @@ namespace ZXEngine
 
         vector<VkRenderPass> allVulkanRenderPass;
         unordered_map<uint32_t, uint32_t> meshsToDelete;
+        unordered_map<uint32_t, uint32_t> ssbosToDelete;
         unordered_map<uint32_t, uint32_t> texturesToDelete;
         unordered_map<uint32_t, uint32_t> materialDatasToDelete;
         unordered_map<uint32_t, uint32_t> pipelinesToDelete;
@@ -261,6 +263,10 @@ namespace ZXEngine
         uint32_t GetNextFBOIndex();
         VulkanFBO* GetFBOByIndex(uint32_t idx);
         void DestroyFBOByIndex(uint32_t idx);
+
+        uint32_t GetNextSSBOIndex();
+        VulkanSSBO* GetSSBOByIndex(uint32_t idx);
+        void DestroySSBOByIndex(uint32_t idx);
 
         uint32_t GetNextAttachmentBufferIndex();
         VulkanAttachmentBuffer* GetAttachmentBufferByIndex(uint32_t idx);

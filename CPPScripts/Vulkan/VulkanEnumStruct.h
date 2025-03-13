@@ -222,6 +222,14 @@ namespace ZXEngine
         bool inUse = false;
     };
 
+    struct VulkanSSBO
+    {
+        GPUBufferType type = GPUBufferType::Static;
+        vector<VulkanBuffer> buffers;
+        uint32_t binding = 0;
+        bool inUse = false;
+    };
+
     struct VulkanPipeline
     {
         string name; // For debug
