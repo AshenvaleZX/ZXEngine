@@ -1874,6 +1874,47 @@ namespace ZXEngine
         SetUpStaticMesh(VAO, vertices, indices);
     }
 
+    uint32_t RenderAPIVulkan::CreateShaderStorageBuffer(const void* data, size_t size, GPUBufferType type)
+    {
+        auto idx = GetNextSSBOIndex();
+        auto ssbo = GetSSBOByIndex(idx);
+
+        if (type == GPUBufferType::Static)
+        {
+            VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+
+            for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+                CreateGPUBuffer(static_cast<VkDeviceSize>(size), usage, ssbo->buffers[i].buffer, ssbo->buffers[i].allocation, data);
+        }
+        else
+        {
+            VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+
+            for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+                CreateBuffer(static_cast<VkDeviceSize>(size), usage, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, ssbo->buffers[i], true);
+        }
+
+        ssbo->inUse = true;
+
+        return idx;
+    }
+    
+    void RenderAPIVulkan::BindShaderStorageBuffer(uint32_t id, uint32_t binding)
+    {
+        curComputePipelineSSBOBindingRecords.push_back({ id, binding });
+    }
+    
+    void RenderAPIVulkan::UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size)
+    {
+        auto ssbo = GetSSBOByIndex(id);
+
+        memcpy(ssbo->buffers[currentFrame].mappedAddress, data, size);
+    }
+
+    void RenderAPIVulkan::DeleteShaderStorageBuffer(uint32_t id)
+    {
+        ssbosToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT));
+    }
     uint32_t RenderAPIVulkan::CreateRayTracingPipeline(const RayTracingShaderPathGroup& rtShaderPathGroup)
     {
         VulkanRTPipeline* rtPipeline = new VulkanRTPipeline();

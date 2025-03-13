@@ -99,7 +99,15 @@ namespace ZXEngine
 
 
         /// <summary>
-        /// 标准RayTracing接口
+        /// 通用计算管线接口
+        /// Compute Pipeline Interface 
+        /// </summary>
+    public:
+        // Shader Storage Buffer
+        virtual uint32_t CreateShaderStorageBuffer(const void* data, size_t size, GPUBufferType type);
+        virtual void BindShaderStorageBuffer(uint32_t id, uint32_t binding);
+        virtual void UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size);
+        virtual void DeleteShaderStorageBuffer(uint32_t id);
         /// </summary>
     public:
         // Pipeline
