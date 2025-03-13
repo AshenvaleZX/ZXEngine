@@ -108,6 +108,9 @@ namespace ZXEngine
         virtual void BindShaderStorageBuffer(uint32_t id, uint32_t binding);
         virtual void UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size);
         virtual void DeleteShaderStorageBuffer(uint32_t id);
+
+        // Vertex Buffer Binding
+        virtual void BindVertexBuffer(uint32_t VAO, uint32_t binding);
         /// </summary>
     public:
         // Pipeline
@@ -457,6 +460,10 @@ namespace ZXEngine
         vector<VulkanDrawRecord> drawRecords;
         vector<VkSemaphore> curWaitSemaphores;
 
+
+        using VulkanComputePipelineDescriptorBindingRecord = pair<uint32_t, uint32_t>;
+        vector<VulkanComputePipelineDescriptorBindingRecord> curComputePipelineSSBOBindingRecords;
+        vector<VulkanComputePipelineDescriptorBindingRecord> curComputePipelineVertexBufferBindingRecords;
         uint32_t GetCurFrameBufferIndex() const;
         uint32_t GetMipMapLevels(int width, int height);
         VkTransformMatrixKHR GetVkTransformMatrix(const Matrix4& mat);

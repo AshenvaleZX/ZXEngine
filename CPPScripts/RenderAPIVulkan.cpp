@@ -1915,6 +1915,11 @@ namespace ZXEngine
     {
         ssbosToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT));
     }
+
+    void RenderAPIVulkan::BindVertexBuffer(uint32_t VAO, uint32_t binding)
+    {
+        curComputePipelineVertexBufferBindingRecords.push_back({ VAO, binding });
+    }
     uint32_t RenderAPIVulkan::CreateRayTracingPipeline(const RayTracingShaderPathGroup& rtShaderPathGroup)
     {
         VulkanRTPipeline* rtPipeline = new VulkanRTPipeline();
