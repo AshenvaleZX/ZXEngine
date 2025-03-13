@@ -9,7 +9,8 @@ namespace ZXEngine
 	class RenderAPIOpenGL : public RenderAPI
 	{
 		/// <summary>
-		/// 标准RenderAPI接口
+		/// 标准渲染管线接口
+		/// Standard Rendering Pipeline Interface
 		/// </summary>
 	public:
 		RenderAPIOpenGL();
@@ -110,7 +111,8 @@ namespace ZXEngine
 		// Vertex Buffer Binding
 		virtual void BindVertexBuffer(uint32_t VAO, uint32_t binding);
 		/// <summary>
-		/// 标准RayTracing接口(OpenGL不支持光线追踪)
+		/// 光线追踪管线接口 (OpenGL不支持光线追踪)
+		/// Ray Tracing Pipeline Interface (OpenGL does not support ray tracing)
 		/// </summary>
 	public:
 		// Pipeline
