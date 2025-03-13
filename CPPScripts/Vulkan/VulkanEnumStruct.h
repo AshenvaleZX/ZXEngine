@@ -303,4 +303,20 @@ namespace ZXEngine
         VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
         vector<VkDescriptorSet> descriptorSets;
     };
+
+    struct VulkanComputePipelineData
+    {
+        size_t bindingNum = 0;
+        vector<VulkanDescriptorGroup> descriptorGroups;
+        // Todo: Add uniform descriptor group
+    };
+
+    struct VulkanComputePipeline
+    {
+        VulkanPipeline pipeline;
+        uint32_t SSBOBindingNum = 0;
+        uint32_t UniformBindingNum = 0;
+        vector<VulkanComputePipelineData> pipelineData;
+        bool inUse = false;
+    };
 }

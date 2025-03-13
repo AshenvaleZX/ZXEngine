@@ -3512,6 +3512,49 @@ namespace ZXEngine
         }
     }
 
+    uint32_t RenderAPIVulkan::GetNextComputePipelineIndex()
+    {
+        uint32_t length = (uint32_t)VulkanComputePipelineArray.size();
+
+        for (uint32_t i = 0; i < length; i++)
+        {
+            if (!VulkanComputePipelineArray[i]->inUse)
+                return i;
+        }
+
+        auto computePipeline = new VulkanComputePipeline();
+
+        computePipeline->pipelineData.resize(MAX_FRAMES_IN_FLIGHT);
+
+        VulkanComputePipelineArray.push_back(computePipeline);
+
+        return length;
+    }
+
+    VulkanComputePipeline* RenderAPIVulkan::GetComputePipelineByIndex(uint32_t idx)
+    {
+        return VulkanComputePipelineArray[idx];
+    }
+
+    void RenderAPIVulkan::DestroyComputePipelineByIndex(uint32_t idx)
+    {
+        auto computePipeline = GetComputePipelineByIndex(idx);
+
+        computePipeline->SSBOBindingNum = 0;
+        computePipeline->UniformBindingNum = 0;
+
+        DestroyVulkanPipeline(&computePipeline->pipeline);
+
+        for (auto& iter : computePipeline->pipelineData)
+        {
+            for (auto& descriptorGroup : iter.descriptorGroups)
+                DestroyDescriptorGroup(descriptorGroup);
+            iter.descriptorGroups.clear();
+        }
+
+        computePipeline->inUse = false;
+    }
+
     uint32_t RenderAPIVulkan::GetNextMaterialDataIndex()
     {
         uint32_t length = (uint32_t)VulkanMaterialDataArray.size();
@@ -5785,6 +5828,21 @@ namespace ZXEngine
         {
             DestroyPipelineByIndex(id);
             pipelinesToDelete.erase(id);
+        }
+
+        // Compute Pipeline
+        deleteList.clear();
+        for (auto& iter : computePipelinesToDelete)
+        {
+            if (iter.second > 0)
+                iter.second--;
+            else
+                deleteList.push_back(iter.first);
+        }
+        for (auto id : deleteList)
+        {
+            DestroyComputePipelineByIndex(id);
+            computePipelinesToDelete.erase(id);
         }
 
         // Instance Buffer

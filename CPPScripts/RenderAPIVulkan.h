@@ -243,6 +243,7 @@ namespace ZXEngine
         vector<VulkanAttachmentBuffer*> VulkanAttachmentBufferArray;
         vector<VulkanTexture*> VulkanTextureArray;
         vector<VulkanPipeline*> VulkanPipelineArray;
+        vector<VulkanComputePipeline*> VulkanComputePipelineArray;
         vector<VulkanMaterialData*> VulkanMaterialDataArray;
         vector<VulkanBuffer*> VulkanInstanceBufferArray;
         vector<VulkanDrawCommand*> VulkanDrawCommandArray;
@@ -253,6 +254,7 @@ namespace ZXEngine
         unordered_map<uint32_t, uint32_t> texturesToDelete;
         unordered_map<uint32_t, uint32_t> materialDatasToDelete;
         unordered_map<uint32_t, uint32_t> pipelinesToDelete;
+        unordered_map<uint32_t, uint32_t> computePipelinesToDelete;
         unordered_map<uint32_t, uint32_t> instanceBuffersToDelete;
         unordered_map<uint32_t, uint32_t> drawCommandsToDelete;
 
@@ -279,6 +281,10 @@ namespace ZXEngine
         uint32_t GetNextPipelineIndex();
         VulkanPipeline* GetPipelineByIndex(uint32_t idx);
         void DestroyPipelineByIndex(uint32_t idx);
+
+        uint32_t GetNextComputePipelineIndex();
+        VulkanComputePipeline* GetComputePipelineByIndex(uint32_t idx);
+        void DestroyComputePipelineByIndex(uint32_t idx);
 
         uint32_t GetNextMaterialDataIndex();
         VulkanMaterialData* GetMaterialDataByIndex(uint32_t idx);
