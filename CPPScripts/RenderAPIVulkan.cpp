@@ -1920,6 +1920,99 @@ namespace ZXEngine
     {
         curComputePipelineVertexBufferBindingRecords.push_back({ VAO, binding });
     }
+
+    ComputeShaderReference* RenderAPIVulkan::LoadAndSetUpComputeShader(const string& path)
+    {
+        string shaderCode = Resources::LoadTextFile(path);
+        if (shaderCode.empty())
+            return nullptr;
+
+        uint32_t pipelineID = GetNextComputePipelineIndex();
+        auto computePipeline = GetComputePipelineByIndex(pipelineID);
+
+        ComputeShaderInfo shaderInfo = ShaderParser::GetComputeShaderInfo(shaderCode);
+
+        vector<VkDescriptorSetLayoutBinding> bindings = {};
+        for (auto& bufferInfo : shaderInfo.bufferInfos)
+        {
+            VkDescriptorSetLayoutBinding binding = {};
+            binding.binding = bufferInfo.binding;
+            binding.descriptorCount = 1;
+            binding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+
+            if (bufferInfo.type == ShaderBufferType::Storage)
+            {
+                computePipeline->SSBOBindingNum++;
+                binding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+            }
+            else if (bufferInfo.type == ShaderBufferType::Uniform)
+            {
+                computePipeline->UniformBindingNum++;
+                binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            }
+            else
+            {
+                throw std::runtime_error("Invalid compute pipeline buffer type!");
+            }
+
+            bindings.push_back(binding);
+        }
+
+        computePipeline->pipeline.name = path;
+
+        VkDescriptorSetLayoutCreateInfo layoutCreateInfo = {};
+        layoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        layoutCreateInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+        layoutCreateInfo.pBindings = bindings.data();
+
+        CHECK_VK_SUCCESS
+        (
+            vkCreateDescriptorSetLayout(device, &layoutCreateInfo, nullptr, &computePipeline->pipeline.descriptorSetLayout),
+            "Failed to create descriptor set layout!"
+        );
+
+        VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {};
+        pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutCreateInfo.setLayoutCount = 1;
+        pipelineLayoutCreateInfo.pSetLayouts = &computePipeline->pipeline.descriptorSetLayout;
+
+        CHECK_VK_SUCCESS
+        (
+            vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &computePipeline->pipeline.pipelineLayout),
+            "Failed to create pipeline layout!"
+        );
+
+        string prePath = path.substr(0, path.length() - 10); // .zxcompute
+        VkPipelineShaderStageCreateInfo computeShaderStageInfo = {};
+        computeShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        computeShaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+        computeShaderStageInfo.module = CreateShaderModule(GetSPIRVShader(prePath, ZX_SHADER_STAGE_COMPUTE_BIT));
+        computeShaderStageInfo.pName = "main";
+
+        VkComputePipelineCreateInfo pipelineCreateInfo = {};
+        pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+        pipelineCreateInfo.stage = computeShaderStageInfo;
+        pipelineCreateInfo.layout = computePipeline->pipeline.pipelineLayout;
+
+        CHECK_VK_SUCCESS
+        (
+            vkCreateComputePipelines(device, VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, &computePipeline->pipeline.pipeline),
+            "Failed to create compute pipeline!"
+        );
+
+        computePipeline->inUse = true;
+
+        ComputeShaderReference* reference = new ComputeShaderReference();
+        reference->ID = pipelineID;
+        reference->shaderInfo = std::move(shaderInfo);
+
+        return reference;
+    }
+
+    void RenderAPIVulkan::DeleteComputeShader(uint32_t id)
+    {
+        computePipelinesToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT));
+    }
     uint32_t RenderAPIVulkan::CreateRayTracingPipeline(const RayTracingShaderPathGroup& rtShaderPathGroup)
     {
         VulkanRTPipeline* rtPipeline = new VulkanRTPipeline();

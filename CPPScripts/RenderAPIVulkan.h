@@ -111,6 +111,10 @@ namespace ZXEngine
 
         // Vertex Buffer Binding
         virtual void BindVertexBuffer(uint32_t VAO, uint32_t binding);
+
+        // Compute Shader
+        virtual ComputeShaderReference* LoadAndSetUpComputeShader(const string& path);
+        virtual void DeleteComputeShader(uint32_t id);
         /// </summary>
     public:
         // Pipeline
