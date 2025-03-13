@@ -27,6 +27,9 @@ namespace ZXEngine
 		// 骨骼名字到数组索引的映射
 		unordered_map<string, uint32_t> mBoneNameToIndexMap;
 
+		uint32_t mVertexSSBO = UINT32_MAX;
+		uint32_t mBoneTransformSSBO = UINT32_MAX;
+
 		// 在xyz方向上最远的点，0-5分别对应+x, -x, +y, -y, +z, -z
 		array<Vertex, 6> mExtremeVertices;
 

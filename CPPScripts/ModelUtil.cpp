@@ -230,7 +230,7 @@ namespace ZXEngine
             // aiNode仅包含索引来获取aiScene中的实际对象
             // aiScene包含所有数据，aiNode只是为了让数据组织起来(比如记录节点之间的关系)
             aiMesh* mesh = pScene->mMeshes[pNode->mMeshes[i]];
-            pModelData->pMeshes.push_back(ProcessMesh(mesh, async));
+            pModelData->pMeshes.push_back(ProcessMesh(mesh, async, false));
         }
 
         // 递归处理子节点
@@ -254,8 +254,19 @@ namespace ZXEngine
             // aiNode仅包含索引来获取aiScene中的实际对象
             // aiScene包含所有数据，aiNode只是为了让数据组织起来(比如记录节点之间的关系)
             aiMesh* mesh = pScene->mMeshes[pNode->mMeshes[i]];
-            pModelData->pMeshes.push_back(ProcessMesh(mesh, async));
-            pModelData->pMeshes.back()->mRootTrans = nodeTransform;
+
+            auto pMesh = ProcessMesh(mesh, async, true);
+            pMesh->mRootTrans = nodeTransform;
+
+#ifdef ZX_COMPUTE_SHADER_SUPPORT
+            pMesh->mVertexSSBO = RenderAPI::GetInstance()->CreateShaderStorageBuffer(
+                pMesh->mVertices.data(), pMesh->mVertices.size() * sizeof(Vertex), GPUBufferType::Static);
+
+            pMesh->mBoneTransformSSBO = RenderAPI::GetInstance()->CreateShaderStorageBuffer(
+                pMesh->mBonesFinalTransform.data(), pMesh->mBonesFinalTransform.size() * sizeof(Matrix4), GPUBufferType::DynamicCPUWriteGPURead);
+#endif
+
+            pModelData->pMeshes.push_back(pMesh);
         }
 
         // 递归处理子节点
@@ -266,7 +277,7 @@ namespace ZXEngine
         }
     }
 
-    shared_ptr<StaticMesh> ModelUtil::ProcessMesh(const aiMesh* mesh, bool async)
+    shared_ptr<StaticMesh> ModelUtil::ProcessMesh(const aiMesh* mesh, bool async, bool skinned)
     {
         // 顶点数据
         vector<Vertex> vertices;
@@ -378,7 +389,7 @@ namespace ZXEngine
             }
         }
 
-        auto newMesh = new StaticMesh(std::move(vertices), std::move(indices), !async);
+        auto newMesh = new StaticMesh(std::move(vertices), std::move(indices), !async, skinned);
         newMesh->mBonesFinalTransform.resize(boneOffsetMatrices.size());
         newMesh->mBonesOffset = std::move(boneOffsetMatrices);
         newMesh->mBoneNameToIndexMap = std::move(boneNameToIndexMap);
