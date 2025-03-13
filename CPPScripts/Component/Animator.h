@@ -12,6 +12,7 @@ namespace ZXEngine
 	public:
 		static ComponentType GetType();
 		static void Update();
+		static ComputeShaderReference* mComputeShader;
 
 	private:
 		static vector<Animator*> mAnimators;
@@ -37,7 +38,10 @@ namespace ZXEngine
 		void Switch(const string& name, float time = 1.0f);
 
 	private:
+		uint32_t mCommand = 0;
+
 		void UpdateMeshes(bool async);
 		void AccomplishUpdate();
+		void UpdateVertices();
 	};
 }
