@@ -119,6 +119,8 @@ namespace ZXEngine
 
         // Compute Command
         virtual void Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ);
+        virtual void SubmitAllComputeCommands();
+
 
         /// <summary>
         /// 光线追踪管线接口
@@ -203,6 +205,8 @@ namespace ZXEngine
         vector<VkSemaphore> presentImageAvailableSemaphores;
         // 一帧绘制结束的Fence
         vector<VkFence> inFlightFences;
+        // 计算管线Fence
+        vector<VkFence> inFlightComputeFences;
 
         // 命令池
         VkCommandPool commandPool = VK_NULL_HANDLE;
@@ -473,6 +477,8 @@ namespace ZXEngine
         vector<VkSemaphore> curWaitSemaphores;
 
         vector<uint32_t> computeCommandRecords;
+        vector<VkSemaphore> computeSemaphores;
+        vector<bool> waitForComputeFenceOfLastFrame;
 
         using VulkanComputePipelineDescriptorBindingRecord = pair<uint32_t, uint32_t>;
         vector<VulkanComputePipelineDescriptorBindingRecord> curComputePipelineSSBOBindingRecords;

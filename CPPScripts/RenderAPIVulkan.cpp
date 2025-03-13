@@ -117,11 +117,15 @@ namespace ZXEngine
         CreatePresentFrameBuffer();
 
         rtPushConstantBuffer = malloc(rtPushConstantBufferSize);
+
         inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+        inFlightComputeFences.resize(MAX_FRAMES_IN_FLIGHT);
+        waitForComputeFenceOfLastFrame.resize(MAX_FRAMES_IN_FLIGHT, true);
         presentImageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
             CreateVkFence(inFlightFences[i]);
+            CreateVkFence(inFlightComputeFences[i]);
             CreateVkSemaphore(presentImageAvailableSemaphores[i]);
         }
 
@@ -1701,8 +1705,15 @@ namespace ZXEngine
             throw std::runtime_error("failed to record command buffer!");
 
         vector<VkPipelineStageFlags> waitStages = {};
-        waitStages.resize(curWaitSemaphores.size(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
         vector<VkSemaphore> waitSemaphores = curWaitSemaphores;
+
+        if (computeSemaphores.size() > 0)
+        {
+            waitSemaphores.insert(waitSemaphores.end(), computeSemaphores.begin(), computeSemaphores.end());
+        }
+
+        waitStages.resize(waitSemaphores.size(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
+
 #ifndef ZX_EDITOR
         // AfterEffect是第一个直接写入PresentBuffer的，所以需要等PresentBuffer可用
         if (curFBOIdx == presentFBOIdx && curDrawCommandObj->commandType == CommandType::AfterEffectRendering)
@@ -2113,6 +2124,57 @@ namespace ZXEngine
 
         computeCommandRecords.push_back(commandID);
     }
+
+    void RenderAPIVulkan::SubmitAllComputeCommands()
+    {
+        if (computeCommandRecords.size() > 0)
+        {
+            vector<VkSubmitInfo> allSubmits;
+            vector<vector<VkCommandBuffer>> allCommandBuffers;
+
+            for (auto& commandID : computeCommandRecords)
+            {
+                auto curDrawCommandObj = GetDrawCommandByIndex(commandID);
+                auto& curDrawCommand = curDrawCommandObj->drawCommands[currentFrame];
+                auto commandBuffer = curDrawCommand.commandBuffer;
+
+                vector<VkCommandBuffer> commandBuffers = { commandBuffer };
+                allCommandBuffers.push_back(commandBuffers);
+
+                VkSubmitInfo submitInfo = {};
+                submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+                submitInfo.pCommandBuffers = allCommandBuffers.back().data();
+                submitInfo.commandBufferCount = static_cast<uint32_t>(allCommandBuffers.back().size());
+                submitInfo.pWaitSemaphores = VK_NULL_HANDLE;
+                submitInfo.pWaitDstStageMask = VK_NULL_HANDLE;
+                submitInfo.waitSemaphoreCount = 0;
+                submitInfo.pSignalSemaphores = curDrawCommand.signalSemaphores.data();
+                submitInfo.signalSemaphoreCount = static_cast<uint32_t>(curDrawCommand.signalSemaphores.size());
+
+                for (auto semaphore : curDrawCommand.signalSemaphores)
+                    computeSemaphores.push_back(semaphore);
+
+                allSubmits.push_back(submitInfo);
+            }
+
+            computeCommandRecords.clear();
+
+            CHECK_VK_SUCCESS
+            (
+                vkQueueSubmit(computeQueue, static_cast<uint32_t>(allSubmits.size()), allSubmits.data(), inFlightComputeFences[currentFrame]),
+                "Failed to submit compute command buffer!"
+            );
+
+            waitForComputeFenceOfLastFrame[currentFrame] = true;
+
+            // 重置计算管线的Descriptor使用记录
+            for (auto computePipeline : VulkanComputePipelineArray)
+            {
+                computePipeline->pipelineData[currentFrame].bindingNum = 0;
+            }
+        }
+    }
+
     uint32_t RenderAPIVulkan::CreateRayTracingPipeline(const RayTracingShaderPathGroup& rtShaderPathGroup)
     {
         VulkanRTPipeline* rtPipeline = new VulkanRTPipeline();
