@@ -15,6 +15,8 @@ namespace ZXEngine
 				CompileShader(entry.path());
 			else if (extension == ".vkr")
 				GenerateSPIRVFile(entry.path());
+			else if (extension == ".zxcompute")
+				CompileCompute(entry.path());
 			else if (entry.is_directory())
 				CompileAllShader(entry.path().string());
 		}
@@ -26,6 +28,15 @@ namespace ZXEngine
 		if (filesystem::exists(p))
 		{
 			CompileShader(p);
+		}
+	}
+
+	void SPIRVCompiler::CompileCompute(const string& path)
+	{
+		filesystem::path p(path);
+		if (filesystem::exists(p))
+		{
+			CompileCompute(p);
 		}
 	}
 
@@ -61,6 +72,12 @@ namespace ZXEngine
 
 		if (!geomCode.empty())
 			GenerateSPIRVFile(path, geomCode, ZX_SHADER_STAGE_GEOMETRY_BIT);
+	}
+
+	void SPIRVCompiler::CompileCompute(const filesystem::path& path)
+	{
+		string code = Resources::LoadTextFile(path.string());
+		GenerateSPIRVFile(path, code, ZX_SHADER_STAGE_COMPUTE_BIT);
 	}
 
 	void SPIRVCompiler::GenerateSPIRVFile(const filesystem::path& path)
@@ -105,6 +122,8 @@ namespace ZXEngine
 			extension = "rmiss";
 		else if (stage & ZX_SHADER_STAGE_INTERSECTION_BIT)
 			extension = "rint";
+		else if (stage & ZX_SHADER_STAGE_COMPUTE_BIT)
+			extension = "comp";
 		else
 			Debug::LogError("Unknown shader stage: " + path.string());
 
