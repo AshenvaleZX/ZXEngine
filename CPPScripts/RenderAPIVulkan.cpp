@@ -6820,10 +6820,12 @@ namespace ZXEngine
             extension = ".rmiss";
         else if (stage & ZX_SHADER_STAGE_INTERSECTION_BIT)
             extension = ".rint";
+        else if (stage & ZX_SHADER_STAGE_COMPUTE_BIT)
+            extension = ".comp";
         else
             throw std::runtime_error("Unknown shader stage!");
 
-        string fullPath = isRasterization ? path + extension + ".spv" : path + ".spv";
+        string fullPath = (isRasterization || stage & ZX_SHADER_STAGE_COMPUTE_BIT) ? path + extension + ".spv" : path + ".spv";
 
         vector<unsigned char> shader;
         bool suc = Resources::LoadBinaryFile(shader, fullPath);
@@ -6833,6 +6835,8 @@ namespace ZXEngine
         {
             if (isRasterization)
                 SPIRVCompiler::CompileShader(path + ".zxshader");
+            else if (stage & ZX_SHADER_STAGE_COMPUTE_BIT)
+                SPIRVCompiler::CompileCompute(path + ".zxcompute");
             else
                 SPIRVCompiler::GenerateSPIRVFile(path + ".vkr");
 
