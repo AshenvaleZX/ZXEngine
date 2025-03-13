@@ -3866,6 +3866,9 @@ namespace ZXEngine
         // 因为我们只是从这个队列簇创建一个队列，所以需要使用索引0
         vkGetDeviceQueue(device, queueFamilyIndices.graphics, 0, &graphicsQueue);
         vkGetDeviceQueue(device, queueFamilyIndices.present, 0, &presentQueue);
+#ifdef ZX_COMPUTE_SHADER_SUPPORT
+        vkGetDeviceQueue(device, queueFamilyIndices.compute, 0, &computeQueue);
+#endif
     }
 
     void RenderAPIVulkan::CreateMemoryAllocator()
@@ -4236,6 +4239,12 @@ namespace ZXEngine
             // 当前队列簇是否支持图形处理
             if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
                 indices.graphics = i;
+
+#ifdef ZX_COMPUTE_SHADER_SUPPORT
+            // 获取计算队列簇
+            if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)
+                indices.compute = i;
+#endif
 
             // 是否支持VkSurfaceKHR
             VkBool32 presentSupport = false;

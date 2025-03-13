@@ -157,6 +157,8 @@ namespace ZXEngine
         VkQueue graphicsQueue = VK_NULL_HANDLE;
         // 展示队列
         VkQueue presentQueue = VK_NULL_HANDLE;
+        // 计算队列
+        VkQueue computeQueue = VK_NULL_HANDLE;
         // 队列簇ID记录
         QueueFamilyIndices queueFamilyIndices;
         // 提供给交换链显示画面的Frame Buffer
