@@ -117,6 +117,8 @@ namespace ZXEngine
         virtual ComputeShaderReference* LoadAndSetUpComputeShader(const string& path);
         virtual void DeleteComputeShader(uint32_t id);
 
+        // Compute Command
+        virtual void Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ);
 
         /// <summary>
         /// 光线追踪管线接口
@@ -470,10 +472,14 @@ namespace ZXEngine
         vector<VulkanDrawRecord> drawRecords;
         vector<VkSemaphore> curWaitSemaphores;
 
+        vector<uint32_t> computeCommandRecords;
 
         using VulkanComputePipelineDescriptorBindingRecord = pair<uint32_t, uint32_t>;
         vector<VulkanComputePipelineDescriptorBindingRecord> curComputePipelineSSBOBindingRecords;
         vector<VulkanComputePipelineDescriptorBindingRecord> curComputePipelineVertexBufferBindingRecords;
+
+        VkDescriptorSet GetNextDescriptorSet(VulkanComputePipeline* pipeline);
+
         uint32_t GetCurFrameBufferIndex() const;
         uint32_t GetMipMapLevels(int width, int height);
         VkTransformMatrixKHR GetVkTransformMatrix(const Matrix4& mat);

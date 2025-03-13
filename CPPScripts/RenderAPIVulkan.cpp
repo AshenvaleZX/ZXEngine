@@ -2013,6 +2013,106 @@ namespace ZXEngine
     {
         computePipelinesToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT));
     }
+
+    void RenderAPIVulkan::Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ)
+    {
+        if (waitForComputeFenceOfLastFrame[currentFrame])
+        {
+            CHECK_VK_SUCCESS
+            (
+                vkWaitForFences(device, 1, &inFlightComputeFences[currentFrame], VK_TRUE, UINT64_MAX),
+                "Failed to wait for compute fence!"
+            );
+
+            CHECK_VK_SUCCESS
+            (
+                vkResetFences(device, 1, &inFlightComputeFences[currentFrame]),
+                "Failed to reset compute fence!"
+            );
+
+            waitForComputeFenceOfLastFrame[currentFrame] = false;
+        }
+
+        auto computePipeline = GetComputePipelineByIndex(shaderID);
+
+        auto curDrawCommandObj = GetDrawCommandByIndex(commandID);
+        auto& curDrawCommand = curDrawCommandObj->drawCommands[currentFrame];
+        auto commandBuffer = curDrawCommand.commandBuffer;
+
+        vkResetCommandBuffer(commandBuffer, 0);
+
+        VkCommandBufferBeginInfo beginInfo = {};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = 0;
+        beginInfo.pInheritanceInfo = VK_NULL_HANDLE;
+
+        CHECK_VK_SUCCESS
+        (
+            vkBeginCommandBuffer(commandBuffer, &beginInfo),
+            "Failed to begin recording command buffer!"
+        );
+
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->pipeline.pipeline);
+
+        VkDescriptorSet descriptorSet = GetNextDescriptorSet(computePipeline);
+
+        for (auto& bindingRecord : curComputePipelineSSBOBindingRecords)
+        {
+            auto ssbo = GetSSBOByIndex(bindingRecord.first);
+
+            VkDescriptorBufferInfo bufferInfo = {};
+            bufferInfo.buffer = ssbo->buffers[currentFrame].buffer;
+            bufferInfo.offset = 0;
+            bufferInfo.range = VK_WHOLE_SIZE;
+
+            VkWriteDescriptorSet descriptorWrite = {};
+            descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrite.dstSet = descriptorSet;
+            descriptorWrite.dstBinding = bindingRecord.second;
+            descriptorWrite.dstArrayElement = 0;
+            descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+            descriptorWrite.descriptorCount = 1;
+            descriptorWrite.pBufferInfo = &bufferInfo;
+
+            vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, VK_NULL_HANDLE);
+        }
+        curComputePipelineSSBOBindingRecords.clear();
+
+        for (auto& bindingRecord : curComputePipelineVertexBufferBindingRecords)
+        {
+            auto meshBuffer = GetVAOByIndex(bindingRecord.first);
+
+            VkDescriptorBufferInfo bufferInfo = {};
+            bufferInfo.buffer = meshBuffer->ssbo[currentFrame].buffer;
+            bufferInfo.offset = 0;
+            bufferInfo.range = VK_WHOLE_SIZE;
+
+            VkWriteDescriptorSet descriptorWrite = {};
+            descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrite.dstSet = descriptorSet;
+            descriptorWrite.dstBinding = bindingRecord.second;
+            descriptorWrite.dstArrayElement = 0;
+            descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+            descriptorWrite.descriptorCount = 1;
+            descriptorWrite.pBufferInfo = &bufferInfo;
+
+            vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, VK_NULL_HANDLE);
+        }
+        curComputePipelineVertexBufferBindingRecords.clear();
+
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE,
+            computePipeline->pipeline.pipelineLayout, 0, 1, &descriptorSet, 0, VK_NULL_HANDLE);
+
+        vkCmdDispatch(commandBuffer, groupX, groupY, groupZ);
+
+        CHECK_VK_SUCCESS
+        (
+            vkEndCommandBuffer(commandBuffer),
+            "Failed to record command buffer!"
+        );
+
+        computeCommandRecords.push_back(commandID);
+    }
     uint32_t RenderAPIVulkan::CreateRayTracingPipeline(const RayTracingShaderPathGroup& rtShaderPathGroup)
     {
         VulkanRTPipeline* rtPipeline = new VulkanRTPipeline();
@@ -6333,6 +6433,20 @@ namespace ZXEngine
         memcpy(dataReferencePtr, dataReferences.data(), sizeof(VulkanRTRendererDataReference) * dataReferences.size());
     }
 
+    VkDescriptorSet RenderAPIVulkan::GetNextDescriptorSet(VulkanComputePipeline* pipeline)
+    {
+        if (pipeline->pipelineData[currentFrame].bindingNum >= pipeline->pipelineData[currentFrame].descriptorGroups.size() * VulkanDescriptorGroup::Size)
+        {
+            pipeline->pipelineData[currentFrame].descriptorGroups.push_back(CreateDescriptorGroup(pipeline));
+        }
+
+        size_t groupIndex = pipeline->pipelineData[currentFrame].bindingNum / VulkanDescriptorGroup::Size;
+        size_t bindingIndex = pipeline->pipelineData[currentFrame].bindingNum % VulkanDescriptorGroup::Size;
+
+        pipeline->pipelineData[currentFrame].bindingNum++;
+
+        return pipeline->pipelineData[currentFrame].descriptorGroups[groupIndex].descriptorSets[bindingIndex];
+    }
 
     uint32_t RenderAPIVulkan::GetCurFrameBufferIndex() const
     {
