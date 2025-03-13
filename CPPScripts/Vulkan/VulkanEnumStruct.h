@@ -285,4 +285,11 @@ namespace ZXEngine
         VkDeviceAddress vertexAddress;
         VkDeviceAddress materialAddress;
     };
+
+    struct VulkanDescriptorGroup
+    {
+        static const size_t Size = 10;
+        VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
+        vector<VkDescriptorSet> descriptorSets;
+    };
 }

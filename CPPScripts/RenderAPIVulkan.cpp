@@ -4667,6 +4667,51 @@ namespace ZXEngine
             throw std::runtime_error("failed to allocate command buffers!");
     }
 
+    VulkanDescriptorGroup RenderAPIVulkan::CreateDescriptorGroup(const VulkanComputePipeline* pipeline)
+    {
+        VulkanDescriptorGroup descriptorGroup;
+
+        vector<VkDescriptorPoolSize> poolSizes;
+        if (pipeline->SSBOBindingNum > 0)
+        {
+            VkDescriptorPoolSize poolSize = {};
+            poolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+            poolSize.descriptorCount = pipeline->SSBOBindingNum * VulkanDescriptorGroup::Size;
+            poolSizes.push_back(poolSize);
+        }
+        if (pipeline->UniformBindingNum > 0)
+        {
+            VkDescriptorPoolSize poolSize = {};
+            poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            poolSize.descriptorCount = pipeline->UniformBindingNum * VulkanDescriptorGroup::Size;
+            poolSizes.push_back(poolSize);
+        }
+
+        VkDescriptorPoolCreateInfo poolInfo = {};
+        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+        poolInfo.pPoolSizes = poolSizes.data();
+        poolInfo.maxSets = VulkanDescriptorGroup::Size;
+        poolInfo.flags = 0;
+
+        CHECK_VK_SUCCESS
+        (
+            vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorGroup.descriptorPool),
+            "Failed to create descriptor pool!"
+        );
+
+        vector<VkDescriptorSetLayout> layouts(VulkanDescriptorGroup::Size, pipeline->pipeline.descriptorSetLayout);
+        descriptorGroup.descriptorSets = CreateDescriptorSets(descriptorGroup.descriptorPool, layouts);
+
+        return descriptorGroup;
+    }
+
+    void RenderAPIVulkan::DestroyDescriptorGroup(VulkanDescriptorGroup& descriptorGroup)
+    {
+        vkDestroyDescriptorPool(device, descriptorGroup.descriptorPool, 0);
+        descriptorGroup.descriptorSets.clear();
+    }
+
     void RenderAPIVulkan::CreateVkFence(VkFence& fence)
     {
         VkFenceCreateInfo fenceInfo = {};

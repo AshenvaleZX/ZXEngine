@@ -301,6 +301,9 @@ namespace ZXEngine
         void AllocateCommandBuffer(VkCommandBuffer& commandBuffers);
         void AllocateCommandBuffers(vector<VkCommandBuffer>& commandBuffers);
 
+        VulkanDescriptorGroup CreateDescriptorGroup(const VulkanComputePipeline* pipeline);
+        void DestroyDescriptorGroup(VulkanDescriptorGroup& descriptorGroup);
+
         void CreateVkFence(VkFence& fence);
         void CreateVkSemaphore(VkSemaphore& semaphore);
 
