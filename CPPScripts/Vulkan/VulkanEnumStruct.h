@@ -83,8 +83,13 @@ namespace ZXEngine
     {
         uint32_t present = UINT32_MAX;
         uint32_t graphics = UINT32_MAX;
+        uint32_t compute = UINT32_MAX;
 
+#ifdef ZX_COMPUTE_SHADER_SUPPORT
+        bool isComplete() const { return present != UINT32_MAX && graphics != UINT32_MAX && compute != UINT32_MAX; }
+#else
         bool isComplete() const { return present != UINT32_MAX && graphics != UINT32_MAX; }
+#endif
     };
 
     // 交换链的三大类属性设置
