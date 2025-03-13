@@ -11,7 +11,8 @@ namespace ZXEngine
         friend class EditorGUIManagerVulkan;
         friend class ImGuiTextureManagerVulkan;
         /// <summary>
-        /// 标准RenderAPI接口
+        /// 标准渲染管线接口
+        /// Standard Rendering Pipeline Interface
         /// </summary>
     public:
         RenderAPIVulkan();
@@ -115,6 +116,11 @@ namespace ZXEngine
         // Compute Shader
         virtual ComputeShaderReference* LoadAndSetUpComputeShader(const string& path);
         virtual void DeleteComputeShader(uint32_t id);
+
+
+        /// <summary>
+        /// 光线追踪管线接口
+        /// Ray Tracing Pipeline Interface
         /// </summary>
     public:
         // Pipeline
