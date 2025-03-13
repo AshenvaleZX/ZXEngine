@@ -110,6 +110,10 @@ namespace ZXEngine
 
 		// Vertex Buffer Binding
 		virtual void BindVertexBuffer(uint32_t VAO, uint32_t binding);
+
+		// Compute Shader
+		virtual ComputeShaderReference* LoadAndSetUpComputeShader(const string& path);
+		virtual void DeleteComputeShader(uint32_t id);
 		/// <summary>
 		/// 光线追踪管线接口 (OpenGL不支持光线追踪)
 		/// Ray Tracing Pipeline Interface (OpenGL does not support ray tracing)

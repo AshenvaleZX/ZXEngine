@@ -1386,6 +1386,37 @@ namespace ZXEngine
 		auto meshBuffer = GetVAOByIndex(VAO);
 		BindShaderStorageBuffer(meshBuffer->VBO, binding);
 	}
+
+	ComputeShaderReference* RenderAPIOpenGL::LoadAndSetUpComputeShader(const string& path)
+	{
+		string shaderCode = Resources::LoadTextFile(path);
+
+		unsigned int compute = glCreateShader(GL_COMPUTE_SHADER);
+		const char* cShaderCode = shaderCode.c_str();
+		glShaderSource(compute, 1, &cShaderCode, NULL);
+		glCompileShader(compute);
+		CheckCompileErrors(compute, "COMPUTE");
+
+		unsigned int ID = glCreateProgram();
+		glAttachShader(ID, compute);
+		glLinkProgram(ID);
+		CheckCompileErrors(ID, "PROGRAM");
+
+		glDeleteShader(compute);
+
+		ComputeShaderReference* reference = new ComputeShaderReference();
+		reference->ID = ID;
+
+		CheckError();
+
+		return reference;
+	};
+
+	void RenderAPIOpenGL::DeleteComputeShader(uint32_t id)
+	{
+		glDeleteProgram(id);
+		CheckError();
+	}
 	void RenderAPIOpenGL::UpdateRenderState()
 	{
 		if (stateDirty)
