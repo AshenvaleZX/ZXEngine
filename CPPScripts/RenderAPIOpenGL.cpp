@@ -1339,6 +1339,40 @@ namespace ZXEngine
 		CheckError();
 	}
 
+	uint32_t RenderAPIOpenGL::CreateShaderStorageBuffer(const void* data, size_t size, GPUBufferType type)
+	{
+		GLuint buffer;
+
+		glGenBuffers(1, &buffer);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer);
+
+		if (type == GPUBufferType::Static)
+			glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GLsizeiptr>(size), data, GL_STATIC_DRAW);
+		else if (type == GPUBufferType::DynamicCPUWriteGPURead)
+			glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GLsizeiptr>(size), data, GL_DYNAMIC_DRAW);
+		else if (type == GPUBufferType::DynamicGPUWriteCPURead)
+			glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GLsizeiptr>(size), data, GL_DYNAMIC_READ);
+		else if (type == GPUBufferType::DynamicGPUWriteGPURead)
+			glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GLsizeiptr>(size), data, GL_DYNAMIC_COPY);
+
+		return static_cast<uint32_t>(buffer);
+	}
+
+	void RenderAPIOpenGL::BindShaderStorageBuffer(uint32_t id, uint32_t binding)
+	{
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, id);
+	}
+
+	void RenderAPIOpenGL::UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size)
+	{
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
+		glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, static_cast<GLsizeiptr>(size), data);
+	}
+
+	void RenderAPIOpenGL::DeleteShaderStorageBuffer(uint32_t id)
+	{
+		glDeleteBuffers(1, &id);
+	}
 	void RenderAPIOpenGL::UpdateRenderState()
 	{
 		if (stateDirty)

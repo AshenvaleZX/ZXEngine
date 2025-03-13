@@ -95,7 +95,17 @@ namespace ZXEngine
 		virtual void SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
 		virtual void SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
 
-		
+
+		/// <summary>
+		/// 通用计算管线接口
+		/// Compute Pipeline Interface 
+		/// </summary>
+	public:
+		// Shader Storage Buffer
+		virtual uint32_t CreateShaderStorageBuffer(const void* data, size_t size, GPUBufferType type);
+		virtual void BindShaderStorageBuffer(uint32_t id, uint32_t binding);
+		virtual void UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size);
+		virtual void DeleteShaderStorageBuffer(uint32_t id);
 		/// <summary>
 		/// 标准RayTracing接口(OpenGL不支持光线追踪)
 		/// </summary>
