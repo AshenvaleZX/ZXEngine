@@ -78,7 +78,7 @@ namespace ZXEngine
 
 		// Mesh
 		virtual void DeleteMesh(unsigned int VAO) = 0;
-		virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices) = 0;
+		virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices, bool skinned = false) = 0;
 		virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize) = 0;
 		virtual void UpdateDynamicMesh(unsigned int VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices) = 0;
 		virtual void GenerateParticleMesh(unsigned int& VAO) = 0;
@@ -116,7 +116,7 @@ namespace ZXEngine
 		virtual void UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size) = 0;
 		virtual void DeleteShaderStorageBuffer(uint32_t id) = 0;
 
-          // Vertex Buffer Binding
+		// Vertex Buffer Binding
 		virtual void BindVertexBuffer(uint32_t VAO, uint32_t binding) = 0;
 
 		// Compute Shader
