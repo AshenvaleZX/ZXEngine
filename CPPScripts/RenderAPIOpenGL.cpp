@@ -1032,7 +1032,7 @@ namespace ZXEngine
 		CheckError();
 	}
 
-	void RenderAPIOpenGL::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
+	void RenderAPIOpenGL::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices, bool skinned)
 	{
 		VAO = GetNextVAOIndex();
 		auto meshBuffer = GetVAOByIndex(VAO);
@@ -1050,7 +1050,14 @@ namespace ZXEngine
 		// A great thing about structs is that their memory layout is sequential for all its items.
 		// The effect is that we can simply pass a pointer to the struct and it translates perfectly to a Vector3/2 array which
 		// again translates to 3/2 floats which translates to a byte array.
+#ifdef ZX_COMPUTE_SHADER_SUPPORT
+		if (skinned)
+			glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_DYNAMIC_COPY);
+		else
+			glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+#else
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+#endif
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshBuffer->EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32_t), &indices[0], GL_STATIC_DRAW);
@@ -1372,6 +1379,12 @@ namespace ZXEngine
 	void RenderAPIOpenGL::DeleteShaderStorageBuffer(uint32_t id)
 	{
 		glDeleteBuffers(1, &id);
+	}
+
+	void RenderAPIOpenGL::BindVertexBuffer(uint32_t VAO, uint32_t binding)
+	{
+		auto meshBuffer = GetVAOByIndex(VAO);
+		BindShaderStorageBuffer(meshBuffer->VBO, binding);
 	}
 	void RenderAPIOpenGL::UpdateRenderState()
 	{

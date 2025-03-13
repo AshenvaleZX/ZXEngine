@@ -69,7 +69,7 @@ namespace ZXEngine
 
 		// Mesh
 		virtual void DeleteMesh(unsigned int VAO);
-		virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
+		virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices, bool skinned = false);
 		virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize);
 		virtual void UpdateDynamicMesh(unsigned int VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
 		virtual void GenerateParticleMesh(unsigned int& VAO);
@@ -106,6 +106,9 @@ namespace ZXEngine
 		virtual void BindShaderStorageBuffer(uint32_t id, uint32_t binding);
 		virtual void UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size);
 		virtual void DeleteShaderStorageBuffer(uint32_t id);
+
+		// Vertex Buffer Binding
+		virtual void BindVertexBuffer(uint32_t VAO, uint32_t binding);
 		/// <summary>
 		/// 标准RayTracing接口(OpenGL不支持光线追踪)
 		/// </summary>
