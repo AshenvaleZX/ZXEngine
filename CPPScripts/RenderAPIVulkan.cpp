@@ -1672,7 +1672,7 @@ namespace ZXEngine
             auto pipeline = GetPipelineByIndex(iter.pipelineID);
             auto materialData = GetMaterialDataByIndex(iter.materialDataID);
 
-            VkBuffer vertexBuffers[] = { vulkanVAO->vertexBuffer };
+            VkBuffer vertexBuffers[] = { vulkanVAO->computeSkinned ? vulkanVAO->ssbo[currentFrame].buffer : vulkanVAO->vertexBuffer };
             VkDeviceSize offsets[] = { 0 };
             vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
@@ -1743,7 +1743,7 @@ namespace ZXEngine
         meshsToDelete.insert(pair(VAO, MAX_FRAMES_IN_FLIGHT));
     }
 
-    void RenderAPIVulkan::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
+    void RenderAPIVulkan::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices, bool skinned)
     {
         VAO = GetNextVAOIndex();
         auto meshBuffer = GetVAOByIndex(VAO);
@@ -1768,6 +1768,18 @@ namespace ZXEngine
             addressInfo.buffer = meshBuffer->vertexBuffer;
             meshBuffer->vertexBufferDeviceAddress = vkGetBufferDeviceAddress(device, &addressInfo);
         }
+
+#ifdef ZX_COMPUTE_SHADER_SUPPORT
+        if (skinned)
+        {
+            for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+            {
+                VkBufferUsageFlags usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+                meshBuffer->ssbo.push_back(CreateBuffer(vertexBufferSize, usage, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE, true, false, vertices.data()));
+            }
+            meshBuffer->computeSkinned = true;
+        }
+#endif
 
         // ----------------------------------------------- Index Buffer -----------------------------------------------
         VkDeviceSize indexBufferSize = sizeof(uint32_t) * indices.size();
@@ -3236,6 +3248,14 @@ namespace ZXEngine
         {
             DestroyAccelerationStructure(meshBuffer->blas);
         }
+
+        meshBuffer->computeSkinned = false;
+
+        for (auto& buffer : meshBuffer->ssbo)
+        {
+            DestroyBuffer(buffer);
+        }
+        meshBuffer->ssbo.clear();
     
         meshBuffer->inUse = false;
     }

@@ -218,6 +218,9 @@ namespace ZXEngine
         void* vertexBufferAddress = nullptr; // Only for dynamic mesh
         VkDeviceAddress vertexBufferDeviceAddress = 0; // Only for ray tracing
 
+        bool computeSkinned = false;
+        vector<VulkanBuffer> ssbo; // For compute pipeline
+
         VulkanAccelerationStructure blas; // Bottom Level Acceleration Structure
         bool inUse = false;
     };
