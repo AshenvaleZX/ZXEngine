@@ -3494,6 +3494,13 @@ namespace ZXEngine
     {
         auto pipeline = GetPipelineByIndex(idx);
 
+        DestroyVulkanPipeline(pipeline);
+
+        pipeline->inUse = false;
+    }
+
+    void RenderAPIVulkan::DestroyVulkanPipeline(VulkanPipeline* pipeline)
+    {
         vkDestroyDescriptorSetLayout(device, pipeline->descriptorSetLayout, VK_NULL_HANDLE);
         vkDestroyPipeline(device, pipeline->pipeline, VK_NULL_HANDLE);
         vkDestroyPipelineLayout(device, pipeline->pipelineLayout, VK_NULL_HANDLE);
@@ -3503,8 +3510,6 @@ namespace ZXEngine
             vkDestroyDescriptorSetLayout(device, pipeline->sceneDescriptorSetLayout, VK_NULL_HANDLE);
             pipeline->sceneDescriptorSetLayout = VK_NULL_HANDLE;
         }
-
-        pipeline->inUse = false;
     }
 
     uint32_t RenderAPIVulkan::GetNextMaterialDataIndex()

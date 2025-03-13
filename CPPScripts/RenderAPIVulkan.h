@@ -330,6 +330,7 @@ namespace ZXEngine
         void DestroyRenderPass(VkRenderPass renderPass);
 
         VkPipeline CreatePipeline(const string& path, const ShaderInfo& shaderInfo, VkDescriptorSetLayout& descriptorSetLayout, VkPipelineLayout& pipelineLayout, RenderPassType renderPassType);
+        void DestroyVulkanPipeline(VulkanPipeline* pipeline);
         
         VkDescriptorSetLayout CreateDescriptorSetLayout(const ShaderInfo& info);
         VkDescriptorSetLayout CreateDescriptorSetLayout(const vector<VkDescriptorSetLayoutBinding>& bindings);
