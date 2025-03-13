@@ -154,6 +154,20 @@ namespace ZXEngine
 		RayTracing,
 	};
 
+	enum class GPUBufferType
+	{
+		Static, // CPU Write GPU Read
+		DynamicCPUWriteGPURead,
+		DynamicGPUWriteCPURead,
+		DynamicGPUWriteGPURead,
+	};
+
+	enum class ShaderBufferType
+	{
+		Uniform,
+		Storage,
+	};
+
 	enum class CommandType
 	{
 		NotCare,
