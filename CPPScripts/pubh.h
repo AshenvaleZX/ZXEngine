@@ -77,6 +77,14 @@
 #define ZX_EDITOR
 #endif
 
+/*
+|  Compute Shader Support
+|  macOS only supports OpenGL 4.1, but OpenGL 4.3 is required for compute shader.
+*/
+#if !(defined(ZX_PLATFORM_MACOS) && defined(ZX_API_OPENGL))
+#define ZX_COMPUTE_SHADER_SUPPORT
+#endif
+
 #include <string>
 #include <list>
 #include <cstdint>
