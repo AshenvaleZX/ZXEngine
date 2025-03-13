@@ -114,6 +114,12 @@ namespace ZXEngine
 		// Compute Shader
 		virtual ComputeShaderReference* LoadAndSetUpComputeShader(const string& path);
 		virtual void DeleteComputeShader(uint32_t id);
+
+		// Compute Command
+		virtual void Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ);
+		virtual void SubmitAllComputeCommands();
+
+
 		/// <summary>
 		/// 光线追踪管线接口 (OpenGL不支持光线追踪)
 		/// Ray Tracing Pipeline Interface (OpenGL does not support ray tracing)

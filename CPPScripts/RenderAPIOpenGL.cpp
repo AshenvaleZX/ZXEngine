@@ -1417,6 +1417,20 @@ namespace ZXEngine
 		glDeleteProgram(id);
 		CheckError();
 	}
+
+	void RenderAPIOpenGL::Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ)
+	{
+		glUseProgram(shaderID);
+		glDispatchCompute(groupX, groupY, groupZ);
+		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+		CheckError();
+	}
+
+	void RenderAPIOpenGL::SubmitAllComputeCommands()
+	{
+		// OpenGL不需要这个接口
+	}
+
 	void RenderAPIOpenGL::UpdateRenderState()
 	{
 		if (stateDirty)
