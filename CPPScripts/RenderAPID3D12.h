@@ -10,7 +10,8 @@ namespace ZXEngine
 		friend class EditorGUIManagerDirectX12;
 		friend class ZXD3D12DescriptorAllocator;
 		/// <summary>
-		/// 标准RenderAPI接口
+		/// 标准渲染管线接口
+		/// Standard Rendering Pipeline Interface
 		/// </summary>
 	public:
 		RenderAPID3D12();
@@ -98,7 +99,8 @@ namespace ZXEngine
 
 
 		/// <summary>
-		/// 标准RayTracing接口(暂未实现基于DXR的光线追踪)
+		/// 光线追踪管线接口
+		/// Ray Tracing Pipeline Interface
 		/// </summary>
 	public:
 		// Pipeline
