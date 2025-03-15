@@ -4276,23 +4276,28 @@ namespace ZXEngine
 		// 读取HLSL代码
 		auto code = Resources::LoadTextFile(Resources::GetAssetFullPath(path) + ".dxr");
 
-		// 创建HLSL代码的Blob
-		ComPtr<IDxcBlobEncoding> shaderBlobEncoding;
-		ThrowIfFailed(mDxcLibrary->CreateBlobWithEncodingFromPinned((LPBYTE)code.c_str(), (UINT32)code.size(), 0, &shaderBlobEncoding));
-
 		// 获取一下代码名字，调试和Include用
 		string name = Resources::GetAssetName(path);
 		std::wstringstream wss;
 		wss << std::wstring(name.begin(), name.end());
 		std::wstring wName = wss.str();
 
+		return DXCCompile(code, wName.c_str(), L"", L"lib_6_3");
+	}
+
+	ComPtr<IDxcBlob> RenderAPID3D12::DXCCompile(const string& code, LPCWSTR name, LPCWSTR entry, LPCWSTR target)
+	{
+		// 创建HLSL代码的Blob
+		ComPtr<IDxcBlobEncoding> shaderBlobEncoding;
+		ThrowIfFailed(mDxcLibrary->CreateBlobWithEncodingFromPinned((LPBYTE)code.c_str(), (UINT32)code.size(), 0, &shaderBlobEncoding));
+
 		// 编译HLSL代码
 		ComPtr<IDxcOperationResult> operationResult;
 		ThrowIfFailed(mDxcCompiler->Compile(
 			shaderBlobEncoding.Get(),
-			wName.c_str(),
-			L"",
-			L"lib_6_3",
+			name,
+			entry,
+			target,
 			nullptr,
 			0,
 			nullptr,

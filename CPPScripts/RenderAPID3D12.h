@@ -348,6 +348,7 @@ namespace ZXEngine
 		void DestroyRTMaterialDataByIndex(uint32_t idx);
 
 		ComPtr<IDxcBlob> CompileRTShader(const string& path);
+		ComPtr<IDxcBlob> DXCCompile(const string& code, LPCWSTR name, LPCWSTR entry, LPCWSTR target);
 		ZXD3D12DXILLibraryDesc CreateDXILLibrary(const ComPtr<IDxcBlob>& dxilBlob, const vector<wstring>& exportedSymbols);
 
 		void DestroyAccelerationStructure(ZXD3D12AccelerationStructure& accelerationStructure);
