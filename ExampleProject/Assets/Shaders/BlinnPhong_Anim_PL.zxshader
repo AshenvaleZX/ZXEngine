@@ -32,26 +32,31 @@ Vertex
         using ENGINE_View
         using ENGINE_Projection
         using ENGINE_Model_Inv
+#ifndef ZX_COMPUTE_ANIMATION
         mat4 _BoneMatrices[MAX_BONE_NUM]
+#endif
     }
 
     Program
     {
         void main()
         {
+#ifdef ZX_COMPUTE_ANIMATION
+            vec4 pos = vec4(aPos, 1.0);
+            vec3 vNormal = aNormal;
+#else
             vec4 pos = vec4(0.0, 0.0, 0.0, 0.0);
             pos += mul(_BoneMatrices[aBoneID.r] * vec4(aPos, 1.0)) * aWeight.r;
             pos += mul(_BoneMatrices[aBoneID.g] * vec4(aPos, 1.0)) * aWeight.g;
             pos += mul(_BoneMatrices[aBoneID.b] * vec4(aPos, 1.0)) * aWeight.b;
             pos += mul(_BoneMatrices[aBoneID.a] * vec4(aPos, 1.0)) * aWeight.a;
 
-            // vec4 pos = vec4(aPos, 1.0);
-
             vec3 vNormal = vec3(0.0, 0.0, 0.0);
             vNormal += mul(to_mat3(_BoneMatrices[aBoneID.r]) * aNormal) * aWeight.r;
             vNormal += mul(to_mat3(_BoneMatrices[aBoneID.g]) * aNormal) * aWeight.g;
             vNormal += mul(to_mat3(_BoneMatrices[aBoneID.b]) * aNormal) * aWeight.b;
             vNormal += mul(to_mat3(_BoneMatrices[aBoneID.a]) * aNormal) * aWeight.a;
+#endif
 
             WorldPos = to_vec3(mul(ENGINE_Model * pos));
             Normal = mul(transpose(to_mat3(ENGINE_Model_Inv)) * vNormal);
