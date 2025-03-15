@@ -1,0 +1,57 @@
+#version 460
+
+layout(local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
+
+struct Vertex
+{
+    vec4 aPosition;
+    vec4 aTexCoords;
+    vec4 aNormal;
+    vec4 aTangent;
+    vec4 aWeights;
+    uvec4 aBoneIDs;
+};
+
+layout(std140, binding = 0) buffer VertexBufferOutput
+{
+    Vertex _VerticesOutput[];
+};
+
+layout(std140, binding = 1) buffer VertexBufferInput
+{
+    Vertex _VerticesInput[];
+};
+
+layout(std140, binding = 2) buffer BoneBuffer
+{
+    mat4 _BoneMatrices[];
+};
+
+void main()
+{
+    uint id = gl_GlobalInvocationID.x;
+    
+    if (id >= _VerticesOutput.length() || id >= _VerticesInput.length())
+    {
+        return;
+    }
+
+    Vertex iV = _VerticesInput[id];
+    Vertex oV = _VerticesOutput[id];
+
+    vec4 pos = vec4(0.0, 0.0, 0.0, 0.0);
+    pos += _BoneMatrices[iV.aBoneIDs.r] * vec4(iV.aPosition.xyz, 1.0) * iV.aWeights.r;
+    pos += _BoneMatrices[iV.aBoneIDs.g] * vec4(iV.aPosition.xyz, 1.0) * iV.aWeights.g;
+    pos += _BoneMatrices[iV.aBoneIDs.b] * vec4(iV.aPosition.xyz, 1.0) * iV.aWeights.b;
+    pos += _BoneMatrices[iV.aBoneIDs.a] * vec4(iV.aPosition.xyz, 1.0) * iV.aWeights.a;
+    oV.aPosition.xyz = pos.xyz;
+
+    vec3 normal = vec3(0.0, 0.0, 0.0);
+    normal += mat3(_BoneMatrices[iV.aBoneIDs.r]) * iV.aNormal.xyz * iV.aWeights.r;
+    normal += mat3(_BoneMatrices[iV.aBoneIDs.g]) * iV.aNormal.xyz * iV.aWeights.g;
+    normal += mat3(_BoneMatrices[iV.aBoneIDs.b]) * iV.aNormal.xyz * iV.aWeights.b;
+    normal += mat3(_BoneMatrices[iV.aBoneIDs.a]) * iV.aNormal.xyz * iV.aWeights.a;
+    oV.aNormal.xyz = normal;
+
+    _VerticesOutput[id] = oV;
+}

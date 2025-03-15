@@ -1,0 +1,51 @@
+#pragma pack_matrix(column_major)
+
+struct Vertex
+{
+    float4 aPosition;
+    float4 aTexCoords;
+    float4 aNormal;
+    float4 aTangent;
+    float4 aWeights;
+    uint4 aBoneIDs;
+};
+
+RWByteAddressBuffer VertexBufferOutput : register(u0);
+ByteAddressBuffer VertexBufferInput : register(t0);
+ByteAddressBuffer BoneBuffer : register(t1);
+
+[numthreads(64, 1, 1)]
+void main(uint3 id : SV_DispatchThreadID)
+{
+    uint vertexSize = sizeof(Vertex);
+    uint matrixSize = 64; // sizeof(float4x4)
+
+    uint outputDimensions;
+    uint inputDimensions;
+    VertexBufferOutput.GetDimensions(outputDimensions);
+    VertexBufferInput.GetDimensions(inputDimensions);
+
+    if (id.x * vertexSize >= outputDimensions || id.x * vertexSize >= inputDimensions)
+    {
+        return;
+    }
+
+    Vertex iV = VertexBufferInput.Load<Vertex>(id.x * vertexSize);
+    Vertex oV = iV;
+
+    float4 pos = float4(0.0, 0.0, 0.0, 0.0);
+    pos += mul(transpose(BoneBuffer.Load<float4x4>(iV.aBoneIDs.x * matrixSize)), float4(iV.aPosition.xyz, 1.0)) * iV.aWeights.x;
+    pos += mul(transpose(BoneBuffer.Load<float4x4>(iV.aBoneIDs.y * matrixSize)), float4(iV.aPosition.xyz, 1.0)) * iV.aWeights.y;
+    pos += mul(transpose(BoneBuffer.Load<float4x4>(iV.aBoneIDs.z * matrixSize)), float4(iV.aPosition.xyz, 1.0)) * iV.aWeights.z;
+    pos += mul(transpose(BoneBuffer.Load<float4x4>(iV.aBoneIDs.w * matrixSize)), float4(iV.aPosition.xyz, 1.0)) * iV.aWeights.w;
+    oV.aPosition.xyz = pos.xyz;
+
+    float3 normal = float3(0.0, 0.0, 0.0);
+    normal += mul(transpose((float3x3)BoneBuffer.Load<float4x4>(iV.aBoneIDs.x * matrixSize)), iV.aNormal.xyz) * iV.aWeights.x;
+    normal += mul(transpose((float3x3)BoneBuffer.Load<float4x4>(iV.aBoneIDs.y * matrixSize)), iV.aNormal.xyz) * iV.aWeights.y;
+    normal += mul(transpose((float3x3)BoneBuffer.Load<float4x4>(iV.aBoneIDs.z * matrixSize)), iV.aNormal.xyz) * iV.aWeights.z;
+    normal += mul(transpose((float3x3)BoneBuffer.Load<float4x4>(iV.aBoneIDs.w * matrixSize)), iV.aNormal.xyz) * iV.aWeights.w;
+    oV.aNormal.xyz = normal;
+
+    VertexBufferOutput.Store<Vertex>(id.x * vertexSize, oV);
+}
