@@ -248,4 +248,11 @@ namespace ZXEngine
         wstring intersectionShaderName;
 		D3D12_HIT_GROUP_DESC desc = {};
 	};
+
+	struct ZXD3D12ComputePipeline
+	{
+		ComPtr<ID3D12RootSignature> rootSignature;
+		ComPtr<ID3D12PipelineState> pipelineState;
+		bool inUse = false;
+	};
 }

@@ -181,6 +181,7 @@ namespace ZXEngine
 		vector<ZXD3D12RenderBuffer*> mRenderBufferArray;
 		vector<ZXD3D12Texture*> mTextureArray;
 		vector<ZXD3D12Pipeline*> mPipelineArray;
+		vector<ZXD3D12ComputePipeline*> mComputePipelineArray;
 		vector<ZXD3D12MaterialData*> mMaterialDataArray;
 		vector<ZXD3D12InstanceBuffer*> mInstanceBufferArray;
 		vector<ZXD3D12DrawCommand*> mDrawCommandArray;
@@ -190,6 +191,7 @@ namespace ZXEngine
 		unordered_map<uint32_t, uint32_t> mTexturesToDelete;
 		unordered_map<uint32_t, uint32_t> mMaterialDatasToDelete;
 		unordered_map<uint32_t, uint32_t> mShadersToDelete;
+		unordered_map<uint32_t, uint32_t> mComputePipelinesToDelete;
 		unordered_map<uint32_t, uint32_t> mInstanceBuffersToDelete;
 		unordered_map<uint32_t, uint32_t> mDrawCommandsToDelete;
 
@@ -216,6 +218,10 @@ namespace ZXEngine
 		uint32_t GetNextPipelineIndex();
 		ZXD3D12Pipeline* GetPipelineByIndex(uint32_t idx);
 		void DestroyPipelineByIndex(uint32_t idx);
+
+		uint32_t GetNextComputePipelineIndex();
+		ZXD3D12ComputePipeline* GetComputePipelineByIndex(uint32_t idx);
+		void DestroyComputePipelineByIndex(uint32_t idx);
 
 		uint32_t GetNextMaterialDataIndex();
 		ZXD3D12MaterialData* GetMaterialDataByIndex(uint32_t idx);

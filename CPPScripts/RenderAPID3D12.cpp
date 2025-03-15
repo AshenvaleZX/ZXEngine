@@ -3634,7 +3634,37 @@ namespace ZXEngine
 
 		pipeline->inUse = false;
 	}
-	
+
+	uint32_t RenderAPID3D12::GetNextComputePipelineIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mComputePipelineArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mComputePipelineArray[i]->inUse)
+				return i;
+		}
+
+		mComputePipelineArray.push_back(new ZXD3D12ComputePipeline());
+
+		return length;
+	}
+
+	ZXD3D12ComputePipeline* RenderAPID3D12::GetComputePipelineByIndex(uint32_t idx)
+	{
+		return mComputePipelineArray[idx];
+	}
+
+	void RenderAPID3D12::DestroyComputePipelineByIndex(uint32_t idx)
+	{
+		auto pipeline = mComputePipelineArray[idx];
+
+		pipeline->pipelineState.Reset();
+		pipeline->rootSignature.Reset();
+
+		pipeline->inUse = false;
+	}
+
 	uint32_t RenderAPID3D12::GetNextMaterialDataIndex()
 	{
 		uint32_t length = static_cast<uint32_t>(mMaterialDataArray.size());
@@ -3844,6 +3874,21 @@ namespace ZXEngine
 		{
 			DestroyPipelineByIndex(id);
 			mShadersToDelete.erase(id);
+		}
+
+		// Compute Pipeline
+		deleteList.clear();
+		for (auto& iter : mComputePipelinesToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroyComputePipelineByIndex(id);
+			mComputePipelinesToDelete.erase(id);
 		}
 
 		// Instance Buffer
