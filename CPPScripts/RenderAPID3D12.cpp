@@ -2748,6 +2748,77 @@ namespace ZXEngine
 	{
 		mCurComputePipelineVertexBufferBindingRecords.push_back({ VAO, binding });
 	}
+
+	ComputeShaderReference* RenderAPID3D12::LoadAndSetUpComputeShader(const string& path)
+	{
+		string shaderCode = Resources::LoadTextFile(path);
+		if (shaderCode.empty())
+			return nullptr;
+
+		ComputeShaderInfo shaderInfo = ShaderParser::GetComputeShaderInfo(shaderCode);
+
+		// 创建根签名
+		ComPtr<ID3D12RootSignature> rootSignature;
+		{
+			vector<D3D12_DESCRIPTOR_RANGE> descriptorRanges;
+			for (auto& bufferInfo : shaderInfo.bufferInfos)
+			{
+				if (bufferInfo.type == ShaderBufferType::Storage)
+				{
+					D3D12_DESCRIPTOR_RANGE descriptorRange = {};
+					descriptorRange.RangeType = bufferInfo.isReadOnly ? D3D12_DESCRIPTOR_RANGE_TYPE_SRV : D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+					descriptorRange.NumDescriptors = 1;
+					descriptorRange.BaseShaderRegister = bufferInfo.binding;
+					descriptorRange.RegisterSpace = 0;
+					descriptorRange.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+					descriptorRanges.push_back(descriptorRange);
+				}
+			}
+
+			vector<CD3DX12_ROOT_PARAMETER> rootParameters(1);
+			rootParameters[0].InitAsDescriptorTable(static_cast<UINT>(descriptorRanges.size()), descriptorRanges.data());
+
+			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
+			rootSignatureDesc.Init(static_cast<UINT>(rootParameters.size()), rootParameters.data(), 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE);
+
+			ComPtr<ID3DBlob> error;
+			ComPtr<ID3DBlob> signature;
+			HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
+			if (error != nullptr)
+				Debug::LogError((char*)error->GetBufferPointer());
+			ThrowIfFailed(hr);
+
+			ThrowIfFailed(mD3D12Device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&rootSignature)));
+		}
+
+		D3D12_COMPUTE_PIPELINE_STATE_DESC pipelineStateDesc = {};
+		pipelineStateDesc.pRootSignature = rootSignature.Get();
+
+		ComPtr<IDxcBlob> compCode = DXCCompile(shaderCode, L"", L"main", L"cs_6_0");
+		pipelineStateDesc.CS = { compCode->GetBufferPointer(), compCode->GetBufferSize() };
+
+		ComPtr<ID3D12PipelineState> PSO;
+		ThrowIfFailed(mD3D12Device->CreateComputePipelineState(&pipelineStateDesc, IID_PPV_ARGS(&PSO)));
+
+		uint32_t pipelineID = GetNextComputePipelineIndex();
+		auto computePipeline = GetComputePipelineByIndex(pipelineID);
+
+		computePipeline->pipelineState = PSO;
+		computePipeline->rootSignature = rootSignature;
+		computePipeline->inUse = true;
+
+		ComputeShaderReference* reference = new ComputeShaderReference();
+		reference->ID = pipelineID;
+		reference->shaderInfo = std::move(shaderInfo);
+
+		return reference;
+	}
+
+	void RenderAPID3D12::DeleteComputeShader(uint32_t id)
+	{
+		mComputePipelinesToDelete.insert(pair(id, DX_MAX_FRAMES_IN_FLIGHT));
+	}
 	uint32_t RenderAPID3D12::CreateRayTracingPipeline(const RayTracingShaderPathGroup& rtShaderPathGroup)
 	{
 		ZXD3D12RTPipeline* rtPipeline = new ZXD3D12RTPipeline();
