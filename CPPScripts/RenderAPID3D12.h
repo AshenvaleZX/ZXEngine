@@ -115,6 +115,12 @@ namespace ZXEngine
 		// Compute Shader
 		virtual ComputeShaderReference* LoadAndSetUpComputeShader(const string& path);
 		virtual void DeleteComputeShader(uint32_t id);
+
+		// Compute Command
+		virtual void Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ);
+		virtual void SubmitAllComputeCommands();
+
+
 		/// <summary>
 		/// 光线追踪管线接口
 		/// Ray Tracing Pipeline Interface
@@ -153,6 +159,8 @@ namespace ZXEngine
 		// 渲染时动态分配的描述符堆
 		vector<UINT> mDynamicDescriptorOffsets;
 		vector<ComPtr<ID3D12DescriptorHeap>> mDynamicDescriptorHeaps;
+		vector<UINT> mDynamicComputeDescriptorOffsets;
+		vector<ComPtr<ID3D12DescriptorHeap>> mDynamicComputeDescriptorHeaps;
 
 		// 屏幕后台缓冲区图像格式
 		DXGI_FORMAT mPresentBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -387,6 +395,8 @@ namespace ZXEngine
 		uint32_t mCurMaterialDataIdx = 0;
 		vector<ZXD3D12DrawRecord> mDrawRecords;
 
+		vector<uint32_t> mComputeCommandRecords;
+		vector<bool> mWaitForComputeFenceOfLastFrame;
 
 		using ZXD3D12ComputePipelineDescriptorBindingRecord = pair<uint32_t, uint32_t>;
 		vector<ZXD3D12ComputePipelineDescriptorBindingRecord> mCurComputePipelineSSBOBindingRecords;

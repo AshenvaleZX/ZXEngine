@@ -187,6 +187,16 @@ namespace ZXEngine
 			mD3D12Device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&mDynamicDescriptorHeaps[i]));
 		}
 
+		mDynamicComputeDescriptorHeaps.resize(DX_MAX_FRAMES_IN_FLIGHT);
+		mDynamicComputeDescriptorOffsets.resize(DX_MAX_FRAMES_IN_FLIGHT);
+		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			mDynamicComputeDescriptorOffsets[i] = 0;
+			mD3D12Device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&mDynamicComputeDescriptorHeaps[i]));
+		}
+
+		mWaitForComputeFenceOfLastFrame.resize(DX_MAX_FRAMES_IN_FLIGHT, true);
+
 		// 初始化光追相关对象
 		InitDXR();
 	}
@@ -274,7 +284,11 @@ namespace ZXEngine
 
 	void RenderAPID3D12::BeginFrame()
 	{
-		WaitForFence(mFrameFences[mCurrentFrame]);
+		if (mWaitForComputeFenceOfLastFrame[mCurrentFrame])
+		{
+			WaitForFence(mFrameFences[mCurrentFrame]);
+		}
+		mWaitForComputeFenceOfLastFrame[mCurrentFrame] = true;
 
 		CheckDeleteData();
 
@@ -2819,6 +2833,120 @@ namespace ZXEngine
 	{
 		mComputePipelinesToDelete.insert(pair(id, DX_MAX_FRAMES_IN_FLIGHT));
 	}
+
+	void RenderAPID3D12::Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ)
+	{
+		if (mWaitForComputeFenceOfLastFrame[mCurrentFrame])
+		{
+			WaitForFence(mFrameFences[mCurrentFrame]);
+			mWaitForComputeFenceOfLastFrame[mCurrentFrame] = false;
+		}
+
+		// 获取当前帧的Command
+		auto command = GetDrawCommandByIndex(commandID);
+		auto& allocator = command->allocators[mCurrentFrame];
+		auto& commandList = command->commandLists[mCurrentFrame];
+
+		// 重置Command List
+		ThrowIfFailed(allocator->Reset());
+		ThrowIfFailed(commandList->Reset(allocator.Get(), nullptr));
+
+		// 获取当前帧的动态描述符堆Handle
+		INT curDynamicDescriptorOffset = static_cast<INT>(mDynamicComputeDescriptorOffsets[mCurrentFrame]);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE dynamicDescriptorHandle(mDynamicComputeDescriptorHeaps[mCurrentFrame]->GetCPUDescriptorHandleForHeapStart());
+		dynamicDescriptorHandle.Offset(curDynamicDescriptorOffset, mCbvSrvUavDescriptorSize);
+
+		// 将SSBO的UAV绑定到动态描述符堆
+		for (auto& bindingRecord : mCurComputePipelineSSBOBindingRecords)
+		{
+			auto ssbo = GetSSBOByIndex(bindingRecord.first);
+
+			auto tmpHandle = dynamicDescriptorHandle;
+			tmpHandle.Offset(static_cast<INT>(bindingRecord.second), mCbvSrvUavDescriptorSize);
+
+			auto cpuHandle = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(ssbo->descriptorHandles[mCurrentFrame]);
+			mD3D12Device->CopyDescriptorsSimple(1, tmpHandle, cpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+			mDynamicComputeDescriptorOffsets[mCurrentFrame]++;
+		}
+		mCurComputePipelineSSBOBindingRecords.clear();
+
+		// 将VertexBuffer的UAV绑定到动态描述符堆
+		for (auto& bindingRecord : mCurComputePipelineVertexBufferBindingRecords)
+		{
+			auto meshBuffer = GetVAOByIndex(bindingRecord.first);
+
+			auto tmpHandle = dynamicDescriptorHandle;
+			tmpHandle.Offset(static_cast<INT>(bindingRecord.second), mCbvSrvUavDescriptorSize);
+
+			auto cpuHandle = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(meshBuffer->uavHandles[mCurrentFrame]);
+			mD3D12Device->CopyDescriptorsSimple(1, tmpHandle, cpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+			mDynamicComputeDescriptorOffsets[mCurrentFrame]++;
+
+			// 将VertexBuffer的Buffer转换到UAV状态
+			auto vertexBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(meshBuffer->ssbo[mCurrentFrame].buffer.Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+			commandList->ResourceBarrier(1, &vertexBufferTransition);
+		}
+
+		// 设置当前帧的动态描述符堆
+		ID3D12DescriptorHeap* curDescriptorHeaps[] = { mDynamicComputeDescriptorHeaps[mCurrentFrame].Get() };
+		commandList->SetDescriptorHeaps(_countof(curDescriptorHeaps), curDescriptorHeaps);
+
+		auto pipeline = GetComputePipelineByIndex(shaderID);
+		commandList->SetComputeRootSignature(pipeline->rootSignature.Get());
+		commandList->SetPipelineState(pipeline->pipelineState.Get());
+
+		// 设置动态描述符堆
+		CD3DX12_GPU_DESCRIPTOR_HANDLE dynamicGPUHandle(mDynamicComputeDescriptorHeaps[mCurrentFrame]->GetGPUDescriptorHandleForHeapStart());
+		dynamicGPUHandle.Offset(curDynamicDescriptorOffset, mCbvSrvUavDescriptorSize);
+		commandList->SetComputeRootDescriptorTable(0, dynamicGPUHandle);
+
+		commandList->Dispatch(groupX, groupY, groupZ);
+
+		for (auto& bindingRecord : mCurComputePipelineVertexBufferBindingRecords)
+		{
+			auto meshBuffer = GetVAOByIndex(bindingRecord.first);
+
+			// UAV Barrier，保证Compute写入完毕
+			auto uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(meshBuffer->ssbo[mCurrentFrame].buffer.Get());
+			commandList->ResourceBarrier(1, &uavBarrier);
+
+			// 将VertexBuffer的Buffer转换回到GenericRead状态
+			auto vertexBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(meshBuffer->ssbo[mCurrentFrame].buffer.Get(),
+				D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ);
+			commandList->ResourceBarrier(1, &vertexBufferTransition);
+		}
+		mCurComputePipelineVertexBufferBindingRecords.clear();
+
+		ThrowIfFailed(commandList->Close());
+
+		mComputeCommandRecords.push_back(commandID);
+	}
+
+	void RenderAPID3D12::SubmitAllComputeCommands()
+	{
+		if (mComputeCommandRecords.size() > 0)
+		{
+			vector<ID3D12CommandList*> allCommandLists;
+
+			for (auto& commandID : mComputeCommandRecords)
+			{
+				auto command = GetDrawCommandByIndex(commandID);
+				auto& commandList = command->commandLists[mCurrentFrame];
+				allCommandLists.push_back(commandList.Get());
+			}
+
+			mComputeCommandRecords.clear();
+
+			mCommandQueue->ExecuteCommandLists(static_cast<UINT>(allCommandLists.size()), allCommandLists.data());
+
+			mDynamicComputeDescriptorOffsets[mCurrentFrame] = 0;
+		}
+	}
+
+
 	uint32_t RenderAPID3D12::CreateRayTracingPipeline(const RayTracingShaderPathGroup& rtShaderPathGroup)
 	{
 		ZXD3D12RTPipeline* rtPipeline = new ZXD3D12RTPipeline();
