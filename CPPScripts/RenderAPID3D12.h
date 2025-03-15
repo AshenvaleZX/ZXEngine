@@ -108,6 +108,9 @@ namespace ZXEngine
 		virtual void BindShaderStorageBuffer(uint32_t id, uint32_t binding);
 		virtual void UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size);
 		virtual void DeleteShaderStorageBuffer(uint32_t id);
+
+		// Vertex Buffer Binding
+		virtual void BindVertexBuffer(uint32_t VAO, uint32_t binding);
 		/// <summary>
 		/// 光线追踪管线接口
 		/// Ray Tracing Pipeline Interface
@@ -378,6 +381,11 @@ namespace ZXEngine
 		uint32_t mCurPipeLineIdx = 0;
 		uint32_t mCurMaterialDataIdx = 0;
 		vector<ZXD3D12DrawRecord> mDrawRecords;
+
+
+		using ZXD3D12ComputePipelineDescriptorBindingRecord = pair<uint32_t, uint32_t>;
+		vector<ZXD3D12ComputePipelineDescriptorBindingRecord> mCurComputePipelineSSBOBindingRecords;
+		vector<ZXD3D12ComputePipelineDescriptorBindingRecord> mCurComputePipelineVertexBufferBindingRecords;
 
 		uint32_t GetCurFrameBufferIndex() const;
 

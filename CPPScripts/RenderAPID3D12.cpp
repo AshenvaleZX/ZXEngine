@@ -2047,7 +2047,7 @@ namespace ZXEngine
 				drawCommandList->SetGraphicsRootDescriptorTable(1, dynamicGPUHandle);
 			}
 
-			vector<D3D12_VERTEX_BUFFER_VIEW> vertexBufferViews = { VAO->vertexBufferView };
+			vector<D3D12_VERTEX_BUFFER_VIEW> vertexBufferViews = { VAO->computeSkinned ? VAO->vbViews[mCurrentFrame] : VAO->vertexBufferView };
 			if (iter.instanceBuffer != UINT32_MAX)
 			{
 				vertexBufferViews.push_back(GetInstanceBufferByIndex(iter.instanceBuffer)->view);
@@ -2742,6 +2742,11 @@ namespace ZXEngine
 	void RenderAPID3D12::DeleteShaderStorageBuffer(uint32_t id)
 	{
 		mSSBOsToDelete.insert(pair(id, DX_MAX_FRAMES_IN_FLIGHT));
+	}
+
+	void RenderAPID3D12::BindVertexBuffer(uint32_t VAO, uint32_t binding)
+	{
+		mCurComputePipelineVertexBufferBindingRecords.push_back({ VAO, binding });
 	}
 	uint32_t RenderAPID3D12::CreateRayTracingPipeline(const RayTracingShaderPathGroup& rtShaderPathGroup)
 	{
