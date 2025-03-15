@@ -2146,7 +2146,7 @@ namespace ZXEngine
 #endif
 	}
 
-	void RenderAPID3D12::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
+	void RenderAPID3D12::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices, bool skinned)
 	{
 		VAO = GetNextVAOIndex();
 		auto meshBuffer = GetVAOByIndex(VAO);
@@ -2159,6 +2159,33 @@ namespace ZXEngine
 		meshBuffer->vertexBufferView.SizeInBytes = vertexBufferSize;
 		meshBuffer->vertexBufferView.StrideInBytes = sizeof(Vertex);
 		meshBuffer->vertexBufferView.BufferLocation = meshBuffer->vertexBuffer.gpuAddress;
+
+#ifdef ZX_COMPUTE_SHADER_SUPPORT
+		if (skinned)
+		{
+			D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+			uavDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+			uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+			uavDesc.Buffer.FirstElement = 0;
+			uavDesc.Buffer.NumElements = vertexBufferSize / 4;
+			uavDesc.Buffer.StructureByteStride = 0;
+			uavDesc.Buffer.CounterOffsetInBytes = 0;
+			uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_RAW;
+
+			meshBuffer->vbViews.resize(DX_MAX_FRAMES_IN_FLIGHT);
+			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				meshBuffer->ssbo.push_back(CreateBuffer(vertexBufferSize, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_DEFAULT, false, true, vertices.data()));
+				meshBuffer->uavHandles.push_back(ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(meshBuffer->ssbo[i].buffer, uavDesc));
+
+				meshBuffer->vbViews[i].SizeInBytes = vertexBufferSize;
+				meshBuffer->vbViews[i].StrideInBytes = sizeof(Vertex);
+				meshBuffer->vbViews[i].BufferLocation = meshBuffer->ssbo.back().gpuAddress;
+			}
+
+			meshBuffer->computeSkinned = true;
+		}
+#endif
 
 		// 创建Index Buffer
 		UINT indexBufferSize = static_cast<UINT>(sizeof(uint32_t) * indices.size());
