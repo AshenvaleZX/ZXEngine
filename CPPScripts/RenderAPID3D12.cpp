@@ -3516,6 +3516,25 @@ namespace ZXEngine
 			DestroyAccelerationStructure(VAO->blas);
 		}
 
+		if (VAO->computeSkinned)
+		{
+			for (auto& buffer : VAO->ssbo)
+			{
+				DestroyBuffer(buffer);
+			}
+
+			for (auto& handle : VAO->uavHandles)
+			{
+				ZXD3D12DescriptorManager::GetInstance()->ReleaseDescriptor(handle);
+			}
+			
+			VAO->ssbo.clear();
+			VAO->vbViews.clear();
+			VAO->uavHandles.clear();
+
+			VAO->computeSkinned = false;
+		}
+
 		VAO->inUse = false;
 	}
 
