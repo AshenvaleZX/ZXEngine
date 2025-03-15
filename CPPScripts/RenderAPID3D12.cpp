@@ -2655,6 +2655,67 @@ namespace ZXEngine
 	}
 
 
+	uint32_t RenderAPID3D12::CreateShaderStorageBuffer(const void* data, size_t size, GPUBufferType type)
+	{
+		auto idx = GetNextSSBOIndex();
+		auto ssbo = GetSSBOByIndex(idx);
+
+		if (type == GPUBufferType::DynamicGPUWriteGPURead || type == GPUBufferType::DynamicGPUWriteCPURead)
+		{
+			D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+			uavDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+			uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+			uavDesc.Buffer.FirstElement = 0;
+			uavDesc.Buffer.NumElements = static_cast<UINT>(size / 4);
+			uavDesc.Buffer.StructureByteStride = 0;
+			uavDesc.Buffer.CounterOffsetInBytes = 0;
+			uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_RAW;
+
+			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				ssbo->buffers[i] = CreateBuffer(static_cast<UINT>(size), D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_DEFAULT, false, true, data);
+				ssbo->descriptorHandles[i] = ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(ssbo->buffers[i].buffer, uavDesc);
+			}
+		}
+		else
+		{
+			D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+			srvDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			srvDesc.Buffer.FirstElement = 0;
+			srvDesc.Buffer.NumElements = static_cast<UINT>(size / 4);
+			srvDesc.Buffer.StructureByteStride = 0;
+			srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_RAW;
+
+			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				ssbo->buffers[i] = CreateBuffer(static_cast<UINT>(size), D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, true, true, data);
+				ssbo->descriptorHandles[i] = ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(ssbo->buffers[i].buffer, srvDesc);
+			}
+		}
+	
+		ssbo->inUse = true;
+
+		return idx;
+	}
+
+	void RenderAPID3D12::BindShaderStorageBuffer(uint32_t id, uint32_t binding)
+	{
+		mCurComputePipelineSSBOBindingRecords.push_back({ id, binding });
+	}
+
+	void RenderAPID3D12::UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size)
+	{
+		auto ssbo = GetSSBOByIndex(id);
+
+		memcpy(ssbo->buffers[mCurrentFrame].cpuAddress, data, size);
+	}
+
+	void RenderAPID3D12::DeleteShaderStorageBuffer(uint32_t id)
+	{
+		mSSBOsToDelete.insert(pair(id, DX_MAX_FRAMES_IN_FLIGHT));
+	}
 	uint32_t RenderAPID3D12::CreateRayTracingPipeline(const RayTracingShaderPathGroup& rtShaderPathGroup)
 	{
 		ZXD3D12RTPipeline* rtPipeline = new ZXD3D12RTPipeline();
