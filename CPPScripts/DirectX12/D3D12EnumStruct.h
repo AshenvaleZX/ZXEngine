@@ -142,6 +142,11 @@ namespace ZXEngine
         ZXD3D12Buffer vertexBuffer;
         D3D12_VERTEX_BUFFER_VIEW vertexBufferView = {};
 
+        bool computeSkinned = false;
+        vector<ZXD3D12Buffer> ssbo; // For compute pipeline
+        vector<D3D12_VERTEX_BUFFER_VIEW> vbViews;
+        vector<ZXD3D12DescriptorHandle> uavHandles;
+
         ZXD3D12AccelerationStructure blas;
         bool inUse = false;
     };
