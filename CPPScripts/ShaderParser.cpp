@@ -195,6 +195,15 @@ namespace ZXEngine
 		return info;
 	}
 
+	ComputeShaderInfo ShaderParser::GetComputeShaderInfo(const string& code)
+	{
+		ComputeShaderInfo info;
+
+		GetBufferInfos(code, info.bufferInfos);
+
+		return info;
+	}
+
 	bool ShaderParser::IsBasePropertyType(ShaderPropertyType type)
 	{
 		return !(type == ShaderPropertyType::SAMPLER || type == ShaderPropertyType::SAMPLER_2D || type == ShaderPropertyType::SAMPLER_CUBE
@@ -1239,6 +1248,42 @@ namespace ZXEngine
 		}
 
 		return;
+	}
+
+	void ShaderParser::GetBufferInfos(const string& code, vector<ShaderBufferInfo>& infos)
+	{
+		auto lines = Utils::StringSplit(code, '\n');
+
+		for (auto& line : lines)
+		{
+#ifdef ZX_API_D3D12
+			auto lexicalItem = line.find("StructuredBuffer");
+			if (lexicalItem == string::npos)
+				continue;
+
+			string binding = Utils::GetNextStringBlock(line, 0, '(', ')');
+			binding = binding.substr(1, binding.size() - 1);
+
+			ShaderBufferInfo info;
+			info.type = ShaderBufferType::Storage;
+			info.binding = static_cast<uint32_t>(std::stoul(binding));
+			info.isReadOnly = line.find("Output") == string::npos;
+#else
+			auto lexicalItem = line.find("buffer");
+			if (lexicalItem == string::npos)
+				continue;
+
+			string binding = Utils::GetNextStringBlock(line, 0, '=', ')');
+
+			Utils::RemoveSpace(binding);
+
+			ShaderBufferInfo info;
+			info.type = ShaderBufferType::Storage;
+			info.binding = static_cast<uint32_t>(std::stoul(binding));
+#endif
+
+			infos.push_back(info);
+		}
 	}
 
 	string ShaderParser::GetCodeBlock(const string& code, const string& blockName)
