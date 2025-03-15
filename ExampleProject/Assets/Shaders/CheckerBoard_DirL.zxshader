@@ -92,19 +92,19 @@ Fragment
                 vec2(-offset, -offset), vec2(0, -offset), vec2(offset, -offset)
             };
 
-#if ZX_API_OPENGL
+#ifdef ZX_API_OPENGL
             vec3 projCoords = fragPos.xyz / fragPos.w;
             projCoords = projCoords * 0.5 + 0.5;
             float currentDepth = projCoords.z;
 #endif
 
-#if ZX_API_VULKAN
+#ifdef ZX_API_VULKAN
             vec3 projCoords = fragPos.xyz / fragPos.w;
             float currentDepth = projCoords.z;
             projCoords = projCoords * 0.5 + 0.5;
 #endif
 
-#if ZX_API_D3D12
+#ifdef ZX_API_D3D12
             vec3 projCoords = fragPos.xyz / fragPos.w;
             float currentDepth = projCoords.z;
             projCoords.y *= -1.0;
