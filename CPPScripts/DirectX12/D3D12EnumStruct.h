@@ -146,6 +146,15 @@ namespace ZXEngine
         bool inUse = false;
     };
 
+    struct ZXD3D12SSBO
+    {
+        GPUBufferType type = GPUBufferType::Static;
+        vector<ZXD3D12Buffer> buffers;
+		vector<ZXD3D12DescriptorHandle> descriptorHandles;
+        uint32_t binding = 0;
+        bool inUse = false;
+    };
+
     struct ZXD3D12RenderBuffer
     {
         vector<uint32_t> renderBuffers;

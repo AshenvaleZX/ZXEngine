@@ -3477,6 +3477,48 @@ namespace ZXEngine
 		FBO->inUse = false;
 	}
 
+	uint32_t RenderAPID3D12::GetNextSSBOIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mSSBOArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mSSBOArray[i]->inUse)
+				return i;
+		}
+
+		auto ssbo = new ZXD3D12SSBO();
+
+		ssbo->buffers.resize(DX_MAX_FRAMES_IN_FLIGHT);
+		ssbo->descriptorHandles.resize(DX_MAX_FRAMES_IN_FLIGHT);
+
+		mSSBOArray.push_back(ssbo);
+
+		return length;
+	}
+
+	ZXD3D12SSBO* RenderAPID3D12::GetSSBOByIndex(uint32_t idx)
+	{
+		return mSSBOArray[idx];
+	}
+
+	void RenderAPID3D12::DestroySSBOByIndex(uint32_t idx)
+	{
+		auto ssbo = mSSBOArray[idx];
+
+		for (auto& buffer : ssbo->buffers)
+		{
+			DestroyBuffer(buffer);
+		}
+
+		for (auto& handle : ssbo->descriptorHandles)
+		{
+			ZXD3D12DescriptorManager::GetInstance()->ReleaseDescriptor(handle);
+		}
+
+		ssbo->inUse = false;
+	}
+
 	uint32_t RenderAPID3D12::GetNextRenderBufferIndex()
 	{
 		uint32_t length = static_cast<uint32_t>(mRenderBufferArray.size());
@@ -3772,6 +3814,21 @@ namespace ZXEngine
 		{
 			DestroyVAOByIndex(id);
 			mMeshsToDelete.erase(id);
+		}
+
+		// SSBO
+		deleteList.clear();
+		for (auto& iter : mSSBOsToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroySSBOByIndex(id);
+			mSSBOsToDelete.erase(id);
 		}
 
 		// Shader

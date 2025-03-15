@@ -177,6 +177,7 @@ namespace ZXEngine
 	private:
 		vector<ZXD3D12VAO*> mVAOArray;
 		vector<ZXD3D12FBO*> mFBOArray;
+		vector<ZXD3D12SSBO*> mSSBOArray;
 		vector<ZXD3D12RenderBuffer*> mRenderBufferArray;
 		vector<ZXD3D12Texture*> mTextureArray;
 		vector<ZXD3D12Pipeline*> mPipelineArray;
@@ -185,6 +186,7 @@ namespace ZXEngine
 		vector<ZXD3D12DrawCommand*> mDrawCommandArray;
 
 		unordered_map<uint32_t, uint32_t> mMeshsToDelete;
+		unordered_map<uint32_t, uint32_t> mSSBOsToDelete;
 		unordered_map<uint32_t, uint32_t> mTexturesToDelete;
 		unordered_map<uint32_t, uint32_t> mMaterialDatasToDelete;
 		unordered_map<uint32_t, uint32_t> mShadersToDelete;
@@ -198,6 +200,10 @@ namespace ZXEngine
 		uint32_t GetNextFBOIndex();
 		ZXD3D12FBO* GetFBOByIndex(uint32_t idx);
 		void DestroyFBOByIndex(uint32_t idx);
+
+		uint32_t GetNextSSBOIndex();
+		ZXD3D12SSBO* GetSSBOByIndex(uint32_t idx);
+		void DestroySSBOByIndex(uint32_t idx);
 
 		uint32_t GetNextRenderBufferIndex();
 		ZXD3D12RenderBuffer* GetRenderBufferByIndex(uint32_t idx);
