@@ -48,10 +48,12 @@ namespace ZXEngine
     {
         for (auto& mesh : mMeshes)
         {
+#ifndef ZX_COMPUTE_SHADER_SUPPORT
             if (mAnimator)
             {
                 mShadowCastMaterial->SetMatrix("_BoneMatrices", mesh->mBonesFinalTransform.data(), static_cast<uint32_t>(mesh->mBonesFinalTransform.size()));
             }
+#endif
             RenderAPI::GetInstance()->Draw(mesh->VAO);
         }
     }

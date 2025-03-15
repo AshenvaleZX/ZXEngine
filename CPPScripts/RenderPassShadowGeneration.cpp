@@ -84,10 +84,14 @@ namespace ZXEngine
 
 			if (renderer->mShadowCastMaterial == nullptr)
 			{
+#ifdef ZX_COMPUTE_SHADER_SUPPORT
+				renderer->mShadowCastMaterial = new Material(shadowMapShader);
+#else
 				if (renderer->mAnimator)
 					renderer->mShadowCastMaterial = new Material(animShadowMapShader);
 				else
 					renderer->mShadowCastMaterial = new Material(shadowMapShader);
+#endif
 			}
 
 			Matrix4 mat_M = renderer->GetTransform()->GetModelMatrix();
@@ -144,10 +148,14 @@ namespace ZXEngine
 
 			if (renderer->mShadowCastMaterial == nullptr)
 			{
+#ifdef ZX_COMPUTE_SHADER_SUPPORT
+				renderer->mShadowCastMaterial = new Material(shadowCubeMapShader);
+#else
 				if (renderer->mAnimator)
 					renderer->mShadowCastMaterial = new Material(animShadowCubeMapShader);
 				else
 					renderer->mShadowCastMaterial = new Material(shadowCubeMapShader);
+#endif
 			}
 
 			renderer->mShadowCastMaterial->Use();
