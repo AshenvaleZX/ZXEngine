@@ -4089,6 +4089,7 @@ namespace ZXEngine
 		{
 			drawCommand->allocators[i]->Reset();
 			drawCommand->commandLists[i]->Reset(drawCommand->allocators[i].Get(), nullptr);
+			drawCommand->commandLists[i]->Close();
 		}
 
 		drawCommand->inUse = false;
