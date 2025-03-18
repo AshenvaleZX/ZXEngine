@@ -1257,7 +1257,7 @@ namespace ZXEngine
 		for (auto& line : lines)
 		{
 #ifdef ZX_API_D3D12
-			auto lexicalItem = line.find("StructuredBuffer");
+			auto lexicalItem = line.find("ByteAddressBuffer");
 			if (lexicalItem == string::npos)
 				continue;
 
