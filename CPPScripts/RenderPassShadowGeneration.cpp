@@ -84,7 +84,7 @@ namespace ZXEngine
 
 			if (renderer->mShadowCastMaterial == nullptr)
 			{
-#ifdef ZX_COMPUTE_SHADER_SUPPORT
+#ifdef ZX_COMPUTE_ANIMATION
 				renderer->mShadowCastMaterial = new Material(shadowMapShader);
 #else
 				if (renderer->mAnimator)
@@ -148,7 +148,7 @@ namespace ZXEngine
 
 			if (renderer->mShadowCastMaterial == nullptr)
 			{
-#ifdef ZX_COMPUTE_SHADER_SUPPORT
+#ifdef ZX_COMPUTE_ANIMATION
 				renderer->mShadowCastMaterial = new Material(shadowCubeMapShader);
 #else
 				if (renderer->mAnimator)

@@ -1050,7 +1050,7 @@ namespace ZXEngine
 		// A great thing about structs is that their memory layout is sequential for all its items.
 		// The effect is that we can simply pass a pointer to the struct and it translates perfectly to a Vector3/2 array which
 		// again translates to 3/2 floats which translates to a byte array.
-#ifdef ZX_COMPUTE_SHADER_SUPPORT
+#ifdef ZX_COMPUTE_ANIMATION
 		if (skinned)
 			glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_DYNAMIC_COPY);
 		else

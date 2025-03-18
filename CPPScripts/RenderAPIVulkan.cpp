@@ -1780,7 +1780,7 @@ namespace ZXEngine
             meshBuffer->vertexBufferDeviceAddress = vkGetBufferDeviceAddress(device, &addressInfo);
         }
 
-#ifdef ZX_COMPUTE_SHADER_SUPPORT
+#ifdef ZX_COMPUTE_ANIMATION
         if (skinned)
         {
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)

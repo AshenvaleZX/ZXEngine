@@ -258,7 +258,7 @@ namespace ZXEngine
             auto pMesh = ProcessMesh(mesh, async, true);
             pMesh->mRootTrans = nodeTransform;
 
-#ifdef ZX_COMPUTE_SHADER_SUPPORT
+#ifdef ZX_COMPUTE_ANIMATION
             pMesh->mVertexSSBO = RenderAPI::GetInstance()->CreateShaderStorageBuffer(
                 pMesh->mVertices.data(), pMesh->mVertices.size() * sizeof(Vertex), GPUBufferType::Static);
 

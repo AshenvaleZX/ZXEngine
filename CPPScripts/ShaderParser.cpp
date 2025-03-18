@@ -141,7 +141,7 @@ namespace ZXEngine
 			break;
 		}
 
-#ifdef ZX_COMPUTE_SHADER_SUPPORT
+#ifdef ZX_COMPUTE_ANIMATION
 		string preprocessedCode = PreprocessMacroDefine(code, { apiMacro.c_str(), "ZX_COMPUTE_ANIMATION"});
 #else
 		string preprocessedCode = PreprocessMacroDefine(code, { apiMacro.c_str() });
@@ -345,7 +345,7 @@ namespace ZXEngine
 		if (originCode.empty())
 			return "";
 
-#ifdef ZX_COMPUTE_SHADER_SUPPORT
+#ifdef ZX_COMPUTE_ANIMATION
 		string preprocessedCode = PreprocessMacroDefine(originCode, { "ZX_API_OPENGL", "ZX_COMPUTE_ANIMATION" });
 #else
 		string preprocessedCode = PreprocessMacroDefine(originCode, { "ZX_API_OPENGL" });
@@ -499,7 +499,7 @@ namespace ZXEngine
 		if (originCode.empty())
 			return "";
 
-#ifdef ZX_COMPUTE_SHADER_SUPPORT
+#ifdef ZX_COMPUTE_ANIMATION
 		string preprocessedCode = PreprocessMacroDefine(originCode, { "ZX_API_VULKAN", "ZX_COMPUTE_ANIMATION" });
 #else
 		string preprocessedCode = PreprocessMacroDefine(originCode, { "ZX_API_VULKAN" });
@@ -665,7 +665,7 @@ namespace ZXEngine
 		if (originCode.empty())
 			return "";
 
-#ifdef ZX_COMPUTE_SHADER_SUPPORT
+#ifdef ZX_COMPUTE_ANIMATION
 		string preprocessedCode = PreprocessMacroDefine(originCode, { "ZX_API_D3D12", "ZX_COMPUTE_ANIMATION" });
 #else
 		string preprocessedCode = PreprocessMacroDefine(originCode, { "ZX_API_D3D12" });

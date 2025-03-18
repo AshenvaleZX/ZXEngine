@@ -22,7 +22,7 @@ namespace ZXEngine
 
 	void Animator::Update()
 	{
-#ifdef ZX_COMPUTE_SHADER_SUPPORT
+#ifdef ZX_COMPUTE_ANIMATION
 		if (mComputeShader == nullptr)
 			mComputeShader = RenderAPI::GetInstance()->LoadAndSetUpComputeShader(Resources::GetAssetFullPath("Shaders/Animation", true));
 #endif
@@ -39,7 +39,7 @@ namespace ZXEngine
 		for (auto pAnimator : mAnimators)
 		{
 			pAnimator->UpdateMeshes(false);
-#ifdef ZX_COMPUTE_SHADER_SUPPORT
+#ifdef ZX_COMPUTE_ANIMATION
 			pAnimator->UpdateVertices();
 #endif
 		}
@@ -53,7 +53,7 @@ namespace ZXEngine
 		for (auto pAnimator : mAnimators)
 			pAnimator->AccomplishUpdate();
 
-#ifdef ZX_COMPUTE_SHADER_SUPPORT
+#ifdef ZX_COMPUTE_ANIMATION
 		for (auto pAnimator : mAnimators)
 			pAnimator->UpdateVertices();
 #endif

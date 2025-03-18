@@ -85,6 +85,22 @@
 #define ZX_COMPUTE_SHADER_SUPPORT
 #endif
 
+/*
+|  Compute Pipeline Animation Switch
+|
+|  This is disabled on macOS for two reasons:
+|  1. macOS only supports OpenGL 4.1, but OpenGL 4.3 is required for compute shader.
+|  2. Although Vulkan on macOS supports compute pipeline, and it actually runs without
+|  any code errors or crashes, but the output of the compute shader is abnormal.
+|
+|  This is disabled on OpenGL for the following reasons:
+|  1. OpenGL compute shader is not efficient, the animation system's performance will
+|  be reduced by using OpenGL compute shader. You can enable it if you want to test it.
+*/
+#if defined(ZX_COMPUTE_SHADER_SUPPORT) && !defined(ZX_PLATFORM_MACOS) && !defined(ZX_API_OPENGL)
+#define ZX_COMPUTE_ANIMATION
+#endif
+
 #include <string>
 #include <list>
 #include <cstdint>

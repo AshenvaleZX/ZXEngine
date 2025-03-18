@@ -36,7 +36,7 @@ namespace ZXEngine
     {
         for (auto& mesh : mMeshes)
         {
-#ifndef ZX_COMPUTE_SHADER_SUPPORT
+#ifndef ZX_COMPUTE_ANIMATION
             if (mAnimator)
             {
                 mMatetrial->SetMatrix("_BoneMatrices", mesh->mBonesFinalTransform.data(), static_cast<uint32_t>(mesh->mBonesFinalTransform.size()));
@@ -50,7 +50,7 @@ namespace ZXEngine
     {
         for (auto& mesh : mMeshes)
         {
-#ifndef ZX_COMPUTE_SHADER_SUPPORT
+#ifndef ZX_COMPUTE_ANIMATION
             if (mAnimator)
             {
                 mShadowCastMaterial->SetMatrix("_BoneMatrices", mesh->mBonesFinalTransform.data(), static_cast<uint32_t>(mesh->mBonesFinalTransform.size()));

@@ -2174,7 +2174,7 @@ namespace ZXEngine
 		meshBuffer->vertexBufferView.StrideInBytes = sizeof(Vertex);
 		meshBuffer->vertexBufferView.BufferLocation = meshBuffer->vertexBuffer.gpuAddress;
 
-#ifdef ZX_COMPUTE_SHADER_SUPPORT
+#ifdef ZX_COMPUTE_ANIMATION
 		if (skinned)
 		{
 			D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
