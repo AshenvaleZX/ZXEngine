@@ -2765,7 +2765,7 @@ namespace ZXEngine
 
 	ComputeShaderReference* RenderAPID3D12::LoadAndSetUpComputeShader(const string& path)
 	{
-		string shaderCode = Resources::LoadTextFile(path);
+		string shaderCode = Resources::LoadTextFile(path + ".dxc");
 		if (shaderCode.empty())
 			return nullptr;
 

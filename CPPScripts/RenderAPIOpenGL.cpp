@@ -1389,7 +1389,7 @@ namespace ZXEngine
 
 	ComputeShaderReference* RenderAPIOpenGL::LoadAndSetUpComputeShader(const string& path)
 	{
-		string shaderCode = Resources::LoadTextFile(path);
+		string shaderCode = Resources::LoadTextFile(path + ".glc");
 
 		unsigned int compute = glCreateShader(GL_COMPUTE_SHADER);
 		const char* cShaderCode = shaderCode.c_str();

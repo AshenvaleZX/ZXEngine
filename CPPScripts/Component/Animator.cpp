@@ -24,7 +24,7 @@ namespace ZXEngine
 	{
 #ifdef ZX_COMPUTE_SHADER_SUPPORT
 		if (mComputeShader == nullptr)
-			mComputeShader = RenderAPI::GetInstance()->LoadAndSetUpComputeShader(Resources::GetAssetFullPath("Shaders/Animation.zxcompute", true));
+			mComputeShader = RenderAPI::GetInstance()->LoadAndSetUpComputeShader(Resources::GetAssetFullPath("Shaders/Animation", true));
 #endif
 
 #ifdef ENABLE_ASYNC_ANIMATION

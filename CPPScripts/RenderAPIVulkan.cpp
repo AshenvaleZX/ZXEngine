@@ -1934,7 +1934,7 @@ namespace ZXEngine
 
     ComputeShaderReference* RenderAPIVulkan::LoadAndSetUpComputeShader(const string& path)
     {
-        string shaderCode = Resources::LoadTextFile(path);
+        string shaderCode = Resources::LoadTextFile(path + ".glc");
         if (shaderCode.empty())
             return nullptr;
 
@@ -1993,11 +1993,10 @@ namespace ZXEngine
             "Failed to create pipeline layout!"
         );
 
-        string prePath = path.substr(0, path.length() - 10); // .zxcompute
         VkPipelineShaderStageCreateInfo computeShaderStageInfo = {};
         computeShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         computeShaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
-        computeShaderStageInfo.module = CreateShaderModule(GetSPIRVShader(prePath, ZX_SHADER_STAGE_COMPUTE_BIT));
+        computeShaderStageInfo.module = CreateShaderModule(GetSPIRVShader(path, ZX_SHADER_STAGE_COMPUTE_BIT));
         computeShaderStageInfo.pName = "main";
 
         VkComputePipelineCreateInfo pipelineCreateInfo = {};
@@ -6836,7 +6835,7 @@ namespace ZXEngine
             if (isRasterization)
                 SPIRVCompiler::CompileShader(path + ".zxshader");
             else if (stage & ZX_SHADER_STAGE_COMPUTE_BIT)
-                SPIRVCompiler::CompileCompute(path + ".zxcompute");
+                SPIRVCompiler::CompileCompute(path + ".glc");
             else
                 SPIRVCompiler::GenerateSPIRVFile(path + ".vkr");
 
