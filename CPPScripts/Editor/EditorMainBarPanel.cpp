@@ -10,6 +10,7 @@
 #include "../Vulkan/SPIRVCompiler.h"
 #include "../Component/Animator.h"
 #include "../Audio/AudioEngine.h"
+#include "../RenderAPI.h"
 
 #ifdef ZX_PLATFORM_WINDOWS
 #include "../DirectX12/ZXD3D12Util.h"
@@ -226,6 +227,7 @@ namespace ZXEngine
 				{
 					Time::UpdateCurTime();
 					SceneManager::GetInstance()->GetCurScene()->Update();
+					RenderAPI::GetInstance()->SubmitAllComputeCommands();
 				}
 			}
 		}
