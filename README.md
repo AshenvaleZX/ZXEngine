@@ -22,7 +22,7 @@ This project aimed at the game engine, not only focus on the graphics and render
 
 - [多套内置渲染管线 (Multiple Built-in Rendering Pipelines)](#多套内置渲染管线-multiple-built-in-rendering-pipelines)
 
-- [通用计算管线集成 (Compute Pipeline Integration)](#通用计算管线集成-compute-pipeline-integration)
+- [通用计算管线支持 (Compute Pipeline Support)](#通用计算管线支持-compute-pipeline-support)
 
 - [PhysZ物理引擎简介 (PhysZ Physics Engine Introduction)](#physz物理引擎简介-physz-physics-engine-introduction)
 
@@ -124,11 +124,11 @@ Scenes using forward rendering pipeline and ray tracing rendering pipeline have 
 
 ![](Documents/Images/EngineShow7.jpg)
 
-## 通用计算管线集成 (Compute Pipeline Integration)
+## 通用计算管线支持 (Compute Pipeline Support)
 
-ZXEngine将Vulkan，DirectX 12和OpenGL的计算管线封装成了统一接口以供使用。由于macOS只支持到OpenGL 4.1，而OpenGL是从4.3版本才加入对计算管线的支持，所以在macOS上使用OpenGL时，所有计算管线相关的模块都会被禁用。除macOS+OpenGL的组合无法使用计算管线外，其它平台+图形API的组合都是可用的。
+ZXEngine集成了Vulkan，DirectX 12和OpenGL的通用计算管线，并封装成了统一接口以供使用。由于macOS只支持到OpenGL 4.1，而OpenGL是从4.3版本才加入对计算管线的支持，所以在macOS上使用OpenGL时，所有计算管线相关的模块都会被禁用。除macOS+OpenGL的组合无法使用计算管线外，其它平台+图形API的组合都是可用的。
 
-ZXEngine encapsulates the Vulkan, DirectX 12 and OpenGL compute pipelines into a unified interface for use. Since macOS only supports OpenGL 4.1, and OpenGL added support for the compute pipeline from version 4.3, all compute pipeline related modules are disabled when using OpenGL on macOS. Except for the macOS + OpenGL combination that does not support compute pipeline, other platform + graphics API combinations are support.
+ZXEngine integrates the compute pipeline of Vulkan, DirectX 12 and OpenGL and is encapsulated into a unified interface for use. Since macOS only supports OpenGL 4.1, and OpenGL added support for the compute pipeline from version 4.3, all compute pipeline related modules are disabled when using OpenGL on macOS. Except for the macOS + OpenGL combination that does not support compute pipeline, other platform + graphics API combinations are support.
 
 目前项目中实际应用了计算管线的地方在骨骼蒙皮动画模块。在启用了ZX_COMPUTE_ANIMATION宏之后，骨骼蒙皮动画的Mesh更新操作将在计算管线中完成。
 
