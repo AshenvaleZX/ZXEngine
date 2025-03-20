@@ -49,7 +49,6 @@ namespace ZXEngine
 		auto handle = GetNextDescriptorHeapAndHandle(zxDescriptorHeap);
 
 		// 创建Sampler
-		auto renderAPI = static_cast<RenderAPID3D12*>(RenderAPI::GetInstance());
 		CD3DX12_CPU_DESCRIPTOR_HANDLE descriptorHandle(zxDescriptorHeap->descriptorHeap->GetCPUDescriptorHandleForHeapStart());
 		descriptorHandle.Offset(handle.descriptorIdx, mDescriptorSize);
 		mD3D12Device->CreateSampler(&desc, descriptorHandle);
@@ -66,7 +65,6 @@ namespace ZXEngine
 		auto handle = GetNextDescriptorHeapAndHandle(zxDescriptorHeap);
 
 		// 创建CBV
-		auto renderAPI = static_cast<RenderAPID3D12*>(RenderAPI::GetInstance());
 		CD3DX12_CPU_DESCRIPTOR_HANDLE descriptorHandle(zxDescriptorHeap->descriptorHeap->GetCPUDescriptorHandleForHeapStart());
 		descriptorHandle.Offset(handle.descriptorIdx, mDescriptorSize);
 		mD3D12Device->CreateConstantBufferView(&desc, descriptorHandle);
@@ -83,7 +81,6 @@ namespace ZXEngine
 		auto handle = GetNextDescriptorHeapAndHandle(zxDescriptorHeap);
 
 		// 创建RTV
-		auto renderAPI = static_cast<RenderAPID3D12*>(RenderAPI::GetInstance());
 		CD3DX12_CPU_DESCRIPTOR_HANDLE descriptorHandle(zxDescriptorHeap->descriptorHeap->GetCPUDescriptorHandleForHeapStart());
 		descriptorHandle.Offset(handle.descriptorIdx, mDescriptorSize);
 		mD3D12Device->CreateRenderTargetView(resource.Get(), &desc, descriptorHandle);
@@ -100,7 +97,6 @@ namespace ZXEngine
 		auto handle = GetNextDescriptorHeapAndHandle(zxDescriptorHeap);
 
 		// 创建DSV
-		auto renderAPI = static_cast<RenderAPID3D12*>(RenderAPI::GetInstance());
 		CD3DX12_CPU_DESCRIPTOR_HANDLE descriptorHandle(zxDescriptorHeap->descriptorHeap->GetCPUDescriptorHandleForHeapStart());
 		descriptorHandle.Offset(handle.descriptorIdx, mDescriptorSize);
 		mD3D12Device->CreateDepthStencilView(resource.Get(), &desc, descriptorHandle);
@@ -117,10 +113,25 @@ namespace ZXEngine
 		auto handle = GetNextDescriptorHeapAndHandle(zxDescriptorHeap);
 
 		// 创建SRV
-		auto renderAPI = static_cast<RenderAPID3D12*>(RenderAPI::GetInstance());
 		CD3DX12_CPU_DESCRIPTOR_HANDLE descriptorHandle(zxDescriptorHeap->descriptorHeap->GetCPUDescriptorHandleForHeapStart());
 		descriptorHandle.Offset(handle.descriptorIdx, mDescriptorSize);
 		mD3D12Device->CreateShaderResourceView(resource.Get(), &desc, descriptorHandle);
+
+		zxDescriptorHeap->availableNum--;
+		zxDescriptorHeap->inUseState[handle.descriptorIdx] = true;
+
+		return handle;
+	}
+
+	ZXD3D12DescriptorHandle ZXD3D12DescriptorAllocator::CreateDescriptor(ComPtr<ID3D12Resource> resource, const D3D12_UNORDERED_ACCESS_VIEW_DESC& desc)
+	{
+		ZXD3D12DescriptorHeap* zxDescriptorHeap = nullptr;
+		auto handle = GetNextDescriptorHeapAndHandle(zxDescriptorHeap);
+
+		// 创建UAV
+		CD3DX12_CPU_DESCRIPTOR_HANDLE descriptorHandle(zxDescriptorHeap->descriptorHeap->GetCPUDescriptorHandleForHeapStart());
+		descriptorHandle.Offset(handle.descriptorIdx, mDescriptorSize);
+		mD3D12Device->CreateUnorderedAccessView(resource.Get(), nullptr, &desc, descriptorHandle);
 
 		zxDescriptorHeap->availableNum--;
 		zxDescriptorHeap->inUseState[handle.descriptorIdx] = true;

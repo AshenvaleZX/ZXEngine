@@ -17,7 +17,8 @@ namespace ZXEngine
 		static RenderAPI* mInstance;
 
 		/// <summary>
-		/// 标准RenderAPI接口
+		/// 标准渲染管线接口
+		/// Standard Rendering Pipeline Interface
 		/// </summary>
 	public:
 		RenderAPI() {};
@@ -70,13 +71,14 @@ namespace ZXEngine
 
 		// Draw
 		virtual uint32_t AllocateDrawCommand(CommandType commandType, FrameBufferClearFlags clearFlags) = 0;
+		virtual void FreeDrawCommand(uint32_t commandID) = 0;
 		virtual void Draw(uint32_t VAO) = 0;
 		virtual void DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer) = 0;
 		virtual void GenerateDrawCommand(uint32_t id) = 0;
 
 		// Mesh
 		virtual void DeleteMesh(unsigned int VAO) = 0;
-		virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices) = 0;
+		virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices, bool skinned = false) = 0;
 		virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize) = 0;
 		virtual void UpdateDynamicMesh(unsigned int VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices) = 0;
 		virtual void GenerateParticleMesh(unsigned int& VAO) = 0;
@@ -104,7 +106,30 @@ namespace ZXEngine
 
 
 		/// <summary>
-		/// 标准RayTracing接口
+		/// 通用计算管线接口
+		/// Compute Pipeline Interface 
+		/// </summary>
+	public:
+		// Shader Storage Buffer
+		virtual uint32_t CreateShaderStorageBuffer(const void* data, size_t size, GPUBufferType type) = 0;
+		virtual void BindShaderStorageBuffer(uint32_t id, uint32_t binding) = 0;
+		virtual void UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size) = 0;
+		virtual void DeleteShaderStorageBuffer(uint32_t id) = 0;
+
+		// Vertex Buffer Binding
+		virtual void BindVertexBuffer(uint32_t VAO, uint32_t binding) = 0;
+
+		// Compute Shader
+		virtual ComputeShaderReference* LoadAndSetUpComputeShader(const string& path) = 0;
+		virtual void DeleteComputeShader(uint32_t id) = 0;
+
+		// Compute Command
+		virtual void Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ) = 0;
+		virtual void SubmitAllComputeCommands() = 0;
+
+		/// <summary>
+		/// 光线追踪管线接口
+		/// Ray Tracing Pipeline Interface
 		/// </summary>
 	public:
 		// Pipeline

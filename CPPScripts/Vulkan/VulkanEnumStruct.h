@@ -83,8 +83,13 @@ namespace ZXEngine
     {
         uint32_t present = UINT32_MAX;
         uint32_t graphics = UINT32_MAX;
+        uint32_t compute = UINT32_MAX;
 
+#ifdef ZX_COMPUTE_SHADER_SUPPORT
+        bool isComplete() const { return present != UINT32_MAX && graphics != UINT32_MAX && compute != UINT32_MAX; }
+#else
         bool isComplete() const { return present != UINT32_MAX && graphics != UINT32_MAX; }
+#endif
     };
 
     // 交换链的三大类属性设置
@@ -213,7 +218,18 @@ namespace ZXEngine
         void* vertexBufferAddress = nullptr; // Only for dynamic mesh
         VkDeviceAddress vertexBufferDeviceAddress = 0; // Only for ray tracing
 
+        bool computeSkinned = false;
+        vector<VulkanBuffer> ssbo; // For compute pipeline
+
         VulkanAccelerationStructure blas; // Bottom Level Acceleration Structure
+        bool inUse = false;
+    };
+
+    struct VulkanSSBO
+    {
+        GPUBufferType type = GPUBufferType::Static;
+        vector<VulkanBuffer> buffers;
+        uint32_t binding = 0;
         bool inUse = false;
     };
 
@@ -279,5 +295,28 @@ namespace ZXEngine
         VkDeviceAddress indexAddress;
         VkDeviceAddress vertexAddress;
         VkDeviceAddress materialAddress;
+    };
+
+    struct VulkanDescriptorGroup
+    {
+        static const size_t Size = 10;
+        VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
+        vector<VkDescriptorSet> descriptorSets;
+    };
+
+    struct VulkanComputePipelineData
+    {
+        size_t bindingNum = 0;
+        vector<VulkanDescriptorGroup> descriptorGroups;
+        // Todo: Add uniform descriptor group
+    };
+
+    struct VulkanComputePipeline
+    {
+        VulkanPipeline pipeline;
+        uint32_t SSBOBindingNum = 0;
+        uint32_t UniformBindingNum = 0;
+        vector<VulkanComputePipelineData> pipelineData;
+        bool inUse = false;
     };
 }

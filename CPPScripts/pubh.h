@@ -77,6 +77,38 @@
 #define ZX_EDITOR
 #endif
 
+/*
+|  Compute Shader Support
+|  macOS only supports OpenGL 4.1, but OpenGL 4.3 is required for compute shader.
+*/
+#if !(defined(ZX_PLATFORM_MACOS) && defined(ZX_API_OPENGL))
+#define ZX_COMPUTE_SHADER_SUPPORT
+#endif
+
+/*
+|  Compute Pipeline Animation Switch
+|
+|  This is disabled on macOS for two reasons:
+|  1. macOS only supports OpenGL 4.1, but OpenGL 4.3 is required for compute shader.
+|  2. Although Vulkan on macOS supports compute pipeline, and it actually runs without
+|  any code errors or crashes, but the output of the compute shader could be abnormal.
+|  The output is not always abnormal, if I run it directly, I will probably get abnormal
+|  output, but if I pause and run it frame by frame, or restart it after pausing, the
+|  result is more likely to be normal. I feel like there's something wrong with the Vulkan
+|  driver on macOS. You can enable ZX_COMPUTE_ANIMATION if you want to try it on your own
+|  macOS device, just delete the condition of ZX_PLATFORM_MACOS in the following code.
+|  But remember to recompile the SPIR-V shader files after enabling this, beacuse there
+|  are some macros in zxshader, and SPIR-V files won't be recompiled automatically.
+|  You can lick "Assets/Compile All Shader for Vulkan" in the editor to recompile them.
+|
+|  This is disabled on OpenGL for the following reasons:
+|  1. OpenGL compute shader is not efficient, the animation system's performance will
+|  be reduced by using OpenGL compute shader. You can enable it if you want to test it.
+*/
+#if defined(ZX_COMPUTE_SHADER_SUPPORT) && !defined(ZX_PLATFORM_MACOS) && !defined(ZX_API_OPENGL)
+#define ZX_COMPUTE_ANIMATION
+#endif
+
 #include <string>
 #include <list>
 #include <cstdint>

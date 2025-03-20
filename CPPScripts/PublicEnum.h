@@ -28,6 +28,7 @@ namespace ZXEngine
 		ZX_SHADER_STAGE_CLOSEST_HIT_BIT  = 0x00000020,
 		ZX_SHADER_STAGE_MISS_BIT         = 0x00000040,
 		ZX_SHADER_STAGE_INTERSECTION_BIT = 0x00000080,
+		ZX_SHADER_STAGE_COMPUTE_BIT      = 0x00000100,
 	} ShaderStageFlagBit;
 
 	typedef uint32_t EditorPanelEdgeFlags;
@@ -154,6 +155,20 @@ namespace ZXEngine
 		RayTracing,
 	};
 
+	enum class GPUBufferType
+	{
+		Static, // CPU Write GPU Read
+		DynamicCPUWriteGPURead,
+		DynamicGPUWriteCPURead,
+		DynamicGPUWriteGPURead,
+	};
+
+	enum class ShaderBufferType
+	{
+		Uniform,
+		Storage,
+	};
+
 	enum class CommandType
 	{
 		NotCare,
@@ -165,6 +180,7 @@ namespace ZXEngine
 		UIRendering,
 		AssetPreviewer,
 		RayTracing,
+		Compute,
 	};
 
 	enum class GameObjectLayer

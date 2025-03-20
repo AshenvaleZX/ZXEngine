@@ -22,15 +22,16 @@ namespace ZXEngine
 {
 	struct Vertex 
 	{
-		Vector3 Position  = {};
-		Vector2 TexCoords = {};
-		Vector3 Normal    = {};
-		Vector3 Tangent   = {};
+		Vector4 Position  = {};
+		Vector4 TexCoords = {};
+		Vector4 Normal    = {};
+		Vector4 Tangent   = {};
 		// 骨骼蒙皮数据
 		float    Weights[MAX_NUM_BONES_PER_VERTEX] = {};
 		uint32_t BoneIDs[MAX_NUM_BONES_PER_VERTEX] = {};
 
 		void AddBoneData(uint32_t boneID, float weight);
+		void NormalizeWeights();
 	};
 
 	struct BoneNode
@@ -144,6 +145,18 @@ namespace ZXEngine
 		ShaderPropertiesInfo fragProperties;
 	};
 
+	struct ShaderBufferInfo
+	{
+		uint32_t binding = 0;
+		bool isReadOnly = true;
+		ShaderBufferType type = ShaderBufferType::Uniform;
+	};
+
+	struct ComputeShaderInfo
+	{
+		vector<ShaderBufferInfo> bufferInfos;
+	};
+
 	struct ShaderReference
 	{
 		string path;
@@ -151,6 +164,14 @@ namespace ZXEngine
 		int referenceCount = 1;
 		FrameBufferType targetFrameBufferType = FrameBufferType::Color;
 		ShaderInfo shaderInfo;
+	};
+
+	struct ComputeShaderReference
+	{
+		string path;
+		unsigned int ID = 0;
+		int referenceCount = 1;
+		ComputeShaderInfo shaderInfo;
 	};
 
 	struct ViewPortInfo

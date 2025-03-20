@@ -16,6 +16,8 @@ namespace ZXEngine
 		static vector<string> ExtractWords(const string& str);
 		// 移除回车符(13)和换行符(10)
 		static void RemoveCRLF(string& str);
+		// 移除空格符
+		static void RemoveSpace(string& str);
 		// 是否为合法单词字符
 		static bool IsValidWordChar(char c);
 		// 查找字符串中是否存在某个单词，并返回起始位
@@ -24,6 +26,8 @@ namespace ZXEngine
 		static void ReplaceAllWord(string& oriStr, const string& srcWord, const string& dstWord);
 		// 替代字符串中的字符串
 		static void ReplaceAllString(string& oriStr, const string& srcStr, const string& dstStr);
+		// 获取由sChar和eChar括起来的一段字符串
+		static string GetNextStringBlock(string& oriStr, size_t offset, char sChar, char eChar, bool exclude = true);
 		// 获取由sChar和eChar括起来的一段字符串起止位置
 		static void GetNextStringBlockPos(string& oriStr, size_t offset, char sChar, char eChar, size_t& sPos, size_t& ePos);
 		// 字符串拼接

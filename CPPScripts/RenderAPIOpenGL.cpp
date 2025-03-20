@@ -940,10 +940,10 @@ namespace ZXEngine
 	{
 		vector<Vertex> vertices =
 		{
-			{.Position = {  0.5f,  0.5f, 0.0f }, .TexCoords = { 1.0f, 0.0f } },
-			{.Position = {  0.5f, -0.5f, 0.0f }, .TexCoords = { 1.0f, 1.0f } },
-			{.Position = { -0.5f,  0.5f, 0.0f }, .TexCoords = { 0.0f, 0.0f } },
-			{.Position = { -0.5f, -0.5f, 0.0f }, .TexCoords = { 0.0f, 1.0f } },
+			{ .Position = {  0.5f,  0.5f, 0.0f, 1.0f }, .TexCoords = { 1.0f, 0.0f, 0.0f, 0.0f } },
+			{ .Position = {  0.5f, -0.5f, 0.0f, 1.0f }, .TexCoords = { 1.0f, 1.0f, 0.0f, 0.0f } },
+			{ .Position = { -0.5f,  0.5f, 0.0f, 1.0f }, .TexCoords = { 0.0f, 0.0f, 0.0f, 0.0f } },
+			{ .Position = { -0.5f, -0.5f, 0.0f, 1.0f }, .TexCoords = { 0.0f, 1.0f, 0.0f, 0.0f } },
 		};
 
 		vector<uint32_t> indices =
@@ -959,6 +959,11 @@ namespace ZXEngine
 	{
 		// OpenGL不需要这个接口
 		return 0;
+	}
+
+	void RenderAPIOpenGL::FreeDrawCommand(uint32_t commandID)
+	{
+		// OpenGL不需要这个接口
 	}
 
 	void RenderAPIOpenGL::Draw(uint32_t VAO)
@@ -1027,7 +1032,7 @@ namespace ZXEngine
 		CheckError();
 	}
 
-	void RenderAPIOpenGL::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
+	void RenderAPIOpenGL::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices, bool skinned)
 	{
 		VAO = GetNextVAOIndex();
 		auto meshBuffer = GetVAOByIndex(VAO);
@@ -1045,7 +1050,14 @@ namespace ZXEngine
 		// A great thing about structs is that their memory layout is sequential for all its items.
 		// The effect is that we can simply pass a pointer to the struct and it translates perfectly to a Vector3/2 array which
 		// again translates to 3/2 floats which translates to a byte array.
+#ifdef ZX_COMPUTE_ANIMATION
+		if (skinned)
+			glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_DYNAMIC_COPY);
+		else
+			glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+#else
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+#endif
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshBuffer->EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32_t), &indices[0], GL_STATIC_DRAW);
@@ -1053,16 +1065,16 @@ namespace ZXEngine
 		// set the vertex attribute pointers
 		// vertex Positions
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 		// vertex normals
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
 		// vertex texture coords
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
 		// vertex tangent
 		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
 		// vertex bone weights
 		glEnableVertexAttribArray(4);
 		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Weights));
@@ -1098,13 +1110,13 @@ namespace ZXEngine
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize * sizeof(uint32_t), NULL, GL_DYNAMIC_DRAW);
 
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
 		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
 		glEnableVertexAttribArray(4);
 		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Weights));
 		glEnableVertexAttribArray(5);
@@ -1332,6 +1344,91 @@ namespace ZXEngine
 		glActiveTexture(GL_TEXTURE0 + idx);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
 		CheckError();
+	}
+
+	uint32_t RenderAPIOpenGL::CreateShaderStorageBuffer(const void* data, size_t size, GPUBufferType type)
+	{
+		GLuint buffer;
+
+		glGenBuffers(1, &buffer);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer);
+
+		if (type == GPUBufferType::Static)
+			glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GLsizeiptr>(size), data, GL_STATIC_DRAW);
+		else if (type == GPUBufferType::DynamicCPUWriteGPURead)
+			glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GLsizeiptr>(size), data, GL_DYNAMIC_DRAW);
+		else if (type == GPUBufferType::DynamicGPUWriteCPURead)
+			glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GLsizeiptr>(size), data, GL_DYNAMIC_READ);
+		else if (type == GPUBufferType::DynamicGPUWriteGPURead)
+			glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GLsizeiptr>(size), data, GL_DYNAMIC_COPY);
+
+		return static_cast<uint32_t>(buffer);
+	}
+
+	void RenderAPIOpenGL::BindShaderStorageBuffer(uint32_t id, uint32_t binding)
+	{
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, id);
+	}
+
+	void RenderAPIOpenGL::UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size)
+	{
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
+		glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, static_cast<GLsizeiptr>(size), data);
+	}
+
+	void RenderAPIOpenGL::DeleteShaderStorageBuffer(uint32_t id)
+	{
+		glDeleteBuffers(1, &id);
+	}
+
+	void RenderAPIOpenGL::BindVertexBuffer(uint32_t VAO, uint32_t binding)
+	{
+		auto meshBuffer = GetVAOByIndex(VAO);
+		BindShaderStorageBuffer(meshBuffer->VBO, binding);
+	}
+
+	ComputeShaderReference* RenderAPIOpenGL::LoadAndSetUpComputeShader(const string& path)
+	{
+		string shaderCode = Resources::LoadTextFile(path + ".glc");
+
+		unsigned int compute = glCreateShader(GL_COMPUTE_SHADER);
+		const char* cShaderCode = shaderCode.c_str();
+		glShaderSource(compute, 1, &cShaderCode, NULL);
+		glCompileShader(compute);
+		CheckCompileErrors(compute, "COMPUTE");
+
+		unsigned int ID = glCreateProgram();
+		glAttachShader(ID, compute);
+		glLinkProgram(ID);
+		CheckCompileErrors(ID, "PROGRAM");
+
+		glDeleteShader(compute);
+
+		ComputeShaderReference* reference = new ComputeShaderReference();
+		reference->ID = ID;
+
+		CheckError();
+
+		return reference;
+	};
+
+	void RenderAPIOpenGL::DeleteComputeShader(uint32_t id)
+	{
+		glDeleteProgram(id);
+		CheckError();
+	}
+
+	void RenderAPIOpenGL::Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ)
+	{
+		glUseProgram(shaderID);
+		glDispatchCompute(groupX, groupY, groupZ);
+		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+		CheckError();
+	}
+
+	void RenderAPIOpenGL::SubmitAllComputeCommands()
+	{
+		// OpenGL不需要这个接口
 	}
 
 	void RenderAPIOpenGL::UpdateRenderState()

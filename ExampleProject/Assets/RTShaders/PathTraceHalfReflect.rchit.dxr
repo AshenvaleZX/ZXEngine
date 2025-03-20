@@ -32,10 +32,10 @@ cbuffer RayTracingPipelineConstants             : register(b0, space0)
 
 struct Vertex
 {
-    float3 Position;
-    float2 TexCoords;
-    float3 Normal;
-    float3 Tangent;
+    float4 Position;
+    float4 TexCoords;
+    float4 Normal;
+    float4 Tangent;
     float4 Weights;
     uint4 BoneIDs;
 };
@@ -105,7 +105,7 @@ void main(inout HitPayload _RayPayload, in Attributes attribs)
     );
 
     // Current hit position
-    const float3 pos = v0.Position * barycentrics.x + v1.Position * barycentrics.y + v2.Position * barycentrics.z;
+    const float3 pos = v0.Position.xyz * barycentrics.x + v1.Position.xyz * barycentrics.y + v2.Position.xyz * barycentrics.z;
     const float3 worldPos = mul(objectToWorld4x4, float4(pos, 1.0)).xyz;
 
     // Build 3x3 WorldToObject Matrix
@@ -117,7 +117,7 @@ void main(inout HitPayload _RayPayload, in Attributes attribs)
     );
 
     // Current hit normal
-    const float3 normal = v0.Normal * barycentrics.x + v1.Normal * barycentrics.y + v2.Normal * barycentrics.z;
+    const float3 normal = v0.Normal.xyz * barycentrics.x + v1.Normal.xyz * barycentrics.y + v2.Normal.xyz * barycentrics.z;
     const float3 wNormal = normalize(mul(normal, worldToObject3x3));
 
     float3 weight = float3(1.0, 1.0, 1.0);

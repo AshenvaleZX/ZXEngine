@@ -15,10 +15,10 @@ struct HitPayload
 
 struct Vertex
 {
-    vec3 Position;
-    vec2 TexCoords;
-    vec3 Normal;
-    vec3 Tangent;
+    vec4 Position;
+    vec4 TexCoords;
+    vec4 Normal;
+    vec4 Tangent;
     vec4 Weights;
     ivec4 BoneIDs;
 };
@@ -78,12 +78,12 @@ void main()
     const vec3 barycentrics = vec3(1.0 - attribs.x - attribs.y, attribs.x, attribs.y);
 
     // 计算当前交点的坐标
-    const vec3 pos = v0.Position * barycentrics.x + v1.Position * barycentrics.y + v2.Position * barycentrics.z;
+    const vec3 pos = v0.Position.xyz * barycentrics.x + v1.Position.xyz * barycentrics.y + v2.Position.xyz * barycentrics.z;
     // 变换到世界空间
     const vec3 worldPos = vec3(gl_ObjectToWorldEXT * vec4(pos, 1.0));
 
     // 计算当前交点的法线
-    const vec3 normal      = v0.Normal * barycentrics.x + v1.Normal * barycentrics.y + v2.Normal * barycentrics.z;
+    const vec3 normal = v0.Normal.xyz * barycentrics.x + v1.Normal.xyz * barycentrics.y + v2.Normal.xyz * barycentrics.z;
     // 变换到世界空间
     const vec3 wNormal = normalize(vec3(normal * gl_WorldToObjectEXT));
 
@@ -96,7 +96,7 @@ void main()
     Material mat = materials.material;
 
     // 计算当前交点的采样坐标，并采样纹理
-    vec2 texCoord = v0.TexCoords * barycentrics.x + v1.TexCoords * barycentrics.y + v2.TexCoords * barycentrics.z;
+    vec2 texCoord = v0.TexCoords.xy * barycentrics.x + v1.TexCoords.xy * barycentrics.y + v2.TexCoords.xy * barycentrics.z;
     vec3 texColor = texture(textureSamplers[nonuniformEXT(mat._TextureID)], texCoord).xyz;
     
     // Diffuse

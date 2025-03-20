@@ -142,7 +142,21 @@ namespace ZXEngine
         ZXD3D12Buffer vertexBuffer;
         D3D12_VERTEX_BUFFER_VIEW vertexBufferView = {};
 
+        bool computeSkinned = false;
+        vector<ZXD3D12Buffer> ssbo; // For compute pipeline
+        vector<D3D12_VERTEX_BUFFER_VIEW> vbViews;
+        vector<ZXD3D12DescriptorHandle> uavHandles;
+
         ZXD3D12AccelerationStructure blas;
+        bool inUse = false;
+    };
+
+    struct ZXD3D12SSBO
+    {
+        GPUBufferType type = GPUBufferType::Static;
+        vector<ZXD3D12Buffer> buffers;
+		vector<ZXD3D12DescriptorHandle> descriptorHandles;
+        uint32_t binding = 0;
         bool inUse = false;
     };
 
@@ -238,5 +252,12 @@ namespace ZXEngine
         wstring anyHitShaderName;
         wstring intersectionShaderName;
 		D3D12_HIT_GROUP_DESC desc = {};
+	};
+
+	struct ZXD3D12ComputePipeline
+	{
+		ComPtr<ID3D12RootSignature> rootSignature;
+		ComPtr<ID3D12PipelineState> pipelineState;
+		bool inUse = false;
 	};
 }

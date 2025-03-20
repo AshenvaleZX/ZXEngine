@@ -22,6 +22,8 @@ This project aimed at the game engine, not only focus on the graphics and render
 
 - [多套内置渲染管线 (Multiple Built-in Rendering Pipelines)](#多套内置渲染管线-multiple-built-in-rendering-pipelines)
 
+- [通用计算管线支持 (Compute Pipeline Support)](#通用计算管线支持-compute-pipeline-support)
+
 - [PhysZ物理引擎简介 (PhysZ Physics Engine Introduction)](#physz物理引擎简介-physz-physics-engine-introduction)
 
 - [ZXShader和材质系统 (ZXShader And Material System)](#zxshader和材质系统-zxshader-and-material-system)
@@ -122,6 +124,16 @@ Scenes using forward rendering pipeline and ray tracing rendering pipeline have 
 
 ![](Documents/Images/EngineShow7.jpg)
 
+## 通用计算管线支持 (Compute Pipeline Support)
+
+ZXEngine集成了Vulkan，DirectX 12和OpenGL的通用计算管线，并封装成了统一接口以供使用。由于macOS只支持到OpenGL 4.1，而OpenGL是从4.3版本才加入对计算管线的支持，所以在macOS上使用OpenGL时，所有计算管线相关的模块都会被禁用。除macOS+OpenGL的组合无法使用计算管线外，其它平台+图形API的组合都是可用的。
+
+ZXEngine integrates the compute pipeline of Vulkan, DirectX 12 and OpenGL and is encapsulated into a unified interface for use. Since macOS only supports OpenGL 4.1, and OpenGL added support for the compute pipeline from version 4.3, all compute pipeline related modules are disabled when using OpenGL on macOS. Except for the macOS + OpenGL combination that does not support compute pipeline, other platform + graphics API combinations are support.
+
+目前项目中实际应用了计算管线的地方在骨骼蒙皮动画模块。在启用了ZX_COMPUTE_ANIMATION宏之后，骨骼蒙皮动画的Mesh更新操作将在计算管线中完成。
+
+Currently, the actual application of compute pipeline in the project is in the skeletal animation system. When the ZX_COMPUTE_ANIMATION macro is enabled, the update of skinned mesh will be done in the compute pipeline.
+
 ## PhysZ物理引擎简介 (PhysZ Physics Engine Introduction)
 
 先展示一下PhysZ引擎对刚体力学和布料的模拟效果(GIF演示，截屏大小和帧率都有压缩):
@@ -185,6 +197,10 @@ Switch to the AnimDemo scene and click Play button to see the skeletal animation
 本引擎的动画系统支持动画混合，所以这里除了能看到单个动画播放外，还能看到人物从走路状态进入跑步状态时，两个动画之间流畅的过渡。
 
 The animation system supports animation blending, so in addition to the individual animation play, you can also see the smooth transition between the two animations when the character enters the running state from the walking state.
+
+此外，动画系统还支持通过计算管线来更新Mesh数据，同时也兼容传统的顶点着色器更新方式。启用ZX_COMPUTE_ANIMATION宏定义后，带有动画的Mesh数据更新将在计算管线中完成。未启用ZX_COMPUTE_ANIMATION时，蒙皮动画将在顶点着色器中计算。
+
+The animation system also supports update skinned mesh through compute pipeline, and is compatible with traditional vertex shader updating methods. When the ZX_COMPUTE_ANIMATION macro is enabled, the skinned mesh update is completed in the compute pipeline. When ZX_COMPUTE_ANIMATION is not enabled, the skinned mesh is update in the vertex shader.
 
 这里动画的播放代码属于业务逻辑层而不是引擎，所以是写在Lua代码中的，通过GameLogic组件绑定到对应的GameObject上。
 
@@ -637,7 +653,13 @@ This is ZXEngine's shader language file, but currently zxshader only supports th
 
 这两个后缀分别对应Vulkan和DirectX12的光线追踪Shader代码文件。目前暂未像光栅管线Shader那样搞一个引擎专用的Shader语言。
 
-These two extension correspond to the ray tracing Shader code files of Vulkan and DirectX12 respectively. For now, there is no engine-specific ray tracing shader language like ZXShader in the rasterization pipeline.
+These two extension correspond to the ray tracing shader code files of Vulkan and DirectX12 respectively. For now, there is no engine-specific ray tracing shader language like ZXShader in the rasterization pipeline.
+
+### *.glc  *.dxc
+
+这两个后缀分别对应Vulkan/OpenGL和DirectX12的计算管线Shader代码文件。通用计算管线与光线追踪管线一样，暂未统一Shader语言。
+
+These two extension correspond to the compute shader code files of Vulkan/OpenGL and DirectX12 respectively. Compute pipeline, like the ray tracing pipeline, has not yet created a unified shader language.
 
 ### *.zxmat  *.zxdrmat  *.zxrtmat
 
@@ -811,6 +833,10 @@ After completing the above steps, click Build in Android Studio to complete the 
 目前zxshader编写好后，在DirectX 12和OpenGL下都是运行时直接读取源代码并实时编译的，但是在Vulkan下需要通过外部工具做预编译。虽然Vulkan也可以做到通过源码实时编译，但是写起来比较麻烦，而且需要引入额外的运行时库，所以没做Vulkan的实时源码编译。在Vulkan下加载一个Shader时，会去检测是否有预编译过的spv文件，如果没有的话就立刻调用外部工具编译再读取。所以如果是第一次打开某个工程，或者第一次打开某个场景，在Vulkan下速度会比较慢，因为需要等待Shader先完成一次预编译。不过可以通过点击引擎菜单栏里的“Assets/Compile All Shader for Vulkan”按钮，提前完成所有的Shader预编译。在Vulkan下还有一个问题是Shader代码的更新，因为在Vulkan下是直接读取编译成spv文件之后的Shader，而不是源代码，所以在Shader源码修改之后，需要重新编译一次才会生效，这种情况下也需要手动去点一下“Assets/Compile All Shader for Vulkan”按钮。
 
 Currently, zxshaders are read from the source code at runtime and compiled in real time under DirectX 12 and OpenGL, but precompiled by external tools under Vulkan.Although Vulkan can also do real-time compilation through the shader source code, but it is more troublesome to write, and needs to introduce additional runtime libraries, so it did not do Vulkan shader real-time compilation. When loading a shader under Vulkan, the engine checks if there is a pre-compiled spv file, and if not, it immediately calls an external tool to compile and read it again. So, if it's the first time to open a project, or the first time to open a scene, the speed will be slower under Vulkan, because you need to wait for shaders to complete a pre-compilation first. However, you can complete All shader precompilation in advance by clicking the "Assets/Compile All Shader for Vulkan" button in the engine menu bar. Another thing under Vulkan is to update the shader code. Because under Vulkan the engine directly read the shader precompiled into the spv file, rather than the source code, so after the shader source code is modified, it needs to be recompiled to take effect. In this case, you also need to manually click the "Assets/Compile All Shader for Vulkan" button.
+
+在我开发ZXEngine对通用计算管线的支持的过程中，在开发DirectX 12的版本时遇到了奇怪的崩溃问题，没有异常信息抛出，崩溃在了英伟达驱动内部。最终是通过更新英伟达驱动解决的问题，我不太确定这个问题具体是怎么产生的。如果你有遇到类似的问题可以尝试更新一下驱动。
+
+In the process of developing ZXEngine support for compute pipeline, I encountered a strange crash problem while developing the DirectX 12 version, no exception messages were thrown, and the crash was inside the Nvidia driver.The problem was solved by updating the Nvidia driver. I'm not sure exactly how this problem came about. If you have similar problems you can try to update the driver.
 
 切换图形API的方式是在pubh.h文件中修改宏定义。有一个叫ZX_API_SWITCH的宏定义就是用来控制图形API切换的。具体怎么操作请到pubh.h头文件中查看ZX_API_SWITCH的注释。
 

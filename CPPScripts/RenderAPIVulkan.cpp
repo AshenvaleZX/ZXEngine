@@ -117,11 +117,15 @@ namespace ZXEngine
         CreatePresentFrameBuffer();
 
         rtPushConstantBuffer = malloc(rtPushConstantBufferSize);
+
         inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+        inFlightComputeFences.resize(MAX_FRAMES_IN_FLIGHT);
+        waitForComputeFenceOfLastFrame.resize(MAX_FRAMES_IN_FLIGHT, true);
         presentImageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
             CreateVkFence(inFlightFences[i]);
+            CreateVkFence(inFlightComputeFences[i]);
             CreateVkSemaphore(presentImageAvailableSemaphores[i]);
         }
 
@@ -1516,6 +1520,11 @@ namespace ZXEngine
         return idx;
     }
 
+    void RenderAPIVulkan::FreeDrawCommand(uint32_t commandID)
+    {
+        drawCommandsToDelete.insert(pair(commandID, MAX_FRAMES_IN_FLIGHT));
+    }
+
     void RenderAPIVulkan::Draw(uint32_t VAO)
     {
         drawRecords.emplace_back(VAO, curPipeLineIdx, curMaterialDataIdx, 0, UINT32_MAX);
@@ -1667,7 +1676,7 @@ namespace ZXEngine
             auto pipeline = GetPipelineByIndex(iter.pipelineID);
             auto materialData = GetMaterialDataByIndex(iter.materialDataID);
 
-            VkBuffer vertexBuffers[] = { vulkanVAO->vertexBuffer };
+            VkBuffer vertexBuffers[] = { vulkanVAO->computeSkinned ? vulkanVAO->ssbo[currentFrame].buffer : vulkanVAO->vertexBuffer };
             VkDeviceSize offsets[] = { 0 };
             vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
@@ -1696,8 +1705,15 @@ namespace ZXEngine
             throw std::runtime_error("failed to record command buffer!");
 
         vector<VkPipelineStageFlags> waitStages = {};
-        waitStages.resize(curWaitSemaphores.size(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
         vector<VkSemaphore> waitSemaphores = curWaitSemaphores;
+
+        if (computeSemaphores.size() > 0)
+        {
+            waitSemaphores.insert(waitSemaphores.end(), computeSemaphores.begin(), computeSemaphores.end());
+        }
+
+        waitStages.resize(waitSemaphores.size(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
+
 #ifndef ZX_EDITOR
         // AfterEffect是第一个直接写入PresentBuffer的，所以需要等PresentBuffer可用
         if (curFBOIdx == presentFBOIdx && curDrawCommandObj->commandType == CommandType::AfterEffectRendering)
@@ -1738,7 +1754,7 @@ namespace ZXEngine
         meshsToDelete.insert(pair(VAO, MAX_FRAMES_IN_FLIGHT));
     }
 
-    void RenderAPIVulkan::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
+    void RenderAPIVulkan::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices, bool skinned)
     {
         VAO = GetNextVAOIndex();
         auto meshBuffer = GetVAOByIndex(VAO);
@@ -1763,6 +1779,18 @@ namespace ZXEngine
             addressInfo.buffer = meshBuffer->vertexBuffer;
             meshBuffer->vertexBufferDeviceAddress = vkGetBufferDeviceAddress(device, &addressInfo);
         }
+
+#ifdef ZX_COMPUTE_ANIMATION
+        if (skinned)
+        {
+            for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+            {
+                VkBufferUsageFlags usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+                meshBuffer->ssbo.push_back(CreateBuffer(vertexBufferSize, usage, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE, true, false, vertices.data()));
+            }
+            meshBuffer->computeSkinned = true;
+        }
+#endif
 
         // ----------------------------------------------- Index Buffer -----------------------------------------------
         VkDeviceSize indexBufferSize = sizeof(uint32_t) * indices.size();
@@ -1842,10 +1870,10 @@ namespace ZXEngine
     {
         vector<Vertex> vertices =
         {
-            { .Position = {  0.5f,  0.5f, 0.0f }, .TexCoords = { 1.0f, 0.0f } },
-            { .Position = {  0.5f, -0.5f, 0.0f }, .TexCoords = { 1.0f, 1.0f } },
-            { .Position = { -0.5f,  0.5f, 0.0f }, .TexCoords = { 0.0f, 0.0f } },
-            { .Position = { -0.5f, -0.5f, 0.0f }, .TexCoords = { 0.0f, 1.0f } },
+            { .Position = {  0.5f,  0.5f, 0.0f, 1.0f }, .TexCoords = { 1.0f, 0.0f, 0.0f, 0.0f } },
+            { .Position = {  0.5f, -0.5f, 0.0f, 1.0f }, .TexCoords = { 1.0f, 1.0f, 0.0f, 0.0f } },
+            { .Position = { -0.5f,  0.5f, 0.0f, 1.0f }, .TexCoords = { 0.0f, 0.0f, 0.0f, 0.0f } },
+            { .Position = { -0.5f, -0.5f, 0.0f, 1.0f }, .TexCoords = { 0.0f, 1.0f, 0.0f, 0.0f } },
         };
 
         vector<uint32_t> indices =
@@ -1855,6 +1883,295 @@ namespace ZXEngine
         };
 
         SetUpStaticMesh(VAO, vertices, indices);
+    }
+
+    uint32_t RenderAPIVulkan::CreateShaderStorageBuffer(const void* data, size_t size, GPUBufferType type)
+    {
+        auto idx = GetNextSSBOIndex();
+        auto ssbo = GetSSBOByIndex(idx);
+
+        if (type == GPUBufferType::Static)
+        {
+            VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+
+            for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+                CreateGPUBuffer(static_cast<VkDeviceSize>(size), usage, ssbo->buffers[i].buffer, ssbo->buffers[i].allocation, data);
+        }
+        else
+        {
+            VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+
+            for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+                CreateBuffer(static_cast<VkDeviceSize>(size), usage, VMA_MEMORY_USAGE_AUTO_PREFER_HOST, ssbo->buffers[i], true);
+        }
+
+        ssbo->inUse = true;
+
+        return idx;
+    }
+    
+    void RenderAPIVulkan::BindShaderStorageBuffer(uint32_t id, uint32_t binding)
+    {
+        curComputePipelineSSBOBindingRecords.push_back({ id, binding });
+    }
+    
+    void RenderAPIVulkan::UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size)
+    {
+        auto ssbo = GetSSBOByIndex(id);
+
+        memcpy(ssbo->buffers[currentFrame].mappedAddress, data, size);
+    }
+
+    void RenderAPIVulkan::DeleteShaderStorageBuffer(uint32_t id)
+    {
+        ssbosToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT));
+    }
+
+    void RenderAPIVulkan::BindVertexBuffer(uint32_t VAO, uint32_t binding)
+    {
+        curComputePipelineVertexBufferBindingRecords.push_back({ VAO, binding });
+    }
+
+    ComputeShaderReference* RenderAPIVulkan::LoadAndSetUpComputeShader(const string& path)
+    {
+        string shaderCode = Resources::LoadTextFile(path + ".glc");
+        if (shaderCode.empty())
+            return nullptr;
+
+        uint32_t pipelineID = GetNextComputePipelineIndex();
+        auto computePipeline = GetComputePipelineByIndex(pipelineID);
+
+        ComputeShaderInfo shaderInfo = ShaderParser::GetComputeShaderInfo(shaderCode);
+
+        vector<VkDescriptorSetLayoutBinding> bindings = {};
+        for (auto& bufferInfo : shaderInfo.bufferInfos)
+        {
+            VkDescriptorSetLayoutBinding binding = {};
+            binding.binding = bufferInfo.binding;
+            binding.descriptorCount = 1;
+            binding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+
+            if (bufferInfo.type == ShaderBufferType::Storage)
+            {
+                computePipeline->SSBOBindingNum++;
+                binding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+            }
+            else if (bufferInfo.type == ShaderBufferType::Uniform)
+            {
+                computePipeline->UniformBindingNum++;
+                binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            }
+            else
+            {
+                throw std::runtime_error("Invalid compute pipeline buffer type!");
+            }
+
+            bindings.push_back(binding);
+        }
+
+        computePipeline->pipeline.name = path;
+
+        VkDescriptorSetLayoutCreateInfo layoutCreateInfo = {};
+        layoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        layoutCreateInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+        layoutCreateInfo.pBindings = bindings.data();
+
+        CHECK_VK_SUCCESS
+        (
+            vkCreateDescriptorSetLayout(device, &layoutCreateInfo, nullptr, &computePipeline->pipeline.descriptorSetLayout),
+            "Failed to create descriptor set layout!"
+        );
+
+        VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {};
+        pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutCreateInfo.setLayoutCount = 1;
+        pipelineLayoutCreateInfo.pSetLayouts = &computePipeline->pipeline.descriptorSetLayout;
+
+        CHECK_VK_SUCCESS
+        (
+            vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &computePipeline->pipeline.pipelineLayout),
+            "Failed to create pipeline layout!"
+        );
+
+        VkPipelineShaderStageCreateInfo computeShaderStageInfo = {};
+        computeShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        computeShaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+        computeShaderStageInfo.module = CreateShaderModule(GetSPIRVShader(path, ZX_SHADER_STAGE_COMPUTE_BIT));
+        computeShaderStageInfo.pName = "main";
+
+        VkComputePipelineCreateInfo pipelineCreateInfo = {};
+        pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+        pipelineCreateInfo.stage = computeShaderStageInfo;
+        pipelineCreateInfo.layout = computePipeline->pipeline.pipelineLayout;
+
+        CHECK_VK_SUCCESS
+        (
+            vkCreateComputePipelines(device, VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, &computePipeline->pipeline.pipeline),
+            "Failed to create compute pipeline!"
+        );
+
+        computePipeline->inUse = true;
+
+        ComputeShaderReference* reference = new ComputeShaderReference();
+        reference->ID = pipelineID;
+        reference->shaderInfo = std::move(shaderInfo);
+
+        return reference;
+    }
+
+    void RenderAPIVulkan::DeleteComputeShader(uint32_t id)
+    {
+        computePipelinesToDelete.insert(pair(id, MAX_FRAMES_IN_FLIGHT));
+    }
+
+    void RenderAPIVulkan::Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ)
+    {
+        if (waitForComputeFenceOfLastFrame[currentFrame])
+        {
+            CHECK_VK_SUCCESS
+            (
+                vkWaitForFences(device, 1, &inFlightComputeFences[currentFrame], VK_TRUE, UINT64_MAX),
+                "Failed to wait for compute fence!"
+            );
+
+            CHECK_VK_SUCCESS
+            (
+                vkResetFences(device, 1, &inFlightComputeFences[currentFrame]),
+                "Failed to reset compute fence!"
+            );
+
+            waitForComputeFenceOfLastFrame[currentFrame] = false;
+        }
+
+        auto computePipeline = GetComputePipelineByIndex(shaderID);
+
+        auto curDrawCommandObj = GetDrawCommandByIndex(commandID);
+        auto& curDrawCommand = curDrawCommandObj->drawCommands[currentFrame];
+        auto commandBuffer = curDrawCommand.commandBuffer;
+
+        vkResetCommandBuffer(commandBuffer, 0);
+
+        VkCommandBufferBeginInfo beginInfo = {};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = 0;
+        beginInfo.pInheritanceInfo = VK_NULL_HANDLE;
+
+        CHECK_VK_SUCCESS
+        (
+            vkBeginCommandBuffer(commandBuffer, &beginInfo),
+            "Failed to begin recording command buffer!"
+        );
+
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->pipeline.pipeline);
+
+        VkDescriptorSet descriptorSet = GetNextDescriptorSet(computePipeline);
+
+        for (auto& bindingRecord : curComputePipelineSSBOBindingRecords)
+        {
+            auto ssbo = GetSSBOByIndex(bindingRecord.first);
+
+            VkDescriptorBufferInfo bufferInfo = {};
+            bufferInfo.buffer = ssbo->buffers[currentFrame].buffer;
+            bufferInfo.offset = 0;
+            bufferInfo.range = VK_WHOLE_SIZE;
+
+            VkWriteDescriptorSet descriptorWrite = {};
+            descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrite.dstSet = descriptorSet;
+            descriptorWrite.dstBinding = bindingRecord.second;
+            descriptorWrite.dstArrayElement = 0;
+            descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+            descriptorWrite.descriptorCount = 1;
+            descriptorWrite.pBufferInfo = &bufferInfo;
+
+            vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, VK_NULL_HANDLE);
+        }
+        curComputePipelineSSBOBindingRecords.clear();
+
+        for (auto& bindingRecord : curComputePipelineVertexBufferBindingRecords)
+        {
+            auto meshBuffer = GetVAOByIndex(bindingRecord.first);
+
+            VkDescriptorBufferInfo bufferInfo = {};
+            bufferInfo.buffer = meshBuffer->ssbo[currentFrame].buffer;
+            bufferInfo.offset = 0;
+            bufferInfo.range = VK_WHOLE_SIZE;
+
+            VkWriteDescriptorSet descriptorWrite = {};
+            descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrite.dstSet = descriptorSet;
+            descriptorWrite.dstBinding = bindingRecord.second;
+            descriptorWrite.dstArrayElement = 0;
+            descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+            descriptorWrite.descriptorCount = 1;
+            descriptorWrite.pBufferInfo = &bufferInfo;
+
+            vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, VK_NULL_HANDLE);
+        }
+        curComputePipelineVertexBufferBindingRecords.clear();
+
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE,
+            computePipeline->pipeline.pipelineLayout, 0, 1, &descriptorSet, 0, VK_NULL_HANDLE);
+
+        vkCmdDispatch(commandBuffer, groupX, groupY, groupZ);
+
+        CHECK_VK_SUCCESS
+        (
+            vkEndCommandBuffer(commandBuffer),
+            "Failed to record command buffer!"
+        );
+
+        computeCommandRecords.push_back(commandID);
+    }
+
+    void RenderAPIVulkan::SubmitAllComputeCommands()
+    {
+        if (computeCommandRecords.size() > 0)
+        {
+            vector<VkSubmitInfo> allSubmits;
+            vector<vector<VkCommandBuffer>> allCommandBuffers;
+
+            for (auto& commandID : computeCommandRecords)
+            {
+                auto curDrawCommandObj = GetDrawCommandByIndex(commandID);
+                auto& curDrawCommand = curDrawCommandObj->drawCommands[currentFrame];
+                auto commandBuffer = curDrawCommand.commandBuffer;
+
+                vector<VkCommandBuffer> commandBuffers = { commandBuffer };
+                allCommandBuffers.push_back(commandBuffers);
+
+                VkSubmitInfo submitInfo = {};
+                submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+                submitInfo.pCommandBuffers = allCommandBuffers.back().data();
+                submitInfo.commandBufferCount = static_cast<uint32_t>(allCommandBuffers.back().size());
+                submitInfo.pWaitSemaphores = VK_NULL_HANDLE;
+                submitInfo.pWaitDstStageMask = VK_NULL_HANDLE;
+                submitInfo.waitSemaphoreCount = 0;
+                submitInfo.pSignalSemaphores = curDrawCommand.signalSemaphores.data();
+                submitInfo.signalSemaphoreCount = static_cast<uint32_t>(curDrawCommand.signalSemaphores.size());
+
+                for (auto semaphore : curDrawCommand.signalSemaphores)
+                    computeSemaphores.push_back(semaphore);
+
+                allSubmits.push_back(submitInfo);
+            }
+
+            computeCommandRecords.clear();
+
+            CHECK_VK_SUCCESS
+            (
+                vkQueueSubmit(computeQueue, static_cast<uint32_t>(allSubmits.size()), allSubmits.data(), inFlightComputeFences[currentFrame]),
+                "Failed to submit compute command buffer!"
+            );
+
+            waitForComputeFenceOfLastFrame[currentFrame] = true;
+
+            // 重置计算管线的Descriptor使用记录
+            for (auto computePipeline : VulkanComputePipelineArray)
+            {
+                computePipeline->pipelineData[currentFrame].bindingNum = 0;
+            }
+        }
     }
 
     uint32_t RenderAPIVulkan::CreateRayTracingPipeline(const RayTracingShaderPathGroup& rtShaderPathGroup)
@@ -3231,6 +3548,14 @@ namespace ZXEngine
         {
             DestroyAccelerationStructure(meshBuffer->blas);
         }
+
+        meshBuffer->computeSkinned = false;
+
+        for (auto& buffer : meshBuffer->ssbo)
+        {
+            DestroyBuffer(buffer);
+        }
+        meshBuffer->ssbo.clear();
     
         meshBuffer->inUse = false;
     }
@@ -3296,6 +3621,40 @@ namespace ZXEngine
         vulkanFBO->inUse = false;
     }
 
+    uint32_t RenderAPIVulkan::GetNextSSBOIndex()
+    {
+        uint32_t length = static_cast<uint32_t>(VulkanSSBOArray.size());
+        
+        for (uint32_t i = 0; i < length; i++)
+        {
+            if (!VulkanSSBOArray[i]->inUse)
+                return i;
+        }
+
+        auto ssbo = new VulkanSSBO();
+
+        ssbo->buffers.resize(MAX_FRAMES_IN_FLIGHT);
+
+        VulkanSSBOArray.push_back(ssbo);
+
+        return length;
+    }
+
+    VulkanSSBO* RenderAPIVulkan::GetSSBOByIndex(uint32_t idx)
+    {
+        return VulkanSSBOArray[idx];
+    }
+
+    void RenderAPIVulkan::DestroySSBOByIndex(uint32_t idx)
+    {
+        auto ssbo = VulkanSSBOArray[idx];
+
+        for (auto& buffer : ssbo->buffers)
+            DestroyBuffer(buffer);
+
+        ssbo->inUse = false;
+    }
+
     uint32_t RenderAPIVulkan::GetNextAttachmentBufferIndex()
     {
         uint32_t length = (uint32_t)VulkanAttachmentBufferArray.size();
@@ -3352,6 +3711,26 @@ namespace ZXEngine
     VulkanDrawCommand* RenderAPIVulkan::GetDrawCommandByIndex(uint32_t idx)
     {
         return VulkanDrawCommandArray[idx];
+    }
+
+    void RenderAPIVulkan::DestroyDrawCommandByIndex(uint32_t idx)
+    {
+        auto drawCommand = VulkanDrawCommandArray[idx];
+        
+        drawCommand->commandType = CommandType::NotCare;
+        drawCommand->clearFlags = ZX_CLEAR_FRAME_BUFFER_NONE_BIT;
+
+        for (auto& command : drawCommand->drawCommands)
+        {
+            for (auto semaphore : command.signalSemaphores)
+            {
+                if (semaphore != VK_NULL_HANDLE)
+                    vkDestroySemaphore(device, semaphore, VK_NULL_HANDLE);
+            }
+            command.signalSemaphores.clear();
+        }
+
+        drawCommand->inUse = false;
     }
 
     uint32_t RenderAPIVulkan::GetNextTextureIndex()
@@ -3415,6 +3794,13 @@ namespace ZXEngine
     {
         auto pipeline = GetPipelineByIndex(idx);
 
+        DestroyVulkanPipeline(pipeline);
+
+        pipeline->inUse = false;
+    }
+
+    void RenderAPIVulkan::DestroyVulkanPipeline(VulkanPipeline* pipeline)
+    {
         vkDestroyDescriptorSetLayout(device, pipeline->descriptorSetLayout, VK_NULL_HANDLE);
         vkDestroyPipeline(device, pipeline->pipeline, VK_NULL_HANDLE);
         vkDestroyPipelineLayout(device, pipeline->pipelineLayout, VK_NULL_HANDLE);
@@ -3424,8 +3810,49 @@ namespace ZXEngine
             vkDestroyDescriptorSetLayout(device, pipeline->sceneDescriptorSetLayout, VK_NULL_HANDLE);
             pipeline->sceneDescriptorSetLayout = VK_NULL_HANDLE;
         }
+    }
 
-        pipeline->inUse = false;
+    uint32_t RenderAPIVulkan::GetNextComputePipelineIndex()
+    {
+        uint32_t length = (uint32_t)VulkanComputePipelineArray.size();
+
+        for (uint32_t i = 0; i < length; i++)
+        {
+            if (!VulkanComputePipelineArray[i]->inUse)
+                return i;
+        }
+
+        auto computePipeline = new VulkanComputePipeline();
+
+        computePipeline->pipelineData.resize(MAX_FRAMES_IN_FLIGHT);
+
+        VulkanComputePipelineArray.push_back(computePipeline);
+
+        return length;
+    }
+
+    VulkanComputePipeline* RenderAPIVulkan::GetComputePipelineByIndex(uint32_t idx)
+    {
+        return VulkanComputePipelineArray[idx];
+    }
+
+    void RenderAPIVulkan::DestroyComputePipelineByIndex(uint32_t idx)
+    {
+        auto computePipeline = GetComputePipelineByIndex(idx);
+
+        computePipeline->SSBOBindingNum = 0;
+        computePipeline->UniformBindingNum = 0;
+
+        DestroyVulkanPipeline(&computePipeline->pipeline);
+
+        for (auto& iter : computePipeline->pipelineData)
+        {
+            for (auto& descriptorGroup : iter.descriptorGroups)
+                DestroyDescriptorGroup(descriptorGroup);
+            iter.descriptorGroups.clear();
+        }
+
+        computePipeline->inUse = false;
     }
 
     uint32_t RenderAPIVulkan::GetNextMaterialDataIndex()
@@ -3841,6 +4268,9 @@ namespace ZXEngine
         // 因为我们只是从这个队列簇创建一个队列，所以需要使用索引0
         vkGetDeviceQueue(device, queueFamilyIndices.graphics, 0, &graphicsQueue);
         vkGetDeviceQueue(device, queueFamilyIndices.present, 0, &presentQueue);
+#ifdef ZX_COMPUTE_SHADER_SUPPORT
+        vkGetDeviceQueue(device, queueFamilyIndices.compute, 0, &computeQueue);
+#endif
     }
 
     void RenderAPIVulkan::CreateMemoryAllocator()
@@ -4212,6 +4642,12 @@ namespace ZXEngine
             if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
                 indices.graphics = i;
 
+#ifdef ZX_COMPUTE_SHADER_SUPPORT
+            // 获取计算队列簇
+            if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)
+                indices.compute = i;
+#endif
+
             // 是否支持VkSurfaceKHR
             VkBool32 presentSupport = false;
             vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
@@ -4475,14 +4911,14 @@ namespace ZXEngine
     }
 
 
-    VulkanBuffer RenderAPIVulkan::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool cpuAddress, bool gpuAddress)
+    VulkanBuffer RenderAPIVulkan::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool cpuAddress, bool gpuAddress, const void* data)
     {
         VulkanBuffer newBuffer;
-        CreateBuffer(size, usage, memoryUsage, newBuffer, cpuAddress, gpuAddress);
+        CreateBuffer(size, usage, memoryUsage, newBuffer, cpuAddress, gpuAddress, data);
         return newBuffer;
     }
 
-    void RenderAPIVulkan::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, VulkanBuffer& newBuffer, bool cpuAddress, bool gpuAddress)
+    void RenderAPIVulkan::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, VulkanBuffer& newBuffer, bool cpuAddress, bool gpuAddress, const void* data)
     {
         if (gpuAddress)
             usage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
@@ -4500,7 +4936,11 @@ namespace ZXEngine
         vmaCreateBuffer(vmaAllocator, &bufferInfo, &allocationInfo, &newBuffer.buffer, &newBuffer.allocation, nullptr);
 
         if (cpuAddress)
+        {
             vmaMapMemory(vmaAllocator, newBuffer.allocation, &newBuffer.mappedAddress);
+            if (data)
+                memcpy(newBuffer.mappedAddress, data, static_cast<size_t>(size));
+        }
 
         if (gpuAddress)
         {
@@ -4566,7 +5006,7 @@ namespace ZXEngine
         vmaDestroyBuffer(vmaAllocator, stagingBuffer, stagingBufferAlloc);
     }
 
-    void RenderAPIVulkan::DestroyBuffer(VulkanBuffer buffer)
+    void RenderAPIVulkan::DestroyBuffer(VulkanBuffer& buffer)
     {
         if (buffer.mappedAddress != nullptr)
         {
@@ -4599,7 +5039,7 @@ namespace ZXEngine
         return uniformBuffer;
     }
 
-    void RenderAPIVulkan::DestroyUniformBuffer(const UniformBuffer& uniformBuffer)
+    void RenderAPIVulkan::DestroyUniformBuffer(UniformBuffer& uniformBuffer)
     {
         vmaUnmapMemory(vmaAllocator, uniformBuffer.buffer.allocation);
         DestroyBuffer(uniformBuffer.buffer);
@@ -4627,6 +5067,51 @@ namespace ZXEngine
 
         if (vkAllocateCommandBuffers(device, &allocInfo, commandBuffers.data()) != VK_SUCCESS)
             throw std::runtime_error("failed to allocate command buffers!");
+    }
+
+    VulkanDescriptorGroup RenderAPIVulkan::CreateDescriptorGroup(const VulkanComputePipeline* pipeline)
+    {
+        VulkanDescriptorGroup descriptorGroup;
+
+        vector<VkDescriptorPoolSize> poolSizes;
+        if (pipeline->SSBOBindingNum > 0)
+        {
+            VkDescriptorPoolSize poolSize = {};
+            poolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+            poolSize.descriptorCount = pipeline->SSBOBindingNum * VulkanDescriptorGroup::Size;
+            poolSizes.push_back(poolSize);
+        }
+        if (pipeline->UniformBindingNum > 0)
+        {
+            VkDescriptorPoolSize poolSize = {};
+            poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            poolSize.descriptorCount = pipeline->UniformBindingNum * VulkanDescriptorGroup::Size;
+            poolSizes.push_back(poolSize);
+        }
+
+        VkDescriptorPoolCreateInfo poolInfo = {};
+        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+        poolInfo.pPoolSizes = poolSizes.data();
+        poolInfo.maxSets = VulkanDescriptorGroup::Size;
+        poolInfo.flags = 0;
+
+        CHECK_VK_SUCCESS
+        (
+            vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorGroup.descriptorPool),
+            "Failed to create descriptor pool!"
+        );
+
+        vector<VkDescriptorSetLayout> layouts(VulkanDescriptorGroup::Size, pipeline->pipeline.descriptorSetLayout);
+        descriptorGroup.descriptorSets = CreateDescriptorSets(descriptorGroup.descriptorPool, layouts);
+
+        return descriptorGroup;
+    }
+
+    void RenderAPIVulkan::DestroyDescriptorGroup(VulkanDescriptorGroup& descriptorGroup)
+    {
+        vkDestroyDescriptorPool(device, descriptorGroup.descriptorPool, 0);
+        descriptorGroup.descriptorSets.clear();
     }
 
     void RenderAPIVulkan::CreateVkFence(VkFence& fence)
@@ -5280,19 +5765,19 @@ namespace ZXEngine
 
         attributeDescriptions[0].binding = 0;
         attributeDescriptions[0].location = 0;
-        attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[0].format = VK_FORMAT_R32G32B32A32_SFLOAT;
         attributeDescriptions[0].offset = offsetof(Vertex, Position);
         attributeDescriptions[1].binding = 0;
         attributeDescriptions[1].location = 1;
-        attributeDescriptions[1].format = VK_FORMAT_R32G32_SFLOAT;
+        attributeDescriptions[1].format = VK_FORMAT_R32G32B32A32_SFLOAT;
         attributeDescriptions[1].offset = offsetof(Vertex, TexCoords);
         attributeDescriptions[2].binding = 0;
         attributeDescriptions[2].location = 2;
-        attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[2].format = VK_FORMAT_R32G32B32A32_SFLOAT;
         attributeDescriptions[2].offset = offsetof(Vertex, Normal);
         attributeDescriptions[3].binding = 0;
         attributeDescriptions[3].location = 3;
-        attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[3].format = VK_FORMAT_R32G32B32A32_SFLOAT;
         attributeDescriptions[3].offset = offsetof(Vertex, Tangent);
         attributeDescriptions[4].binding = 0;
         attributeDescriptions[4].location = 4;
@@ -5615,6 +6100,21 @@ namespace ZXEngine
             meshsToDelete.erase(id);
         }
 
+        // SSBO
+        deleteList.clear();
+        for (auto& iter : ssbosToDelete)
+        {
+            if (iter.second > 0)
+                iter.second--;
+            else
+                deleteList.push_back(iter.first);
+        }
+        for (auto id : deleteList)
+        {
+            DestroySSBOByIndex(id);
+            ssbosToDelete.erase(id);
+        }
+
         // Shader
         deleteList.clear();
         for (auto& iter : pipelinesToDelete)
@@ -5630,20 +6130,50 @@ namespace ZXEngine
             pipelinesToDelete.erase(id);
         }
 
+        // Compute Pipeline
+        deleteList.clear();
+        for (auto& iter : computePipelinesToDelete)
+        {
+            if (iter.second > 0)
+                iter.second--;
+            else
+                deleteList.push_back(iter.first);
+        }
+        for (auto id : deleteList)
+        {
+            DestroyComputePipelineByIndex(id);
+            computePipelinesToDelete.erase(id);
+        }
+
         // Instance Buffer
         deleteList.clear();
         for (auto& iter : instanceBuffersToDelete)
-		{
-			if (iter.second > 0)
-				iter.second--;
-			else
-				deleteList.push_back(iter.first);
-		}
+        {
+            if (iter.second > 0)
+                iter.second--;
+            else
+                deleteList.push_back(iter.first);
+        }
         for (auto id : deleteList)
         {
-			DestroyInstanceBufferByIndex(id);
-			instanceBuffersToDelete.erase(id);
-		}
+            DestroyInstanceBufferByIndex(id);
+            instanceBuffersToDelete.erase(id);
+        }
+
+		// Draw Command
+        deleteList.clear();
+        for (auto& iter : drawCommandsToDelete)
+        {
+            if (iter.second > 0)
+                iter.second--;
+            else
+                deleteList.push_back(iter.first);
+        }
+        for (auto id : deleteList)
+        {
+            DestroyDrawCommandByIndex(id);
+            drawCommandsToDelete.erase(id);
+        }
     }
 
 
@@ -5964,6 +6494,20 @@ namespace ZXEngine
         memcpy(dataReferencePtr, dataReferences.data(), sizeof(VulkanRTRendererDataReference) * dataReferences.size());
     }
 
+    VkDescriptorSet RenderAPIVulkan::GetNextDescriptorSet(VulkanComputePipeline* pipeline)
+    {
+        if (pipeline->pipelineData[currentFrame].bindingNum >= pipeline->pipelineData[currentFrame].descriptorGroups.size() * VulkanDescriptorGroup::Size)
+        {
+            pipeline->pipelineData[currentFrame].descriptorGroups.push_back(CreateDescriptorGroup(pipeline));
+        }
+
+        size_t groupIndex = pipeline->pipelineData[currentFrame].bindingNum / VulkanDescriptorGroup::Size;
+        size_t bindingIndex = pipeline->pipelineData[currentFrame].bindingNum % VulkanDescriptorGroup::Size;
+
+        pipeline->pipelineData[currentFrame].bindingNum++;
+
+        return pipeline->pipelineData[currentFrame].descriptorGroups[groupIndex].descriptorSets[bindingIndex];
+    }
 
     uint32_t RenderAPIVulkan::GetCurFrameBufferIndex() const
     {
@@ -6275,10 +6819,12 @@ namespace ZXEngine
             extension = ".rmiss";
         else if (stage & ZX_SHADER_STAGE_INTERSECTION_BIT)
             extension = ".rint";
+        else if (stage & ZX_SHADER_STAGE_COMPUTE_BIT)
+            extension = ".comp";
         else
             throw std::runtime_error("Unknown shader stage!");
 
-        string fullPath = isRasterization ? path + extension + ".spv" : path + ".spv";
+        string fullPath = (isRasterization || stage & ZX_SHADER_STAGE_COMPUTE_BIT) ? path + extension + ".spv" : path + ".spv";
 
         vector<unsigned char> shader;
         bool suc = Resources::LoadBinaryFile(shader, fullPath);
@@ -6288,6 +6834,8 @@ namespace ZXEngine
         {
             if (isRasterization)
                 SPIRVCompiler::CompileShader(path + ".zxshader");
+            else if (stage & ZX_SHADER_STAGE_COMPUTE_BIT)
+                SPIRVCompiler::CompileCompute(path + ".glc");
             else
                 SPIRVCompiler::GenerateSPIRVFile(path + ".vkr");
 

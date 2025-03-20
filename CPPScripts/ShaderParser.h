@@ -16,6 +16,7 @@ namespace ZXEngine
 	{
 	public:
 		static ShaderInfo GetShaderInfo(const string& code, GraphicsAPI api);
+		static ComputeShaderInfo GetComputeShaderInfo(const string& code);
 		static bool IsBasePropertyType(ShaderPropertyType type);
 		static ShaderPropertiesInfo GetProperties(const string& stageCode);
 		static void ParseShaderCode(const string& code, string& vertCode, string& geomCode, string& fragCode);
@@ -27,10 +28,11 @@ namespace ZXEngine
 	private:
 		static ShaderStateSet GetShaderStateSet(const string& code);
 		static void GetInstanceInfo(const string& code, ShaderInstanceInfo& info);
+		static void GetBufferInfos(const string& code, vector<ShaderBufferInfo>& infos);
 		static string GetCodeBlock(const string& code, const string& blockName);
 		static void GetPropertyNameAndArrayLength(const string& propertyStr, string& name, uint32_t& arrayLength);
 
-		static string PreprocessMacroDefine(const string& code, const string& macro);
+		static string PreprocessMacroDefine(const string& code, std::initializer_list<const char*> macros);
 
 		static void SetUpPropertiesStd140(ShaderInfo& info);
 		static PropertyAlignInfo GetPropertyAlignInfoStd140(ShaderPropertyType type, uint32_t arrayLength);

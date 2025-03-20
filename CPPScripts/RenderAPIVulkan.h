@@ -11,7 +11,8 @@ namespace ZXEngine
         friend class EditorGUIManagerVulkan;
         friend class ImGuiTextureManagerVulkan;
         /// <summary>
-        /// 标准RenderAPI接口
+        /// 标准渲染管线接口
+        /// Standard Rendering Pipeline Interface
         /// </summary>
     public:
         RenderAPIVulkan();
@@ -64,13 +65,14 @@ namespace ZXEngine
 
         // Draw
         virtual uint32_t AllocateDrawCommand(CommandType commandType, FrameBufferClearFlags clearFlags);
+        virtual void FreeDrawCommand(uint32_t commandID);
         virtual void Draw(uint32_t VAO);
         virtual void DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer);
         virtual void GenerateDrawCommand(uint32_t id);
 
         // Mesh
         virtual void DeleteMesh(unsigned int VAO);
-        virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
+        virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices, bool skinned = false);
         virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize);
         virtual void UpdateDynamicMesh(unsigned int VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
         virtual void GenerateParticleMesh(unsigned int& VAO);
@@ -98,7 +100,31 @@ namespace ZXEngine
 
 
         /// <summary>
-        /// 标准RayTracing接口
+        /// 通用计算管线接口
+        /// Compute Pipeline Interface 
+        /// </summary>
+    public:
+        // Shader Storage Buffer
+        virtual uint32_t CreateShaderStorageBuffer(const void* data, size_t size, GPUBufferType type);
+        virtual void BindShaderStorageBuffer(uint32_t id, uint32_t binding);
+        virtual void UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size);
+        virtual void DeleteShaderStorageBuffer(uint32_t id);
+
+        // Vertex Buffer Binding
+        virtual void BindVertexBuffer(uint32_t VAO, uint32_t binding);
+
+        // Compute Shader
+        virtual ComputeShaderReference* LoadAndSetUpComputeShader(const string& path);
+        virtual void DeleteComputeShader(uint32_t id);
+
+        // Compute Command
+        virtual void Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ);
+        virtual void SubmitAllComputeCommands();
+
+
+        /// <summary>
+        /// 光线追踪管线接口
+        /// Ray Tracing Pipeline Interface
         /// </summary>
     public:
         // Pipeline
@@ -156,6 +182,8 @@ namespace ZXEngine
         VkQueue graphicsQueue = VK_NULL_HANDLE;
         // 展示队列
         VkQueue presentQueue = VK_NULL_HANDLE;
+        // 计算队列
+        VkQueue computeQueue = VK_NULL_HANDLE;
         // 队列簇ID记录
         QueueFamilyIndices queueFamilyIndices;
         // 提供给交换链显示画面的Frame Buffer
@@ -177,6 +205,8 @@ namespace ZXEngine
         vector<VkSemaphore> presentImageAvailableSemaphores;
         // 一帧绘制结束的Fence
         vector<VkFence> inFlightFences;
+        // 计算管线Fence
+        vector<VkFence> inFlightComputeFences;
 
         // 命令池
         VkCommandPool commandPool = VK_NULL_HANDLE;
@@ -236,19 +266,24 @@ namespace ZXEngine
     private:
         vector<VulkanVAO*> VulkanVAOArray;
         vector<VulkanFBO*> VulkanFBOArray;
+        vector<VulkanSSBO*> VulkanSSBOArray;
         vector<VulkanAttachmentBuffer*> VulkanAttachmentBufferArray;
         vector<VulkanTexture*> VulkanTextureArray;
         vector<VulkanPipeline*> VulkanPipelineArray;
+        vector<VulkanComputePipeline*> VulkanComputePipelineArray;
         vector<VulkanMaterialData*> VulkanMaterialDataArray;
         vector<VulkanBuffer*> VulkanInstanceBufferArray;
         vector<VulkanDrawCommand*> VulkanDrawCommandArray;
 
         vector<VkRenderPass> allVulkanRenderPass;
         unordered_map<uint32_t, uint32_t> meshsToDelete;
+        unordered_map<uint32_t, uint32_t> ssbosToDelete;
         unordered_map<uint32_t, uint32_t> texturesToDelete;
         unordered_map<uint32_t, uint32_t> materialDatasToDelete;
         unordered_map<uint32_t, uint32_t> pipelinesToDelete;
+        unordered_map<uint32_t, uint32_t> computePipelinesToDelete;
         unordered_map<uint32_t, uint32_t> instanceBuffersToDelete;
+        unordered_map<uint32_t, uint32_t> drawCommandsToDelete;
 
         uint32_t GetNextVAOIndex();
         VulkanVAO* GetVAOByIndex(uint32_t idx);
@@ -257,6 +292,10 @@ namespace ZXEngine
         uint32_t GetNextFBOIndex();
         VulkanFBO* GetFBOByIndex(uint32_t idx);
         void DestroyFBOByIndex(uint32_t idx);
+
+        uint32_t GetNextSSBOIndex();
+        VulkanSSBO* GetSSBOByIndex(uint32_t idx);
+        void DestroySSBOByIndex(uint32_t idx);
 
         uint32_t GetNextAttachmentBufferIndex();
         VulkanAttachmentBuffer* GetAttachmentBufferByIndex(uint32_t idx);
@@ -270,6 +309,10 @@ namespace ZXEngine
         VulkanPipeline* GetPipelineByIndex(uint32_t idx);
         void DestroyPipelineByIndex(uint32_t idx);
 
+        uint32_t GetNextComputePipelineIndex();
+        VulkanComputePipeline* GetComputePipelineByIndex(uint32_t idx);
+        void DestroyComputePipelineByIndex(uint32_t idx);
+
         uint32_t GetNextMaterialDataIndex();
         VulkanMaterialData* GetMaterialDataByIndex(uint32_t idx);
         void DestroyMaterialDataByIndex(uint32_t idx);
@@ -280,21 +323,25 @@ namespace ZXEngine
 
         uint32_t GetNextDrawCommandIndex();
         VulkanDrawCommand* GetDrawCommandByIndex(uint32_t idx);
+        void DestroyDrawCommandByIndex(uint32_t idx);
 
         void* GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
         vector<void*> GetShaderPropertyAddressAllBuffer(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
 
-        VulkanBuffer CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool cpuAddress = false, bool gpuAddress = false);
-        void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, VulkanBuffer& newBuffer, bool cpuAddress = false, bool gpuAddress = false);
+        VulkanBuffer CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool cpuAddress = false, bool gpuAddress = false, const void* data = nullptr);
+        void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, VulkanBuffer& newBuffer, bool cpuAddress = false, bool gpuAddress = false, const void* data = nullptr);
         VulkanBuffer CreateGPUBuffer(VkDeviceSize size, VkBufferUsageFlags usage, const void* data);
         void CreateGPUBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer& buffer, VmaAllocation& allocation, const void* data);
-        void DestroyBuffer(VulkanBuffer buffer);
+        void DestroyBuffer(VulkanBuffer& buffer);
 
         UniformBuffer CreateUniformBuffer(const vector<ShaderProperty>& properties);
-        void DestroyUniformBuffer(const UniformBuffer& uniformBuffer);
+        void DestroyUniformBuffer(UniformBuffer& uniformBuffer);
 
         void AllocateCommandBuffer(VkCommandBuffer& commandBuffers);
         void AllocateCommandBuffers(vector<VkCommandBuffer>& commandBuffers);
+
+        VulkanDescriptorGroup CreateDescriptorGroup(const VulkanComputePipeline* pipeline);
+        void DestroyDescriptorGroup(VulkanDescriptorGroup& descriptorGroup);
 
         void CreateVkFence(VkFence& fence);
         void CreateVkSemaphore(VkSemaphore& semaphore);
@@ -316,6 +363,7 @@ namespace ZXEngine
         void DestroyRenderPass(VkRenderPass renderPass);
 
         VkPipeline CreatePipeline(const string& path, const ShaderInfo& shaderInfo, VkDescriptorSetLayout& descriptorSetLayout, VkPipelineLayout& pipelineLayout, RenderPassType renderPassType);
+        void DestroyVulkanPipeline(VulkanPipeline* pipeline);
         
         VkDescriptorSetLayout CreateDescriptorSetLayout(const ShaderInfo& info);
         VkDescriptorSetLayout CreateDescriptorSetLayout(const vector<VkDescriptorSetLayoutBinding>& bindings);
@@ -427,6 +475,16 @@ namespace ZXEngine
 
         vector<VulkanDrawRecord> drawRecords;
         vector<VkSemaphore> curWaitSemaphores;
+
+        vector<uint32_t> computeCommandRecords;
+        vector<VkSemaphore> computeSemaphores;
+        vector<bool> waitForComputeFenceOfLastFrame;
+
+        using VulkanComputePipelineDescriptorBindingRecord = pair<uint32_t, uint32_t>;
+        vector<VulkanComputePipelineDescriptorBindingRecord> curComputePipelineSSBOBindingRecords;
+        vector<VulkanComputePipelineDescriptorBindingRecord> curComputePipelineVertexBufferBindingRecords;
+
+        VkDescriptorSet GetNextDescriptorSet(VulkanComputePipeline* pipeline);
 
         uint32_t GetCurFrameBufferIndex() const;
         uint32_t GetMipMapLevels(int width, int height);

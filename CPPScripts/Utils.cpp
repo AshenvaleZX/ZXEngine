@@ -70,6 +70,11 @@ namespace ZXEngine
         str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
     }
 
+    void Utils::RemoveSpace(string& str)
+    {
+		str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
+    }
+
     bool Utils::IsValidWordChar(char c)
     {
         return isalnum(c) or c == '_';
@@ -120,6 +125,20 @@ namespace ZXEngine
             offset = pos + dstL;
             pos = oriStr.find(srcStr, offset);
         }
+    }
+
+    string Utils::GetNextStringBlock(string& oriStr, size_t offset, char sChar, char eChar, bool exclude)
+    {
+		size_t sPos = 0, ePos = 0;
+		GetNextStringBlockPos(oriStr, offset, sChar, eChar, sPos, ePos);
+
+        if (exclude)
+        {
+            sPos++;
+            ePos--;
+        }
+
+		return oriStr.substr(sPos, ePos - sPos + 1);
     }
 
     void Utils::GetNextStringBlockPos(string& oriStr, size_t offset, char sChar, char eChar, size_t& sPos, size_t& ePos)

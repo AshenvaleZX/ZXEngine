@@ -10,7 +10,8 @@ namespace ZXEngine
 		friend class EditorGUIManagerDirectX12;
 		friend class ZXD3D12DescriptorAllocator;
 		/// <summary>
-		/// 标准RenderAPI接口
+		/// 标准渲染管线接口
+		/// Standard Rendering Pipeline Interface
 		/// </summary>
 	public:
 		RenderAPID3D12();
@@ -63,13 +64,14 @@ namespace ZXEngine
 
 		// Draw
 		virtual uint32_t AllocateDrawCommand(CommandType commandType, FrameBufferClearFlags clearFlags);
+		virtual void FreeDrawCommand(uint32_t commandID);
 		virtual void Draw(uint32_t VAO);
 		virtual void DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer);
 		virtual void GenerateDrawCommand(uint32_t id);
 
 		// Mesh
 		virtual void DeleteMesh(unsigned int VAO);
-		virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
+		virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices, bool skinned = false);
 		virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize);
 		virtual void UpdateDynamicMesh(unsigned int VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
 		virtual void GenerateParticleMesh(unsigned int& VAO);
@@ -97,7 +99,31 @@ namespace ZXEngine
 
 
 		/// <summary>
-		/// 标准RayTracing接口(暂未实现基于DXR的光线追踪)
+		/// 通用计算管线接口
+		/// Compute Pipeline Interface 
+		/// </summary>
+	public:
+		// Shader Storage Buffer
+		virtual uint32_t CreateShaderStorageBuffer(const void* data, size_t size, GPUBufferType type);
+		virtual void BindShaderStorageBuffer(uint32_t id, uint32_t binding);
+		virtual void UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size);
+		virtual void DeleteShaderStorageBuffer(uint32_t id);
+
+		// Vertex Buffer Binding
+		virtual void BindVertexBuffer(uint32_t VAO, uint32_t binding);
+
+		// Compute Shader
+		virtual ComputeShaderReference* LoadAndSetUpComputeShader(const string& path);
+		virtual void DeleteComputeShader(uint32_t id);
+
+		// Compute Command
+		virtual void Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ);
+		virtual void SubmitAllComputeCommands();
+
+
+		/// <summary>
+		/// 光线追踪管线接口
+		/// Ray Tracing Pipeline Interface
 		/// </summary>
 	public:
 		// Pipeline
@@ -133,6 +159,8 @@ namespace ZXEngine
 		// 渲染时动态分配的描述符堆
 		vector<UINT> mDynamicDescriptorOffsets;
 		vector<ComPtr<ID3D12DescriptorHeap>> mDynamicDescriptorHeaps;
+		vector<UINT> mDynamicComputeDescriptorOffsets;
+		vector<ComPtr<ID3D12DescriptorHeap>> mDynamicComputeDescriptorHeaps;
 
 		// 屏幕后台缓冲区图像格式
 		DXGI_FORMAT mPresentBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -176,18 +204,23 @@ namespace ZXEngine
 	private:
 		vector<ZXD3D12VAO*> mVAOArray;
 		vector<ZXD3D12FBO*> mFBOArray;
+		vector<ZXD3D12SSBO*> mSSBOArray;
 		vector<ZXD3D12RenderBuffer*> mRenderBufferArray;
 		vector<ZXD3D12Texture*> mTextureArray;
 		vector<ZXD3D12Pipeline*> mPipelineArray;
+		vector<ZXD3D12ComputePipeline*> mComputePipelineArray;
 		vector<ZXD3D12MaterialData*> mMaterialDataArray;
 		vector<ZXD3D12InstanceBuffer*> mInstanceBufferArray;
 		vector<ZXD3D12DrawCommand*> mDrawCommandArray;
 
 		unordered_map<uint32_t, uint32_t> mMeshsToDelete;
+		unordered_map<uint32_t, uint32_t> mSSBOsToDelete;
 		unordered_map<uint32_t, uint32_t> mTexturesToDelete;
 		unordered_map<uint32_t, uint32_t> mMaterialDatasToDelete;
 		unordered_map<uint32_t, uint32_t> mShadersToDelete;
+		unordered_map<uint32_t, uint32_t> mComputePipelinesToDelete;
 		unordered_map<uint32_t, uint32_t> mInstanceBuffersToDelete;
+		unordered_map<uint32_t, uint32_t> mDrawCommandsToDelete;
 
 		uint32_t GetNextVAOIndex();
 		ZXD3D12VAO* GetVAOByIndex(uint32_t idx);
@@ -196,6 +229,10 @@ namespace ZXEngine
 		uint32_t GetNextFBOIndex();
 		ZXD3D12FBO* GetFBOByIndex(uint32_t idx);
 		void DestroyFBOByIndex(uint32_t idx);
+
+		uint32_t GetNextSSBOIndex();
+		ZXD3D12SSBO* GetSSBOByIndex(uint32_t idx);
+		void DestroySSBOByIndex(uint32_t idx);
 
 		uint32_t GetNextRenderBufferIndex();
 		ZXD3D12RenderBuffer* GetRenderBufferByIndex(uint32_t idx);
@@ -209,6 +246,10 @@ namespace ZXEngine
 		ZXD3D12Pipeline* GetPipelineByIndex(uint32_t idx);
 		void DestroyPipelineByIndex(uint32_t idx);
 
+		uint32_t GetNextComputePipelineIndex();
+		ZXD3D12ComputePipeline* GetComputePipelineByIndex(uint32_t idx);
+		void DestroyComputePipelineByIndex(uint32_t idx);
+
 		uint32_t GetNextMaterialDataIndex();
 		ZXD3D12MaterialData* GetMaterialDataByIndex(uint32_t idx);
 		void DestroyMaterialDataByIndex(uint32_t idx);
@@ -219,6 +260,7 @@ namespace ZXEngine
 
 		uint32_t GetNextDrawCommandIndex();
 		ZXD3D12DrawCommand* GetDrawCommandByIndex(uint32_t idx);
+		void DestroyDrawCommandByIndex(uint32_t idx);
 
 		void CheckDeleteData();
 
@@ -318,6 +360,7 @@ namespace ZXEngine
 		void DestroyRTMaterialDataByIndex(uint32_t idx);
 
 		ComPtr<IDxcBlob> CompileRTShader(const string& path);
+		ComPtr<IDxcBlob> DXCCompile(const string& code, LPCWSTR name, LPCWSTR entry, LPCWSTR target);
 		ZXD3D12DXILLibraryDesc CreateDXILLibrary(const ComPtr<IDxcBlob>& dxilBlob, const vector<wstring>& exportedSymbols);
 
 		void DestroyAccelerationStructure(ZXD3D12AccelerationStructure& accelerationStructure);
@@ -351,6 +394,13 @@ namespace ZXEngine
 		uint32_t mCurPipeLineIdx = 0;
 		uint32_t mCurMaterialDataIdx = 0;
 		vector<ZXD3D12DrawRecord> mDrawRecords;
+
+		vector<uint32_t> mComputeCommandRecords;
+		vector<bool> mWaitForComputeFenceOfLastFrame;
+
+		using ZXD3D12ComputePipelineDescriptorBindingRecord = pair<uint32_t, uint32_t>;
+		vector<ZXD3D12ComputePipelineDescriptorBindingRecord> mCurComputePipelineSSBOBindingRecords;
+		vector<ZXD3D12ComputePipelineDescriptorBindingRecord> mCurComputePipelineVertexBufferBindingRecords;
 
 		uint32_t GetCurFrameBufferIndex() const;
 

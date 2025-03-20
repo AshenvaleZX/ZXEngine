@@ -13,6 +13,7 @@
 #include "Resources.h"
 #include "Concurrent/JobSystem.h"
 #include "ECS/ECS.h"
+#include "RenderAPI.h"
 
 #ifdef ZX_EDITOR
 #include "Editor/EditorGUIManager.h"
@@ -93,9 +94,11 @@ namespace ZXEngine
 		if (EditorDataManager::isGameStart && !EditorDataManager::isGamePause)
 		{
 			SceneManager::GetInstance()->GetCurScene()->Update();
+			RenderAPI::GetInstance()->SubmitAllComputeCommands();
 		}
 #else
 		SceneManager::GetInstance()->GetCurScene()->Update();
+		RenderAPI::GetInstance()->SubmitAllComputeCommands();
 #endif
 	}
 

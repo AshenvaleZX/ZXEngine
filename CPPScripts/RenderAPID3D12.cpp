@@ -187,6 +187,16 @@ namespace ZXEngine
 			mD3D12Device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&mDynamicDescriptorHeaps[i]));
 		}
 
+		mDynamicComputeDescriptorHeaps.resize(DX_MAX_FRAMES_IN_FLIGHT);
+		mDynamicComputeDescriptorOffsets.resize(DX_MAX_FRAMES_IN_FLIGHT);
+		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			mDynamicComputeDescriptorOffsets[i] = 0;
+			mD3D12Device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&mDynamicComputeDescriptorHeaps[i]));
+		}
+
+		mWaitForComputeFenceOfLastFrame.resize(DX_MAX_FRAMES_IN_FLIGHT, true);
+
 		// 初始化光追相关对象
 		InitDXR();
 	}
@@ -274,7 +284,11 @@ namespace ZXEngine
 
 	void RenderAPID3D12::BeginFrame()
 	{
-		WaitForFence(mFrameFences[mCurrentFrame]);
+		if (mWaitForComputeFenceOfLastFrame[mCurrentFrame])
+		{
+			WaitForFence(mFrameFences[mCurrentFrame]);
+		}
+		mWaitForComputeFenceOfLastFrame[mCurrentFrame] = true;
 
 		CheckDeleteData();
 
@@ -1567,10 +1581,10 @@ namespace ZXEngine
 		// Input Layout
 		vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs =
 		{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, offsetof(Vertex, Position),  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0, offsetof(Vertex, TexCoords), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-			{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT,    0, offsetof(Vertex, Normal),    D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-			{ "TANGENT",  0, DXGI_FORMAT_R32G32B32_FLOAT,    0, offsetof(Vertex, Tangent),   D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offsetof(Vertex, Position),  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offsetof(Vertex, TexCoords), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "NORMAL",   0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offsetof(Vertex, Normal),    D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "TANGENT",  0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offsetof(Vertex, Tangent),   D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 			{ "WEIGHT",   0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offsetof(Vertex, Weights),   D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 			{ "BONEID",   0, DXGI_FORMAT_R32G32B32A32_UINT,  0, offsetof(Vertex, BoneIDs),   D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 		};
@@ -1803,23 +1817,14 @@ namespace ZXEngine
 		drawCmd->clearFlags = clearFlags;
 		drawCmd->commandType = commandType;
 
-		drawCmd->allocators.resize(DX_MAX_FRAMES_IN_FLIGHT);
-		drawCmd->commandLists.resize(DX_MAX_FRAMES_IN_FLIGHT);
-		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
-		{
-			ThrowIfFailed(mD3D12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
-				IID_PPV_ARGS(drawCmd->allocators[i].GetAddressOf())));
-
-			ThrowIfFailed(mD3D12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, drawCmd->allocators[i].Get(), nullptr,
-				IID_PPV_ARGS(drawCmd->commandLists[i].GetAddressOf())));
-
-			// 使用CommandList的时候会先Reset，Reset时要求处于Close状态
-			drawCmd->commandLists[i]->Close();
-		}
-
 		drawCmd->inUse = true;
 
 		return idx;
+	}
+
+	void RenderAPID3D12::FreeDrawCommand(uint32_t commandID)
+	{
+		mDrawCommandsToDelete.insert(pair(commandID, DX_MAX_FRAMES_IN_FLIGHT));
 	}
 
 	void RenderAPID3D12::Draw(uint32_t VAO)
@@ -2056,7 +2061,7 @@ namespace ZXEngine
 				drawCommandList->SetGraphicsRootDescriptorTable(1, dynamicGPUHandle);
 			}
 
-			vector<D3D12_VERTEX_BUFFER_VIEW> vertexBufferViews = { VAO->vertexBufferView };
+			vector<D3D12_VERTEX_BUFFER_VIEW> vertexBufferViews = { VAO->computeSkinned ? VAO->vbViews[mCurrentFrame] : VAO->vertexBufferView };
 			if (iter.instanceBuffer != UINT32_MAX)
 			{
 				vertexBufferViews.push_back(GetInstanceBufferByIndex(iter.instanceBuffer)->view);
@@ -2155,7 +2160,7 @@ namespace ZXEngine
 #endif
 	}
 
-	void RenderAPID3D12::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
+	void RenderAPID3D12::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices, bool skinned)
 	{
 		VAO = GetNextVAOIndex();
 		auto meshBuffer = GetVAOByIndex(VAO);
@@ -2168,6 +2173,33 @@ namespace ZXEngine
 		meshBuffer->vertexBufferView.SizeInBytes = vertexBufferSize;
 		meshBuffer->vertexBufferView.StrideInBytes = sizeof(Vertex);
 		meshBuffer->vertexBufferView.BufferLocation = meshBuffer->vertexBuffer.gpuAddress;
+
+#ifdef ZX_COMPUTE_ANIMATION
+		if (skinned)
+		{
+			D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+			uavDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+			uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+			uavDesc.Buffer.FirstElement = 0;
+			uavDesc.Buffer.NumElements = vertexBufferSize / 4;
+			uavDesc.Buffer.StructureByteStride = 0;
+			uavDesc.Buffer.CounterOffsetInBytes = 0;
+			uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_RAW;
+
+			meshBuffer->vbViews.resize(DX_MAX_FRAMES_IN_FLIGHT);
+			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				meshBuffer->ssbo.push_back(CreateBuffer(vertexBufferSize, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_DEFAULT, false, true, vertices.data()));
+				meshBuffer->uavHandles.push_back(ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(meshBuffer->ssbo[i].buffer, uavDesc));
+
+				meshBuffer->vbViews[i].SizeInBytes = vertexBufferSize;
+				meshBuffer->vbViews[i].StrideInBytes = sizeof(Vertex);
+				meshBuffer->vbViews[i].BufferLocation = meshBuffer->ssbo.back().gpuAddress;
+			}
+
+			meshBuffer->computeSkinned = true;
+		}
+#endif
 
 		// 创建Index Buffer
 		UINT indexBufferSize = static_cast<UINT>(sizeof(uint32_t) * indices.size());
@@ -2221,10 +2253,10 @@ namespace ZXEngine
 	{
 		vector<Vertex> vertices =
 		{
-			{.Position = {  0.5f,  0.5f, 0.0f }, .TexCoords = { 1.0f, 0.0f } },
-			{.Position = {  0.5f, -0.5f, 0.0f }, .TexCoords = { 1.0f, 1.0f } },
-			{.Position = { -0.5f,  0.5f, 0.0f }, .TexCoords = { 0.0f, 0.0f } },
-			{.Position = { -0.5f, -0.5f, 0.0f }, .TexCoords = { 0.0f, 1.0f } },
+			{ .Position = {  0.5f,  0.5f, 0.0f, 1.0f }, .TexCoords = { 1.0f, 0.0f, 0.0f, 0.0f } },
+			{ .Position = {  0.5f, -0.5f, 0.0f, 1.0f }, .TexCoords = { 1.0f, 1.0f, 0.0f, 0.0f } },
+			{ .Position = { -0.5f,  0.5f, 0.0f, 1.0f }, .TexCoords = { 0.0f, 0.0f, 0.0f, 0.0f } },
+			{ .Position = { -0.5f, -0.5f, 0.0f, 1.0f }, .TexCoords = { 0.0f, 1.0f, 0.0f, 0.0f } },
 		};
 
 		vector<uint32_t> indices =
@@ -2661,6 +2693,257 @@ namespace ZXEngine
 	void RenderAPID3D12::SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer, bool isBuffer)
 	{
 		SetShaderTexture(material, name, ID, idx, allBuffer, isBuffer);
+	}
+
+
+	uint32_t RenderAPID3D12::CreateShaderStorageBuffer(const void* data, size_t size, GPUBufferType type)
+	{
+		auto idx = GetNextSSBOIndex();
+		auto ssbo = GetSSBOByIndex(idx);
+
+		if (type == GPUBufferType::DynamicGPUWriteGPURead || type == GPUBufferType::DynamicGPUWriteCPURead)
+		{
+			D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+			uavDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+			uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+			uavDesc.Buffer.FirstElement = 0;
+			uavDesc.Buffer.NumElements = static_cast<UINT>(size / 4);
+			uavDesc.Buffer.StructureByteStride = 0;
+			uavDesc.Buffer.CounterOffsetInBytes = 0;
+			uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_RAW;
+
+			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				ssbo->buffers[i] = CreateBuffer(static_cast<UINT>(size), D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_DEFAULT, false, true, data);
+				ssbo->descriptorHandles[i] = ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(ssbo->buffers[i].buffer, uavDesc);
+			}
+		}
+		else
+		{
+			D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+			srvDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			srvDesc.Buffer.FirstElement = 0;
+			srvDesc.Buffer.NumElements = static_cast<UINT>(size / 4);
+			srvDesc.Buffer.StructureByteStride = 0;
+			srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_RAW;
+
+			for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				ssbo->buffers[i] = CreateBuffer(static_cast<UINT>(size), D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD, true, true, data);
+				ssbo->descriptorHandles[i] = ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(ssbo->buffers[i].buffer, srvDesc);
+			}
+		}
+	
+		ssbo->inUse = true;
+
+		return idx;
+	}
+
+	void RenderAPID3D12::BindShaderStorageBuffer(uint32_t id, uint32_t binding)
+	{
+		mCurComputePipelineSSBOBindingRecords.push_back({ id, binding });
+	}
+
+	void RenderAPID3D12::UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size)
+	{
+		auto ssbo = GetSSBOByIndex(id);
+
+		memcpy(ssbo->buffers[mCurrentFrame].cpuAddress, data, size);
+	}
+
+	void RenderAPID3D12::DeleteShaderStorageBuffer(uint32_t id)
+	{
+		mSSBOsToDelete.insert(pair(id, DX_MAX_FRAMES_IN_FLIGHT));
+	}
+
+	void RenderAPID3D12::BindVertexBuffer(uint32_t VAO, uint32_t binding)
+	{
+		mCurComputePipelineVertexBufferBindingRecords.push_back({ VAO, binding });
+	}
+
+	ComputeShaderReference* RenderAPID3D12::LoadAndSetUpComputeShader(const string& path)
+	{
+		string shaderCode = Resources::LoadTextFile(path + ".dxc");
+		if (shaderCode.empty())
+			return nullptr;
+
+		ComputeShaderInfo shaderInfo = ShaderParser::GetComputeShaderInfo(shaderCode);
+
+		// 创建根签名
+		ComPtr<ID3D12RootSignature> rootSignature;
+		{
+			vector<D3D12_DESCRIPTOR_RANGE> descriptorRanges;
+			for (auto& bufferInfo : shaderInfo.bufferInfos)
+			{
+				if (bufferInfo.type == ShaderBufferType::Storage)
+				{
+					D3D12_DESCRIPTOR_RANGE descriptorRange = {};
+					descriptorRange.RangeType = bufferInfo.isReadOnly ? D3D12_DESCRIPTOR_RANGE_TYPE_SRV : D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+					descriptorRange.NumDescriptors = 1;
+					descriptorRange.BaseShaderRegister = bufferInfo.binding;
+					descriptorRange.RegisterSpace = 0;
+					descriptorRange.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+					descriptorRanges.push_back(descriptorRange);
+				}
+			}
+
+			vector<CD3DX12_ROOT_PARAMETER> rootParameters(1);
+			rootParameters[0].InitAsDescriptorTable(static_cast<UINT>(descriptorRanges.size()), descriptorRanges.data());
+
+			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
+			rootSignatureDesc.Init(static_cast<UINT>(rootParameters.size()), rootParameters.data(), 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE);
+
+			ComPtr<ID3DBlob> error;
+			ComPtr<ID3DBlob> signature;
+			HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
+			if (error != nullptr)
+				Debug::LogError((char*)error->GetBufferPointer());
+			ThrowIfFailed(hr);
+
+			ThrowIfFailed(mD3D12Device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&rootSignature)));
+		}
+
+		D3D12_COMPUTE_PIPELINE_STATE_DESC pipelineStateDesc = {};
+		pipelineStateDesc.pRootSignature = rootSignature.Get();
+
+		ComPtr<IDxcBlob> compCode = DXCCompile(shaderCode, L"", L"main", L"cs_6_0");
+		pipelineStateDesc.CS = { compCode->GetBufferPointer(), compCode->GetBufferSize() };
+
+		ComPtr<ID3D12PipelineState> PSO;
+		ThrowIfFailed(mD3D12Device->CreateComputePipelineState(&pipelineStateDesc, IID_PPV_ARGS(&PSO)));
+
+		uint32_t pipelineID = GetNextComputePipelineIndex();
+		auto computePipeline = GetComputePipelineByIndex(pipelineID);
+
+		computePipeline->pipelineState = PSO;
+		computePipeline->rootSignature = rootSignature;
+		computePipeline->inUse = true;
+
+		ComputeShaderReference* reference = new ComputeShaderReference();
+		reference->ID = pipelineID;
+		reference->shaderInfo = std::move(shaderInfo);
+
+		return reference;
+	}
+
+	void RenderAPID3D12::DeleteComputeShader(uint32_t id)
+	{
+		mComputePipelinesToDelete.insert(pair(id, DX_MAX_FRAMES_IN_FLIGHT));
+	}
+
+	void RenderAPID3D12::Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ)
+	{
+		if (mWaitForComputeFenceOfLastFrame[mCurrentFrame])
+		{
+			WaitForFence(mFrameFences[mCurrentFrame]);
+			mWaitForComputeFenceOfLastFrame[mCurrentFrame] = false;
+		}
+
+		// 获取当前帧的Command
+		auto command = GetDrawCommandByIndex(commandID);
+		auto& allocator = command->allocators[mCurrentFrame];
+		auto& commandList = command->commandLists[mCurrentFrame];
+
+		// 重置Command List
+		ThrowIfFailed(allocator->Reset());
+		ThrowIfFailed(commandList->Reset(allocator.Get(), nullptr));
+
+		// 获取当前帧的动态描述符堆Handle
+		INT curDynamicDescriptorOffset = static_cast<INT>(mDynamicComputeDescriptorOffsets[mCurrentFrame]);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE dynamicDescriptorHandle(mDynamicComputeDescriptorHeaps[mCurrentFrame]->GetCPUDescriptorHandleForHeapStart());
+		dynamicDescriptorHandle.Offset(curDynamicDescriptorOffset, mCbvSrvUavDescriptorSize);
+
+		// 将SSBO的UAV绑定到动态描述符堆
+		for (auto& bindingRecord : mCurComputePipelineSSBOBindingRecords)
+		{
+			auto ssbo = GetSSBOByIndex(bindingRecord.first);
+
+			auto tmpHandle = dynamicDescriptorHandle;
+			tmpHandle.Offset(static_cast<INT>(bindingRecord.second), mCbvSrvUavDescriptorSize);
+
+			auto cpuHandle = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(ssbo->descriptorHandles[mCurrentFrame]);
+			mD3D12Device->CopyDescriptorsSimple(1, tmpHandle, cpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+			mDynamicComputeDescriptorOffsets[mCurrentFrame]++;
+		}
+		mCurComputePipelineSSBOBindingRecords.clear();
+
+		// 将VertexBuffer的UAV绑定到动态描述符堆
+		for (auto& bindingRecord : mCurComputePipelineVertexBufferBindingRecords)
+		{
+			auto meshBuffer = GetVAOByIndex(bindingRecord.first);
+
+			auto tmpHandle = dynamicDescriptorHandle;
+			tmpHandle.Offset(static_cast<INT>(bindingRecord.second), mCbvSrvUavDescriptorSize);
+
+			auto cpuHandle = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(meshBuffer->uavHandles[mCurrentFrame]);
+			mD3D12Device->CopyDescriptorsSimple(1, tmpHandle, cpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+			mDynamicComputeDescriptorOffsets[mCurrentFrame]++;
+
+			// 将VertexBuffer的Buffer转换到UAV状态
+			auto vertexBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(meshBuffer->ssbo[mCurrentFrame].buffer.Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+			commandList->ResourceBarrier(1, &vertexBufferTransition);
+		}
+
+		// 设置当前帧的动态描述符堆
+		ID3D12DescriptorHeap* curDescriptorHeaps[] = { mDynamicComputeDescriptorHeaps[mCurrentFrame].Get() };
+		commandList->SetDescriptorHeaps(_countof(curDescriptorHeaps), curDescriptorHeaps);
+
+		auto pipeline = GetComputePipelineByIndex(shaderID);
+		commandList->SetComputeRootSignature(pipeline->rootSignature.Get());
+		commandList->SetPipelineState(pipeline->pipelineState.Get());
+
+		// 设置动态描述符堆
+		CD3DX12_GPU_DESCRIPTOR_HANDLE dynamicGPUHandle(mDynamicComputeDescriptorHeaps[mCurrentFrame]->GetGPUDescriptorHandleForHeapStart());
+		dynamicGPUHandle.Offset(curDynamicDescriptorOffset, mCbvSrvUavDescriptorSize);
+		commandList->SetComputeRootDescriptorTable(0, dynamicGPUHandle);
+
+		commandList->Dispatch(groupX, groupY, groupZ);
+
+		for (auto& bindingRecord : mCurComputePipelineVertexBufferBindingRecords)
+		{
+			auto meshBuffer = GetVAOByIndex(bindingRecord.first);
+
+			// UAV Barrier，保证Compute写入完毕
+			auto uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(meshBuffer->ssbo[mCurrentFrame].buffer.Get());
+			commandList->ResourceBarrier(1, &uavBarrier);
+
+			// 将VertexBuffer的Buffer转换回到GenericRead状态
+			auto vertexBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(meshBuffer->ssbo[mCurrentFrame].buffer.Get(),
+				D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ);
+			commandList->ResourceBarrier(1, &vertexBufferTransition);
+		}
+		mCurComputePipelineVertexBufferBindingRecords.clear();
+
+		ThrowIfFailed(commandList->Close());
+
+		mComputeCommandRecords.push_back(commandID);
+	}
+
+	void RenderAPID3D12::SubmitAllComputeCommands()
+	{
+		if (mComputeCommandRecords.size() > 0)
+		{
+			vector<ID3D12CommandList*> allCommandLists;
+
+			for (auto& commandID : mComputeCommandRecords)
+			{
+				auto command = GetDrawCommandByIndex(commandID);
+				auto& commandList = command->commandLists[mCurrentFrame];
+				allCommandLists.push_back(commandList.Get());
+			}
+
+			mComputeCommandRecords.clear();
+
+			mCommandQueue->ExecuteCommandLists(static_cast<UINT>(allCommandLists.size()), allCommandLists.data());
+
+			mDynamicComputeDescriptorOffsets[mCurrentFrame] = 0;
+		}
 	}
 
 
@@ -3432,6 +3715,25 @@ namespace ZXEngine
 			DestroyAccelerationStructure(VAO->blas);
 		}
 
+		if (VAO->computeSkinned)
+		{
+			for (auto& buffer : VAO->ssbo)
+			{
+				DestroyBuffer(buffer);
+			}
+
+			for (auto& handle : VAO->uavHandles)
+			{
+				ZXD3D12DescriptorManager::GetInstance()->ReleaseDescriptor(handle);
+			}
+			
+			VAO->ssbo.clear();
+			VAO->vbViews.clear();
+			VAO->uavHandles.clear();
+
+			VAO->computeSkinned = false;
+		}
+
 		VAO->inUse = false;
 	}
 
@@ -3484,6 +3786,48 @@ namespace ZXEngine
 		FBO->clearInfo = {};
 
 		FBO->inUse = false;
+	}
+
+	uint32_t RenderAPID3D12::GetNextSSBOIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mSSBOArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mSSBOArray[i]->inUse)
+				return i;
+		}
+
+		auto ssbo = new ZXD3D12SSBO();
+
+		ssbo->buffers.resize(DX_MAX_FRAMES_IN_FLIGHT);
+		ssbo->descriptorHandles.resize(DX_MAX_FRAMES_IN_FLIGHT);
+
+		mSSBOArray.push_back(ssbo);
+
+		return length;
+	}
+
+	ZXD3D12SSBO* RenderAPID3D12::GetSSBOByIndex(uint32_t idx)
+	{
+		return mSSBOArray[idx];
+	}
+
+	void RenderAPID3D12::DestroySSBOByIndex(uint32_t idx)
+	{
+		auto ssbo = mSSBOArray[idx];
+
+		for (auto& buffer : ssbo->buffers)
+		{
+			DestroyBuffer(buffer);
+		}
+
+		for (auto& handle : ssbo->descriptorHandles)
+		{
+			ZXD3D12DescriptorManager::GetInstance()->ReleaseDescriptor(handle);
+		}
+
+		ssbo->inUse = false;
 	}
 
 	uint32_t RenderAPID3D12::GetNextRenderBufferIndex()
@@ -3601,7 +3945,37 @@ namespace ZXEngine
 
 		pipeline->inUse = false;
 	}
-	
+
+	uint32_t RenderAPID3D12::GetNextComputePipelineIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mComputePipelineArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mComputePipelineArray[i]->inUse)
+				return i;
+		}
+
+		mComputePipelineArray.push_back(new ZXD3D12ComputePipeline());
+
+		return length;
+	}
+
+	ZXD3D12ComputePipeline* RenderAPID3D12::GetComputePipelineByIndex(uint32_t idx)
+	{
+		return mComputePipelineArray[idx];
+	}
+
+	void RenderAPID3D12::DestroyComputePipelineByIndex(uint32_t idx)
+	{
+		auto pipeline = mComputePipelineArray[idx];
+
+		pipeline->pipelineState.Reset();
+		pipeline->rootSignature.Reset();
+
+		pipeline->inUse = false;
+	}
+
 	uint32_t RenderAPID3D12::GetNextMaterialDataIndex()
 	{
 		uint32_t length = static_cast<uint32_t>(mMaterialDataArray.size());
@@ -3678,7 +4052,23 @@ namespace ZXEngine
 				return i;
 		}
 
-		mDrawCommandArray.push_back(new ZXD3D12DrawCommand());
+		auto drawCmd = new ZXD3D12DrawCommand();
+
+		drawCmd->allocators.resize(DX_MAX_FRAMES_IN_FLIGHT);
+		drawCmd->commandLists.resize(DX_MAX_FRAMES_IN_FLIGHT);
+		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			ThrowIfFailed(mD3D12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
+				IID_PPV_ARGS(drawCmd->allocators[i].GetAddressOf())));
+
+			ThrowIfFailed(mD3D12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, drawCmd->allocators[i].Get(), nullptr,
+				IID_PPV_ARGS(drawCmd->commandLists[i].GetAddressOf())));
+
+			// 使用CommandList的时候会先Reset，Reset时要求处于Close状态
+			drawCmd->commandLists[i]->Close();
+		}
+
+		mDrawCommandArray.push_back(drawCmd);
 
 		return length;
 	}
@@ -3686,6 +4076,23 @@ namespace ZXEngine
 	ZXD3D12DrawCommand* RenderAPID3D12::GetDrawCommandByIndex(uint32_t idx)
 	{
 		return mDrawCommandArray[idx];
+	}
+
+	void RenderAPID3D12::DestroyDrawCommandByIndex(uint32_t idx)
+	{
+		auto drawCommand = mDrawCommandArray[idx];
+
+		drawCommand->commandType = CommandType::NotCare;
+		drawCommand->clearFlags = ZX_CLEAR_FRAME_BUFFER_NONE_BIT;
+
+		for (uint32_t i = 0; i < DX_MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			drawCommand->allocators[i]->Reset();
+			drawCommand->commandLists[i]->Reset(drawCommand->allocators[i].Get(), nullptr);
+			drawCommand->commandLists[i]->Close();
+		}
+
+		drawCommand->inUse = false;
 	}
 
 	void RenderAPID3D12::CheckDeleteData()
@@ -3751,6 +4158,21 @@ namespace ZXEngine
 			mMeshsToDelete.erase(id);
 		}
 
+		// SSBO
+		deleteList.clear();
+		for (auto& iter : mSSBOsToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroySSBOByIndex(id);
+			mSSBOsToDelete.erase(id);
+		}
+
 		// Shader
 		deleteList.clear();
 		for (auto& iter : mShadersToDelete)
@@ -3766,6 +4188,21 @@ namespace ZXEngine
 			mShadersToDelete.erase(id);
 		}
 
+		// Compute Pipeline
+		deleteList.clear();
+		for (auto& iter : mComputePipelinesToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroyComputePipelineByIndex(id);
+			mComputePipelinesToDelete.erase(id);
+		}
+
 		// Instance Buffer
 		deleteList.clear();
 		for (auto& iter : mInstanceBuffersToDelete)
@@ -3779,6 +4216,21 @@ namespace ZXEngine
 		{
 			DestroyInstanceBufferByIndex(id);
 			mInstanceBuffersToDelete.erase(id);
+		}
+
+		// Draw Command
+		deleteList.clear();
+		for (auto& iter : mDrawCommandsToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroyDrawCommandByIndex(id);
+			mDrawCommandsToDelete.erase(id);
 		}
 	}
 
@@ -3870,43 +4322,53 @@ namespace ZXEngine
 		if (gpuAddress)
 			buffer.gpuAddress = buffer.buffer->GetGPUVirtualAddress();
 
+		// 有需要立刻填充的初始化数据
 		if (data)
 		{
-			CD3DX12_HEAP_PROPERTIES uploadBufferProps(D3D12_HEAP_TYPE_UPLOAD);
-			CD3DX12_RESOURCE_DESC uploadBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(size);
-			ComPtr<ID3D12Resource> uploadBuffer;
-			ThrowIfFailed(mD3D12Device->CreateCommittedResource(
-				&uploadBufferProps,
-				D3D12_HEAP_FLAG_NONE,
-				&uploadBufferDesc,
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				nullptr,
-				IID_PPV_ARGS(uploadBuffer.GetAddressOf())));
-
-			D3D12_SUBRESOURCE_DATA subResourceData = {};
-			subResourceData.pData = data;
-			subResourceData.RowPitch = size;
-			subResourceData.SlicePitch = subResourceData.RowPitch;
-
-			ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList4> cmdList)
+			if (cpuAddress)
 			{
-				// 其实可以直接在创建defaultBuffer的时候就把初始状态设置为D3D12_RESOURCE_STATE_COPY_DEST
-				// 没必要多一步这个转换，但是创建的时候如果不是以 D3D12_RESOURCE_STATE_COMMON 初始化，Debug Layer居然会给个Warning
-				// 所以为了没有Warning干扰排除问题，这里就这样写了
-				CD3DX12_RESOURCE_BARRIER barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(
-					buffer.buffer.Get(),
-					D3D12_RESOURCE_STATE_COMMON,
-					D3D12_RESOURCE_STATE_COPY_DEST);
-				cmdList->ResourceBarrier(1, &barrier1);
+				// 如果有CPU地址，说明这不是纯用于GPU的Buffer，直接拷贝数据
+				memcpy(buffer.cpuAddress, data, size);
+			}
+			else
+			{
+				// 如果没有CPU地址，说明这是一个纯GPU Buffer，需要用Upload Buffer来拷贝数据
+				CD3DX12_HEAP_PROPERTIES uploadBufferProps(D3D12_HEAP_TYPE_UPLOAD);
+				CD3DX12_RESOURCE_DESC uploadBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(size);
+				ComPtr<ID3D12Resource> uploadBuffer;
+				ThrowIfFailed(mD3D12Device->CreateCommittedResource(
+					&uploadBufferProps,
+					D3D12_HEAP_FLAG_NONE,
+					&uploadBufferDesc,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					nullptr,
+					IID_PPV_ARGS(uploadBuffer.GetAddressOf())));
 
-				UpdateSubresources<1>(cmdList.Get(), buffer.buffer.Get(), uploadBuffer.Get(), 0, 0, 1, &subResourceData);
+				D3D12_SUBRESOURCE_DATA subResourceData = {};
+				subResourceData.pData = data;
+				subResourceData.RowPitch = size;
+				subResourceData.SlicePitch = subResourceData.RowPitch;
 
-				CD3DX12_RESOURCE_BARRIER barrier2 = CD3DX12_RESOURCE_BARRIER::Transition(
-					buffer.buffer.Get(),
-					D3D12_RESOURCE_STATE_COPY_DEST,
-					initState);
-				cmdList->ResourceBarrier(1, &barrier2);
-			});
+				ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList4> cmdList)
+				{
+					// 其实可以直接在创建defaultBuffer的时候就把初始状态设置为D3D12_RESOURCE_STATE_COPY_DEST
+					// 没必要多一步这个转换，但是创建的时候如果不是以 D3D12_RESOURCE_STATE_COMMON 初始化，Debug Layer居然会给个Warning
+					// 所以为了没有Warning干扰排除问题，这里就这样写了
+					CD3DX12_RESOURCE_BARRIER barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(
+						buffer.buffer.Get(),
+						D3D12_RESOURCE_STATE_COMMON,
+						D3D12_RESOURCE_STATE_COPY_DEST);
+					cmdList->ResourceBarrier(1, &barrier1);
+
+					UpdateSubresources<1>(cmdList.Get(), buffer.buffer.Get(), uploadBuffer.Get(), 0, 0, 1, &subResourceData);
+
+					CD3DX12_RESOURCE_BARRIER barrier2 = CD3DX12_RESOURCE_BARRIER::Transition(
+						buffer.buffer.Get(),
+						D3D12_RESOURCE_STATE_COPY_DEST,
+						initState);
+					cmdList->ResourceBarrier(1, &barrier2);
+				});
+			}
 		}
 
 		return buffer;
@@ -4014,23 +4476,28 @@ namespace ZXEngine
 		// 读取HLSL代码
 		auto code = Resources::LoadTextFile(Resources::GetAssetFullPath(path) + ".dxr");
 
-		// 创建HLSL代码的Blob
-		ComPtr<IDxcBlobEncoding> shaderBlobEncoding;
-		ThrowIfFailed(mDxcLibrary->CreateBlobWithEncodingFromPinned((LPBYTE)code.c_str(), (UINT32)code.size(), 0, &shaderBlobEncoding));
-
 		// 获取一下代码名字，调试和Include用
 		string name = Resources::GetAssetName(path);
 		std::wstringstream wss;
 		wss << std::wstring(name.begin(), name.end());
 		std::wstring wName = wss.str();
 
+		return DXCCompile(code, wName.c_str(), L"", L"lib_6_3");
+	}
+
+	ComPtr<IDxcBlob> RenderAPID3D12::DXCCompile(const string& code, LPCWSTR name, LPCWSTR entry, LPCWSTR target)
+	{
+		// 创建HLSL代码的Blob
+		ComPtr<IDxcBlobEncoding> shaderBlobEncoding;
+		ThrowIfFailed(mDxcLibrary->CreateBlobWithEncodingFromPinned((LPBYTE)code.c_str(), (UINT32)code.size(), 0, &shaderBlobEncoding));
+
 		// 编译HLSL代码
 		ComPtr<IDxcOperationResult> operationResult;
 		ThrowIfFailed(mDxcCompiler->Compile(
 			shaderBlobEncoding.Get(),
-			wName.c_str(),
-			L"",
-			L"lib_6_3",
+			name,
+			entry,
+			target,
 			nullptr,
 			0,
 			nullptr,

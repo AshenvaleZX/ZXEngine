@@ -14,55 +14,55 @@ namespace ZXEngine
 		vector<uint32_t> indices(36);
 
 		// -Z, Front
-		vertices[0]  = { .Position = { -hx, -hy, -hz }, .TexCoords = { 0.0f, 1.0f }, .Normal = { 0.0f, 0.0f, -1.0f }, .Tangent = {  1.0f, 0.0f, 0.0f } };
-		vertices[1]  = { .Position = { -hx,  hy, -hz }, .TexCoords = { 0.0f, 0.0f }, .Normal = { 0.0f, 0.0f, -1.0f }, .Tangent = {  1.0f, 0.0f, 0.0f } };
-		vertices[2]  = { .Position = {  hx,  hy, -hz }, .TexCoords = { 1.0f, 0.0f }, .Normal = { 0.0f, 0.0f, -1.0f }, .Tangent = {  1.0f, 0.0f, 0.0f } };
-		vertices[3]  = { .Position = {  hx, -hy, -hz }, .TexCoords = { 1.0f, 1.0f }, .Normal = { 0.0f, 0.0f, -1.0f }, .Tangent = {  1.0f, 0.0f, 0.0f } };
+		vertices[0]  = { .Position = { -hx, -hy, -hz, 1.0f }, .TexCoords = { 0.0f, 1.0f, 0.0f, 0.0f }, .Normal = { 0.0f, 0.0f, -1.0f, 0.0f }, .Tangent = {  1.0f, 0.0f, 0.0f, 0.0f } };
+		vertices[1]  = { .Position = { -hx,  hy, -hz, 1.0f }, .TexCoords = { 0.0f, 0.0f, 0.0f, 0.0f }, .Normal = { 0.0f, 0.0f, -1.0f, 0.0f }, .Tangent = {  1.0f, 0.0f, 0.0f, 0.0f } };
+		vertices[2]  = { .Position = {  hx,  hy, -hz, 1.0f }, .TexCoords = { 1.0f, 0.0f, 0.0f, 0.0f }, .Normal = { 0.0f, 0.0f, -1.0f, 0.0f }, .Tangent = {  1.0f, 0.0f, 0.0f, 0.0f } };
+		vertices[3]  = { .Position = {  hx, -hy, -hz, 1.0f }, .TexCoords = { 1.0f, 1.0f, 0.0f, 0.0f }, .Normal = { 0.0f, 0.0f, -1.0f, 0.0f }, .Tangent = {  1.0f, 0.0f, 0.0f, 0.0f } };
 
 		indices[0] = 0; indices[1] = 2; indices[2] = 1;
 		indices[3] = 0; indices[4] = 3; indices[5] = 2;
 
 		// +Z, Back
-		vertices[4]  = { .Position = { -hx, -hy,  hz }, .TexCoords = { 1.0f, 1.0f }, .Normal = { 0.0f, 0.0f,  1.0f }, .Tangent = { -1.0f, 0.0f, 0.0f } };
-		vertices[5]  = { .Position = {  hx, -hy,  hz }, .TexCoords = { 0.0f, 1.0f }, .Normal = { 0.0f, 0.0f,  1.0f }, .Tangent = { -1.0f, 0.0f, 0.0f } };
-		vertices[6]  = { .Position = {  hx,  hy,  hz }, .TexCoords = { 0.0f, 0.0f }, .Normal = { 0.0f, 0.0f,  1.0f }, .Tangent = { -1.0f, 0.0f, 0.0f } };
-		vertices[7]  = { .Position = { -hx,  hy,  hz }, .TexCoords = { 1.0f, 0.0f }, .Normal = { 0.0f, 0.0f,  1.0f }, .Tangent = { -1.0f, 0.0f, 0.0f } };
+		vertices[4]  = { .Position = { -hx, -hy,  hz, 1.0f }, .TexCoords = { 1.0f, 1.0f, 0.0f, 0.0f }, .Normal = { 0.0f, 0.0f,  1.0f, 0.0f }, .Tangent = { -1.0f, 0.0f, 0.0f, 0.0f } };
+		vertices[5]  = { .Position = {  hx, -hy,  hz, 1.0f }, .TexCoords = { 0.0f, 1.0f, 0.0f, 0.0f }, .Normal = { 0.0f, 0.0f,  1.0f, 0.0f }, .Tangent = { -1.0f, 0.0f, 0.0f, 0.0f } };
+		vertices[6]  = { .Position = {  hx,  hy,  hz, 1.0f }, .TexCoords = { 0.0f, 0.0f, 0.0f, 0.0f }, .Normal = { 0.0f, 0.0f,  1.0f, 0.0f }, .Tangent = { -1.0f, 0.0f, 0.0f, 0.0f } };
+		vertices[7]  = { .Position = { -hx,  hy,  hz, 1.0f }, .TexCoords = { 1.0f, 0.0f, 0.0f, 0.0f }, .Normal = { 0.0f, 0.0f,  1.0f, 0.0f }, .Tangent = { -1.0f, 0.0f, 0.0f, 0.0f } };
 
 		indices[6] = 4; indices[7]  = 6; indices[8]  = 5;
 		indices[9] = 4; indices[10] = 7; indices[11] = 6;
 
 		// -X, Left
-		vertices[8]  = { .Position = { -hx, -hy,  hz }, .TexCoords = { 0.0f, 1.0f }, .Normal = { -1.0f, 0.0f, 0.0f }, .Tangent = { 0.0f, 0.0f, -1.0f } };
-		vertices[9]  = { .Position = { -hx,  hy,  hz }, .TexCoords = { 0.0f, 0.0f }, .Normal = { -1.0f, 0.0f, 0.0f }, .Tangent = { 0.0f, 0.0f, -1.0f } };
-		vertices[10] = { .Position = { -hx,  hy, -hz }, .TexCoords = { 1.0f, 0.0f }, .Normal = { -1.0f, 0.0f, 0.0f }, .Tangent = { 0.0f, 0.0f, -1.0f } };
-		vertices[11] = { .Position = { -hx, -hy, -hz }, .TexCoords = { 1.0f, 1.0f }, .Normal = { -1.0f, 0.0f, 0.0f }, .Tangent = { 0.0f, 0.0f, -1.0f } };
+		vertices[8]  = { .Position = { -hx, -hy,  hz, 1.0f }, .TexCoords = { 0.0f, 1.0f, 0.0f, 0.0f }, .Normal = { -1.0f, 0.0f, 0.0f, 0.0f }, .Tangent = { 0.0f, 0.0f, -1.0f, 0.0f } };
+		vertices[9]  = { .Position = { -hx,  hy,  hz, 1.0f }, .TexCoords = { 0.0f, 0.0f, 0.0f, 0.0f }, .Normal = { -1.0f, 0.0f, 0.0f, 0.0f }, .Tangent = { 0.0f, 0.0f, -1.0f, 0.0f } };
+		vertices[10] = { .Position = { -hx,  hy, -hz, 1.0f }, .TexCoords = { 1.0f, 0.0f, 0.0f, 0.0f }, .Normal = { -1.0f, 0.0f, 0.0f, 0.0f }, .Tangent = { 0.0f, 0.0f, -1.0f, 0.0f } };
+		vertices[11] = { .Position = { -hx, -hy, -hz, 1.0f }, .TexCoords = { 1.0f, 1.0f, 0.0f, 0.0f }, .Normal = { -1.0f, 0.0f, 0.0f, 0.0f }, .Tangent = { 0.0f, 0.0f, -1.0f, 0.0f } };
 
 		indices[12] = 8; indices[13] = 10; indices[14] = 9;
 		indices[15] = 8; indices[16] = 11; indices[17] = 10;
 
 		// +X, Right
-		vertices[12] = { .Position = {  hx, -hy, -hz }, .TexCoords = { 0.0f, 1.0f }, .Normal = {  1.0f, 0.0f, 0.0f }, .Tangent = { 0.0f, 0.0f,  1.0f } };
-		vertices[13] = { .Position = {  hx,  hy, -hz }, .TexCoords = { 0.0f, 0.0f }, .Normal = {  1.0f, 0.0f, 0.0f }, .Tangent = { 0.0f, 0.0f,  1.0f } };
-		vertices[14] = { .Position = {  hx,  hy,  hz }, .TexCoords = { 1.0f, 0.0f }, .Normal = {  1.0f, 0.0f, 0.0f }, .Tangent = { 0.0f, 0.0f,  1.0f } };
-		vertices[15] = { .Position = {  hx, -hy,  hz }, .TexCoords = { 1.0f, 1.0f }, .Normal = {  1.0f, 0.0f, 0.0f }, .Tangent = { 0.0f, 0.0f,  1.0f } };
+		vertices[12] = { .Position = {  hx, -hy, -hz, 1.0f }, .TexCoords = { 0.0f, 1.0f, 0.0f, 0.0f }, .Normal = {  1.0f, 0.0f, 0.0f, 0.0f }, .Tangent = { 0.0f, 0.0f,  1.0f, 0.0f } };
+		vertices[13] = { .Position = {  hx,  hy, -hz, 1.0f }, .TexCoords = { 0.0f, 0.0f, 0.0f, 0.0f }, .Normal = {  1.0f, 0.0f, 0.0f, 0.0f }, .Tangent = { 0.0f, 0.0f,  1.0f, 0.0f } };
+		vertices[14] = { .Position = {  hx,  hy,  hz, 1.0f }, .TexCoords = { 1.0f, 0.0f, 0.0f, 0.0f }, .Normal = {  1.0f, 0.0f, 0.0f, 0.0f }, .Tangent = { 0.0f, 0.0f,  1.0f, 0.0f } };
+		vertices[15] = { .Position = {  hx, -hy,  hz, 1.0f }, .TexCoords = { 1.0f, 1.0f, 0.0f, 0.0f }, .Normal = {  1.0f, 0.0f, 0.0f, 0.0f }, .Tangent = { 0.0f, 0.0f,  1.0f, 0.0f } };
 
 		indices[18] = 12; indices[19] = 14; indices[20] = 13;
 		indices[21] = 12; indices[22] = 15; indices[23] = 14;
 
 		// -Y, Bottom
-		vertices[16] = { .Position = { -hx, -hy, -hz }, .TexCoords = { 1.0f, 1.0f }, .Normal = { 0.0f, -1.0f, 0.0f }, .Tangent = { -1.0f, 0.0f, 0.0f } };
-		vertices[17] = { .Position = {  hx, -hy, -hz }, .TexCoords = { 0.0f, 1.0f }, .Normal = { 0.0f, -1.0f, 0.0f }, .Tangent = { -1.0f, 0.0f, 0.0f } };
-		vertices[18] = { .Position = {  hx, -hy,  hz }, .TexCoords = { 0.0f, 0.0f }, .Normal = { 0.0f, -1.0f, 0.0f }, .Tangent = { -1.0f, 0.0f, 0.0f } };
-		vertices[19] = { .Position = { -hx, -hy,  hz }, .TexCoords = { 1.0f, 0.0f }, .Normal = { 0.0f, -1.0f, 0.0f }, .Tangent = { -1.0f, 0.0f, 0.0f } };
+		vertices[16] = { .Position = { -hx, -hy, -hz, 1.0f }, .TexCoords = { 1.0f, 1.0f, 0.0f, 0.0f }, .Normal = { 0.0f, -1.0f, 0.0f, 0.0f }, .Tangent = { -1.0f, 0.0f, 0.0f, 0.0f } };
+		vertices[17] = { .Position = {  hx, -hy, -hz, 1.0f }, .TexCoords = { 0.0f, 1.0f, 0.0f, 0.0f }, .Normal = { 0.0f, -1.0f, 0.0f, 0.0f }, .Tangent = { -1.0f, 0.0f, 0.0f, 0.0f } };
+		vertices[18] = { .Position = {  hx, -hy,  hz, 1.0f }, .TexCoords = { 0.0f, 0.0f, 0.0f, 0.0f }, .Normal = { 0.0f, -1.0f, 0.0f, 0.0f }, .Tangent = { -1.0f, 0.0f, 0.0f, 0.0f } };
+		vertices[19] = { .Position = { -hx, -hy,  hz, 1.0f }, .TexCoords = { 1.0f, 0.0f, 0.0f, 0.0f }, .Normal = { 0.0f, -1.0f, 0.0f, 0.0f }, .Tangent = { -1.0f, 0.0f, 0.0f, 0.0f } };
 
 		indices[24] = 16; indices[25] = 18; indices[26] = 17;
 		indices[27] = 16; indices[28] = 19; indices[29] = 18;
 
 		// +Y, Top
-		vertices[20] = { .Position = { -hx,  hy, -hz }, .TexCoords = { 0.0f, 1.0f }, .Normal = { 0.0f,  1.0f, 0.0f }, .Tangent = {  1.0f, 0.0f, 0.0f } };
-		vertices[21] = { .Position = { -hx,  hy,  hz }, .TexCoords = { 0.0f, 0.0f }, .Normal = { 0.0f,  1.0f, 0.0f }, .Tangent = {  1.0f, 0.0f, 0.0f } };
-		vertices[22] = { .Position = {  hx,  hy,  hz }, .TexCoords = { 1.0f, 0.0f }, .Normal = { 0.0f,  1.0f, 0.0f }, .Tangent = {  1.0f, 0.0f, 0.0f } };
-		vertices[23] = { .Position = {  hx,  hy, -hz }, .TexCoords = { 1.0f, 1.0f }, .Normal = { 0.0f,  1.0f, 0.0f }, .Tangent = {  1.0f, 0.0f, 0.0f } };
+		vertices[20] = { .Position = { -hx,  hy, -hz, 1.0f }, .TexCoords = { 0.0f, 1.0f, 0.0f, 0.0f }, .Normal = { 0.0f,  1.0f, 0.0f, 0.0f }, .Tangent = {  1.0f, 0.0f, 0.0f, 0.0f } };
+		vertices[21] = { .Position = { -hx,  hy,  hz, 1.0f }, .TexCoords = { 0.0f, 0.0f, 0.0f, 0.0f }, .Normal = { 0.0f,  1.0f, 0.0f, 0.0f }, .Tangent = {  1.0f, 0.0f, 0.0f, 0.0f } };
+		vertices[22] = { .Position = {  hx,  hy,  hz, 1.0f }, .TexCoords = { 1.0f, 0.0f, 0.0f, 0.0f }, .Normal = { 0.0f,  1.0f, 0.0f, 0.0f }, .Tangent = {  1.0f, 0.0f, 0.0f, 0.0f } };
+		vertices[23] = { .Position = {  hx,  hy, -hz, 1.0f }, .TexCoords = { 1.0f, 1.0f, 0.0f, 0.0f }, .Normal = { 0.0f,  1.0f, 0.0f, 0.0f }, .Tangent = {  1.0f, 0.0f, 0.0f, 0.0f } };
 
 		indices[30] = 20; indices[31] = 22; indices[32] = 21;
 		indices[33] = 20; indices[34] = 23; indices[35] = 22;
@@ -76,9 +76,9 @@ namespace ZXEngine
 		vector<uint32_t> indices;
 
 		// 顶部顶点
-		Vertex topVertex = { .Position = { 0.0f, +radius, 0.0f }, .TexCoords = { 0.0f, 0.0f }, .Normal = { 0.0f, +1.0f, 0.0f }, .Tangent = { 1.0f, 0.0f, 0.0f } };
+		Vertex topVertex = { .Position = { 0.0f, +radius, 0.0f, 1.0f }, .TexCoords = { 0.0f, 0.0f, 0.0f, 0.0f }, .Normal = { 0.0f, +1.0f, 0.0f, 0.0f }, .Tangent = { 1.0f, 0.0f, 0.0f, 0.0f } };
 		// 底部顶点
-		Vertex bottomVertex = { .Position = { 0.0f, -radius, 0.0f }, .TexCoords = { 0.0f, 1.0f }, .Normal = { 0.0f, -1.0f, 0.0f }, .Tangent = { 1.0f, 0.0f, 0.0f } };
+		Vertex bottomVertex = { .Position = { 0.0f, -radius, 0.0f, 1.0f }, .TexCoords = { 0.0f, 1.0f, 0.0f, 0.0f }, .Normal = { 0.0f, -1.0f, 0.0f, 0.0f }, .Tangent = { 1.0f, 0.0f, 0.0f, 0.0f } };
 
 		float phiStep = Math::PI / stackCount;
 		float thetaStep = 2.0f * Math::PI / sliceCount;
@@ -168,20 +168,20 @@ namespace ZXEngine
 
 		vector<Vertex> vertices = 
 		{
-			{ .Position = { -X, 0.0f,  Z } },
-			{ .Position = {  X, 0.0f,  Z } },
-			{ .Position = { -X, 0.0f, -Z } },
-			{ .Position = {  X, 0.0f, -Z } },
+			{ .Position = { -X, 0.0f,  Z, 1.0f } },
+			{ .Position = {  X, 0.0f,  Z, 1.0f } },
+			{ .Position = { -X, 0.0f, -Z, 1.0f } },
+			{ .Position = {  X, 0.0f, -Z, 1.0f } },
 
-			{ .Position = { 0.0f,  Z,  X } },
-			{ .Position = { 0.0f,  Z, -X } },
-			{ .Position = { 0.0f, -Z,  X } },
-			{ .Position = { 0.0f, -Z, -X } },
+			{ .Position = { 0.0f,  Z,  X, 1.0f } },
+			{ .Position = { 0.0f,  Z, -X, 1.0f } },
+			{ .Position = { 0.0f, -Z,  X, 1.0f } },
+			{ .Position = { 0.0f, -Z, -X, 1.0f } },
 
-			{ .Position = {  Z,  X, 0.0f } },
-			{ .Position = { -Z,  X, 0.0f } },
-			{ .Position = {  Z, -X, 0.0f } },
-			{ .Position = { -Z, -X, 0.0f } },
+			{ .Position = {  Z,  X, 0.0f, 1.0f } },
+			{ .Position = { -Z,  X, 0.0f, 1.0f } },
+			{ .Position = {  Z, -X, 0.0f, 1.0f } },
+			{ .Position = { -Z, -X, 0.0f, 1.0f } },
 		};
 
 		vector<uint32_t> indices = 
@@ -233,7 +233,7 @@ namespace ZXEngine
 		vector<Vertex> vertices;
 		vector<uint32_t> indices;
 
-		Vertex centerVertex = { .Position = { 0.0f, 0.0f, 0.0f }, .TexCoords = { 0.5f, 0.5f }, .Normal = { 0.0f, 0.0f, -1.0f }, .Tangent = { 1.0f, 0.0f, 0.0f } };
+		Vertex centerVertex = { .Position = { 0.0f, 0.0f, 0.0f, 1.0f }, .TexCoords = { 0.5f, 0.5f, 0.0f, 0.0f }, .Normal = { 0.0f, 0.0f, -1.0f, 0.0f }, .Tangent = { 1.0f, 0.0f, 0.0f, 0.0f } };
 		vertices.push_back(centerVertex);
 
 		float dTheta = Math::PIx2 / sliceCount;
@@ -243,10 +243,10 @@ namespace ZXEngine
 			float y = radius * sinf(i * dTheta);
 
 			Vertex v;
-			v.Position = { x, y, 0.0f };
-			v.Normal = { 0.0f, 0.0f, -1.0f };
-			v.Tangent = { -y, x, 0.0f };
-			v.TexCoords = { 0.5f * (x / radius + 1.0f), 0.5f * (y / radius + 1.0f) };
+			v.Position  = {  x,    y,     0.0f,  1.0f };
+			v.Normal    = {  0.0f, 0.0f, -1.0f,  0.0f };
+			v.Tangent   = { -y,    x,     0.0f,  0.0f };
+			v.TexCoords = { 0.5f * (x / radius + 1.0f), 0.5f * (y / radius + 1.0f), 0.0f, 0.0f };
 
 			vertices.push_back(std::move(v));
 		}
@@ -266,7 +266,7 @@ namespace ZXEngine
 		vector<Vertex> vertices;
 		vector<uint32_t> indices;
 
-		Vertex bottomVertex = { .Position = { 0.0f, -0.5f * height, 0.0f }, .TexCoords = { 0.0f, 1.0f }, .Normal = { 0.0f, -1.0f, 0.0f }, .Tangent = { 1.0f, 0.0f, 0.0f } };
+		Vertex bottomVertex = { .Position = { 0.0f, -0.5f * height, 0.0f, 1.0f }, .TexCoords = { 0.0f, 1.0f, 0.0f, 0.0f }, .Normal = { 0.0f, -1.0f, 0.0f, 0.0f }, .Tangent = { 1.0f, 0.0f, 0.0f, 0.0f } };
 		vertices.push_back(bottomVertex);
 
 		float y = radius * radius / height;
@@ -305,9 +305,9 @@ namespace ZXEngine
 			float z = sinf(i * dTheta);
 
 			Vertex v;
-			v.Position = { x * radius, -0.5f * height, z * radius };
+			v.Position = { x * radius, -0.5f * height, z * radius, 1.0f };
 
-			v.Normal = { x, y, z };
+			v.Normal = { x, y, z, 0.0f };
 			v.Normal.Normalize();
 
 			v.Tangent = topVertexPos - v.Position;
@@ -326,11 +326,11 @@ namespace ZXEngine
 			float z = sinf(i * dTheta);
 
 			Vertex v;
-			v.Position = { x * radius, -0.5f * height, z * radius };
+			v.Position = { x * radius, -0.5f * height, z * radius, 1.0f };
 
-			v.Normal = { 0.0f, -1.0f, 0.0f };
+			v.Normal = { 0.0f, -1.0f, 0.0f, 0.0f };
 
-			v.Tangent = { x, 0.0f, z };
+			v.Tangent = { x, 0.0f, z, 0.0f };
 
 			v.TexCoords.x = static_cast<float>(i) / static_cast<float>(sliceCount);
 			v.TexCoords.y = 0.5f;
@@ -389,12 +389,12 @@ namespace ZXEngine
 				float c = cosf(j * dTheta);
 				float s = sinf(j * dTheta);
 
-				vertex.Position = { r * c, y, r * s };
+				vertex.Position = { r * c, y, r * s, 1.0f };
 
 				vertex.TexCoords.x = (float)j / sliceCount;
 				vertex.TexCoords.y = 1.0f - (float)i / stackCount;
 
-				vertex.Tangent = { -s, 0.0f, c };
+				vertex.Tangent = { -s, 0.0f, c, 0.0f };
 
 				float dr = bottomRadius - topRadius;
 				bitangent = { dr * c, -height, dr * s };
@@ -439,20 +439,22 @@ namespace ZXEngine
 			float u = 0.5f + c * 0.5f;
 			float v = 0.5f + s * 0.5f;
 
-			vertices.push_back({
-				.Position = { x, topY, z },
-				.TexCoords = { u, v },
-				.Normal = { 0.0f, 1.0f, 0.0f },
-				.Tangent = { 1.0f, 0.0f, 0.0f }
+			vertices.push_back(
+			{
+				.Position  = { x,    topY, z,    1.0f },
+				.TexCoords = { u,    v,    0.0f, 0.0f },
+				.Normal    = { 0.0f, 1.0f, 0.0f, 0.0f },
+				.Tangent   = { 1.0f, 0.0f, 0.0f, 0.0f }
 			});
 		}
 
 		// 顶部中心顶点
-		vertices.push_back({
-			.Position = { 0.0f, topY, 0.0f },
-			.TexCoords = { 0.5f, 0.5f },
-			.Normal = { 0.0f, 1.0f, 0.0f },
-			.Tangent = { 1.0f, 0.0f, 0.0f }
+		vertices.push_back(
+		{
+			.Position  = { 0.0f, topY, 0.0f, 1.0f },
+			.TexCoords = { 0.5f, 0.5f, 0.0f, 0.0f },
+			.Normal    = { 0.0f, 1.0f, 0.0f, 0.0f },
+			.Tangent   = { 1.0f, 0.0f, 0.0f, 0.0f }
 		});
 
 		// 顶部中心顶点索引
@@ -480,19 +482,20 @@ namespace ZXEngine
 			float u = 0.5f + c * 0.5f;
 			float v = 0.5f + s * 0.5f;
 
-			vertices.push_back({
-				.Position = { x, bottomY, z },
-				.TexCoords = { u, v },
-				.Normal = { 0.0f, -1.0f, 0.0f },
-				.Tangent = { 1.0f, 0.0f, 0.0f }
+			vertices.push_back(
+			{
+				.Position  = { x,     bottomY, z,    1.0f },
+				.TexCoords = { u,     v,       0.0f, 0.0f },
+				.Normal    = { 0.0f, -1.0f,    0.0f, 0.0f },
+				.Tangent   = { 1.0f,  0.0f,    0.0f, 0.0f }
 			});
 		}
 
 		vertices.push_back({
-			.Position = { 0.0f, bottomY, 0.0f },
-			.TexCoords = { 0.5f, 0.5f },
-			.Normal = { 0.0f, -1.0f, 0.0f },
-			.Tangent = { 1.0f, 0.0f, 0.0f }
+			.Position  = { 0.0f,  bottomY, 0.0f, 1.0f },
+			.TexCoords = { 0.5f,  0.5f,    0.0f, 0.0f },
+			.Normal    = { 0.0f, -1.0f,    0.0f, 0.0f },
+			.Tangent   = { 1.0f,  0.0f,    0.0f, 0.0f }
 		});
 
 		uint32_t bottomCenterIndex = static_cast<uint32_t>(vertices.size()) - 1;
@@ -541,9 +544,9 @@ namespace ZXEngine
 			{
 				float x = -halfWidth + j * dx;
 
-				vertices[i * xSplit + j].Position = { x, 0.0f, z };
-				vertices[i * xSplit + j].Normal = { 0.0f, 1.0f, 0.0f };
-				vertices[i * xSplit + j].Tangent = { 1.0f, 0.0f, 0.0f };
+				vertices[i * xSplit + j].Position = { x,    0.0f, z,    1.0f };
+				vertices[i * xSplit + j].Normal   = { 0.0f, 1.0f, 0.0f, 0.0f };
+				vertices[i * xSplit + j].Tangent  = { 1.0f, 0.0f, 0.0f, 0.0f };
 
 				vertices[i * xSplit + j].TexCoords.x = j * du;
 				vertices[i * xSplit + j].TexCoords.y = i * dv;
@@ -578,10 +581,10 @@ namespace ZXEngine
 
 		vector<Vertex> vertices =
 		{
-			{ .Position = {  halfX,  halfY, 0.0f }, .TexCoords = { 1.0f, 0.0f }, .Normal = { 0.0f, 0.0f, -1.0f }, .Tangent = { 1.0f, 0.0f, 0.0f } },
-			{ .Position = {  halfX, -halfY, 0.0f }, .TexCoords = { 1.0f, 1.0f }, .Normal = { 0.0f, 0.0f, -1.0f }, .Tangent = { 1.0f, 0.0f, 0.0f } },
-			{ .Position = { -halfX,  halfY, 0.0f }, .TexCoords = { 0.0f, 0.0f }, .Normal = { 0.0f, 0.0f, -1.0f }, .Tangent = { 1.0f, 0.0f, 0.0f } },
-			{ .Position = { -halfX, -halfY, 0.0f }, .TexCoords = { 0.0f, 1.0f }, .Normal = { 0.0f, 0.0f, -1.0f }, .Tangent = { 1.0f, 0.0f, 0.0f } },
+			{ .Position = {  halfX,  halfY, 0.0f, 1.0f }, .TexCoords = { 1.0f, 0.0f, 0.0f, 0.0f }, .Normal = { 0.0f, 0.0f, -1.0f, 0.0f }, .Tangent = { 1.0f, 0.0f, 0.0f, 0.0f } },
+			{ .Position = {  halfX, -halfY, 0.0f, 1.0f }, .TexCoords = { 1.0f, 1.0f, 0.0f, 0.0f }, .Normal = { 0.0f, 0.0f, -1.0f, 0.0f }, .Tangent = { 1.0f, 0.0f, 0.0f, 0.0f } },
+			{ .Position = { -halfX,  halfY, 0.0f, 1.0f }, .TexCoords = { 0.0f, 0.0f, 0.0f, 0.0f }, .Normal = { 0.0f, 0.0f, -1.0f, 0.0f }, .Tangent = { 1.0f, 0.0f, 0.0f, 0.0f } },
+			{ .Position = { -halfX, -halfY, 0.0f, 1.0f }, .TexCoords = { 0.0f, 1.0f, 0.0f, 0.0f }, .Normal = { 0.0f, 0.0f, -1.0f, 0.0f }, .Tangent = { 1.0f, 0.0f, 0.0f, 0.0f } },
 		};
 
 		vector<uint32_t> indices = 
@@ -663,7 +666,8 @@ namespace ZXEngine
 		{
 			Vertex vertex;
 			vertex.Position = points[i];
-			vertex.TexCoords = coords[i];
+			vertex.TexCoords.x = coords[i].x;
+			vertex.TexCoords.y = coords[i].y;
 			vertices.push_back(vertex);
 		}
 
@@ -711,7 +715,8 @@ namespace ZXEngine
 		{
 			Vertex vertex;
 			vertex.Position = points[i];
-			vertex.TexCoords = Vector2(1);
+			vertex.TexCoords.x = 1.0f;
+			vertex.TexCoords.y = 1.0f;
 			vertices.push_back(std::move(vertex));
 		}
 

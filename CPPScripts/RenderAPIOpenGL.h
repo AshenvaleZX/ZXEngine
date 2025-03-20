@@ -9,7 +9,8 @@ namespace ZXEngine
 	class RenderAPIOpenGL : public RenderAPI
 	{
 		/// <summary>
-		/// 标准RenderAPI接口
+		/// 标准渲染管线接口
+		/// Standard Rendering Pipeline Interface
 		/// </summary>
 	public:
 		RenderAPIOpenGL();
@@ -62,13 +63,14 @@ namespace ZXEngine
 
 		// Draw
 		virtual uint32_t AllocateDrawCommand(CommandType commandType, FrameBufferClearFlags clearFlags);
+		virtual void FreeDrawCommand(uint32_t commandID);
 		virtual void Draw(uint32_t VAO);
 		virtual void DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer);
 		virtual void GenerateDrawCommand(uint32_t id);
 
 		// Mesh
 		virtual void DeleteMesh(unsigned int VAO);
-		virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
+		virtual void SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices, bool skinned = false);
 		virtual void SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize);
 		virtual void UpdateDynamicMesh(unsigned int VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices);
 		virtual void GenerateParticleMesh(unsigned int& VAO);
@@ -94,9 +96,33 @@ namespace ZXEngine
 		virtual void SetShaderTexture(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
 		virtual void SetShaderCubeMap(Material* material, const string& name, uint32_t ID, uint32_t idx, bool allBuffer = false, bool isBuffer = false);
 
-		
+
 		/// <summary>
-		/// 标准RayTracing接口(OpenGL不支持光线追踪)
+		/// 通用计算管线接口
+		/// Compute Pipeline Interface 
+		/// </summary>
+	public:
+		// Shader Storage Buffer
+		virtual uint32_t CreateShaderStorageBuffer(const void* data, size_t size, GPUBufferType type);
+		virtual void BindShaderStorageBuffer(uint32_t id, uint32_t binding);
+		virtual void UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size);
+		virtual void DeleteShaderStorageBuffer(uint32_t id);
+
+		// Vertex Buffer Binding
+		virtual void BindVertexBuffer(uint32_t VAO, uint32_t binding);
+
+		// Compute Shader
+		virtual ComputeShaderReference* LoadAndSetUpComputeShader(const string& path);
+		virtual void DeleteComputeShader(uint32_t id);
+
+		// Compute Command
+		virtual void Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ);
+		virtual void SubmitAllComputeCommands();
+
+
+		/// <summary>
+		/// 光线追踪管线接口 (OpenGL不支持光线追踪)
+		/// Ray Tracing Pipeline Interface (OpenGL does not support ray tracing)
 		/// </summary>
 	public:
 		// Pipeline
