@@ -175,7 +175,7 @@ namespace ZXEngine
 			{
 				static string DeserializeFromJson(json data)
 				{
-					return data.get<string>();
+					return data.template get<string>();
 				}
 			};
 
@@ -310,7 +310,7 @@ namespace ZXEngine
 			{
 				static void DeserializeFromJson(string& object, json data)
 				{
-					object = data.get<string>();
+					object = data.template get<string>();
 				}
 			};
 
