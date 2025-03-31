@@ -13,10 +13,10 @@ namespace ZXEngine
 {
 	SceneManager* SceneManager::mInstance = nullptr;
 
-	void SceneManager::Create()
+	bool SceneManager::Create()
 	{
 		mInstance = new SceneManager();
-		mInstance->LoadScene(ProjectSetting::defaultScene);
+		return mInstance->LoadScene(ProjectSetting::defaultScene);
 	}
 
 	SceneManager* SceneManager::GetInstance()
@@ -37,9 +37,14 @@ namespace ZXEngine
 		}
 	}
 
-	void SceneManager::LoadScene(const string& path, bool switchNow)
+	bool SceneManager::LoadScene(const string& path, bool switchNow)
 	{
 		auto sceneStruct = Resources::LoadScene(path);
+		if (sceneStruct == nullptr)
+		{
+			Debug::LogError("Failed to load scene: " + path);
+			return false;
+		}
 
 		if (sceneStruct->renderPipelineType == RenderPipelineType::RayTracing)
 		{
@@ -48,7 +53,7 @@ namespace ZXEngine
 			EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "OpenGL do not support ray tracing.");
 #endif
 			delete sceneStruct;
-			return;
+			return false;
 #else
 			if (!ProjectSetting::isSupportRayTracing)
 			{
@@ -56,7 +61,7 @@ namespace ZXEngine
 				EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "Current GPU do not support ray tracing.");
 #endif
 				delete sceneStruct;
-				return;
+				return false;
 			}
 #endif
 		}
@@ -76,6 +81,8 @@ namespace ZXEngine
 			SwitchScene(name);
 
 		delete sceneStruct;
+
+		return true;
 	}
 
 	void SceneManager::SwitchScene(const string& name)

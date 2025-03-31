@@ -47,7 +47,9 @@ namespace ZXEngine
 		InputManager::Create();
 		LuaManager::Create();
 		GameLogicManager::Create();
-		SceneManager::Create();
+		if (!SceneManager::Create())
+			return false;
+
 #ifdef ZX_EDITOR
 		EditorGUIManager::Create();
 		EditorInputManager::Create();

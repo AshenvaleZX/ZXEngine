@@ -14,7 +14,7 @@ namespace ZXEngine
 	{
 		friend class Scene;
 	public:
-		static void Create();
+		static bool Create();
 		static SceneManager* GetInstance();
 
 	private:
@@ -25,7 +25,7 @@ namespace ZXEngine
 		~SceneManager() {};
 
 		Scene* GetScene(const string& name);
-		void LoadScene(const string& path, bool switchNow = true);
+		bool LoadScene(const string& path, bool switchNow = true);
 		void SwitchScene(const string& name);
 		void DeleteScene(const string& name);
 		void DeleteAllScene();
