@@ -118,10 +118,7 @@ namespace ZXEngine
 
 	string Resources::JsonStrToString(const json& data)
 	{
-		string p = to_string(data);
-		// 这个json字符串取出来前后会有双引号，需要去掉再用
-		p = p.substr(1, p.length() - 2);
-		return p;
+		return data.template get<string>();
 	}
 
 	json Resources::LoadJson(const string& path)
