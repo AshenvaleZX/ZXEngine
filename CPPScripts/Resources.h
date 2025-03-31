@@ -103,7 +103,7 @@ namespace ZXEngine
 		static string GetAssetExtension(const string& path);
 		static string GetAssetNameWithExtension(const string& path);
 
-		static json LoadJson(const string& path);
+		static bool LoadJson(json& data, const string& path);
 		static string JsonStrToString(const json& data);
 		static string LoadTextFile(const string& path, bool logError = true);
 		static bool LoadBinaryFile(vector<unsigned char>& data, const string& path);
@@ -121,7 +121,7 @@ namespace ZXEngine
 	private:
 		static string mAssetsPath;
 
-		static json GetAssetData(const string& path, bool isBuiltIn = false);
+		static bool GetAssetData(json& data, const string& path, bool isBuiltIn = false);
 		static PrefabStruct* ParsePrefab(json data, bool async = false, bool isBuiltIn = false);
 
 

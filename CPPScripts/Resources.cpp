@@ -121,16 +121,14 @@ namespace ZXEngine
 		return data.template get<string>();
 	}
 
-	json Resources::LoadJson(const string& path)
+	bool Resources::LoadJson(json& data, const string& path)
 	{
-		json data;
-
 #if defined(ZX_PLATFORM_DESKTOP)
 		std::ifstream f(path);
 		if (!f.is_open())
 		{
 			Debug::LogError("Load asset failed: " + path);
-			return NULL;
+			return false;
 		}
 
 		try
@@ -142,6 +140,7 @@ namespace ZXEngine
 			Debug::LogError("Asset format error: " + path);
 			string msg = e.what();
 			Debug::LogError("Error detail: " + msg);
+			return false;
 		}
 #elif defined(ZX_PLATFORM_ANDROID)
 		AAssetManager* assetManager = GlobalData::app->activity->assetManager;
@@ -149,7 +148,7 @@ namespace ZXEngine
 		if (!asset)
 		{
 			Debug::LogError("Load asset failed: " + path);
-			return NULL;
+			return false;
 		}
 
 		off_t size = AAsset_getLength(asset);
@@ -167,12 +166,13 @@ namespace ZXEngine
 			Debug::LogError("Asset format error: " + path);
 			string msg = e.what();
 			Debug::LogError("Error detail: " + msg);
+			return false;
 		}
 
 		delete[] buffer;
 #endif
 
-		return data;
+		return true;
 	}
 
 	string Resources::LoadTextFile(const string& path, bool logError)
@@ -270,20 +270,25 @@ namespace ZXEngine
 		stbi_image_free(data);
 	}
 
-	json Resources::GetAssetData(const string& path, bool isBuiltIn)
+	bool Resources::GetAssetData(json& data, const string& path, bool isBuiltIn)
 	{
 		if (!isBuiltIn)
 		{
 			Debug::Log("Load asset: " + path);
 		}
+
 		string p = Resources::GetAssetFullPath(path, isBuiltIn);
-		return Resources::LoadJson(p);
+		
+		return Resources::LoadJson(data, p);
 	}
 
 	SceneStruct* Resources::LoadScene(const string& path)
 	{
-		json data = Resources::GetAssetData(path);
-		SceneStruct* scene = new SceneStruct;
+		json data;
+		if (!Resources::GetAssetData(data, path))
+			return nullptr;
+
+		SceneStruct* scene = new SceneStruct();
 
 		if (data["SkyBox"].is_null())
 		{
@@ -350,7 +355,8 @@ namespace ZXEngine
 
 	PrefabStruct* Resources::LoadPrefab(const string& path, bool isBuiltIn, bool async)
 	{
-		json data = Resources::GetAssetData(path, isBuiltIn);
+		json data;
+		Resources::GetAssetData(data, path, isBuiltIn);
 		return ParsePrefab(data, async, isBuiltIn);
 	}
 
@@ -407,7 +413,8 @@ namespace ZXEngine
 		matStruct->path = path;
 		matStruct->name = GetAssetName(path);
 
-		json data = Resources::GetAssetData(path, isBuiltIn);
+		json data;
+		Resources::GetAssetData(data, path, isBuiltIn);
 
 		if (data["Type"] == "Forward")
 			matStruct->type = MaterialType::Forward;

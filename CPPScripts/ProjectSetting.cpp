@@ -70,16 +70,17 @@ namespace ZXEngine
 		else
 			mBuiltInAssetsPath = curExePath + "/../../../BuiltInAssets/";
 
-		json data = Resources::LoadJson(path + "/ProjectSetting.zxprjcfg");
+		json data;
+		if (!Resources::LoadJson(data, path + "/ProjectSetting.zxprjcfg"))
+			return false;
 #elif defined(ZX_PLATFORM_ANDROID)
 		Resources::SetAssetsPath("Assets/");
 		mBuiltInAssetsPath = "BuiltInAssets/";
 
-		json data = Resources::LoadJson("ProjectSetting.zxprjcfg");
-#endif
-
-		if (data == NULL)
+		json data;
+		if (!Resources::LoadJson(data, "ProjectSetting.zxprjcfg"))
 			return false;
+#endif
 
 #if defined(ZX_PLATFORM_DESKTOP)
 		GlobalData::srcWidth = data["WindowSize"][0];
