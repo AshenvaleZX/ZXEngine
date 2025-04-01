@@ -1498,7 +1498,7 @@ namespace ZXEngine
 			HRESULT res = D3DCompile(hlslCode.c_str(), hlslCode.length(), NULL, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
 				"VS", "vs_5_1", compileFlags, 0, &vertCode, &errors);
 			if (errors != nullptr)
-				Debug::LogError((char*)errors->GetBufferPointer());
+				Debug::LogError("Compile error in %s, dump error:\n%s", path, (const char*)errors->GetBufferPointer());
 			ThrowIfFailed(res);
 		}
 		// 编译Geometry Shader
@@ -1509,7 +1509,7 @@ namespace ZXEngine
 			HRESULT res = D3DCompile(hlslCode.c_str(), hlslCode.length(), NULL, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
 				"GS", "gs_5_1", compileFlags, 0, &geomCode, &errors);
 			if (errors != nullptr)
-				Debug::LogError((char*)errors->GetBufferPointer());
+				Debug::LogError("Compile error in %s, dump error:\n%s", path, (const char*)errors->GetBufferPointer());
 			ThrowIfFailed(res);
 		}
 		// 编译Fragment(Pixel) Shader
@@ -1520,7 +1520,7 @@ namespace ZXEngine
 			HRESULT res = D3DCompile(hlslCode.c_str(), hlslCode.length(), NULL, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
 				"PS", "ps_5_1", compileFlags, 0, &fragCode, &errors);
 			if (errors != nullptr)
-				Debug::LogError((char*)errors->GetBufferPointer());
+				Debug::LogError("Compile error in %s, dump error:\n%s", path, (const char*)errors->GetBufferPointer());
 			ThrowIfFailed(res);
 		}
 
