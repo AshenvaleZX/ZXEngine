@@ -757,13 +757,13 @@ cd BuildSolution/CMake
 ./BuildMac.sh
 ```
 
-在macOS下运行时，如果有引擎编辑器和画面显示错位的问题，多半是由分辨率过低导致的。因为Mac Book的屏幕较小，所以即使屏幕的硬件分辨率很高，但是为了文本和图标不会太小，macOS的默认分辨率设置还是可能会比较低。比如我这台13寸的Mac系统默认分辨率为1440x900，显示就会异常。推荐运行时分辨率设置在1920x1080以上。
+在Mac设备上运行ZXEngine有一个问题，就是Vulkan的几何着色器可能是不被支持的，比如我这台M1芯片的MacBook就不支持。我也不知道为什么用OpenGL都支持，但是用Vulkan就不支持。可能是因为苹果的GPU本身的设计就没有准备支持几何着色器，只是为OpenGL的几何着色器做了个驱动层面的模拟。由于本引擎的Shadow Cube Map是使用几何着色器渲染的，所以在不支持几何着色器的设备上运行时，在使用点光源的场景中阴影系统会失效。
 
-When running on macOS, if there is a display misalignment between the engine editor and the rendering scene, it is most likely caused by a low resolution. Because the Mac Book's screen is small, even if the screen's hardware resolution is high, the default resolution setting of macOS may still be relatively low so that text and icons are not too small. For example, the default resolution setting of my 13-inch Mac is 1440x900, and the display will be abnormal. It is recommended to set the resolution to above 1920x1080 when running ZXEngine with editor.
+One problem with running ZXEngine on a Mac device is that Vulkan's geometry shader may not be supported, such as on my M1 chip MacBook. I don't know why it is supported with OpenGL but not supported with Vulkan. Probably because Apple's GPU was not designed to support geometry shader, but did a driver level simulation for OpenGL's geometry shader. Since the shadow cube map of this engine is rendered using a geometry shader, when running on a device that does not support geometry shader, the shadow system will not work in a scene using point light.
 
-还有一个问题是Mac的芯片可能不支持Vulkan的几何着色器，比如我这台M1芯片的Mac就不支持。我也不知道为什么用OpenGL都支持，但是用Vulkan就不支持。由于本引擎的Shadow Cube Map是使用几何着色器渲染的，所以在不支持几何着色器的设备上运行时，在使用点光源的场景中阴影系统会失效。
+在MacBook下运行时可能还有一个小问题。因为MacBook的屏幕较小，所以即使屏幕的硬件分辨率很高，但是为了文本和图标不会太小，macOS的默认分辨率设置还是可能会比较低。比如我这台13寸的MacBook屏幕硬件分辨率为2560x1600，但是系统默认分辨率为1440x900。当屏幕分辨率小于ZXEngine窗口大小时会触发ZXEngine的自适应调整，可能会使引擎编辑器的某些面板显示过小或者不太正常。推荐运行时分辨率设置在1920x1080以上。
 
-Another problem is that the Macbook may not support Vulkan's geometry shader. For example, my M1 Mac does not support it. I don't know why it is supported with OpenGL but not supported with Vulkan. Since the shadow cube map of this engine is rendered using a geometry shader, when running on a device that does not support geometry shader, the shadow system will not work in a scene using point light.
+There may be another small problem when running on MacBook. Because the MacBook's screen is small, even if the screen's hardware resolution is high, the default resolution setting of macOS may still be relatively low so that text and icons are not too small. For example, the hardware resolution of my 13-inch MacBook screen is 2560x1600, but the default system resolution setting is 1440x900. When the screen resolution is smaller than the ZXEngine window size, the ZXEngine adaptive adjustment will be triggered, which may cause some panels of the engine editor to display too small or abnormal. It is recommended to set the resolution to above 1920x1080 when running ZXEngine with editor.
 
 ### Linux
 
