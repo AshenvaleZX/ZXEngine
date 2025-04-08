@@ -339,11 +339,19 @@ namespace ZXEngine
     void Utils::GetScreenResolution(uint32_t& width, uint32_t& height)
     {
 #if defined(ZX_PLATFORM_WINDOWS)
+        /* 这种方式获取的是经过系统缩放后的分辨率，暂时不用
         int srcWidth = GetSystemMetrics(SM_CXSCREEN);
+        int srcHeight = GetSystemMetrics(SM_CYSCREEN);
+        */
+
+        // 这种方式获取的是屏幕的实际物理分辨率
+        HDC hdc = GetDC(NULL); // NULL表示获取整个屏幕而不是某个窗口的信息
+        int srcWidth = GetDeviceCaps(hdc, DESKTOPHORZRES);
+        int srcHeight = GetDeviceCaps(hdc, DESKTOPVERTRES);
+        ReleaseDC(NULL, hdc);
+
         if (srcWidth > 0)
             width = static_cast<uint32_t>(srcWidth);
-
-        int srcHeight = GetSystemMetrics(SM_CYSCREEN);
         if (srcHeight > 0)
             height = static_cast<uint32_t>(srcHeight);
 
