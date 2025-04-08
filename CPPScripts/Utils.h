@@ -53,6 +53,8 @@ namespace ZXEngine
 		static void OpenFileWithDefaultApplication(const string& path);
 		// 弹出系统消息框
 		static void ShowSystemMessageBox(const string& title, const string& message);
+		// 获取屏幕分辨率
+		static void GetScreenResolution(uint32_t& width, uint32_t& height);
 	};
 
 	string Utils::StringToLower(const string& str)

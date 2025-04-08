@@ -57,6 +57,11 @@ namespace ZXEngine
 	uint32_t ProjectSetting::gameViewWidth;
 	uint32_t ProjectSetting::gameViewHeight;
 
+	static const uint32_t defaultHierarchyWidth = 150;
+	static const uint32_t defaultProjectHeight = 200;
+	static const uint32_t defaultInspectorWidth = 300;
+	static const uint32_t defaultMainBarHeight = 58;
+
 	bool ProjectSetting::InitSetting(const string& path)
 	{
 		projectPath = path;
@@ -97,9 +102,42 @@ namespace ZXEngine
 		logToFile = data["LogToFile"];
 		stablePhysics = data["StablePhysics"];
 
-#ifdef ZX_EDITOR
-		InitWindowSize(150, 200, 300);
+		uint32_t screenResolutionX = 0, screenResolutionY = 0;
+		Utils::GetScreenResolution(screenResolutionX, screenResolutionY);
+
+#if defined(ZX_EDITOR)
+		uint32_t hWidth = defaultHierarchyWidth;
+		uint32_t pHeight = defaultProjectHeight;
+		uint32_t iWidth = defaultInspectorWidth;
+
+		uint32_t fullWidth = GlobalData::srcWidth + defaultHierarchyWidth + defaultInspectorWidth;
+		uint32_t fullHeight = GlobalData::srcHeight + defaultProjectHeight + defaultMainBarHeight;
+
+		if (fullWidth > screenResolutionX && screenResolutionX > 0)
+		{
+			float scaleRatio = static_cast<float>(screenResolutionX) / static_cast<float>(fullWidth);
+
+			hWidth = static_cast<uint32_t>(static_cast<float>(hWidth) * scaleRatio);
+			iWidth = static_cast<uint32_t>(static_cast<float>(iWidth) * scaleRatio);
+			GlobalData::srcWidth = static_cast<uint32_t>(static_cast<float>(GlobalData::srcWidth) * scaleRatio);
+		}
+
+		if (fullHeight > screenResolutionY && screenResolutionY > 0)
+		{
+			float scaleRatio = static_cast<float>(screenResolutionY - defaultMainBarHeight) / static_cast<float>(fullHeight - defaultMainBarHeight);
+
+			pHeight = static_cast<uint32_t>(static_cast<float>(pHeight) * scaleRatio);
+			GlobalData::srcHeight = static_cast<uint32_t>(static_cast<float>(GlobalData::srcHeight) * scaleRatio);
+		}
+
+		InitWindowSize(hWidth, pHeight, iWidth);
 #else
+#if defined(ZX_PLATFORM_DESKTOP)
+		if (GlobalData::srcWidth > screenResolutionX && screenResolutionX > 0)
+			GlobalData::srcWidth = screenResolutionX;
+		if (GlobalData::srcHeight > screenResolutionY && screenResolutionY > 0)
+			GlobalData::srcHeight = screenResolutionY;
+#endif
 		SetWindowSize();
 #endif
 
@@ -151,7 +189,7 @@ namespace ZXEngine
 		inspectorWidth = iWidth;
 		inspectorHeight = gameViewHeight + projectHeight;
 		mainBarWidth = gameViewWidth + hierarchyWidth + inspectorWidth;
-		mainBarHeight = 58;
+		mainBarHeight = defaultMainBarHeight;
 		srcWidth = mainBarWidth;
 		srcHeight = inspectorHeight + mainBarHeight;
 	}
@@ -167,7 +205,7 @@ namespace ZXEngine
 		inspectorWidth = iWidth;
 		inspectorHeight = gameViewHeight + projectHeight;
 		mainBarWidth = gameViewWidth + hierarchyWidth + inspectorWidth;
-		mainBarHeight = 58;
+		mainBarHeight = defaultMainBarHeight;
 	}
 #else
 	void ProjectSetting::SetWindowSize()

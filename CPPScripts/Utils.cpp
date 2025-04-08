@@ -334,4 +334,25 @@ namespace ZXEngine
         int ret = std::system(command.c_str());
 #endif
     }
+
+    void Utils::GetScreenResolution(uint32_t& width, uint32_t& height)
+    {
+#if defined(ZX_PLATFORM_WINDOWS)
+        int srcWidth = GetSystemMetrics(SM_CXSCREEN);
+        if (srcWidth > 0)
+            width = static_cast<uint32_t>(srcWidth);
+
+        int srcHeight = GetSystemMetrics(SM_CYSCREEN);
+        if (srcHeight > 0)
+            height = static_cast<uint32_t>(srcHeight);
+
+#elif defined(ZX_PLATFORM_MACOS)
+        CGDirectDisplayID displayID = CGMainDisplayID();
+        width = static_cast<uint32_t>(CGDisplayPixelsWide(displayID));
+        height = static_cast<uint32_t>(CGDisplayPixelsHigh(displayID));
+#else
+        width = 0;
+        height = 0;
+#endif
+    }
 }
