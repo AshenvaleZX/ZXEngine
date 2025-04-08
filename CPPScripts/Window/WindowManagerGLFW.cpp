@@ -1,6 +1,7 @@
 #include "WindowManagerGLFW.h"
 #include "../ProjectSetting.h"
 #include "../RenderAPI.h"
+#include "../GlobalData.h"
 
 namespace ZXEngine
 {
@@ -68,7 +69,13 @@ namespace ZXEngine
 		uint32_t realWindowHeight_ui32 = static_cast<uint32_t>(realWindowHeight);
 		if (realWindowWidth_ui32 != ProjectSetting::srcWidth || realWindowHeight_ui32 != ProjectSetting::srcHeight)
 		{
+#ifdef ZX_EDITOR
 			ProjectSetting::SetWindowSize(realWindowWidth_ui32, realWindowHeight_ui32);
+#else
+			GlobalData::srcWidth = realWindowWidth_ui32;
+			GlobalData::srcHeight = realWindowHeight_ui32;
+			ProjectSetting::SetWindowSize();
+#endif
 		}
 	}
 
