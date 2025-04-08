@@ -5,6 +5,7 @@
 #elif defined(ZX_PLATFORM_MACOS)
 #include <mach-o/dyld.h>
 #include <limits.h>
+#include <CoreGraphics/CoreGraphics.h>
 #elif defined(ZX_PLATFORM_LINUX)
 #include <unistd.h>
 #include <limits.h>
