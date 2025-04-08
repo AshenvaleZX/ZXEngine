@@ -82,7 +82,15 @@ namespace ZXEngine
 	void RenderAPIOpenGL::OnWindowSizeChange(uint32_t width, uint32_t height)
 	{
 #ifdef ZX_EDITOR
+		uint32_t lastSrcWidth = GlobalData::srcWidth;
+		uint32_t lastSrcHeight = GlobalData::srcHeight;
+
 		ProjectSetting::SetWindowSize(width, height);
+
+		if (lastSrcWidth != GlobalData::srcWidth || lastSrcHeight != GlobalData::srcHeight)
+		{
+			FBOManager::GetInstance()->RecreateAllFollowWindowFBO();
+		}
 #else
 		GlobalData::srcWidth = width;
 		GlobalData::srcHeight = height;

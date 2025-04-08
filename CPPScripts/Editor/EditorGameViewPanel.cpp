@@ -41,7 +41,16 @@ namespace ZXEngine
 				pGUIManager->mViewBorderSize.y = style.WindowPadding.y;
 				pGUIManager->mHeaderSize = ImGui::GetCursorPosY() - yMax;
 
+				uint32_t lastSrcWidth = GlobalData::srcWidth;
+				uint32_t lastSrcHeight = GlobalData::srcHeight;
+				
 				ProjectSetting::SetWindowSize();
+
+				if (lastSrcWidth != GlobalData::srcWidth || lastSrcHeight != GlobalData::srcHeight)
+				{
+					RenderAPI::GetInstance()->OnGameViewSizeChange();
+				}
+
 				mFirstDraw = false;
 			}
 

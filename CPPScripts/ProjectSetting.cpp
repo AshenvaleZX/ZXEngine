@@ -62,6 +62,8 @@ namespace ZXEngine
 	static const uint32_t defaultInspectorWidth = 300;
 	static const uint32_t defaultMainBarHeight = 58;
 
+	static const uint32_t defaultMinimumPresentSize = 8;
+
 	bool ProjectSetting::InitSetting(const string& path)
 	{
 		projectPath = path;
@@ -113,6 +115,7 @@ namespace ZXEngine
 		uint32_t fullWidth = GlobalData::srcWidth + defaultHierarchyWidth + defaultInspectorWidth;
 		uint32_t fullHeight = GlobalData::srcHeight + defaultProjectHeight + defaultMainBarHeight;
 
+		// 宽度已经超过了屏幕分辨率，自适应缩小
 		if (fullWidth > screenResolutionX && screenResolutionX > 0)
 		{
 			float scaleRatio = static_cast<float>(screenResolutionX) / static_cast<float>(fullWidth);
@@ -122,6 +125,7 @@ namespace ZXEngine
 			GlobalData::srcWidth = static_cast<uint32_t>(static_cast<float>(GlobalData::srcWidth) * scaleRatio);
 		}
 
+		// 高度已经超过了屏幕分辨率，自适应缩小
 		if (fullHeight > screenResolutionY && screenResolutionY > 0)
 		{
 			float scaleRatio = static_cast<float>(screenResolutionY - defaultMainBarHeight) / static_cast<float>(fullHeight - defaultMainBarHeight);
@@ -167,10 +171,62 @@ namespace ZXEngine
 			gameViewHeight = GlobalData::srcHeight + static_cast<uint32_t>(pGUIManager->mViewBorderSize.y * 2 + pGUIManager->mHeaderSize);
 		}
 
-		float hRatio = static_cast<float>(hierarchyWidth) / static_cast<float>(hierarchyWidth + inspectorWidth);
-		uint32_t hWidth = static_cast<uint32_t>(static_cast<float>(srcWidth - gameViewWidth) * hRatio);
-		uint32_t iWidth = srcWidth - gameViewWidth - hWidth;
-		uint32_t pHeight = srcHeight - gameViewHeight - ProjectSetting::mainBarHeight;
+		uint32_t hWidth = 0, pHeight = 0, iWidth = 0;
+
+		// 宽度自适应逻辑
+		if (gameViewWidth + ((defaultHierarchyWidth + defaultInspectorWidth) / 10) > srcWidth)
+		{
+			// 如果已经没有Hierarchy和Inspector面板的空间了，就至少保留一个最小的宽度
+			hWidth = defaultHierarchyWidth / 10;
+			iWidth = defaultInspectorWidth / 10;
+
+			uint32_t gameViewBorderWidth = gameViewWidth - GlobalData::srcWidth;
+
+			if (hWidth + iWidth + gameViewBorderWidth + defaultMinimumPresentSize > srcWidth)
+			{
+				// 如果窗口实在是太小了，输出的画面也至少需要保留一个defaultMinimumPresentSize的宽度
+				GlobalData::srcWidth = defaultMinimumPresentSize;
+				gameViewWidth = defaultMinimumPresentSize + gameViewBorderWidth;
+			}
+			else
+			{
+				// 重新计算输出画面和GameView的宽度
+				uint32_t newGameViewWidth = srcWidth - hWidth - iWidth;
+				GlobalData::srcWidth -= (gameViewWidth - newGameViewWidth);
+				gameViewWidth = newGameViewWidth;
+			}
+		}
+		else
+		{
+			// 正常缩放Hierarchy和Inspector面板的宽度，且无需处理输出画面和GameView的宽度
+			float hRatio = static_cast<float>(hierarchyWidth) / static_cast<float>(hierarchyWidth + inspectorWidth);
+			hWidth = static_cast<uint32_t>(static_cast<float>(srcWidth - gameViewWidth) * hRatio);
+			iWidth = srcWidth - gameViewWidth - hWidth;
+		}
+
+		// 高度自适应逻辑，与上面的宽度自适应逻辑类似
+		if (gameViewHeight + ProjectSetting::mainBarHeight + defaultProjectHeight / 10 > srcHeight)
+		{
+			pHeight = defaultProjectHeight / 10;
+
+			uint32_t gameViewBorderHeight = gameViewHeight - GlobalData::srcHeight;
+
+			if (pHeight + ProjectSetting::mainBarHeight + gameViewBorderHeight + defaultMinimumPresentSize > srcHeight)
+			{
+				GlobalData::srcHeight = defaultMinimumPresentSize;
+				gameViewHeight = defaultMinimumPresentSize + gameViewBorderHeight;
+			}
+			else
+			{
+				uint32_t newGameViewHeight = srcHeight - pHeight - ProjectSetting::mainBarHeight;
+				GlobalData::srcHeight -= (gameViewHeight - newGameViewHeight);
+				gameViewHeight = newGameViewHeight;
+			}
+		}
+		else
+		{
+			pHeight = srcHeight - gameViewHeight - ProjectSetting::mainBarHeight;
+		}
 
 		UpdatePanelSize(hWidth, pHeight, iWidth);
 	}
