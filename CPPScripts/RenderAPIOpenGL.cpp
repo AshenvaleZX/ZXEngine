@@ -70,7 +70,8 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::BeginFrame()
 	{
-		
+		if (windowSizeChanged)
+			DoWindowSizeChange();
 	}
 
 	void RenderAPIOpenGL::EndFrame()
@@ -81,22 +82,31 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::OnWindowSizeChange(uint32_t width, uint32_t height)
 	{
+		newWindowWidth = width;
+		newWindowHeight = height;
+		windowSizeChanged = true;
+	}
+
+	void RenderAPIOpenGL::DoWindowSizeChange()
+	{
 #ifdef ZX_EDITOR
 		uint32_t lastSrcWidth = GlobalData::srcWidth;
 		uint32_t lastSrcHeight = GlobalData::srcHeight;
 
-		ProjectSetting::SetWindowSize(width, height);
+		ProjectSetting::SetWindowSize(newWindowWidth, newWindowHeight);
 
 		if (lastSrcWidth != GlobalData::srcWidth || lastSrcHeight != GlobalData::srcHeight)
 		{
 			FBOManager::GetInstance()->RecreateAllFollowWindowFBO();
 		}
 #else
-		GlobalData::srcWidth = width;
-		GlobalData::srcHeight = height;
+		GlobalData::srcWidth = newWindowWidth;
+		GlobalData::srcHeight = newWindowHeight;
 		FBOManager::GetInstance()->RecreateAllFollowWindowFBO();
 #endif
 		EventManager::GetInstance()->FireEvent(EventType::WINDOW_RESIZE, "");
+
+		windowSizeChanged = false;
 	}
 
 	void RenderAPIOpenGL::OnGameViewSizeChange()

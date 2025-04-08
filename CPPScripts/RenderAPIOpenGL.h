@@ -158,6 +158,12 @@ namespace ZXEngine
 		RenderStateSetting* targetState = nullptr;
 		RenderStateSetting* curRealState = nullptr;
 
+		bool windowSizeChanged = false;
+		uint32_t newWindowWidth = 0;
+		uint32_t newWindowHeight = 0;
+
+		void DoWindowSizeChange();
+
 		vector<OpenGLVAO*> OpenGLVAOArray;
 		vector<OpenGLMaterialData*> OpenGLMaterialDataArray;
 		unordered_map<uint32_t, OpenGLMaterialData*> materialDataInShaders;
