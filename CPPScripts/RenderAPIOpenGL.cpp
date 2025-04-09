@@ -89,6 +89,19 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::DoWindowSizeChange()
 	{
+		if (newWindowWidth == 0 || newWindowHeight == 0)
+		{
+			int width = 0, height = 0;
+			glfwGetFramebufferSize(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), &width, &height);
+
+			// 如果窗口大小为0(被最小化了)，那么程序就在这里等待，直到窗口重新弹出
+			while (width == 0 || height == 0)
+			{
+				glfwGetFramebufferSize(static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow()), &width, &height);
+				glfwWaitEvents();
+			}
+		}
+
 #ifdef ZX_EDITOR
 		uint32_t lastSrcWidth = GlobalData::srcWidth;
 		uint32_t lastSrcHeight = GlobalData::srcHeight;
