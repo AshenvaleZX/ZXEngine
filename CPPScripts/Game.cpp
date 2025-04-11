@@ -31,7 +31,9 @@ namespace ZXEngine
 
 		if (!ProjectSetting::InitSetting(path))
 		{
-			zOutError << "Invalid project path: " << Utils::RelativePathToAbsolutePath(path) << std::endl;
+			string absPath = Utils::RelativePathToAbsolutePath(path);
+			zOutError << "Invalid project path: " << absPath << std::endl;
+			Utils::ShowSystemMessageBox("Error", "Invalid project path: " + absPath);
 			return false;
 		}
 		else
@@ -48,7 +50,10 @@ namespace ZXEngine
 		LuaManager::Create();
 		GameLogicManager::Create();
 		if (!SceneManager::Create())
+		{
+			Utils::ShowSystemMessageBox("Error", "Failed to create scene manager. Please check the default scene settings in zxprjcfg.");
 			return false;
+		}
 
 #ifdef ZX_EDITOR
 		EditorGUIManager::Create();
