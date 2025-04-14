@@ -40,6 +40,7 @@
 |  0: OpenGL
 |  1: Vulkan
 |  2: D3D12
+|  3: Metal
 */
 #define ZX_API_SWITCH ZX_API_DEFAULT
 
@@ -49,6 +50,8 @@
 #define ZX_API_VULKAN
 #elif ZX_API_SWITCH == 2
 #define ZX_API_D3D12
+#elif ZX_API_SWITCH == 3
+#define ZX_API_METAL
 #else
 #error "Error Graphics API Definition"
 #endif
@@ -56,16 +59,18 @@
 /*
 |  Graphics API Compatibility Check
 |
-|  Windows : OpenGL, Vulkan, D3D12
-|  MacOS   : OpenGL, Vulkan
+|  Windows : D3D12, Vulkan, OpenGL
+|  macOS   : Metal, Vulkan, OpenGL
 |  Linux   : OpenGL, Vulkan(Unverified)
 |  Android : Vulkan
 */
-#if defined(ZX_PLATFORM_ANDROID) && (defined(ZX_API_OPENGL) || defined(ZX_API_D3D12))
-#error "Unsupported Graphics API"
-#elif defined(ZX_PLATFORM_LINUX) && defined(ZX_API_D3D12)
+#if defined(ZX_PLATFORM_WINDOWS) && defined(ZX_API_METAL)
 #error "Unsupported Graphics API"
 #elif defined(ZX_PLATFORM_MACOS) && defined(ZX_API_D3D12)
+#error "Unsupported Graphics API"
+#elif defined(ZX_PLATFORM_LINUX) && (defined(ZX_API_D3D12) || defined(ZX_API_METAL))
+#error "Unsupported Graphics API"
+#elif defined(ZX_PLATFORM_ANDROID) && (defined(ZX_API_OPENGL) || defined(ZX_API_D3D12) || defined(ZX_API_METAL))
 #error "Unsupported Graphics API"
 #endif
 
