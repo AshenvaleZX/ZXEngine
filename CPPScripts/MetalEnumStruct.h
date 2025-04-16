@@ -9,5 +9,11 @@
 
 namespace ZXEngine
 {
-    constexpr uint32_t MT_MAX_FRAMES_IN_FLIGHT = 2;
+	constexpr uint32_t MT_MAX_FRAMES_IN_FLIGHT = 2;
+
+	struct MetalBuffer
+	{
+		MTL::Buffer* buffer = nullptr;
+		bool inUse = false;
+	};
 }

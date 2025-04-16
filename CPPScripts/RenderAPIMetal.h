@@ -152,6 +152,31 @@ namespace ZXEngine
 		MTL::Device* mDevice;
 		MTL::CommandQueue* mCommandQueue;
 		MTK::View* mMetalView;
+		// 控制帧同步的信号量
 		dispatch_semaphore_t mSemaphore;
+		// 当前是MT_MAX_FRAMES_IN_FLIGHT中的第几帧
+		uint32_t mCurrentFrame = 0;
+
+
+		/// <summary>
+		/// Metal资源创建相关接口
+		/// </summary>
+	private:
+		vector<MetalBuffer*> mMetalInstanceBufferArray;
+
+		unordered_map<uint32_t, uint32_t> mInstanceBuffersToDelete;
+
+        uint32_t GetNextInstanceBufferIndex();
+        MetalBuffer* GetInstanceBufferByIndex(uint32_t idx);
+        void DestroyInstanceBufferByIndex(uint32_t idx);
+
+		void CheckDeleteData();
+
+
+		/// <summary>
+		/// 其它辅助接口
+		/// </summary>
+	private:
+		void ImmediatelyExecute(std::function<void(MTL::CommandBuffer* cmd)>&& function);
 	};
 }
