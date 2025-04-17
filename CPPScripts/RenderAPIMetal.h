@@ -162,13 +162,25 @@ namespace ZXEngine
 		/// Metal资源创建相关接口
 		/// </summary>
 	private:
+		vector<MetalTexture*> mMetalTextureArray;
 		vector<MetalBuffer*> mMetalInstanceBufferArray;
 
+		unordered_map<uint32_t, uint32_t> mTexturesToDelete;
 		unordered_map<uint32_t, uint32_t> mInstanceBuffersToDelete;
+
+		uint32_t GetNextTextureIndex();
+		MetalTexture* GetTextureByIndex(uint32_t idx);
+		void DestroyTextureByIndex(uint32_t idx);
 
         uint32_t GetNextInstanceBufferIndex();
         MetalBuffer* GetInstanceBufferByIndex(uint32_t idx);
         void DestroyInstanceBufferByIndex(uint32_t idx);
+
+		uint32_t CreateMetalTexture(uint32_t width, uint32_t height, void* data);
+		uint32_t CreateMetalCubeMap(uint32_t width, const array<void*, 6>& datas);
+
+		void FillGPUTexture(MTL::Texture* texture, const void* data, uint32_t width, uint32_t height);
+		void FillGPUCubeMap(MTL::Texture* texture, const array<void*, 6>& datas, uint32_t width);
 
 		void CheckDeleteData();
 

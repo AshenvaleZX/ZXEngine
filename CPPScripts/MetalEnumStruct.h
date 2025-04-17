@@ -16,4 +16,10 @@ namespace ZXEngine
 		MTL::Buffer* buffer = nullptr;
 		bool inUse = false;
 	};
+
+	struct MetalTexture
+	{
+		MTL::Texture* texture = nullptr;
+		bool inUse = false;
+	};
 }
