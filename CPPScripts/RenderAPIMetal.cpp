@@ -2,9 +2,39 @@
 #include "ProjectSetting.h"
 #include "Window/WindowManager.h"
 #include "Resources.h"
+#include "ShaderParser.h"
 
 namespace ZXEngine
 {
+	unordered_map<BlendFactor, MTL::BlendFactor> mtBlendFactorMap =
+	{
+		{ BlendFactor::ZERO,      MTL::BlendFactor::BlendFactorZero             }, { BlendFactor::ONE,                 MTL::BlendFactor::BlendFactorOne                      },
+		{ BlendFactor::SRC_COLOR, MTL::BlendFactor::BlendFactorSourceColor      }, { BlendFactor::ONE_MINUS_SRC_COLOR, MTL::BlendFactor::BlendFactorOneMinusSourceColor      },
+		{ BlendFactor::DST_COLOR, MTL::BlendFactor::BlendFactorDestinationColor }, { BlendFactor::ONE_MINUS_DST_COLOR, MTL::BlendFactor::BlendFactorOneMinusDestinationColor },
+		{ BlendFactor::SRC_ALPHA, MTL::BlendFactor::BlendFactorSourceAlpha      }, { BlendFactor::ONE_MINUS_SRC_ALPHA, MTL::BlendFactor::BlendFactorOneMinusSourceAlpha      },
+		{ BlendFactor::DST_ALPHA, MTL::BlendFactor::BlendFactorDestinationAlpha }, { BlendFactor::ONE_MINUS_DST_ALPHA, MTL::BlendFactor::BlendFactorOneMinusDestinationAlpha },
+	};
+
+	unordered_map<BlendOption, MTL::BlendOperation> mtBlendOptionMap =
+	{
+		{ BlendOption::ADD, MTL::BlendOperation::BlendOperationAdd }, { BlendOption::SUBTRACT, MTL::BlendOperation::BlendOperationSubtract }, { BlendOption::REVERSE_SUBTRACT, MTL::BlendOperation::BlendOperationReverseSubtract },
+		{ BlendOption::MIN, MTL::BlendOperation::BlendOperationMin }, { BlendOption::MAX,      MTL::BlendOperation::BlendOperationMax      },
+	};
+
+	unordered_map<CompareOption, MTL::CompareFunction> mtCompareOptionMap =
+	{
+		{ CompareOption::NEVER,         MTL::CompareFunction::CompareFunctionNever     }, { CompareOption::LESS,             MTL::CompareFunction::CompareFunctionLess         },
+		{ CompareOption::ALWAYS,        MTL::CompareFunction::CompareFunctionAlways    }, { CompareOption::GREATER,          MTL::CompareFunction::CompareFunctionGreater      },
+		{ CompareOption::EQUAL,         MTL::CompareFunction::CompareFunctionEqual     }, { CompareOption::NOT_EQUAL,        MTL::CompareFunction::CompareFunctionNotEqual     },
+		{ CompareOption::LESS_OR_EQUAL, MTL::CompareFunction::CompareFunctionLessEqual }, { CompareOption::GREATER_OR_EQUAL, MTL::CompareFunction::CompareFunctionGreaterEqual },
+	};
+
+	unordered_map<FaceCullOption, MTL::CullMode> mtFaceCullOptionMap =
+	{
+		{ FaceCullOption::Back, MTL::CullMode::CullModeBack }, { FaceCullOption::Front, MTL::CullMode::CullModeFront },
+		{ FaceCullOption::None, MTL::CullMode::CullModeNone },
+	};
+
 	RenderAPIMetal::RenderAPIMetal()
 	{
 		mDevice = MTL::CreateSystemDefaultDevice();
@@ -148,6 +178,158 @@ namespace ZXEngine
 		mTexturesToDelete.insert(pair(id, MT_MAX_FRAMES_IN_FLIGHT));
 	}
 
+	ShaderReference* RenderAPIMetal::LoadAndSetUpShader(const string& path, FrameBufferType type)
+	{
+		string shaderCode = Resources::LoadTextFile(path);
+		return SetUpShader(path, shaderCode, type);
+	}
+
+	ShaderReference* RenderAPIMetal::SetUpShader(const string& path, const string& shaderCode, FrameBufferType type)
+	{
+		auto shaderInfo = ShaderParser::GetShaderInfo(shaderCode, GraphicsAPI::Metal);
+
+		NS::Error* pError = nullptr;
+		MTL::Library* pLibrary = mDevice->newLibrary(NS::String::string(shaderCode.c_str(), NS::StringEncoding::UTF8StringEncoding), nullptr, &pError);
+		if (!pLibrary)
+		{
+			Debug::LogError(pError->localizedDescription()->utf8String());
+			assert(false);
+		}
+	
+		uint32_t pipelineID = GetNextPipelineIndex();
+		auto pipeline = GetPipelineByIndex(pipelineID);
+		pipeline->inUse = true;
+		pipeline->faceCullOption = shaderInfo.stateSet.cull;
+		
+		MTL::Function* pVertFn = pLibrary->newFunction(NS::String::string("VertMain", NS::StringEncoding::UTF8StringEncoding));
+		MTL::Function* pFragFn = pLibrary->newFunction(NS::String::string("FragMain", NS::StringEncoding::UTF8StringEncoding));
+	
+		// 绑定Shader入口函数
+		MTL::RenderPipelineDescriptor* pipelineDesc = MTL::RenderPipelineDescriptor::alloc()->init();
+		pipelineDesc->setVertexFunction(pVertFn);
+		pipelineDesc->setFragmentFunction(pFragFn);
+
+		// 设置顶点数据格式
+		MTL::VertexDescriptor* vertexDesc = MTL::VertexDescriptor::alloc()->init();
+
+		// 常规顶点数据
+		auto positionAttr = vertexDesc->attributes()->object(0);
+		positionAttr->setFormat(MTL::VertexFormatFloat4);
+		positionAttr->setOffset(static_cast<NS::UInteger>(offsetof(Vertex, Position)));
+		positionAttr->setBufferIndex(0);
+		auto texCoordAttr = vertexDesc->attributes()->object(1);
+		texCoordAttr->setFormat(MTL::VertexFormatFloat4);
+		texCoordAttr->setOffset(static_cast<NS::UInteger>(offsetof(Vertex, TexCoords)));
+		texCoordAttr->setBufferIndex(0);
+		auto normalAttr = vertexDesc->attributes()->object(2);
+		normalAttr->setFormat(MTL::VertexFormatFloat4);
+		normalAttr->setOffset(static_cast<NS::UInteger>(offsetof(Vertex, Normal)));
+		normalAttr->setBufferIndex(0);
+		auto tangentAttr = vertexDesc->attributes()->object(3);
+		tangentAttr->setFormat(MTL::VertexFormatFloat4);
+		tangentAttr->setOffset(static_cast<NS::UInteger>(offsetof(Vertex, Tangent)));
+		tangentAttr->setBufferIndex(0);
+		auto weightsAttr = vertexDesc->attributes()->object(4);
+		weightsAttr->setFormat(MTL::VertexFormatFloat4);
+		weightsAttr->setOffset(static_cast<NS::UInteger>(offsetof(Vertex, Weights)));
+		weightsAttr->setBufferIndex(0);
+		auto boneIDAttr = vertexDesc->attributes()->object(5);
+		boneIDAttr->setFormat(MTL::VertexFormatUInt4);
+		boneIDAttr->setOffset(static_cast<NS::UInteger>(offsetof(Vertex, BoneIDs)));
+		boneIDAttr->setBufferIndex(0);
+
+		auto layoutDesc = vertexDesc->layouts()->object(0);
+		layoutDesc->setStride(static_cast<NS::UInteger>(sizeof(Vertex)));
+		layoutDesc->setStepFunction(MTL::VertexStepFunctionPerVertex);
+		layoutDesc->setStepRate(1); // 逐顶点
+
+		// GPU Instance数据
+		if (shaderInfo.instanceInfo.size > 0)
+		{
+			for (NS::UInteger i = 0; i < shaderInfo.instanceInfo.size; i++)
+			{
+				auto instanceAttr = vertexDesc->attributes()->object(6 + i);
+				instanceAttr->setFormat(MTL::VertexFormatFloat4);
+				instanceAttr->setOffset(i * static_cast<NS::UInteger>(sizeof(Vector4)));
+				instanceAttr->setBufferIndex(1);
+			}
+
+			auto instanceLayoutDesc = vertexDesc->layouts()->object(1);
+			instanceLayoutDesc->setStride(static_cast<NS::UInteger>(shaderInfo.instanceInfo.size * sizeof(Vector4)));
+			instanceLayoutDesc->setStepFunction(MTL::VertexStepFunctionPerInstance);
+			instanceLayoutDesc->setStepRate(1); // 逐实例
+		}
+
+		pipelineDesc->setVertexDescriptor(vertexDesc);
+		pipelineDesc->setRasterSampleCount(1); // MSAA采样数
+		pipelineDesc->setAlphaToCoverageEnabled(false); // 配合MSAA使用的参数
+
+		if (type == FrameBufferType::GBuffer)
+		{
+			pipelineDesc->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormatRGBA32Float);
+			pipelineDesc->colorAttachments()->object(1)->setPixelFormat(MTL::PixelFormatRGBA32Float);
+			pipelineDesc->colorAttachments()->object(2)->setPixelFormat(MTL::PixelFormatBGRA8Unorm);
+
+			for (NS::Integer i = 0; i < 3; i++)
+			{
+				pipelineDesc->colorAttachments()->object(i)->setBlendingEnabled(true);
+				pipelineDesc->colorAttachments()->object(i)->setSourceRGBBlendFactor(mtBlendFactorMap[shaderInfo.stateSet.srcFactor]);
+				pipelineDesc->colorAttachments()->object(i)->setDestinationRGBBlendFactor(mtBlendFactorMap[shaderInfo.stateSet.dstFactor]);
+				pipelineDesc->colorAttachments()->object(i)->setRgbBlendOperation(mtBlendOptionMap[shaderInfo.stateSet.blendOp]);
+				pipelineDesc->colorAttachments()->object(i)->setSourceAlphaBlendFactor(MTL::BlendFactor::BlendFactorOne);
+				pipelineDesc->colorAttachments()->object(i)->setDestinationAlphaBlendFactor(MTL::BlendFactor::BlendFactorOne);
+				pipelineDesc->colorAttachments()->object(i)->setAlphaBlendOperation(MTL::BlendOperation::BlendOperationAdd);
+			}
+		}
+		else
+		{
+			pipelineDesc->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormatBGRA8Unorm);
+			pipelineDesc->colorAttachments()->object(0)->setBlendingEnabled(true);
+			pipelineDesc->colorAttachments()->object(0)->setSourceRGBBlendFactor(mtBlendFactorMap[shaderInfo.stateSet.srcFactor]);
+			pipelineDesc->colorAttachments()->object(0)->setDestinationRGBBlendFactor(mtBlendFactorMap[shaderInfo.stateSet.dstFactor]);
+			pipelineDesc->colorAttachments()->object(0)->setRgbBlendOperation(mtBlendOptionMap[shaderInfo.stateSet.blendOp]);
+			pipelineDesc->colorAttachments()->object(0)->setSourceAlphaBlendFactor(MTL::BlendFactor::BlendFactorOne);
+			pipelineDesc->colorAttachments()->object(0)->setDestinationAlphaBlendFactor(MTL::BlendFactor::BlendFactorOne);
+			pipelineDesc->colorAttachments()->object(0)->setAlphaBlendOperation(MTL::BlendOperation::BlendOperationAdd);
+		}
+
+		if (type == FrameBufferType::Present || type == FrameBufferType::PresentOverspread || type == FrameBufferType::Color)
+		{
+			pipelineDesc->setDepthAttachmentPixelFormat(MTL::PixelFormatInvalid);
+		}
+		else
+		{
+			pipelineDesc->setDepthAttachmentPixelFormat(MTL::PixelFormatDepth32Float);
+		}
+
+		pipelineDesc->setInputPrimitiveTopology(MTL::PrimitiveTopologyClassTriangle);
+
+		pipeline->pipeline = mDevice->newRenderPipelineState(pipelineDesc, &pError);
+		if (!pipeline->pipeline)
+		{
+			Debug::LogError(pError->localizedDescription()->utf8String());
+			assert(false);
+		}
+		
+		MTL::DepthStencilDescriptor* depthStencilDesc = MTL::DepthStencilDescriptor::alloc()->init();
+		depthStencilDesc->setDepthWriteEnabled(shaderInfo.stateSet.depthWrite);
+		depthStencilDesc->setDepthCompareFunction(mtCompareOptionMap[shaderInfo.stateSet.depthCompareOp]);
+
+		pipeline->depthStencilState = mDevice->newDepthStencilState(depthStencilDesc);
+
+		ShaderReference* reference = new ShaderReference();
+		reference->ID = pipelineID;
+		reference->shaderInfo = shaderInfo;
+		reference->targetFrameBufferType = type;
+
+		return reference;
+	}
+
+	void RenderAPIMetal::DeleteShader(uint32_t id)
+	{
+		mPipelinesToDelete.insert(pair(id, MT_MAX_FRAMES_IN_FLIGHT));
+	}
+
 	uint32_t RenderAPIMetal::GetNextTextureIndex()
 	{
 		uint32_t length = static_cast<uint32_t>(mMetalTextureArray.size());
@@ -180,6 +362,46 @@ namespace ZXEngine
 		}
 
 		texture->inUse = false;
+	}
+
+	uint32_t RenderAPIMetal::GetNextPipelineIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mMetalPipelineArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mMetalPipelineArray[i]->inUse)
+				return i;
+		}
+
+		MetalPipeline* pipeline = new MetalPipeline();
+		mMetalPipelineArray.push_back(pipeline);
+
+		return length;
+	}
+
+	MetalPipeline* RenderAPIMetal::GetPipelineByIndex(uint32_t idx)
+	{
+		return mMetalPipelineArray[idx];
+	}
+
+	void RenderAPIMetal::DestroyPipelineByIndex(uint32_t idx)
+	{
+		auto pipeline = mMetalPipelineArray[idx];
+
+		if (pipeline->pipeline)
+		{
+			pipeline->pipeline->release();
+			pipeline->pipeline = nullptr;
+		}
+
+		if (pipeline->depthStencilState)
+		{
+			pipeline->depthStencilState->release();
+			pipeline->depthStencilState = nullptr;
+		}
+
+		pipeline->inUse = false;
 	}
 
 	uint32_t RenderAPIMetal::GetNextInstanceBufferIndex()
@@ -334,6 +556,21 @@ namespace ZXEngine
 		{
 			DestroyTextureByIndex(id);
 			mTexturesToDelete.erase(id);
+		}
+
+		// Shader
+		deleteList.clear();
+		for (auto& iter : mPipelinesToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroyPipelineByIndex(id);
+			mPipelinesToDelete.erase(id);
 		}
 
 		// Instance Buffer

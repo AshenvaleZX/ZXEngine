@@ -22,4 +22,12 @@ namespace ZXEngine
 		MTL::Texture* texture = nullptr;
 		bool inUse = false;
 	};
+
+	struct MetalPipeline
+	{
+		MTL::RenderPipelineState* pipeline = nullptr;
+		MTL::DepthStencilState* depthStencilState = nullptr;
+		FaceCullOption faceCullOption = FaceCullOption::None;
+		bool inUse = false;
+	};
 }

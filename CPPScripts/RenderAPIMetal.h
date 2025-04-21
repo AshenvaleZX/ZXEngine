@@ -163,14 +163,20 @@ namespace ZXEngine
 		/// </summary>
 	private:
 		vector<MetalTexture*> mMetalTextureArray;
+		vector<MetalPipeline*> mMetalPipelineArray;
 		vector<MetalBuffer*> mMetalInstanceBufferArray;
 
 		unordered_map<uint32_t, uint32_t> mTexturesToDelete;
+		unordered_map<uint32_t, uint32_t> mPipelinesToDelete;
 		unordered_map<uint32_t, uint32_t> mInstanceBuffersToDelete;
 
 		uint32_t GetNextTextureIndex();
 		MetalTexture* GetTextureByIndex(uint32_t idx);
 		void DestroyTextureByIndex(uint32_t idx);
+
+        uint32_t GetNextPipelineIndex();
+        MetalPipeline* GetPipelineByIndex(uint32_t idx);
+        void DestroyPipelineByIndex(uint32_t idx);
 
         uint32_t GetNextInstanceBufferIndex();
         MetalBuffer* GetInstanceBufferByIndex(uint32_t idx);
