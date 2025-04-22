@@ -440,19 +440,26 @@ namespace ZXEngine
 
 	uint32_t RenderAPIMetal::CreateMetalTexture(uint32_t width, uint32_t height, void* data)
 	{
-		MTL::TextureDescriptor* textureDesc = MTL::TextureDescriptor::texture2DDescriptor(
+		MTL::TextureDescriptor* desc = MTL::TextureDescriptor::texture2DDescriptor(
 			MTL::PixelFormatBGRA8Unorm,
 			static_cast<NS::Integer>(width),
 			static_cast<NS::Integer>(height),
 			true
 		);
-		textureDesc->setStorageMode(MTL::StorageModePrivate);
-		textureDesc->setUsage(MTL::TextureUsageShaderRead);
-		textureDesc->setResourceOptions(MTL::ResourceStorageModePrivate);
 
-		MTL::Texture* texture = mDevice->newTexture(textureDesc);
+		desc->setStorageMode(MTL::StorageModePrivate);
+		desc->setUsage(MTL::TextureUsageShaderRead);
+		desc->setResourceOptions(MTL::ResourceStorageModePrivate);
 
-		FillGPUTexture(texture, data, width, height);
+		return CreateMetalTexture(desc, width, height, data);
+	}
+
+	uint32_t RenderAPIMetal::CreateMetalTexture(MTL::TextureDescriptor* desc, uint32_t width, uint32_t height, void* data)
+	{
+		MTL::Texture* texture = mDevice->newTexture(desc);
+
+		if (data)
+			FillGPUTexture(texture, data, width, height);
 
 		uint32_t textureID = GetNextTextureIndex();
 		auto mtTexture = GetTextureByIndex(textureID);
