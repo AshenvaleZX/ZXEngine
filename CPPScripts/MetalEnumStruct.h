@@ -23,6 +23,17 @@ namespace ZXEngine
 		bool inUse = false;
 	};
 
+	struct MetalVAO
+	{
+		uint32_t indexCount = 0; // 索引数量
+		MTL::Buffer* indexBuffer = nullptr;
+
+		uint32_t vertexCount = 0; // 顶点数量
+		MTL::Buffer* vertexBuffer = nullptr;
+		
+		bool inUse = false;
+	};
+
 	struct MetalPipeline
 	{
 		MTL::RenderPipelineState* pipeline = nullptr;

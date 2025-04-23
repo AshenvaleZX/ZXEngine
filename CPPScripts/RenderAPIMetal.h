@@ -145,9 +145,9 @@ namespace ZXEngine
 		virtual void BuildBottomLevelAccelerationStructure(uint32_t VAO, bool isCompact) {};
 
 
-        /// <summary>
-        /// 仅启动时一次性初始化的核心Metal组件及相关变量
-        /// </summary>
+		/// <summary>
+		/// 仅启动时一次性初始化的核心Metal组件及相关变量
+		/// </summary>
 	private:
 		MTL::Device* mDevice;
 		MTL::CommandQueue* mCommandQueue;
@@ -162,15 +162,21 @@ namespace ZXEngine
 		/// Metal资源创建相关接口
 		/// </summary>
 	private:
+		vector<MetalVAO*> mVAOArray;
 		vector<MetalFBO*> mFBOArray;
 		vector<MetalRenderBuffer*> mRenderBufferArray;
 		vector<MetalTexture*> mMetalTextureArray;
 		vector<MetalPipeline*> mMetalPipelineArray;
 		vector<MetalBuffer*> mMetalInstanceBufferArray;
 
+		unordered_map<uint32_t, uint32_t> mMeshsToDelete;
 		unordered_map<uint32_t, uint32_t> mTexturesToDelete;
 		unordered_map<uint32_t, uint32_t> mPipelinesToDelete;
 		unordered_map<uint32_t, uint32_t> mInstanceBuffersToDelete;
+
+		uint32_t GetNextVAOIndex();
+		MetalVAO* GetVAOByIndex(uint32_t idx);
+		void DestroyVAOByIndex(uint32_t idx);
 
 		uint32_t GetNextFBOIndex();
 		MetalFBO* GetFBOByIndex(uint32_t idx);
@@ -184,13 +190,13 @@ namespace ZXEngine
 		MetalTexture* GetTextureByIndex(uint32_t idx);
 		void DestroyTextureByIndex(uint32_t idx);
 
-        uint32_t GetNextPipelineIndex();
-        MetalPipeline* GetPipelineByIndex(uint32_t idx);
-        void DestroyPipelineByIndex(uint32_t idx);
+		uint32_t GetNextPipelineIndex();
+		MetalPipeline* GetPipelineByIndex(uint32_t idx);
+		void DestroyPipelineByIndex(uint32_t idx);
 
-        uint32_t GetNextInstanceBufferIndex();
-        MetalBuffer* GetInstanceBufferByIndex(uint32_t idx);
-        void DestroyInstanceBufferByIndex(uint32_t idx);
+		uint32_t GetNextInstanceBufferIndex();
+		MetalBuffer* GetInstanceBufferByIndex(uint32_t idx);
+		void DestroyInstanceBufferByIndex(uint32_t idx);
 
 		MTL::Buffer* CreateMetalBuffer(size_t size, MTL::ResourceOptions flags, const void* data = nullptr);
 

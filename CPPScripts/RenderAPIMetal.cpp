@@ -670,6 +670,109 @@ namespace ZXEngine
 		mPipelinesToDelete.insert(pair(id, MT_MAX_FRAMES_IN_FLIGHT));
 	}
 
+	void RenderAPIMetal::DeleteMesh(unsigned int VAO)
+	{
+		mMeshsToDelete.insert(pair(VAO, MT_MAX_FRAMES_IN_FLIGHT));
+	}
+
+	void RenderAPIMetal::SetUpStaticMesh(unsigned int& VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices, bool skinned)
+	{
+		VAO = GetNextVAOIndex();
+		auto meshBuffer = GetVAOByIndex(VAO);
+		meshBuffer->indexCount = static_cast<uint32_t>(indices.size());
+		meshBuffer->vertexCount = static_cast<uint32_t>(vertices.size());
+
+		size_t vertexBufferSize = vertices.size() * sizeof(Vertex);
+		meshBuffer->vertexBuffer = CreateMetalBuffer(vertexBufferSize, MTL::ResourceStorageModePrivate, vertices.data());
+
+		size_t indexBufferSize = indices.size() * sizeof(uint32_t);
+		meshBuffer->indexBuffer = CreateMetalBuffer(indexBufferSize, MTL::ResourceStorageModePrivate, indices.data());
+
+		meshBuffer->inUse = true;
+	}
+
+	void RenderAPIMetal::SetUpDynamicMesh(unsigned int& VAO, unsigned int vertexSize, unsigned int indexSize)
+	{
+		VAO = GetNextVAOIndex();
+		auto meshBuffer = GetVAOByIndex(VAO);
+		meshBuffer->indexCount = static_cast<uint32_t>(indexSize);
+		meshBuffer->vertexCount = static_cast<uint32_t>(vertexSize);
+
+		size_t vertexBufferSize = vertexSize * sizeof(Vertex);
+		meshBuffer->vertexBuffer = CreateMetalBuffer(vertexBufferSize, MTL::ResourceStorageModeShared);
+
+		size_t indexBufferSize = indexSize * sizeof(uint32_t);
+		meshBuffer->indexBuffer = CreateMetalBuffer(indexBufferSize, MTL::ResourceStorageModeShared);
+
+		meshBuffer->inUse = true;
+	}
+
+	void RenderAPIMetal::UpdateDynamicMesh(unsigned int VAO, const vector<Vertex>& vertices, const vector<uint32_t>& indices)
+	{
+		auto meshBuffer = GetVAOByIndex(VAO);
+
+		size_t vertexBufferSize = vertices.size() * sizeof(Vertex);
+		memcpy(meshBuffer->vertexBuffer->contents(), vertices.data(), vertexBufferSize);
+
+		size_t indexBufferSize = indices.size() * sizeof(uint32_t);
+		memcpy(meshBuffer->indexBuffer->contents(), indices.data(), indexBufferSize);
+	}
+
+	void RenderAPIMetal::GenerateParticleMesh(unsigned int& VAO)
+	{
+		vector<Vertex> vertices =
+		{
+			{ .Position = {  0.5f,  0.5f, 0.0f, 1.0f }, .TexCoords = { 1.0f, 0.0f, 0.0f, 0.0f } },
+			{ .Position = {  0.5f, -0.5f, 0.0f, 1.0f }, .TexCoords = { 1.0f, 1.0f, 0.0f, 0.0f } },
+			{ .Position = { -0.5f,  0.5f, 0.0f, 1.0f }, .TexCoords = { 0.0f, 0.0f, 0.0f, 0.0f } },
+			{ .Position = { -0.5f, -0.5f, 0.0f, 1.0f }, .TexCoords = { 0.0f, 1.0f, 0.0f, 0.0f } },
+		};
+
+		vector<uint32_t> indices =
+		{
+			2, 1, 3,
+			2, 0, 1,
+		};
+
+		SetUpStaticMesh(VAO, vertices, indices);
+	}
+
+	uint32_t RenderAPIMetal::GetNextVAOIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mVAOArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mVAOArray[i]->inUse)
+				return i;
+		}
+
+		MetalVAO* vao = new MetalVAO();
+		mVAOArray.push_back(vao);
+
+		return length;
+	}
+
+	MetalVAO* RenderAPIMetal::GetVAOByIndex(uint32_t idx)
+	{
+		return mVAOArray[idx];
+	}
+
+	void RenderAPIMetal::DestroyVAOByIndex(uint32_t idx)
+	{
+		auto vao = mVAOArray[idx];
+
+		vao->indexCount = 0;
+		if (vao->indexBuffer)
+			vao->indexBuffer->release();
+
+		vao->vertexCount = 0;
+		if (vao->vertexBuffer)
+			vao->vertexBuffer->release();
+
+		vao->inUse = false;
+	}
+
 	uint32_t RenderAPIMetal::GetNextFBOIndex()
 	{
 		uint32_t length = static_cast<uint32_t>(mFBOArray.size());
