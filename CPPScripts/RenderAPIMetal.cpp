@@ -438,6 +438,34 @@ namespace ZXEngine
 		instanceBuffer->inUse = false;
 	}
 
+	MTL::Buffer* RenderAPIMetal::CreateMetalBuffer(size_t size, MTL::ResourceOptions resOpt, const void* data)
+	{
+		MTL::Buffer* buffer = mDevice->newBuffer(static_cast<NS::Integer>(size), resOpt);
+		assert(buffer != nullptr && "Metal buffer is null");
+
+		if (data)
+		{
+			if (resOpt == MTL::ResourceStorageModePrivate)
+			{
+				ImmediatelyExecute([=](MTL::CommandBuffer* cmd)
+				{
+					MTL::Buffer* sharedBuffer = mDevice->newBuffer(static_cast<NS::Integer>(size), MTL::ResourceStorageModeShared);
+					memcpy(sharedBuffer->contents(), data, size);
+		
+					MTL::BlitCommandEncoder* blitEncoder = cmd->blitCommandEncoder();
+					blitEncoder->copyFromBuffer(sharedBuffer, 0, buffer, 0, static_cast<NS::Integer>(size));
+					blitEncoder->endEncoding();
+				});
+			}
+			else
+			{
+				memcpy(buffer->contents(), data, size);
+			}
+		}
+
+		return buffer;
+	}
+
 	uint32_t RenderAPIMetal::CreateMetalTexture(uint32_t width, uint32_t height, void* data)
 	{
 		MTL::TextureDescriptor* desc = MTL::TextureDescriptor::texture2DDescriptor(

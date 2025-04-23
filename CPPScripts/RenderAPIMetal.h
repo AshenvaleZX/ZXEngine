@@ -182,6 +182,8 @@ namespace ZXEngine
         MetalBuffer* GetInstanceBufferByIndex(uint32_t idx);
         void DestroyInstanceBufferByIndex(uint32_t idx);
 
+		MTL::Buffer* CreateMetalBuffer(size_t size, MTL::ResourceOptions flags, const void* data = nullptr);
+
 		uint32_t CreateMetalTexture(uint32_t width, uint32_t height, void* data = nullptr);
 		uint32_t CreateMetalTexture(MTL::TextureDescriptor* desc, uint32_t width, uint32_t height, void* data = nullptr);
 		uint32_t CreateMetalCubeMap(uint32_t width, const array<void*, 6>* datas = nullptr);
