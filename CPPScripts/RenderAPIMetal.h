@@ -162,6 +162,8 @@ namespace ZXEngine
 		/// Metal资源创建相关接口
 		/// </summary>
 	private:
+		vector<MetalFBO*> mFBOArray;
+		vector<MetalRenderBuffer*> mRenderBufferArray;
 		vector<MetalTexture*> mMetalTextureArray;
 		vector<MetalPipeline*> mMetalPipelineArray;
 		vector<MetalBuffer*> mMetalInstanceBufferArray;
@@ -169,6 +171,14 @@ namespace ZXEngine
 		unordered_map<uint32_t, uint32_t> mTexturesToDelete;
 		unordered_map<uint32_t, uint32_t> mPipelinesToDelete;
 		unordered_map<uint32_t, uint32_t> mInstanceBuffersToDelete;
+
+		uint32_t GetNextFBOIndex();
+		MetalFBO* GetFBOByIndex(uint32_t idx);
+		void DestroyFBOByIndex(uint32_t idx);
+
+		uint32_t GetNextRenderBufferIndex();
+		MetalRenderBuffer* GetRenderBufferByIndex(uint32_t idx);
+		void DestroyRenderBufferByIndex(uint32_t idx);
 
 		uint32_t GetNextTextureIndex();
 		MetalTexture* GetTextureByIndex(uint32_t idx);
@@ -199,6 +209,8 @@ namespace ZXEngine
 		/// 其它辅助接口
 		/// </summary>
 	private:
+		uint32_t mCurFBOIdx = 0;
+
 		void ImmediatelyExecute(std::function<void(MTL::CommandBuffer* cmd)>&& function);
 	};
 }

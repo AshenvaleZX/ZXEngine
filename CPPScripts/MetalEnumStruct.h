@@ -30,4 +30,22 @@ namespace ZXEngine
 		FaceCullOption faceCullOption = FaceCullOption::None;
 		bool inUse = false;
 	};
+
+	struct MetalRenderBuffer
+	{
+		vector<uint32_t> renderBuffers;
+		bool inUse = false;
+	};
+
+	struct MetalFBO
+	{
+		uint32_t colorBufferIdx = UINT32_MAX;
+		uint32_t depthBufferIdx = UINT32_MAX;
+		uint32_t positionBufferIdx = UINT32_MAX; // GBuffer
+		uint32_t normalBufferIdx   = UINT32_MAX; // GBuffer
+		FrameBufferType bufferType = FrameBufferType::Normal;
+		ClearInfo clearInfo = {};
+		MTL::RenderPassDescriptor* renderPassDescriptor = nullptr;
+		bool inUse = false;
+	};
 }

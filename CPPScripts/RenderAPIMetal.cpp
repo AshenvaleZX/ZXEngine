@@ -3,6 +3,8 @@
 #include "Window/WindowManager.h"
 #include "Resources.h"
 #include "ShaderParser.h"
+#include "GlobalData.h"
+#include "FBOManager.h"
 
 namespace ZXEngine
 {
@@ -67,6 +69,344 @@ namespace ZXEngine
 	void RenderAPIMetal::EndFrame()
 	{
 		mCurrentFrame = (mCurrentFrame + 1) % MT_MAX_FRAMES_IN_FLIGHT;
+	}
+
+	void RenderAPIMetal::SwitchFrameBuffer(uint32_t id)
+	{
+		if (id == UINT32_MAX)
+			// TODO: 这里需要以某种形式切换到Present Buffer
+			mCurFBOIdx = 0;
+		else
+			mCurFBOIdx = id;
+	}
+
+	void RenderAPIMetal::ClearFrameBuffer(FrameBufferClearFlags clearFlags)
+	{
+		// Metal不需要实现这个接口
+	}
+
+	void RenderAPIMetal::BlitFrameBuffer(uint32_t cmd, const string& src, const string& dst, FrameBufferPieceFlags flags)
+	{
+		MTL::CommandBuffer* commandBuffer = mCommandQueue->commandBuffer();
+		MTL::BlitCommandEncoder* blitEncoder = commandBuffer->blitCommandEncoder();
+
+		auto sFBO = FBOManager::GetInstance()->GetFBO(src);
+		auto dFBO = FBOManager::GetInstance()->GetFBO(dst);
+
+		if (flags & ZX_FRAME_BUFFER_PIECE_COLOR)
+		{
+			auto sColorBuffer = GetRenderBufferByIndex(sFBO->ColorBuffer);
+			auto dColorBuffer = GetRenderBufferByIndex(dFBO->ColorBuffer);
+
+			auto sColorTexture = GetTextureByIndex(sColorBuffer->renderBuffers[mCurrentFrame]);
+			auto dColorTexture = GetTextureByIndex(dColorBuffer->renderBuffers[mCurrentFrame]);
+
+			blitEncoder->copyFromTexture(sColorTexture->texture, dColorTexture->texture);
+		}
+
+		if (flags & ZX_FRAME_BUFFER_PIECE_DEPTH)
+		{
+			auto sDepthBuffer = GetRenderBufferByIndex(sFBO->DepthBuffer);
+			auto dDepthBuffer = GetRenderBufferByIndex(dFBO->DepthBuffer);
+
+			auto sDepthTexture = GetTextureByIndex(sDepthBuffer->renderBuffers[mCurrentFrame]);
+			auto dDepthTexture = GetTextureByIndex(dDepthBuffer->renderBuffers[mCurrentFrame]);
+
+			blitEncoder->copyFromTexture(sDepthTexture->texture, dDepthTexture->texture);
+		}
+
+		blitEncoder->endEncoding();
+
+		commandBuffer->commit();
+	}
+
+	FrameBufferObject* RenderAPIMetal::CreateFrameBufferObject(FrameBufferType type, unsigned int width, unsigned int height)
+	{
+		ClearInfo clearInfo = {};
+		return CreateFrameBufferObject(type, clearInfo, width, height);
+	}
+
+	FrameBufferObject* RenderAPIMetal::CreateFrameBufferObject(FrameBufferType type, const ClearInfo& clearInfo, unsigned int width, unsigned int height)
+	{
+		FrameBufferObject* FBO = new FrameBufferObject(type);
+		FBO->clearInfo = clearInfo;
+		FBO->isFollowWindow = width == 0 || height == 0;
+
+		width = width == 0 ? GlobalData::srcWidth : width;
+		height = height == 0 ? GlobalData::srcHeight : height;
+
+		FBO->width = width;
+		FBO->height = height;
+
+		if (type == FrameBufferType::Normal || type == FrameBufferType::Deferred)
+		{
+			FBO->ID = GetNextFBOIndex();
+			FBO->ColorBuffer = GetNextRenderBufferIndex();
+			auto colorBuffer = GetRenderBufferByIndex(FBO->ColorBuffer);
+			colorBuffer->inUse = true;
+			FBO->DepthBuffer = GetNextRenderBufferIndex();
+			auto depthBuffer = GetRenderBufferByIndex(FBO->DepthBuffer);
+			depthBuffer->inUse = true;
+
+			auto mtFBO = GetFBOByIndex(FBO->ID);
+			mtFBO->colorBufferIdx = FBO->ColorBuffer;
+			mtFBO->depthBufferIdx = FBO->DepthBuffer;
+			mtFBO->bufferType = type;
+			mtFBO->clearInfo = clearInfo;
+
+			for (uint32_t i = 0; i < MT_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				MTL::TextureDescriptor* colorBufferDesc = MTL::TextureDescriptor::texture2DDescriptor(
+					MTL::PixelFormatBGRA8Unorm,
+					static_cast<NS::Integer>(width),
+					static_cast<NS::Integer>(height),
+					false
+				);
+				colorBufferDesc->setStorageMode(MTL::StorageModePrivate);
+				colorBufferDesc->setUsage(MTL::TextureUsageShaderRead | MTL::TextureUsageRenderTarget);
+				colorBufferDesc->setResourceOptions(MTL::ResourceStorageModePrivate);
+		
+				colorBuffer->renderBuffers[i] = CreateMetalTexture(colorBufferDesc, width, height);
+
+				MTL::TextureDescriptor* depthBufferDesc = MTL::TextureDescriptor::texture2DDescriptor(
+					MTL::PixelFormatDepth32Float,
+					static_cast<NS::Integer>(width),
+					static_cast<NS::Integer>(height),
+					false
+				);
+				depthBufferDesc->setStorageMode(MTL::StorageModePrivate);
+				depthBufferDesc->setUsage(MTL::TextureUsageRenderTarget);
+				depthBufferDesc->setResourceOptions(MTL::ResourceStorageModePrivate);
+
+				depthBuffer->renderBuffers[i] = CreateMetalTexture(depthBufferDesc, width, height);
+			}
+
+			mtFBO->renderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
+			mtFBO->renderPassDescriptor->colorAttachments()->object(0)->setLoadAction(MTL::LoadActionLoad);
+			mtFBO->renderPassDescriptor->colorAttachments()->object(0)->setStoreAction(MTL::StoreActionStore);
+			mtFBO->renderPassDescriptor->colorAttachments()->object(0)->setClearColor(MTL::ClearColor(clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a));
+			mtFBO->renderPassDescriptor->depthAttachment()->setLoadAction(MTL::LoadActionClear);
+			mtFBO->renderPassDescriptor->depthAttachment()->setStoreAction(MTL::StoreActionStore);
+			mtFBO->renderPassDescriptor->depthAttachment()->setClearDepth(clearInfo.depth);
+
+			mtFBO->inUse = true;
+		}
+		else if (type == FrameBufferType::Color)
+		{
+			FBO->ID = GetNextFBOIndex();
+			FBO->ColorBuffer = GetNextRenderBufferIndex();
+			auto colorBuffer = GetRenderBufferByIndex(FBO->ColorBuffer);
+			colorBuffer->inUse = true;
+			FBO->DepthBuffer = UINT32_MAX;
+
+			auto mtFBO = GetFBOByIndex(FBO->ID);
+			mtFBO->colorBufferIdx = FBO->ColorBuffer;
+			mtFBO->bufferType = FrameBufferType::Color;
+			mtFBO->clearInfo = clearInfo;
+
+			for (uint32_t i = 0; i < MT_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				MTL::TextureDescriptor* colorBufferDesc = MTL::TextureDescriptor::texture2DDescriptor(
+					MTL::PixelFormatBGRA8Unorm,
+					static_cast<NS::Integer>(width),
+					static_cast<NS::Integer>(height),
+					false
+				);
+				colorBufferDesc->setStorageMode(MTL::StorageModePrivate);
+				colorBufferDesc->setUsage(MTL::TextureUsageShaderRead | MTL::TextureUsageRenderTarget);
+				colorBufferDesc->setResourceOptions(MTL::ResourceStorageModePrivate);
+
+				colorBuffer->renderBuffers[i] = CreateMetalTexture(colorBufferDesc, width, height);
+			}
+
+			mtFBO->renderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
+			mtFBO->renderPassDescriptor->colorAttachments()->object(0)->setLoadAction(MTL::LoadActionLoad);
+			mtFBO->renderPassDescriptor->colorAttachments()->object(0)->setStoreAction(MTL::StoreActionStore);
+			mtFBO->renderPassDescriptor->colorAttachments()->object(0)->setClearColor(MTL::ClearColor(clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a));
+
+			mtFBO->inUse = true;
+		}
+		else if (type == FrameBufferType::ShadowMap)
+		{
+			FBO->ID = GetNextFBOIndex();
+			FBO->ColorBuffer = UINT32_MAX;
+			FBO->DepthBuffer = GetNextRenderBufferIndex();
+			auto depthBuffer = GetRenderBufferByIndex(FBO->DepthBuffer);
+			depthBuffer->inUse = true;
+
+			auto mtFBO = GetFBOByIndex(FBO->ID);
+			mtFBO->depthBufferIdx = FBO->DepthBuffer;
+			mtFBO->bufferType = FrameBufferType::ShadowMap;
+			mtFBO->clearInfo = clearInfo;
+
+			for (uint32_t i = 0; i < MT_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				MTL::TextureDescriptor* depthBufferDesc = MTL::TextureDescriptor::texture2DDescriptor(
+					MTL::PixelFormatDepth32Float,
+					static_cast<NS::Integer>(width),
+					static_cast<NS::Integer>(height),
+					false
+				);
+				depthBufferDesc->setStorageMode(MTL::StorageModePrivate);
+				depthBufferDesc->setUsage(MTL::TextureUsageRenderTarget);
+				depthBufferDesc->setResourceOptions(MTL::ResourceStorageModePrivate);
+
+				depthBuffer->renderBuffers[i] = CreateMetalTexture(depthBufferDesc, width, height);
+			}
+
+			mtFBO->renderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
+			mtFBO->renderPassDescriptor->depthAttachment()->setLoadAction(MTL::LoadActionClear);
+			mtFBO->renderPassDescriptor->depthAttachment()->setStoreAction(MTL::StoreActionStore);
+			mtFBO->renderPassDescriptor->depthAttachment()->setClearDepth(clearInfo.depth);
+
+			mtFBO->inUse = true;
+		}
+		else if (type == FrameBufferType::ShadowCubeMap)
+		{
+			FBO->ID = GetNextFBOIndex();
+			FBO->ColorBuffer = UINT32_MAX;
+			FBO->DepthBuffer = GetNextRenderBufferIndex();
+			auto depthBuffer = GetRenderBufferByIndex(FBO->DepthBuffer);
+			depthBuffer->inUse = true;
+
+			auto mtFBO = GetFBOByIndex(FBO->ID);
+			mtFBO->depthBufferIdx = FBO->DepthBuffer;
+			mtFBO->bufferType = FrameBufferType::ShadowCubeMap;
+			mtFBO->clearInfo = clearInfo;
+
+			for (uint32_t i = 0; i < MT_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				MTL::TextureDescriptor* depthBufferDesc = MTL::TextureDescriptor::textureCubeDescriptor(
+					MTL::PixelFormatDepth32Float,
+					static_cast<NS::Integer>(width),
+					false
+				);
+				depthBufferDesc->setStorageMode(MTL::StorageModePrivate);
+				depthBufferDesc->setUsage(MTL::TextureUsageRenderTarget);
+				depthBufferDesc->setResourceOptions(MTL::ResourceStorageModePrivate);
+
+				depthBuffer->renderBuffers[i] = CreateMetalTexture(depthBufferDesc, width, width);
+			}
+
+			mtFBO->renderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
+			mtFBO->renderPassDescriptor->depthAttachment()->setLoadAction(MTL::LoadActionClear);
+			mtFBO->renderPassDescriptor->depthAttachment()->setStoreAction(MTL::StoreActionStore);
+			mtFBO->renderPassDescriptor->depthAttachment()->setClearDepth(clearInfo.depth);
+
+			mtFBO->inUse = true;
+		}
+		else if (type == FrameBufferType::GBuffer)
+		{
+			FBO->ID = GetNextFBOIndex();
+			FBO->ColorBuffer = GetNextRenderBufferIndex();
+			auto colorBuffer = GetRenderBufferByIndex(FBO->ColorBuffer);
+			colorBuffer->inUse = true;
+			FBO->DepthBuffer = GetNextRenderBufferIndex();
+			auto depthBuffer = GetRenderBufferByIndex(FBO->DepthBuffer);
+			depthBuffer->inUse = true;
+			FBO->PositionBuffer = GetNextRenderBufferIndex();
+			auto positionBuffer = GetRenderBufferByIndex(FBO->PositionBuffer);
+			positionBuffer->inUse = true;
+			FBO->NormalBuffer = GetNextRenderBufferIndex();
+			auto normalBuffer = GetRenderBufferByIndex(FBO->NormalBuffer);
+			normalBuffer->inUse = true;
+
+			auto mtFBO = GetFBOByIndex(FBO->ID);
+			mtFBO->colorBufferIdx = FBO->ColorBuffer;
+			mtFBO->depthBufferIdx = FBO->DepthBuffer;
+			mtFBO->positionBufferIdx = FBO->PositionBuffer;
+			mtFBO->normalBufferIdx = FBO->NormalBuffer;
+			mtFBO->bufferType = FrameBufferType::GBuffer;
+			mtFBO->clearInfo = clearInfo;
+
+			for (uint32_t i = 0; i < MT_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				MTL::TextureDescriptor* positionBufferDesc = MTL::TextureDescriptor::texture2DDescriptor(
+					MTL::PixelFormatRGBA32Float,
+					static_cast<NS::Integer>(width),
+					static_cast<NS::Integer>(height),
+					false
+				);
+				positionBufferDesc->setStorageMode(MTL::StorageModePrivate);
+				positionBufferDesc->setUsage(MTL::TextureUsageShaderRead | MTL::TextureUsageRenderTarget);
+				positionBufferDesc->setResourceOptions(MTL::ResourceStorageModePrivate);
+
+				positionBuffer->renderBuffers[i] = CreateMetalTexture(positionBufferDesc, width, height);
+
+				MTL::TextureDescriptor* normalBufferDesc = MTL::TextureDescriptor::texture2DDescriptor(
+					MTL::PixelFormatRGBA32Float,
+					static_cast<NS::Integer>(width),
+					static_cast<NS::Integer>(height),
+					false
+				);
+				normalBufferDesc->setStorageMode(MTL::StorageModePrivate);
+				normalBufferDesc->setUsage(MTL::TextureUsageShaderRead | MTL::TextureUsageRenderTarget);
+				normalBufferDesc->setResourceOptions(MTL::ResourceStorageModePrivate);
+
+				normalBuffer->renderBuffers[i] = CreateMetalTexture(normalBufferDesc, width, height);
+
+				MTL::TextureDescriptor* colorBufferDesc = MTL::TextureDescriptor::texture2DDescriptor(
+					MTL::PixelFormatBGRA8Unorm,
+					static_cast<NS::Integer>(width),
+					static_cast<NS::Integer>(height),
+					false
+				);
+				colorBufferDesc->setStorageMode(MTL::StorageModePrivate);
+				colorBufferDesc->setUsage(MTL::TextureUsageShaderRead | MTL::TextureUsageRenderTarget);
+				colorBufferDesc->setResourceOptions(MTL::ResourceStorageModePrivate);
+
+				colorBuffer->renderBuffers[i] = CreateMetalTexture(colorBufferDesc, width, height);
+
+				MTL::TextureDescriptor* depthBufferDesc = MTL::TextureDescriptor::texture2DDescriptor(
+					MTL::PixelFormatDepth32Float,
+					static_cast<NS::Integer>(width),
+					static_cast<NS::Integer>(height),
+					false
+				);
+				depthBufferDesc->setStorageMode(MTL::StorageModePrivate);
+				depthBufferDesc->setUsage(MTL::TextureUsageRenderTarget);
+				depthBufferDesc->setResourceOptions(MTL::ResourceStorageModePrivate);
+
+				depthBuffer->renderBuffers[i] = CreateMetalTexture(depthBufferDesc, width, height);
+			}
+
+			mtFBO->renderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
+			mtFBO->renderPassDescriptor->colorAttachments()->object(0)->setLoadAction(MTL::LoadActionClear);
+			mtFBO->renderPassDescriptor->colorAttachments()->object(0)->setStoreAction(MTL::StoreActionStore);
+			mtFBO->renderPassDescriptor->colorAttachments()->object(0)->setClearColor(MTL::ClearColor(0.0, 0.0, 0.0, 1.0));
+			mtFBO->renderPassDescriptor->colorAttachments()->object(1)->setLoadAction(MTL::LoadActionClear);
+			mtFBO->renderPassDescriptor->colorAttachments()->object(1)->setStoreAction(MTL::StoreActionStore);
+			mtFBO->renderPassDescriptor->colorAttachments()->object(1)->setClearColor(MTL::ClearColor(0.0, 0.0, 0.0, 0.0));
+			mtFBO->renderPassDescriptor->colorAttachments()->object(2)->setLoadAction(MTL::LoadActionClear);
+			mtFBO->renderPassDescriptor->colorAttachments()->object(2)->setStoreAction(MTL::StoreActionStore);
+			mtFBO->renderPassDescriptor->colorAttachments()->object(2)->setClearColor(MTL::ClearColor(clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a));
+			mtFBO->renderPassDescriptor->depthAttachment()->setLoadAction(MTL::LoadActionClear);
+			mtFBO->renderPassDescriptor->depthAttachment()->setStoreAction(MTL::StoreActionStore);
+			mtFBO->renderPassDescriptor->depthAttachment()->setClearDepth(clearInfo.depth);
+
+			mtFBO->inUse = true;
+		}
+		else if (type == FrameBufferType::RayTracing)
+		{
+			// 暂未实现
+		}
+		else
+		{
+			Debug::LogError("Invalide frame buffer type.");
+		}
+
+		return FBO;
+	}
+
+	void RenderAPIMetal::DeleteFrameBufferObject(FrameBufferObject* FBO)
+	{
+		DestroyFBOByIndex(FBO->ID);
+	}
+
+	uint32_t RenderAPIMetal::GetRenderBufferTexture(uint32_t id)
+	{
+		auto buffer = GetRenderBufferByIndex(id);
+		return buffer->renderBuffers[mCurrentFrame];
 	}
 
 	uint32_t RenderAPIMetal::CreateStaticInstanceBuffer(uint32_t size, uint32_t num, const void* data)
@@ -328,6 +668,102 @@ namespace ZXEngine
 	void RenderAPIMetal::DeleteShader(uint32_t id)
 	{
 		mPipelinesToDelete.insert(pair(id, MT_MAX_FRAMES_IN_FLIGHT));
+	}
+
+	uint32_t RenderAPIMetal::GetNextFBOIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mFBOArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mFBOArray[i]->inUse)
+				return i;
+		}
+
+		MetalFBO* fbo = new MetalFBO();
+		mFBOArray.push_back(fbo);
+
+		return length;
+	}
+
+	MetalFBO* RenderAPIMetal::GetFBOByIndex(uint32_t idx)
+	{
+		return mFBOArray[idx];
+	}
+
+	void RenderAPIMetal::DestroyFBOByIndex(uint32_t idx)
+	{
+		auto fbo = mFBOArray[idx];
+
+		if (fbo->colorBufferIdx != UINT32_MAX)
+		{
+			DestroyRenderBufferByIndex(fbo->colorBufferIdx);
+			fbo->colorBufferIdx = UINT32_MAX;
+		}
+		if (fbo->depthBufferIdx != UINT32_MAX)
+		{
+			DestroyRenderBufferByIndex(fbo->depthBufferIdx);
+			fbo->depthBufferIdx = UINT32_MAX;
+		}
+		if (fbo->positionBufferIdx != UINT32_MAX)
+		{
+			DestroyRenderBufferByIndex(fbo->positionBufferIdx);
+			fbo->positionBufferIdx = UINT32_MAX;
+		}
+		if (fbo->normalBufferIdx != UINT32_MAX)
+		{
+			DestroyRenderBufferByIndex(fbo->normalBufferIdx);
+			fbo->normalBufferIdx = UINT32_MAX;
+		}
+
+		fbo->bufferType = FrameBufferType::Normal;
+		fbo->clearInfo = {};
+
+		if (fbo->renderPassDescriptor)
+		{
+			fbo->renderPassDescriptor->release();
+			fbo->renderPassDescriptor = nullptr;
+		}
+
+		fbo->inUse = false;
+	}
+
+	uint32_t RenderAPIMetal::GetNextRenderBufferIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mRenderBufferArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mRenderBufferArray[i]->inUse)
+				return i;
+		}
+
+		MetalRenderBuffer* renderBuffer = new MetalRenderBuffer();
+		renderBuffer->renderBuffers.resize(MT_MAX_FRAMES_IN_FLIGHT, UINT32_MAX);
+		mRenderBufferArray.push_back(renderBuffer);
+
+		return length;
+	}
+
+	MetalRenderBuffer* RenderAPIMetal::GetRenderBufferByIndex(uint32_t idx)
+	{
+		return mRenderBufferArray[idx];
+	}
+
+	void RenderAPIMetal::DestroyRenderBufferByIndex(uint32_t idx)
+	{
+		auto renderBuffer = mRenderBufferArray[idx];
+
+		for (auto& buffer : renderBuffer->renderBuffers)
+		{
+			auto texture = GetTextureByIndex(buffer);
+			texture->texture->release();
+			texture->texture = nullptr;
+		}
+
+		renderBuffer->renderBuffers.resize(MT_MAX_FRAMES_IN_FLIGHT, UINT32_MAX);
+
+		renderBuffer->inUse = false;
 	}
 
 	uint32_t RenderAPIMetal::GetNextTextureIndex()
