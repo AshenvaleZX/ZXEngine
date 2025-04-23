@@ -184,10 +184,11 @@ namespace ZXEngine
 
 		uint32_t CreateMetalTexture(uint32_t width, uint32_t height, void* data = nullptr);
 		uint32_t CreateMetalTexture(MTL::TextureDescriptor* desc, uint32_t width, uint32_t height, void* data = nullptr);
-		uint32_t CreateMetalCubeMap(uint32_t width, const array<void*, 6>& datas);
+		uint32_t CreateMetalCubeMap(uint32_t width, const array<void*, 6>* datas = nullptr);
+		uint32_t CreateMetalCubeMap(MTL::TextureDescriptor* desc, uint32_t width, const array<void*, 6>* datas = nullptr);
 
 		void FillGPUTexture(MTL::Texture* texture, const void* data, uint32_t width, uint32_t height);
-		void FillGPUCubeMap(MTL::Texture* texture, const array<void*, 6>& datas, uint32_t width);
+		void FillGPUCubeMap(MTL::Texture* texture, const array<void*, 6>* datas, uint32_t width);
 
 		void CheckDeleteData();
 

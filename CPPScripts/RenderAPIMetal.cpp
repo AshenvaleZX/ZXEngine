@@ -144,7 +144,7 @@ namespace ZXEngine
 		for (size_t i = 0; i < faces.size(); i++)
 			textureData[i] = Resources::LoadTexture(faces[i], &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 
-		uint32_t textureID = CreateMetalCubeMap(static_cast<uint32_t>(texWidth), textureData);
+		uint32_t textureID = CreateMetalCubeMap(static_cast<uint32_t>(texWidth), &textureData);
 
 		for (size_t i = 0; i < faces.size(); i++)
 			stbi_image_free(textureData[i]);
@@ -165,7 +165,7 @@ namespace ZXEngine
 			textureData[i] = data->data[i];
 		}
 
-		return CreateMetalCubeMap(data->width, textureData);
+		return CreateMetalCubeMap(data->width, &textureData);
 	}
 
 	unsigned int RenderAPIMetal::GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data)
@@ -469,20 +469,26 @@ namespace ZXEngine
 		return textureID;
 	}
 
-	uint32_t RenderAPIMetal::CreateMetalCubeMap(uint32_t width, const array<void*, 6>& datas)
+	uint32_t RenderAPIMetal::CreateMetalCubeMap(uint32_t width, const array<void*, 6>* datas)
 	{
-		MTL::TextureDescriptor* textureDesc = MTL::TextureDescriptor::textureCubeDescriptor(
+		MTL::TextureDescriptor* desc = MTL::TextureDescriptor::textureCubeDescriptor(
 			MTL::PixelFormatBGRA8Unorm,
 			static_cast<NS::Integer>(width),
 			true
 		);
-		textureDesc->setStorageMode(MTL::StorageModePrivate);
-		textureDesc->setUsage(MTL::TextureUsageShaderRead);
-		textureDesc->setResourceOptions(MTL::ResourceStorageModePrivate);
+		desc->setStorageMode(MTL::StorageModePrivate);
+		desc->setUsage(MTL::TextureUsageShaderRead);
+		desc->setResourceOptions(MTL::ResourceStorageModePrivate);
 		
-		MTL::Texture* texture = mDevice->newTexture(textureDesc);
+		return CreateMetalCubeMap(desc, width, datas);
+	}
 
-		FillGPUCubeMap(texture, datas, width);
+	uint32_t RenderAPIMetal::CreateMetalCubeMap(MTL::TextureDescriptor* desc, uint32_t width, const array<void*, 6>* datas)
+	{
+		MTL::Texture* texture = mDevice->newTexture(desc);
+
+		if (datas)
+			FillGPUCubeMap(texture, datas, width);
 
 		uint32_t textureID = GetNextTextureIndex();
 		auto mtTexture = GetTextureByIndex(textureID);
@@ -518,7 +524,7 @@ namespace ZXEngine
 		tempTexture->release();
 	}
 
-	void RenderAPIMetal::FillGPUCubeMap(MTL::Texture* texture, const array<void*, 6>& datas, uint32_t width)
+	void RenderAPIMetal::FillGPUCubeMap(MTL::Texture* texture, const array<void*, 6>* datas, uint32_t width)
 	{
 		MTL::TextureDescriptor* tempTextureDesc = MTL::TextureDescriptor::textureCubeDescriptor(
 			texture->pixelFormat(),
@@ -532,7 +538,7 @@ namespace ZXEngine
 		for (size_t i = 0; i < 6; i++)
 		{
 			MTL::Region region = MTL::Region::Make2D(0, 0, width, width);
-			tempTexture->replaceRegion(region, 0, static_cast<NS::Integer>(i), datas[i],
+			tempTexture->replaceRegion(region, 0, static_cast<NS::Integer>(i), datas->at(i),
 				static_cast<NS::Integer>(width * 4), static_cast<NS::Integer>(width * width * 4));
 		}
 
