@@ -222,7 +222,11 @@ namespace ZXEngine
 		/// </summary>
 	private:
 		uint32_t mCurFBOIdx = 0;
+		uint32_t mCurPipeLineIdx = 0;
 		uint32_t mCurMaterialDataIdx = 0;
+
+		void* GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
+		vector<void*> GetShaderPropertyAddressAllBuffer(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
 
 		void ImmediatelyExecute(std::function<void(MTL::CommandBuffer* cmd)>&& function);
 	};
