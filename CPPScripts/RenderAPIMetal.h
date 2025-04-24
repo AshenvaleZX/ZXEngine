@@ -167,11 +167,13 @@ namespace ZXEngine
 		vector<MetalRenderBuffer*> mRenderBufferArray;
 		vector<MetalTexture*> mMetalTextureArray;
 		vector<MetalPipeline*> mMetalPipelineArray;
+		vector<MetalMaterialData*> mMaterialDataArray;
 		vector<MetalBuffer*> mMetalInstanceBufferArray;
 
 		unordered_map<uint32_t, uint32_t> mMeshsToDelete;
 		unordered_map<uint32_t, uint32_t> mTexturesToDelete;
 		unordered_map<uint32_t, uint32_t> mPipelinesToDelete;
+		unordered_map<uint32_t, uint32_t> mMaterialDatasToDelete;
 		unordered_map<uint32_t, uint32_t> mInstanceBuffersToDelete;
 
 		uint32_t GetNextVAOIndex();
@@ -193,6 +195,10 @@ namespace ZXEngine
 		uint32_t GetNextPipelineIndex();
 		MetalPipeline* GetPipelineByIndex(uint32_t idx);
 		void DestroyPipelineByIndex(uint32_t idx);
+
+		uint32_t GetNextMaterialDataIndex();
+		MetalMaterialData* GetMaterialDataByIndex(uint32_t idx);
+		void DestroyMaterialDataByIndex(uint32_t idx);
 
 		uint32_t GetNextInstanceBufferIndex();
 		MetalBuffer* GetInstanceBufferByIndex(uint32_t idx);
@@ -216,6 +222,7 @@ namespace ZXEngine
 		/// </summary>
 	private:
 		uint32_t mCurFBOIdx = 0;
+		uint32_t mCurMaterialDataIdx = 0;
 
 		void ImmediatelyExecute(std::function<void(MTL::CommandBuffer* cmd)>&& function);
 	};

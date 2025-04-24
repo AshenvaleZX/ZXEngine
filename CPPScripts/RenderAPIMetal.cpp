@@ -5,6 +5,10 @@
 #include "ShaderParser.h"
 #include "GlobalData.h"
 #include "FBOManager.h"
+#include "Material.h"
+#include "MaterialData.h"
+#include "ZShader.h"
+#include "Texture.h"
 
 namespace ZXEngine
 {
@@ -670,6 +674,87 @@ namespace ZXEngine
 		mPipelinesToDelete.insert(pair(id, MT_MAX_FRAMES_IN_FLIGHT));
 	}
 
+	uint32_t RenderAPIMetal::CreateMaterialData()
+	{
+		uint32_t materialDataID = GetNextMaterialDataIndex();
+		auto materialData = GetMaterialDataByIndex(materialDataID);
+
+		materialData->inUse = true;
+
+		return materialDataID;
+	}
+
+	void RenderAPIMetal::SetUpMaterial(Material* material)
+	{
+		auto shaderReference = material->shader->reference;
+		auto mtMaterialData = GetMaterialDataByIndex(material->data->GetID());
+
+		uint32_t bufferSize = 0;
+		if (shaderReference->shaderInfo.fragProperties.baseProperties.size() > 0)
+			bufferSize = shaderReference->shaderInfo.fragProperties.baseProperties.back().offset + shaderReference->shaderInfo.fragProperties.baseProperties.back().size;
+		else if (shaderReference->shaderInfo.vertProperties.baseProperties.size() > 0)
+			bufferSize = shaderReference->shaderInfo.vertProperties.baseProperties.back().offset + shaderReference->shaderInfo.vertProperties.baseProperties.back().size;
+
+		mtMaterialData->textures.resize(MT_MAX_FRAMES_IN_FLIGHT);
+		for (uint32_t i = 0; i < MT_MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			mtMaterialData->constantBuffers.push_back(mDevice->newBuffer(static_cast<NS::Integer>(bufferSize), MTL::ResourceStorageModeShared));
+
+			for (auto& matTexture : material->data->textures)
+			{
+				uint32_t binding = UINT32_MAX;
+
+				for (auto& textureProperty : shaderReference->shaderInfo.fragProperties.textureProperties)
+					if (matTexture.first == textureProperty.name)
+						binding = textureProperty.binding;
+
+				if (binding == UINT32_MAX)
+					for (auto& textureProperty : shaderReference->shaderInfo.vertProperties.textureProperties)
+						if (matTexture.first == textureProperty.name)
+							binding = textureProperty.binding;
+
+				if (binding == UINT32_MAX)
+					for (auto& textureProperty : shaderReference->shaderInfo.geomProperties.textureProperties)
+						if (matTexture.first == textureProperty.name)
+							binding = textureProperty.binding;
+
+				if (binding == UINT32_MAX)
+				{
+					Debug::LogError("No texture named " + matTexture.first + " matched !");
+					continue;
+				}
+
+				mtMaterialData->textures[i][binding] = matTexture.second->GetID();
+			}
+		}
+
+		// 设置材质数据
+		for (auto& property : material->data->vec2Datas)
+			SetShaderVector(material, property.first, property.second, true);
+		for (auto& property : material->data->vec3Datas)
+			SetShaderVector(material, property.first, property.second, true);
+		for (auto& property : material->data->vec4Datas)
+			SetShaderVector(material, property.first, property.second, true);
+		for (auto& property : material->data->floatDatas)
+			SetShaderScalar(material, property.first, property.second, true);
+		for (auto& property : material->data->uintDatas)
+			SetShaderScalar(material, property.first, property.second, true);
+		for (auto& property : material->data->colorDatas)
+			SetShaderVector(material, property.first, property.second, true);
+
+		material->data->initialized = true;
+	}
+
+	void RenderAPIMetal::UseMaterialData(uint32_t ID)
+	{
+		mCurMaterialDataIdx = ID;
+	}
+
+	void RenderAPIMetal::DeleteMaterialData(uint32_t id)
+	{
+		mMaterialDatasToDelete.insert(pair(id, MT_MAX_FRAMES_IN_FLIGHT));
+	}
+
 	void RenderAPIMetal::DeleteMesh(unsigned int VAO)
 	{
 		mMeshsToDelete.insert(pair(VAO, MT_MAX_FRAMES_IN_FLIGHT));
@@ -941,6 +1026,46 @@ namespace ZXEngine
 		}
 
 		pipeline->inUse = false;
+	}
+
+	uint32_t RenderAPIMetal::GetNextMaterialDataIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mMaterialDataArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mMaterialDataArray[i]->inUse)
+				return i;
+		}
+
+		MetalMaterialData* materialData = new MetalMaterialData();
+		mMaterialDataArray.push_back(materialData);
+
+		return length;
+	}
+
+	MetalMaterialData* RenderAPIMetal::GetMaterialDataByIndex(uint32_t idx)
+	{
+		return mMaterialDataArray[idx];
+	}
+	
+	void RenderAPIMetal::DestroyMaterialDataByIndex(uint32_t idx)
+	{
+		auto materialData = mMaterialDataArray[idx];
+
+		for (auto buffer : materialData->constantBuffers)
+		{
+			if (buffer)
+			{
+				buffer->release();
+				buffer = nullptr;
+			}
+		}
+		materialData->constantBuffers.clear();
+
+		materialData->textures.clear();
+
+		materialData->inUse = false;
 	}
 
 	uint32_t RenderAPIMetal::GetNextInstanceBufferIndex()

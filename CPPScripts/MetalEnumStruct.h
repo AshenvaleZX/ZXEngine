@@ -42,6 +42,13 @@ namespace ZXEngine
 		bool inUse = false;
 	};
 
+	struct MetalMaterialData
+	{
+		vector<MTL::Buffer*> constantBuffers;
+		vector<unordered_map<uint32_t, uint32_t>> textures;
+		bool inUse = false;
+	};
+
 	struct MetalRenderBuffer
 	{
 		vector<uint32_t> renderBuffers;
