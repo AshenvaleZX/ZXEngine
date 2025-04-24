@@ -38,6 +38,8 @@ namespace ZXEngine
 		static PropertyAlignInfo GetPropertyAlignInfoStd140(ShaderPropertyType type, uint32_t arrayLength);
 		static void SetUpPropertiesHLSL(ShaderInfo& info);
 		static PropertyAlignInfo GetPropertyAlignInfoHLSL(ShaderPropertyType type, uint32_t arrayLength);
+		static void SetUpPropertiesMSL(ShaderInfo& info);
+		static PropertyAlignInfo GetPropertyAlignInfoMSL(ShaderPropertyType type, uint32_t arrayLength);
 
 		static void SetPropertyAlignInfo(ShaderProperty& property, uint32_t& offset, GraphicsAPI api);
 	};

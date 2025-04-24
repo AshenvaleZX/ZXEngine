@@ -137,6 +137,9 @@ namespace ZXEngine
 		case ZXEngine::GraphicsAPI::D3D12:
 			apiMacro = "ZX_API_D3D12";
 			break;
+		case ZXEngine::GraphicsAPI::Metal:
+			apiMacro = "ZX_API_METAL";
+			break;
 		default:
 			break;
 		}
@@ -189,6 +192,8 @@ namespace ZXEngine
 
 		if (api == GraphicsAPI::D3D12)
 			SetUpPropertiesHLSL(info);
+		else if (api == GraphicsAPI::Metal)
+			SetUpPropertiesMSL(info);
 		else
 			SetUpPropertiesStd140(info);
 
@@ -1637,6 +1642,125 @@ namespace ZXEngine
 		}
 	}
 
+	void ShaderParser::SetUpPropertiesMSL(ShaderInfo& info)
+	{
+		// MSL文档链接: https://developer.apple.com/metal/Metal-Shading-Language-Specification.pdf
+		// 内存布局参考: 
+		// Table 2.2 Size and alignment of scalar data type
+		// Table 2.3 Size and alignment of vector data types
+		// Table 2.5 Size and alignment of matrix data types
+		// 但是文档里没有专门对数组形式的数据进行说明，先按照非数组形式挨着排列的方式来实现(即align和arrayOffset一致)
+
+		// 目前的ZXEngine里一个MSL Shader只有一个Constant/Uniform Buffer，所有变量严格按照VS，PS里的Properties声明顺序排列
+		uint32_t offset = 0;
+
+		if (!info.vertProperties.baseProperties.empty())
+		{
+			for (auto& property : info.vertProperties.baseProperties)
+			{
+				auto alignInfo = GetPropertyAlignInfoMSL(property.type, property.arrayLength);
+				property.size = alignInfo.size;
+				property.align = alignInfo.align;
+				property.arrayOffset = alignInfo.arrayOffset;
+				property.offset = Math::AlignUp(offset, property.align);
+
+				offset = property.offset + property.size;
+			}
+		}
+
+		if (!info.fragProperties.baseProperties.empty())
+		{
+			for (auto& property : info.fragProperties.baseProperties)
+			{
+				auto alignInfo = GetPropertyAlignInfoMSL(property.type, property.arrayLength);
+				property.size = alignInfo.size;
+				property.align = alignInfo.align;
+				property.arrayOffset = alignInfo.arrayOffset;
+				property.offset = Math::AlignUp(offset, property.align);
+
+				offset = property.offset + property.size;
+			}
+		}
+
+		// 这里的binding是指纹理在MSL里的[[texture(n)]]索引，严格按照VS，PS里的纹理声明顺序排列
+		uint32_t binding = 0;
+		for (auto& property : info.vertProperties.textureProperties)
+		{
+			property.binding = binding;
+			binding++;
+		}
+		for (auto& property : info.fragProperties.textureProperties)
+		{
+			property.binding = binding;
+			binding++;
+		}
+	}
+
+	PropertyAlignInfo ShaderParser::GetPropertyAlignInfoMSL(ShaderPropertyType type, uint32_t arrayLength)
+	{
+		static uint32_t std_size = sizeof(float);
+
+		if (type == ShaderPropertyType::BOOL)
+			if (arrayLength == 0)
+				return { .size = 1, .align = 1 };
+			else
+				return { .size = arrayLength, .align = 1, .arrayOffset = 1 };
+
+		else if (type == ShaderPropertyType::INT || type == ShaderPropertyType::UINT
+			|| type == ShaderPropertyType::FLOAT || type == ShaderPropertyType::ENGINE_LIGHT_INTENSITY 
+			|| type == ShaderPropertyType::ENGINE_FAR_PLANE || type == ShaderPropertyType::TEXTURE_INDEX)
+			if (arrayLength == 0)
+				return { .size = std_size, .align = std_size };
+			else
+				return { .size = std_size * arrayLength, .align = std_size, .arrayOffset = std_size };
+
+		else if (type == ShaderPropertyType::VEC2 || type == ShaderPropertyType::ENGINE_TIME)
+			if (arrayLength == 0)
+				return { .size = std_size * 2, .align = std_size * 2 };
+			else
+				return { .size = (std_size * 2) * arrayLength, .align = std_size * 2, .arrayOffset = std_size * 2 };
+
+		else if (type == ShaderPropertyType::VEC3 || type == ShaderPropertyType::ENGINE_CAMERA_POS
+			|| type == ShaderPropertyType::ENGINE_LIGHT_POS || type == ShaderPropertyType::ENGINE_LIGHT_DIR
+			|| type == ShaderPropertyType::ENGINE_LIGHT_COLOR)
+			if (arrayLength == 0)
+				return { .size = std_size * 3, .align = std_size * 4 };
+			else
+				return { .size = (std_size * 4) * arrayLength, .align = std_size * 4, .arrayOffset = std_size * 4 };
+
+		else if (type == ShaderPropertyType::VEC4)
+			if (arrayLength == 0)
+				return { .size = std_size * 4, .align = std_size * 4 };
+			else
+				return { .size = (std_size * 4) * arrayLength, .align = std_size * 4, .arrayOffset = std_size * 4 };
+
+		else if (type == ShaderPropertyType::MAT2)
+			if (arrayLength == 0)
+				return { .size = std_size * 4, .align = std_size * 2 };
+			else
+				return { .size = (std_size * 4) * arrayLength, .align = std_size * 2, .arrayOffset = std_size * 4 };
+
+		else if (type == ShaderPropertyType::MAT3)
+			if (arrayLength == 0)
+				return { .size = std_size * (4 * 3), .align = std_size * 4 };
+			else
+				return { .size = std_size * (4 * 3) * arrayLength, .align = std_size * 4, .arrayOffset = std_size * (4 * 3) };
+
+		else if (type == ShaderPropertyType::MAT4 || type == ShaderPropertyType::ENGINE_MODEL
+			|| type == ShaderPropertyType::ENGINE_VIEW || type == ShaderPropertyType::ENGINE_PROJECTION
+			|| type == ShaderPropertyType::ENGINE_MODEL_INV || type == ShaderPropertyType::ENGINE_LIGHT_MAT
+			|| type == ShaderPropertyType::ENGINE_VIEW_INV || type == ShaderPropertyType::ENGINE_PROJECTION_INV)
+			if (arrayLength == 0)
+				return { .size = std_size * 16, .align = std_size * 4 };
+			else
+				return { .size = std_size * 16 * arrayLength, .align = std_size * 4, .arrayOffset = std_size * 16 };
+		else
+		{
+			Debug::LogError("Invalid shader property type !");
+			return {};
+		}
+	}
+
 	void ShaderParser::SetUpRTMaterialData(MaterialData* materialData, GraphicsAPI api)
 	{
 		uint32_t offset = 0;
@@ -1714,8 +1838,13 @@ namespace ZXEngine
 
 	void ShaderParser::SetPropertyAlignInfo(ShaderProperty& property, uint32_t& offset, GraphicsAPI api)
 	{
-		auto alignInfo = api == GraphicsAPI::D3D12 ? 
-			GetPropertyAlignInfoHLSL(property.type, property.arrayLength) : GetPropertyAlignInfoStd140(property.type, property.arrayLength);
+		PropertyAlignInfo alignInfo;
+		if (api == GraphicsAPI::D3D12) 
+			alignInfo = GetPropertyAlignInfoHLSL(property.type, property.arrayLength);
+		else if (api == GraphicsAPI::Metal)
+			alignInfo = GetPropertyAlignInfoMSL(property.type, property.arrayLength);
+		else
+			alignInfo = GetPropertyAlignInfoStd140(property.type, property.arrayLength);
 
 		property.size = alignInfo.size;
 		property.align = alignInfo.align;
