@@ -91,6 +91,8 @@ namespace ZXEngine
 
 	void RenderAPIMetal::WaitForRenderFinish()
 	{
+		// 没有直接可以等待渲染完成的接口，所以添加一个新的空Command到队列末尾，然后等待它完成
+		// 这样可以确保所有之前的Command都已经完成
 		MTL::CommandBuffer* commandBuffer = mCommandQueue->commandBuffer();
 		commandBuffer->commit();
 		commandBuffer->waitUntilCompleted();
@@ -98,11 +100,7 @@ namespace ZXEngine
 
 	void RenderAPIMetal::SwitchFrameBuffer(uint32_t id)
 	{
-		if (id == UINT32_MAX)
-			// TODO: 这里需要以某种形式切换到Present Buffer
-			mCurFBOIdx = 0;
-		else
-			mCurFBOIdx = id;
+		mCurFBOIdx = id;
 	}
 
 	void RenderAPIMetal::ClearFrameBuffer(FrameBufferClearFlags clearFlags)
@@ -719,7 +717,8 @@ namespace ZXEngine
 		mtMaterialData->textures.resize(MT_MAX_FRAMES_IN_FLIGHT);
 		for (uint32_t i = 0; i < MT_MAX_FRAMES_IN_FLIGHT; i++)
 		{
-			mtMaterialData->constantBuffers.push_back(mDevice->newBuffer(static_cast<NS::Integer>(bufferSize), MTL::ResourceStorageModeShared));
+			if (bufferSize > 0)
+				mtMaterialData->constantBuffers.push_back(mDevice->newBuffer(static_cast<NS::Integer>(bufferSize), MTL::ResourceStorageModeShared));
 
 			for (auto& matTexture : material->data->textures)
 			{
@@ -774,6 +773,266 @@ namespace ZXEngine
 	void RenderAPIMetal::DeleteMaterialData(uint32_t id)
 	{
 		mMaterialDatasToDelete.insert(pair(id, MT_MAX_FRAMES_IN_FLIGHT));
+	}
+
+	uint32_t RenderAPIMetal::AllocateDrawCommand(CommandType commandType, FrameBufferClearFlags clearFlags)
+	{
+		uint32_t idx = GetNextDrawCommandIndex();
+		auto drawCmd = GetDrawCommandByIndex(idx);
+		drawCmd->clearFlags = clearFlags;
+		drawCmd->commandType = commandType;
+
+		drawCmd->inUse = true;
+
+		return idx;
+	}
+
+	void RenderAPIMetal::FreeDrawCommand(uint32_t commandID)
+	{
+		mDrawCommandsToDelete.insert(pair(commandID, MT_MAX_FRAMES_IN_FLIGHT));
+	}
+
+	void RenderAPIMetal::Draw(uint32_t VAO)
+	{
+		mDrawRecords.emplace_back(VAO, mCurPipeLineIdx, mCurMaterialDataIdx, 0, UINT32_MAX);
+	}
+
+	void RenderAPIMetal::DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer)
+	{
+		mDrawRecords.emplace_back(VAO, mCurPipeLineIdx, mCurMaterialDataIdx, instanceNum, instanceBuffer);
+	}
+
+	void RenderAPIMetal::GenerateDrawCommand(uint32_t id)
+	{
+		auto drawCommand = GetDrawCommandByIndex(id);
+		MTL::CommandBuffer* pCmd = mCommandQueue->commandBuffer();
+		MTL::RenderCommandEncoder* pEncoder = nullptr;
+
+		// 设置RenderTarget和Clear信息
+		if (mCurFBOIdx == UINT32_MAX)
+		{
+			// Present Buffer
+			MTL::RenderPassDescriptor* renderPassDesc = MTL::RenderPassDescriptor::alloc()->init();
+			renderPassDesc->colorAttachments()->object(0)->setLoadAction(MTL::LoadActionLoad);
+			renderPassDesc->colorAttachments()->object(0)->setStoreAction(MTL::StoreActionStore);
+			renderPassDesc->colorAttachments()->object(0)->setTexture(mMetalView->currentDrawable()->texture());
+
+			pEncoder = pCmd->renderCommandEncoder(renderPassDesc);
+		}
+		else
+		{
+			auto curFBO = GetFBOByIndex(mCurFBOIdx);
+			MetalTexture* colorBuffer = nullptr;
+			MetalTexture* depthBuffer = nullptr;
+			MetalTexture* positionBuffer = nullptr;
+			MetalTexture* normalBuffer = nullptr;
+
+			if (curFBO->bufferType == FrameBufferType::Normal)
+			{
+				colorBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->colorBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+				depthBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->depthBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+
+				curFBO->renderPassDescriptor->colorAttachments()->object(0)->setTexture(colorBuffer->texture);
+				curFBO->renderPassDescriptor->depthAttachment()->setTexture(depthBuffer->texture);
+
+				auto& clearInfo = curFBO->clearInfo;
+
+				if (drawCommand->clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
+				{
+					curFBO->renderPassDescriptor->colorAttachments()->object(0)->setLoadAction(MTL::LoadActionClear);
+					curFBO->renderPassDescriptor->colorAttachments()->object(0)->setClearColor(MTL::ClearColor(clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a));
+				}
+				else
+				{
+					curFBO->renderPassDescriptor->colorAttachments()->object(0)->setLoadAction(MTL::LoadActionLoad);
+				}
+
+				if (drawCommand->clearFlags & ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT)
+				{
+					curFBO->renderPassDescriptor->depthAttachment()->setLoadAction(MTL::LoadActionClear);
+					curFBO->renderPassDescriptor->depthAttachment()->setClearDepth(clearInfo.depth);
+				}
+				else
+				{
+					curFBO->renderPassDescriptor->depthAttachment()->setLoadAction(MTL::LoadActionLoad);
+				}
+			}
+			else if (curFBO->bufferType == FrameBufferType::Color || curFBO->bufferType == FrameBufferType::HigthPrecision)
+			{
+				colorBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->colorBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+
+				curFBO->renderPassDescriptor->colorAttachments()->object(0)->setTexture(colorBuffer->texture);
+
+				auto& clearInfo = curFBO->clearInfo;
+
+				if (drawCommand->clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
+				{
+					curFBO->renderPassDescriptor->colorAttachments()->object(0)->setLoadAction(MTL::LoadActionClear);
+					curFBO->renderPassDescriptor->colorAttachments()->object(0)->setClearColor(MTL::ClearColor(clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a));
+				}
+				else
+				{
+					curFBO->renderPassDescriptor->colorAttachments()->object(0)->setLoadAction(MTL::LoadActionLoad);
+				}
+			}
+			else if (curFBO->bufferType == FrameBufferType::ShadowMap || curFBO->bufferType == FrameBufferType::ShadowCubeMap)
+			{
+				depthBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->depthBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+
+				curFBO->renderPassDescriptor->depthAttachment()->setTexture(depthBuffer->texture);
+
+				auto& clearInfo = curFBO->clearInfo;
+
+				if (drawCommand->clearFlags & ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT)
+				{
+					curFBO->renderPassDescriptor->depthAttachment()->setLoadAction(MTL::LoadActionClear);
+					curFBO->renderPassDescriptor->depthAttachment()->setClearDepth(clearInfo.depth);
+				}
+				else
+				{
+					curFBO->renderPassDescriptor->depthAttachment()->setLoadAction(MTL::LoadActionLoad);
+				}
+			}
+			else if (curFBO->bufferType == FrameBufferType::GBuffer)
+			{
+				colorBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->colorBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+				positionBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->positionBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+				normalBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->normalBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+				depthBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->depthBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+
+				curFBO->renderPassDescriptor->colorAttachments()->object(0)->setTexture(positionBuffer->texture);
+				curFBO->renderPassDescriptor->colorAttachments()->object(1)->setTexture(normalBuffer->texture);
+				curFBO->renderPassDescriptor->colorAttachments()->object(2)->setTexture(colorBuffer->texture);
+				curFBO->renderPassDescriptor->depthAttachment()->setTexture(depthBuffer->texture);
+
+				auto& clearInfo = curFBO->clearInfo;
+
+				if (drawCommand->clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
+				{
+					curFBO->renderPassDescriptor->colorAttachments()->object(0)->setLoadAction(MTL::LoadActionClear);
+					curFBO->renderPassDescriptor->colorAttachments()->object(0)->setClearColor(MTL::ClearColor(0.0, 0.0, 0.0, 1.0));
+					curFBO->renderPassDescriptor->colorAttachments()->object(1)->setLoadAction(MTL::LoadActionClear);
+					curFBO->renderPassDescriptor->colorAttachments()->object(1)->setClearColor(MTL::ClearColor(0.0, 0.0, 0.0, 0.0));
+					curFBO->renderPassDescriptor->colorAttachments()->object(2)->setLoadAction(MTL::LoadActionClear);
+					curFBO->renderPassDescriptor->colorAttachments()->object(2)->setClearColor(MTL::ClearColor(clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a));
+				}
+				else
+				{
+					curFBO->renderPassDescriptor->colorAttachments()->object(0)->setLoadAction(MTL::LoadActionLoad);
+					curFBO->renderPassDescriptor->colorAttachments()->object(1)->setLoadAction(MTL::LoadActionLoad);
+					curFBO->renderPassDescriptor->colorAttachments()->object(2)->setLoadAction(MTL::LoadActionLoad);
+				}
+
+				if (drawCommand->clearFlags & ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT)
+				{
+					curFBO->renderPassDescriptor->depthAttachment()->setLoadAction(MTL::LoadActionClear);
+					curFBO->renderPassDescriptor->depthAttachment()->setClearDepth(clearInfo.depth);
+				}
+				else
+				{
+					curFBO->renderPassDescriptor->depthAttachment()->setLoadAction(MTL::LoadActionLoad);
+				}
+			}
+			else if (curFBO->bufferType == FrameBufferType::Deferred)
+			{
+				colorBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->colorBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+				depthBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->depthBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
+
+				curFBO->renderPassDescriptor->colorAttachments()->object(0)->setTexture(colorBuffer->texture);
+				curFBO->renderPassDescriptor->depthAttachment()->setTexture(depthBuffer->texture);
+
+				auto& clearInfo = curFBO->clearInfo;
+
+				if (drawCommand->clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
+				{
+					curFBO->renderPassDescriptor->colorAttachments()->object(0)->setLoadAction(MTL::LoadActionClear);
+					curFBO->renderPassDescriptor->colorAttachments()->object(0)->setClearColor(MTL::ClearColor(clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a));
+				}
+				else
+				{
+					curFBO->renderPassDescriptor->colorAttachments()->object(0)->setLoadAction(MTL::LoadActionLoad);
+				}
+
+				// Deferred Buffer的深度缓存来自G-Buffer，不清理
+				curFBO->renderPassDescriptor->depthAttachment()->setLoadAction(MTL::LoadActionLoad);
+			}
+			
+			pEncoder = pCmd->renderCommandEncoder(curFBO->renderPassDescriptor);
+		}
+
+		// 设置Viewport
+		MTL::Viewport viewport;
+		viewport.originX = mViewPortInfo.xOffset;
+		viewport.originY = mViewPortInfo.yOffset;
+		viewport.width = mViewPortInfo.width;
+		viewport.height = mViewPortInfo.height;
+		viewport.znear = 0.0f;
+		viewport.zfar = 1.0f;
+		pEncoder->setViewport(viewport);
+
+		// 设置Scissor
+		MTL::ScissorRect scissor;
+		scissor.x = mViewPortInfo.xOffset;
+		scissor.y = mViewPortInfo.yOffset;
+		scissor.width = mViewPortInfo.width;
+		scissor.height = mViewPortInfo.height;
+		pEncoder->setScissorRect(scissor);
+
+		pEncoder->setTriangleFillMode(MTL::TriangleFillModeFill);
+		pEncoder->setFrontFacingWinding(MTL::WindingCounterClockwise);
+
+		for (auto& drawRecord : mDrawRecords)
+		{
+			auto VAO = GetVAOByIndex(drawRecord.VAO);
+			auto pipeline = GetPipelineByIndex(drawRecord.pipelineID);
+			auto materialData = GetMaterialDataByIndex(drawRecord.materialDataID);
+
+			pEncoder->setDepthStencilState(pipeline->depthStencilState);
+			pEncoder->setCullMode(mtFaceCullOptionMap[pipeline->faceCullOption]);
+
+			pEncoder->setRenderPipelineState(pipeline->pipeline);
+
+			pEncoder->setVertexBuffer(VAO->vertexBuffer, 0, 0);
+
+			NS::UInteger bufferIndex = 1;
+			if (!materialData->constantBuffers.empty())
+			{
+				pEncoder->setVertexBuffer(materialData->constantBuffers[mCurrentFrame], 0, bufferIndex);
+				pEncoder->setFragmentBuffer(materialData->constantBuffers[mCurrentFrame], 0, bufferIndex);
+				bufferIndex++;
+			}
+			if (drawRecord.instanceBuffer != UINT32_MAX)
+			{
+				auto instanceBuffer = GetInstanceBufferByIndex(drawRecord.instanceBuffer);
+				pEncoder->setVertexBuffer(instanceBuffer->buffer, 0, bufferIndex);
+			}
+
+			for (auto& texture : materialData->textures[mCurrentFrame])
+			{
+				auto mtTexture = GetTextureByIndex(texture.second);
+				pEncoder->setFragmentTexture(mtTexture->texture, texture.first);
+			}
+
+			if (drawRecord.instanceBuffer == UINT32_MAX)
+				pEncoder->drawIndexedPrimitives(MTL::PrimitiveTypeTriangle, VAO->indexCount, MTL::IndexTypeUInt32, VAO->indexBuffer, 0);
+			else
+				pEncoder->drawIndexedPrimitives(MTL::PrimitiveTypeTriangle, VAO->indexCount, MTL::IndexTypeUInt32, VAO->indexBuffer, 0, drawRecord.instanceNum);
+		}
+
+		pEncoder->endEncoding();
+
+#ifndef ZX_EDITOR
+		if (drawCommand->commandType == CommandType::UIRendering)
+		{
+			pCmd->presentDrawable(mMetalView->currentDrawable());
+			pCmd->addCompletedHandler([=](MTL::CommandBuffer* cmd)
+			{
+				dispatch_semaphore_signal(mSemaphore);
+			});
+		}
+#endif
+
+		pCmd->commit();
 	}
 
 	void RenderAPIMetal::DeleteMesh(unsigned int VAO)
@@ -1467,6 +1726,37 @@ namespace ZXEngine
 		instanceBuffer->inUse = false;
 	}
 
+	uint32_t RenderAPIMetal::GetNextDrawCommandIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mDrawCommandArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mDrawCommandArray[i]->inUse)
+				return i;
+		}
+
+		MetalDrawCommand* drawCmd = new MetalDrawCommand();
+		mDrawCommandArray.push_back(drawCmd);
+
+		return length;
+	}
+
+	MetalDrawCommand* RenderAPIMetal::GetDrawCommandByIndex(uint32_t idx)
+	{
+		return mDrawCommandArray[idx];
+	}
+
+	void RenderAPIMetal::DestroyDrawCommandByIndex(uint32_t idx)
+	{
+		auto drawCmd = mDrawCommandArray[idx];
+
+		drawCmd->commandType = CommandType::NotCare;
+		drawCmd->clearFlags = ZX_CLEAR_FRAME_BUFFER_NONE_BIT;
+
+		drawCmd->inUse = false;
+	}
+
 	MTL::Buffer* RenderAPIMetal::CreateMetalBuffer(size_t size, MTL::ResourceOptions resOpt, const void* data)
 	{
 		MTL::Buffer* buffer = mDevice->newBuffer(static_cast<NS::Integer>(size), resOpt);
@@ -1613,6 +1903,20 @@ namespace ZXEngine
 	{
 		vector<uint32_t> deleteList = {};
 
+		// Mesh
+		for (auto& iter : mMeshsToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroyVAOByIndex(id);
+			mMeshsToDelete.erase(id);
+		}
+
 		// Texture
 		deleteList.clear();
 		for (auto& iter : mTexturesToDelete)
@@ -1643,6 +1947,21 @@ namespace ZXEngine
 			mPipelinesToDelete.erase(id);
 		}
 
+		// Material Data
+		deleteList.clear();
+		for (auto& iter : mMaterialDatasToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroyMaterialDataByIndex(id);
+			mMaterialDatasToDelete.erase(id);
+		}
+
 		// Instance Buffer
 		deleteList.clear();
 		for (auto& iter : mInstanceBuffersToDelete)
@@ -1657,6 +1976,26 @@ namespace ZXEngine
 			DestroyInstanceBufferByIndex(id);
 			mInstanceBuffersToDelete.erase(id);
 		}
+
+		// Draw Command
+		deleteList.clear();
+		for (auto& iter : mDrawCommandsToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroyDrawCommandByIndex(id);
+			mDrawCommandsToDelete.erase(id);
+		}
+	}
+
+	uint32_t RenderAPIMetal::GetCurFrameBufferIndex() const
+	{
+		return mCurrentFrame;
 	}
 
 	void* RenderAPIMetal::GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx)

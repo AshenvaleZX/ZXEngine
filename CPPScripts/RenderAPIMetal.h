@@ -169,12 +169,14 @@ namespace ZXEngine
 		vector<MetalPipeline*> mMetalPipelineArray;
 		vector<MetalMaterialData*> mMaterialDataArray;
 		vector<MetalBuffer*> mMetalInstanceBufferArray;
+		vector<MetalDrawCommand*> mDrawCommandArray;
 
 		unordered_map<uint32_t, uint32_t> mMeshsToDelete;
 		unordered_map<uint32_t, uint32_t> mTexturesToDelete;
 		unordered_map<uint32_t, uint32_t> mPipelinesToDelete;
 		unordered_map<uint32_t, uint32_t> mMaterialDatasToDelete;
 		unordered_map<uint32_t, uint32_t> mInstanceBuffersToDelete;
+		unordered_map<uint32_t, uint32_t> mDrawCommandsToDelete;
 
 		uint32_t GetNextVAOIndex();
 		MetalVAO* GetVAOByIndex(uint32_t idx);
@@ -204,6 +206,10 @@ namespace ZXEngine
 		MetalBuffer* GetInstanceBufferByIndex(uint32_t idx);
 		void DestroyInstanceBufferByIndex(uint32_t idx);
 
+		uint32_t GetNextDrawCommandIndex();
+		MetalDrawCommand* GetDrawCommandByIndex(uint32_t idx);
+		void DestroyDrawCommandByIndex(uint32_t idx);
+
 		MTL::Buffer* CreateMetalBuffer(size_t size, MTL::ResourceOptions flags, const void* data = nullptr);
 
 		uint32_t CreateMetalTexture(uint32_t width, uint32_t height, void* data = nullptr);
@@ -224,8 +230,11 @@ namespace ZXEngine
 		uint32_t mCurFBOIdx = 0;
 		uint32_t mCurPipeLineIdx = 0;
 		uint32_t mCurMaterialDataIdx = 0;
+		vector<MetalDrawRecord> mDrawRecords;
 		
 		ViewPortInfo mViewPortInfo;
+
+		uint32_t GetCurFrameBufferIndex() const;
 
 		void* GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
 		vector<void*> GetShaderPropertyAddressAllBuffer(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);

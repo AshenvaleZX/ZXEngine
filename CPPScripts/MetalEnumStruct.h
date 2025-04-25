@@ -49,6 +49,14 @@ namespace ZXEngine
 		bool inUse = false;
 	};
 
+	// Metal的MTL::CommandBuffer是一个一次性对象，没必要也不可以重复使用，所以这里没有CommandBuffer
+	struct MetalDrawCommand
+	{
+		CommandType commandType = CommandType::NotCare;
+		FrameBufferClearFlags clearFlags = ZX_CLEAR_FRAME_BUFFER_NONE_BIT;
+		bool inUse = false;
+	};
+
 	struct MetalRenderBuffer
 	{
 		vector<uint32_t> renderBuffers;
@@ -66,4 +74,18 @@ namespace ZXEngine
 		MTL::RenderPassDescriptor* renderPassDescriptor = nullptr;
 		bool inUse = false;
 	};
+
+    struct MetalDrawRecord
+    {
+        uint32_t VAO = 0;
+        uint32_t pipelineID = 0;
+        uint32_t materialDataID = 0;
+        uint32_t instanceNum = 0;
+        uint32_t instanceBuffer = UINT32_MAX;
+
+        // 必须显示声明构造函数，否则在MacOS上无法使用emplace操作在一些容器中直接构造
+        MetalDrawRecord(uint32_t vao, uint32_t pipelineID, uint32_t materialDataID, uint32_t instanceNum, uint32_t instanceBuffer) :
+            VAO(vao), pipelineID(pipelineID), materialDataID(materialDataID), instanceNum(instanceNum), instanceBuffer(instanceBuffer)
+        {}
+    };
 }
