@@ -75,6 +75,27 @@ namespace ZXEngine
 		mCurrentFrame = (mCurrentFrame + 1) % MT_MAX_FRAMES_IN_FLIGHT;
 	}
 
+	void RenderAPIMetal::SetRenderState(RenderStateSetting* state)
+	{
+		// Metal不需要实现这个接口
+	}
+
+	void RenderAPIMetal::SetViewPort(unsigned int width, unsigned int height, unsigned int xOffset, unsigned int yOffset)
+	{
+		mViewPortInfo.width = width;
+		mViewPortInfo.height = height;
+		// 0点在左上角
+		mViewPortInfo.xOffset = xOffset;
+		mViewPortInfo.yOffset = yOffset;
+	}
+
+	void RenderAPIMetal::WaitForRenderFinish()
+	{
+		MTL::CommandBuffer* commandBuffer = mCommandQueue->commandBuffer();
+		commandBuffer->commit();
+		commandBuffer->waitUntilCompleted();
+	}
+
 	void RenderAPIMetal::SwitchFrameBuffer(uint32_t id)
 	{
 		if (id == UINT32_MAX)
