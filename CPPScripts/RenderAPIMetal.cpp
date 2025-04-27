@@ -9,6 +9,10 @@
 #include "MaterialData.h"
 #include "ZShader.h"
 #include "Texture.h"
+#include "EventManager.h"
+#ifdef ZX_EDITOR
+#include "Editor/EditorGUIManager.h"
+#endif
 
 namespace ZXEngine
 {
@@ -73,6 +77,18 @@ namespace ZXEngine
 	void RenderAPIMetal::EndFrame()
 	{
 		mCurrentFrame = (mCurrentFrame + 1) % MT_MAX_FRAMES_IN_FLIGHT;
+	}
+
+	void RenderAPIMetal::OnWindowSizeChange(uint32_t width, uint32_t height)
+	{
+		mNewWindowWidth = width;
+		mNewWindowHeight = height;
+		mWindowResized = true;
+	}
+
+	void RenderAPIMetal::OnGameViewSizeChange()
+	{
+		mGameViewResized = true;
 	}
 
 	void RenderAPIMetal::SetRenderState(RenderStateSetting* state)
@@ -1996,6 +2012,40 @@ namespace ZXEngine
 	uint32_t RenderAPIMetal::GetCurFrameBufferIndex() const
 	{
 		return mCurrentFrame;
+	}
+
+	void RenderAPIMetal::DoWindowSizeChange()
+	{
+		WaitForRenderFinish();
+
+#ifdef ZX_EDITOR
+		ProjectSetting::SetWindowSize(mNewWindowWidth, mNewWindowHeight);
+#else
+		GlobalData::srcWidth = mNewWindowWidth;
+		GlobalData::srcHeight = mNewWindowHeight;
+#endif
+
+		// 这个调用类似于重新创建Present Buffer
+		mMetalView->setDrawableSize(CGSizeMake(mNewWindowWidth, mNewWindowHeight));
+		
+		// 重新创建所有大小随窗口变化的FBO
+		FBOManager::GetInstance()->RecreateAllFollowWindowFBO();
+
+#ifdef ZX_EDITOR
+		EditorGUIManager::GetInstance()->OnWindowSizeChange();
+#endif
+
+		EventManager::GetInstance()->FireEvent(EventType::WINDOW_RESIZE, "");
+
+		mWindowResized = false;
+	}
+
+	void RenderAPIMetal::DoGameViewSizeChange()
+	{
+		WaitForRenderFinish();
+		FBOManager::GetInstance()->RecreateAllFollowWindowFBO();
+		EventManager::GetInstance()->FireEvent(EventType::WINDOW_RESIZE, "");
+		mGameViewResized = false;
 	}
 
 	void* RenderAPIMetal::GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx)

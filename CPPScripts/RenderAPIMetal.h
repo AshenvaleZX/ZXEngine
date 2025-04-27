@@ -227,14 +227,22 @@ namespace ZXEngine
 		/// 其它辅助接口
 		/// </summary>
 	private:
+		bool mWindowResized = false;
+		bool mGameViewResized = false;
+		uint32_t mNewWindowWidth = 0;
+		uint32_t mNewWindowHeight = 0;
+
 		uint32_t mCurFBOIdx = 0;
 		uint32_t mCurPipeLineIdx = 0;
 		uint32_t mCurMaterialDataIdx = 0;
 		vector<MetalDrawRecord> mDrawRecords;
-		
+
 		ViewPortInfo mViewPortInfo;
 
 		uint32_t GetCurFrameBufferIndex() const;
+
+		void DoWindowSizeChange();
+		void DoGameViewSizeChange();
 
 		void* GetShaderPropertyAddress(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
 		vector<void*> GetShaderPropertyAddressAllBuffer(ShaderReference* reference, uint32_t materialDataID, const string& name, uint32_t idx = 0);
