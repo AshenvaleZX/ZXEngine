@@ -12,6 +12,7 @@
 #include "EventManager.h"
 #ifdef ZX_EDITOR
 #include "Editor/EditorGUIManager.h"
+#include "Editor/ImGuiTextureManager.h"
 #endif
 
 namespace ZXEngine
@@ -1626,6 +1627,10 @@ namespace ZXEngine
 		}
 
 		texture->inUse = false;
+
+#ifdef ZX_EDITOR
+		ImGuiTextureManager::GetInstance()->DeleteByEngineID(idx);
+#endif
 	}
 
 	uint32_t RenderAPIMetal::GetNextPipelineIndex()

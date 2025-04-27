@@ -1,5 +1,6 @@
 #pragma once
 #include "pubh.h"
+#include "PublicStruct.h"
 
 #define MTL_PRIVATE_IMPLEMENTATION
 #define MTK_PRIVATE_IMPLEMENTATION
