@@ -2,6 +2,14 @@
 #include "WindowManagerMacOS.h"
 #include "../ProjectSetting.h"
 
+#define NS_PRIVATE_IMPLEMENTATION
+#define MTL_PRIVATE_IMPLEMENTATION
+#define MTK_PRIVATE_IMPLEMENTATION
+#define CA_PRIVATE_IMPLEMENTATION
+#include <Metal/Metal.hpp>
+#include <AppKit/AppKit.hpp>
+#include <MetalKit/MetalKit.hpp>
+
 namespace ZXEngine
 {
 	WindowManagerMacOS::WindowManagerMacOS()
@@ -12,24 +20,26 @@ namespace ZXEngine
 		frame.size.width = static_cast<CGFloat>(ProjectSetting::srcWidth);
 		frame.size.height = static_cast<CGFloat>(ProjectSetting::srcHeight);
 
-		mWindow = NS::Window::alloc()->init(frame,
+		NS::Window* wnd = NS::Window::alloc()->init(frame,
 			NS::WindowStyleMaskClosable | NS::WindowStyleMaskTitled,
 			NS::BackingStoreBuffered, false
 		);
 
-		mWindow->setTitle(NS::String::string("ZXEngine <Metal>", NS::StringEncoding::UTF8StringEncoding));
+		wnd->setTitle(NS::String::string("ZXEngine <Metal>", NS::StringEncoding::UTF8StringEncoding));
 		// 让窗口出现在最上层
-		mWindow->makeKeyAndOrderFront(nullptr);
+		wnd->makeKeyAndOrderFront(nullptr);
+
+		mWindow = wnd;
 	}
 
 	void* WindowManagerMacOS::GetWindow()
 	{
-		return static_cast<void*>(mWindow);
+		return mWindow;
 	}
 
 	void WindowManagerMacOS::CloseWindow(string args)
 	{
-		mWindow->close();
+		static_cast<NS::Window*>(mWindow)->close();
 	}
 
 	bool WindowManagerMacOS::WindowShouldClose()

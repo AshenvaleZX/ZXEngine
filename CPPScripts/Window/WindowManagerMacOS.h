@@ -1,9 +1,6 @@
 #pragma once
 #include "WindowManager.h"
 
-#define NS_PRIVATE_IMPLEMENTATION
-#include <AppKit/AppKit.hpp>
-
 namespace ZXEngine
 {
 	class WindowManagerMacOS : public WindowManager
@@ -17,6 +14,6 @@ namespace ZXEngine
 		virtual bool WindowShouldClose();
 
 	private:
-        NS::Window* mWindow;
+		void* mWindow;
 	};
 }
