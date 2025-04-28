@@ -143,6 +143,7 @@ namespace ZXEngine
 		ShaderPropertiesInfo vertProperties;
 		ShaderPropertiesInfo geomProperties;
 		ShaderPropertiesInfo fragProperties;
+		uint32_t uniformBufferSize = 0; // For Metal
 	};
 
 	struct ShaderBufferInfo

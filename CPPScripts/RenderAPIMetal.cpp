@@ -729,18 +729,12 @@ namespace ZXEngine
 		auto shaderReference = material->shader->reference;
 		auto mtMaterialData = GetMaterialDataByIndex(material->data->GetID());
 
-		uint32_t bufferSize = 0;
-		if (shaderReference->shaderInfo.fragProperties.baseProperties.size() > 0)
-			bufferSize = shaderReference->shaderInfo.fragProperties.baseProperties.back().offset + shaderReference->shaderInfo.fragProperties.baseProperties.back().size;
-		else if (shaderReference->shaderInfo.vertProperties.baseProperties.size() > 0)
-			bufferSize = shaderReference->shaderInfo.vertProperties.baseProperties.back().offset + shaderReference->shaderInfo.vertProperties.baseProperties.back().size;
-
-		mtMaterialData->size = bufferSize;
+		mtMaterialData->size = shaderReference->shaderInfo.uniformBufferSize;
 		mtMaterialData->textures.resize(MT_MAX_FRAMES_IN_FLIGHT);
 		for (uint32_t i = 0; i < MT_MAX_FRAMES_IN_FLIGHT; i++)
 		{
-			if (bufferSize > 0)
-				mtMaterialData->constantBuffers.push_back(mDevice->newBuffer(static_cast<NS::Integer>(bufferSize), MTL::ResourceStorageModeShared));
+			if (mtMaterialData->size > 0)
+				mtMaterialData->constantBuffers.push_back(mDevice->newBuffer(static_cast<NS::Integer>(mtMaterialData->size), MTL::ResourceStorageModeShared));
 
 			for (auto& matTexture : material->data->textures)
 			{

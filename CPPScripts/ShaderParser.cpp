@@ -2071,6 +2071,7 @@ namespace ZXEngine
 
 		// 目前的ZXEngine里一个MSL Shader只有一个Constant/Uniform Buffer，所有变量严格按照VS，PS里的Properties声明顺序排列
 		uint32_t offset = 0;
+		uint32_t maxAlign = 0;
 
 		if (!info.vertProperties.baseProperties.empty())
 		{
@@ -2083,6 +2084,9 @@ namespace ZXEngine
 				property.offset = Math::AlignUp(offset, property.align);
 
 				offset = property.offset + property.size;
+
+				if (property.align > maxAlign)
+					maxAlign = property.align;
 			}
 		}
 
@@ -2097,8 +2101,15 @@ namespace ZXEngine
 				property.offset = Math::AlignUp(offset, property.align);
 
 				offset = property.offset + property.size;
+
+				if (property.align > maxAlign)
+					maxAlign = property.align;
 			}
 		}
+
+		// 整个Uniform Buffer的大小需要对齐到最大的对齐值
+		if (maxAlign > 0)
+			info.uniformBufferSize = Math::AlignUp(offset, maxAlign);
 
 		// 这里的binding是指纹理在MSL里的[[texture(n)]]索引，严格按照VS，PS里的纹理声明顺序排列
 		uint32_t binding = 0;
@@ -2142,7 +2153,7 @@ namespace ZXEngine
 			|| type == ShaderPropertyType::ENGINE_LIGHT_POS || type == ShaderPropertyType::ENGINE_LIGHT_DIR
 			|| type == ShaderPropertyType::ENGINE_LIGHT_COLOR)
 			if (arrayLength == 0)
-				return { .size = std_size * 3, .align = std_size * 4 };
+				return { .size = std_size * 4, .align = std_size * 4 };
 			else
 				return { .size = (std_size * 4) * arrayLength, .align = std_size * 4, .arrayOffset = std_size * 4 };
 
