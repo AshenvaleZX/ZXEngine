@@ -11,6 +11,9 @@
 *.hlsl
 *.fxc
 
+# Metal Shader
+*.msl
+
 # Log
 log.txt
 

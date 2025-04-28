@@ -11,6 +11,7 @@
 #include "../Component/Animator.h"
 #include "../Audio/AudioEngine.h"
 #include "../RenderAPI.h"
+#include "../Metal/MetalUtil.h"
 
 #ifdef ZX_PLATFORM_WINDOWS
 #include "../DirectX12/ZXD3D12Util.h"
@@ -105,6 +106,17 @@ namespace ZXEngine
 #else
 						EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "This feature is only available on Windows.");
 #endif
+					}
+
+					if (ImGui::MenuItem("Generate MSL for Metal"))
+					{
+						std::thread t([]
+						{
+							MetalUtil::TranslateAllShaderToMSL(Resources::GetAssetsPath());
+							MetalUtil::TranslateAllShaderToMSL(Resources::GetAssetFullPath("Shaders", true));
+							Debug::Log("The translation of all shaders is complete.");
+						});
+						t.detach();
 					}
 
 					ImGui::EndMenu();
