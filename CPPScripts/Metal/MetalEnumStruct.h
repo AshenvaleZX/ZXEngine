@@ -1,6 +1,6 @@
 #pragma once
-#include "pubh.h"
-#include "PublicStruct.h"
+#include "../pubh.h"
+#include "../PublicStruct.h"
 
 #include <Metal/Metal.hpp>
 #include <AppKit/AppKit.hpp>

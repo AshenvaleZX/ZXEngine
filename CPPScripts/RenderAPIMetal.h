@@ -1,6 +1,6 @@
 #pragma once
 #include "RenderAPI.h"
-#include "MetalEnumStruct.h"
+#include "Metal/MetalEnumStruct.h"
 
 namespace ZXEngine
 {
