@@ -23,6 +23,7 @@ namespace ZXEngine
 		static string TranslateToOpenGL(const string& originCode);
 		static string TranslateToVulkan(const string& originCode, const ShaderPropertiesInfo& info);
 		static string TranslateToD3D12(const string& originCode, const ShaderInfo& shaderInfo);
+		static string TranslateToMetal(const string& originCode, const ShaderInfo& shaderInfo);
 		static void SetUpRTMaterialData(MaterialData* materialData, GraphicsAPI api);
 
 	private:

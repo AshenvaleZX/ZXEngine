@@ -569,12 +569,13 @@ namespace ZXEngine
 	ShaderReference* RenderAPIMetal::SetUpShader(const string& path, const string& shaderCode, FrameBufferType type)
 	{
 		auto shaderInfo = ShaderParser::GetShaderInfo(shaderCode, GraphicsAPI::Metal);
+		auto mslCode = ShaderParser::TranslateToMetal(shaderCode, shaderInfo);
 
 		NS::Error* pError = nullptr;
-		MTL::Library* pLibrary = mDevice->newLibrary(NS::String::string(shaderCode.c_str(), NS::StringEncoding::UTF8StringEncoding), nullptr, &pError);
+		MTL::Library* pLibrary = mDevice->newLibrary(NS::String::string(mslCode.c_str(), NS::StringEncoding::UTF8StringEncoding), nullptr, &pError);
 		if (!pLibrary)
 		{
-			Debug::LogError(pError->localizedDescription()->utf8String());
+			Debug::LogError("Metal shader error, path: %s error:\n%s", path, pError->localizedDescription()->utf8String());
 			assert(false);
 		}
 	
