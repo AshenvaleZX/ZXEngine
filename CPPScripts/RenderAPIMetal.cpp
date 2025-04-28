@@ -66,6 +66,8 @@ namespace ZXEngine
 		nsWindow->setContentView(mMetalView);
 
 		mSemaphore = dispatch_semaphore_create(MT_MAX_FRAMES_IN_FLIGHT);
+
+		ProjectSetting::isSupportGeometryShader = false;
 	}
 
 	void RenderAPIMetal::BeginFrame()
