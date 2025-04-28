@@ -35,6 +35,7 @@ namespace ZXEngine
 
 	struct MetalPipeline
 	{
+        string name; // For debug
 		MTL::RenderPipelineState* pipeline = nullptr;
 		MTL::DepthStencilState* depthStencilState = nullptr;
 		FaceCullOption faceCullOption = FaceCullOption::None;
@@ -43,6 +44,7 @@ namespace ZXEngine
 
 	struct MetalMaterialData
 	{
+		uint32_t size = 0; // For debug
 		vector<MTL::Buffer*> constantBuffers;
 		vector<unordered_map<uint32_t, uint32_t>> textures;
 		bool inUse = false;

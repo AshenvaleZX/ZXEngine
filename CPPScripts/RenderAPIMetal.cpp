@@ -583,6 +583,7 @@ namespace ZXEngine
 		auto pipeline = GetPipelineByIndex(pipelineID);
 		pipeline->inUse = true;
 		pipeline->faceCullOption = shaderInfo.stateSet.cull;
+		pipeline->name = path;
 		
 		MTL::Function* pVertFn = pLibrary->newFunction(NS::String::string("VertMain", NS::StringEncoding::UTF8StringEncoding));
 		MTL::Function* pFragFn = pLibrary->newFunction(NS::String::string("FragMain", NS::StringEncoding::UTF8StringEncoding));
@@ -734,6 +735,7 @@ namespace ZXEngine
 		else if (shaderReference->shaderInfo.vertProperties.baseProperties.size() > 0)
 			bufferSize = shaderReference->shaderInfo.vertProperties.baseProperties.back().offset + shaderReference->shaderInfo.vertProperties.baseProperties.back().size;
 
+		mtMaterialData->size = bufferSize;
 		mtMaterialData->textures.resize(MT_MAX_FRAMES_IN_FLIGHT);
 		for (uint32_t i = 0; i < MT_MAX_FRAMES_IN_FLIGHT; i++)
 		{
