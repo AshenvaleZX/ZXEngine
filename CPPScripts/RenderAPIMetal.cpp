@@ -10,9 +10,17 @@
 #include "ZShader.h"
 #include "Texture.h"
 #include "EventManager.h"
+
 #ifdef ZX_EDITOR
 #include "Editor/EditorGUIManager.h"
 #include "Editor/ImGuiTextureManager.h"
+#endif
+
+#ifdef ZX_PLATFORM_MACOS
+#define GLFW_INCLUDE_NONE
+#define GLFW_EXPOSE_NATIVE_COCOA
+#include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
 #endif
 
 namespace ZXEngine
@@ -54,16 +62,16 @@ namespace ZXEngine
 		mCommandQueue = mDevice->newCommandQueue();
 		assert(mCommandQueue != nullptr && "Metal command queue is null");
 
-		CGRect frame;
-		frame.origin.x = 0.0;
-		frame.origin.y = 0.0;
-		frame.size.width = static_cast<CGFloat>(ProjectSetting::srcWidth);
-		frame.size.height = static_cast<CGFloat>(ProjectSetting::srcHeight);
-		mMetalView = MTK::View::alloc()->init(frame, mDevice);
-		mMetalView->setColorPixelFormat(MTL::PixelFormatBGRA8Unorm);
+		GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow());
+		NS::Window* nsWindow = static_cast<NS::Window*>(glfwGetCocoaWindow(glfwWindow));
 
-		NS::Window* nsWindow = static_cast<NS::Window*>(WindowManager::GetInstance()->GetWindow());
-		nsWindow->setContentView(mMetalView);
+		mMetalLayer = CA::MetalLayer::layer();
+		mMetalLayer->setDevice(mDevice);
+		mMetalLayer->setPixelFormat(MTL::PixelFormatBGRA8Unorm);
+
+		NS::View* nsView = nsWindow->contentView();
+		nsView->setLayer(mMetalLayer);
+		nsView->setWantsLayer(true);
 
 		mSemaphore = dispatch_semaphore_create(MT_MAX_FRAMES_IN_FLIGHT);
 
@@ -834,7 +842,7 @@ namespace ZXEngine
 			MTL::RenderPassDescriptor* renderPassDesc = MTL::RenderPassDescriptor::alloc()->init();
 			renderPassDesc->colorAttachments()->object(0)->setLoadAction(MTL::LoadActionLoad);
 			renderPassDesc->colorAttachments()->object(0)->setStoreAction(MTL::StoreActionStore);
-			renderPassDesc->colorAttachments()->object(0)->setTexture(mMetalView->currentDrawable()->texture());
+			renderPassDesc->colorAttachments()->object(0)->setTexture(mMetalLayer->nextDrawable()->texture());
 
 			pEncoder = pCmd->renderCommandEncoder(renderPassDesc);
 		}
@@ -1043,7 +1051,7 @@ namespace ZXEngine
 #ifndef ZX_EDITOR
 		if (drawCommand->commandType == CommandType::UIRendering)
 		{
-			pCmd->presentDrawable(mMetalView->currentDrawable());
+			pCmd->presentDrawable(mMetalLayer->nextDrawable());
 			pCmd->addCompletedHandler([=](MTL::CommandBuffer* cmd)
 			{
 				dispatch_semaphore_signal(mSemaphore);
@@ -2035,7 +2043,7 @@ namespace ZXEngine
 #endif
 
 		// 这个调用类似于重新创建Present Buffer
-		mMetalView->setDrawableSize(CGSizeMake(mNewWindowWidth, mNewWindowHeight));
+		mMetalLayer->setDrawableSize(CGSizeMake(mNewWindowWidth, mNewWindowHeight));
 		
 		// 重新创建所有大小随窗口变化的FBO
 		FBOManager::GetInstance()->RecreateAllFollowWindowFBO();

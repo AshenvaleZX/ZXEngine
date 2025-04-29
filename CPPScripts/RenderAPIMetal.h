@@ -151,7 +151,7 @@ namespace ZXEngine
 	private:
 		MTL::Device* mDevice;
 		MTL::CommandQueue* mCommandQueue;
-		MTK::View* mMetalView;
+		CA::MetalLayer* mMetalLayer;
 		// 控制帧同步的信号量
 		dispatch_semaphore_t mSemaphore;
 		// 当前是MT_MAX_FRAMES_IN_FLIGHT中的第几帧
