@@ -1218,14 +1218,39 @@ namespace ZXEngine
 		mtCode += "struct VertexInput\n{\n";
 		string vertInputBlock = GetCodeBlock(vertCode, "Input");
 		vector<string> vertInputVariables;
+		vector<string> attributeStatement;
+		attributeStatement.resize(6);
 		auto lines = Utils::StringSplit(vertInputBlock, '\n');
+		// 找出声明过的属性
 		for (auto& line : lines)
 		{
 			auto words = Utils::ExtractWords(line);
 			if (words.size() >= 5 && words[0] != "//")
 			{
-				mtCode += "    " + words[1] + " " + words[2] + " [[attribute(" + words[0] + ")]];\n";
+				size_t attrID = SIZE_T_MAX;
+				try {
+					attrID = static_cast<size_t>(std::stoul(words[0]));
+				} catch (const std::exception&) {
+					attrID = SIZE_T_MAX;
+				}
+
+				if (attrID < 6)
+					attributeStatement[attrID] = "    " + words[1] + " " + words[2] + " [[attribute(" + words[0] + ")]];\n";
+
 				vertInputVariables.push_back(words[2]);
+			}
+		}
+		// MSL里必须声明完整的VertexInput结构体，否则会有内存对齐问题
+		for (uint32_t i = 0; i < 6; i++)
+		{
+			if (attributeStatement[i].empty())
+			{
+				// 如果某个属性位没有声明过，则用float4占位
+				mtCode += "    float4 ZX_Attr" + to_string(i) + " [[attribute(" + to_string(i) + ")]];\n";
+			}
+			else
+			{
+				mtCode += attributeStatement[i];
 			}
 		}
 		mtCode += "};\n\n";
@@ -1590,6 +1615,8 @@ namespace ZXEngine
 		// 替换内置函数名称
 		Utils::ReplaceAllWord(mtCode, "mod", "fmod");
 		Utils::ReplaceAllWord(mtCode, "lerp", "mix");
+		Utils::ReplaceAllWord(mtCode, "ddx", "dfdx");
+		Utils::ReplaceAllWord(mtCode, "ddy", "dfdy");
 
 		return mtCode;
 	}
