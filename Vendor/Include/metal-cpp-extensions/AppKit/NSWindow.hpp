@@ -40,6 +40,7 @@ namespace NS
 			static Window*		alloc();
 			Window*				init( CGRect contentRect, WindowStyleMask styleMask, BackingStoreType backing, bool defer );
 
+			class View*			contentView() const;
 			void				setContentView( const View* pContentView );
 			void				makeKeyAndOrderFront( const Object* pSender );
 			void				setTitle( const String* pTitle );
@@ -58,6 +59,11 @@ _NS_INLINE NS::Window* NS::Window::alloc()
 _NS_INLINE NS::Window* NS::Window::init( CGRect contentRect, WindowStyleMask styleMask, BackingStoreType backing, bool defer )
 {
 	return Object::sendMessage< Window* >( this, _APPKIT_PRIVATE_SEL( initWithContentRect_styleMask_backing_defer_ ), contentRect, styleMask, backing, defer );
+}
+
+_NS_INLINE NS::View* NS::Window::contentView() const
+{
+	return Object::sendMessage< NS::View* >( this, _APPKIT_PRIVATE_SEL( contentView ) );
 }
 
 _NS_INLINE void NS::Window::setContentView( const NS::View* pContentView )

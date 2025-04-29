@@ -8,3 +8,5 @@ metal-cpp-extension 下载链接：
 https://developer.apple.com/metal/LearnMetalCPP.zip
 
 metal-cpp-extension 并不是一个正式发布的拓展，所以没有明确的版本管理，对AppKit和MetalKit的封装也并不完整。如果需要更新可以通过上面的下载链接下载最新版的，或者自己手动去封装一下自己需要但是这里没提供的接口。
+
+目前这里的代码是从上面给的链接下载后又自己稍微扩展了一点的。
