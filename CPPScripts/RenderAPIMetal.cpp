@@ -815,6 +815,9 @@ namespace ZXEngine
 
 	void RenderAPIMetal::DrawInstanced(uint32_t VAO, uint32_t instanceNum, uint32_t instanceBuffer)
 	{
+		if (instanceNum == 0)
+			return;
+
 		mDrawRecords.emplace_back(VAO, mCurPipeLineIdx, mCurMaterialDataIdx, instanceNum, instanceBuffer);
 	}
 
@@ -1049,6 +1052,8 @@ namespace ZXEngine
 #endif
 
 		pCmd->commit();
+
+		mDrawRecords.clear();
 	}
 
 	void RenderAPIMetal::DeleteMesh(unsigned int VAO)
