@@ -685,6 +685,11 @@ namespace ZXEngine
 			pipelineDesc->colorAttachments()->object(0)->setAlphaBlendOperation(MTL::BlendOperation::BlendOperationAdd);
 		}
 
+		if (type == FrameBufferType::ShadowMap || type == FrameBufferType::ShadowCubeMap)
+		{
+			pipelineDesc->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormatInvalid);
+		}
+
 		if (type == FrameBufferType::Present || type == FrameBufferType::PresentOverspread || type == FrameBufferType::Color)
 		{
 			pipelineDesc->setDepthAttachmentPixelFormat(MTL::PixelFormatInvalid);
