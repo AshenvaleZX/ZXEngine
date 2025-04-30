@@ -67,7 +67,7 @@ namespace ZXEngine
 
 		mMetalLayer = CA::MetalLayer::layer();
 		mMetalLayer->setDevice(mDevice);
-		mMetalLayer->setPixelFormat(MTL::PixelFormatBGRA8Unorm);
+		mMetalLayer->setPixelFormat(mDefaultImageFormat);
 
 		NS::View* nsView = nsWindow->contentView();
 		nsView->setLayer(mMetalLayer);
@@ -209,7 +209,7 @@ namespace ZXEngine
 			for (uint32_t i = 0; i < MT_MAX_FRAMES_IN_FLIGHT; i++)
 			{
 				MTL::TextureDescriptor* colorBufferDesc = MTL::TextureDescriptor::texture2DDescriptor(
-					MTL::PixelFormatBGRA8Unorm,
+					mDefaultImageFormat,
 					static_cast<NS::Integer>(width),
 					static_cast<NS::Integer>(height),
 					false
@@ -259,7 +259,7 @@ namespace ZXEngine
 			for (uint32_t i = 0; i < MT_MAX_FRAMES_IN_FLIGHT; i++)
 			{
 				MTL::TextureDescriptor* colorBufferDesc = MTL::TextureDescriptor::texture2DDescriptor(
-					MTL::PixelFormatBGRA8Unorm,
+					mDefaultImageFormat,
 					static_cast<NS::Integer>(width),
 					static_cast<NS::Integer>(height),
 					false
@@ -398,7 +398,7 @@ namespace ZXEngine
 				normalBuffer->renderBuffers[i] = CreateMetalTexture(normalBufferDesc, width, height);
 
 				MTL::TextureDescriptor* colorBufferDesc = MTL::TextureDescriptor::texture2DDescriptor(
-					MTL::PixelFormatBGRA8Unorm,
+					mDefaultImageFormat,
 					static_cast<NS::Integer>(width),
 					static_cast<NS::Integer>(height),
 					false
@@ -662,7 +662,7 @@ namespace ZXEngine
 		{
 			pipelineDesc->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormatRGBA32Float);
 			pipelineDesc->colorAttachments()->object(1)->setPixelFormat(MTL::PixelFormatRGBA32Float);
-			pipelineDesc->colorAttachments()->object(2)->setPixelFormat(MTL::PixelFormatBGRA8Unorm);
+			pipelineDesc->colorAttachments()->object(2)->setPixelFormat(mDefaultImageFormat);
 
 			for (NS::Integer i = 0; i < 3; i++)
 			{
@@ -677,7 +677,7 @@ namespace ZXEngine
 		}
 		else
 		{
-			pipelineDesc->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormatBGRA8Unorm);
+			pipelineDesc->colorAttachments()->object(0)->setPixelFormat(mDefaultImageFormat);
 			pipelineDesc->colorAttachments()->object(0)->setBlendingEnabled(true);
 			pipelineDesc->colorAttachments()->object(0)->setSourceRGBBlendFactor(mtBlendFactorMap[shaderInfo.stateSet.srcFactor]);
 			pipelineDesc->colorAttachments()->object(0)->setDestinationRGBBlendFactor(mtBlendFactorMap[shaderInfo.stateSet.dstFactor]);
@@ -1828,7 +1828,7 @@ namespace ZXEngine
 	uint32_t RenderAPIMetal::CreateMetalTexture(uint32_t width, uint32_t height, void* data)
 	{
 		MTL::TextureDescriptor* desc = MTL::TextureDescriptor::texture2DDescriptor(
-			MTL::PixelFormatBGRA8Unorm,
+			mDefaultImageFormat,
 			static_cast<NS::Integer>(width),
 			static_cast<NS::Integer>(height),
 			true
@@ -1859,7 +1859,7 @@ namespace ZXEngine
 	uint32_t RenderAPIMetal::CreateMetalCubeMap(uint32_t width, const array<void*, 6>* datas)
 	{
 		MTL::TextureDescriptor* desc = MTL::TextureDescriptor::textureCubeDescriptor(
-			MTL::PixelFormatBGRA8Unorm,
+			mDefaultImageFormat,
 			static_cast<NS::Integer>(width),
 			true
 		);

@@ -152,6 +152,7 @@ namespace ZXEngine
 		MTL::Device* mDevice;
 		MTL::CommandQueue* mCommandQueue;
 		CA::MetalLayer* mMetalLayer;
+		const MTL::PixelFormat mDefaultImageFormat = MTL::PixelFormatRGBA8Unorm;
 		// 控制帧同步的信号量
 		dispatch_semaphore_t mSemaphore;
 		// 当前是MT_MAX_FRAMES_IN_FLIGHT中的第几帧
