@@ -1891,7 +1891,7 @@ namespace ZXEngine
 			texture->pixelFormat(),
 			width,
 			height,
-			texture->mipmapLevelCount() > 1
+			false
 		);
 		tempTextureDesc->setStorageMode(MTL::StorageModeShared);
 	
@@ -1905,6 +1905,10 @@ namespace ZXEngine
 		{
 			MTL::BlitCommandEncoder* blitEncoder = cmd->blitCommandEncoder();
 			blitEncoder->copyFromTexture(tempTexture, texture);
+			if (texture->mipmapLevelCount() > 1)
+			{
+				blitEncoder->generateMipmaps(texture);
+			}
 			blitEncoder->endEncoding();
 		});
 
@@ -1916,7 +1920,7 @@ namespace ZXEngine
 		MTL::TextureDescriptor* tempTextureDesc = MTL::TextureDescriptor::textureCubeDescriptor(
 			texture->pixelFormat(),
 			width,
-			texture->mipmapLevelCount() > 1
+			false
 		);
 		tempTextureDesc->setStorageMode(MTL::StorageModeShared);
 
@@ -1933,6 +1937,10 @@ namespace ZXEngine
 		{
 			MTL::BlitCommandEncoder* blitEncoder = cmd->blitCommandEncoder();
 			blitEncoder->copyFromTexture(tempTexture, texture);
+			if (texture->mipmapLevelCount() > 1)
+			{
+				blitEncoder->generateMipmaps(texture);
+			}
 			blitEncoder->endEncoding();
 		});
 
