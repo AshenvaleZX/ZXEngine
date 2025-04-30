@@ -238,6 +238,7 @@ namespace ZXEngine
 		vector<MetalDrawRecord> mDrawRecords;
 
 		ViewPortInfo mViewPortInfo;
+		CA::MetalDrawable* mDrawable = nullptr;
 
 		uint32_t GetCurFrameBufferIndex() const;
 

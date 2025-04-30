@@ -83,6 +83,8 @@ namespace ZXEngine
 		dispatch_semaphore_wait(mSemaphore, DISPATCH_TIME_FOREVER);
 
 		CheckDeleteData();
+
+		mDrawable = mMetalLayer->nextDrawable();
 	}
 
 	void RenderAPIMetal::EndFrame()
@@ -847,7 +849,7 @@ namespace ZXEngine
 			MTL::RenderPassDescriptor* renderPassDesc = MTL::RenderPassDescriptor::alloc()->init();
 			renderPassDesc->colorAttachments()->object(0)->setLoadAction(MTL::LoadActionLoad);
 			renderPassDesc->colorAttachments()->object(0)->setStoreAction(MTL::StoreActionStore);
-			renderPassDesc->colorAttachments()->object(0)->setTexture(mMetalLayer->nextDrawable()->texture());
+			renderPassDesc->colorAttachments()->object(0)->setTexture(mDrawable->texture());
 
 			pEncoder = pCmd->renderCommandEncoder(renderPassDesc);
 		}
@@ -1056,7 +1058,7 @@ namespace ZXEngine
 #ifndef ZX_EDITOR
 		if (drawCommand->commandType == CommandType::UIRendering)
 		{
-			pCmd->presentDrawable(mMetalLayer->nextDrawable());
+			pCmd->presentDrawable(mDrawable);
 			pCmd->addCompletedHandler([=](MTL::CommandBuffer* cmd)
 			{
 				dispatch_semaphore_signal(mSemaphore);
