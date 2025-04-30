@@ -562,7 +562,14 @@ namespace ZXEngine
 
 	unsigned int RenderAPIMetal::GenerateTextTexture(unsigned int width, unsigned int height, unsigned char* data)
 	{
-		return CreateMetalTexture(width, height, data);
+		MTL::TextureDescriptor* desc = MTL::TextureDescriptor::texture2DDescriptor(
+			MTL::PixelFormatR8Unorm,
+			static_cast<NS::Integer>(width),
+			static_cast<NS::Integer>(height),
+			false
+		);
+
+		return CreateMetalTexture(desc, width, height, data, 1);
 	}
 
 	void RenderAPIMetal::DeleteTexture(unsigned int id)
@@ -1825,7 +1832,7 @@ namespace ZXEngine
 		return buffer;
 	}
 
-	uint32_t RenderAPIMetal::CreateMetalTexture(uint32_t width, uint32_t height, void* data)
+	uint32_t RenderAPIMetal::CreateMetalTexture(uint32_t width, uint32_t height, void* data, uint32_t bytesPerPixel)
 	{
 		MTL::TextureDescriptor* desc = MTL::TextureDescriptor::texture2DDescriptor(
 			mDefaultImageFormat,
@@ -1841,12 +1848,12 @@ namespace ZXEngine
 		return CreateMetalTexture(desc, width, height, data);
 	}
 
-	uint32_t RenderAPIMetal::CreateMetalTexture(MTL::TextureDescriptor* desc, uint32_t width, uint32_t height, void* data)
+	uint32_t RenderAPIMetal::CreateMetalTexture(MTL::TextureDescriptor* desc, uint32_t width, uint32_t height, void* data, uint32_t bytesPerPixel)
 	{
 		MTL::Texture* texture = mDevice->newTexture(desc);
 
 		if (data)
-			FillGPUTexture(texture, data, width, height);
+			FillGPUTexture(texture, data, width, height, bytesPerPixel);
 
 		uint32_t textureID = GetNextTextureIndex();
 		auto mtTexture = GetTextureByIndex(textureID);
@@ -1856,7 +1863,7 @@ namespace ZXEngine
 		return textureID;
 	}
 
-	uint32_t RenderAPIMetal::CreateMetalCubeMap(uint32_t width, const array<void*, 6>* datas)
+	uint32_t RenderAPIMetal::CreateMetalCubeMap(uint32_t width, const array<void*, 6>* datas, uint32_t bytesPerPixel)
 	{
 		MTL::TextureDescriptor* desc = MTL::TextureDescriptor::textureCubeDescriptor(
 			mDefaultImageFormat,
@@ -1870,12 +1877,12 @@ namespace ZXEngine
 		return CreateMetalCubeMap(desc, width, datas);
 	}
 
-	uint32_t RenderAPIMetal::CreateMetalCubeMap(MTL::TextureDescriptor* desc, uint32_t width, const array<void*, 6>* datas)
+	uint32_t RenderAPIMetal::CreateMetalCubeMap(MTL::TextureDescriptor* desc, uint32_t width, const array<void*, 6>* datas, uint32_t bytesPerPixel)
 	{
 		MTL::Texture* texture = mDevice->newTexture(desc);
 
 		if (datas)
-			FillGPUCubeMap(texture, datas, width);
+			FillGPUCubeMap(texture, datas, width, bytesPerPixel);
 
 		uint32_t textureID = GetNextTextureIndex();
 		auto mtTexture = GetTextureByIndex(textureID);
@@ -1885,7 +1892,7 @@ namespace ZXEngine
 		return textureID;
 	}
 
-	void RenderAPIMetal::FillGPUTexture(MTL::Texture* texture, const void* data, uint32_t width, uint32_t height)
+	void RenderAPIMetal::FillGPUTexture(MTL::Texture* texture, const void* data, uint32_t width, uint32_t height, uint32_t bytesPerPixel)
 	{
 		MTL::TextureDescriptor* tempTextureDesc = MTL::TextureDescriptor::texture2DDescriptor(
 			texture->pixelFormat(),
@@ -1898,8 +1905,7 @@ namespace ZXEngine
 		MTL::Texture* tempTexture = mDevice->newTexture(tempTextureDesc);
 
 		MTL::Region region = MTL::Region::Make2D(0, 0, width, height);
-		// 这里默认每个像素4字节
-		tempTexture->replaceRegion(region, 0, data, width * 4);
+		tempTexture->replaceRegion(region, 0, data, width * bytesPerPixel);
 	
 		ImmediatelyExecute([=](MTL::CommandBuffer* cmd)
 		{
@@ -1915,7 +1921,7 @@ namespace ZXEngine
 		tempTexture->release();
 	}
 
-	void RenderAPIMetal::FillGPUCubeMap(MTL::Texture* texture, const array<void*, 6>* datas, uint32_t width)
+	void RenderAPIMetal::FillGPUCubeMap(MTL::Texture* texture, const array<void*, 6>* datas, uint32_t width, uint32_t bytesPerPixel)
 	{
 		MTL::TextureDescriptor* tempTextureDesc = MTL::TextureDescriptor::textureCubeDescriptor(
 			texture->pixelFormat(),
@@ -1930,7 +1936,7 @@ namespace ZXEngine
 		{
 			MTL::Region region = MTL::Region::Make2D(0, 0, width, width);
 			tempTexture->replaceRegion(region, 0, static_cast<NS::Integer>(i), datas->at(i),
-				static_cast<NS::Integer>(width * 4), static_cast<NS::Integer>(width * width * 4));
+				static_cast<NS::Integer>(width * 4), static_cast<NS::Integer>(width * width * bytesPerPixel));
 		}
 
 		ImmediatelyExecute([=](MTL::CommandBuffer* cmd)
