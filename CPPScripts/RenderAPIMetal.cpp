@@ -84,6 +84,11 @@ namespace ZXEngine
 
 		CheckDeleteData();
 
+		if (mWindowResized)
+			DoWindowSizeChange();
+		if (mGameViewResized)
+			DoGameViewSizeChange();
+
 		mDrawable = mMetalLayer->nextDrawable();
 	}
 
