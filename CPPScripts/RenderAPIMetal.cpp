@@ -445,7 +445,38 @@ namespace ZXEngine
 		}
 		else if (type == FrameBufferType::RayTracing)
 		{
-			// 暂未实现
+			FBO->ID = GetNextFBOIndex();
+			FBO->ColorBuffer = GetNextRenderBufferIndex();
+			auto colorBuffer = GetRenderBufferByIndex(FBO->ColorBuffer);
+			colorBuffer->inUse = true;
+			FBO->DepthBuffer = UINT32_MAX;
+
+			auto mtFBO = GetFBOByIndex(FBO->ID);
+			mtFBO->colorBufferIdx = FBO->ColorBuffer;
+			mtFBO->bufferType = FrameBufferType::RayTracing;
+			mtFBO->clearInfo = clearInfo;
+
+			for (uint32_t i = 0; i < MT_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				MTL::TextureDescriptor* colorBufferDesc = MTL::TextureDescriptor::texture2DDescriptor(
+					mDefaultImageFormat,
+					static_cast<NS::Integer>(width),
+					static_cast<NS::Integer>(height),
+					false
+				);
+				colorBufferDesc->setStorageMode(MTL::StorageModePrivate);
+				colorBufferDesc->setUsage(MTL::TextureUsageShaderRead | MTL::TextureUsageShaderWrite | MTL::TextureUsageRenderTarget);
+				colorBufferDesc->setResourceOptions(MTL::ResourceStorageModePrivate);
+
+				colorBuffer->renderBuffers[i] = CreateMetalTexture(colorBufferDesc, width, height);
+			}
+
+			mtFBO->renderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
+			mtFBO->renderPassDescriptor->colorAttachments()->object(0)->setLoadAction(MTL::LoadActionLoad);
+			mtFBO->renderPassDescriptor->colorAttachments()->object(0)->setStoreAction(MTL::StoreActionStore);
+			mtFBO->renderPassDescriptor->colorAttachments()->object(0)->setClearColor(MTL::ClearColor(clearInfo.color.r, clearInfo.color.g, clearInfo.color.b, clearInfo.color.a));
+
+			mtFBO->inUse = true;
 		}
 		else
 		{
@@ -1614,14 +1645,16 @@ namespace ZXEngine
 	{
 		auto renderBuffer = mRenderBufferArray[idx];
 
-		for (auto& buffer : renderBuffer->renderBuffers)
+		for (auto buffer : renderBuffer->renderBuffers)
 		{
-			auto texture = GetTextureByIndex(buffer);
-			texture->texture->release();
-			texture->texture = nullptr;
+			DestroyTextureByIndex(buffer);
 		}
 
-		renderBuffer->renderBuffers.resize(MT_MAX_FRAMES_IN_FLIGHT, UINT32_MAX);
+		renderBuffer->renderBuffers.clear();
+		for (uint32_t i = 0; i < MT_MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			renderBuffer->renderBuffers.push_back(UINT32_MAX);
+		}
 
 		renderBuffer->inUse = false;
 	}
