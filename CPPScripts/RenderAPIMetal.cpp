@@ -1029,16 +1029,16 @@ namespace ZXEngine
 			pEncoder->setVertexBuffer(VAO->vertexBuffer, 0, 0);
 
 			NS::UInteger bufferIndex = 1;
-			if (!materialData->constantBuffers.empty())
-			{
-				pEncoder->setVertexBuffer(materialData->constantBuffers[mCurrentFrame], 0, bufferIndex);
-				pEncoder->setFragmentBuffer(materialData->constantBuffers[mCurrentFrame], 0, bufferIndex);
-				bufferIndex++;
-			}
 			if (drawRecord.instanceBuffer != UINT32_MAX)
 			{
 				auto instanceBuffer = GetInstanceBufferByIndex(drawRecord.instanceBuffer);
 				pEncoder->setVertexBuffer(instanceBuffer->buffer, 0, bufferIndex);
+				bufferIndex++;
+			}
+			if (!materialData->constantBuffers.empty())
+			{
+				pEncoder->setVertexBuffer(materialData->constantBuffers[mCurrentFrame], 0, bufferIndex);
+				pEncoder->setFragmentBuffer(materialData->constantBuffers[mCurrentFrame], 0, bufferIndex);
 			}
 
 			for (auto& texture : materialData->textures[mCurrentFrame])
