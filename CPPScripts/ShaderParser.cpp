@@ -1339,7 +1339,7 @@ namespace ZXEngine
 		mtCode += "\n";
 
 		// 采样器
-		mtCode += "constexpr sampler _Sampler(coord::normalized, address::repeat, filter::linear);\n\n";
+		mtCode += "constexpr sampler _Sampler(coord::normalized, address::repeat, filter::linear, mip_filter::linear);\n\n";
 
 		// 顶点着色器
 		string vertProgramBlock = GetCodeBlock(vertCode, "Program");
