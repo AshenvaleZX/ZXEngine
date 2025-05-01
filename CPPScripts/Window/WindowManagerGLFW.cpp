@@ -60,12 +60,10 @@ namespace ZXEngine
 		// 在macOS上使用WindowSize回调，WindowSize是窗口的逻辑分辨率大小，FramebufferSize是窗口的物理分辨率大小
 		// 如果直接使用物理分辨率大小，在系统分辨率设置有缩放的情况下，渲染输出分辨率和实际窗口分辨率会不匹配
 		int realWindowWidth, realWindowHeight;
-#ifdef ZX_PLATFORM_MACOS
+#if defined(ZX_PLATFORM_MACOS) && defined(ZX_EDITOR)
 		glfwSetWindowSizeCallback(mWindow, FrameBufferSizeCallback);
 		glfwGetWindowSize(mWindow, &realWindowWidth, &realWindowHeight);
-#ifdef ZX_EDITOR
 		glfwGetWindowContentScale(mWindow, &mWindowScaleX, &mWindowScaleY);
-#endif
 #else
 		glfwSetFramebufferSizeCallback(mWindow, FrameBufferSizeCallback);
 		glfwGetFramebufferSize(mWindow, &realWindowWidth, &realWindowHeight);
