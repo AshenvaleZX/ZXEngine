@@ -21,6 +21,7 @@
 #define GLFW_EXPOSE_NATIVE_COCOA
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
+#include "Window/WindowManagerGLFW.h"
 #endif
 
 namespace ZXEngine
@@ -62,12 +63,18 @@ namespace ZXEngine
 		mCommandQueue = mDevice->newCommandQueue();
 		assert(mCommandQueue != nullptr && "Metal command queue is null");
 
-		GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(WindowManager::GetInstance()->GetWindow());
+		auto windowManager = static_cast<WindowManagerGLFW*>(WindowManager::GetInstance());
+
+		GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(windowManager->GetWindow());
 		NS::Window* nsWindow = static_cast<NS::Window*>(glfwGetCocoaWindow(glfwWindow));
 
 		mMetalLayer = CA::MetalLayer::layer();
 		mMetalLayer->setDevice(mDevice);
 		mMetalLayer->setPixelFormat(mDefaultImageFormat);
+		mMetalLayer->setDrawableSize(CGSizeMake(
+			static_cast<float>(ProjectSetting::srcWidth) * windowManager->GetWindowScaleX(),
+			static_cast<float>(ProjectSetting::srcHeight) * windowManager->GetWindowScaleY()
+		));
 
 		NS::View* nsView = nsWindow->contentView();
 		nsView->setLayer(mMetalLayer);
@@ -2099,10 +2106,15 @@ namespace ZXEngine
 #else
 		GlobalData::srcWidth = mNewWindowWidth;
 		GlobalData::srcHeight = mNewWindowHeight;
+		ProjectSetting::SetWindowSize();
 #endif
 
+		auto windowManager = static_cast<WindowManagerGLFW*>(WindowManager::GetInstance());
 		// 这个调用类似于重新创建Present Buffer
-		mMetalLayer->setDrawableSize(CGSizeMake(mNewWindowWidth, mNewWindowHeight));
+		mMetalLayer->setDrawableSize(CGSizeMake(
+			static_cast<float>(ProjectSetting::srcWidth) * windowManager->GetWindowScaleX(),
+			static_cast<float>(ProjectSetting::srcHeight) * windowManager->GetWindowScaleY()
+		));
 		
 		// 重新创建所有大小随窗口变化的FBO
 		FBOManager::GetInstance()->RecreateAllFollowWindowFBO();
