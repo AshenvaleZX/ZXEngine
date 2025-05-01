@@ -25,14 +25,14 @@ namespace ZXEngine
 		ImGuiTextureIndex newImGuiTexture = {};
 		newImGuiTexture.EngineID = renderAPI->LoadTexture(path.c_str(), width, height);
 		auto vulkanTexture = renderAPI->GetTextureByIndex(newImGuiTexture.EngineID);
-		newImGuiTexture.ImGuiID = ImGui_ImplVulkan_AddTexture(vulkanTexture->sampler, vulkanTexture->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		newImGuiTexture.ImGuiID = (ImTextureID)ImGui_ImplVulkan_AddTexture(vulkanTexture->sampler, vulkanTexture->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		allTextures[newImGuiTexture.EngineID] = newImGuiTexture;
 		return newImGuiTexture;
 	}
 
 	void ImGuiTextureManagerVulkan::DeleteTexture(ImGuiTextureIndex textureIndex)
 	{
-		ImGui_ImplVulkan_RemoveTexture(static_cast<VkDescriptorSet>(textureIndex.ImGuiID));
+		ImGui_ImplVulkan_RemoveTexture((VkDescriptorSet)textureIndex.ImGuiID);
 		RenderAPI::GetInstance()->DeleteTexture(textureIndex.EngineID);
 		allTextures.erase(textureIndex.EngineID);
 	}
@@ -43,14 +43,14 @@ namespace ZXEngine
 		ImGuiTextureIndex newImGuiTexture = {};
 		newImGuiTexture.EngineID = id;
 		auto vulkanTexture = renderAPI->GetTextureByIndex(newImGuiTexture.EngineID);
-		newImGuiTexture.ImGuiID = ImGui_ImplVulkan_AddTexture(vulkanTexture->sampler, vulkanTexture->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		newImGuiTexture.ImGuiID = (ImTextureID)ImGui_ImplVulkan_AddTexture(vulkanTexture->sampler, vulkanTexture->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		allTextures[newImGuiTexture.EngineID] = newImGuiTexture;
 		return newImGuiTexture;
 	}
 
 	void ImGuiTextureManagerVulkan::DeleteByEngineID(uint32_t id)
 	{
-		ImGui_ImplVulkan_RemoveTexture(static_cast<VkDescriptorSet>(allTextures[id].ImGuiID));
+		ImGui_ImplVulkan_RemoveTexture((VkDescriptorSet)allTextures[id].ImGuiID);
 		allTextures.erase(id);
 	}
 }
