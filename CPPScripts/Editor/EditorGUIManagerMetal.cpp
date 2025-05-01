@@ -47,6 +47,9 @@ namespace ZXEngine
 
 	void EditorGUIManagerMetal::BeginEditorRender()
 	{
+		RenderAPIMetal* renderAPI = static_cast<RenderAPIMetal*>(RenderAPI::GetInstance());
+		mRenderPassDescriptor->colorAttachments()->object(0)->setTexture(renderAPI->mDrawable->texture());
+
 		ImGui_ImplMetal_NewFrame(mRenderPassDescriptor);
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -72,7 +75,6 @@ namespace ZXEngine
 	void EditorGUIManagerMetal::EndEditorRender()
 	{
 		RenderAPIMetal* renderAPI = static_cast<RenderAPIMetal*>(RenderAPI::GetInstance());
-		mRenderPassDescriptor->colorAttachments()->object(0)->setTexture(renderAPI->mDrawable->texture());
 
 		MTL::CommandBuffer* commandBuffer = renderAPI->mCommandQueue->commandBuffer();
 		MTL::RenderCommandEncoder* renderEncoder = commandBuffer->renderCommandEncoder(mRenderPassDescriptor);
