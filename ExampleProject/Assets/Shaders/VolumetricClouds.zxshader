@@ -226,7 +226,7 @@ Fragment
             return color;
         }
 
-        float GetPerlinWorleyCloudsDensity(vec3 uvw)
+        float GetPerlinWorleyCloudsDensity(vec3 uvw, float coverage)
         {
             // 读取低频柏林-沃利和沃利噪音
             vec4 low_frequency_noises = PerlinWorley(uvw);
@@ -241,9 +241,9 @@ Fragment
             // base_cloud *= density_height_gradient
 
             // 使用重映射应用云体的覆盖比
-            float base_cloud_with_coverage = Remap(base_cloud, _Coverage, 1.0, 0.0, 1.0);
+            float base_cloud_with_coverage = Remap(base_cloud, coverage, 1.0, 0.0, 1.0);
             // 将之前的结果乘上覆盖比后，小巧和轻量的云体将会比原来更好看
-            base_cloud_with_coverage *= _Coverage;
+            base_cloud_with_coverage *= coverage;
 
             return base_cloud_with_coverage;
         }
@@ -270,11 +270,11 @@ Fragment
         }
 
         // Raymarch
-        float Interesect(vec3 ro, vec3 rd)
+        float Interesect(vec3 ro, vec3 rd, vec3 size, float scale, float coverage, float trans, float fadeDis)
         {
             float res = -1.0;
             // Bounding Volume
-            vec2 dis = iBox(ro, rd, _Size);
+            vec2 dis = iBox(ro, rd, size);
 
             if (dis.y >= 0.0) 
             {
@@ -292,18 +292,18 @@ Fragment
 
                     // 边缘淡出
                     float edgeFade = 1.0;
-                    float edgeDis = min(_Size.x - abs(curPos.x), _Size.z - abs(curPos.z));
-                    if (edgeDis < _FadeDistance)
+                    float edgeDis = min(size.x - abs(curPos.x), size.z - abs(curPos.z));
+                    if (edgeDis < fadeDis)
                     {
-                        edgeFade = edgeDis / _FadeDistance;
+                        edgeFade = edgeDis / fadeDis;
                     }
 
                     vec3 rOffset = (vec3(Random(curPos.x), Random(curPos.y), Random(curPos.z)) * 2 - 1) / 100;
-                    curPos *= _Scale;
-                    float curDense = GetPerlinWorleyCloudsDensity(curPos + rOffset);
+                    curPos *= scale;
+                    float curDense = GetPerlinWorleyCloudsDensity(curPos + rOffset, coverage);
                     dense += curDense * edgeFade;
                 }
-                res =  dense / _Transparency;
+                res =  dense / trans;
             }
             
             return res;
@@ -314,7 +314,7 @@ Fragment
             vec3 ro = ENGINE_Camera_Pos;
             vec3 rd = normalize(WorldPos - ro);
 
-            float dense = Interesect(ro, rd);
+            float dense = Interesect(ro, rd, _Size, _Scale, _Coverage, _Transparency, _FadeDistance);
 
             FragColor = vec4(1.0, 1.0, 1.0, dense);
         }
