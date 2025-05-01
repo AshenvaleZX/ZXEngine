@@ -6,9 +6,12 @@
 // Implemented features:
 //  [X] Platform: Clipboard support.
 //  [X] Platform: Mouse support. Can discriminate Mouse/TouchScreen/Pen (Windows only).
-//  [X] Platform: Keyboard support. Since 1.87 we are using the io.AddKeyEvent() function. Pass ImGuiKey values to all key functions e.g. ImGui::IsKeyPressed(ImGuiKey_Space). [Legacy GLFW_KEY_* values will also be supported unless IMGUI_DISABLE_OBSOLETE_KEYIO is set]
+//  [X] Platform: Keyboard support. Since 1.87 we are using the io.AddKeyEvent() function. Pass ImGuiKey values to all key functions e.g. ImGui::IsKeyPressed(ImGuiKey_Space). [Legacy GLFW_KEY_* values are obsolete since 1.87 and not supported since 1.91.5]
 //  [X] Platform: Gamepad support. Enable with 'io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad'.
-//  [X] Platform: Mouse cursor shape and visibility. Disable with 'io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange' (note: the resizing cursors requires GLFW 3.4+).
+//  [X] Platform: Mouse cursor shape and visibility (ImGuiBackendFlags_HasMouseCursors). Resizing cursors requires GLFW 3.4+! Disable with 'io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange'.
+// Missing features or Issues:
+//  [ ] Touch events are only correctly identified as Touch on Windows. This create issues with some interactions. GLFW doesn't provide a way to identify touch inputs from mouse inputs, we cannot call io.AddMouseSourceEvent() to identify the source. We provide a Windows-specific workaround.
+//  [ ] Missing ImGuiMouseCursor_Wait and ImGuiMouseCursor_Progress cursors.
 
 // You can use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
 // Prefer including the entire imgui/ repository into your project (either as a copy or as a submodule), and only build the backends you need.
@@ -18,8 +21,20 @@
 // - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
 // - Introduction, links and more at the top of imgui.cpp
 
+// About Emscripten support:
+// - Emscripten provides its own GLFW (3.2.1) implementation (syntax: "-sUSE_GLFW=3"), but Joystick is broken and several features are not supported (multiple windows, clipboard, timer, etc.)
+// - A third-party Emscripten GLFW (3.4.0) implementation (syntax: "--use-port=contrib.glfw3") fixes the Joystick issue and implements all relevant features for the browser.
+// See https://github.com/pongasoft/emscripten-glfw/blob/master/docs/Comparison.md for details.
+
 // CHANGELOG
 // (minor and older changes stripped away, please see git history for details)
+//  2025-03-10: Map GLFW_KEY_WORLD_1 and GLFW_KEY_WORLD_2 into ImGuiKey_Oem102.
+//  2025-03-03: Fixed clipboard handler assertion when using GLFW <= 3.2.1 compiled with asserts enabled.
+//  2024-08-22: Moved some OS/backend related function pointers from ImGuiIO to ImGuiPlatformIO:
+//               - io.GetClipboardTextFn    -> platform_io.Platform_GetClipboardTextFn
+//               - io.SetClipboardTextFn    -> platform_io.Platform_SetClipboardTextFn
+//               - io.PlatformOpenInShellFn -> platform_io.Platform_OpenInShellFn
+//  2024-07-31: Added ImGui_ImplGlfw_Sleep() helper function for usage by our examples app, since GLFW doesn't provide one.
 //  2024-07-08: *BREAKING* Renamed ImGui_ImplGlfw_InstallEmscriptenCanvasResizeCallback to ImGui_ImplGlfw_InstallEmscriptenCallbacks(), added GLFWWindow* parameter.
 //  2024-07-08: Emscripten: Added support for GLFW3 contrib port (GLFW 3.4.0 features + bug fixes): to enable, replace -sUSE_GLFW=3 with --use-port=contrib.glfw3 (requires emscripten 3.1.59+) (https://github.com/pongasoft/emscripten-glfw)
 //  2024-07-02: Emscripten: Added io.PlatformOpenInShellFn() handler for Emscripten versions.
@@ -99,6 +114,9 @@
 #endif
 #include <GLFW/glfw3native.h>   // for glfwGetCocoaWindow()
 #endif
+#ifndef _WIN32
+#include <unistd.h>             // for usleep()
+#endif
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -172,19 +190,13 @@ static ImGui_ImplGlfw_Data* ImGui_ImplGlfw_GetBackendData()
 }
 
 // Functions
-static const char* ImGui_ImplGlfw_GetClipboardText(void* user_data)
-{
-    return glfwGetClipboardString((GLFWwindow*)user_data);
-}
 
-static void ImGui_ImplGlfw_SetClipboardText(void* user_data, const char* text)
+// Not static to allow third-party code to use that if they want to (but undocumented)
+ImGuiKey ImGui_ImplGlfw_KeyToImGuiKey(int keycode, int scancode);
+ImGuiKey ImGui_ImplGlfw_KeyToImGuiKey(int keycode, int scancode)
 {
-    glfwSetClipboardString((GLFWwindow*)user_data, text);
-}
-
-static ImGuiKey ImGui_ImplGlfw_KeyToImGuiKey(int key)
-{
-    switch (key)
+    IM_UNUSED(scancode);
+    switch (keycode)
     {
         case GLFW_KEY_TAB: return ImGuiKey_Tab;
         case GLFW_KEY_LEFT: return ImGuiKey_LeftArrow;
@@ -210,6 +222,8 @@ static ImGuiKey ImGui_ImplGlfw_KeyToImGuiKey(int key)
         case GLFW_KEY_EQUAL: return ImGuiKey_Equal;
         case GLFW_KEY_LEFT_BRACKET: return ImGuiKey_LeftBracket;
         case GLFW_KEY_BACKSLASH: return ImGuiKey_Backslash;
+        case GLFW_KEY_WORLD_1: return ImGuiKey_Oem102;
+        case GLFW_KEY_WORLD_2: return ImGuiKey_Oem102;
         case GLFW_KEY_RIGHT_BRACKET: return ImGuiKey_RightBracket;
         case GLFW_KEY_GRAVE_ACCENT: return ImGuiKey_GraveAccent;
         case GLFW_KEY_CAPS_LOCK: return ImGuiKey_CapsLock;
@@ -352,6 +366,7 @@ void ImGui_ImplGlfw_ScrollCallback(GLFWwindow* window, double xoffset, double yo
     io.AddMouseWheelEvent((float)xoffset, (float)yoffset);
 }
 
+// FIXME: should this be baked into ImGui_ImplGlfw_KeyToImGuiKey()? then what about the values passed to io.SetKeyEventNativeData()?
 static int ImGui_ImplGlfw_TranslateUntranslatedKey(int key, int scancode)
 {
 #if GLFW_HAS_GETKEYNAME && !defined(EMSCRIPTEN_USE_EMBEDDED_GLFW3)
@@ -399,7 +414,7 @@ void ImGui_ImplGlfw_KeyCallback(GLFWwindow* window, int keycode, int scancode, i
     keycode = ImGui_ImplGlfw_TranslateUntranslatedKey(keycode, scancode);
 
     ImGuiIO& io = ImGui::GetIO();
-    ImGuiKey imgui_key = ImGui_ImplGlfw_KeyToImGuiKey(keycode);
+    ImGuiKey imgui_key = ImGui_ImplGlfw_KeyToImGuiKey(keycode, scancode);
     io.AddKeyEvent(imgui_key, (action == GLFW_PRESS));
     io.SetKeyEventNativeData(imgui_key, keycode, scancode); // To support legacy indexing (<1.87 user code)
 }
@@ -459,7 +474,7 @@ void ImGui_ImplGlfw_CharCallback(GLFWwindow* window, unsigned int c)
 
 void ImGui_ImplGlfw_MonitorCallback(GLFWmonitor*, int)
 {
-	// Unused in 'master' branch but 'docking' branch will use this, so we declare it ahead of it so if you have to install callbacks you can install this one too.
+    // Unused in 'master' branch but 'docking' branch will use this, so we declare it ahead of it so if you have to install callbacks you can install this one too.
 }
 
 #ifdef EMSCRIPTEN_USE_EMBEDDED_GLFW3
@@ -562,7 +577,11 @@ void ImGui_ImplGlfw_SetCallbacksChainForAllWindows(bool chain_for_all_windows)
 }
 
 #ifdef __EMSCRIPTEN__
-EM_JS(void, ImGui_ImplGlfw_EmscriptenOpenURL, (char const* url), { url = url ? UTF8ToString(url) : null; if (url) window.open(url, '_blank'); });
+#if EMSCRIPTEN_USE_PORT_CONTRIB_GLFW3 >= 34020240817
+void ImGui_ImplGlfw_EmscriptenOpenURL(const char* url) { if (url) emscripten::glfw3::OpenURL(url); }
+#else
+EM_JS(void, ImGui_ImplGlfw_EmscriptenOpenURL, (const char* url), { url = url ? UTF8ToString(url) : null; if (url) window.open(url, '_blank'); });
+#endif
 #endif
 
 static bool ImGui_ImplGlfw_Init(GLFWwindow* window, bool install_callbacks, GlfwClientApi client_api)
@@ -582,11 +601,17 @@ static bool ImGui_ImplGlfw_Init(GLFWwindow* window, bool install_callbacks, Glfw
     bd->Window = window;
     bd->Time = 0.0;
 
-    io.SetClipboardTextFn = ImGui_ImplGlfw_SetClipboardText;
-    io.GetClipboardTextFn = ImGui_ImplGlfw_GetClipboardText;
-    io.ClipboardUserData = bd->Window;
+    ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
+#if GLFW_VERSION_COMBINED < 3300
+    platform_io.Platform_SetClipboardTextFn = [](ImGuiContext*, const char* text) { glfwSetClipboardString(ImGui_ImplGlfw_GetBackendData()->Window, text); };
+    platform_io.Platform_GetClipboardTextFn = [](ImGuiContext*) { return glfwGetClipboardString(ImGui_ImplGlfw_GetBackendData()->Window); };
+#else
+    platform_io.Platform_SetClipboardTextFn = [](ImGuiContext*, const char* text) { glfwSetClipboardString(nullptr, text); };
+    platform_io.Platform_GetClipboardTextFn = [](ImGuiContext*) { return glfwGetClipboardString(nullptr); };
+#endif
+
 #ifdef __EMSCRIPTEN__
-    io.PlatformOpenInShellFn = [](ImGuiContext*, const char* url) { ImGui_ImplGlfw_EmscriptenOpenURL(url); return true; };
+    platform_io.Platform_OpenInShellFn = [](ImGuiContext*, const char* url) { ImGui_ImplGlfw_EmscriptenOpenURL(url); return true; };
 #endif
 
     // Create mouse cursors
@@ -635,6 +660,23 @@ static bool ImGui_ImplGlfw_Init(GLFWwindow* window, bool install_callbacks, Glfw
     bd->PrevWndProc = (WNDPROC)::GetWindowLongPtrW((HWND)main_viewport->PlatformHandleRaw, GWLP_WNDPROC);
     IM_ASSERT(bd->PrevWndProc != nullptr);
     ::SetWindowLongPtrW((HWND)main_viewport->PlatformHandleRaw, GWLP_WNDPROC, (LONG_PTR)ImGui_ImplGlfw_WndProc);
+#endif
+
+    // Emscripten: the same application can run on various platforms, so we detect the Apple platform at runtime
+    // to override io.ConfigMacOSXBehaviors from its default (which is always false in Emscripten).
+#ifdef __EMSCRIPTEN__
+#if EMSCRIPTEN_USE_PORT_CONTRIB_GLFW3 >= 34020240817
+    if (emscripten::glfw3::IsRuntimePlatformApple())
+    {
+        ImGui::GetIO().ConfigMacOSXBehaviors = true;
+
+        // Due to how the browser (poorly) handles the Meta Key, this line essentially disables repeats when used.
+        // This means that Meta + V only registers a single key-press, even if the keys are held.
+        // This is a compromise for dealing with this issue in ImGui since ImGui implements key repeat itself.
+        // See https://github.com/pongasoft/emscripten-glfw/blob/v3.4.0.20240817/docs/Usage.md#the-problem-of-the-super-key
+        emscripten::glfw3::SetSuperPlusKeyTimeouts(10, 10);
+    }
+#endif
 #endif
 
     bd->ClientApi = client_api;
@@ -700,7 +742,7 @@ static void ImGui_ImplGlfw_UpdateMouseData()
 #endif
         if (is_window_focused)
         {
-            // (Optional) Set OS mouse position from Dear ImGui if requested (rarely used, only when ImGuiConfigFlags_NavEnableSetMousePos is enabled by user)
+            // (Optional) Set OS mouse position from Dear ImGui if requested (rarely used, only when io.ConfigNavMoveSetMousePos is enabled by user)
             if (io.WantSetMousePos)
                 glfwSetCursorPos(window, (double)io.MousePos.x, (double)io.MousePos.y);
 
@@ -823,6 +865,16 @@ void ImGui_ImplGlfw_NewFrame()
 
     // Update game controllers (if enabled and available)
     ImGui_ImplGlfw_UpdateGamepads();
+}
+
+// GLFW doesn't provide a portable sleep function
+void ImGui_ImplGlfw_Sleep(int milliseconds)
+{
+#ifdef _WIN32
+    ::Sleep(milliseconds);
+#else
+    usleep(milliseconds * 1000);
+#endif
 }
 
 #ifdef EMSCRIPTEN_USE_EMBEDDED_GLFW3
