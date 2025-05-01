@@ -145,3 +145,6 @@ namespace ImGui
 // 需要我们自己去加载函数(绑定函数指针)，所以因此间接影响了基于Vulkan的ImGui
 // 虽然基于Vulkan的ImGui渲染并不需要任何扩展，但是因为我们要自己加载所有Vulkan函数了，就也需要给ImGui传递一个函数，让ImGui去找Vulkan函数地址
 #define IMGUI_IMPL_VULKAN_NO_PROTOTYPES
+
+// 使用metal-cpp
+#define IMGUI_IMPL_METAL_CPP

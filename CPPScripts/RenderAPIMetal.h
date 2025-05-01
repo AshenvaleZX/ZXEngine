@@ -6,6 +6,8 @@ namespace ZXEngine
 {
 	class RenderAPIMetal : public RenderAPI
 	{
+		friend class EditorGUIManagerMetal;
+		friend class ImGuiTextureManagerMetal;
 		/// <summary>
 		/// 标准渲染管线接口
 		/// Standard Rendering Pipeline Interface
