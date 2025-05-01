@@ -15,6 +15,8 @@ namespace ZXEngine
 		".vert", ".frag", ".geom",
 		// 预编译的Vulkan Shader
 		".spv",
+		// 生成的MSL代码
+		".msl",
 	};
 
 	EditorProjectPanel::EditorProjectPanel()
