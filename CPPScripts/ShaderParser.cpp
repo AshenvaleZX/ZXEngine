@@ -1227,11 +1227,11 @@ namespace ZXEngine
 			auto words = Utils::ExtractWords(line);
 			if (words.size() >= 5 && words[0] != "//")
 			{
-				size_t attrID = SIZE_T_MAX;
+				size_t attrID = SIZE_MAX;
 				try {
 					attrID = static_cast<size_t>(std::stoul(words[0]));
 				} catch (const std::exception&) {
-					attrID = SIZE_T_MAX;
+					attrID = SIZE_MAX;
 				}
 
 				if (attrID < 6)
