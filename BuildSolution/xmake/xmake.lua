@@ -83,7 +83,7 @@ if not is_plat("windows") then
 end
 
 if not is_plat("macosx") then
-    remove_files("../../CPPScripts/Metal/**")
+    remove_files("../../CPPScripts/Metal/MetalEnumStruct.cpp")
     remove_files("../../CPPScripts/RenderAPIMetal.cpp")
     remove_files("../../CPPScripts/External/ImGui/imgui_impl_metal.mm")
     remove_files("../../CPPScripts/Editor/EditorGUIManagerMetal.cpp")

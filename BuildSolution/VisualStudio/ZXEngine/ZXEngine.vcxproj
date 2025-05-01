@@ -234,6 +234,7 @@
     <ClCompile Include="..\..\..\CPPScripts\Math\Vector2.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Math\Vector3.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\Math\Vector4.cpp" />
+    <ClCompile Include="..\..\..\CPPScripts\Metal\MetalUtil.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\ModelUtil.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\ParticleSystem\ParticleEmitter.cpp" />
     <ClCompile Include="..\..\..\CPPScripts\ParticleSystem\ParticleEvolver.cpp" />
@@ -456,6 +457,7 @@
     <ClInclude Include="..\..\..\CPPScripts\Math\Vector2.h" />
     <ClInclude Include="..\..\..\CPPScripts\Math\Vector3.h" />
     <ClInclude Include="..\..\..\CPPScripts\Math\Vector4.h" />
+    <ClInclude Include="..\..\..\CPPScripts\Metal\MetalUtil.h" />
     <ClInclude Include="..\..\..\CPPScripts\ModelUtil.h" />
     <ClInclude Include="..\..\..\CPPScripts\OpenGLEnumStruct.h" />
     <ClInclude Include="..\..\..\CPPScripts\ParticleSystem\ParticleEmitter.h" />

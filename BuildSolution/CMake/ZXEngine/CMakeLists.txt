@@ -342,6 +342,18 @@ set(Math
 )
 source_group("Math" FILES ${Math})
 
+set(Metal
+    "../../../CPPScripts/Metal/MetalUtil.cpp"
+    "../../../CPPScripts/Metal/MetalUtil.h"
+)
+if(APPLE)
+    list(APPEND Metal
+        "../../../CPPScripts/Metal/MetalEnumStruct.cpp"
+        "../../../CPPScripts/Metal/MetalEnumStruct.h"
+    )
+endif()
+source_group("Metal" FILES ${Metal})
+
 set(ParticleSystem
     "../../../CPPScripts/ParticleSystem/ParticleEmitter.cpp"
     "../../../CPPScripts/ParticleSystem/ParticleEmitter.h"
@@ -603,14 +615,6 @@ if(WIN32)
         "../../../CPPScripts/DirectX12/ZXD3D12Util.h"
     )
     source_group("DirectX12" FILES ${DirectX12})
-elseif(APPLE)
-    set(Metal
-        "../../../CPPScripts/Metal/MetalEnumStruct.cpp"
-        "../../../CPPScripts/Metal/MetalEnumStruct.h"
-        "../../../CPPScripts/Metal/MetalUtil.cpp"
-        "../../../CPPScripts/Metal/MetalUtil.h"
-    )
-    source_group("Metal" FILES ${Metal})
 endif()
 
 set(ALL_FILES
@@ -629,6 +633,7 @@ set(ALL_FILES
     ${Input}
     ${LuaWrap}
     ${Math}
+    ${Metal}
     ${ParticleSystem}
     ${PhysZ}
     ${PhysZ__BoundingVolume}
@@ -647,10 +652,6 @@ if(WIN32)
     list(APPEND ALL_FILES
         ${Audio__irrKlangImpl}
         ${DirectX12}
-    )
-elseif(APPLE)
-    list(APPEND ALL_FILES
-        ${Metal}
     )
 endif()
 
