@@ -159,7 +159,7 @@ void ImGui_ImplMetal_NewFrame(MTLRenderPassDescriptor* renderPassDescriptor)
 {
     ImGui_ImplMetal_Data* bd = ImGui_ImplMetal_GetBackendData();
     IM_ASSERT(bd != nil && "Context or backend not initialized! Did you call ImGui_ImplMetal_Init()?");
-#ifdef IMGUI_IMPL_METAL_CPP
+#if defined(IMGUI_IMPL_METAL_CPP) && !__has_feature(objc_arc)
     bd->SharedMetalContext.framebufferDescriptor = [[[FramebufferDescriptor alloc] initWithRenderPassDescriptor:renderPassDescriptor]autorelease];
 #else
     bd->SharedMetalContext.framebufferDescriptor = [[FramebufferDescriptor alloc] initWithRenderPassDescriptor:renderPassDescriptor];
@@ -370,7 +370,7 @@ bool ImGui_ImplMetal_CreateDeviceObjects(id<MTLDevice> device)
     depthStencilDescriptor.depthWriteEnabled = NO;
     depthStencilDescriptor.depthCompareFunction = MTLCompareFunctionAlways;
     bd->SharedMetalContext.depthStencilState = [device newDepthStencilStateWithDescriptor:depthStencilDescriptor];
-#ifdef IMGUI_IMPL_METAL_CPP
+#if defined(IMGUI_IMPL_METAL_CPP) && !__has_feature(objc_arc)
     [depthStencilDescriptor release];
 #endif
     ImGui_ImplMetal_CreateFontsTexture(device);
