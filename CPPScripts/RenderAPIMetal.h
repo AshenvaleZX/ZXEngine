@@ -112,8 +112,8 @@ namespace ZXEngine
 		virtual void BindVertexBuffer(uint32_t VAO, uint32_t binding);
 
 		// Compute Shader
-		virtual ComputeShaderReference* LoadAndSetUpComputeShader(const string& path) { return nullptr; };
-		virtual void DeleteComputeShader(uint32_t id) {};
+		virtual ComputeShaderReference* LoadAndSetUpComputeShader(const string& path);
+		virtual void DeleteComputeShader(uint32_t id);
 
 		// Compute Command
 		virtual void Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ) {};
@@ -171,6 +171,7 @@ namespace ZXEngine
 		vector<MetalRenderBuffer*> mRenderBufferArray;
 		vector<MetalTexture*> mMetalTextureArray;
 		vector<MetalPipeline*> mMetalPipelineArray;
+		vector<MetalComputePipeline*> mComputePipelineArray;
 		vector<MetalMaterialData*> mMaterialDataArray;
 		vector<MetalBuffer*> mMetalInstanceBufferArray;
 		vector<MetalDrawCommand*> mDrawCommandArray;
@@ -179,6 +180,7 @@ namespace ZXEngine
 		unordered_map<uint32_t, uint32_t> mSSBOsToDelete;
 		unordered_map<uint32_t, uint32_t> mTexturesToDelete;
 		unordered_map<uint32_t, uint32_t> mPipelinesToDelete;
+		unordered_map<uint32_t, uint32_t> mComputePipelinesToDelete;
 		unordered_map<uint32_t, uint32_t> mMaterialDatasToDelete;
 		unordered_map<uint32_t, uint32_t> mInstanceBuffersToDelete;
 		unordered_map<uint32_t, uint32_t> mDrawCommandsToDelete;
@@ -206,6 +208,10 @@ namespace ZXEngine
 		uint32_t GetNextPipelineIndex();
 		MetalPipeline* GetPipelineByIndex(uint32_t idx);
 		void DestroyPipelineByIndex(uint32_t idx);
+
+		uint32_t GetNextComputePipelineIndex();
+		MetalComputePipeline* GetComputePipelineByIndex(uint32_t idx);
+		void DestroyComputePipelineByIndex(uint32_t idx);
 
 		uint32_t GetNextMaterialDataIndex();
 		MetalMaterialData* GetMaterialDataByIndex(uint32_t idx);

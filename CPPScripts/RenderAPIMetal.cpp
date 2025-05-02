@@ -1580,6 +1580,43 @@ namespace ZXEngine
 		mCurComputePipelineVertexBufferBindingRecords.push_back({ VAO, binding });
 	}
 
+	ComputeShaderReference* RenderAPIMetal::LoadAndSetUpComputeShader(const string& path)
+	{
+		string shaderCode = Resources::LoadTextFile(path + ".mtc");
+		if (shaderCode.empty())
+			return nullptr;
+
+		NS::Error* pError = nullptr;
+		MTL::Library* pLibrary = mDevice->newLibrary(NS::String::string(shaderCode.c_str(), NS::StringEncoding::UTF8StringEncoding), nullptr, &pError);
+		if (!pLibrary)
+		{
+			Debug::LogError("Metal compute shader error, path: %s error:\n%s", path, pError->localizedDescription()->utf8String());
+			assert(false);
+		}
+
+		MTL::Function* pCompFn = pLibrary->newFunction(NS::String::string("CompMain", NS::StringEncoding::UTF8StringEncoding));
+
+		uint32_t pipelineID = GetNextComputePipelineIndex();
+		auto computePipeline = GetComputePipelineByIndex(pipelineID);
+
+		computePipeline->pipeline = mDevice->newComputePipelineState(pCompFn, &pError);
+		if (!computePipeline->pipeline)
+		{
+			Debug::LogError("Metal compute shader error, path: %s error:\n%s", path, pError->localizedDescription()->utf8String());
+			assert(false);
+		}
+
+		ComputeShaderReference* reference = new ComputeShaderReference();
+		reference->ID = pipelineID;
+
+		return reference;
+	}
+
+	void RenderAPIMetal::DeleteComputeShader(uint32_t id)
+	{
+		mComputePipelinesToDelete.insert(pair(id, MT_MAX_FRAMES_IN_FLIGHT));
+	}
+
 	uint32_t RenderAPIMetal::GetNextVAOIndex()
 	{
 		uint32_t length = static_cast<uint32_t>(mVAOArray.size());
@@ -1835,6 +1872,40 @@ namespace ZXEngine
 		}
 
 		pipeline->inUse = false;
+	}
+
+	uint32_t RenderAPIMetal::GetNextComputePipelineIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mComputePipelineArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mComputePipelineArray[i]->inUse)
+				return i;
+		}
+
+		MetalComputePipeline* computePipeline = new MetalComputePipeline();
+		mComputePipelineArray.push_back(computePipeline);
+
+		return length;
+	}
+
+	MetalComputePipeline* RenderAPIMetal::GetComputePipelineByIndex(uint32_t idx)
+	{
+		return mComputePipelineArray[idx];
+	}
+
+	void RenderAPIMetal::DestroyComputePipelineByIndex(uint32_t idx)
+	{
+		auto computePipeline = mComputePipelineArray[idx];
+
+		if (computePipeline->pipeline)
+		{
+			computePipeline->pipeline->release();
+			computePipeline->pipeline = nullptr;
+		}
+
+		computePipeline->inUse = false;
 	}
 
 	uint32_t RenderAPIMetal::GetNextMaterialDataIndex()
@@ -2152,6 +2223,21 @@ namespace ZXEngine
 		{
 			DestroyPipelineByIndex(id);
 			mPipelinesToDelete.erase(id);
+		}
+
+		// Compute Pipeline
+		deleteList.clear();
+		for (auto& iter : mComputePipelinesToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroyComputePipelineByIndex(id);
+			mComputePipelinesToDelete.erase(id);
 		}
 
 		// Material Data

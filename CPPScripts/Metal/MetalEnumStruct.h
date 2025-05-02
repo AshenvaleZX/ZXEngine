@@ -44,6 +44,12 @@ namespace ZXEngine
 		bool inUse = false;
 	};
 
+	struct MetalComputePipeline
+	{
+		MTL::ComputePipelineState* pipeline = nullptr;
+		bool inUse = false;
+	};
+
 	struct MetalMaterialData
 	{
 		uint32_t size = 0; // For debug
