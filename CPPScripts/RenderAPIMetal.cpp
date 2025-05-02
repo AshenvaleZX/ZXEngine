@@ -1617,6 +1617,43 @@ namespace ZXEngine
 		mComputePipelinesToDelete.insert(pair(id, MT_MAX_FRAMES_IN_FLIGHT));
 	}
 
+	void RenderAPIMetal::Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ, uint32_t xSizeInGroup, uint32_t ySizeInGroup, uint32_t zSizeInGroup)
+	{
+		MTL::CommandBuffer* pCmd = mCommandQueue->commandBuffer();
+		auto computePipeline = GetComputePipelineByIndex(shaderID);
+
+		auto pEncoder = pCmd->computeCommandEncoder(MTL::DispatchTypeConcurrent);
+
+		pEncoder->setComputePipelineState(computePipeline->pipeline);
+
+		for (auto& bindingRecord : mCurComputePipelineSSBOBindingRecords)
+		{
+			auto ssbo = GetSSBOByIndex(bindingRecord.first);
+			pEncoder->setBuffer(ssbo->buffer, 0, bindingRecord.second);
+		}
+		mCurComputePipelineSSBOBindingRecords.clear();
+
+		for (auto& bindingRecord : mCurComputePipelineVertexBufferBindingRecords)
+		{
+			auto VAO = GetVAOByIndex(bindingRecord.first);
+			pEncoder->setBuffer(VAO->ssbo[mCurrentFrame], 0, bindingRecord.second);
+		}
+		mCurComputePipelineVertexBufferBindingRecords.clear();
+
+		pEncoder->dispatchThreadgroups(
+			MTL::Size(static_cast<NS::UInteger>(groupX), static_cast<NS::UInteger>(groupY), static_cast<NS::UInteger>(groupZ)),
+			MTL::Size(static_cast<NS::UInteger>(xSizeInGroup), static_cast<NS::UInteger>(ySizeInGroup), static_cast<NS::UInteger>(zSizeInGroup))
+		);
+
+		pEncoder->endEncoding();
+		pCmd->commit();
+	}
+
+	void RenderAPIMetal::SubmitAllComputeCommands()
+	{
+		// Metal的命令都是单独提交的，record完就直接提交了，所以不需要这个接口
+	}
+
 	uint32_t RenderAPIMetal::GetNextVAOIndex()
 	{
 		uint32_t length = static_cast<uint32_t>(mVAOArray.size());

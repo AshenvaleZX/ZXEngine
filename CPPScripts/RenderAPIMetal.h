@@ -116,8 +116,8 @@ namespace ZXEngine
 		virtual void DeleteComputeShader(uint32_t id);
 
 		// Compute Command
-		virtual void Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ) {};
-		virtual void SubmitAllComputeCommands() {};
+		virtual void Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ, uint32_t xSizeInGroup, uint32_t ySizeInGroup, uint32_t zSizeInGroup);
+		virtual void SubmitAllComputeCommands();
 
 
 		/// <summary>
