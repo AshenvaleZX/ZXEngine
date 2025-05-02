@@ -652,7 +652,7 @@ namespace ZXEngine
 		// Vulkan的Y轴和其它来个API相反，所以顶点索引顺序是逆序的
 		vector<uint32_t> indices =
 		{
-#if defined(ZX_API_OPENGL) || defined(ZX_API_D3D12)
+#if defined(ZX_API_OPENGL) || defined(ZX_API_D3D12) || defined(ZX_API_METAL)
 			2, 3, 1,
 			2, 1, 0,
 #else

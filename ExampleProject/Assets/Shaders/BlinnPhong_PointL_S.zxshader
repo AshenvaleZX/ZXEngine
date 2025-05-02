@@ -72,7 +72,7 @@ Fragment
 
     Program
     {
-        float ShadowCalculation(vec3 fragPos)
+        float ShadowCalculation(vec3 fragPos, vec3 lightPos, vec3 camPos, float farPlane)
         {
             array<vec3, 20> gridSamplingDisk = 
             {
@@ -83,19 +83,19 @@ Fragment
                 vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
             };
 
-            vec3 fragToLight = fragPos - ENGINE_Light_Pos;
+            vec3 fragToLight = fragPos - lightPos;
             float currentDepth = length(fragToLight);
             float shadow = 0.0;
             float bias = 0.05;
             int samples = 20;
-            float viewDistance = length(ENGINE_Camera_Pos - fragPos);
+            float viewDistance = length(camPos - fragPos);
             float soft = 5.0;
-            float diskRadius = (1.0 + (viewDistance / ENGINE_Far_Plane)) / soft;
+            float diskRadius = (1.0 + (viewDistance / farPlane)) / soft;
 
             for(int i = 0; i < samples; ++i)
             {
                 float closestDepth = texture(ENGINE_Shadow_Cube_Map, fragToLight + gridSamplingDisk[i] * diskRadius).r;
-                closestDepth *= ENGINE_Far_Plane;
+                closestDepth *= farPlane;
                 if(currentDepth - bias > closestDepth)
                     shadow += 1.0;
             }
@@ -122,7 +122,7 @@ Fragment
             vec3 specular = to_vec3(_Specular) * spec; // assuming bright white light color
 
             // 计算阴影
-            float shadow = ShadowCalculation(WorldPos);
+            float shadow = ShadowCalculation(WorldPos, ENGINE_Light_Pos, ENGINE_Camera_Pos, ENGINE_Far_Plane);
             // 对漫反射的影响参数
             float shadowD = 1.0 - shadow / 2;
             // 对镜面反射的影响参数，这个值更小，因为被挡住了光源的直射，应该几乎没有镜面反射了

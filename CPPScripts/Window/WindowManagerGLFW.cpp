@@ -11,12 +11,18 @@ namespace ZXEngine
 		RenderAPI::GetInstance()->OnWindowSizeChange(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
 	}
 
+	static void ErrorCallback(int error, const char* description)
+	{
+		Debug::LogError("GLFW Error %s: %s", error, description);
+	}
+
 	WindowManagerGLFW::WindowManagerGLFW()
 	{
+		glfwSetErrorCallback(ErrorCallback);
 		glfwInit();
 		string windowName = "ZXEngine";
 
-#ifdef ZX_API_OPENGL
+#if defined(ZX_API_OPENGL)
 		windowName = "ZXEngine <OpenGL " + 
 			to_string(ProjectSetting::OpenGLVersionMajor) +"." + 
 			to_string(ProjectSetting::OpenGLVersionMinor) + ">";
@@ -24,15 +30,17 @@ namespace ZXEngine
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, ProjectSetting::OpenGLVersionMajor);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, ProjectSetting::OpenGLVersionMinor);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#endif
-
-#ifdef ZX_API_VULKAN
+#elif defined(ZX_API_VULKAN)
 #ifdef ZX_PLATFORM_MACOS
 		windowName = "ZXEngine <Vulkan 1.2>";
 #else
 		windowName = "ZXEngine <Vulkan 1.3>";
 #endif
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+#elif defined(ZX_API_METAL)
+		windowName = "ZXEngine <Metal>";
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
 #endif
 
 		mWindow = glfwCreateWindow(ProjectSetting::srcWidth, ProjectSetting::srcHeight, windowName.c_str(), NULL, NULL);
@@ -51,16 +59,13 @@ namespace ZXEngine
 
 		// 在macOS上使用WindowSize回调，WindowSize是窗口的逻辑分辨率大小，FramebufferSize是窗口的物理分辨率大小
 		// 如果直接使用物理分辨率大小，在系统分辨率设置有缩放的情况下，渲染输出分辨率和实际窗口分辨率会不匹配
-#ifdef ZX_PLATFORM_MACOS
+		int realWindowWidth, realWindowHeight;
+#if defined(ZX_PLATFORM_MACOS) && defined(ZX_EDITOR)
 		glfwSetWindowSizeCallback(mWindow, FrameBufferSizeCallback);
+		glfwGetWindowSize(mWindow, &realWindowWidth, &realWindowHeight);
+		glfwGetWindowContentScale(mWindow, &mWindowScaleX, &mWindowScaleY);
 #else
 		glfwSetFramebufferSizeCallback(mWindow, FrameBufferSizeCallback);
-#endif
-
-		int realWindowWidth, realWindowHeight;
-#ifdef ZX_PLATFORM_MACOS
-		glfwGetWindowSize(mWindow, &realWindowWidth, &realWindowHeight);
-#else
 		glfwGetFramebufferSize(mWindow, &realWindowWidth, &realWindowHeight);
 #endif
 

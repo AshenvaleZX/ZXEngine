@@ -1449,7 +1449,7 @@ namespace ZXEngine
 		CheckError();
 	}
 
-	void RenderAPIOpenGL::Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ)
+	void RenderAPIOpenGL::Dispatch(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY, uint32_t groupZ, uint32_t xSizeInGroup, uint32_t ySizeInGroup, uint32_t zSizeInGroup)
 	{
 		glUseProgram(shaderID);
 		glDispatchCompute(groupX, groupY, groupZ);

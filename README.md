@@ -2,7 +2,7 @@
 
 | Graphics API | Platform |
 | :----------: | :------: |
-| ![Vulkan](Documents/Badges/Vulkan-Supported.svg) ![DirectX 12](Documents/Badges/DirectX_12-Supported.svg) ![OpenGL](Documents/Badges/OpenGL-Supported.svg) | ![Windows](Documents/Badges/Windows-Supported-blue.svg) ![macOS](Documents/Badges/macOS-Supported-blue.svg) ![Linux](Documents/Badges/Linux-Supported-blue.svg) ![Android](Documents/Badges/Android-Experimental-red.svg) |
+| ![Vulkan](Documents/Badges/Vulkan-Supported.svg) ![DirectX 12](Documents/Badges/DirectX_12-Supported.svg) ![Metal](Documents/Badges/Metal-Supported.svg) ![OpenGL](Documents/Badges/OpenGL-Supported.svg) | ![Windows](Documents/Badges/Windows-Supported-blue.svg) ![macOS](Documents/Badges/macOS-Supported-blue.svg) ![Linux](Documents/Badges/Linux-Supported-blue.svg) ![Android](Documents/Badges/Android-Experimental-red.svg) |
 
 这是我自己开发的游戏引擎项目，创建这个项目的主要目的是为了我自己学习和实践游戏引擎技术，不过也希望这个项目能对你有所帮助。
 
@@ -52,9 +52,16 @@ This project aimed at the game engine, not only focus on the graphics and render
 
 ## 引擎简介 (Engine Introduction)
 
-本引擎目前同时支持Vulkan，DirectX 12和OpenGL，支持Windows，macOS，Linux和Android。使用自创的zxshader语言来编写shader，支持前面三种图形API，编写一次即可在3种图形API和4种平台运行。本引擎同时也支持基于Vulkan和DirectX12的光线追踪渲染管线。
+| Platform | Graphics API Support       |
+| -------- | -------------------------- |
+| Windows  | DirectX 12, Vulkan, OpenGL |
+| macOS    | Metal, Vulkan, OpenGL      |
+| Linux    | OpenGL, Vulkan(unverified) |
+| Android  | Vulkan                     |
 
-This engine currently supports Vulkan, DirectX 12 and OpenGL, supports Windows, macOS, Linux and Android. The engine uses the self-created zxshader language to write shaders. You only need to write zxshader once and it can work in all three graphics APIs and four platforms. This engine also supports ray tracing rendering pipeline based on Vulkan or DirectX12.
+本引擎目前同时支持Vulkan，DirectX 12，Metal和OpenGL，支持Windows，macOS，Linux和Android。使用自创的zxshader语言来编写shader，支持前面4种图形API，编写一次即可在4种图形API和4种平台运行。本引擎同时也支持基于Vulkan和DirectX12的光线追踪渲染管线。
+
+This engine currently supports Vulkan, DirectX 12, Metal and OpenGL, supports Windows, macOS, Linux and Android. The engine uses the self-created zxshader language to write shaders. You only need to write zxshader once and it can work in all four graphics APIs and four platforms. This engine also supports ray tracing rendering pipeline based on Vulkan or DirectX12.
 
 本引擎内置了我写的物理引擎PhysZ(看了一些书和别人的项目之后的学习成果，详见后文)，支持基本的刚体力学模拟和弹簧，布料模拟。同时我也开发了简单的骨骼蒙皮动画系统，材质系统，粒子系统，UI系统，JobSystem等。
 
@@ -126,9 +133,9 @@ Scenes using forward rendering pipeline and ray tracing rendering pipeline have 
 
 ## 通用计算管线支持 (Compute Pipeline Support)
 
-ZXEngine集成了Vulkan，DirectX 12和OpenGL的通用计算管线，并封装成了统一接口以供使用。由于macOS只支持到OpenGL 4.1，而OpenGL是从4.3版本才加入对计算管线的支持，所以在macOS上使用OpenGL时，所有计算管线相关的模块都会被禁用。除macOS+OpenGL的组合无法使用计算管线外，其它平台+图形API的组合都是可用的。
+ZXEngine集成了Vulkan，DirectX 12，Metal和OpenGL的通用计算管线，并封装成了统一接口以供使用。由于macOS只支持到OpenGL 4.1，而OpenGL是从4.3版本才加入对计算管线的支持，所以在macOS上使用OpenGL时，所有计算管线相关的模块都会被禁用。除macOS+OpenGL的组合无法使用计算管线外，其它平台+图形API的组合都是可用的。
 
-ZXEngine integrates the compute pipeline of Vulkan, DirectX 12 and OpenGL and is encapsulated into a unified interface for use. Since macOS only supports OpenGL 4.1, and OpenGL added support for the compute pipeline from version 4.3, all compute pipeline related modules are disabled when using OpenGL on macOS. Except for the macOS + OpenGL combination that does not support compute pipeline, other platform + graphics API combinations are support.
+ZXEngine integrates the compute pipeline of Vulkan, DirectX 12, Metal and OpenGL and is encapsulated into a unified interface for use. Since macOS only supports OpenGL 4.1, and OpenGL added support for the compute pipeline from version 4.3, all compute pipeline related modules are disabled when using OpenGL on macOS. Except for the macOS + OpenGL combination that does not support compute pipeline, other platform + graphics API combinations are support.
 
 目前项目中实际应用了计算管线的地方在骨骼蒙皮动画模块。在启用了ZX_COMPUTE_ANIMATION宏之后，骨骼蒙皮动画的Mesh更新操作将在计算管线中完成。
 
@@ -170,9 +177,9 @@ The PhysZ engine is the result of me studying Ian Millington's "Game Physics Eng
 
 ## ZXShader和材质系统 (ZXShader And Material System)
 
-ZXShader是专门给ZXEngine用的一套Shader系统，因为ZXEngine同时支持Vulkan/DirectX12/OpenGL，所以也需要一个统一的Shader语言才能支撑后面的材质系统。ZXShader目前暂时只支持光栅渲染管线，光追渲染管线的Shader是在VK和DX下独立写的。ZXShader语言本身并不复杂，对GLSL，HLSL或者Unity ShaderLab比较熟悉的人应该都能很快看懂，代码示例在ExampleProject\Assets\Shaders中。
+ZXShader是专门给ZXEngine用的一套Shader系统，因为ZXEngine同时支持Vulkan/DirectX12/Metal/OpenGL，所以也需要一个统一的Shader语言才能支撑后面的材质系统。ZXShader目前暂时只支持光栅渲染管线，光追渲染管线的Shader是在VK和DX下独立写的。ZXShader语言本身并不复杂，对GLSL，HLSL或者Unity ShaderLab比较熟悉的人应该都能很快看懂，代码示例在ExampleProject\Assets\Shaders中。
 
-ZXShader is a shader system for ZXEngine. Because ZXEngine supports Vulkan/DirectX12/OpenGL, a unified shader language is needed to support the material system. ZXShader currently only supports the rasterization rendering pipeline. The Shader of the raytracing rendering pipeline is written independently under VK and DX. The ZXShader language itself is not complicated. People who are familiar with GLSL, HLSL or Unity ShaderLab should be able to understand it quickly. The code examples are in ExampleProject\Assets\Shaders.
+ZXShader is a shader system for ZXEngine. Because ZXEngine supports Vulkan/DirectX12/Metal/OpenGL, a unified shader language is needed to support the material system. ZXShader currently only supports the rasterization rendering pipeline. The Shader of the raytracing rendering pipeline is written independently under VK and DX. The ZXShader language itself is not complicated. People who are familiar with GLSL, HLSL or Unity ShaderLab should be able to understand it quickly. The code examples are in ExampleProject\Assets\Shaders.
 
 材质系统和Unity的比较类似，就是挂一个Shader，然后可以在编辑器面板上看到这个材质暴露给引擎的参数。并且可以通过引擎编辑器调整参数数值，然后实时看到渲染结果的动态反馈。如图，直接调整正在运行的场景中的材质：
 
@@ -645,9 +652,9 @@ Scene files, containing GameObjects, skyboxes, etc. If it is a ray tracing scene
 
 ### *.zxshader
 
-这是本引擎自己的shader语言文件，不过目前zxshader仅支持DirectX 12，Vulkan和OpenGL的光栅化渲染管线。示例代码可以在ExampleProject\Assets\Shaders中找到。
+这是本引擎自己的shader语言文件，不过目前zxshader仅支持Vulkan，DirectX 12，Metal和OpenGL的光栅化渲染管线。示例代码可以在ExampleProject\Assets\Shaders中找到。
 
-This is ZXEngine's shader language file, but currently zxshader only supports the rasterization rendering pipeline of DirectX 12, Vulkan and OpenGL. Example code can be found in ExampleProject\Assets\Shaders.
+This is ZXEngine's shader language file, but currently zxshader only supports the rasterization rendering pipeline of Vulkan, DirectX 12, Metal and OpenGL. Example code can be found in ExampleProject\Assets\Shaders.
 
 ### *.vkr  *.dxr
 
@@ -655,11 +662,11 @@ This is ZXEngine's shader language file, but currently zxshader only supports th
 
 These two extension correspond to the ray tracing shader code files of Vulkan and DirectX12 respectively. For now, there is no engine-specific ray tracing shader language like ZXShader in the rasterization pipeline.
 
-### *.glc  *.dxc
+### *.glc  *.dxc  *mtc
 
-这两个后缀分别对应Vulkan/OpenGL和DirectX12的计算管线Shader代码文件。通用计算管线与光线追踪管线一样，暂未统一Shader语言。
+这两个后缀分别对应Vulkan/OpenGL，DirectX12和Metal的计算管线Shader代码文件。通用计算管线与光线追踪管线一样，暂未统一Shader语言。
 
-These two extension correspond to the compute shader code files of Vulkan/OpenGL and DirectX12 respectively. Compute pipeline, like the ray tracing pipeline, has not yet created a unified shader language.
+These two extension correspond to the compute shader code files of Vulkan/OpenGL, DirectX12 and Metal respectively. Compute pipeline, like the ray tracing pipeline, has not yet created a unified shader language.
 
 ### *.zxmat  *.zxdrmat  *.zxrtmat
 
@@ -711,9 +718,9 @@ This repository contains some actual game project demos developed with ZXEngine.
 
 This project supports Windows, macOS, Linux and Android, provides four build tools: xmake, CMake, Visual Studio 2022 and Android Studio, which are placed in the BuildSolution folder.
 
-本项目在Windows平台支持Vulkan，DirectX 12和OpenGL，在macOS平台支持Vulkan和OpenGL，在Linux平台支持OpenGL，在Android平台支持Vulkan。在Linux上的Vulkan应该也是能支持的，但是由于我缺少符合条件的硬件设备，所以暂时还没有在Linux上调试运行过Vulkan版的ZXEngine。
+本项目在Windows平台支持DirectX 12，Vulkan和OpenGL，在macOS平台支持Metal，Vulkan和OpenGL，在Linux平台支持OpenGL，在Android平台支持Vulkan。在Linux上的Vulkan应该也是能支持的，但是由于我缺少符合条件的硬件设备，所以暂时还没有在Linux上调试运行过Vulkan版的ZXEngine。
 
-This project supports Vulkan, DirectX 12 and OpenGL on Windows, Vulkan and OpenGL on macOS, OpenGL on Linux and Vulkan on Android. Vulkan on Linux is also supposed to be supported, but I haven't tested and debugged the Vulkan version of ZXEngine on Linux yet because I don't have the device that meets the requirements.
+This project supports DirectX 12, Vulkan and OpenGL on Windows, supports Metal, Vulkan and OpenGL on macOS, supports OpenGL on Linux and Vulkan on Android. Vulkan on Linux is also supposed to be supported, but I haven't tested and debugged the Vulkan version of ZXEngine on Linux yet because I don't have the device that meets the requirements.
 
 ### Windows
 
@@ -757,9 +764,9 @@ cd BuildSolution/CMake
 ./BuildMac.sh
 ```
 
-在Mac设备上运行ZXEngine有一个问题，就是Vulkan的几何着色器可能是不被支持的，比如我这台M1芯片的MacBook就不支持。我也不知道为什么用OpenGL都支持，但是用Vulkan就不支持。可能是因为苹果的GPU本身的设计就没有准备支持几何着色器，只是为OpenGL的几何着色器做了个驱动层面的模拟。由于本引擎的Shadow Cube Map是使用几何着色器渲染的，所以在不支持几何着色器的设备上运行时，在使用点光源的场景中阴影系统会失效。
+在Mac设备上运行ZXEngine有一个问题，就是几何着色器可能是不被支持的。比如使用Metal或者Vulkan时就无法使用几何着色器，使用OpenGL是可以的。这可能是因为苹果的GPU本身的设计就没有准备支持几何着色器，只是为OpenGL的几何着色器做了个驱动层面的模拟。由于本引擎的Shadow Cube Map是使用几何着色器渲染的，所以在不支持几何着色器的环境下运行时，在使用点光源的场景中阴影系统会失效。
 
-One problem with running ZXEngine on a Mac device is that Vulkan's geometry shader may not be supported, such as on my M1 chip MacBook. I don't know why it is supported with OpenGL but not supported with Vulkan. Probably because Apple's GPU was not designed to support geometry shader, but did a driver level simulation for OpenGL's geometry shader. Since the shadow cube map of this engine is rendered using a geometry shader, when running on a device that does not support geometry shader, the shadow system will not work in a scene using point light.
+One problem with running ZXEngine on a Mac device is that geometry shader may not be supported. For example, you can't use geometry shaders with Metal or Vulkan, but you can use them with OpenGL. Probably because Apple's GPU was not designed to support geometry shader, but did a driver level simulation for OpenGL's geometry shader. Since the shadow cube map of this engine is rendered using a geometry shader, when running in an environment that does not support geometry shader, the shadow system will not work in a scene using point light.
 
 在MacBook下运行时可能还有一个小问题。因为MacBook的屏幕较小，所以即使屏幕的硬件分辨率很高，但是为了文本和图标不会太小，macOS的默认分辨率设置还是可能会比较低。比如我这台13寸的MacBook屏幕硬件分辨率为2560x1600，但是系统默认分辨率为1440x900。当屏幕分辨率小于ZXEngine窗口大小时会触发ZXEngine的自适应调整，可能会使引擎编辑器的某些面板显示过小，有些模糊或者不太正常。推荐运行时分辨率设置在1920x1080以上。
 
@@ -830,9 +837,9 @@ After completing the above steps, click Build in Android Studio to complete the 
 
 ## 注意事项 (Precautions)
 
-目前zxshader编写好后，在DirectX 12和OpenGL下都是运行时直接读取源代码并实时编译的，但是在Vulkan下需要通过外部工具做预编译。虽然Vulkan也可以做到通过源码实时编译，但是写起来比较麻烦，而且需要引入额外的运行时库，所以没做Vulkan的实时源码编译。在Vulkan下加载一个Shader时，会去检测是否有预编译过的spv文件，如果没有的话就立刻调用外部工具编译再读取。所以如果是第一次打开某个工程，或者第一次打开某个场景，在Vulkan下速度会比较慢，因为需要等待Shader先完成一次预编译。不过可以通过点击引擎菜单栏里的“Assets/Compile All Shader for Vulkan”按钮，提前完成所有的Shader预编译。在Vulkan下还有一个问题是Shader代码的更新，因为在Vulkan下是直接读取编译成spv文件之后的Shader，而不是源代码，所以在Shader源码修改之后，需要重新编译一次才会生效，这种情况下也需要手动去点一下“Assets/Compile All Shader for Vulkan”按钮。
+目前zxshader编写好后，在DirectX 12，Metal和OpenGL下都是运行时直接读取源代码并实时编译的，但是在Vulkan下需要通过外部工具做预编译。虽然Vulkan也可以做到通过源码实时编译，但是写起来比较麻烦，而且需要引入额外的运行时库，所以没做Vulkan的实时源码编译。在Vulkan下加载一个Shader时，会去检测是否有预编译过的spv文件，如果没有的话就立刻调用外部工具编译再读取。所以如果是第一次打开某个工程，或者第一次打开某个场景，在Vulkan下速度会比较慢，因为需要等待Shader先完成一次预编译。不过可以通过点击引擎菜单栏里的“Assets/Compile All Shader for Vulkan”按钮，提前完成所有的Shader预编译。在Vulkan下还有一个问题是Shader代码的更新，因为在Vulkan下是直接读取编译成spv文件之后的Shader，而不是源代码，所以在Shader源码修改之后，需要重新编译一次才会生效，这种情况下也需要手动去点一下“Assets/Compile All Shader for Vulkan”按钮。
 
-Currently, zxshaders are read from the source code at runtime and compiled in real time under DirectX 12 and OpenGL, but precompiled by external tools under Vulkan.Although Vulkan can also do real-time compilation through the shader source code, but it is more troublesome to write, and needs to introduce additional runtime libraries, so it did not do Vulkan shader real-time compilation. When loading a shader under Vulkan, the engine checks if there is a pre-compiled spv file, and if not, it immediately calls an external tool to compile and read it again. So, if it's the first time to open a project, or the first time to open a scene, the speed will be slower under Vulkan, because you need to wait for shaders to complete a pre-compilation first. However, you can complete All shader precompilation in advance by clicking the "Assets/Compile All Shader for Vulkan" button in the engine menu bar. Another thing under Vulkan is to update the shader code. Because under Vulkan the engine directly read the shader precompiled into the spv file, rather than the source code, so after the shader source code is modified, it needs to be recompiled to take effect. In this case, you also need to manually click the "Assets/Compile All Shader for Vulkan" button.
+Currently, zxshaders are read from the source code at runtime and compiled in real time under DirectX 12, Metal and OpenGL, but precompiled by external tools under Vulkan.Although Vulkan can also do real-time compilation through the shader source code, but it is more troublesome to write, and needs to introduce additional runtime libraries, so it did not do Vulkan shader real-time compilation. When loading a shader under Vulkan, the engine checks if there is a pre-compiled spv file, and if not, it immediately calls an external tool to compile and read it again. So, if it's the first time to open a project, or the first time to open a scene, the speed will be slower under Vulkan, because you need to wait for shaders to complete a pre-compilation first. However, you can complete All shader precompilation in advance by clicking the "Assets/Compile All Shader for Vulkan" button in the engine menu bar. Another thing under Vulkan is to update the shader code. Because under Vulkan the engine directly read the shader precompiled into the spv file, rather than the source code, so after the shader source code is modified, it needs to be recompiled to take effect. In this case, you also need to manually click the "Assets/Compile All Shader for Vulkan" button.
 
 在我开发ZXEngine对通用计算管线的支持的过程中，在开发DirectX 12的版本时遇到了奇怪的崩溃问题，没有异常信息抛出，崩溃在了英伟达驱动内部。最终是通过更新英伟达驱动解决的问题，我不太确定这个问题具体是怎么产生的。如果你有遇到类似的问题可以尝试更新一下驱动。
 

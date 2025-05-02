@@ -21,7 +21,7 @@ namespace ZXEngine
 		int width = 0, height = 0;
 		ImGuiTextureIndex newImGuiTexture = {};
 		newImGuiTexture.EngineID = RenderAPI::GetInstance()->LoadTexture(path.c_str(), width, height);
-		newImGuiTexture.ImGuiID = (void*)(intptr_t)newImGuiTexture.EngineID;
+		newImGuiTexture.ImGuiID = (ImTextureID)(intptr_t)newImGuiTexture.EngineID;
 		allTextures[newImGuiTexture.EngineID] = newImGuiTexture;
 		return newImGuiTexture;
 	}
@@ -36,7 +36,7 @@ namespace ZXEngine
 	{
 		ImGuiTextureIndex newImGuiTexture = {};
 		newImGuiTexture.EngineID = id;
-		newImGuiTexture.ImGuiID = (void*)(intptr_t)id;
+		newImGuiTexture.ImGuiID = (ImTextureID)(intptr_t)id;
 		allTextures[newImGuiTexture.EngineID] = newImGuiTexture;
 		return newImGuiTexture;
 	}

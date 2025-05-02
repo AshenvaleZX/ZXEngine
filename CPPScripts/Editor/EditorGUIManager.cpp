@@ -3,14 +3,15 @@
 #include "ImGuiTextureManager.h"
 #include "EditorDialogBoxManager.h"
 #include "EditorSceneWidgetsRenderer.h"
-#ifdef ZX_API_OPENGL
+
+#if defined(ZX_API_OPENGL)
 #include "EditorGUIManagerOpenGL.h"
-#endif
-#ifdef ZX_API_VULKAN
+#elif defined(ZX_API_VULKAN)
 #include "EditorGUIManagerVulkan.h"
-#endif
-#ifdef ZX_API_D3D12
+#elif defined(ZX_API_D3D12)
 #include "EditorGUIManagerDirectX12.h"
+#elif defined(ZX_API_METAL)
+#include "EditorGUIManagerMetal.h"
 #endif
 
 namespace ZXEngine
@@ -19,14 +20,14 @@ namespace ZXEngine
 
 	void EditorGUIManager::Create()
 	{
-#ifdef ZX_API_OPENGL
+#if defined(ZX_API_OPENGL)
 		mInstance = new EditorGUIManagerOpenGL();
-#endif
-#ifdef ZX_API_VULKAN
+#elif defined(ZX_API_VULKAN)
 		mInstance = new EditorGUIManagerVulkan();
-#endif
-#ifdef ZX_API_D3D12
+#elif defined(ZX_API_D3D12)
 		mInstance = new EditorGUIManagerDirectX12();
+#elif defined(ZX_API_METAL)
+		mInstance = new EditorGUIManagerMetal();
 #endif
 		ImGuiTextureManager::Creat();
 		EditorDialogBoxManager::Create();

@@ -1,12 +1,12 @@
 #include "ImGuiTextureManager.h"
-#ifdef ZX_API_OPENGL
+#if defined(ZX_API_OPENGL)
 #include "ImGuiTextureManagerOpenGL.h"
-#endif
-#ifdef ZX_API_VULKAN
+#elif defined(ZX_API_VULKAN)
 #include "ImGuiTextureManagerVulkan.h"
-#endif
-#ifdef ZX_API_D3D12
+#elif defined(ZX_API_D3D12)
 #include "ImGuiTextureManagerD3D12.h"
+#elif defined(ZX_API_METAL)
+#include "ImGuiTextureManagerMetal.h"
 #endif
 
 namespace ZXEngine
@@ -15,14 +15,14 @@ namespace ZXEngine
 
 	void ImGuiTextureManager::Creat()
 	{
-#ifdef ZX_API_OPENGL
+#if defined(ZX_API_OPENGL)
 		mInstance = new ImGuiTextureManagerOpenGL();
-#endif
-#ifdef ZX_API_VULKAN
+#elif defined(ZX_API_VULKAN)
 		mInstance = new ImGuiTextureManagerVulkan();
-#endif
-#ifdef ZX_API_D3D12
+#elif defined(ZX_API_D3D12)
 		mInstance = new ImGuiTextureManagerD3D12();
+#elif defined(ZX_API_METAL)
+		mInstance = new ImGuiTextureManagerMetal();
 #endif
 	}
 

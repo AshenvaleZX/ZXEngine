@@ -44,7 +44,8 @@ namespace ZXEngine
 	{
 		OpenGL,
 		Vulkan,
-		D3D12
+		D3D12,
+		Metal,
 	};
 
 	enum class PlatformType

@@ -70,7 +70,7 @@ set_kind("binary")
 
 add_files("../../CPPScripts/**.cpp", "../../CPPScripts/**.c", "../../Vendor/Src/**.c")
 
-if is_plat("macosx", "linux") then
+if not is_plat("windows") then
     remove_files("../../CPPScripts/DirectX12/**.cpp")
     remove_files("../../CPPScripts/Input/InputManagerWindows.cpp")
     remove_files("../../CPPScripts/Window/WindowManagerWindows.cpp")
@@ -82,7 +82,15 @@ if is_plat("macosx", "linux") then
     remove_files("../../CPPScripts/Audio/irrKlangImpl/**.cpp")
 end
 
-if is_plat("macosx", "linux", "windows") then
+if not is_plat("macosx") then
+    remove_files("../../CPPScripts/Metal/MetalEnumStruct.cpp")
+    remove_files("../../CPPScripts/RenderAPIMetal.cpp")
+    remove_files("../../CPPScripts/External/ImGui/imgui_impl_metal.mm")
+    remove_files("../../CPPScripts/Editor/EditorGUIManagerMetal.cpp")
+    remove_files("../../CPPScripts/Editor/ImGuiTextureManagerMetal.cpp")
+end
+
+if not is_plat("android") then
     remove_files("../../CPPScripts/Android/**")
     remove_files("../../CPPScripts/Input/InputManagerAndroid.cpp")
     remove_files("../../CPPScripts/Window/WindowManagerAndroid.cpp")
@@ -93,9 +101,11 @@ add_rules("basic_settings", "check-winsdk")
 add_deps("vulkan-sdk")
 
 if is_plat("macosx") then
+    add_files("../../CPPScripts/**.mm")
+    add_includedirs("../../Vendor/Include/metal-cpp", "../../Vendor/Include/metal-cpp-extensions")
     add_linkdirs(path.join(os.projectdir(), "../../Vendor/Library/MacOS"))
     add_links("assimp.5.4.0", "freetype", "glfw3", "bz2")
-    add_frameworks("CoreFoundation", "CoreGraphics", "IOKit", "AppKit", "OpenGL")
+    add_frameworks("CoreFoundation", "CoreGraphics", "IOKit", "AppKit", "OpenGL", "Metal")
     if is_mode("debug") then
         add_rpathdirs(path.join(os.projectdir(), "debug"))
     else

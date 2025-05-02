@@ -9,8 +9,8 @@ Vertex
 {
     Input
     {
-        0 vec2 aPos       : POSITION
-        1 vec2 aTexCoords : TEXCOORD
+        0 vec4 aPos       : POSITION
+        1 vec4 aTexCoords : TEXCOORD
     }
 
     InstanceInput
@@ -35,9 +35,9 @@ Vertex
     {
         void main()
         {
-            TexCoords = aTexCoords;
+            TexCoords = aTexCoords.xy;
             ParticleColor = iColor;
-            ZX_Position = mul(ENGINE_Projection * ENGINE_View * iModel * vec4(aPos, 0.0, 1.0));
+            ZX_Position = mul(ENGINE_Projection * ENGINE_View * iModel * vec4(aPos.xy, 0.0, 1.0));
         }
     }
 }

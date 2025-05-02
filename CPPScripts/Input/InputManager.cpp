@@ -1,7 +1,7 @@
 #include "InputManager.h"
 
 #if defined(ZX_PLATFORM_DESKTOP)
-#	if defined(ZX_API_OPENGL) || defined(ZX_API_VULKAN)
+#	if defined(ZX_API_OPENGL) || defined(ZX_API_VULKAN) || defined(ZX_API_METAL)
 #		include "InputManagerGLFW.h"
 #	elif defined(ZX_API_D3D12)
 #		include "InputManagerWindows.h"
@@ -17,7 +17,7 @@ namespace ZXEngine
 	void InputManager::Create()
 	{
 #if defined(ZX_PLATFORM_DESKTOP)
-#	if defined(ZX_API_OPENGL) || defined(ZX_API_VULKAN)
+#	if defined(ZX_API_OPENGL) || defined(ZX_API_VULKAN) || defined(ZX_API_METAL)
 		mInstance = new InputManagerGLFW();
 #	elif defined(ZX_API_D3D12)
 		mInstance = new InputManagerWindows();

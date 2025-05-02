@@ -97,6 +97,9 @@
     <Filter Include="ParticleSystem">
       <UniqueIdentifier>{3a46da9f-a203-4e0a-80d6-96f17617ad23}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Metal">
+      <UniqueIdentifier>{a493f072-896c-4466-8440-b476ba64c6ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\CPPScripts\GameObject.cpp">
@@ -668,6 +671,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\CPPScripts\Component\Physics\Circle2DCollider.cpp">
       <Filter>Component\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\CPPScripts\Metal\MetalUtil.cpp">
+      <Filter>Metal</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1387,6 +1393,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\CPPScripts\LuaWrap\Lua_GlobalFunction.h">
       <Filter>LuaWrap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CPPScripts\Metal\MetalUtil.h">
+      <Filter>Metal</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

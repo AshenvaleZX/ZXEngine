@@ -167,6 +167,13 @@ if(WIN32)
         "../../../CPPScripts/Editor/ImGuiTextureManagerD3D12.cpp"
         "../../../CPPScripts/Editor/ImGuiTextureManagerD3D12.h"
     )
+elseif(APPLE)
+    list(APPEND Editor
+        "../../../CPPScripts/Editor/EditorGUIManagerMetal.cpp"
+        "../../../CPPScripts/Editor/EditorGUIManagerMetal.h"
+        "../../../CPPScripts/Editor/ImGuiTextureManagerMetal.cpp"
+        "../../../CPPScripts/Editor/ImGuiTextureManagerMetal.h"
+    )
 endif()
 source_group("Editor" FILES ${Editor})
 
@@ -206,6 +213,11 @@ if(WIN32)
         "../../../CPPScripts/External/ImGui/imgui_impl_dx12.h"
         "../../../CPPScripts/External/ImGui/imgui_impl_win32.cpp"
         "../../../CPPScripts/External/ImGui/imgui_impl_win32.h"
+    )
+elseif(APPLE)
+    list(APPEND External__ImGui
+        "../../../CPPScripts/External/ImGui/imgui_impl_metal.mm"
+        "../../../CPPScripts/External/ImGui/imgui_impl_metal.h"
     )
 endif()
 source_group("External\\ImGui" FILES ${External__ImGui})
@@ -329,6 +341,18 @@ set(Math
     "../../../CPPScripts/Math/Vector4.h"
 )
 source_group("Math" FILES ${Math})
+
+set(Metal
+    "../../../CPPScripts/Metal/MetalUtil.cpp"
+    "../../../CPPScripts/Metal/MetalUtil.h"
+)
+if(APPLE)
+    list(APPEND Metal
+        "../../../CPPScripts/Metal/MetalEnumStruct.cpp"
+        "../../../CPPScripts/Metal/MetalEnumStruct.h"
+    )
+endif()
+source_group("Metal" FILES ${Metal})
 
 set(ParticleSystem
     "../../../CPPScripts/ParticleSystem/ParticleEmitter.cpp"
@@ -506,6 +530,10 @@ if(WIN32)
     list(APPEND ZXHeader
         "../../../CPPScripts/RenderAPID3D12.h"
     )
+elseif(APPLE)
+    list(APPEND ZXHeader
+        "../../../CPPScripts/RenderAPIMetal.h"
+    )
 endif()
 source_group("ZXHeader" FILES ${ZXHeader})
 
@@ -559,6 +587,10 @@ if(WIN32)
     list(APPEND ZXSource
         "../../../CPPScripts/RenderAPID3D12.cpp"
     )
+elseif(APPLE)
+    list(APPEND ZXSource
+        "../../../CPPScripts/RenderAPIMetal.cpp"
+    )
 endif()
 source_group("ZXSource" FILES ${ZXSource})
 
@@ -601,6 +633,7 @@ set(ALL_FILES
     ${Input}
     ${LuaWrap}
     ${Math}
+    ${Metal}
     ${ParticleSystem}
     ${PhysZ}
     ${PhysZ__BoundingVolume}
@@ -688,6 +721,13 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../../Vendor/Include/Vulkan
     ${CMAKE_CURRENT_SOURCE_DIR}/../../../Vendor/Include
 )
+if(APPLE)
+    target_include_directories(${PROJECT_NAME} PRIVATE 
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../../Vendor/Include/metal-cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../../Vendor/Include/metal-cpp-extensions
+    )
+endif()
+
 if(WIN32)
     target_link_directories(${PROJECT_NAME} PRIVATE 
         ${PROJECT_SOURCE_DIR}/../../Vendor/Library/Windows/Static
@@ -756,6 +796,7 @@ elseif(APPLE)
     find_library(IOKit_LIBRARY IOKit)
     find_library(AppKit_LIBRARY AppKit)
     find_library(OpenGL_LIBRARY OpenGL)
+    find_library(Metal_LIBRARY Metal)
     set(ADDITIONAL_LIBRARY_DEPENDENCIES
         "assimp.5;"
         "glfw3;"
@@ -768,6 +809,7 @@ elseif(APPLE)
         "${IOKit_LIBRARY};"
         "${AppKit_LIBRARY};"
         "${OpenGL_LIBRARY};"
+        "${Metal_LIBRARY};"
     )
 elseif(LINUX)
     set(ADDITIONAL_LIBRARY_DEPENDENCIES

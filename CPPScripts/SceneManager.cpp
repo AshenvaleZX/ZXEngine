@@ -48,9 +48,15 @@ namespace ZXEngine
 
 		if (sceneStruct->renderPipelineType == RenderPipelineType::RayTracing)
 		{
-#ifdef ZX_API_OPENGL
+#if defined(ZX_API_OPENGL)
 #ifdef ZX_EDITOR
 			EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "OpenGL do not support ray tracing.");
+#endif
+			delete sceneStruct;
+			return false;
+#elif defined(ZX_API_METAL)
+#ifdef ZX_EDITOR
+			EditorDialogBoxManager::GetInstance()->PopMessage("Notice", "Metal-based ray tracing is not implemented yet.");
 #endif
 			delete sceneStruct;
 			return false;

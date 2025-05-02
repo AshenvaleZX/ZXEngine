@@ -40,6 +40,7 @@
 |  0: OpenGL
 |  1: Vulkan
 |  2: D3D12
+|  3: Metal
 */
 #define ZX_API_SWITCH ZX_API_DEFAULT
 
@@ -49,6 +50,8 @@
 #define ZX_API_VULKAN
 #elif ZX_API_SWITCH == 2
 #define ZX_API_D3D12
+#elif ZX_API_SWITCH == 3
+#define ZX_API_METAL
 #else
 #error "Error Graphics API Definition"
 #endif
@@ -56,16 +59,18 @@
 /*
 |  Graphics API Compatibility Check
 |
-|  Windows : OpenGL, Vulkan, D3D12
-|  MacOS   : OpenGL, Vulkan
+|  Windows : D3D12,  Vulkan, OpenGL
+|  macOS   : Metal,  Vulkan, OpenGL
 |  Linux   : OpenGL, Vulkan(Unverified)
 |  Android : Vulkan
 */
-#if defined(ZX_PLATFORM_ANDROID) && (defined(ZX_API_OPENGL) || defined(ZX_API_D3D12))
-#error "Unsupported Graphics API"
-#elif defined(ZX_PLATFORM_LINUX) && defined(ZX_API_D3D12)
+#if defined(ZX_PLATFORM_WINDOWS) && defined(ZX_API_METAL)
 #error "Unsupported Graphics API"
 #elif defined(ZX_PLATFORM_MACOS) && defined(ZX_API_D3D12)
+#error "Unsupported Graphics API"
+#elif defined(ZX_PLATFORM_LINUX) && (defined(ZX_API_D3D12) || defined(ZX_API_METAL))
+#error "Unsupported Graphics API"
+#elif defined(ZX_PLATFORM_ANDROID) && (defined(ZX_API_OPENGL) || defined(ZX_API_D3D12) || defined(ZX_API_METAL))
 #error "Unsupported Graphics API"
 #endif
 
@@ -88,7 +93,7 @@
 /*
 |  Compute Pipeline Animation Switch
 |
-|  This is disabled on macOS for two reasons:
+|  This is disabled for OpenGL and Vulkan on macOS for following reasons:
 |  1. macOS only supports OpenGL 4.1, but OpenGL 4.3 is required for compute shader.
 |  2. Although Vulkan on macOS supports compute pipeline, and it actually runs without
 |  any code errors or crashes, but the output of the compute shader could be abnormal.
@@ -105,7 +110,9 @@
 |  1. OpenGL compute shader is not efficient, the animation system's performance will
 |  be reduced by using OpenGL compute shader. You can enable it if you want to test it.
 */
-#if defined(ZX_COMPUTE_SHADER_SUPPORT) && !defined(ZX_PLATFORM_MACOS) && !defined(ZX_API_OPENGL)
+#if defined(ZX_COMPUTE_SHADER_SUPPORT) &&                                                  \
+    !(defined(ZX_PLATFORM_MACOS) && (defined(ZX_API_OPENGL) || defined(ZX_API_VULKAN))) && \
+    !defined(ZX_API_OPENGL)
 #define ZX_COMPUTE_ANIMATION
 #endif
 

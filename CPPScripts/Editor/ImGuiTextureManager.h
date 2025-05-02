@@ -9,7 +9,7 @@ namespace ZXEngine
 	{
 		uint32_t idx = UINT32_MAX;
 		uint32_t EngineID = UINT32_MAX;
-		ImTextureID ImGuiID = nullptr;
+		ImTextureID ImGuiID = 0;
 	};
 
 	class ImGuiTextureManager

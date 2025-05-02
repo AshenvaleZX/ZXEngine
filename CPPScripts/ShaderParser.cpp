@@ -117,6 +117,28 @@ namespace ZXEngine
 		{ ShaderPropertyType::ENGINE_DEPTH_MAP,   "Texture2D" },
 	};
 
+	unordered_map<ShaderPropertyType, string> propertyTypeToMSLType =
+	{
+		{ ShaderPropertyType::VEC2,  "float2"   }, { ShaderPropertyType::VEC3,  "float3"   }, { ShaderPropertyType::VEC4,  "float4"   },
+		{ ShaderPropertyType::IVEC2, "int2"     }, { ShaderPropertyType::IVEC3, "int3"     }, { ShaderPropertyType::IVEC4, "int4"     },
+		{ ShaderPropertyType::UVEC2, "uint2"    }, { ShaderPropertyType::UVEC3, "uint3"    }, { ShaderPropertyType::UVEC4, "uint4"    },
+		{ ShaderPropertyType::MAT2,  "float2x2" }, { ShaderPropertyType::MAT3,  "float3x3" }, { ShaderPropertyType::MAT4,  "float4x4" },
+		{ ShaderPropertyType::INT,   "int"      }, { ShaderPropertyType::UINT,  "uint"     }, { ShaderPropertyType::FLOAT, "float"    },
+		{ ShaderPropertyType::BOOL,  "bool"     },
+
+		{ ShaderPropertyType::SAMPLER, "texture2d" }, { ShaderPropertyType::SAMPLER_2D, "texture2d" }, { ShaderPropertyType::SAMPLER_CUBE, "texturecube" },
+
+		{ ShaderPropertyType::ENGINE_MODEL,       "float4x4"  }, { ShaderPropertyType::ENGINE_VIEW,            "float4x4"    },
+		{ ShaderPropertyType::ENGINE_PROJECTION,  "float4x4"  }, { ShaderPropertyType::ENGINE_CAMERA_POS,      "float3"      },
+		{ ShaderPropertyType::ENGINE_LIGHT_POS,   "float3"    }, { ShaderPropertyType::ENGINE_LIGHT_DIR,       "float3"      },
+		{ ShaderPropertyType::ENGINE_LIGHT_COLOR, "float3"    }, { ShaderPropertyType::ENGINE_LIGHT_INTENSITY, "float"       },
+		{ ShaderPropertyType::ENGINE_SHADOW_MAP,  "texture2d" }, { ShaderPropertyType::ENGINE_SHADOW_CUBE_MAP, "texturecube" },
+		{ ShaderPropertyType::ENGINE_FAR_PLANE,   "float"     }, { ShaderPropertyType::ENGINE_MODEL_INV,       "float4x4"    },
+		{ ShaderPropertyType::ENGINE_VIEW_INV,    "float4x4"  }, { ShaderPropertyType::ENGINE_PROJECTION_INV,  "float4x4"    },
+		{ ShaderPropertyType::ENGINE_LIGHT_MAT,   "float4x4"  }, { ShaderPropertyType::ENGINE_TIME,            "float2"      },
+		{ ShaderPropertyType::ENGINE_DEPTH_MAP,   "texture2d" },
+	};
+
 	unordered_map<string, RenderQueueType> renderQueueMap =
 	{
 		{ "Opaque",   RenderQueueType::Opaque   }, { "Transparent", RenderQueueType::Transparent },
@@ -136,6 +158,9 @@ namespace ZXEngine
 			break;
 		case ZXEngine::GraphicsAPI::D3D12:
 			apiMacro = "ZX_API_D3D12";
+			break;
+		case ZXEngine::GraphicsAPI::Metal:
+			apiMacro = "ZX_API_METAL";
 			break;
 		default:
 			break;
@@ -189,6 +214,8 @@ namespace ZXEngine
 
 		if (api == GraphicsAPI::D3D12)
 			SetUpPropertiesHLSL(info);
+		else if (api == GraphicsAPI::Metal)
+			SetUpPropertiesMSL(info);
 		else
 			SetUpPropertiesStd140(info);
 
@@ -1171,6 +1198,429 @@ namespace ZXEngine
 		return dxCode;
 	}
 
+	string ShaderParser::TranslateToMetal(const string& originCode, const ShaderInfo& shaderInfo)
+	{
+		if (originCode.empty())
+			return "";
+
+#ifdef ZX_COMPUTE_ANIMATION
+		string preprocessedCode = PreprocessMacroDefine(originCode, { "ZX_API_METAL", "ZX_COMPUTE_ANIMATION" });
+#else
+		string preprocessedCode = PreprocessMacroDefine(originCode, { "ZX_API_METAL" });
+#endif
+
+		string vertCode = GetCodeBlock(preprocessedCode, "Vertex");
+		string fragCode = GetCodeBlock(preprocessedCode, "Fragment");
+
+		string mtCode = "#include <metal_stdlib>\nusing namespace metal;\n\n";
+
+		// 顶点着色器输入结构体
+		mtCode += "struct VertexInput\n{\n";
+		string vertInputBlock = GetCodeBlock(vertCode, "Input");
+		vector<string> vertInputVariables;
+		vector<string> attributeStatement;
+		attributeStatement.resize(6);
+		auto lines = Utils::StringSplit(vertInputBlock, '\n');
+		// 找出声明过的属性
+		for (auto& line : lines)
+		{
+			auto words = Utils::ExtractWords(line);
+			if (words.size() >= 5 && words[0] != "//")
+			{
+				size_t attrID = SIZE_MAX;
+				try {
+					attrID = static_cast<size_t>(std::stoul(words[0]));
+				} catch (const std::exception&) {
+					attrID = SIZE_MAX;
+				}
+
+				if (attrID < 6)
+					attributeStatement[attrID] = "    " + words[1] + " " + words[2] + " [[attribute(" + words[0] + ")]];\n";
+
+				vertInputVariables.push_back(words[2]);
+			}
+		}
+		// MSL里必须声明完整的VertexInput结构体，否则会有内存对齐问题
+		for (uint32_t i = 0; i < 6; i++)
+		{
+			if (attributeStatement[i].empty())
+			{
+				// 如果某个属性位没有声明过，则用float4占位
+				mtCode += "    float4 ZX_Attr" + to_string(i) + " [[attribute(" + to_string(i) + ")]];\n";
+			}
+			else
+			{
+				mtCode += attributeStatement[i];
+			}
+		}
+		mtCode += "};\n\n";
+
+		vector<string> instanceInputVariables;
+		if (shaderInfo.instanceInfo.size > 0)
+		{
+			mtCode += "struct InstanceInput\n{\n";
+			string instanceInputBlock = GetCodeBlock(vertCode, "InstanceInput");
+			lines = Utils::StringSplit(instanceInputBlock, '\n');
+			for (auto& line : lines)
+			{
+				auto words = Utils::ExtractWords(line);
+				if (words.size() >= 5 && words[0] != "//")
+				{
+					mtCode += "    " + words[1] + " " + words[2] + ";\n";
+					instanceInputVariables.push_back(words[2]);
+				}
+			}
+			mtCode += "};\n\n";
+		}
+
+		// 顶点着色器输出结构体
+		mtCode += "struct VertexOutput\n{\n";
+		string vertOutputBlock = GetCodeBlock(vertCode, "Output");
+		vector<string> vertOutputVariables;
+		lines = Utils::StringSplit(vertOutputBlock, '\n');
+		for (auto& line : lines)
+		{
+			auto words = Utils::ExtractWords(line);
+			if (words.size() >= 5 && words[0] != "//")
+			{
+				mtCode += "    " + words[1] + " " + words[2] + ";\n";
+				vertOutputVariables.push_back(words[2]);
+			}
+		}
+		mtCode += "    float4 ZX_Pos [[position]];\n";
+		mtCode += "};\n\n";
+
+		// 片元着色器输出结构体
+		bool writeToDepth = fragCode.find("ZX_Depth") != string::npos;
+		mtCode += "struct FragmentOutput\n{\n";
+		string fragOutputBlock = GetCodeBlock(fragCode, "Output");
+		vector<string> fragOutputVariables;
+		lines = Utils::StringSplit(fragOutputBlock, '\n');
+		for (auto& line : lines)
+		{
+			auto words = Utils::ExtractWords(line);
+			if (words.size() >= 5 && words[0] != "//")
+			{
+				mtCode += "    " + words[1] + " " + words[2] + " [[color(" + words[0] + ")]];\n";
+				fragOutputVariables.push_back(words[2]);
+			}
+		}
+		if (writeToDepth)
+			mtCode += "    float ZX_Depth [[depth(any)]];\n";
+		mtCode += "};\n\n";
+
+		// Uniform
+		mtCode += "struct Uniform\n{\n";
+		for (auto& property : shaderInfo.vertProperties.baseProperties)
+		{
+			if (property.arrayLength == 0)
+				mtCode += "    " + propertyTypeToMSLType[property.type] + " " + property.name + ";\n";
+			else
+				mtCode += "    " + propertyTypeToMSLType[property.type] + " " + property.name + "[" + to_string(property.arrayLength) + "];\n";
+		}
+		for (auto& property : shaderInfo.fragProperties.baseProperties)
+		{
+			if (property.arrayLength == 0)
+				mtCode += "    " + propertyTypeToMSLType[property.type] + " " + property.name + ";\n";
+			else
+				mtCode += "    " + propertyTypeToMSLType[property.type] + " " + property.name + "[" + to_string(property.arrayLength) + "];\n";
+		}
+		mtCode += "};\n\n";
+
+		// 纹理
+		for (auto& property : shaderInfo.vertProperties.textureProperties)
+		{
+			mtCode += "constant " + propertyTypeToMSLType[property.type] + "<float> " + property.name + " [[texture(" + to_string(property.binding) + ")]];\n";
+		}
+		for (auto& property : shaderInfo.fragProperties.textureProperties)
+		{
+			mtCode += "constant " + propertyTypeToMSLType[property.type] + "<float> " + property.name + " [[texture(" + to_string(property.binding) + ")]];\n";
+		}
+		mtCode += "\n";
+
+		// 采样器
+		mtCode += "constexpr sampler _Sampler(coord::normalized, address::repeat, filter::linear, mip_filter::linear);\n\n";
+
+		// 顶点着色器
+		string vertProgramBlock = GetCodeBlock(vertCode, "Program");
+		// 替换纹理采样语法，只处理Program Block里面的，否则会影响纹理声明
+		size_t pos = 0;
+		while ((pos = Utils::FindWord(vertProgramBlock, "texture", pos)) != string::npos)
+		{
+			size_t sPos = string::npos;
+			size_t ePos = string::npos;
+			Utils::GetNextStringBlockPos(vertProgramBlock, pos, '(', ')', sPos, ePos);
+
+			string sampleSentence = vertProgramBlock.substr(sPos + 1, ePos - sPos - 1);
+			size_t splitPos = sampleSentence.find(',');
+			string textureStr = sampleSentence.substr(0, splitPos);
+			string coordStr = sampleSentence.substr(splitPos + 1, sampleSentence.size() - splitPos - 1);
+			string oldSentence = vertProgramBlock.substr(pos, ePos - pos + 1);
+			string newSentence = textureStr + ".sample(_Sampler," + coordStr + ")";
+			vertProgramBlock.replace(pos, oldSentence.length(), newSentence);
+
+			pos += newSentence.length();
+		}
+		lines = Utils::StringSplit(vertProgramBlock, '\n');
+		// 逐行检测需要处理的语法
+		for (auto& line : lines)
+		{
+			// 处理矩阵乘法
+			pos = 0;
+			if ((pos = Utils::FindWord(line, "mul", pos)) != string::npos)
+			{
+				size_t sPos = string::npos;
+				size_t ePos = string::npos;
+				Utils::GetNextStringBlockPos(line, pos, '(', ')', sPos, ePos);
+				// 删除 mul 函数和括号
+				line.replace(pos, ePos - pos + 1, line.substr(sPos + 1, ePos - sPos - 1));
+			}
+
+			// 处理GetTextureSize函数
+			pos = 0;
+			if ((pos = Utils::FindWord(line, "GetTextureSize", pos)) != string::npos)
+			{
+				size_t sPos = string::npos;
+				size_t ePos = string::npos;
+				Utils::GetNextStringBlockPos(line, pos, '(', ')', sPos, ePos);
+
+				string paramsBlock = line.substr(sPos + 1, ePos - sPos - 1);
+				vector<string> params = Utils::StringSplit(paramsBlock, ',');
+				string newStatement = params[1] + " = float2(" + params[0] + ".get_width(), " + params[0] + ".get_height())";
+				line.replace(pos, ePos - pos + 1, newStatement);
+			}
+
+			line += "\n";
+		}
+		vertProgramBlock = Utils::ConcatenateStrings(lines);
+		// 将main函数之前的代码添加到mtCode中
+		for (auto& line : lines)
+		{
+			if (line.find("main") != string::npos)
+				break;
+			mtCode += line;
+		}
+		// 重新生成VertMain函数
+		string vertMainBlock = GetCodeBlock(vertProgramBlock, "main");
+		Utils::ReplaceAllWord(vertMainBlock, "ZX_Position", "_Output.ZX_Pos");
+		for (auto& varName : vertInputVariables)
+			Utils::ReplaceAllWord(vertMainBlock, varName, "_Vertex." + varName);
+		for (auto& varName : vertOutputVariables)
+			Utils::ReplaceAllWord(vertMainBlock, varName, "_Output." + varName);
+		for (auto& name : instanceInputVariables)
+			Utils::ReplaceAllWord(vertMainBlock, name, "_Instance." + name);
+		for (auto& property : shaderInfo.vertProperties.baseProperties)
+			Utils::ReplaceAllWord(vertMainBlock, property.name, "_Uniform." + property.name);
+
+		mtCode += "vertex VertexOutput VertMain(device const VertexInput* _VertexInputs [[buffer(0)]],\n";
+
+		if (shaderInfo.instanceInfo.size > 0)
+		{
+			mtCode += "    device const InstanceInput* _InstanceInputs [[buffer(1)]],\n";
+			mtCode += "    device const Uniform& _Uniform [[buffer(2)]],\n";
+			mtCode += "    uint _VertexID [[vertex_id]],\n";
+			mtCode += "    uint _InstanceID [[instance_id]])\n";
+		}
+		else
+		{
+			mtCode += "    device const Uniform& _Uniform [[buffer(1)]],\n";
+			mtCode += "    uint _VertexID [[vertex_id]])\n";
+		}
+
+		mtCode += "{\n";
+		mtCode += "    VertexOutput _Output;\n";
+		mtCode += "    device const VertexInput& _Vertex = _VertexInputs[_VertexID];\n";
+		if (shaderInfo.instanceInfo.size > 0)
+			mtCode += "    device const InstanceInput& _Instance = _InstanceInputs[_InstanceID];\n";
+		mtCode += vertMainBlock;
+		mtCode += "    return _Output;\n";
+		mtCode += "}\n\n";
+
+		// 片元着色器
+		string fragProgramBlock = GetCodeBlock(fragCode, "Program");
+		// 替换纹理采样语法，只处理Program Block里面的，否则会影响纹理声明
+		pos = 0;
+		while ((pos = Utils::FindWord(fragProgramBlock, "texture", pos)) != string::npos)
+		{
+			size_t sPos = string::npos;
+			size_t ePos = string::npos;
+			Utils::GetNextStringBlockPos(fragProgramBlock, pos, '(', ')', sPos, ePos);
+
+			string sampleSentence = fragProgramBlock.substr(sPos + 1, ePos - sPos - 1);
+			size_t splitPos = sampleSentence.find(',');
+			string textureStr = sampleSentence.substr(0, splitPos);
+			string coordStr = sampleSentence.substr(splitPos + 1, sampleSentence.size() - splitPos - 1);
+			string oldSentence = fragProgramBlock.substr(pos, ePos - pos + 1);
+			string newSentence = textureStr + ".sample(_Sampler," + coordStr + ")";
+			fragProgramBlock.replace(pos, oldSentence.length(), newSentence);
+
+			pos += newSentence.length();
+		}
+		lines = Utils::StringSplit(fragProgramBlock, '\n');
+		// 逐行检测需要处理的语法
+		for (auto& line : lines)
+		{
+			// 处理矩阵乘法
+			pos = 0;
+			if ((pos = Utils::FindWord(line, "mul", pos)) != string::npos)
+			{
+				size_t sPos = string::npos;
+				size_t ePos = string::npos;
+				Utils::GetNextStringBlockPos(line, pos, '(', ')', sPos, ePos);
+				// 删除 mul 函数和括号
+				line.replace(pos, ePos - pos + 1, line.substr(sPos + 1, ePos - sPos - 1));
+			}
+
+			// 处理GetTextureSize函数
+			pos = 0;
+			if ((pos = Utils::FindWord(line, "GetTextureSize", pos)) != string::npos)
+			{
+				size_t sPos = string::npos;
+				size_t ePos = string::npos;
+				Utils::GetNextStringBlockPos(line, pos, '(', ')', sPos, ePos);
+
+				string paramsBlock = line.substr(sPos + 1, ePos - sPos - 1);
+				vector<string> params = Utils::StringSplit(paramsBlock, ',');
+				string newStatement = params[1] + " = float2(" + params[0] + ".get_width(), " + params[0] + ".get_height())";
+				line.replace(pos, ePos - pos + 1, newStatement);
+			}
+
+			line += "\n";
+		}
+		fragProgramBlock = Utils::ConcatenateStrings(lines);
+		// 将main函数之前的代码添加到mtCode中
+		for (auto& line : lines)
+		{
+			if (line.find("main") != string::npos)
+				break;
+			mtCode += line;
+		}
+		// 重新生成FragMain函数
+		string fragMainBlock = GetCodeBlock(fragProgramBlock, "main");
+		for (auto& varName : fragOutputVariables)
+			Utils::ReplaceAllWord(fragMainBlock, varName, "_Output." + varName);
+		for (auto& varName : vertOutputVariables)
+			Utils::ReplaceAllWord(fragMainBlock, varName, "_Input." + varName);
+		for (auto& property : shaderInfo.fragProperties.baseProperties)
+			Utils::ReplaceAllWord(fragMainBlock, property.name, "_Uniform." + property.name);
+		if (writeToDepth)
+			Utils::ReplaceAllWord(fragMainBlock, "ZX_Depth", "_Output.ZX_Depth");
+
+		mtCode += "fragment FragmentOutput FragMain(VertexOutput _Input [[stage_in]],\n";
+		if (shaderInfo.instanceInfo.size > 0)
+			mtCode += "    device const Uniform& _Uniform [[buffer(2)]])\n";
+		else
+			mtCode += "    device const Uniform& _Uniform [[buffer(1)]])\n";
+		mtCode += "{\n";
+		mtCode += "    FragmentOutput _Output;\n";
+		mtCode += fragMainBlock;
+		mtCode += "    return _Output;\n";
+		mtCode += "}\n";
+
+		// 处理数组声明
+		pos = 0;
+		while ((pos = Utils::FindWord(mtCode, "array", pos)) != string::npos)
+		{
+			size_t sPos1 = string::npos;
+			size_t ePos1 = string::npos;
+			Utils::GetNextStringBlockPos(mtCode, pos, '<', '>', sPos1, ePos1);
+			string arrayDeclare = mtCode.substr(sPos1 + 1, ePos1 - sPos1 - 1);
+			vector<string> declareParams = Utils::StringSplit(arrayDeclare, ',');
+
+			size_t sPos2 = string::npos;
+			size_t ePos2 = string::npos;
+			Utils::GetNextStringBlockPos(mtCode, pos, '{', '}', sPos2, ePos2);
+			string arrayContent = mtCode.substr(sPos2 + 1, ePos2 - sPos2 - 1);
+			vector<string> contentParams = Utils::StringSplit(arrayContent, ',');
+
+			string nameBlock = mtCode.substr(ePos1 + 1, sPos2 - ePos1 - 1);
+			nameBlock.erase(nameBlock.find('='));
+
+			string oldSentence = mtCode.substr(pos, ePos2 - pos + 1);
+			string newSentence = declareParams[0] + " " + nameBlock + "[" + declareParams[1] + "] = {" + contentParams[0];
+			for (size_t i = 1; i < contentParams.size(); i++)
+				newSentence += "," + contentParams[i];
+			newSentence += "}";
+
+			mtCode.replace(pos, oldSentence.length(), newSentence);
+
+			pos += newSentence.length();
+		}
+
+		// 处理矩阵构建
+		pos = 0;
+		while ((pos = Utils::FindWord(mtCode, "build_mat3", pos)) != string::npos)
+		{
+			size_t sPos = string::npos;
+			size_t ePos = string::npos;
+			Utils::GetNextStringBlockPos(mtCode, pos, '(', ')', sPos, ePos);
+
+			string matContent = mtCode.substr(sPos + 1, ePos - sPos - 1);
+
+			string oldSentence = mtCode.substr(pos, ePos - pos + 1);
+			string newSentence = "float3x3(" + matContent + ")";
+			mtCode.replace(pos, oldSentence.length(), newSentence);
+
+			pos += newSentence.length();
+		}
+		pos = 0;
+		while ((pos = Utils::FindWord(mtCode, "build_mat4", pos)) != string::npos)
+		{
+			size_t sPos = string::npos;
+			size_t ePos = string::npos;
+			Utils::GetNextStringBlockPos(mtCode, pos, '(', ')', sPos, ePos);
+
+			string matContent = mtCode.substr(sPos + 1, ePos - sPos - 1);
+
+			string oldSentence = mtCode.substr(pos, ePos - pos + 1);
+			string newSentence = "float4x4(" + matContent + ")";
+			mtCode.replace(pos, oldSentence.length(), newSentence);
+
+			pos += newSentence.length();
+		}
+
+		// 强制类型转换
+		Utils::ReplaceAllWord(mtCode, "to_vec2", "(float2)");
+		Utils::ReplaceAllWord(mtCode, "to_vec3", "(float3)");
+		// 4x4矩阵转3x3矩阵
+		pos = 0;
+		while ((pos = Utils::FindWord(mtCode, "to_mat3", pos)) != string::npos)
+		{
+			size_t sPos = string::npos;
+			size_t ePos = string::npos;
+			Utils::GetNextStringBlockPos(mtCode, pos, '(', ')', sPos, ePos);
+
+			string originMat = mtCode.substr(sPos + 1, ePos - sPos - 1);
+
+			string oldSentence = mtCode.substr(pos, ePos - pos + 1);
+			string newSentence = "float3x3(" + originMat + "[0].xyz," + originMat + "[1].xyz," + originMat + "[2].xyz)";
+			mtCode.replace(pos, oldSentence.length(), newSentence);
+
+			pos += newSentence.length();
+		}
+
+		// 替换变量类型名称
+		Utils::ReplaceAllWord(mtCode, "vec2", "float2");
+		Utils::ReplaceAllWord(mtCode, "vec3", "float3");
+		Utils::ReplaceAllWord(mtCode, "vec4", "float4");
+		Utils::ReplaceAllWord(mtCode, "ivec2", "int2");
+		Utils::ReplaceAllWord(mtCode, "ivec3", "int3");
+		Utils::ReplaceAllWord(mtCode, "ivec4", "int4");
+		Utils::ReplaceAllWord(mtCode, "uvec2", "uint2");
+		Utils::ReplaceAllWord(mtCode, "uvec3", "uint3");
+		Utils::ReplaceAllWord(mtCode, "uvec4", "uint4");
+		Utils::ReplaceAllWord(mtCode, "mat3", "float3x3");
+		Utils::ReplaceAllWord(mtCode, "mat4", "float4x4");
+
+		// 替换内置函数名称
+		Utils::ReplaceAllWord(mtCode, "mod", "fmod");
+		Utils::ReplaceAllWord(mtCode, "lerp", "mix");
+		Utils::ReplaceAllWord(mtCode, "ddx", "dfdx");
+		Utils::ReplaceAllWord(mtCode, "ddy", "dfdy");
+
+		return mtCode;
+	}
+
 	ShaderStateSet ShaderParser::GetShaderStateSet(const string& code)
 	{
 		ShaderStateSet stateSet;
@@ -1637,6 +2087,136 @@ namespace ZXEngine
 		}
 	}
 
+	void ShaderParser::SetUpPropertiesMSL(ShaderInfo& info)
+	{
+		// MSL文档链接: https://developer.apple.com/metal/Metal-Shading-Language-Specification.pdf
+		// 内存布局参考: 
+		// Table 2.2 Size and alignment of scalar data type
+		// Table 2.3 Size and alignment of vector data types
+		// Table 2.5 Size and alignment of matrix data types
+		// 但是文档里没有专门对数组形式的数据进行说明，先按照非数组形式挨着排列的方式来实现(即align和arrayOffset一致)
+
+		// 目前的ZXEngine里一个MSL Shader只有一个Constant/Uniform Buffer，所有变量严格按照VS，PS里的Properties声明顺序排列
+		uint32_t offset = 0;
+		uint32_t maxAlign = 0;
+
+		if (!info.vertProperties.baseProperties.empty())
+		{
+			for (auto& property : info.vertProperties.baseProperties)
+			{
+				auto alignInfo = GetPropertyAlignInfoMSL(property.type, property.arrayLength);
+				property.size = alignInfo.size;
+				property.align = alignInfo.align;
+				property.arrayOffset = alignInfo.arrayOffset;
+				property.offset = Math::AlignUp(offset, property.align);
+
+				offset = property.offset + property.size;
+
+				if (property.align > maxAlign)
+					maxAlign = property.align;
+			}
+		}
+
+		if (!info.fragProperties.baseProperties.empty())
+		{
+			for (auto& property : info.fragProperties.baseProperties)
+			{
+				auto alignInfo = GetPropertyAlignInfoMSL(property.type, property.arrayLength);
+				property.size = alignInfo.size;
+				property.align = alignInfo.align;
+				property.arrayOffset = alignInfo.arrayOffset;
+				property.offset = Math::AlignUp(offset, property.align);
+
+				offset = property.offset + property.size;
+
+				if (property.align > maxAlign)
+					maxAlign = property.align;
+			}
+		}
+
+		// 整个Uniform Buffer的大小需要对齐到最大的对齐值
+		if (maxAlign > 0)
+			info.uniformBufferSize = Math::AlignUp(offset, maxAlign);
+
+		// 这里的binding是指纹理在MSL里的[[texture(n)]]索引，严格按照VS，PS里的纹理声明顺序排列
+		uint32_t binding = 0;
+		for (auto& property : info.vertProperties.textureProperties)
+		{
+			property.binding = binding;
+			binding++;
+		}
+		for (auto& property : info.fragProperties.textureProperties)
+		{
+			property.binding = binding;
+			binding++;
+		}
+	}
+
+	PropertyAlignInfo ShaderParser::GetPropertyAlignInfoMSL(ShaderPropertyType type, uint32_t arrayLength)
+	{
+		static uint32_t std_size = sizeof(float);
+
+		if (type == ShaderPropertyType::BOOL)
+			if (arrayLength == 0)
+				return { .size = 1, .align = 1 };
+			else
+				return { .size = arrayLength, .align = 1, .arrayOffset = 1 };
+
+		else if (type == ShaderPropertyType::INT || type == ShaderPropertyType::UINT
+			|| type == ShaderPropertyType::FLOAT || type == ShaderPropertyType::ENGINE_LIGHT_INTENSITY 
+			|| type == ShaderPropertyType::ENGINE_FAR_PLANE || type == ShaderPropertyType::TEXTURE_INDEX)
+			if (arrayLength == 0)
+				return { .size = std_size, .align = std_size };
+			else
+				return { .size = std_size * arrayLength, .align = std_size, .arrayOffset = std_size };
+
+		else if (type == ShaderPropertyType::VEC2 || type == ShaderPropertyType::ENGINE_TIME)
+			if (arrayLength == 0)
+				return { .size = std_size * 2, .align = std_size * 2 };
+			else
+				return { .size = (std_size * 2) * arrayLength, .align = std_size * 2, .arrayOffset = std_size * 2 };
+
+		else if (type == ShaderPropertyType::VEC3 || type == ShaderPropertyType::ENGINE_CAMERA_POS
+			|| type == ShaderPropertyType::ENGINE_LIGHT_POS || type == ShaderPropertyType::ENGINE_LIGHT_DIR
+			|| type == ShaderPropertyType::ENGINE_LIGHT_COLOR)
+			if (arrayLength == 0)
+				return { .size = std_size * 4, .align = std_size * 4 };
+			else
+				return { .size = (std_size * 4) * arrayLength, .align = std_size * 4, .arrayOffset = std_size * 4 };
+
+		else if (type == ShaderPropertyType::VEC4)
+			if (arrayLength == 0)
+				return { .size = std_size * 4, .align = std_size * 4 };
+			else
+				return { .size = (std_size * 4) * arrayLength, .align = std_size * 4, .arrayOffset = std_size * 4 };
+
+		else if (type == ShaderPropertyType::MAT2)
+			if (arrayLength == 0)
+				return { .size = std_size * 4, .align = std_size * 2 };
+			else
+				return { .size = (std_size * 4) * arrayLength, .align = std_size * 2, .arrayOffset = std_size * 4 };
+
+		else if (type == ShaderPropertyType::MAT3)
+			if (arrayLength == 0)
+				return { .size = std_size * (4 * 3), .align = std_size * 4 };
+			else
+				return { .size = std_size * (4 * 3) * arrayLength, .align = std_size * 4, .arrayOffset = std_size * (4 * 3) };
+
+		else if (type == ShaderPropertyType::MAT4 || type == ShaderPropertyType::ENGINE_MODEL
+			|| type == ShaderPropertyType::ENGINE_VIEW || type == ShaderPropertyType::ENGINE_PROJECTION
+			|| type == ShaderPropertyType::ENGINE_MODEL_INV || type == ShaderPropertyType::ENGINE_LIGHT_MAT
+			|| type == ShaderPropertyType::ENGINE_VIEW_INV || type == ShaderPropertyType::ENGINE_PROJECTION_INV)
+			if (arrayLength == 0)
+				return { .size = std_size * 16, .align = std_size * 4 };
+			else
+				return { .size = std_size * 16 * arrayLength, .align = std_size * 4, .arrayOffset = std_size * 16 };
+		else
+		{
+			Debug::LogError("Invalid shader property type !");
+			return {};
+		}
+	}
+
 	void ShaderParser::SetUpRTMaterialData(MaterialData* materialData, GraphicsAPI api)
 	{
 		uint32_t offset = 0;
@@ -1714,8 +2294,13 @@ namespace ZXEngine
 
 	void ShaderParser::SetPropertyAlignInfo(ShaderProperty& property, uint32_t& offset, GraphicsAPI api)
 	{
-		auto alignInfo = api == GraphicsAPI::D3D12 ? 
-			GetPropertyAlignInfoHLSL(property.type, property.arrayLength) : GetPropertyAlignInfoStd140(property.type, property.arrayLength);
+		PropertyAlignInfo alignInfo;
+		if (api == GraphicsAPI::D3D12) 
+			alignInfo = GetPropertyAlignInfoHLSL(property.type, property.arrayLength);
+		else if (api == GraphicsAPI::Metal)
+			alignInfo = GetPropertyAlignInfoMSL(property.type, property.arrayLength);
+		else
+			alignInfo = GetPropertyAlignInfoStd140(property.type, property.arrayLength);
 
 		property.size = alignInfo.size;
 		property.align = alignInfo.align;

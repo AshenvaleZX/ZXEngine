@@ -8,6 +8,9 @@
 #ifdef ZX_API_D3D12
 #include "RenderAPID3D12.h"
 #endif
+#ifdef ZX_API_METAL
+#include "RenderAPIMetal.h"
+#endif
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -27,6 +30,9 @@ namespace ZXEngine
 #ifdef ZX_API_D3D12
 		mInstance = new RenderAPID3D12();
 		static_cast<RenderAPID3D12*>(mInstance)->InitAfterConstructor();
+#endif
+#ifdef ZX_API_METAL
+		mInstance = new RenderAPIMetal();
 #endif
 	}
 
