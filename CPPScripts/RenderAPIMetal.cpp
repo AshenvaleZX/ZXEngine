@@ -1076,7 +1076,7 @@ namespace ZXEngine
 
 			pEncoder->setRenderPipelineState(pipeline->pipeline);
 
-			pEncoder->setVertexBuffer(VAO->vertexBuffer, 0, 0);
+			pEncoder->setVertexBuffer(VAO->computeSkinned ? VAO->ssbo[mCurrentFrame] : VAO->vertexBuffer, 0, 0);
 
 			NS::UInteger bufferIndex = 1;
 			if (drawRecord.instanceBuffer != UINT32_MAX)
@@ -1135,6 +1135,17 @@ namespace ZXEngine
 
 		size_t vertexBufferSize = vertices.size() * sizeof(Vertex);
 		meshBuffer->vertexBuffer = CreateMetalBuffer(vertexBufferSize, MTL::ResourceStorageModePrivate, vertices.data());
+
+#ifdef ZX_COMPUTE_ANIMATION
+		if (skinned)
+		{
+			for (uint32_t i = 0; i < MT_MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				meshBuffer->ssbo.push_back(CreateMetalBuffer(vertexBufferSize, MTL::ResourceStorageModePrivate, vertices.data()));
+			}
+			meshBuffer->computeSkinned = true;
+		}
+#endif
 
 		size_t indexBufferSize = indices.size() * sizeof(uint32_t);
 		meshBuffer->indexBuffer = CreateMetalBuffer(indexBufferSize, MTL::ResourceStorageModePrivate, indices.data());
@@ -1564,6 +1575,11 @@ namespace ZXEngine
 		mSSBOsToDelete.insert(pair(id, MT_MAX_FRAMES_IN_FLIGHT));
 	}
 
+	void RenderAPIMetal::BindVertexBuffer(uint32_t VAO, uint32_t binding)
+	{
+		mCurComputePipelineVertexBufferBindingRecords.push_back({ VAO, binding });
+	}
+
 	uint32_t RenderAPIMetal::GetNextVAOIndex()
 	{
 		uint32_t length = static_cast<uint32_t>(mVAOArray.size());
@@ -1596,6 +1612,17 @@ namespace ZXEngine
 		vao->vertexCount = 0;
 		if (vao->vertexBuffer)
 			vao->vertexBuffer->release();
+
+		for (auto ssbo : vao->ssbo)
+		{
+			if (ssbo)
+			{
+				ssbo->release();
+				ssbo = nullptr;
+			}
+		}
+		vao->ssbo.clear();
+		vao->computeSkinned = false;
 
 		vao->inUse = false;
 	}

@@ -28,7 +28,10 @@ namespace ZXEngine
 
 		uint32_t vertexCount = 0; // 顶点数量
 		MTL::Buffer* vertexBuffer = nullptr;
-		
+
+		bool computeSkinned = false;
+		vector<MTL::Buffer*> ssbo; // For compute pipeline
+
 		bool inUse = false;
 	};
 

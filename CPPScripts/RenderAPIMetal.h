@@ -109,7 +109,7 @@ namespace ZXEngine
 		virtual void DeleteShaderStorageBuffer(uint32_t id);
 
 		// Vertex Buffer Binding
-		virtual void BindVertexBuffer(uint32_t VAO, uint32_t binding) {};
+		virtual void BindVertexBuffer(uint32_t VAO, uint32_t binding);
 
 		// Compute Shader
 		virtual ComputeShaderReference* LoadAndSetUpComputeShader(const string& path) { return nullptr; };
@@ -245,6 +245,10 @@ namespace ZXEngine
 		uint32_t mCurPipeLineIdx = 0;
 		uint32_t mCurMaterialDataIdx = 0;
 		vector<MetalDrawRecord> mDrawRecords;
+
+		using MetalComputePipelineDescriptorBindingRecord = pair<uint32_t, uint32_t>;
+		vector<MetalComputePipelineDescriptorBindingRecord> mCurComputePipelineSSBOBindingRecords;
+		vector<MetalComputePipelineDescriptorBindingRecord> mCurComputePipelineVertexBufferBindingRecords;
 
 		ViewPortInfo mViewPortInfo;
 		CA::MetalDrawable* mDrawable = nullptr;
