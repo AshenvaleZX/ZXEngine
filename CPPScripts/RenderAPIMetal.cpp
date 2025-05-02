@@ -102,6 +102,13 @@ namespace ZXEngine
 	void RenderAPIMetal::EndFrame()
 	{
 		mCurrentFrame = (mCurrentFrame + 1) % MT_MAX_FRAMES_IN_FLIGHT;
+
+		if (mAutoReleasePool)
+		{
+			mAutoReleasePool->release();
+			mAutoReleasePool = nullptr;
+		}
+		mAutoReleasePool = NS::AutoreleasePool::alloc()->init();
 	}
 
 	void RenderAPIMetal::OnWindowSizeChange(uint32_t width, uint32_t height)

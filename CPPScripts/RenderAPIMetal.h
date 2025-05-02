@@ -259,6 +259,8 @@ namespace ZXEngine
 		ViewPortInfo mViewPortInfo;
 		CA::MetalDrawable* mDrawable = nullptr;
 
+		NS::AutoreleasePool* mAutoReleasePool = nullptr;
+
 		uint32_t GetCurFrameBufferIndex() const;
 
 		void DoWindowSizeChange();
