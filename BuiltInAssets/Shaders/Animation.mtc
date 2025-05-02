@@ -1,0 +1,41 @@
+#include <metal_stdlib>
+using namespace metal;
+
+struct Vertex {
+    float4 aPosition;
+    float4 aTexCoords;
+    float4 aNormal;
+    float4 aTangent;
+    float4 aWeights;
+    uint4 aBoneIDs;
+};
+
+kernel void CompMain(
+    device Vertex* outputBuffer [[buffer(0)]],
+    device const Vertex* inputBuffer [[buffer(1)]],
+    device const float4x4* boneBuffer [[buffer(2)]],
+    uint id [[thread_position_in_grid]])
+{
+    Vertex iV = inputBuffer[id];
+    Vertex oV = outputBuffer[id];
+
+    float4 pos = float4(0.0, 0.0, 0.0, 0.0);
+    pos += boneBuffer[iV.aBoneIDs.x] * float4(iV.aPosition.xyz, 1.0) * iV.aWeights.x;
+    pos += boneBuffer[iV.aBoneIDs.y] * float4(iV.aPosition.xyz, 1.0) * iV.aWeights.y;
+    pos += boneBuffer[iV.aBoneIDs.z] * float4(iV.aPosition.xyz, 1.0) * iV.aWeights.z;
+    pos += boneBuffer[iV.aBoneIDs.w] * float4(iV.aPosition.xyz, 1.0) * iV.aWeights.w;
+    oV.aPosition.xyz = pos.xyz;
+
+    float3 normal = float3(0.0, 0.0, 0.0);
+    float4x4 bMat1 = boneBuffer[iV.aBoneIDs.x];
+    normal += float3x3(bMat1[0].xyz, bMat1[1].xyz, bMat1[2].xyz) * iV.aNormal.xyz * iV.aWeights.x;
+    float4x4 bMat2 = boneBuffer[iV.aBoneIDs.y];
+    normal += float3x3(bMat2[0].xyz, bMat2[1].xyz, bMat2[2].xyz) * iV.aNormal.xyz * iV.aWeights.y;
+    float4x4 bMat3 = boneBuffer[iV.aBoneIDs.z];
+    normal += float3x3(bMat3[0].xyz, bMat3[1].xyz, bMat3[2].xyz) * iV.aNormal.xyz * iV.aWeights.z;
+    float4x4 bMat4 = boneBuffer[iV.aBoneIDs.w];
+    normal += float3x3(bMat4[0].xyz, bMat4[1].xyz, bMat4[2].xyz) * iV.aNormal.xyz * iV.aWeights.w;
+    oV.aNormal.xyz = normal;
+
+    outputBuffer[id] = oV;
+}
