@@ -103,10 +103,10 @@ namespace ZXEngine
 		/// </summary>
 	public:
 		// Shader Storage Buffer
-		virtual uint32_t CreateShaderStorageBuffer(const void* data, size_t size, GPUBufferType type) { return 0; };
-		virtual void BindShaderStorageBuffer(uint32_t id, uint32_t binding) {};
-		virtual void UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size) {};
-		virtual void DeleteShaderStorageBuffer(uint32_t id) {};
+		virtual uint32_t CreateShaderStorageBuffer(const void* data, size_t size, GPUBufferType type);
+		virtual void BindShaderStorageBuffer(uint32_t id, uint32_t binding);
+		virtual void UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size);
+		virtual void DeleteShaderStorageBuffer(uint32_t id);
 
 		// Vertex Buffer Binding
 		virtual void BindVertexBuffer(uint32_t VAO, uint32_t binding) {};
@@ -167,6 +167,7 @@ namespace ZXEngine
 	private:
 		vector<MetalVAO*> mVAOArray;
 		vector<MetalFBO*> mFBOArray;
+		vector<MetalBuffer*> mSSBOArray;
 		vector<MetalRenderBuffer*> mRenderBufferArray;
 		vector<MetalTexture*> mMetalTextureArray;
 		vector<MetalPipeline*> mMetalPipelineArray;
@@ -175,6 +176,7 @@ namespace ZXEngine
 		vector<MetalDrawCommand*> mDrawCommandArray;
 
 		unordered_map<uint32_t, uint32_t> mMeshsToDelete;
+		unordered_map<uint32_t, uint32_t> mSSBOsToDelete;
 		unordered_map<uint32_t, uint32_t> mTexturesToDelete;
 		unordered_map<uint32_t, uint32_t> mPipelinesToDelete;
 		unordered_map<uint32_t, uint32_t> mMaterialDatasToDelete;
@@ -188,6 +190,10 @@ namespace ZXEngine
 		uint32_t GetNextFBOIndex();
 		MetalFBO* GetFBOByIndex(uint32_t idx);
 		void DestroyFBOByIndex(uint32_t idx);
+
+		uint32_t GetNextSSBOIndex();
+		MetalBuffer* GetSSBOByIndex(uint32_t idx);
+		void DestroySSBOByIndex(uint32_t idx);
 
 		uint32_t GetNextRenderBufferIndex();
 		MetalRenderBuffer* GetRenderBufferByIndex(uint32_t idx);

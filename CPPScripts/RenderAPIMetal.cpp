@@ -1532,6 +1532,38 @@ namespace ZXEngine
 		SetShaderTexture(material, name, ID, idx, allBuffer, isBuffer);
 	}
 
+	uint32_t RenderAPIMetal::CreateShaderStorageBuffer(const void* data, size_t size, GPUBufferType type)
+	{
+		auto idx = GetNextSSBOIndex();
+		auto ssbo = GetSSBOByIndex(idx);
+
+		if (type == GPUBufferType::Static)
+			ssbo->buffer = CreateMetalBuffer(size, MTL::ResourceStorageModePrivate, data);
+		else
+			ssbo->buffer = CreateMetalBuffer(size, MTL::ResourceStorageModeShared, data);
+
+		ssbo->inUse = true;
+
+		return idx;
+	}
+
+	void RenderAPIMetal::BindShaderStorageBuffer(uint32_t id, uint32_t binding)
+	{
+		mCurComputePipelineSSBOBindingRecords.push_back({ id, binding });
+	}
+
+	void RenderAPIMetal::UpdateShaderStorageBuffer(uint32_t id, const void* data, size_t size)
+	{
+		auto ssbo = GetSSBOByIndex(id);
+
+		memcpy(ssbo->buffer->contents(), data, size);
+	}
+
+	void RenderAPIMetal::DeleteShaderStorageBuffer(uint32_t id)
+	{
+		mSSBOsToDelete.insert(pair(id, MT_MAX_FRAMES_IN_FLIGHT));
+	}
+
 	uint32_t RenderAPIMetal::GetNextVAOIndex()
 	{
 		uint32_t length = static_cast<uint32_t>(mVAOArray.size());
@@ -1624,6 +1656,40 @@ namespace ZXEngine
 		}
 
 		fbo->inUse = false;
+	}
+
+	uint32_t RenderAPIMetal::GetNextSSBOIndex()
+	{
+		uint32_t length = static_cast<uint32_t>(mSSBOArray.size());
+
+		for (uint32_t i = 0; i < length; i++)
+		{
+			if (!mSSBOArray[i]->inUse)
+				return i;
+		}
+
+		MetalBuffer* ssbo = new MetalBuffer();
+		mSSBOArray.push_back(ssbo);
+
+		return length;
+	}
+
+	MetalBuffer* RenderAPIMetal::GetSSBOByIndex(uint32_t idx)
+	{
+		return mSSBOArray[idx];
+	}
+
+	void RenderAPIMetal::DestroySSBOByIndex(uint32_t idx)
+	{
+		auto ssbo = mSSBOArray[idx];
+
+		if (ssbo->buffer)
+		{
+			ssbo->buffer->release();
+			ssbo->buffer = nullptr;
+		}
+
+		ssbo->inUse = false;
 	}
 
 	uint32_t RenderAPIMetal::GetNextRenderBufferIndex()
@@ -2014,6 +2080,21 @@ namespace ZXEngine
 		{
 			DestroyVAOByIndex(id);
 			mMeshsToDelete.erase(id);
+		}
+
+		// SSBO
+		deleteList.clear();
+		for (auto& iter : mSSBOsToDelete)
+		{
+			if (iter.second > 0)
+				iter.second--;
+			else
+				deleteList.push_back(iter.first);
+		}
+		for (auto id : deleteList)
+		{
+			DestroySSBOByIndex(id);
+			mSSBOsToDelete.erase(id);
 		}
 
 		// Texture
