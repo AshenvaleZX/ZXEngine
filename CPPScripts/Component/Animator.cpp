@@ -115,7 +115,7 @@ namespace ZXEngine
 			renderAPI->BindShaderStorageBuffer(pMesh->mVertexSSBO, 1);
 			renderAPI->BindShaderStorageBuffer(pMesh->mBoneTransformSSBO, 2);
 
-			renderAPI->Dispatch(mCommand, mComputeShader->ID, static_cast<uint32_t>(pMesh->mVertices.size() + 63) / 64, 1, 1);
+			renderAPI->Dispatch(mCommand, mComputeShader->ID, static_cast<uint32_t>(pMesh->mVertices.size() + 63) / 64, 1, 1, 64, 1, 1);
 		}
 	}
 }
