@@ -149,6 +149,7 @@ namespace ZXEngine
 	void RenderAPIMetal::SwitchFrameBuffer(uint32_t id, uint32_t index)
 	{
 		mCurFBOIdx = id;
+		mCurFBOInternalIdx = index;
 	}
 
 	void RenderAPIMetal::ClearFrameBuffer(FrameBufferClearFlags clearFlags)
@@ -971,6 +972,11 @@ namespace ZXEngine
 				depthBuffer = GetTextureByIndex(GetRenderBufferByIndex(curFBO->depthBufferIdx)->renderBuffers[GetCurFrameBufferIndex()]);
 
 				curFBO->renderPassDescriptor->depthAttachment()->setTexture(depthBuffer->texture);
+				
+				if (mCurFBOInternalIdx != UINT32_MAX)
+				{
+					curFBO->renderPassDescriptor->depthAttachment()->setSlice(mCurFBOInternalIdx);
+				}
 
 				auto& clearInfo = curFBO->clearInfo;
 

@@ -248,6 +248,7 @@ namespace ZXEngine
 		uint32_t mNewWindowHeight = 0;
 
 		uint32_t mCurFBOIdx = 0;
+		uint32_t mCurFBOInternalIdx = 0;
 		uint32_t mCurPipeLineIdx = 0;
 		uint32_t mCurMaterialDataIdx = 0;
 		vector<MetalDrawRecord> mDrawRecords;
