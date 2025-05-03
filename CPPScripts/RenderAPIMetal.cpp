@@ -146,7 +146,7 @@ namespace ZXEngine
 		commandBuffer->waitUntilCompleted();
 	}
 
-	void RenderAPIMetal::SwitchFrameBuffer(uint32_t id)
+	void RenderAPIMetal::SwitchFrameBuffer(uint32_t id, uint32_t index)
 	{
 		mCurFBOIdx = id;
 	}

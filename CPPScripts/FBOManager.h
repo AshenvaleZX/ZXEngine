@@ -19,7 +19,7 @@ namespace ZXEngine
 		FBOManager() {};
 		~FBOManager() {};
 
-		void SwitchFBO(const string& name);
+		void SwitchFBO(const string& name, uint32_t index = UINT32_MAX);
 		void CreateFBO(const string& name, FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
 		void CreateFBO(const string& name, FrameBufferType type, const ClearInfo& clearInfo, unsigned int width = 0, unsigned int height = 0);
 		void RecreateAllFollowWindowFBO();

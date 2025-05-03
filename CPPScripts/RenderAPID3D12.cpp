@@ -340,7 +340,7 @@ namespace ZXEngine
 		WaitForFence(mEndRenderFence);
 	}
 
-	void RenderAPID3D12::SwitchFrameBuffer(uint32_t id)
+	void RenderAPID3D12::SwitchFrameBuffer(uint32_t id, uint32_t index)
 	{
 		if (id == UINT32_MAX)
 			mCurFBOIdx = mPresentFBOIdx;

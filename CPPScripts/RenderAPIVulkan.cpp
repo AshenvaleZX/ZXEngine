@@ -211,7 +211,7 @@ namespace ZXEngine
         vkDeviceWaitIdle(device);
     }
 
-    void RenderAPIVulkan::SwitchFrameBuffer(uint32_t id)
+    void RenderAPIVulkan::SwitchFrameBuffer(uint32_t id, uint32_t index)
     {
         if (id == UINT32_MAX)
             curFBOIdx = presentFBOIdx;
