@@ -1,0 +1,64 @@
+Setting 
+{
+    Blend SrcAlpha OneMinusSrcAlpha
+    BlendOp Add
+    Cull Front
+    ZTest Less
+    ZWrite On
+}
+
+Vertex
+{
+    Input
+    {
+        0 vec3 aPos : POSITION
+    }
+
+    Output
+    {
+        0 vec4 FragPos : TEXCOORD0
+    }
+
+    Properties
+    {
+        using ENGINE_Model
+        mat4 _ShadowMatrix
+    }
+
+    Program
+    {
+        void main()
+        {
+            FragPos = mul(ENGINE_Model * vec4(aPos, 1.0));
+            ZX_Position = mul(_ShadowMatrix * vec4(aPos, 1.0));
+        }
+    }
+}
+
+Fragment
+{
+    Input
+    {
+        0 vec4 FragPos : TEXCOORD0
+    }
+
+    Properties
+    {
+        vec3 _LightPos
+        float _FarPlane
+    }
+
+    Program
+    {
+        void main()
+        {
+            float lightDistance = length(FragPos.xyz - _LightPos);
+            
+            // map to [0;1] range by dividing by _FarPlane
+            lightDistance = lightDistance / _FarPlane;
+            
+            // write this as modified depth
+            ZX_Depth = lightDistance;
+        }
+    }
+}
