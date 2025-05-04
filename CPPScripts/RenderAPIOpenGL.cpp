@@ -150,6 +150,11 @@ namespace ZXEngine
 		{
 			curFBOID = id;
 			glBindFramebuffer(GL_FRAMEBUFFER, id);
+			if (index != UINT32_MAX)
+			{
+				// 输出到CubeMap的某个面(目前暂时只有ShadowCubeMap，而且正常情况下也是用几何着色器直接输出6个面，走不到这里来)
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, FBOInfoMap[id].depthBuffer, 0);
+			}
 		}
 		CheckError();
 	}

@@ -102,8 +102,8 @@ namespace ZXEngine
 	void RenderEngineProperties::SetShadowCubeMap(uint32_t id, bool isBuffer)
 	{
 		// 支持Geometry Shader才会实际渲染ShadowCubeMap
-		// Metal和Vulkan支持非GS的绘制
-#if defined(ZX_API_OPENGL) || defined(ZX_API_D3D12)
+		// Vulkan，Metal和OpenGL支持非GS的ShadowCubeMap绘制
+#if defined(ZX_API_D3D12)
 		if (ProjectSetting::isSupportGeometryShader)
 #endif
 		{
