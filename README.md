@@ -764,9 +764,9 @@ cd BuildSolution/CMake
 ./BuildMac.sh
 ```
 
-在Mac设备上运行ZXEngine有一个问题，就是几何着色器可能是不被支持的。比如使用Metal或者Vulkan时就无法使用几何着色器，使用OpenGL是可以的。这可能是因为苹果的GPU本身的设计就没有准备支持几何着色器，只是为OpenGL的几何着色器做了个驱动层面的模拟。由于本引擎的Shadow Cube Map是使用几何着色器渲染的，所以在不支持几何着色器的环境下运行时，在使用点光源的场景中阴影系统会失效。
+Mac设备有一个问题，就是几何着色器可能是不被支持的。比如使用Metal或者Vulkan时就无法使用几何着色器，使用OpenGL是可以的。这可能是因为苹果的GPU本身的设计就没有准备支持几何着色器，只是为OpenGL的几何着色器做了个驱动层面的模拟。本引擎的Shadow Cube Map默认是使用几何着色器一次性渲染的，但在不支持几何着色器的环境下会以非几何着色器的方式将场景渲染6次来生成Shadow Cube Map。
 
-One problem with running ZXEngine on a Mac device is that geometry shader may not be supported. For example, you can't use geometry shaders with Metal or Vulkan, but you can use them with OpenGL. Probably because Apple's GPU was not designed to support geometry shader, but did a driver level simulation for OpenGL's geometry shader. Since the shadow cube map of this engine is rendered using a geometry shader, when running in an environment that does not support geometry shader, the shadow system will not work in a scene using point light.
+One problem with Mac devices is that geometry shader may not be supported. For example, you can't use geometry shaders with Metal or Vulkan, but you can use them with OpenGL. Probably because Apple's GPU was not designed to support geometry shader, but did a driver level simulation for OpenGL's geometry shader. The Shadow Cube Map of this engine is rendered once by default using geometry shader. However, in an environment where geometry shader is not supported, the scene will be rendered six times in a non-geometry shader way to generate the Shadow Cube Map.
 
 在MacBook下运行时可能还有一个小问题。因为MacBook的屏幕较小，所以即使屏幕的硬件分辨率很高，但是为了文本和图标不会太小，macOS的默认分辨率设置还是可能会比较低。比如我这台13寸的MacBook屏幕硬件分辨率为2560x1600，但是系统默认分辨率为1440x900。当屏幕分辨率小于ZXEngine窗口大小时会触发ZXEngine的自适应调整，可能会使引擎编辑器的某些面板显示过小，有些模糊或者不太正常。推荐运行时分辨率设置在1920x1080以上。
 
