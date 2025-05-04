@@ -472,6 +472,7 @@ namespace ZXEngine
         uint32_t newWindowHeight = 0;
 
         uint32_t curFBOIdx = 0;
+		uint32_t curFBOInternalIdx = 0;
         uint32_t curPipeLineIdx = 0;
         uint32_t curMaterialDataIdx = 0;
 

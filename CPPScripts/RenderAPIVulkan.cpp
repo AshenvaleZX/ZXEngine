@@ -213,6 +213,8 @@ namespace ZXEngine
 
     void RenderAPIVulkan::SwitchFrameBuffer(uint32_t id, uint32_t index)
     {
+        curFBOInternalIdx = index;
+
         if (id == UINT32_MAX)
             curFBOIdx = presentFBOIdx;
         else
@@ -1340,6 +1342,33 @@ namespace ZXEngine
 
                 if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &vulkanFBO->frameBuffers[i]) != VK_SUCCESS)
                     throw std::runtime_error("failed to create framebuffer!");
+                
+                if (!ProjectSetting::isSupportGeometryShader)
+                {
+                    vector<VkImageView> depth2DImageViews;
+                    vulkanFBO->separatedCubeFrameBuffers[i].resize(6);
+                    for (uint32_t j = 0; j < 6; j++)
+                    {
+                        VkImageView depthImageView = CreateCubeFaceImageView(GetImage(depthImage)->image, j, VK_FORMAT_D32_SFLOAT, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                        depth2DImageViews.push_back(depthImageView);
+
+                        array<VkImageView, 1> attachments = { depthImageView };
+
+                        VkFramebufferCreateInfo framebufferInfo{};
+                        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+                        framebufferInfo.renderPass = GetRenderPass(RenderPassType::ShadowCubeMap);
+                        framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+                        framebufferInfo.pAttachments = attachments.data();
+                        framebufferInfo.width = width;
+                        framebufferInfo.height = height;
+                        framebufferInfo.layers = 1;
+
+                        if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &vulkanFBO->separatedCubeFrameBuffers[i][j]) != VK_SUCCESS)
+                            throw std::runtime_error("failed to create framebuffer!");
+                    }
+
+                    depthAttachmentBuffer->separatedCubeAttachmentBuffers[i] = CreateVulkanTexture(depthImage, depth2DImageViews, CreateSampler(1));
+                }
             }
 
             vulkanFBO->inUse = true;
@@ -1557,7 +1586,16 @@ namespace ZXEngine
             renderPassInfo.renderPass = GetRenderPass(RenderPassType::PresentOverspread);
         else
             renderPassInfo.renderPass = GetRenderPass(curFBO->renderPassType);
-        renderPassInfo.framebuffer = curFBO->frameBuffers[GetCurFrameBufferIndex()];
+
+        if (curFBO->bufferType == FrameBufferType::ShadowCubeMap && curFBOInternalIdx != UINT32_MAX)
+        {
+            renderPassInfo.framebuffer = curFBO->separatedCubeFrameBuffers[GetCurFrameBufferIndex()][curFBOInternalIdx];
+        }
+        else
+        {
+            renderPassInfo.framebuffer = curFBO->frameBuffers[GetCurFrameBufferIndex()];
+        }
+
         // 这个render area定义了shader将要加载和存储的位置
         renderPassInfo.renderArea.offset = { viewPortInfo.xOffset, viewPortInfo.yOffset };
         // 一般来说大小(extend)是和framebuffer的attachment一致的，如果小了会浪费，大了超出去的部分是一些未定义数值
