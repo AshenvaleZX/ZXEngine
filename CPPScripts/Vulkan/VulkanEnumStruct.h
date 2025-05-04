@@ -141,6 +141,8 @@ namespace ZXEngine
     struct VulkanFBO
     {
         vector<VkFramebuffer> frameBuffers;
+        // 在FrameBuffer的类型为CubeMap并且6个面需要分别独立渲染的情况下使用
+        vector<vector<VkFramebuffer>> separatedCubeFrameBuffers;
         uint32_t colorAttachmentIdx = UINT32_MAX;
         uint32_t depthAttachmentIdx = UINT32_MAX;
         uint32_t positionAttachmentIdx = UINT32_MAX; // GBuffer
@@ -154,6 +156,7 @@ namespace ZXEngine
     struct VulkanAttachmentBuffer
     {
         vector<uint32_t> attachmentBuffers;
+        vector<uint32_t> separatedCubeAttachmentBuffers;
         bool inUse = false;
     };
 

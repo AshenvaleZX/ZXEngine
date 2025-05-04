@@ -3572,6 +3572,7 @@ namespace ZXEngine
 
         auto newFBO = new VulkanFBO();
         newFBO->frameBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+        newFBO->separatedCubeFrameBuffers.resize(MAX_FRAMES_IN_FLIGHT);
         VulkanFBOArray.push_back(newFBO);
 
         return length;
@@ -3592,6 +3593,17 @@ namespace ZXEngine
 		}
         vulkanFBO->frameBuffers.clear();
         vulkanFBO->frameBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+
+        for (auto& iter : vulkanFBO->separatedCubeFrameBuffers)
+        {
+            for (auto iter2 : iter)
+            {
+                vkDestroyFramebuffer(device, iter2, VK_NULL_HANDLE);
+            }
+            iter.clear();
+        }
+        vulkanFBO->separatedCubeFrameBuffers.clear();
+        vulkanFBO->separatedCubeFrameBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 
         if (vulkanFBO->colorAttachmentIdx != UINT32_MAX)
         {
@@ -3666,7 +3678,8 @@ namespace ZXEngine
         }
 
         auto newAttachmentBuffer = new VulkanAttachmentBuffer();
-        newAttachmentBuffer->attachmentBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+        newAttachmentBuffer->attachmentBuffers.resize(MAX_FRAMES_IN_FLIGHT, UINT32_MAX);
+        newAttachmentBuffer->separatedCubeAttachmentBuffers.resize(MAX_FRAMES_IN_FLIGHT, UINT32_MAX);
         VulkanAttachmentBufferArray.push_back(newAttachmentBuffer);
 
         return length;
@@ -3680,10 +3693,23 @@ namespace ZXEngine
     void RenderAPIVulkan::DestroyAttachmentBufferByIndex(uint32_t idx)
     {
         auto colorAttachmentBuffer = VulkanAttachmentBufferArray[idx];
+
         for (auto iter : colorAttachmentBuffer->attachmentBuffers)
-            DestroyTextureByIndex(iter);
+        {
+            if (iter != UINT32_MAX)
+                DestroyTextureByIndex(iter);
+        }
         colorAttachmentBuffer->attachmentBuffers.clear();
-        colorAttachmentBuffer->attachmentBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+        colorAttachmentBuffer->attachmentBuffers.resize(MAX_FRAMES_IN_FLIGHT, UINT32_MAX);
+
+        for (auto iter : colorAttachmentBuffer->separatedCubeAttachmentBuffers)
+        {
+            if (iter != UINT32_MAX)
+                DestroyTextureByIndex(iter);
+        }
+        colorAttachmentBuffer->separatedCubeAttachmentBuffers.clear();
+        colorAttachmentBuffer->separatedCubeAttachmentBuffers.resize(MAX_FRAMES_IN_FLIGHT, UINT32_MAX);
+
         colorAttachmentBuffer->inUse = false;
     }
 
