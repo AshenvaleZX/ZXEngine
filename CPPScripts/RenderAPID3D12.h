@@ -392,6 +392,7 @@ namespace ZXEngine
 		ViewPortInfo mViewPortInfo;
 
 		uint32_t mCurFBOIdx = 0;
+		uint32_t mCurFBOInternalIdx = 0;
 		uint32_t mCurPipeLineIdx = 0;
 		uint32_t mCurMaterialDataIdx = 0;
 		vector<ZXD3D12DrawRecord> mDrawRecords;
