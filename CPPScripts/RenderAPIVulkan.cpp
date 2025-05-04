@@ -5268,8 +5268,8 @@ namespace ZXEngine
         vmaCreateImage(vmaAllocator, &imageInfo, &allocationInfo, &newImage->image, &newImage->allocation, nullptr);
         newImage->inUse = true;
         // 这里引用计数归0，在CreateVulkanTexture里会加1
-        // 目前所有通过这个CreateImage接口创建的image都是在CreateVulkanTexture里使用的
-        // 如果以后有出现通过CreateImage创建的image通过别的形式使用，引用计数方式需要重新设计
+        // 目前所有通过这个CreateImage接口创建的image都是在CreateVulkanTexture里使用，然后在DestroyTextureByIndex里销毁的
+        // 如果以后有出现通过CreateImage创建的image通过别的形式使用，引用计数方式可能需要重新设计
         newImage->referenceCount = 0;
 
         return idx;
