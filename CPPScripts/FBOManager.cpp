@@ -18,7 +18,7 @@ namespace ZXEngine
 		return mInstance;
 	}
 
-	void FBOManager::SwitchFBO(const string& name)
+	void FBOManager::SwitchFBO(const string& name, uint32_t index)
 	{
 		// 直接写入到默认的屏幕Buffer
 		if (name == ScreenBuffer)
@@ -31,7 +31,7 @@ namespace ZXEngine
 		if (FBO == nullptr)
 			Debug::LogError("Try to switch to an nonexistent FBO");
 		else
-			RenderAPI::GetInstance()->SwitchFrameBuffer(FBO->ID);
+			RenderAPI::GetInstance()->SwitchFrameBuffer(FBO->ID, index);
 	}
 
 	void FBOManager::CreateFBO(const string& name, FrameBufferType type, unsigned int width, unsigned int height)

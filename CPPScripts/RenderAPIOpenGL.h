@@ -27,7 +27,7 @@ namespace ZXEngine
 		virtual void WaitForRenderFinish();
 
 		// Frame Buffer
-		virtual void SwitchFrameBuffer(uint32_t id);
+		virtual void SwitchFrameBuffer(uint32_t id, uint32_t index = UINT32_MAX);
 		virtual void ClearFrameBuffer(FrameBufferClearFlags clearFlags);
 		virtual void BlitFrameBuffer(uint32_t cmd, const string& src, const string& dst, FrameBufferPieceFlags flags);
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
@@ -167,7 +167,7 @@ namespace ZXEngine
 		vector<OpenGLVAO*> OpenGLVAOArray;
 		vector<OpenGLMaterialData*> OpenGLMaterialDataArray;
 		unordered_map<uint32_t, OpenGLMaterialData*> materialDataInShaders;
-		unordered_map<uint32_t, ClearInfo> FBOClearInfoMap;
+		unordered_map<uint32_t, OpenGLFBO> FBOInfoMap;
 
 		uint32_t GetNextVAOIndex();
 		OpenGLVAO* GetVAOByIndex(uint32_t idx);

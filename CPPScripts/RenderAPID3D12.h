@@ -28,7 +28,7 @@ namespace ZXEngine
 		virtual void WaitForRenderFinish();
 
 		// Frame Buffer
-		virtual void SwitchFrameBuffer(uint32_t id);
+		virtual void SwitchFrameBuffer(uint32_t id, uint32_t index = UINT32_MAX);
 		virtual void ClearFrameBuffer(FrameBufferClearFlags clearFlags);
 		virtual void BlitFrameBuffer(uint32_t cmd, const string& src, const string& dst, FrameBufferPieceFlags flags);
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
@@ -268,6 +268,7 @@ namespace ZXEngine
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc);
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_RENDER_TARGET_VIEW_DESC& rtvDesc);
 		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const D3D12_DEPTH_STENCIL_VIEW_DESC& dsvDesc);
+		uint32_t CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const vector<D3D12_DEPTH_STENCIL_VIEW_DESC>& dsvDescs);
 		
 		ZXD3D12Buffer CreateBuffer(UINT64 size, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initState, D3D12_HEAP_TYPE heapType, bool cpuAddress = false, bool gpuAddress = false, const void* data = nullptr);
 		void DestroyBuffer(ZXD3D12Buffer& buffer);
@@ -391,6 +392,7 @@ namespace ZXEngine
 		ViewPortInfo mViewPortInfo;
 
 		uint32_t mCurFBOIdx = 0;
+		uint32_t mCurFBOInternalIdx = 0;
 		uint32_t mCurPipeLineIdx = 0;
 		uint32_t mCurMaterialDataIdx = 0;
 		vector<ZXD3D12DrawRecord> mDrawRecords;

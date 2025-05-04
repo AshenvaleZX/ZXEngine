@@ -21,6 +21,8 @@ namespace ZXEngine
 		Material* mMatetrial = nullptr;
 		Material* mShadowCastMaterial = nullptr;
 		Material* mGBufferMaterial = nullptr;
+		// 在不支持几何着色器的环境下(比如苹果的Vulkan和Metal)绘制Shadow Cube Map用的材质
+		vector<Material*> mNonGSCubeShadowCastMaterials;
 
 		Animator* mAnimator = nullptr;
 
@@ -43,7 +45,7 @@ namespace ZXEngine
 		virtual ComponentType GetInsType();
 
 		void Draw();
-		void DrawShadow();
+		void DrawShadow(uint32_t face = UINT32_MAX);
 		void GenerateModel(GeometryType type);
 		void SetMeshes(const vector<shared_ptr<Mesh>>& meshes);
 

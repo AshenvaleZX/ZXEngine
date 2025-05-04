@@ -31,9 +31,18 @@ namespace ZXEngine
 			shadowCubeMapShader = new Shader(Resources::GetAssetFullPath("Shaders/PointShadowDepth.zxshader", true), FrameBufferType::ShadowCubeMap);
 			animShadowCubeMapShader = new Shader(Resources::GetAssetFullPath("Shaders/PointShadowDepthAnim.zxshader", true), FrameBufferType::ShadowCubeMap);
 		}
+		else
+		{
+			shadowCubeMapShaderNonGS = new Shader(Resources::GetAssetFullPath("Shaders/NonGSPointShadowDepth.zxshader", true), FrameBufferType::ShadowCubeMap);
+			animShadowCubeMapShaderNonGS = new Shader(Resources::GetAssetFullPath("Shaders/NonGSPointShadowDepthAnim.zxshader", true), FrameBufferType::ShadowCubeMap);
+		}
 
 		renderState = new RenderStateSetting();
 		drawCommandID = RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ShadowGeneration, ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
+		for (uint32_t i = 0; i < 6; i++)
+		{
+			drawCommandIDs.push_back(RenderAPI::GetInstance()->AllocateDrawCommand(CommandType::ShadowGeneration, ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT));
+		}
 
 		ClearInfo clearInfo = {};
 		FBOManager::GetInstance()->CreateFBO("ShadowMap", FrameBufferType::ShadowMap, clearInfo, GlobalData::depthMapWidth, GlobalData::depthMapWidth);
@@ -107,19 +116,6 @@ namespace ZXEngine
 
 	void RenderPassShadowGeneration::RenderShadowCubeMap(Light* light)
 	{
-		if (!ProjectSetting::isSupportGeometryShader)
-			return;
-
-		auto renderAPI = RenderAPI::GetInstance();
-		// 切换到shadow FBO
-		FBOManager::GetInstance()->SwitchFBO("ShadowCubeMap");
-		// ViewPort改成渲染CubeMap的正方形
-		renderAPI->SetViewPort(GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
-		// 切换到阴影渲染设置
-		renderAPI->SetRenderState(renderState);
-		// 清理上一帧数据
-		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
-
 		// 基于左手坐标系构建6个方向上的VP矩阵
 		Vector3 lightPos = light->GetTransform()->GetPosition();
 #if defined(ZX_API_OPENGL) || defined(ZX_API_VULKAN)
@@ -137,6 +133,27 @@ namespace ZXEngine
 		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3( 0.0f,  0.0f,  1.0f), Vector3(0.0f,  1.0f,  0.0f)));
 		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3( 0.0f,  0.0f, -1.0f), Vector3(0.0f,  1.0f,  0.0f)));
 #endif
+
+		if (ProjectSetting::isSupportGeometryShader)
+			RenderShadowCubeMapWithGS(lightPos);
+		else
+			RenderShadowCubeMapWithoutGS(lightPos);
+
+		// 用完立刻清除，下一帧还会生成
+		shadowTransforms.clear();
+	}
+
+	void RenderPassShadowGeneration::RenderShadowCubeMapWithGS(const Vector3& lightPos)
+	{
+		auto renderAPI = RenderAPI::GetInstance();
+		// 切换到shadow FBO
+		FBOManager::GetInstance()->SwitchFBO("ShadowCubeMap");
+		// ViewPort改成渲染CubeMap的正方形
+		renderAPI->SetViewPort(GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
+		// 切换到阴影渲染设置
+		renderAPI->SetRenderState(renderState);
+		// 清理上一帧数据
+		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
 		// 渲染投射阴影的物体
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Opaque);
@@ -169,9 +186,55 @@ namespace ZXEngine
 			renderer->DrawShadow();
 		}
 
-		// 用完立刻清除，下一帧还会生成
-		shadowTransforms.clear();
-
 		renderAPI->GenerateDrawCommand(drawCommandID);
+	}
+
+	void RenderPassShadowGeneration::RenderShadowCubeMapWithoutGS(const Vector3& lightPos)
+	{
+		auto renderAPI = RenderAPI::GetInstance();
+		renderAPI->SetViewPort(GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
+		renderAPI->SetRenderState(renderState);
+
+		for (uint32_t i = 0; i < 6; i++)
+		{
+			FBOManager::GetInstance()->SwitchFBO("ShadowCubeMap", i);
+			renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
+
+			// 渲染投射阴影的物体
+			auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Opaque);
+			for (auto renderer : renderQueue->GetRenderers())
+			{
+				// 跳过不投射阴影的物体
+				if (!renderer->mCastShadow)
+					continue;
+
+				if (renderer->mNonGSCubeShadowCastMaterials.size() == 0)
+				{
+					for (uint32_t j = 0; j < 6; j++)
+					{
+#ifdef ZX_COMPUTE_ANIMATION
+						renderer->mNonGSCubeShadowCastMaterials.push_back(new Material(shadowCubeMapShaderNonGS));
+#else
+						if (renderer->mAnimator)
+							renderer->mNonGSCubeShadowCastMaterials.push_back(new Material(animShadowCubeMapShaderNonGS));
+						else
+							renderer->mNonGSCubeShadowCastMaterials.push_back(new Material(shadowCubeMapShaderNonGS));
+#endif
+					}
+				}
+
+				Matrix4 mat_M = renderer->GetTransform()->GetModelMatrix();
+
+				renderer->mNonGSCubeShadowCastMaterials[i]->Use();
+				renderer->mNonGSCubeShadowCastMaterials[i]->SetMatrix("ENGINE_Model", mat_M);
+				renderer->mNonGSCubeShadowCastMaterials[i]->SetMatrix("_ShadowMatrix", shadowTransforms[i] * mat_M);
+				renderer->mNonGSCubeShadowCastMaterials[i]->SetScalar("_FarPlane", GlobalData::shadowCubeMapFarPlane);
+				renderer->mNonGSCubeShadowCastMaterials[i]->SetVector("_LightPos", lightPos);
+
+				renderer->DrawShadow(i);
+			}
+
+			renderAPI->GenerateDrawCommand(drawCommandIDs[i]);
+		}
 	}
 }

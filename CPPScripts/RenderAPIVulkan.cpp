@@ -211,8 +211,10 @@ namespace ZXEngine
         vkDeviceWaitIdle(device);
     }
 
-    void RenderAPIVulkan::SwitchFrameBuffer(uint32_t id)
+    void RenderAPIVulkan::SwitchFrameBuffer(uint32_t id, uint32_t index)
     {
+        curFBOInternalIdx = index;
+
         if (id == UINT32_MAX)
             curFBOIdx = presentFBOIdx;
         else
@@ -321,7 +323,7 @@ namespace ZXEngine
             auto sColorTexture = GetTextureByIndex(sColorBuffer->attachmentBuffers[currentFrame]);
             auto dColorTexture = GetTextureByIndex(dColorBuffer->attachmentBuffers[currentFrame]);
 
-            TransitionImageLayout(commandBuffer, sColorTexture->image.image,
+            TransitionImageLayout(commandBuffer, GetImage(sColorTexture->image)->image,
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                 VK_IMAGE_ASPECT_COLOR_BIT,
                 // 需要等渲染输出完成
@@ -330,7 +332,7 @@ namespace ZXEngine
                 VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT
             );
 
-            TransitionImageLayout(commandBuffer, dColorTexture->image.image,
+            TransitionImageLayout(commandBuffer, GetImage(dColorTexture->image)->image,
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                 VK_IMAGE_ASPECT_COLOR_BIT,
                 // 需要等???，我也不知道应该等什么
@@ -355,8 +357,8 @@ namespace ZXEngine
                 imageCopy.extent = { sFBO->width, sFBO->height, 1 };
 
                 vkCmdCopyImage(commandBuffer,
-                    sColorTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                    dColorTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                    GetImage(sColorTexture->image)->image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                    GetImage(dColorTexture->image)->image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                     1, &imageCopy
                 );
             }
@@ -377,14 +379,14 @@ namespace ZXEngine
 				imageBlit.dstOffsets[1] = { static_cast<int32_t>(dFBO->width), static_cast<int32_t>(dFBO->height), 1 };
 
 				vkCmdBlitImage(commandBuffer,
-                    sColorTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                    dColorTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                    GetImage(sColorTexture->image)->image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                    GetImage(dColorTexture->image)->image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                     1, &imageBlit,
                     VK_FILTER_LINEAR
                 );
             }
 
-            TransitionImageLayout(commandBuffer, sColorTexture->image.image,
+            TransitionImageLayout(commandBuffer, GetImage(sColorTexture->image)->image,
                 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                 VK_IMAGE_ASPECT_COLOR_BIT,
                 // 需要等Transfer的读取完成
@@ -393,7 +395,7 @@ namespace ZXEngine
                 VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT
             );
 
-            TransitionImageLayout(commandBuffer, dColorTexture->image.image,
+            TransitionImageLayout(commandBuffer, GetImage(dColorTexture->image)->image,
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                 VK_IMAGE_ASPECT_COLOR_BIT,
                 // 需要等Transfer的写入完成
@@ -411,7 +413,7 @@ namespace ZXEngine
             auto sDepthTexture = GetTextureByIndex(sDepthBuffer->attachmentBuffers[currentFrame]);
             auto dDepthTexture = GetTextureByIndex(dDepthBuffer->attachmentBuffers[currentFrame]);
 
-            TransitionImageLayout(commandBuffer, sDepthTexture->image.image,
+            TransitionImageLayout(commandBuffer, GetImage(sDepthTexture->image)->image,
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                 VK_IMAGE_ASPECT_DEPTH_BIT,
                 // 需要等渲染输出完成
@@ -420,7 +422,7 @@ namespace ZXEngine
                 VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT
             );
 
-            TransitionImageLayout(commandBuffer, dDepthTexture->image.image,
+            TransitionImageLayout(commandBuffer, GetImage(dDepthTexture->image)->image,
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                 VK_IMAGE_ASPECT_DEPTH_BIT,
                 // 需要等???，我也不知道应该等什么
@@ -445,8 +447,8 @@ namespace ZXEngine
                 imageCopy.extent = { sFBO->width, sFBO->height, 1 };
 
                 vkCmdCopyImage(commandBuffer,
-                    sDepthTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                    dDepthTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                    GetImage(sDepthTexture->image)->image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                    GetImage(dDepthTexture->image)->image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                     1, &imageCopy
                 );
             }
@@ -467,14 +469,14 @@ namespace ZXEngine
 				imageBlit.dstOffsets[1] = { static_cast<int32_t>(dFBO->width), static_cast<int32_t>(dFBO->height), 1 };
 
 				vkCmdBlitImage(commandBuffer,
-                    sDepthTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                    dDepthTexture->image.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                    GetImage(sDepthTexture->image)->image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                    GetImage(dDepthTexture->image)->image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                     1, &imageBlit,
                     VK_FILTER_NEAREST
                 );
 			}
 
-            TransitionImageLayout(commandBuffer, sDepthTexture->image.image,
+            TransitionImageLayout(commandBuffer, GetImage(sDepthTexture->image)->image,
                 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                 VK_IMAGE_ASPECT_DEPTH_BIT,
                 // 需要等Transfer的读取完成
@@ -483,7 +485,7 @@ namespace ZXEngine
                 VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT
             );
 
-            TransitionImageLayout(commandBuffer, dDepthTexture->image.image,
+            TransitionImageLayout(commandBuffer, GetImage(dDepthTexture->image)->image,
                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                 VK_IMAGE_ASPECT_DEPTH_BIT,
                 // 需要等Transfer的写入完成
@@ -581,7 +583,7 @@ namespace ZXEngine
 
         uint32_t mipLevels = GetMipMapLevels(width, height);
 
-        VulkanImage image = CreateImage(width, height, mipLevels, 1, VK_SAMPLE_COUNT_1_BIT,
+        uint32_t image = CreateImage(width, height, mipLevels, 1, VK_SAMPLE_COUNT_1_BIT,
             defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
             // 这里我们要从一个stagingBuffer接收数据，所以要写一个VK_IMAGE_USAGE_TRANSFER_DST_BIT
             // 又因为我们要生成mipmap，需要从这个原image读数据，所以又再加一个VK_IMAGE_USAGE_TRANSFER_SRC_BIT
@@ -589,7 +591,7 @@ namespace ZXEngine
             VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
-        TransitionImageLayout(image.image, 
+        TransitionImageLayout(GetImage(image)->image, 
             // 从初始的Layout转换到接收stagingBuffer数据的Layout
             VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
             // 从硬盘加载的图像默认都是Color
@@ -621,18 +623,18 @@ namespace ZXEngine
             vkCmdCopyBufferToImage(
                 cmd,
                 stagingBuffer.buffer,
-                image.image,
+                GetImage(image)->image,
                 // image当前的layout
                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                 1, &region
             );
         });
 
-        GenerateMipMaps(image.image, defaultImageFormat, width, height, mipLevels);
+        GenerateMipMaps(GetImage(image)->image, defaultImageFormat, width, height, mipLevels);
 
         DestroyBuffer(stagingBuffer);
 
-        VkImageView imageView = CreateImageView(image.image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+        VkImageView imageView = CreateImageView(GetImage(image)->image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
         VkSampler sampler = CreateSampler(mipLevels);
 
         return CreateVulkanTexture(image, imageView, sampler);
@@ -647,13 +649,13 @@ namespace ZXEngine
 
         VkDeviceSize singleImageSize = VkDeviceSize(texWidth * texHeight * 4);
 
-        VulkanImage image = CreateImage(texWidth, texHeight, 1, 6, VK_SAMPLE_COUNT_1_BIT,
+        uint32_t image = CreateImage(texWidth, texHeight, 1, 6, VK_SAMPLE_COUNT_1_BIT,
             defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
             VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
         // 同LoadTexture
-        TransitionImageLayout(image.image,
+        TransitionImageLayout(GetImage(image)->image,
             VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
             VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT);
@@ -692,7 +694,7 @@ namespace ZXEngine
 
                 vkCmdCopyBufferToImage(cmd,
                     stagingBuffers[i].buffer,
-                    image.image,
+                    GetImage(image)->image,
                     // image当前的layout
                     VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                     1, &bufferCopyRegion
@@ -703,13 +705,13 @@ namespace ZXEngine
         for (auto& stagingBuffer : stagingBuffers)
             DestroyBuffer(stagingBuffer);
 
-        TransitionImageLayout(image.image,
+        TransitionImageLayout(GetImage(image)->image,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
             VK_IMAGE_ASPECT_COLOR_BIT, 
             VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT,
             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_SHADER_READ_BIT);
 
-        VkImageView imageView = CreateImageView(image.image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_CUBE);
+        VkImageView imageView = CreateImageView(GetImage(image)->image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_CUBE);
         VkSampler sampler = CreateSampler(1);
 
         return CreateVulkanTexture(image, imageView, sampler);
@@ -729,7 +731,7 @@ namespace ZXEngine
 
         uint32_t mipLevels = GetMipMapLevels(data->width, data->height);
 
-        VulkanImage image = CreateImage(data->width, data->height, mipLevels, 1, VK_SAMPLE_COUNT_1_BIT,
+        uint32_t image = CreateImage(data->width, data->height, mipLevels, 1, VK_SAMPLE_COUNT_1_BIT,
             defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
             // 这里我们要从一个stagingBuffer接收数据，所以要写一个VK_IMAGE_USAGE_TRANSFER_DST_BIT
             // 又因为我们要生成mipmap，需要从这个原image读数据，所以又再加一个VK_IMAGE_USAGE_TRANSFER_SRC_BIT
@@ -737,7 +739,7 @@ namespace ZXEngine
             VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
-        TransitionImageLayout(image.image,
+        TransitionImageLayout(GetImage(image)->image,
             // 从初始的Layout转换到接收stagingBuffer数据的Layout
             VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             // 从硬盘加载的图像默认都是Color
@@ -769,18 +771,18 @@ namespace ZXEngine
             vkCmdCopyBufferToImage(
                 cmd,
                 stagingBuffer.buffer,
-                image.image,
+                GetImage(image)->image,
                 // image当前的layout
                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                 1, &region
             );
         });
 
-        GenerateMipMaps(image.image, defaultImageFormat, data->width, data->height, mipLevels);
+        GenerateMipMaps(GetImage(image)->image, defaultImageFormat, data->width, data->height, mipLevels);
 
         DestroyBuffer(stagingBuffer);
 
-        VkImageView imageView = CreateImageView(image.image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+        VkImageView imageView = CreateImageView(GetImage(image)->image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
         VkSampler sampler = CreateSampler(mipLevels);
 
         return CreateVulkanTexture(image, imageView, sampler);
@@ -790,13 +792,13 @@ namespace ZXEngine
     {
         VkDeviceSize singleImageSize = VkDeviceSize(data->width * data->height * 4);
 
-        VulkanImage image = CreateImage(data->width, data->height, 1, 6, VK_SAMPLE_COUNT_1_BIT,
+        uint32_t image = CreateImage(data->width, data->height, 1, 6, VK_SAMPLE_COUNT_1_BIT,
             defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
             VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
         // 同LoadTexture
-        TransitionImageLayout(image.image,
+        TransitionImageLayout(GetImage(image)->image,
             VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
             VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT);
@@ -833,7 +835,7 @@ namespace ZXEngine
 
                 vkCmdCopyBufferToImage(cmd,
                     stagingBuffers[i].buffer,
-                    image.image,
+                    GetImage(image)->image,
                     // image当前的layout
                     VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                     1, &bufferCopyRegion
@@ -844,13 +846,13 @@ namespace ZXEngine
         for (auto& stagingBuffer : stagingBuffers)
             DestroyBuffer(stagingBuffer);
 
-        TransitionImageLayout(image.image,
+        TransitionImageLayout(GetImage(image)->image,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
             VK_IMAGE_ASPECT_COLOR_BIT,
             VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT,
             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_SHADER_READ_BIT);
 
-        VkImageView imageView = CreateImageView(image.image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_CUBE);
+        VkImageView imageView = CreateImageView(GetImage(image)->image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_CUBE);
         VkSampler sampler = CreateSampler(1);
 
         return CreateVulkanTexture(image, imageView, sampler);
@@ -870,13 +872,13 @@ namespace ZXEngine
         memcpy(ptr, data, static_cast<size_t>(imageSize));
         vmaUnmapMemory(vmaAllocator, stagingBuffer.allocation);
 
-        VulkanImage image = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT,
+        uint32_t image = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT,
             VK_FORMAT_R8_SRGB, VK_IMAGE_TILING_OPTIMAL,
             VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 
         // 同LoadTexture
-        TransitionImageLayout(image.image,
+        TransitionImageLayout(GetImage(image)->image,
             VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
             VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT);
@@ -894,18 +896,18 @@ namespace ZXEngine
             region.imageOffset = { 0, 0, 0 };
             region.imageExtent = { (uint32_t)width, (uint32_t)height, 1 };
 
-            vkCmdCopyBufferToImage(cmd, stagingBuffer.buffer, image.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+            vkCmdCopyBufferToImage(cmd, stagingBuffer.buffer, GetImage(image)->image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
         });
 
         DestroyBuffer(stagingBuffer);
 
-        TransitionImageLayout(image.image,
+        TransitionImageLayout(GetImage(image)->image,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
             VK_IMAGE_ASPECT_COLOR_BIT,
             VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT,
             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_SHADER_READ_BIT);
 
-        VkImageView imageView = CreateImageView(image.image, VK_FORMAT_R8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+        VkImageView imageView = CreateImageView(GetImage(image)->image, VK_FORMAT_R8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
         VkSampler sampler = CreateSampler(1);
 
         return CreateVulkanTexture(image, imageView, sampler);
@@ -1165,14 +1167,14 @@ namespace ZXEngine
             {
                 // 这里很多Attachment后面都可能会用于其它Shader采样，所以都加了VK_IMAGE_USAGE_SAMPLED_BIT
                 // 如果确定不会被用作采样的，可以不加VK_IMAGE_USAGE_SAMPLED_BIT，改成VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT提高性能
-                VulkanImage colorImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
+                uint32_t colorImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
-                TransitionImageLayout(colorImage.image,
+                TransitionImageLayout(GetImage(colorImage)->image,
                     VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_COLOR_BIT, 
                     VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
                     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
-                VkImageView colorImageView = CreateImageView(colorImage.image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkImageView colorImageView = CreateImageView(GetImage(colorImage)->image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
                 VkSampler colorSampler = CreateSampler(1);
                 colorAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(colorImage, colorImageView, colorSampler);
 
@@ -1182,14 +1184,14 @@ namespace ZXEngine
                 else if (type == FrameBufferType::Normal)
 					depthUsage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 
-                VulkanImage depthImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
+                uint32_t depthImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
                     depthUsage, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
-                TransitionImageLayout(depthImage.image,
+                TransitionImageLayout(GetImage(depthImage)->image,
                     VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_DEPTH_BIT,
                     VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
                     VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
-                VkImageView depthImageView = CreateImageView(depthImage.image, VK_FORMAT_D32_SFLOAT, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkImageView depthImageView = CreateImageView(GetImage(depthImage)->image, VK_FORMAT_D32_SFLOAT, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_VIEW_TYPE_2D);
                 VkSampler depthSampler = CreateSampler(1);
                 depthAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(depthImage, depthImageView, depthSampler);
 
@@ -1227,14 +1229,14 @@ namespace ZXEngine
 
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
-                VulkanImage colorImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
+                uint32_t colorImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
-                TransitionImageLayout(colorImage.image,
+                TransitionImageLayout(GetImage(colorImage)->image,
                     VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_COLOR_BIT,
                     VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
                     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
-                VkImageView colorImageView = CreateImageView(colorImage.image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkImageView colorImageView = CreateImageView(GetImage(colorImage)->image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
                 VkSampler colorSampler = CreateSampler(1);
                 colorAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(colorImage, colorImageView, colorSampler);
 
@@ -1271,15 +1273,15 @@ namespace ZXEngine
 
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
-                VulkanImage depthImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
+                uint32_t depthImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                     VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
-                TransitionImageLayout(depthImage.image,
+                TransitionImageLayout(GetImage(depthImage)->image,
                     VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_DEPTH_BIT,
                     VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
                     VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
-                VkImageView depthImageView = CreateImageView(depthImage.image, VK_FORMAT_D32_SFLOAT, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkImageView depthImageView = CreateImageView(GetImage(depthImage)->image, VK_FORMAT_D32_SFLOAT, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_VIEW_TYPE_2D);
                 VkSampler depthSampler = CreateSampler(1);
                 depthAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(depthImage, depthImageView, depthSampler);
 
@@ -1316,14 +1318,14 @@ namespace ZXEngine
 
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
-                VulkanImage depthImage = CreateImage(width, height, 1, 6, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
+                uint32_t depthImage = CreateImage(width, height, 1, 6, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
-                TransitionImageLayout(depthImage.image,
+                TransitionImageLayout(GetImage(depthImage)->image,
                     VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_DEPTH_BIT,
                     VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
                     VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
-                VkImageView depthImageView = CreateImageView(depthImage.image, VK_FORMAT_D32_SFLOAT, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_VIEW_TYPE_CUBE);
+                VkImageView depthImageView = CreateImageView(GetImage(depthImage)->image, VK_FORMAT_D32_SFLOAT, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_VIEW_TYPE_CUBE);
                 VkSampler depthSampler = CreateSampler(1);
                 depthAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(depthImage, depthImageView, depthSampler);
 
@@ -1340,6 +1342,33 @@ namespace ZXEngine
 
                 if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &vulkanFBO->frameBuffers[i]) != VK_SUCCESS)
                     throw std::runtime_error("failed to create framebuffer!");
+                
+                if (!ProjectSetting::isSupportGeometryShader)
+                {
+                    vector<VkImageView> depth2DImageViews;
+                    vulkanFBO->separatedCubeFrameBuffers[i].resize(6);
+                    for (uint32_t j = 0; j < 6; j++)
+                    {
+                        VkImageView depthImageView = CreateCubeFaceImageView(GetImage(depthImage)->image, j, VK_FORMAT_D32_SFLOAT, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                        depth2DImageViews.push_back(depthImageView);
+
+                        array<VkImageView, 1> attachments = { depthImageView };
+
+                        VkFramebufferCreateInfo framebufferInfo{};
+                        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+                        framebufferInfo.renderPass = GetRenderPass(RenderPassType::ShadowCubeMap);
+                        framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+                        framebufferInfo.pAttachments = attachments.data();
+                        framebufferInfo.width = width;
+                        framebufferInfo.height = height;
+                        framebufferInfo.layers = 1;
+
+                        if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &vulkanFBO->separatedCubeFrameBuffers[i][j]) != VK_SUCCESS)
+                            throw std::runtime_error("failed to create framebuffer!");
+                    }
+
+                    depthAttachmentBuffer->separatedCubeAttachmentBuffers[i] = CreateVulkanTexture(depthImage, depth2DImageViews, CreateSampler(1));
+                }
             }
 
             vulkanFBO->inUse = true;
@@ -1371,47 +1400,47 @@ namespace ZXEngine
 
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
-                VulkanImage posImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
+                uint32_t posImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
-                TransitionImageLayout(posImage.image,
+                TransitionImageLayout(GetImage(posImage)->image,
                     VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_COLOR_BIT,
                     VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
                     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
-                VkImageView posImageView = CreateImageView(posImage.image, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkImageView posImageView = CreateImageView(GetImage(posImage)->image, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
                 VkSampler posSampler = CreateSampler(1);
                 positionAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(posImage, posImageView, posSampler);
 
-                VulkanImage normalImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
+                uint32_t normalImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
-                TransitionImageLayout(normalImage.image,
+                TransitionImageLayout(GetImage(normalImage)->image,
                     VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_COLOR_BIT,
                     VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
                     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
-                VkImageView normalImageView = CreateImageView(normalImage.image, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkImageView normalImageView = CreateImageView(GetImage(normalImage)->image, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
                 VkSampler normalSampler = CreateSampler(1);
                 normalAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(normalImage, normalImageView, normalSampler);
 
-                VulkanImage colorImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
+                uint32_t colorImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
-                TransitionImageLayout(colorImage.image,
+                TransitionImageLayout(GetImage(colorImage)->image,
                     VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_COLOR_BIT,
                     VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
                     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
-                VkImageView colorImageView = CreateImageView(colorImage.image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkImageView colorImageView = CreateImageView(GetImage(colorImage)->image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
                 VkSampler colorSampler = CreateSampler(1);
                 colorAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(colorImage, colorImageView, colorSampler);
 
-                VulkanImage depthImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
+                uint32_t depthImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_D32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
-                TransitionImageLayout(depthImage.image,
+                TransitionImageLayout(GetImage(depthImage)->image,
                     VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_DEPTH_BIT,
                     VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
                     VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
-                VkImageView depthImageView = CreateImageView(depthImage.image, VK_FORMAT_D32_SFLOAT, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkImageView depthImageView = CreateImageView(GetImage(depthImage)->image, VK_FORMAT_D32_SFLOAT, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_VIEW_TYPE_2D);
                 VkSampler depthSampler = CreateSampler(1);
                 depthAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(depthImage, depthImageView, depthSampler);
 
@@ -1448,14 +1477,14 @@ namespace ZXEngine
 
             for (uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
             {
-                VulkanImage colorImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
+                uint32_t colorImage = CreateImage(width, height, 1, 1, VK_SAMPLE_COUNT_1_BIT, defaultImageFormat, VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
-                TransitionImageLayout(colorImage.image,
+                TransitionImageLayout(GetImage(colorImage)->image,
                     VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     VK_IMAGE_ASPECT_COLOR_BIT,
                     VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
                     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
-                VkImageView colorImageView = CreateImageView(colorImage.image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+                VkImageView colorImageView = CreateImageView(GetImage(colorImage)->image, defaultImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
                 VkSampler colorSampler = CreateSampler(1);
                 colorAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(colorImage, colorImageView, colorSampler);
 
@@ -1557,7 +1586,16 @@ namespace ZXEngine
             renderPassInfo.renderPass = GetRenderPass(RenderPassType::PresentOverspread);
         else
             renderPassInfo.renderPass = GetRenderPass(curFBO->renderPassType);
-        renderPassInfo.framebuffer = curFBO->frameBuffers[GetCurFrameBufferIndex()];
+
+        if (curFBO->bufferType == FrameBufferType::ShadowCubeMap && curFBOInternalIdx != UINT32_MAX)
+        {
+            renderPassInfo.framebuffer = curFBO->separatedCubeFrameBuffers[GetCurFrameBufferIndex()][curFBOInternalIdx];
+        }
+        else
+        {
+            renderPassInfo.framebuffer = curFBO->frameBuffers[GetCurFrameBufferIndex()];
+        }
+
         // 这个render area定义了shader将要加载和存储的位置
         renderPassInfo.renderArea.offset = { viewPortInfo.xOffset, viewPortInfo.yOffset };
         // 一般来说大小(extend)是和framebuffer的attachment一致的，如果小了会浪费，大了超出去的部分是一些未定义数值
@@ -2593,7 +2631,7 @@ namespace ZXEngine
         auto texture = GetTextureByIndex(textureID);
 
         // 转为光追输出格式
-        TransitionImageLayout(commandBuffer, texture->image.image, 
+        TransitionImageLayout(commandBuffer, GetImage(texture->image)->image, 
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_ASPECT_COLOR_BIT, 
             VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_SHADER_READ_BIT,
             VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR, VK_ACCESS_SHADER_WRITE_BIT);
@@ -2645,7 +2683,7 @@ namespace ZXEngine
             viewPortInfo.width, viewPortInfo.height, 1);
 
         // 转为Shader读取格式
-        TransitionImageLayout(commandBuffer, texture->image.image, 
+        TransitionImageLayout(commandBuffer, GetImage(texture->image)->image, 
             VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT, 
             VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR, VK_ACCESS_SHADER_WRITE_BIT,
             VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_ACCESS_SHADER_READ_BIT);
@@ -3572,6 +3610,7 @@ namespace ZXEngine
 
         auto newFBO = new VulkanFBO();
         newFBO->frameBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+        newFBO->separatedCubeFrameBuffers.resize(MAX_FRAMES_IN_FLIGHT);
         VulkanFBOArray.push_back(newFBO);
 
         return length;
@@ -3592,6 +3631,17 @@ namespace ZXEngine
 		}
         vulkanFBO->frameBuffers.clear();
         vulkanFBO->frameBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+
+        for (auto& iter : vulkanFBO->separatedCubeFrameBuffers)
+        {
+            for (auto iter2 : iter)
+            {
+                vkDestroyFramebuffer(device, iter2, VK_NULL_HANDLE);
+            }
+            iter.clear();
+        }
+        vulkanFBO->separatedCubeFrameBuffers.clear();
+        vulkanFBO->separatedCubeFrameBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 
         if (vulkanFBO->colorAttachmentIdx != UINT32_MAX)
         {
@@ -3666,7 +3716,8 @@ namespace ZXEngine
         }
 
         auto newAttachmentBuffer = new VulkanAttachmentBuffer();
-        newAttachmentBuffer->attachmentBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+        newAttachmentBuffer->attachmentBuffers.resize(MAX_FRAMES_IN_FLIGHT, UINT32_MAX);
+        newAttachmentBuffer->separatedCubeAttachmentBuffers.resize(MAX_FRAMES_IN_FLIGHT, UINT32_MAX);
         VulkanAttachmentBufferArray.push_back(newAttachmentBuffer);
 
         return length;
@@ -3680,10 +3731,23 @@ namespace ZXEngine
     void RenderAPIVulkan::DestroyAttachmentBufferByIndex(uint32_t idx)
     {
         auto colorAttachmentBuffer = VulkanAttachmentBufferArray[idx];
+
         for (auto iter : colorAttachmentBuffer->attachmentBuffers)
-            DestroyTextureByIndex(iter);
+        {
+            if (iter != UINT32_MAX)
+                DestroyTextureByIndex(iter);
+        }
         colorAttachmentBuffer->attachmentBuffers.clear();
-        colorAttachmentBuffer->attachmentBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+        colorAttachmentBuffer->attachmentBuffers.resize(MAX_FRAMES_IN_FLIGHT, UINT32_MAX);
+
+        for (auto iter : colorAttachmentBuffer->separatedCubeAttachmentBuffers)
+        {
+            if (iter != UINT32_MAX)
+                DestroyTextureByIndex(iter);
+        }
+        colorAttachmentBuffer->separatedCubeAttachmentBuffers.clear();
+        colorAttachmentBuffer->separatedCubeAttachmentBuffers.resize(MAX_FRAMES_IN_FLIGHT, UINT32_MAX);
+
         colorAttachmentBuffer->inUse = false;
     }
 
@@ -3756,13 +3820,27 @@ namespace ZXEngine
     void RenderAPIVulkan::DestroyTextureByIndex(uint32_t idx)
     {
         auto texture = VulkanTextureArray[idx];
-        DestroyImageView(texture->imageView);
+
+        if (texture->imageView != VK_NULL_HANDLE)
+        {
+            DestroyImageView(texture->imageView);
+            texture->imageView = VK_NULL_HANDLE;
+        }
+        for (auto iter : texture->imageViews)
+        {
+            if (iter != VK_NULL_HANDLE)
+                DestroyImageView(iter);
+        }
+        texture->imageViews.clear();
+
         DestroyImage(texture->image);
+
         if (texture->sampler != VK_NULL_HANDLE)
         {
             vkDestroySampler(device, texture->sampler, VK_NULL_HANDLE);
             texture->sampler = VK_NULL_HANDLE;
         }
+        
         texture->inUse = false;
 
 #ifdef ZX_EDITOR
@@ -4456,9 +4534,9 @@ namespace ZXEngine
         {
             swapChainImageViews[i] = CreateImageView(swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
 
-            VulkanImage colorImage = CreateImage(swapChainExtent.width, swapChainExtent.height, 1, 1, msaaSamplesCount, swapChainImageFormat, VK_IMAGE_TILING_OPTIMAL,
+            uint32_t colorImage = CreateImage(swapChainExtent.width, swapChainExtent.height, 1, 1, msaaSamplesCount, swapChainImageFormat, VK_IMAGE_TILING_OPTIMAL,
                 VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
-            VkImageView colorImageView = CreateImageView(colorImage.image, swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
+            VkImageView colorImageView = CreateImageView(GetImage(colorImage)->image, swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
             colorAttachmentBuffer->attachmentBuffers[i] = CreateVulkanTexture(colorImage, colorImageView, VK_NULL_HANDLE);
 
             array<VkImageView, 2> attachments = { colorImageView, swapChainImageViews[i] };
@@ -5132,8 +5210,31 @@ namespace ZXEngine
             throw std::runtime_error("failed to create synchronization objects for a frame!");
     }
 
-    VulkanImage RenderAPIVulkan::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, uint32_t layers, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage)
+    uint32_t RenderAPIVulkan::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, uint32_t layers, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage)
     {
+        uint32_t idx = 0;
+        VulkanImage* newImage = nullptr;
+        uint32_t length = static_cast<uint32_t>(VulkanImageArray.size());
+        
+        bool isReuse = false;
+        for (uint32_t i = 0; i < length; i++)
+        {
+            if (!VulkanImageArray[i]->inUse)
+            {
+                idx = i;
+                isReuse = true;
+                newImage = VulkanImageArray[i];
+                break;
+            }
+        }
+
+        if (!isReuse)
+        {
+            idx = length;
+            newImage = new VulkanImage();
+            VulkanImageArray.push_back(newImage);
+        }
+
         VkImageCreateInfo imageInfo{};
         imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -5164,14 +5265,39 @@ namespace ZXEngine
         VmaAllocationCreateInfo allocationInfo = {};
         allocationInfo.usage = memoryUsage;
 
-        VulkanImage newImage;
-        vmaCreateImage(vmaAllocator, &imageInfo, &allocationInfo, &newImage.image, &newImage.allocation, nullptr);
-        return newImage;
+        vmaCreateImage(vmaAllocator, &imageInfo, &allocationInfo, &newImage->image, &newImage->allocation, nullptr);
+        newImage->inUse = true;
+        // 这里引用计数归0，在CreateVulkanTexture里会加1
+        // 目前所有通过这个CreateImage接口创建的image都是在CreateVulkanTexture里使用，然后在DestroyTextureByIndex里销毁的
+        // 如果以后有出现通过CreateImage创建的image通过别的形式使用，引用计数方式可能需要重新设计
+        newImage->referenceCount = 0;
+
+        return idx;
     }
 
-    void RenderAPIVulkan::DestroyImage(VulkanImage image)
+    VulkanImage* RenderAPIVulkan::GetImage(uint32_t idx)
     {
-        vmaDestroyImage(vmaAllocator, image.image, image.allocation);
+        return VulkanImageArray[idx];
+    }
+
+    void RenderAPIVulkan::DestroyImage(uint32_t idx)
+    {
+        auto image = VulkanImageArray[idx];
+
+        assert(image->referenceCount > 0);
+        image->referenceCount--;
+        
+        if (image->referenceCount > 0)
+            return;
+        
+        if (image->image != VK_NULL_HANDLE)
+        {
+            vmaDestroyImage(vmaAllocator, image->image, image->allocation);
+            image->image = VK_NULL_HANDLE;
+            image->allocation = VK_NULL_HANDLE;
+        }
+
+        image->inUse = false;
     }
 
     void RenderAPIVulkan::GenerateMipMaps(VkImage image, VkFormat format, int32_t width, int32_t height, uint32_t mipLevels)
@@ -5332,6 +5458,31 @@ namespace ZXEngine
         return imageView;
     }
 
+    VkImageView RenderAPIVulkan::CreateCubeFaceImageView(VkImage image, uint32_t face, VkFormat format, VkImageAspectFlags aspectFlags, VkImageViewType viewType)
+    {
+        VkImageViewCreateInfo createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        createInfo.image = image;
+        createInfo.viewType = viewType;
+        createInfo.format = format;
+
+        createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+
+        createInfo.subresourceRange.aspectMask = aspectFlags;
+        createInfo.subresourceRange.baseMipLevel = 0;
+        createInfo.subresourceRange.levelCount = 1;
+        createInfo.subresourceRange.baseArrayLayer = face;
+        createInfo.subresourceRange.layerCount = 1;
+
+        VkImageView imageView;
+        if (vkCreateImageView(device, &createInfo, nullptr, &imageView) != VK_SUCCESS)
+            throw std::runtime_error("failed to create image views!");
+        return imageView;
+    }
+
     void RenderAPIVulkan::DestroyImageView(VkImageView imageView)
     {
         vkDestroyImageView(device, imageView, nullptr);
@@ -5368,13 +5519,32 @@ namespace ZXEngine
         return sampler;
     }
 
-    uint32_t RenderAPIVulkan::CreateVulkanTexture(VulkanImage image, VkImageView imageView, VkSampler sampler)
+    uint32_t RenderAPIVulkan::CreateVulkanTexture(uint32_t image, VkImageView imageView, VkSampler sampler)
     {
         uint32_t textureID = GetNextTextureIndex();
         auto texture = GetTextureByIndex(textureID);
+
+        assert(VulkanImageArray[image]->inUse);
+        VulkanImageArray[image]->referenceCount++;
+
         texture->inUse = true;
         texture->image = image;
         texture->imageView = imageView;
+        texture->sampler = sampler;
+        return textureID;
+    }
+
+    uint32_t RenderAPIVulkan::CreateVulkanTexture(uint32_t image, const vector<VkImageView>& imageViews, VkSampler sampler)
+    {
+        uint32_t textureID = GetNextTextureIndex();
+        auto texture = GetTextureByIndex(textureID);
+
+        assert(VulkanImageArray[image]->inUse);
+        VulkanImageArray[image]->referenceCount++;
+
+        texture->inUse = true;
+        texture->image = image;
+        texture->imageViews = imageViews;
         texture->sampler = sampler;
         return textureID;
     }

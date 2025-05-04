@@ -101,6 +101,7 @@ namespace ZXEngine
         ZXD3D12DescriptorHandle handleSRV = {};
         ZXD3D12DescriptorHandle handleRTV = {};
         ZXD3D12DescriptorHandle handleDSV = {};
+        vector<ZXD3D12DescriptorHandle> handleCubeDSV = {}; // 不用几何着色器，单独渲染到每个面的情况下使用的
         ZX_D3D12_TEXTURE_USAGE_FLAGS usageFlags = ZX_D3D12_TEXTURE_USAGE_NONE_BIT;
         bool inUse = false;
     };

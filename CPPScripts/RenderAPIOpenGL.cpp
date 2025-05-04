@@ -63,7 +63,7 @@ namespace ZXEngine
 
 		targetState = new RenderStateSetting();
 		curRealState = new RenderStateSetting();
-		FBOClearInfoMap[0] = {};
+		FBOInfoMap[0] = {};
 
 		CheckError();
 	}
@@ -139,7 +139,7 @@ namespace ZXEngine
 		// OpenGL的所有行为都是单线程的，同步的，所以不需要实现这个接口
 	}
 
-	void RenderAPIOpenGL::SwitchFrameBuffer(uint32_t id)
+	void RenderAPIOpenGL::SwitchFrameBuffer(uint32_t id, uint32_t index)
 	{
 		if (id == UINT32_MAX)
 		{
@@ -150,6 +150,11 @@ namespace ZXEngine
 		{
 			curFBOID = id;
 			glBindFramebuffer(GL_FRAMEBUFFER, id);
+			if (index != UINT32_MAX)
+			{
+				// 输出到CubeMap的某个面(目前暂时只有ShadowCubeMap，而且正常情况下也是用几何着色器直接输出6个面，走不到这里来)
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, FBOInfoMap[id].depthBuffer, 0);
+			}
 		}
 		CheckError();
 	}
@@ -163,16 +168,16 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::ClearFrameBuffer(FrameBufferClearFlags clearFlags)
 	{
-		auto& clearInfo = FBOClearInfoMap[curFBOID];
+		auto& fboInfo = FBOInfoMap[curFBOID];
 
 		if (clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
-			ClearColorBuffer(clearInfo.color);
+			ClearColorBuffer(fboInfo.clearInfo.color);
 
 		if (clearFlags & ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT)
-			ClearDepthBuffer(clearInfo.depth);
+			ClearDepthBuffer(fboInfo.clearInfo.depth);
 
 		if (clearFlags & ZX_CLEAR_FRAME_BUFFER_STENCIL_BIT)
-			ClearStencilBuffer(clearInfo.stencil);
+			ClearStencilBuffer(fboInfo.clearInfo.stencil);
 	}
 
 	void RenderAPIOpenGL::ClearColorBuffer(const Vector4& color)
@@ -876,7 +881,14 @@ namespace ZXEngine
 			Debug::LogError("Invalide frame buffer type.");
 		}
 
-		FBOClearInfoMap[FBO->ID] = clearInfo;
+		FBOInfoMap[FBO->ID] = {};
+		OpenGLFBO& fboInfo = FBOInfoMap[FBO->ID];
+		fboInfo.clearInfo      = clearInfo;
+		fboInfo.colorBuffer    = FBO->ColorBuffer;
+		fboInfo.depthBuffer    = FBO->DepthBuffer;
+		fboInfo.positionBuffer = FBO->PositionBuffer;
+		fboInfo.normalBuffer   = FBO->NormalBuffer;
+
 		CheckError();
 
 		return FBO;
@@ -884,7 +896,7 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::DeleteFrameBufferObject(FrameBufferObject* FBO)
 	{
-		FBOClearInfoMap.erase(FBO->ID);
+		FBOInfoMap.erase(FBO->ID);
 
 		if (FBO->ColorBuffer != UINT32_MAX)
 			glDeleteTextures(1, &FBO->ColorBuffer);

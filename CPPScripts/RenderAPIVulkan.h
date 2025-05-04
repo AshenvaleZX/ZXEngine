@@ -29,7 +29,7 @@ namespace ZXEngine
         virtual void WaitForRenderFinish();
 
         // Frame Buffer
-        virtual void SwitchFrameBuffer(uint32_t id);
+        virtual void SwitchFrameBuffer(uint32_t id, uint32_t index = UINT32_MAX);
         virtual void ClearFrameBuffer(FrameBufferClearFlags clearFlags);
         virtual void BlitFrameBuffer(uint32_t cmd, const string& src, const string& dst, FrameBufferPieceFlags flags);
         virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0);
@@ -346,16 +346,22 @@ namespace ZXEngine
         void CreateVkFence(VkFence& fence);
         void CreateVkSemaphore(VkSemaphore& semaphore);
 
-        VulkanImage CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, uint32_t layers, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage);
-        void DestroyImage(VulkanImage image);
+        vector<VulkanImage*> VulkanImageArray;
+        uint32_t CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, uint32_t layers, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage);
+        VulkanImage* GetImage(uint32_t idx);
+        void DestroyImage(uint32_t idx);
+
         void GenerateMipMaps(VkImage image, VkFormat format, int32_t width, int32_t height, uint32_t mipLevels);
 
         VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageViewType viewType);
+        // 为CubeMap的其中一个面创建独立的ImageView
+        VkImageView CreateCubeFaceImageView(VkImage image, uint32_t face, VkFormat format, VkImageAspectFlags aspectFlags, VkImageViewType viewType);
         void DestroyImageView(VkImageView imageView);
 
         VkSampler CreateSampler(uint32_t mipLevels);
 
-        uint32_t CreateVulkanTexture(VulkanImage image, VkImageView imageView, VkSampler sampler);
+        uint32_t CreateVulkanTexture(uint32_t image, VkImageView imageView, VkSampler sampler);
+        uint32_t CreateVulkanTexture(uint32_t image, const vector<VkImageView>& imageViews, VkSampler sampler);
 
         void CreateAllRenderPass();
         VkRenderPass CreateRenderPass(RenderPassType type);
@@ -466,6 +472,7 @@ namespace ZXEngine
         uint32_t newWindowHeight = 0;
 
         uint32_t curFBOIdx = 0;
+		uint32_t curFBOInternalIdx = 0;
         uint32_t curPipeLineIdx = 0;
         uint32_t curMaterialDataIdx = 0;
 

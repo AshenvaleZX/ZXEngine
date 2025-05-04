@@ -35,7 +35,7 @@ namespace ZXEngine
 		virtual void WaitForRenderFinish() = 0;
 
 		// Frame Buffer
-		virtual void SwitchFrameBuffer(uint32_t id) = 0;
+		virtual void SwitchFrameBuffer(uint32_t id, uint32_t index = UINT32_MAX) = 0;
 		virtual void ClearFrameBuffer(FrameBufferClearFlags clearFlags) = 0;
 		virtual void BlitFrameBuffer(uint32_t cmd, const string& src, const string& dst, FrameBufferPieceFlags flags) = 0;
 		virtual FrameBufferObject* CreateFrameBufferObject(FrameBufferType type, unsigned int width = 0, unsigned int height = 0) = 0;

@@ -340,8 +340,10 @@ namespace ZXEngine
 		WaitForFence(mEndRenderFence);
 	}
 
-	void RenderAPID3D12::SwitchFrameBuffer(uint32_t id)
+	void RenderAPID3D12::SwitchFrameBuffer(uint32_t id, uint32_t index)
 	{
+		mCurFBOInternalIdx = index;
+
 		if (id == UINT32_MAX)
 			mCurFBOIdx = mPresentFBOIdx;
 		else
@@ -739,14 +741,35 @@ namespace ZXEngine
 				depthSrvDesc.Texture2D.MostDetailedMip = 0;
 				depthSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
-				D3D12_DEPTH_STENCIL_VIEW_DESC depthDsvDesc = {};
-				depthDsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
-				depthDsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DARRAY;
-				depthDsvDesc.Texture2DArray.MipSlice = 0;
-				depthDsvDesc.Texture2DArray.ArraySize = 6;
-				depthDsvDesc.Texture2DArray.FirstArraySlice = 0;
+				if (ProjectSetting::isSupportGeometryShader)
+				{
+					D3D12_DEPTH_STENCIL_VIEW_DESC depthDsvDesc = {};
+					depthDsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+					depthDsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DARRAY;
+					depthDsvDesc.Texture2DArray.MipSlice = 0;
+					depthDsvDesc.Texture2DArray.ArraySize = 6;
+					depthDsvDesc.Texture2DArray.FirstArraySlice = 0;
 
-				depthBuffer->renderBuffers[i] = CreateZXD3D12Texture(depthBufferResource, depthSrvDesc, depthDsvDesc);
+					depthBuffer->renderBuffers[i] = CreateZXD3D12Texture(depthBufferResource, depthSrvDesc, depthDsvDesc);
+				}
+				else
+				{
+					vector<D3D12_DEPTH_STENCIL_VIEW_DESC> depthDsvDescs;
+
+					for (UINT i = 0; i < 6; i++)
+					{
+						D3D12_DEPTH_STENCIL_VIEW_DESC depthDsvDesc = {};
+						depthDsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+						depthDsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DARRAY;
+						depthDsvDesc.Texture2DArray.MipSlice = 0;
+						depthDsvDesc.Texture2DArray.ArraySize = 1;
+						depthDsvDesc.Texture2DArray.FirstArraySlice = i;
+
+						depthDsvDescs.push_back(depthDsvDesc);
+					}
+
+					depthBuffer->renderBuffers[i] = CreateZXD3D12Texture(depthBufferResource, depthSrvDesc, depthDsvDescs);
+				}
 			}
 
 			D3D12FBO->inUse = true;
@@ -1910,7 +1933,12 @@ namespace ZXEngine
 				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 			drawCommandList->ResourceBarrier(1, &depthBufferTransition);
 
-			auto dsv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(depthBuffer->handleDSV);
+			D3D12_CPU_DESCRIPTOR_HANDLE dsv;
+			if (mCurFBOInternalIdx == UINT32_MAX)
+				dsv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(depthBuffer->handleDSV);
+			else
+				dsv = ZXD3D12DescriptorManager::GetInstance()->GetCPUDescriptorHandle(depthBuffer->handleCubeDSV[mCurFBOInternalIdx]);
+
 			drawCommandList->OMSetRenderTargets(0, nullptr, false, &dsv);
 
 			if (drawCommand->clearFlags & ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT)
@@ -3901,8 +3929,19 @@ namespace ZXEngine
 		}
 		if (texture->usageFlags & ZX_D3D12_TEXTURE_USAGE_DSV_BIT)
 		{
-			ZXD3D12DescriptorManager::GetInstance()->ReleaseDescriptor(texture->handleDSV);
-			texture->handleDSV = {};
+			if (texture->handleCubeDSV.size() == 0)
+			{
+				ZXD3D12DescriptorManager::GetInstance()->ReleaseDescriptor(texture->handleDSV);
+				texture->handleDSV = {};
+			}
+			else
+			{
+				for (auto& handle : texture->handleCubeDSV)
+				{
+					ZXD3D12DescriptorManager::GetInstance()->ReleaseDescriptor(handle);
+				}
+				texture->handleCubeDSV.clear();
+			}
 		}
 		texture->usageFlags = ZX_D3D12_TEXTURE_USAGE_NONE_BIT;
 
@@ -4284,6 +4323,22 @@ namespace ZXEngine
 		texture->usageFlags = ZX_D3D12_TEXTURE_USAGE_SRV_BIT | ZX_D3D12_TEXTURE_USAGE_DSV_BIT;
 		texture->handleSRV = ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(texture->texture, srvDesc);
 		texture->handleDSV = ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(texture->texture, dsvDesc);
+
+		return textureID;
+	}
+
+	uint32_t RenderAPID3D12::CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const vector<D3D12_DEPTH_STENCIL_VIEW_DESC>& dsvDescs)
+	{
+		uint32_t textureID = GetNextTextureIndex();
+		auto texture = GetTextureByIndex(textureID);
+
+		texture->inUse = true;
+		texture->texture = textureResource;
+		texture->usageFlags = ZX_D3D12_TEXTURE_USAGE_SRV_BIT | ZX_D3D12_TEXTURE_USAGE_DSV_BIT;
+		texture->handleSRV = ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(texture->texture, srvDesc);
+
+		for (auto& desc : dsvDescs)
+			texture->handleCubeDSV.push_back(ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(texture->texture, desc));
 
 		return textureID;
 	}

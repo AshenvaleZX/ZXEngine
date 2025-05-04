@@ -25,6 +25,8 @@ namespace ZXEngine
             delete mShadowCastMaterial;
         if (mGBufferMaterial)
 			delete mGBufferMaterial;
+        for (auto material : mNonGSCubeShadowCastMaterials)
+            delete material;
     }
 
     ComponentType MeshRenderer::GetInsType()
@@ -46,14 +48,17 @@ namespace ZXEngine
         }
     }
 
-    void MeshRenderer::DrawShadow()
+    void MeshRenderer::DrawShadow(uint32_t face)
     {
         for (auto& mesh : mMeshes)
         {
 #ifndef ZX_COMPUTE_ANIMATION
             if (mAnimator)
             {
-                mShadowCastMaterial->SetMatrix("_BoneMatrices", mesh->mBonesFinalTransform.data(), static_cast<uint32_t>(mesh->mBonesFinalTransform.size()));
+                if (face == UINT32_MAX)
+                    mShadowCastMaterial->SetMatrix("_BoneMatrices", mesh->mBonesFinalTransform.data(), static_cast<uint32_t>(mesh->mBonesFinalTransform.size()));
+                else
+                    mNonGSCubeShadowCastMaterials[face]->SetMatrix("_BoneMatrices", mesh->mBonesFinalTransform.data(), static_cast<uint32_t>(mesh->mBonesFinalTransform.size()));
             }
 #endif
             RenderAPI::GetInstance()->Draw(mesh->VAO);

@@ -17,6 +17,15 @@ namespace ZXEngine
 		bool inUse = false;
 	};
 
+	struct OpenGLFBO
+	{
+		uint32_t colorBuffer = UINT32_MAX;
+		uint32_t depthBuffer = UINT32_MAX;
+		uint32_t positionBuffer = UINT32_MAX;
+		uint32_t normalBuffer = UINT32_MAX;
+		ClearInfo clearInfo = {};
+	};
+
 	struct OpenGLMaterialData
 	{
 		unordered_map<string, bool> boolList;
