@@ -3901,8 +3901,19 @@ namespace ZXEngine
 		}
 		if (texture->usageFlags & ZX_D3D12_TEXTURE_USAGE_DSV_BIT)
 		{
-			ZXD3D12DescriptorManager::GetInstance()->ReleaseDescriptor(texture->handleDSV);
-			texture->handleDSV = {};
+			if (texture->handleCubeDSV.size() == 0)
+			{
+				ZXD3D12DescriptorManager::GetInstance()->ReleaseDescriptor(texture->handleDSV);
+				texture->handleDSV = {};
+			}
+			else
+			{
+				for (auto& handle : texture->handleCubeDSV)
+				{
+					ZXD3D12DescriptorManager::GetInstance()->ReleaseDescriptor(handle);
+				}
+				texture->handleCubeDSV.clear();
+			}
 		}
 		texture->usageFlags = ZX_D3D12_TEXTURE_USAGE_NONE_BIT;
 
@@ -4284,6 +4295,22 @@ namespace ZXEngine
 		texture->usageFlags = ZX_D3D12_TEXTURE_USAGE_SRV_BIT | ZX_D3D12_TEXTURE_USAGE_DSV_BIT;
 		texture->handleSRV = ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(texture->texture, srvDesc);
 		texture->handleDSV = ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(texture->texture, dsvDesc);
+
+		return textureID;
+	}
+
+	uint32_t RenderAPID3D12::CreateZXD3D12Texture(ComPtr<ID3D12Resource>& textureResource, const D3D12_SHADER_RESOURCE_VIEW_DESC& srvDesc, const vector<D3D12_DEPTH_STENCIL_VIEW_DESC>& dsvDescs)
+	{
+		uint32_t textureID = GetNextTextureIndex();
+		auto texture = GetTextureByIndex(textureID);
+
+		texture->inUse = true;
+		texture->texture = textureResource;
+		texture->usageFlags = ZX_D3D12_TEXTURE_USAGE_SRV_BIT | ZX_D3D12_TEXTURE_USAGE_DSV_BIT;
+		texture->handleSRV = ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(texture->texture, srvDesc);
+
+		for (auto& desc : dsvDescs)
+			texture->handleCubeDSV.push_back(ZXD3D12DescriptorManager::GetInstance()->CreateDescriptor(texture->texture, desc));
 
 		return textureID;
 	}
