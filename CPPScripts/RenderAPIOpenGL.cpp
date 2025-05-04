@@ -63,7 +63,7 @@ namespace ZXEngine
 
 		targetState = new RenderStateSetting();
 		curRealState = new RenderStateSetting();
-		FBOClearInfoMap[0] = {};
+		FBOInfoMap[0] = {};
 
 		CheckError();
 	}
@@ -163,16 +163,16 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::ClearFrameBuffer(FrameBufferClearFlags clearFlags)
 	{
-		auto& clearInfo = FBOClearInfoMap[curFBOID];
+		auto& fboInfo = FBOInfoMap[curFBOID];
 
 		if (clearFlags & ZX_CLEAR_FRAME_BUFFER_COLOR_BIT)
-			ClearColorBuffer(clearInfo.color);
+			ClearColorBuffer(fboInfo.clearInfo.color);
 
 		if (clearFlags & ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT)
-			ClearDepthBuffer(clearInfo.depth);
+			ClearDepthBuffer(fboInfo.clearInfo.depth);
 
 		if (clearFlags & ZX_CLEAR_FRAME_BUFFER_STENCIL_BIT)
-			ClearStencilBuffer(clearInfo.stencil);
+			ClearStencilBuffer(fboInfo.clearInfo.stencil);
 	}
 
 	void RenderAPIOpenGL::ClearColorBuffer(const Vector4& color)
@@ -876,7 +876,14 @@ namespace ZXEngine
 			Debug::LogError("Invalide frame buffer type.");
 		}
 
-		FBOClearInfoMap[FBO->ID] = clearInfo;
+		FBOInfoMap[FBO->ID] = {};
+		OpenGLFBO& fboInfo = FBOInfoMap[FBO->ID];
+		fboInfo.clearInfo      = clearInfo;
+		fboInfo.colorBuffer    = FBO->ColorBuffer;
+		fboInfo.depthBuffer    = FBO->DepthBuffer;
+		fboInfo.positionBuffer = FBO->PositionBuffer;
+		fboInfo.normalBuffer   = FBO->NormalBuffer;
+
 		CheckError();
 
 		return FBO;
@@ -884,7 +891,7 @@ namespace ZXEngine
 
 	void RenderAPIOpenGL::DeleteFrameBufferObject(FrameBufferObject* FBO)
 	{
-		FBOClearInfoMap.erase(FBO->ID);
+		FBOInfoMap.erase(FBO->ID);
 
 		if (FBO->ColorBuffer != UINT32_MAX)
 			glDeleteTextures(1, &FBO->ColorBuffer);

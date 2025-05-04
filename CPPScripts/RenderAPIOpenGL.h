@@ -167,7 +167,7 @@ namespace ZXEngine
 		vector<OpenGLVAO*> OpenGLVAOArray;
 		vector<OpenGLMaterialData*> OpenGLMaterialDataArray;
 		unordered_map<uint32_t, OpenGLMaterialData*> materialDataInShaders;
-		unordered_map<uint32_t, ClearInfo> FBOClearInfoMap;
+		unordered_map<uint32_t, OpenGLFBO> FBOInfoMap;
 
 		uint32_t GetNextVAOIndex();
 		OpenGLVAO* GetVAOByIndex(uint32_t idx);
