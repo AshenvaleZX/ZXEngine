@@ -194,11 +194,11 @@ namespace ZXEngine
 		auto renderAPI = RenderAPI::GetInstance();
 		renderAPI->SetViewPort(GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
 		renderAPI->SetRenderState(renderState);
-		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
 		for (uint32_t i = 0; i < 6; i++)
 		{
 			FBOManager::GetInstance()->SwitchFBO("ShadowCubeMap", i);
+			renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
 			// 渲染投射阴影的物体
 			auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Opaque);
