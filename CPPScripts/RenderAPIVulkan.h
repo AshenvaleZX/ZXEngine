@@ -360,7 +360,7 @@ namespace ZXEngine
 
         VkSampler CreateSampler(uint32_t mipLevels);
 
-        uint32_t CreateVulkanTexture(VulkanImage image, VkImageView imageView, VkSampler sampler);
+        uint32_t CreateVulkanTexture(uint32_t image, VkImageView imageView, VkSampler sampler);
 
         void CreateAllRenderPass();
         VkRenderPass CreateRenderPass(RenderPassType type);
