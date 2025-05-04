@@ -32,7 +32,7 @@ namespace ZXEngine
 
 		void RenderShadowMap(Light* light);
 		void RenderShadowCubeMap(Light* light);
-		void RenderShadowCubeMapWithGS(Light* light);
-		void RenderShadowCubeMapWithoutGS(Light* light);
+		void RenderShadowCubeMapWithGS(const Vector3& lightPos);
+		void RenderShadowCubeMapWithoutGS(const Vector3& lightPos);
 	};
 }

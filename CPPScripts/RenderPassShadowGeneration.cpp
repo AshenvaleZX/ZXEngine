@@ -116,24 +116,6 @@ namespace ZXEngine
 
 	void RenderPassShadowGeneration::RenderShadowCubeMap(Light* light)
 	{
-		if (ProjectSetting::isSupportGeometryShader)
-			RenderShadowCubeMapWithGS(light);
-		else
-			RenderShadowCubeMapWithoutGS(light);
-	}
-
-	void RenderPassShadowGeneration::RenderShadowCubeMapWithGS(Light* light)
-	{
-		auto renderAPI = RenderAPI::GetInstance();
-		// 切换到shadow FBO
-		FBOManager::GetInstance()->SwitchFBO("ShadowCubeMap");
-		// ViewPort改成渲染CubeMap的正方形
-		renderAPI->SetViewPort(GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
-		// 切换到阴影渲染设置
-		renderAPI->SetRenderState(renderState);
-		// 清理上一帧数据
-		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
-
 		// 基于左手坐标系构建6个方向上的VP矩阵
 		Vector3 lightPos = light->GetTransform()->GetPosition();
 #if defined(ZX_API_OPENGL) || defined(ZX_API_VULKAN)
@@ -151,6 +133,27 @@ namespace ZXEngine
 		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3( 0.0f,  0.0f,  1.0f), Vector3(0.0f,  1.0f,  0.0f)));
 		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3( 0.0f,  0.0f, -1.0f), Vector3(0.0f,  1.0f,  0.0f)));
 #endif
+
+		if (ProjectSetting::isSupportGeometryShader)
+			RenderShadowCubeMapWithGS(lightPos);
+		else
+			RenderShadowCubeMapWithoutGS(lightPos);
+
+		// 用完立刻清除，下一帧还会生成
+		shadowTransforms.clear();
+	}
+
+	void RenderPassShadowGeneration::RenderShadowCubeMapWithGS(const Vector3& lightPos)
+	{
+		auto renderAPI = RenderAPI::GetInstance();
+		// 切换到shadow FBO
+		FBOManager::GetInstance()->SwitchFBO("ShadowCubeMap");
+		// ViewPort改成渲染CubeMap的正方形
+		renderAPI->SetViewPort(GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
+		// 切换到阴影渲染设置
+		renderAPI->SetRenderState(renderState);
+		// 清理上一帧数据
+		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
 
 		// 渲染投射阴影的物体
 		auto renderQueue = RenderQueueManager::GetInstance()->GetRenderQueue((int)RenderQueueType::Opaque);
@@ -183,36 +186,15 @@ namespace ZXEngine
 			renderer->DrawShadow();
 		}
 
-		// 用完立刻清除，下一帧还会生成
-		shadowTransforms.clear();
-
 		renderAPI->GenerateDrawCommand(drawCommandID);
 	}
 
-	void RenderPassShadowGeneration::RenderShadowCubeMapWithoutGS(Light* light)
+	void RenderPassShadowGeneration::RenderShadowCubeMapWithoutGS(const Vector3& lightPos)
 	{
 		auto renderAPI = RenderAPI::GetInstance();
 		renderAPI->SetViewPort(GlobalData::depthCubeMapWidth, GlobalData::depthCubeMapWidth);
 		renderAPI->SetRenderState(renderState);
 		renderAPI->ClearFrameBuffer(ZX_CLEAR_FRAME_BUFFER_DEPTH_BIT);
-
-		// 基于左手坐标系构建6个方向上的VP矩阵
-		Vector3 lightPos = light->GetTransform()->GetPosition();
-#if defined(ZX_API_OPENGL) || defined(ZX_API_VULKAN)
-		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3(-1.0f,  0.0f,  0.0f), Vector3(0.0f, -1.0f,  0.0f)));
-		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3( 1.0f,  0.0f,  0.0f), Vector3(0.0f, -1.0f,  0.0f)));
-		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3( 0.0f, -1.0f,  0.0f), Vector3(0.0f,  0.0f,  1.0f)));
-		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3( 0.0f,  1.0f,  0.0f), Vector3(0.0f,  0.0f, -1.0f)));
-		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3( 0.0f,  0.0f, -1.0f), Vector3(0.0f, -1.0f,  0.0f)));
-		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3( 0.0f,  0.0f,  1.0f), Vector3(0.0f, -1.0f,  0.0f)));
-#else
-		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3( 1.0f,  0.0f,  0.0f), Vector3(0.0f,  1.0f,  0.0f)));
-		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3(-1.0f,  0.0f,  0.0f), Vector3(0.0f,  1.0f,  0.0f)));
-		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3( 0.0f,  1.0f,  0.0f), Vector3(0.0f,  0.0f, -1.0f)));
-		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3( 0.0f, -1.0f,  0.0f), Vector3(0.0f,  0.0f,  1.0f)));
-		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3( 0.0f,  0.0f,  1.0f), Vector3(0.0f,  1.0f,  0.0f)));
-		shadowTransforms.push_back(shadowProj * Math::GetLookToMatrix(lightPos, Vector3( 0.0f,  0.0f, -1.0f), Vector3(0.0f,  1.0f,  0.0f)));
-#endif
 
 		for (uint32_t i = 0; i < 6; i++)
 		{
@@ -254,8 +236,5 @@ namespace ZXEngine
 
 			renderAPI->GenerateDrawCommand(drawCommandIDs[i]);
 		}
-
-		// 用完立刻清除，下一帧还会生成
-		shadowTransforms.clear();
 	}
 }
