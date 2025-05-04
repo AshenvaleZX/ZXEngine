@@ -124,6 +124,8 @@ namespace ZXEngine
     {
         VkImage image = VK_NULL_HANDLE;
         VmaAllocation allocation = VK_NULL_HANDLE;
+        uint32_t referenceCount = 0;
+        bool inUse = false;
     };
 
     struct VulkanTexture

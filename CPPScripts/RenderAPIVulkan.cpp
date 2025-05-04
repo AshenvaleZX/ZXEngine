@@ -5132,8 +5132,30 @@ namespace ZXEngine
             throw std::runtime_error("failed to create synchronization objects for a frame!");
     }
 
-    VulkanImage RenderAPIVulkan::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, uint32_t layers, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage)
+    uint32_t RenderAPIVulkan::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, uint32_t layers, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage)
     {
+        uint32_t idx = 0;
+        VulkanImage* newImage = nullptr;
+        uint32_t length = static_cast<uint32_t>(VulkanImageArray.size());
+        
+        bool isReuse = false;
+        for (uint32_t i = 0; i < length; i++)
+        {
+            if (!VulkanImageArray[i]->inUse)
+            {
+                idx = i;
+                isReuse = true;
+                newImage = VulkanImageArray[i];
+            }
+        }
+
+        if (!isReuse)
+        {
+            idx = length;
+            newImage = new VulkanImage();
+            VulkanImageArray.push_back(newImage);
+        }
+
         VkImageCreateInfo imageInfo{};
         imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -5164,14 +5186,36 @@ namespace ZXEngine
         VmaAllocationCreateInfo allocationInfo = {};
         allocationInfo.usage = memoryUsage;
 
-        VulkanImage newImage;
-        vmaCreateImage(vmaAllocator, &imageInfo, &allocationInfo, &newImage.image, &newImage.allocation, nullptr);
-        return newImage;
+        vmaCreateImage(vmaAllocator, &imageInfo, &allocationInfo, &newImage->image, &newImage->allocation, nullptr);
+        newImage->inUse = true;
+        newImage->referenceCount = 1;
+
+        return idx;
     }
 
-    void RenderAPIVulkan::DestroyImage(VulkanImage image)
+    VulkanImage* RenderAPIVulkan::GetImage(uint32_t idx)
     {
-        vmaDestroyImage(vmaAllocator, image.image, image.allocation);
+        return VulkanImageArray[idx];
+    }
+
+    void RenderAPIVulkan::DestroyImage(uint32_t idx)
+    {
+        auto image = VulkanImageArray[idx];
+
+        assert(image->referenceCount > 0);
+        image->referenceCount--;
+        
+        if (image->referenceCount > 0)
+            return;
+        
+        if (image->image != VK_NULL_HANDLE)
+        {
+            vmaDestroyImage(vmaAllocator, image->image, image->allocation);
+            image->image = VK_NULL_HANDLE;
+            image->allocation = VK_NULL_HANDLE;
+        }
+
+        image->inUse = false;
     }
 
     void RenderAPIVulkan::GenerateMipMaps(VkImage image, VkFormat format, int32_t width, int32_t height, uint32_t mipLevels)

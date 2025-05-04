@@ -346,8 +346,11 @@ namespace ZXEngine
         void CreateVkFence(VkFence& fence);
         void CreateVkSemaphore(VkSemaphore& semaphore);
 
-        VulkanImage CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, uint32_t layers, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage);
-        void DestroyImage(VulkanImage image);
+        vector<VulkanImage*> VulkanImageArray;
+        uint32_t CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, uint32_t layers, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VmaMemoryUsage memoryUsage);
+        VulkanImage* GetImage(uint32_t idx);
+        void DestroyImage(uint32_t idx);
+
         void GenerateMipMaps(VkImage image, VkFormat format, int32_t width, int32_t height, uint32_t mipLevels);
 
         VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageViewType viewType);
