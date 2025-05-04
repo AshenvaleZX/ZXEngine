@@ -351,6 +351,8 @@ namespace ZXEngine
         void GenerateMipMaps(VkImage image, VkFormat format, int32_t width, int32_t height, uint32_t mipLevels);
 
         VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageViewType viewType);
+        // 为CubeMap的其中一个面创建独立的ImageView
+        VkImageView CreateCubeFaceImageView(VkImage image, uint32_t face, VkFormat format, VkImageAspectFlags aspectFlags, VkImageViewType viewType);
         void DestroyImageView(VkImageView imageView);
 
         VkSampler CreateSampler(uint32_t mipLevels);
