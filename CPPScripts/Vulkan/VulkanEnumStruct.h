@@ -130,8 +130,10 @@ namespace ZXEngine
 
     struct VulkanTexture
     {
-        VulkanImage image;
+        uint32_t image;
         VkImageView imageView = VK_NULL_HANDLE;
+        // 在纹理有多层layer，并且需要分开使用的情况下需要这个数组
+        vector<VkImageView> imageViews;
         VkSampler sampler = VK_NULL_HANDLE;
         bool inUse = false;
     };

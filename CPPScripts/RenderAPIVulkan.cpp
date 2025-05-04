@@ -3756,13 +3756,27 @@ namespace ZXEngine
     void RenderAPIVulkan::DestroyTextureByIndex(uint32_t idx)
     {
         auto texture = VulkanTextureArray[idx];
-        DestroyImageView(texture->imageView);
+
+        if (texture->imageView != VK_NULL_HANDLE)
+        {
+            DestroyImageView(texture->imageView);
+            texture->imageView = VK_NULL_HANDLE;
+        }
+        for (auto iter : texture->imageViews)
+        {
+            if (iter != VK_NULL_HANDLE)
+                DestroyImageView(iter);
+        }
+        texture->imageViews.clear();
+
         DestroyImage(texture->image);
+
         if (texture->sampler != VK_NULL_HANDLE)
         {
             vkDestroySampler(device, texture->sampler, VK_NULL_HANDLE);
             texture->sampler = VK_NULL_HANDLE;
         }
+        
         texture->inUse = false;
 
 #ifdef ZX_EDITOR
@@ -5448,6 +5462,21 @@ namespace ZXEngine
         texture->inUse = true;
         texture->image = image;
         texture->imageView = imageView;
+        texture->sampler = sampler;
+        return textureID;
+    }
+
+    uint32_t RenderAPIVulkan::CreateVulkanTexture(uint32_t image, const vector<VkImageView>& imageViews, VkSampler sampler)
+    {
+        uint32_t textureID = GetNextTextureIndex();
+        auto texture = GetTextureByIndex(textureID);
+
+        assert(VulkanImageArray[image]->inUse);
+        VulkanImageArray[image]->referenceCount++;
+
+        texture->inUse = true;
+        texture->image = image;
+        texture->imageViews = imageViews;
         texture->sampler = sampler;
         return textureID;
     }
