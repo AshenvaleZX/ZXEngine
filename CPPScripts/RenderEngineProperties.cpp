@@ -101,14 +101,10 @@ namespace ZXEngine
 
 	void RenderEngineProperties::SetShadowCubeMap(uint32_t id, bool isBuffer)
 	{
-		// 支持Geometry Shader才会实际渲染ShadowCubeMap
-		// Vulkan，Metal和OpenGL支持非GS的ShadowCubeMap绘制
-#if defined(ZX_API_D3D12)
-		if (ProjectSetting::isSupportGeometryShader)
-#endif
-		{
-			shadowCubeMap = id;
-			isShadowCubeMapBuffer = isBuffer;
-		}
+		// 如果当前环境无法渲染ShadowCubeMap可以禁用此函数，或者判断一下条件直接return，这样会用一个空的ShadowCubeMap，相当于点光源阴影失效
+		// 以前由于只能通过几何着色器渲染ShadowCubeMap，而有些环境(比如苹果)可能不支持几何着色器，所以可能有无法渲染ShadowCubeMap的情况出现
+		// 但是现在无论是否支持几何着色器都可以渲染ShadowCubeMap了，所以应该不存在无法渲染ShadowCubeMap的情况了
+		shadowCubeMap = id;
+		isShadowCubeMapBuffer = isBuffer;
 	}
 }
