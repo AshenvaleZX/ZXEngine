@@ -12,25 +12,34 @@
 */
 
 #if defined(__ANDROID__)
-#define ZX_PLATFORM_ANDROID
+#   define ZX_PLATFORM_ANDROID
 #elif defined(__linux__)
-#define ZX_PLATFORM_LINUX
-#elif defined(__APPLE__)
-#define ZX_PLATFORM_MACOS
+#   define ZX_PLATFORM_LINUX
 #elif defined(_WIN32) || defined(_WIN64)
-#define ZX_PLATFORM_WINDOWS
+#   define ZX_PLATFORM_WINDOWS
+#elif defined(__APPLE__)
+#   include <TargetConditionals.h>
+#   if TARGET_OS_IPHONE
+#       define ZX_PLATFORM_IOS
+#   else
+#       define ZX_PLATFORM_MACOS
+#   endif
+#else
+#   error "Unsupported Platform"
 #endif
 
 #if defined(ZX_PLATFORM_WINDOWS) || defined(ZX_PLATFORM_MACOS) || defined(ZX_PLATFORM_LINUX)
-#define ZX_PLATFORM_DESKTOP
-#elif defined(ZX_PLATFORM_ANDROID)
-#define ZX_PLATFORM_MOBILE
+#   define ZX_PLATFORM_DESKTOP
+#elif defined(ZX_PLATFORM_ANDROID) || defined(ZX_PLATFORM_IOS)
+#   define ZX_PLATFORM_MOBILE
 #endif
 
 #if defined(ZX_PLATFORM_DESKTOP)
-#define ZX_API_DEFAULT 0
+#   define ZX_API_DEFAULT 0
 #elif defined(ZX_PLATFORM_ANDROID)
-#define ZX_API_DEFAULT 1
+#   define ZX_API_DEFAULT 1
+#elif defined(ZX_PLATFORM_IOS)
+#   define ZX_API_DEFAULT 3
 #endif
 
 /*
@@ -71,6 +80,8 @@
 #elif defined(ZX_PLATFORM_LINUX) && (defined(ZX_API_D3D12) || defined(ZX_API_METAL))
 #error "Unsupported Graphics API"
 #elif defined(ZX_PLATFORM_ANDROID) && (defined(ZX_API_OPENGL) || defined(ZX_API_D3D12) || defined(ZX_API_METAL))
+#error "Unsupported Graphics API"
+#elif defined(ZX_PLATFORM_IOS) && (defined(ZX_API_OPENGL) || defined(ZX_API_D3D12) || defined(ZX_API_VULKAN))
 #error "Unsupported Graphics API"
 #endif
 
