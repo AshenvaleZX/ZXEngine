@@ -48,4 +48,8 @@ void android_main(struct android_app* app)
 	}
 }
 
+#elif defined(ZX_PLATFORM_IOS)
+
+// The entry function for iOS is defined in the Entry.m file.
+
 #endif
