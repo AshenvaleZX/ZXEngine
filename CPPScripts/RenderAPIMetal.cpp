@@ -63,22 +63,29 @@ namespace ZXEngine
 		mCommandQueue = mDevice->newCommandQueue();
 		assert(mCommandQueue != nullptr && "Metal command queue is null");
 
-		auto windowManager = static_cast<WindowManagerGLFW*>(WindowManager::GetInstance());
-
-		GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(windowManager->GetWindow());
-		NS::Window* nsWindow = static_cast<NS::Window*>(glfwGetCocoaWindow(glfwWindow));
-
 		mMetalLayer = CA::MetalLayer::layer();
 		mMetalLayer->setDevice(mDevice);
 		mMetalLayer->setPixelFormat(mDefaultImageFormat);
+
+#if defined(ZX_PLATFORM_IOS)
+		mMetalLayer->setDrawableSize(CGSizeMake(
+			static_cast<float>(ProjectSetting::srcWidth),
+			static_cast<float>(ProjectSetting::srcHeight)
+		));
+#else
+		auto windowManager = static_cast<WindowManagerGLFW*>(WindowManager::GetInstance());
+
 		mMetalLayer->setDrawableSize(CGSizeMake(
 			static_cast<float>(ProjectSetting::srcWidth) * windowManager->GetWindowScaleX(),
 			static_cast<float>(ProjectSetting::srcHeight) * windowManager->GetWindowScaleY()
 		));
 
+		GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(windowManager->GetWindow());
+		NS::Window* nsWindow = static_cast<NS::Window*>(glfwGetCocoaWindow(glfwWindow));
 		NS::View* nsView = nsWindow->contentView();
 		nsView->setLayer(mMetalLayer);
 		nsView->setWantsLayer(true);
+#endif
 
 		mSemaphore = dispatch_semaphore_create(MT_MAX_FRAMES_IN_FLIGHT);
 
@@ -2353,12 +2360,19 @@ namespace ZXEngine
 		ProjectSetting::SetWindowSize();
 #endif
 
+#if defined(ZX_PLATFORM_IOS)
+		mMetalLayer->setDrawableSize(CGSizeMake(
+			static_cast<float>(ProjectSetting::srcWidth),
+			static_cast<float>(ProjectSetting::srcHeight)
+		));
+#else
 		auto windowManager = static_cast<WindowManagerGLFW*>(WindowManager::GetInstance());
 		// 这个调用类似于重新创建Present Buffer
 		mMetalLayer->setDrawableSize(CGSizeMake(
 			static_cast<float>(ProjectSetting::srcWidth) * windowManager->GetWindowScaleX(),
 			static_cast<float>(ProjectSetting::srcHeight) * windowManager->GetWindowScaleY()
 		));
+#endif
 		
 		// 重新创建所有大小随窗口变化的FBO
 		FBOManager::GetInstance()->RecreateAllFollowWindowFBO();
