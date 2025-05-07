@@ -3,6 +3,10 @@
 #include "Resources.h"
 #include "GlobalData.h"
 
+#ifdef ZX_PLATFORM_IOS
+#include "iOS/iOSUtil.h"
+#endif
+
 #ifdef ZX_EDITOR
 #include "Editor/EditorGUIManager.h"
 #endif
@@ -21,7 +25,7 @@ namespace ZXEngine
 	const string ProjectSetting::OpenGLVersion = "450";
 	const int ProjectSetting::OpenGLVersionMajor = 4;
 	const int ProjectSetting::OpenGLVersionMinor = 5;
-#elif defined(ZX_PLATFORM_ANDROID)
+#else
 	const string ProjectSetting::OpenGLVersion = "300 es";
 	const int ProjectSetting::OpenGLVersionMajor = 3;
 	const int ProjectSetting::OpenGLVersionMinor = 0;
@@ -80,7 +84,7 @@ namespace ZXEngine
 		json data;
 		if (!Resources::LoadJson(data, path + "/ProjectSetting.zxprjcfg"))
 			return false;
-#elif defined(ZX_PLATFORM_ANDROID)
+#elif defined(ZX_PLATFORM_MOBILE)
 		Resources::SetAssetsPath("Assets/");
 		mBuiltInAssetsPath = "BuiltInAssets/";
 
@@ -95,6 +99,10 @@ namespace ZXEngine
 #elif defined(ZX_PLATFORM_ANDROID)
 		GlobalData::srcWidth = 0;
 		GlobalData::srcHeight = 0;
+#elif defined(ZX_PLATFORM_IOS)
+		Vector2 screenSize = iOSUtil::GetScreenSize();
+		GlobalData::srcWidth = static_cast<uint32_t>(screenSize.x);
+		GlobalData::srcHeight = static_cast<uint32_t>(screenSize.y);
 #endif
 
 		defaultScene = Resources::JsonStrToString(data["DefaultScene"]);

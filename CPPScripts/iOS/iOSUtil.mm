@@ -16,4 +16,13 @@ namespace ZXEngine
             return "";
         }
     }
+
+    Vector2 iOSUtil::GetScreenSize()
+    {
+        @autoreleasepool
+        {
+            CGRect screenRect = [[UIScreen mainScreen] bounds];
+            return Vector2(static_cast<float>(screenRect.size.width), static_cast<float>(screenRect.size.height));
+        }
+    }
 }

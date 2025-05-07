@@ -7,5 +7,6 @@ namespace ZXEngine
 	{
 	public:
 		static string GetResourcePath(const string& path, const string& ext);
+        static Vector2 GetScreenSize();
 	};
 }
