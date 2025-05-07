@@ -67,17 +67,22 @@ namespace ZXEngine
 	{
 		while (!RenderEngine::GetInstance()->WindowShouldClose())
 		{
-			// 逻辑
-			Update();
+			Loop();
+		}
+	}
 
-			// 渲染
-			Render();
+	void Game::Loop()
+	{
+		// 逻辑
+		Update();
+
+		// 渲染
+		Render();
 
 #ifdef ZX_DEBUG
-			// 调试
-			Debug::Update();
+		// 调试
+		Debug::Update();
 #endif
-		}
 	}
 
 	void Game::Shutdown()
