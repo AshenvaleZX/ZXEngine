@@ -3,7 +3,11 @@
 #include "../PublicStruct.h"
 
 #include <Metal/Metal.hpp>
+#ifdef ZX_PLATFORM_MACOS
 #include <AppKit/AppKit.hpp>
+#else
+#include <QuartzCore/QuartzCore.hpp>
+#endif
 
 namespace ZXEngine
 {
