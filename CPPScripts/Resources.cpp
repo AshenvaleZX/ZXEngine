@@ -2,9 +2,11 @@
 #include "ModelUtil.h"
 #include "ProjectSetting.h"
 
-#ifdef ZX_PLATFORM_ANDROID
+#if defined(ZX_PLATFORM_ANDROID)
 #include "GlobalData.h"
 #include <android/asset_manager.h>
+#elif defined(ZX_PLATFORM_IOS)
+#include "iOS/iOSUtil.h"
 #endif
 
 namespace ZXEngine
@@ -110,6 +112,12 @@ namespace ZXEngine
 		return path.substr(s + 1, path.length() - s - 1);
 	}
 
+	string Resources::GetAssetWithOutExtension(const string& path)
+	{
+		size_t e = path.rfind(".");
+		return path.substr(0, e);
+	}
+
 	string Resources::GetAssetNameWithExtension(const string& path)
 	{
 		size_t s = path.rfind("/");
@@ -123,8 +131,18 @@ namespace ZXEngine
 
 	bool Resources::LoadJson(json& data, const string& path)
 	{
-#if defined(ZX_PLATFORM_DESKTOP)
-		std::ifstream f(path);
+#if defined(ZX_PLATFORM_DESKTOP) || defined(ZX_PLATFORM_IOS)
+#if defined(ZX_PLATFORM_IOS)
+		string loadPath = iOSUtil::GetResourcePath(GetAssetWithOutExtension(path), GetAssetExtension(path));
+		if (loadPath.empty())
+		{
+			Debug::LogError("Load asset failed: " + path);
+			return false;
+		}
+#else
+		string loadPath = path;
+#endif
+		std::ifstream f(loadPath);
 		if (!f.is_open())
 		{
 			Debug::LogError("Load asset failed: " + path);
@@ -179,13 +197,24 @@ namespace ZXEngine
 	{
 		string text = "";
 
-#if defined(ZX_PLATFORM_DESKTOP)
+#if defined(ZX_PLATFORM_DESKTOP) || defined(ZX_PLATFORM_IOS)
+#if defined(ZX_PLATFORM_IOS)
+		string loadPath = iOSUtil::GetResourcePath(GetAssetWithOutExtension(path), GetAssetExtension(path));
+		if (loadPath.empty())
+		{
+			if (logError)
+				Debug::LogError("Load asset failed: " + path);
+			return "";
+		}
+#else
+		string loadPath = path;
+#endif
 		ifstream file;
 		file.exceptions(ifstream::failbit | ifstream::badbit);
 
 		try
 		{
-			file.open(path);
+			file.open(loadPath);
 			stringstream stream;
 			stream << file.rdbuf();
 			file.close();
@@ -221,11 +250,24 @@ namespace ZXEngine
 
 	bool Resources::LoadBinaryFile(vector<unsigned char>& data, const string& path)
 	{
-#if defined(ZX_PLATFORM_DESKTOP)
-		// ate:在文件末尾开始读取，从文件末尾开始读取的优点是我们可以使用读取位置来确定文件的大小并分配缓冲区
-		ifstream file(path, std::ios::ate | std::ios::binary);
-		if (!file.is_open())
+#if defined(ZX_PLATFORM_DESKTOP) || defined(ZX_PLATFORM_IOS)
+#if defined(ZX_PLATFORM_IOS)
+		string loadPath = iOSUtil::GetResourcePath(GetAssetWithOutExtension(path), GetAssetExtension(path));
+		if (loadPath.empty())
+		{
+			Debug::LogError("Load asset failed: " + path);
 			return false;
+		}
+#else
+		string loadPath = path;
+#endif
+		// ate:在文件末尾开始读取，从文件末尾开始读取的优点是我们可以使用读取位置来确定文件的大小并分配缓冲区
+		ifstream file(loadPath, std::ios::ate | std::ios::binary);
+		if (!file.is_open())
+		{
+			Debug::LogError("Load asset failed: " + path);
+			return false;
+		}
 
 		// 使用读取位置来确定文件的大小并分配缓冲区
 		size_t fileSize = (size_t)file.tellg();
