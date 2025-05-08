@@ -636,7 +636,7 @@ _NS_EXPORT MTL::Device* MTL::CreateSystemDefaultDevice()
 
 _NS_EXPORT NS::Array* MTL::CopyAllDevices()
 {
-#if (defined __IPHONE_18) || (defined __MAC_10_11)
+#if TARGET_OS_OSX
     return ::MTLCopyAllDevices();
 #else
     return nullptr;
