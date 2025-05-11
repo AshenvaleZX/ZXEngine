@@ -57,10 +57,22 @@ Fragment
 
             float v0 = texture(_RenderTexture, TexCoords).r;
 
-            float v1 = texture(_RenderTexture, TexCoords + vec2( texOffset.x,  texOffset.y)).r;
-            v1 += texture(_RenderTexture, TexCoords + vec2( texOffset.x, -texOffset.y)).r;
-            v1 += texture(_RenderTexture, TexCoords + vec2(-texOffset.x,  texOffset.y)).r;
-            v1 += texture(_RenderTexture, TexCoords + vec2(-texOffset.x, -texOffset.y)).r;
+            float v1 = 0.0;
+            vec2 realTexPos = TexCoords + vec2( texOffset.x,  texOffset.y);
+            if ((realTexPos.x >= 0) && (realTexPos.x <= 1) && (realTexPos.y >= 0) && (realTexPos.y <= 1))
+                v1 += texture(_RenderTexture, realTexPos).r;
+
+            realTexPos = TexCoords + vec2( texOffset.x, -texOffset.y);
+            if ((realTexPos.x >= 0) && (realTexPos.x <= 1) && (realTexPos.y >= 0) && (realTexPos.y <= 1))
+                v1 += texture(_RenderTexture, realTexPos).r;
+
+            realTexPos = TexCoords + vec2(-texOffset.x,  texOffset.y);
+            if ((realTexPos.x >= 0) && (realTexPos.x <= 1) && (realTexPos.y >= 0) && (realTexPos.y <= 1))
+                v1 += texture(_RenderTexture, realTexPos).r;
+
+            realTexPos = TexCoords + vec2(-texOffset.x, -texOffset.y);
+            if ((realTexPos.x >= 0) && (realTexPos.x <= 1) && (realTexPos.y >= 0) && (realTexPos.y <= 1))
+                v1 += texture(_RenderTexture, realTexPos).r;
 
             if ((v0 < 0.5 && v1 > 0.5) || (v0 > 0.5 && v1 < 3.5))
                 FragColor = vec4(1.0, 0.5, 0.0, 1.0);
