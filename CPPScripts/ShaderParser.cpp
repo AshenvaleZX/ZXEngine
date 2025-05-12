@@ -1327,22 +1327,15 @@ namespace ZXEngine
 		}
 		mtCode += "};\n\n";
 
-		// 纹理
-		for (auto& property : shaderInfo.vertProperties.textureProperties)
-		{
-			mtCode += "constant " + propertyTypeToMSLType[property.type] + "<float> " + property.name + " [[texture(" + to_string(property.binding) + ")]];\n";
-		}
-		for (auto& property : shaderInfo.fragProperties.textureProperties)
-		{
-			mtCode += "constant " + propertyTypeToMSLType[property.type] + "<float> " + property.name + " [[texture(" + to_string(property.binding) + ")]];\n";
-		}
-		mtCode += "\n";
-
 		// 采样器
 		mtCode += "constexpr sampler _Sampler(coord::normalized, address::repeat, filter::linear, mip_filter::linear);\n\n";
 
 		// 顶点着色器
 		string vertProgramBlock = GetCodeBlock(vertCode, "Program");
+		// 将自定义函数中的纹理引用处理为函数参数传递的形式
+		vector<CustomShaderFunctionInfo> customVertFunctions;
+		GetCustomShaderFunctionInfo(vertProgramBlock, customVertFunctions);
+		InsertTextureParamsForMetal(vertProgramBlock, customVertFunctions, shaderInfo.vertProperties.textureProperties);
 		// 替换纹理采样语法，只处理Program Block里面的，否则会影响纹理声明
 		size_t pos = 0;
 		while ((pos = Utils::FindWord(vertProgramBlock, "texture", pos)) != string::npos)
@@ -1414,6 +1407,12 @@ namespace ZXEngine
 
 		mtCode += "vertex VertexOutput VertMain(device const VertexInput* _VertexInputs [[buffer(0)]],\n";
 
+		// 纹理声明
+		for (auto& property : shaderInfo.vertProperties.textureProperties)
+		{
+			mtCode += "    " + propertyTypeToMSLType[property.type] + "<float> " + property.name + " [[texture(" + to_string(property.binding) + ")]],\n";
+		}
+
 		if (shaderInfo.instanceInfo.size > 0)
 		{
 			mtCode += "    device const InstanceInput* _InstanceInputs [[buffer(1)]],\n";
@@ -1438,6 +1437,10 @@ namespace ZXEngine
 
 		// 片元着色器
 		string fragProgramBlock = GetCodeBlock(fragCode, "Program");
+		// 将自定义函数中的纹理引用处理为函数参数传递的形式
+		vector<CustomShaderFunctionInfo> customFragFunctions;
+		GetCustomShaderFunctionInfo(fragProgramBlock, customFragFunctions);
+		InsertTextureParamsForMetal(fragProgramBlock, customFragFunctions, shaderInfo.fragProperties.textureProperties);
 		// 替换纹理采样语法，只处理Program Block里面的，否则会影响纹理声明
 		pos = 0;
 		while ((pos = Utils::FindWord(fragProgramBlock, "texture", pos)) != string::npos)
@@ -1507,10 +1510,18 @@ namespace ZXEngine
 			Utils::ReplaceAllWord(fragMainBlock, "ZX_Depth", "_Output.ZX_Depth");
 
 		mtCode += "fragment FragmentOutput FragMain(VertexOutput _Input [[stage_in]],\n";
+
+		// 纹理声明
+		for (auto& property : shaderInfo.fragProperties.textureProperties)
+		{
+			mtCode += "    " + propertyTypeToMSLType[property.type] + "<float> " + property.name + " [[texture(" + to_string(property.binding) + ")]],\n";
+		}
+
 		if (shaderInfo.instanceInfo.size > 0)
 			mtCode += "    device const Uniform& _Uniform [[buffer(2)]])\n";
 		else
 			mtCode += "    device const Uniform& _Uniform [[buffer(1)]])\n";
+
 		mtCode += "{\n";
 		mtCode += "    FragmentOutput _Output;\n";
 		mtCode += fragMainBlock;
@@ -1798,6 +1809,151 @@ namespace ZXEngine
 			arrayLength = MAX_BONE_NUM;
 		else
 			arrayLength = static_cast<uint32_t>(std::stoi(lengthStr));
+	}
+
+	void ShaderParser::GetCustomShaderFunctionInfo(const string& code, vector<CustomShaderFunctionInfo>& infos)
+	{
+		size_t curCodePos = 0;
+
+		while (true)
+		{
+			size_t sPosBody = string::npos;
+			size_t ePosBody = string::npos;
+			Utils::GetNextStringBlockPos(code, curCodePos, '{', '}', sPosBody, ePosBody);
+
+			if (sPosBody == string::npos || ePosBody == string::npos)
+				break;
+
+			size_t sPosParam = string::npos;
+			size_t ePosParam = string::npos;
+			Utils::GetPreviousStringBlockPos(code, sPosBody, '(', ')', sPosParam, ePosParam);
+
+			string funcName = Utils::GetPreviousWord(code, sPosParam);
+
+			// 搜索到main函数说明已经结束了
+			if (funcName == "main")
+				break;
+
+			CustomShaderFunctionInfo info;
+			info.name = funcName;
+
+			size_t curFuncPos = 0;
+			string funcBlock = code.substr(sPosBody, ePosBody - sPosBody + 1);
+			while ((curFuncPos = Utils::FindWord(funcBlock, "texture", curFuncPos)) != string::npos)
+			{
+				size_t sPos = string::npos;
+				size_t ePos = string::npos;
+				Utils::GetNextStringBlockPos(funcBlock, curFuncPos, '(', ')', sPos, ePos);
+
+				string textureName = Utils::GetNextWord(funcBlock, sPos);
+
+				bool isNew = true;
+				for (auto& texture : info.textures)
+				{
+					if (texture == textureName)
+					{
+						isNew = false;
+						break;
+					}
+				}
+				if (isNew)
+				{
+					info.textures.push_back(textureName);
+				}
+
+				curFuncPos += ePos - curFuncPos + 1;
+			}
+
+			infos.push_back(info);
+
+			curCodePos = ePosBody + 1;
+		}
+	}
+
+	void ShaderParser::InsertTextureParamsForMetal(string& code, const vector<CustomShaderFunctionInfo>& infos, const vector<ShaderProperty>& textureProperties)
+	{
+		size_t curCodePos = 0;
+
+		while (true)
+		{
+			size_t sPosBody = string::npos;
+			size_t ePosBody = string::npos;
+			Utils::GetNextStringBlockPos(code, curCodePos, '{', '}', sPosBody, ePosBody);
+
+			if (sPosBody == string::npos || ePosBody == string::npos)
+				break;
+
+			size_t sPosParam = string::npos;
+			size_t ePosParam = string::npos;
+			Utils::GetPreviousStringBlockPos(code, sPosBody, '(', ')', sPosParam, ePosParam);
+
+			string funcName = Utils::GetPreviousWord(code, sPosParam);
+
+			for (auto& info : infos)
+			{
+				if (info.name == funcName)
+				{
+					if (info.textures.size() == 0)
+						break;
+
+					string insertStr = "";
+					bool isEmptyParam = (sPosParam + 1 == ePosParam); // 原函数参数是否为空
+
+					for (size_t i = 0; i < info.textures.size(); i++)
+					{
+						for (auto& property : textureProperties)
+						{
+							if (property.name == info.textures[i])
+							{
+								if (isEmptyParam && i == 0)
+									insertStr += propertyTypeToMSLType[property.type] + "<float> " + property.name;
+								else
+									insertStr += ", " + propertyTypeToMSLType[property.type] + "<float> " + property.name;
+								break;
+							}
+						}
+					}
+
+					code.insert(ePosParam, insertStr);
+					sPosBody += insertStr.length();
+					ePosBody += insertStr.length();
+
+					break;
+				}
+			}
+
+			for (auto& info : infos)
+			{
+				if (info.textures.size() == 0)
+					continue;
+
+				size_t pos = sPosBody;
+				while (((pos = Utils::FindWord(code, info.name, pos)) != string::npos) && (pos < ePosBody))
+				{
+					size_t sPos = string::npos;
+					size_t ePos = string::npos;
+					Utils::GetNextStringBlockPos(code, pos, '(', ')', sPos, ePos);
+
+					string insertStr = "";
+					bool isEmptyParam = (sPos + 1 == ePos); // 原函数参数是否为空
+
+					for (size_t i = 0; i < info.textures.size(); i++)
+					{
+						if (isEmptyParam && i == 0)
+							insertStr += info.textures[i];
+						else
+							insertStr += ", " + info.textures[i];
+					}
+
+					code.insert(ePos, insertStr);
+
+					pos += info.name.length();
+					ePosBody += insertStr.length();
+				}
+			}
+
+			curCodePos = ePosBody + 1;
+		}
 	}
 
 	string ShaderParser::PreprocessMacroDefine(const string& code, std::initializer_list<const char*> macros)
