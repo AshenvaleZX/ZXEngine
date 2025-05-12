@@ -8,6 +8,8 @@
 #	endif
 #elif defined(ZX_PLATFORM_ANDROID)
 #	include "InputManagerAndroid.h"
+#elif defined(ZX_PLATFORM_IOS)
+#	include "InputManagerIOS.h"
 #endif
 
 namespace ZXEngine
@@ -24,6 +26,8 @@ namespace ZXEngine
 #	endif
 #elif defined(ZX_PLATFORM_ANDROID)
 		mInstance = new InputManagerAndroid();
+#elif defined(ZX_PLATFORM_IOS)
+		mInstance = new InputManagerIOS();
 #endif
 	}
 
