@@ -110,12 +110,14 @@ namespace ZXEngine
 	{
 		mCurrentFrame = (mCurrentFrame + 1) % MT_MAX_FRAMES_IN_FLIGHT;
 
+#ifdef ZX_PLATFORM_MACOS
 		if (mAutoReleasePool)
 		{
 			mAutoReleasePool->release();
 			mAutoReleasePool = nullptr;
 		}
 		mAutoReleasePool = NS::AutoreleasePool::alloc()->init();
+#endif
 	}
 
 	void RenderAPIMetal::OnWindowSizeChange(uint32_t width, uint32_t height)
