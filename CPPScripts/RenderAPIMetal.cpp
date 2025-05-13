@@ -327,7 +327,7 @@ namespace ZXEngine
 					false
 				);
 				depthBufferDesc->setStorageMode(MTL::StorageModePrivate);
-				depthBufferDesc->setUsage(MTL::TextureUsageRenderTarget);
+				depthBufferDesc->setUsage(MTL::TextureUsageShaderRead | MTL::TextureUsageRenderTarget);
 				depthBufferDesc->setResourceOptions(MTL::ResourceStorageModePrivate);
 
 				depthBuffer->renderBuffers[i] = CreateMetalTexture(depthBufferDesc, width, height);
@@ -361,7 +361,7 @@ namespace ZXEngine
 					false
 				);
 				depthBufferDesc->setStorageMode(MTL::StorageModePrivate);
-				depthBufferDesc->setUsage(MTL::TextureUsageRenderTarget);
+				depthBufferDesc->setUsage(MTL::TextureUsageShaderRead | MTL::TextureUsageRenderTarget);
 				depthBufferDesc->setResourceOptions(MTL::ResourceStorageModePrivate);
 
 				depthBuffer->renderBuffers[i] = CreateMetalTexture(depthBufferDesc, width, width);
