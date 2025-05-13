@@ -1,5 +1,7 @@
 #import <UIKit/UIKit.h>
 
-@interface GameViewController : UIViewController
+@interface GameView : UIView
+@end
 
+@interface GameViewController : UIViewController
 @end

@@ -63,21 +63,15 @@ namespace ZXEngine
 		mCommandQueue = mDevice->newCommandQueue();
 		assert(mCommandQueue != nullptr && "Metal command queue is null");
 
+#if defined(ZX_PLATFORM_MACOS)
+		auto windowManager = static_cast<WindowManagerGLFW*>(WindowManager::GetInstance());
+
 		mMetalLayer = CA::MetalLayer::layer();
 		mMetalLayer->setDevice(mDevice);
 		mMetalLayer->setPixelFormat(mDefaultImageFormat);
-
-#if defined(ZX_PLATFORM_IOS)
 		mMetalLayer->setDrawableSize(CGSizeMake(
-			static_cast<float>(ProjectSetting::srcWidth),
-			static_cast<float>(ProjectSetting::srcHeight)
-		));
-#else
-		auto windowManager = static_cast<WindowManagerGLFW*>(WindowManager::GetInstance());
-
-		mMetalLayer->setDrawableSize(CGSizeMake(
-			static_cast<float>(ProjectSetting::srcWidth) * windowManager->GetWindowScaleX(),
-			static_cast<float>(ProjectSetting::srcHeight) * windowManager->GetWindowScaleY()
+			static_cast<CGFloat>(ProjectSetting::srcWidth) * windowManager->GetWindowScaleX(),
+			static_cast<CGFloat>(ProjectSetting::srcHeight) * windowManager->GetWindowScaleY()
 		));
 
 		GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(windowManager->GetWindow());
@@ -90,6 +84,17 @@ namespace ZXEngine
 		mSemaphore = dispatch_semaphore_create(MT_MAX_FRAMES_IN_FLIGHT);
 
 		ProjectSetting::isSupportGeometryShader = false;
+	}
+
+	void RenderAPIMetal::SetMetalLayer(CA::MetalLayer* layer)
+	{
+		mMetalLayer = layer;
+		mMetalLayer->setDevice(mDevice);
+		mMetalLayer->setPixelFormat(mDefaultImageFormat);
+		mMetalLayer->setDrawableSize(CGSizeMake(
+			static_cast<CGFloat>(ProjectSetting::srcWidth),
+			static_cast<CGFloat>(ProjectSetting::srcHeight)
+		));
 	}
 
 	void RenderAPIMetal::BeginFrame()

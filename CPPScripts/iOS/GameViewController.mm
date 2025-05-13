@@ -2,6 +2,15 @@
 #include "Game.h"
 #include "../RenderAPIMetal.h"
 
+@implementation GameView
+
++ (Class)layerClass
+{
+    return [CAMetalLayer class];
+}
+
+@end
+
 @implementation GameViewController
 {
     CADisplayLink* displayLink;
@@ -13,13 +22,13 @@
 
     ZXEngine::Game::Launch("");
     
+    auto renderAPI = static_cast<ZXEngine::RenderAPIMetal*>(ZXEngine::RenderAPI::GetInstance());
+    self.view = [[GameView alloc] initWithFrame:self.view.frame];
+    renderAPI->SetMetalLayer((__bridge CA::MetalLayer*)(CAMetalLayer*)self.view.layer);
+    
     displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(gameLoop)];
     displayLink.preferredFramesPerSecond = 60;
     [displayLink addToRunLoop:NSRunLoop.currentRunLoop forMode:NSDefaultRunLoopMode];
-    
-    auto renderAPI = static_cast<ZXEngine::RenderAPIMetal*>(ZXEngine::RenderAPI::GetInstance());
-    CAMetalLayer* metalLayer = (__bridge CAMetalLayer*)renderAPI->GetMetalLayer();
-    [self.view.layer addSublayer:metalLayer];
 }
 
 - (void)gameLoop
