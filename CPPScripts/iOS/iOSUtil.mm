@@ -21,7 +21,7 @@ namespace ZXEngine
     {
         @autoreleasepool
         {
-            CGRect screenRect = [[UIScreen mainScreen] bounds];
+            CGRect screenRect = [[UIScreen mainScreen] nativeBounds];
             return Vector2(static_cast<float>(screenRect.size.width), static_cast<float>(screenRect.size.height));
         }
     }
