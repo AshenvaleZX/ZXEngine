@@ -1,15 +1,7 @@
 #import "GameViewController.h"
+#import "GameView.h"
 #include "Game.h"
 #include "../RenderAPIMetal.h"
-
-@implementation GameView
-
-+ (Class)layerClass
-{
-    return [CAMetalLayer class];
-}
-
-@end
 
 @implementation GameViewController
 {
