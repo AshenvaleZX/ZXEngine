@@ -20,6 +20,13 @@
     return self;
 }
 
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    CAMetalLayer* mtLayer = (CAMetalLayer*)self.layer;
+    mtLayer.frame = self.bounds;
+}
+
 // 当触控开始时
 - (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event
 {

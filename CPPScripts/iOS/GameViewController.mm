@@ -23,6 +23,20 @@
     [displayLink addToRunLoop:NSRunLoop.currentRunLoop forMode:NSDefaultRunLoopMode];
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context)
+    {
+        CGFloat scale = [[UIScreen mainScreen] nativeScale];
+        ZXEngine::RenderAPI::GetInstance()->OnWindowSizeChange(
+            static_cast<uint32_t>(size.width * scale),
+            static_cast<uint32_t>(size.height * scale)
+        );
+    } completion:nil];
+}
+
 - (void)gameLoop
 {
     ZXEngine::Game::Loop();
