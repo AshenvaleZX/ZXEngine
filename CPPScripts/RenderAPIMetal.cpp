@@ -788,6 +788,13 @@ namespace ZXEngine
 
 		pipeline->depthStencilState = mDevice->newDepthStencilState(depthStencilDesc);
 
+		pLibrary->release();
+		pVertFn->release();
+		pFragFn->release();
+		pipelineDesc->release();
+		vertexDesc->release();
+		depthStencilDesc->release();
+
 		ShaderReference* reference = new ShaderReference();
 		reference->ID = pipelineID;
 		reference->shaderInfo = shaderInfo;
@@ -924,6 +931,7 @@ namespace ZXEngine
 			renderPassDesc->colorAttachments()->object(0)->setTexture(mDrawable->texture());
 
 			pEncoder = pCmd->renderCommandEncoder(renderPassDesc);
+			renderPassDesc->release();
 		}
 		else
 		{
@@ -1632,6 +1640,9 @@ namespace ZXEngine
 			Debug::LogError("Metal compute shader error, path: %s error:\n%s", path, pError->localizedDescription()->utf8String());
 			assert(false);
 		}
+
+		pLibrary->release();
+		pCompFn->release();
 
 		ComputeShaderReference* reference = new ComputeShaderReference();
 		reference->ID = pipelineID;
