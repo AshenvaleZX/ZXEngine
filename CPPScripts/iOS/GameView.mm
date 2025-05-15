@@ -74,6 +74,7 @@
 {
     [super touchesBegan:touches withEvent:event];
 
+    CGFloat scale = [[UIScreen mainScreen] nativeScale];
     auto inputManager = static_cast<ZXEngine::InputManagerIOS*>(ZXEngine::InputManager::GetInstance());
 
     for (UITouch* touch in touches)
@@ -83,8 +84,8 @@
         NSInteger touchID = [self getTouchKeyID:key];
         inputManager->UpdateTouch(
             static_cast<int32_t>(touchID),
-            static_cast<float>(location.x),
-            static_cast<float>(location.y)
+            static_cast<float>(location.x * scale),
+            static_cast<float>(location.y * scale)
         );
     }
 }
@@ -94,6 +95,7 @@
 {
     [super touchesMoved:touches withEvent:event];
 
+    CGFloat scale = [[UIScreen mainScreen] nativeScale];
     auto inputManager = static_cast<ZXEngine::InputManagerIOS*>(ZXEngine::InputManager::GetInstance());
 
     for (UITouch* touch in touches)
@@ -103,8 +105,8 @@
         NSInteger touchID = [self getTouchKeyID:key];
         inputManager->UpdateTouch(
             static_cast<int32_t>(touchID),
-            static_cast<float>(location.x),
-            static_cast<float>(location.y)
+            static_cast<float>(location.x * scale),
+            static_cast<float>(location.y * scale)
         );
     }
 }
