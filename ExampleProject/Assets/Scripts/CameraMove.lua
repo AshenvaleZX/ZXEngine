@@ -14,7 +14,7 @@ function CameraMove:Start()
 end
 
 function CameraMove:Update()
-    if GlobalData.Platform == PlatformType.Android then
+    if GlobalData.Platform == PlatformType.Android or GlobalData.Platform == PlatformType.iOS then
         self:UpdateTouch()
     end
 end
