@@ -136,7 +136,7 @@ namespace ZXEngine
 		string loadPath = iOSUtil::GetResourcePath(GetAssetWithOutExtension(path), GetAssetExtension(path));
 		if (loadPath.empty())
 		{
-			Debug::LogError("Load asset failed: " + path);
+			Debug::LogError("Get iOS asset path failed: " + path);
 			return false;
 		}
 #else
@@ -145,7 +145,7 @@ namespace ZXEngine
 		std::ifstream f(loadPath);
 		if (!f.is_open())
 		{
-			Debug::LogError("Load asset failed: " + path);
+			Debug::LogError("Load json asset failed: " + path);
 			return false;
 		}
 
@@ -165,7 +165,7 @@ namespace ZXEngine
 		AAsset* asset = AAssetManager_open(assetManager, path.c_str(), AASSET_MODE_BUFFER);
 		if (!asset)
 		{
-			Debug::LogError("Load asset failed: " + path);
+			Debug::LogError("Load json asset failed: " + path);
 			return false;
 		}
 
@@ -203,7 +203,7 @@ namespace ZXEngine
 		if (loadPath.empty())
 		{
 			if (logError)
-				Debug::LogError("Load asset failed: " + path);
+				Debug::LogError("Get iOS asset path failed: " + path);
 			return "";
 		}
 #else
@@ -223,7 +223,7 @@ namespace ZXEngine
 		catch (ifstream::failure e)
 		{
 			if (logError)
-				Debug::LogError("Failed to load text file: " + path);
+				Debug::LogError("Load text asset failed: " + path);
 		}
 #elif defined(ZX_PLATFORM_ANDROID)
 		AAssetManager* assetManager = GlobalData::app->activity->assetManager;
@@ -231,7 +231,7 @@ namespace ZXEngine
 		if (!asset)
 		{
 			if (logError)
-				Debug::LogError("Load asset failed: " + path);
+				Debug::LogError("Load text asset failed: " + path);
 			return "";
 		}
 
@@ -255,7 +255,7 @@ namespace ZXEngine
 		string loadPath = iOSUtil::GetResourcePath(GetAssetWithOutExtension(path), GetAssetExtension(path));
 		if (loadPath.empty())
 		{
-			Debug::LogError("Load asset failed: " + path);
+			Debug::LogError("Get iOS asset path failed: " + path);
 			return false;
 		}
 #else
@@ -265,7 +265,7 @@ namespace ZXEngine
 		ifstream file(loadPath, std::ios::ate | std::ios::binary);
 		if (!file.is_open())
 		{
-			Debug::LogError("Load asset failed: " + path);
+			Debug::LogError("Load binary asset failed: " + path);
 			return false;
 		}
 
@@ -284,7 +284,7 @@ namespace ZXEngine
 		AAsset* asset = AAssetManager_open(assetManager, path.c_str(), AASSET_MODE_BUFFER);
 		if (!asset)
 		{
-			Debug::LogError("Load asset failed: " + path);
+			Debug::LogError("Load binary asset failed: " + path);
 			return false;
 		}
 
