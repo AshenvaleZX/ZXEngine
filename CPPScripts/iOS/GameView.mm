@@ -1,8 +1,11 @@
 #import "GameView.h"
+#include "InputManagerIOS.h"
 
 @implementation GameView
 {
-    NSMutableDictionary<NSValue*, UITouch*>* _activeTouches;
+    NSMutableDictionary<NSValue*, NSNumber*>* _activeToucheIDs;
+    NSMutableSet<NSNumber*>* _availableIDs;
+    NSInteger _nextID;
 }
 
 + (Class)layerClass
@@ -15,7 +18,12 @@
     self = [super initWithFrame:frame];
     if (self)
     {
-        _activeTouches = [NSMutableDictionary dictionary];
+        // 启用多点触控
+        self.multipleTouchEnabled = YES;
+
+        _activeToucheIDs = [NSMutableDictionary dictionary];
+        _availableIDs = [NSMutableSet set];
+        _nextID = 0;
     }
     return self;
 }
@@ -27,16 +35,57 @@
     mtLayer.frame = self.bounds;
 }
 
+- (NSInteger)getTouchKeyID:(NSValue*)key
+{
+    NSNumber* assignedID = _activeToucheIDs[key];
+
+    if (assignedID)
+    {
+        return [assignedID integerValue];
+    }
+
+    if (_availableIDs.count > 0)
+    {
+        assignedID = [_availableIDs anyObject];
+        [_availableIDs removeObject:assignedID];
+    }
+    else
+    {
+        assignedID = @(_nextID);
+        _nextID++;
+    }
+    _activeToucheIDs[key] = assignedID;
+
+    return [assignedID integerValue];
+}
+
+- (void)releaseTouchKeyID:(NSValue*)key
+{
+    NSNumber* assignedID = _activeToucheIDs[key];
+    if (assignedID)
+    {
+        [_activeToucheIDs removeObjectForKey:key];
+        [_availableIDs addObject:assignedID];
+    }
+}
+
 // 当触控开始时
 - (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event
 {
     [super touchesBegan:touches withEvent:event];
+
+    auto inputManager = static_cast<ZXEngine::InputManagerIOS*>(ZXEngine::InputManager::GetInstance());
+
     for (UITouch* touch in touches)
     {
         NSValue* key = [NSValue valueWithNonretainedObject:touch];
-        self->_activeTouches[key] = touch;
         CGPoint location = [touch locationInView:self];
-        NSLog(@"Touch began at: %@ (Touch ID: %@)", NSStringFromCGPoint(location), key);
+        NSInteger touchID = [self getTouchKeyID:key];
+        inputManager->UpdateTouch(
+            static_cast<int32_t>(touchID),
+            static_cast<float>(location.x),
+            static_cast<float>(location.y)
+        );
     }
 }
 
@@ -44,11 +93,19 @@
 - (void)touchesMoved:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event
 {
     [super touchesMoved:touches withEvent:event];
+
+    auto inputManager = static_cast<ZXEngine::InputManagerIOS*>(ZXEngine::InputManager::GetInstance());
+
     for (UITouch* touch in touches)
     {
         NSValue* key = [NSValue valueWithNonretainedObject:touch];
         CGPoint location = [touch locationInView:self];
-        NSLog(@"Touch moved to: %@ (Touch ID: %@)", NSStringFromCGPoint(location), key);
+        NSInteger touchID = [self getTouchKeyID:key];
+        inputManager->UpdateTouch(
+            static_cast<int32_t>(touchID),
+            static_cast<float>(location.x),
+            static_cast<float>(location.y)
+        );
     }
 }
 
@@ -56,12 +113,15 @@
 - (void)touchesEnded:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event
 {
     [super touchesEnded:touches withEvent:event];
+
+    auto inputManager = static_cast<ZXEngine::InputManagerIOS*>(ZXEngine::InputManager::GetInstance());
+
     for (UITouch* touch in touches)
     {
         NSValue* key = [NSValue valueWithNonretainedObject:touch];
-        CGPoint location = [touch locationInView:self];
-        NSLog(@"Touch ended at: %@ (Touch ID: %@)", NSStringFromCGPoint(location), key);
-        [self->_activeTouches removeObjectForKey:key];
+        NSInteger touchID = [self getTouchKeyID:key];
+        inputManager->RemoveTouch(static_cast<int32_t>(touchID));
+        [self releaseTouchKeyID:key];
     }
 }
 
@@ -69,11 +129,15 @@
 - (void)touchesCancelled:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event
 {
     [super touchesCancelled:touches withEvent:event];
+
+    auto inputManager = static_cast<ZXEngine::InputManagerIOS*>(ZXEngine::InputManager::GetInstance());
+
     for (UITouch* touch in touches)
     {
         NSValue* key = [NSValue valueWithNonretainedObject:touch];
-        NSLog(@"Touch cancelled (Touch ID: %@)", key);
-        [self->_activeTouches removeObjectForKey:key];
+        NSInteger touchID = [self getTouchKeyID:key];
+        inputManager->RemoveTouch(static_cast<int32_t>(touchID));
+        [self releaseTouchKeyID:key];
     }
 }
 
