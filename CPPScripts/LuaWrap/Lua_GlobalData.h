@@ -30,6 +30,8 @@ static int GetGlobalData(lua_State* L)
 		lua_pushinteger(L, (int)ZXEngine::PlatformType::MacOS);
 #elif defined(ZX_PLATFORM_WINDOWS)
 		lua_pushinteger(L, (int)ZXEngine::PlatformType::Windows);
+#elif defined(ZX_PLATFORM_IOS)
+		lua_pushinteger(L, (int)ZXEngine::PlatformType::iOS);
 #endif
 	}
 	else

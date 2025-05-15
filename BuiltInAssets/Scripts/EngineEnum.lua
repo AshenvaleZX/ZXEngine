@@ -17,6 +17,7 @@ PlatformType_Enum =
     "MacOS",
     "Linux",
     "Android",
+    "iOS",
 }
 
 for i, key in ipairs(PlatformType_Enum) do
