@@ -7,7 +7,8 @@ namespace ZXEngine
     {
         @autoreleasepool
         {
-            NSString* res = [[NSBundle mainBundle] pathForResource:[NSString stringWithUTF8String:path.c_str()]
+            string fullPath = "ZXAssets/" + path;
+            NSString* res = [[NSBundle mainBundle] pathForResource:[NSString stringWithUTF8String:fullPath.c_str()]
                                                             ofType:[NSString stringWithUTF8String:ext.c_str()]];
             if (res)
             {
