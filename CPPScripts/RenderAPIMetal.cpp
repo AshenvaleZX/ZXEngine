@@ -63,26 +63,38 @@ namespace ZXEngine
 		mCommandQueue = mDevice->newCommandQueue();
 		assert(mCommandQueue != nullptr && "Metal command queue is null");
 
+#if defined(ZX_PLATFORM_MACOS)
 		auto windowManager = static_cast<WindowManagerGLFW*>(WindowManager::GetInstance());
-
-		GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(windowManager->GetWindow());
-		NS::Window* nsWindow = static_cast<NS::Window*>(glfwGetCocoaWindow(glfwWindow));
 
 		mMetalLayer = CA::MetalLayer::layer();
 		mMetalLayer->setDevice(mDevice);
 		mMetalLayer->setPixelFormat(mDefaultImageFormat);
 		mMetalLayer->setDrawableSize(CGSizeMake(
-			static_cast<float>(ProjectSetting::srcWidth) * windowManager->GetWindowScaleX(),
-			static_cast<float>(ProjectSetting::srcHeight) * windowManager->GetWindowScaleY()
+			static_cast<CGFloat>(ProjectSetting::srcWidth) * windowManager->GetWindowScaleX(),
+			static_cast<CGFloat>(ProjectSetting::srcHeight) * windowManager->GetWindowScaleY()
 		));
 
+		GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(windowManager->GetWindow());
+		NS::Window* nsWindow = static_cast<NS::Window*>(glfwGetCocoaWindow(glfwWindow));
 		NS::View* nsView = nsWindow->contentView();
 		nsView->setLayer(mMetalLayer);
 		nsView->setWantsLayer(true);
+#endif
 
 		mSemaphore = dispatch_semaphore_create(MT_MAX_FRAMES_IN_FLIGHT);
 
 		ProjectSetting::isSupportGeometryShader = false;
+	}
+
+	void RenderAPIMetal::SetMetalLayer(CA::MetalLayer* layer)
+	{
+		mMetalLayer = layer;
+		mMetalLayer->setDevice(mDevice);
+		mMetalLayer->setPixelFormat(mDefaultImageFormat);
+		mMetalLayer->setDrawableSize(CGSizeMake(
+			static_cast<CGFloat>(ProjectSetting::srcWidth),
+			static_cast<CGFloat>(ProjectSetting::srcHeight)
+		));
 	}
 
 	void RenderAPIMetal::BeginFrame()
@@ -103,12 +115,14 @@ namespace ZXEngine
 	{
 		mCurrentFrame = (mCurrentFrame + 1) % MT_MAX_FRAMES_IN_FLIGHT;
 
+#ifdef ZX_PLATFORM_MACOS
 		if (mAutoReleasePool)
 		{
 			mAutoReleasePool->release();
 			mAutoReleasePool = nullptr;
 		}
 		mAutoReleasePool = NS::AutoreleasePool::alloc()->init();
+#endif
 	}
 
 	void RenderAPIMetal::OnWindowSizeChange(uint32_t width, uint32_t height)
@@ -320,7 +334,7 @@ namespace ZXEngine
 					false
 				);
 				depthBufferDesc->setStorageMode(MTL::StorageModePrivate);
-				depthBufferDesc->setUsage(MTL::TextureUsageRenderTarget);
+				depthBufferDesc->setUsage(MTL::TextureUsageShaderRead | MTL::TextureUsageRenderTarget);
 				depthBufferDesc->setResourceOptions(MTL::ResourceStorageModePrivate);
 
 				depthBuffer->renderBuffers[i] = CreateMetalTexture(depthBufferDesc, width, height);
@@ -354,7 +368,7 @@ namespace ZXEngine
 					false
 				);
 				depthBufferDesc->setStorageMode(MTL::StorageModePrivate);
-				depthBufferDesc->setUsage(MTL::TextureUsageRenderTarget);
+				depthBufferDesc->setUsage(MTL::TextureUsageShaderRead | MTL::TextureUsageRenderTarget);
 				depthBufferDesc->setResourceOptions(MTL::ResourceStorageModePrivate);
 
 				depthBuffer->renderBuffers[i] = CreateMetalTexture(depthBufferDesc, width, width);
@@ -774,6 +788,13 @@ namespace ZXEngine
 
 		pipeline->depthStencilState = mDevice->newDepthStencilState(depthStencilDesc);
 
+		pLibrary->release();
+		pVertFn->release();
+		pFragFn->release();
+		pipelineDesc->release();
+		vertexDesc->release();
+		depthStencilDesc->release();
+
 		ShaderReference* reference = new ShaderReference();
 		reference->ID = pipelineID;
 		reference->shaderInfo = shaderInfo;
@@ -910,6 +931,7 @@ namespace ZXEngine
 			renderPassDesc->colorAttachments()->object(0)->setTexture(mDrawable->texture());
 
 			pEncoder = pCmd->renderCommandEncoder(renderPassDesc);
+			renderPassDesc->release();
 		}
 		else
 		{
@@ -1618,6 +1640,9 @@ namespace ZXEngine
 			Debug::LogError("Metal compute shader error, path: %s error:\n%s", path, pError->localizedDescription()->utf8String());
 			assert(false);
 		}
+
+		pLibrary->release();
+		pCompFn->release();
 
 		ComputeShaderReference* reference = new ComputeShaderReference();
 		reference->ID = pipelineID;
@@ -2353,12 +2378,19 @@ namespace ZXEngine
 		ProjectSetting::SetWindowSize();
 #endif
 
+#if defined(ZX_PLATFORM_IOS)
+		mMetalLayer->setDrawableSize(CGSizeMake(
+			static_cast<float>(ProjectSetting::srcWidth),
+			static_cast<float>(ProjectSetting::srcHeight)
+		));
+#else
 		auto windowManager = static_cast<WindowManagerGLFW*>(WindowManager::GetInstance());
 		// 这个调用类似于重新创建Present Buffer
 		mMetalLayer->setDrawableSize(CGSizeMake(
 			static_cast<float>(ProjectSetting::srcWidth) * windowManager->GetWindowScaleX(),
 			static_cast<float>(ProjectSetting::srcHeight) * windowManager->GetWindowScaleY()
 		));
+#endif
 		
 		// 重新创建所有大小随窗口变化的FBO
 		FBOManager::GetInstance()->RecreateAllFollowWindowFBO();

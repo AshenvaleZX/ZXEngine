@@ -8,6 +8,7 @@ namespace ZXEngine
 	public:
 		static bool Launch(const string& path);
 		static void Run();
+		static void Loop();
 		static void Shutdown();
 
 	private:

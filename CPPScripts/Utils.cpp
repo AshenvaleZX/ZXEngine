@@ -100,6 +100,36 @@ namespace ZXEngine
         return string::npos;
     }
 
+    string Utils::GetNextWord(const string& str, size_t offset)
+    {
+        for (size_t i = offset + 1; i < str.size(); i++)
+        {
+            if (IsValidWordChar(str[i]))
+            {
+                size_t s = i;
+                while (i < str.size() && IsValidWordChar(str[i]))
+                    i++;
+                return str.substr(s, i - s);
+            }
+        }
+        return "";
+    }
+
+    string Utils::GetPreviousWord(const string& str, size_t offset)
+    {
+        for (int i = static_cast<int>(offset - 1); i >= 0; i--)
+        {
+            if (IsValidWordChar(str[i]))
+            {
+                int e = i;
+                while (i >= 0 && IsValidWordChar(str[i]))
+                    i--;
+                return str.substr(static_cast<size_t>(i + 1), static_cast<size_t>(e - i));
+            }
+        }
+        return "";
+    }
+
     void Utils::ReplaceAllWord(string& oriStr, const string& srcWord, const string& dstWord)
     {
         size_t offset = 0;
@@ -128,10 +158,10 @@ namespace ZXEngine
         }
     }
 
-    string Utils::GetNextStringBlock(string& oriStr, size_t offset, char sChar, char eChar, bool exclude)
+    string Utils::GetNextStringBlock(const string& oriStr, size_t offset, char sChar, char eChar, bool exclude)
     {
-		size_t sPos = 0, ePos = 0;
-		GetNextStringBlockPos(oriStr, offset, sChar, eChar, sPos, ePos);
+        size_t sPos = 0, ePos = 0;
+        GetNextStringBlockPos(oriStr, offset, sChar, eChar, sPos, ePos);
 
         if (exclude)
         {
@@ -142,7 +172,21 @@ namespace ZXEngine
 		return oriStr.substr(sPos, ePos - sPos + 1);
     }
 
-    void Utils::GetNextStringBlockPos(string& oriStr, size_t offset, char sChar, char eChar, size_t& sPos, size_t& ePos)
+    string Utils::GetPreviousStringBlock(const string& oriStr, size_t offset, char sChar, char eChar, bool exclude)
+    {
+		size_t sPos = 0, ePos = 0;
+		GetPreviousStringBlockPos(oriStr, offset, sChar, eChar, sPos, ePos);
+
+        if (exclude)
+        {
+            sPos++;
+            ePos--;
+        }
+
+		return oriStr.substr(sPos, ePos - sPos + 1);
+    }
+
+    void Utils::GetNextStringBlockPos(const string& oriStr, size_t offset, char sChar, char eChar, size_t& sPos, size_t& ePos)
     {
         int level = 0;
         for (size_t i = offset; i < oriStr.size(); i++)
@@ -161,6 +205,31 @@ namespace ZXEngine
                 if (level == 0)
                 {
                     ePos = i;
+                    break;
+                }
+            }
+        }
+    }
+
+    void Utils::GetPreviousStringBlockPos(const string& oriStr, size_t offset, char sChar, char eChar, size_t& sPos, size_t& ePos)
+    {
+        int level = 0;
+        for (size_t i = offset; i > 0; i--)
+        {
+            if (oriStr[i] == eChar)
+            {
+                level++;
+                if (level == 1)
+                {
+                    ePos = i;
+                }
+            }
+            else if (oriStr[i] == sChar)
+            {
+                level--;
+                if (level == 0)
+                {
+                    sPos = i;
                     break;
                 }
             }

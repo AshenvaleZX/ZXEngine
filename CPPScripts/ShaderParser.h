@@ -11,6 +11,12 @@ namespace ZXEngine
 		uint32_t arrayOffset = 0;
 	};
 
+	struct CustomShaderFunctionInfo
+	{
+		string name;
+		vector<string> textures;
+	};
+
 	class MaterialData;
 	class ShaderParser
 	{
@@ -32,6 +38,8 @@ namespace ZXEngine
 		static void GetBufferInfos(const string& code, vector<ShaderBufferInfo>& infos);
 		static string GetCodeBlock(const string& code, const string& blockName);
 		static void GetPropertyNameAndArrayLength(const string& propertyStr, string& name, uint32_t& arrayLength);
+		static void GetCustomShaderFunctionInfo(const string& code, vector<CustomShaderFunctionInfo>& infos);
+		static void InsertTextureParamsForMetal(string& code, const vector<CustomShaderFunctionInfo>& infos, const vector<ShaderProperty>& textureProperties);
 
 		static string PreprocessMacroDefine(const string& code, std::initializer_list<const char*> macros);
 

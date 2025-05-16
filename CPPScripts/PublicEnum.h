@@ -54,6 +54,7 @@ namespace ZXEngine
 		MacOS,
 		Linux,
 		Android,
+		iOS,
 	};
 
 	enum class RenderPipelineType

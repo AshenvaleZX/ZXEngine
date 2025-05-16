@@ -22,14 +22,20 @@ namespace ZXEngine
 		static bool IsValidWordChar(char c);
 		// 查找字符串中是否存在某个单词，并返回起始位
 		static size_t FindWord(const string& str, const string& word, size_t offset);
+		// 获取下一个单词
+		static string GetNextWord(const string& str, size_t offset);
+		// 获取上一个单词
+		static string GetPreviousWord(const string& str, size_t offset);
 		// 替代字符串中的单词
 		static void ReplaceAllWord(string& oriStr, const string& srcWord, const string& dstWord);
 		// 替代字符串中的字符串
 		static void ReplaceAllString(string& oriStr, const string& srcStr, const string& dstStr);
 		// 获取由sChar和eChar括起来的一段字符串
-		static string GetNextStringBlock(string& oriStr, size_t offset, char sChar, char eChar, bool exclude = true);
+		static string GetNextStringBlock(const string& oriStr, size_t offset, char sChar, char eChar, bool exclude = true);
+		static string GetPreviousStringBlock(const string& oriStr, size_t offset, char sChar, char eChar, bool exclude = true);
 		// 获取由sChar和eChar括起来的一段字符串起止位置
-		static void GetNextStringBlockPos(string& oriStr, size_t offset, char sChar, char eChar, size_t& sPos, size_t& ePos);
+		static void GetNextStringBlockPos(const string& oriStr, size_t offset, char sChar, char eChar, size_t& sPos, size_t& ePos);
+		static void GetPreviousStringBlockPos(const string& oriStr, size_t offset, char sChar, char eChar, size_t& sPos, size_t& ePos);
 		// 字符串拼接
 		static string ConcatenateStrings(const vector<string>& strings);
 		// 路径转换为Windows格式

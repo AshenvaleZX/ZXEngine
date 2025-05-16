@@ -102,6 +102,7 @@ add_deps("vulkan-sdk")
 
 if is_plat("macosx") then
     add_files("../../CPPScripts/**.mm")
+    remove_files("../../CPPScripts/iOS/**")
     add_includedirs("../../Vendor/Include/metal-cpp", "../../Vendor/Include/metal-cpp-extensions")
     add_linkdirs(path.join(os.projectdir(), "../../Vendor/Library/MacOS"))
     add_links("assimp.5.4.0", "freetype", "glfw3", "bz2")

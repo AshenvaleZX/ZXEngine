@@ -3,11 +3,15 @@
 #include "../PublicStruct.h"
 
 #include <Metal/Metal.hpp>
+#ifdef ZX_PLATFORM_MACOS
 #include <AppKit/AppKit.hpp>
+#else
+#include <QuartzCore/QuartzCore.hpp>
+#endif
 
 namespace ZXEngine
 {
-	constexpr uint32_t MT_MAX_FRAMES_IN_FLIGHT = 2;
+	constexpr uint32_t MT_MAX_FRAMES_IN_FLIGHT = 1;
 
 	struct MetalBuffer
 	{

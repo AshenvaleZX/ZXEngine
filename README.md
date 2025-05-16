@@ -2,7 +2,7 @@
 
 | Graphics API | Platform |
 | :----------: | :------: |
-| ![Vulkan](Documents/Badges/Vulkan-Supported.svg) ![DirectX 12](Documents/Badges/DirectX_12-Supported.svg) ![Metal](Documents/Badges/Metal-Supported.svg) ![OpenGL](Documents/Badges/OpenGL-Supported.svg) | ![Windows](Documents/Badges/Windows-Supported-blue.svg) ![macOS](Documents/Badges/macOS-Supported-blue.svg) ![Linux](Documents/Badges/Linux-Supported-blue.svg) ![Android](Documents/Badges/Android-Experimental-red.svg) |
+| ![Vulkan](Documents/Badges/Vulkan-Supported.svg) ![DirectX 12](Documents/Badges/DirectX_12-Supported.svg) ![Metal](Documents/Badges/Metal-Supported.svg) ![OpenGL](Documents/Badges/OpenGL-Supported.svg) | ![Windows](Documents/Badges/Windows-Supported-blue.svg) ![macOS](Documents/Badges/macOS-Supported-blue.svg) ![Linux](Documents/Badges/Linux-Supported-blue.svg) ![Android](Documents/Badges/Android-Experimental-red.svg) ![iOS](Documents/Badges/iOS-Experimental-red.svg) |
 
 这是我自己开发的游戏引擎项目，创建这个项目的主要目的是为了我自己学习和实践游戏引擎技术，不过也希望这个项目能对你有所帮助。
 
@@ -48,20 +48,21 @@ This project aimed at the game engine, not only focus on the graphics and render
 
 - [构建与跨平台 (Build And Cross-Platform)](#构建与跨平台-build-and-cross-platform)
 
-- [注意事项 (Precautions)](#注意事项-precautions)
+- [注意事项 (Notices)](#注意事项-notices)
 
 ## 引擎简介 (Engine Introduction)
 
-| Platform | Graphics API Support       |
-| -------- | -------------------------- |
-| Windows  | DirectX 12, Vulkan, OpenGL |
-| macOS    | Metal, Vulkan, OpenGL      |
-| Linux    | OpenGL, Vulkan(unverified) |
-| Android  | Vulkan                     |
+| Platform | Graphics API Support       | Build Solution Support      |
+| -------- | -------------------------- | --------------------------- |
+| Windows  | DirectX 12, Vulkan, OpenGL | Visual Studio, xmake, CMake |
+| macOS    | Metal, Vulkan, OpenGL      | xmake, CMake                |
+| Linux    | OpenGL, Vulkan(unverified) | xmake, CMake                |
+| Android  | Vulkan                     | Android Studio              |
+| iOS      | Metal                      | Xcode                       |
 
-本引擎目前同时支持Vulkan，DirectX 12，Metal和OpenGL，支持Windows，macOS，Linux和Android。使用自创的zxshader语言来编写shader，支持前面4种图形API，编写一次即可在4种图形API和4种平台运行。本引擎同时也支持基于Vulkan和DirectX12的光线追踪渲染管线。
+本引擎目前同时支持Vulkan，DirectX 12，Metal和OpenGL，支持Windows，macOS，Linux，Android和iOS。使用自创的zxshader语言来编写shader，支持前面4种图形API，编写一次即可在4种图形API和5种平台运行。本引擎同时也支持基于Vulkan和DirectX12的光线追踪渲染管线。
 
-This engine currently supports Vulkan, DirectX 12, Metal and OpenGL, supports Windows, macOS, Linux and Android. The engine uses the self-created zxshader language to write shaders. You only need to write zxshader once and it can work in all four graphics APIs and four platforms. This engine also supports ray tracing rendering pipeline based on Vulkan or DirectX12.
+This engine currently supports Vulkan, DirectX 12, Metal and OpenGL, supports Windows, macOS, Linux, Android and iOS. The engine uses the self-created zxshader language to write shaders. You only need to write zxshader once and it can work in all four graphics APIs and five platforms. This engine also supports ray tracing rendering pipeline based on Vulkan or DirectX12.
 
 本引擎内置了我写的物理引擎PhysZ(看了一些书和别人的项目之后的学习成果，详见后文)，支持基本的刚体力学模拟和弹簧，布料模拟。同时我也开发了简单的骨骼蒙皮动画系统，材质系统，粒子系统，UI系统，JobSystem等。
 
@@ -714,13 +715,13 @@ This repository contains some actual game project demos developed with ZXEngine.
 
 ## 构建与跨平台 (Build And Cross-Platform)
 
-本项目支持Windows，macOS，Linux和Android，提供了四种构建工具，分别是xmake，CMake，Visual Studio 2022和Android Studio，放到了BuildSolution文件夹中。
+本项目支持Windows，macOS，Linux，Android和iOS，提供了五种构建工具，分别是xmake，CMake，Visual Studio 2022，Android Studio和Xcode，放到了BuildSolution文件夹中。
 
-This project supports Windows, macOS, Linux and Android, provides four build tools: xmake, CMake, Visual Studio 2022 and Android Studio, which are placed in the BuildSolution folder.
+This project supports Windows, macOS, Linux, Android and iOS, provides five build tools: xmake, CMake, Visual Studio 2022, Android Studio and Xcode, which are placed in the BuildSolution folder.
 
-本项目在Windows平台支持DirectX 12，Vulkan和OpenGL，在macOS平台支持Metal，Vulkan和OpenGL，在Linux平台支持OpenGL，在Android平台支持Vulkan。在Linux上的Vulkan应该也是能支持的，但是由于我缺少符合条件的硬件设备，所以暂时还没有在Linux上调试运行过Vulkan版的ZXEngine。
+本项目在Windows平台支持DirectX 12，Vulkan和OpenGL，在macOS平台支持Metal，Vulkan和OpenGL，在Linux平台支持OpenGL，在Android平台支持Vulkan，在iOS平台支持Metal。在Linux上的Vulkan应该也是能支持的，但是由于我缺少符合条件的硬件设备，所以暂时还没有在Linux上调试运行过Vulkan版的ZXEngine。
 
-This project supports DirectX 12, Vulkan and OpenGL on Windows, supports Metal, Vulkan and OpenGL on macOS, supports OpenGL on Linux and Vulkan on Android. Vulkan on Linux is also supposed to be supported, but I haven't tested and debugged the Vulkan version of ZXEngine on Linux yet because I don't have the device that meets the requirements.
+This project supports DirectX 12, Vulkan and OpenGL on Windows, supports Metal, Vulkan and OpenGL on macOS, supports OpenGL on Linux, Vulkan on Android and Metal on iOS. Vulkan on Linux is also supposed to be supported, but I haven't tested and debugged the Vulkan version of ZXEngine on Linux yet because I don't have the device that meets the requirements.
 
 ### Windows
 
@@ -825,9 +826,9 @@ Open the game project to be built in editor mode on the desktop platform first, 
 
 #### 3.
 
-把BuiltInAssets文件夹整个复制粘贴到安卓工程的asset目录下，再把你要打包的那个工程的Assets文件夹和项目配置文件一起复制粘贴到asset目录下，最后安卓工程的asset目录下应该有这三个内容：Assets，BuiltInAssets，ProjectSetting.zxprjcfg
+把BuiltInAssets文件夹整个复制粘贴到安卓工程的assets目录（app/src/main/assets）下，再把你要打包的那个工程的Assets文件夹和项目配置文件（ProjectSetting.zxprjcfg）一起复制粘贴到assets目录下，最后安卓工程的assets目录下应该有这三个内容：Assets，BuiltInAssets，ProjectSetting.zxprjcfg
 
-Copy and paste the entire BuiltInAssets folder into the asset directory of the Android Studio project. Then copy and paste the Assets folder and project configuration file of the project you want to package into the asset directory. Finally, the asset directory of the Android Studio project should have these three contents: Assets, BuiltInAssets, ProjectSetting.zxprjcfg
+Copy and paste the entire BuiltInAssets folder into the assets directory(app/src/main/assets) of the Android Studio project. Then copy and paste the Assets folder and project configuration file(ProjectSetting.zxprjcfg) of the project you want to build into the assets directory. Finally, the assets directory of the Android Studio project should have these three contents: Assets, BuiltInAssets, ProjectSetting.zxprjcfg
 
 #### 4.
 
@@ -835,11 +836,43 @@ Copy and paste the entire BuiltInAssets folder into the asset directory of the A
 
 After completing the above steps, click Build in Android Studio to complete the build.
 
-## 注意事项 (Precautions)
+### iOS
+
+ZXEngine已经完成了对iOS平台的适配，并且成功出包在iPhone设备上测试运行过了，使用Metal进行渲染。但是和在安卓平台一样暂未提供一个完整的自动化构建流程。
+
+ZXEngine has completed the iOS platform support, and has been successfully tested and run on the iPhone device, using Metal for rendering. However, just like on the Android platform, a complete automated build process has not been provided yet.
+
+目前ZXEngine在iOS上还有一个问题，就是Assimp库读取动画数据有BUG。在iOS上读取出来的aiScene::mAnimations的mRotationKeys数据有异常，我调试起来像是数据读取的时候错位了。这会导致动画系统异常。现在引擎里使用的是目前最新的Release 5.4.3依然存在这个问题，后面Assimp如果更新版本了我会关注这个问题有没有被解决。不过这个问题仅存在于iOS平台，其它所有平台，包括macOS都是正常的。
+
+Currently, ZXEngine still has one issue on iOS, which is that there is a BUG in reading animation data from the Assimp library. The mRotationKeys data of aiScene::mAnimations read on iOS is abnormal. I debug it as if the data was misplaced when reading. This will cause the animation system to malfunction. Currently, the latest Release 5.4.3 is being used in the engine, but this problem still exists. If Assimp updates its version later, I will pay attention to whether this problem has been solved. However, this issue only exists on the iOS platform. All other platforms, including macOS, are fine.
+
+如果需要构建iOS平台的ZXEngine应用，可以参考以下步骤手动构建：
+
+If you want to build ZXEngine applications for iOS platform, you can follow the following steps to build manually:
+
+#### 1.
+
+打开BuildSolution/Xcode里的Xcode模板工程，在Project Navigator里选择ZXEngine，再选择TARGETS里的ZXEngine，选择Signing & Capabilities，把Signing下的苹果账号设置为你自己的。
+
+Open the Xcode template project in BuildSolution/Xcode, select ZXEngine in Project Navigator, then select ZXEngine in TARGETS, then select Signing & Capabilities, then set the account of Signing as your own account.
+
+#### 2.
+
+把BuiltInAssets文件夹整个复制粘贴到Xcode工程的ZXAssets目录下，再把你要打包的那个工程的Assets文件夹和项目配置文件（ProjectSetting.zxprjcfg）一起复制粘贴到ZXAssets目录下，最后Xcode工程的ZXAssets目录下应该有这三个内容：Assets，BuiltInAssets，ProjectSetting.zxprjcfg
+
+Copy and paste the entire BuiltInAssets folder into the ZXAssets directory of the Xcode project. Then copy and paste the Assets folder and project configuration file(ProjectSetting.zxprjcfg) of the project you want to build into the ZXAssets directory. Finally, the ZXAssets directory of the Xcode project should have these three contents: Assets, BuiltInAssets, ProjectSetting.zxprjcfg
+
+#### 3.
+
+上述步骤都完成后，在Xcode里点击构建即可。
+
+After completing the above steps, click Build or Archive in Xcode to complete the build.
+
+## 注意事项 (Notices)
 
 目前zxshader编写好后，在DirectX 12，Metal和OpenGL下都是运行时直接读取源代码并实时编译的，但是在Vulkan下需要通过外部工具做预编译。虽然Vulkan也可以做到通过源码实时编译，但是写起来比较麻烦，而且需要引入额外的运行时库，所以没做Vulkan的实时源码编译。在Vulkan下加载一个Shader时，会去检测是否有预编译过的spv文件，如果没有的话就立刻调用外部工具编译再读取。所以如果是第一次打开某个工程，或者第一次打开某个场景，在Vulkan下速度会比较慢，因为需要等待Shader先完成一次预编译。不过可以通过点击引擎菜单栏里的“Assets/Compile All Shader for Vulkan”按钮，提前完成所有的Shader预编译。在Vulkan下还有一个问题是Shader代码的更新，因为在Vulkan下是直接读取编译成spv文件之后的Shader，而不是源代码，所以在Shader源码修改之后，需要重新编译一次才会生效，这种情况下也需要手动去点一下“Assets/Compile All Shader for Vulkan”按钮。
 
-Currently, zxshaders are read from the source code at runtime and compiled in real time under DirectX 12, Metal and OpenGL, but precompiled by external tools under Vulkan.Although Vulkan can also do real-time compilation through the shader source code, but it is more troublesome to write, and needs to introduce additional runtime libraries, so it did not do Vulkan shader real-time compilation. When loading a shader under Vulkan, the engine checks if there is a pre-compiled spv file, and if not, it immediately calls an external tool to compile and read it again. So, if it's the first time to open a project, or the first time to open a scene, the speed will be slower under Vulkan, because you need to wait for shaders to complete a pre-compilation first. However, you can complete All shader precompilation in advance by clicking the "Assets/Compile All Shader for Vulkan" button in the engine menu bar. Another thing under Vulkan is to update the shader code. Because under Vulkan the engine directly read the shader precompiled into the spv file, rather than the source code, so after the shader source code is modified, it needs to be recompiled to take effect. In this case, you also need to manually click the "Assets/Compile All Shader for Vulkan" button.
+Currently, zxshaders are read from the source code at runtime and compiled in real time under DirectX 12, Metal and OpenGL, but precompiled by external tools under Vulkan. Although Vulkan can also do real-time compilation through the shader source code, but it is more troublesome to write, and needs to introduce additional runtime libraries, so it did not do Vulkan shader real-time compilation. When loading a shader under Vulkan, the engine checks if there is a pre-compiled spv file, and if not, it immediately calls an external tool to compile and read it again. So, if it's the first time to open a project, or the first time to open a scene, the speed will be slower under Vulkan, because you need to wait for shaders to complete a pre-compilation first. However, you can complete All shader precompilation in advance by clicking the "Assets/Compile All Shader for Vulkan" button in the engine menu bar. Another thing under Vulkan is to update the shader code. Because under Vulkan the engine directly read the shader precompiled into the spv file, rather than the source code, so after the shader source code is modified, it needs to be recompiled to take effect. In this case, you also need to manually click the "Assets/Compile All Shader for Vulkan" button.
 
 在我开发ZXEngine对通用计算管线的支持的过程中，在开发DirectX 12的版本时遇到了奇怪的崩溃问题，没有异常信息抛出，崩溃在了英伟达驱动内部。最终是通过更新英伟达驱动解决的问题，我不太确定这个问题具体是怎么产生的。如果你有遇到类似的问题可以尝试更新一下驱动。
 
