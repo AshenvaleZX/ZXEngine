@@ -34,12 +34,12 @@
 #   define ZX_PLATFORM_MOBILE
 #endif
 
-#if defined(ZX_PLATFORM_DESKTOP)
-#   define ZX_API_DEFAULT 0
-#elif defined(ZX_PLATFORM_ANDROID)
+#if defined(ZX_PLATFORM_ANDROID)
 #   define ZX_API_DEFAULT 1
-#elif defined(ZX_PLATFORM_IOS)
+#elif defined(ZX_PLATFORM_MACOS) || defined(ZX_PLATFORM_IOS)
 #   define ZX_API_DEFAULT 3
+#else
+#   define ZX_API_DEFAULT 0
 #endif
 
 /*
