@@ -72,6 +72,7 @@
 |  macOS   : Metal,  Vulkan, OpenGL
 |  Linux   : OpenGL, Vulkan(Unverified)
 |  Android : Vulkan
+|  iOS     : Metal
 */
 #if defined(ZX_PLATFORM_WINDOWS) && defined(ZX_API_METAL)
 #error "Unsupported Graphics API"
@@ -94,7 +95,7 @@
 #endif
 
 /*
-|  Compute Shader Support
+|  Compute Shader Support Check
 |  macOS only supports OpenGL 4.1, but OpenGL 4.3 is required for compute shader.
 */
 #if !(defined(ZX_PLATFORM_MACOS) && defined(ZX_API_OPENGL))
