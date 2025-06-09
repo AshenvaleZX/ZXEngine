@@ -163,6 +163,7 @@
 		638199B82DCC7DDA00653443 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 638199A92DCB7F6200653443 /* CoreFoundation.framework */; };
 		638199BA2DCC7FC500653443 /* libassimp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 638199AF2DCC566D00653443 /* libassimp.a */; };
 		6381AB352DD209B600653443 /* InputManagerIOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6381AB342DD209B600653443 /* InputManagerIOS.cpp */; };
+		63D0B77E2DF6AF9A0020AA38 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63D0B77D2DF6AF9A0020AA38 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -520,6 +521,7 @@
 		638199B52DCC67AD00653443 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		6381AB332DD209B600653443 /* InputManagerIOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InputManagerIOS.h; sourceTree = "<group>"; };
 		6381AB342DD209B600653443 /* InputManagerIOS.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = InputManagerIOS.cpp; sourceTree = "<group>"; };
+		63D0B77D2DF6AF9A0020AA38 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -542,6 +544,7 @@
 		6381968E2DC9D85F00653443 = {
 			isa = PBXGroup;
 			children = (
+				63D0B77D2DF6AF9A0020AA38 /* LaunchScreen.storyboard */,
 				632BCF032DD6219600673702 /* ZXAssets */,
 				638198D02DC9F21400653443 /* CPPScripts */,
 				638199A42DCB7F0400653443 /* Frameworks */,
@@ -1185,6 +1188,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				632BCF042DD6219A00673702 /* ZXAssets in Resources */,
+				63D0B77E2DF6AF9A0020AA38 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1482,6 +1486,7 @@
 				);
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = metal;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
@@ -1519,6 +1524,7 @@
 				);
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = metal;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
