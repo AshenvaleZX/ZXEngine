@@ -197,8 +197,17 @@ namespace ZXEngine
 
 		mWaitForComputeFenceOfLastFrame.resize(DX_MAX_FRAMES_IN_FLIGHT, true);
 
+		D3D12_DESCRIPTOR_HEAP_DESC mipmapHeapDesc = {};
+		mipmapHeapDesc.NumDescriptors = 256;
+		mipmapHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		mipmapHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+		mD3D12Device->CreateDescriptorHeap(&mipmapHeapDesc, IID_PPV_ARGS(&mMipmapGenerationDescriptorHeap));
+
 		// 初始化光追相关对象
 		InitDXR();
+
+		// 用来生成Mipmap的Compute Shader
+		mMipmapGenerationShader = LoadAndSetUpComputeShader(Resources::GetAssetFullPath("Shaders/MipmapGeneration", true));
 	}
 
 	void RenderAPID3D12::GetDeviceProperties()
@@ -1127,9 +1136,23 @@ namespace ZXEngine
 		int nrComponents;
 		stbi_uc* pixels = stbi_load(path, &width, &height, &nrComponents, STBI_rgb_alpha);
 
+		bool genMipmap = true;
 		// 创建纹理资源
+		uint32_t mipmapLevel = 1;
+		if (genMipmap)
+			mipmapLevel = GetMipmapLevel(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+		if (mipmapLevel == 1)
+			genMipmap = false;
+
 		CD3DX12_HEAP_PROPERTIES textureProps(D3D12_HEAP_TYPE_DEFAULT);
-		CD3DX12_RESOURCE_DESC textureDesc(CD3DX12_RESOURCE_DESC::Tex2D(mDefaultImageFormat, width, height, 1, 1));
+		CD3DX12_RESOURCE_DESC textureDesc(CD3DX12_RESOURCE_DESC::Tex2D(mDefaultImageFormat,
+			static_cast<UINT64>(width),
+			static_cast<UINT>(height),
+			1,
+			static_cast<UINT16>(mipmapLevel),
+			1, 0, 
+			D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
+		));
 		ComPtr<ID3D12Resource> textureResource;
 		ThrowIfFailed(mD3D12Device->CreateCommittedResource(
 			&textureProps,
@@ -1178,15 +1201,99 @@ namespace ZXEngine
 			cmdList->ResourceBarrier(1, &barrier);
 		});
 
+		if (genMipmap)
+		{
+			auto descriptorMgr = ZXD3D12DescriptorManager::GetInstance();
+
+			vector<ZXD3D12DescriptorHandle> srvHandles;
+			vector<ZXD3D12DescriptorHandle> uavHandles;
+			for (uint32_t i = 0; i < mipmapLevel; i++)
+			{
+				D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+				srvDesc.Format = mDefaultImageFormat;
+				srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+				srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+				srvDesc.Texture2D.MipLevels = 1;
+				srvDesc.Texture2D.MostDetailedMip = static_cast<UINT>(i);
+
+				srvHandles.push_back(descriptorMgr->CreateDescriptor(textureResource, srvDesc));
+
+				D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+				uavDesc.Format = mDefaultImageFormat;
+				uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+				uavDesc.Texture2D.MipSlice = static_cast<UINT>(i);
+
+				uavHandles.push_back(descriptorMgr->CreateDescriptor(textureResource, uavDesc));
+			}
+
+			ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList4> cmdList)
+			{
+				auto pipeline = GetComputePipelineByIndex(mMipmapGenerationShader->ID);
+				cmdList->SetComputeRootSignature(pipeline->rootSignature.Get());
+				cmdList->SetPipelineState(pipeline->pipelineState.Get());
+
+				INT offset = 0;
+				CD3DX12_CPU_DESCRIPTOR_HANDLE dynamicDescriptorHandle(mMipmapGenerationDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+
+				ID3D12DescriptorHeap* curDescriptorHeaps[] = { mMipmapGenerationDescriptorHeap.Get() };
+				cmdList->SetDescriptorHeaps(_countof(curDescriptorHeaps), curDescriptorHeaps);
+
+				CD3DX12_RESOURCE_BARRIER beginBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+					textureResource.Get(),
+					D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+					D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+				);
+				cmdList->ResourceBarrier(1, &beginBarrier);
+
+				for (size_t i = 1; i < mipmapLevel; i++)
+				{
+					auto cpuHandle = descriptorMgr->GetCPUDescriptorHandle(srvHandles[i - 1]);
+					mD3D12Device->CopyDescriptorsSimple(1, dynamicDescriptorHandle, cpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					dynamicDescriptorHandle.Offset(1, mCbvSrvUavDescriptorSize);
+
+					cpuHandle = descriptorMgr->GetCPUDescriptorHandle(uavHandles[i]);
+					mD3D12Device->CopyDescriptorsSimple(1, dynamicDescriptorHandle, cpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					dynamicDescriptorHandle.Offset(1, mCbvSrvUavDescriptorSize);
+
+					CD3DX12_GPU_DESCRIPTOR_HANDLE dynamicGPUHandle(mMipmapGenerationDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+					dynamicGPUHandle.Offset(offset, mCbvSrvUavDescriptorSize);
+					offset += 2;
+
+					cmdList->SetComputeRootDescriptorTable(0, dynamicGPUHandle);
+
+					cmdList->Dispatch(
+						Math::Max(Math::CeilDiv(static_cast<UINT>(width), 8u), 1u),
+						Math::Max(Math::CeilDiv(static_cast<UINT>(height), 8u), 1u),
+						1
+					);
+
+					CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(textureResource.Get());
+					cmdList->ResourceBarrier(1, &uavBarrier);
+				}
+
+				CD3DX12_RESOURCE_BARRIER endBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+					textureResource.Get(),
+					D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+					D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+				);
+				cmdList->ResourceBarrier(1, &endBarrier);
+			});
+
+			for (uint32_t i = 0; i < mipmapLevel; i++)
+			{
+				descriptorMgr->ReleaseDescriptor(srvHandles[i]);
+				descriptorMgr->ReleaseDescriptor(uavHandles[i]);
+			}
+		}
+
 		stbi_image_free(pixels);
 
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 		srvDesc.Format = mDefaultImageFormat;
 		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		srvDesc.Texture2D.MipLevels = 1;
+		srvDesc.Texture2D.MipLevels = static_cast<UINT16>(mipmapLevel);
 		srvDesc.Texture2D.MostDetailedMip = 0;
-		srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
 		return CreateZXD3D12Texture(textureResource, srvDesc);
 	}
@@ -1287,9 +1394,24 @@ namespace ZXEngine
 
 	unsigned int RenderAPID3D12::CreateTexture(TextureFullData* data)
 	{
+		bool genMipmap = true;
+		// 创建纹理资源
+		uint32_t mipmapLevel = 1;
+		if (genMipmap)
+			mipmapLevel = GetMipmapLevel(static_cast<uint32_t>(data->width), static_cast<uint32_t>(data->height));
+		if (mipmapLevel == 1)
+			genMipmap = false;
+
 		// 创建纹理资源
 		CD3DX12_HEAP_PROPERTIES textureProps(D3D12_HEAP_TYPE_DEFAULT);
-		CD3DX12_RESOURCE_DESC textureDesc(CD3DX12_RESOURCE_DESC::Tex2D(mDefaultImageFormat, data->width, data->height, 1, 1));
+		CD3DX12_RESOURCE_DESC textureDesc(CD3DX12_RESOURCE_DESC::Tex2D(mDefaultImageFormat,
+			static_cast<UINT64>(data->width),
+			static_cast<UINT>(data->height),
+			1,
+			static_cast<UINT16>(mipmapLevel),
+			1, 0,
+			D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
+		));
 		ComPtr<ID3D12Resource> textureResource;
 		ThrowIfFailed(mD3D12Device->CreateCommittedResource(
 			&textureProps,
@@ -1338,13 +1460,97 @@ namespace ZXEngine
 			cmdList->ResourceBarrier(1, &barrier);
 		});
 
+		if (genMipmap)
+		{
+			auto descriptorMgr = ZXD3D12DescriptorManager::GetInstance();
+
+			vector<ZXD3D12DescriptorHandle> srvHandles;
+			vector<ZXD3D12DescriptorHandle> uavHandles;
+			for (uint32_t i = 0; i < mipmapLevel; i++)
+			{
+				D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+				srvDesc.Format = mDefaultImageFormat;
+				srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+				srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+				srvDesc.Texture2D.MipLevels = 1;
+				srvDesc.Texture2D.MostDetailedMip = static_cast<UINT>(i);
+
+				srvHandles.push_back(descriptorMgr->CreateDescriptor(textureResource, srvDesc));
+
+				D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+				uavDesc.Format = mDefaultImageFormat;
+				uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+				uavDesc.Texture2D.MipSlice = static_cast<UINT>(i);
+
+				uavHandles.push_back(descriptorMgr->CreateDescriptor(textureResource, uavDesc));
+			}
+
+			ImmediatelyExecute([=](ComPtr<ID3D12GraphicsCommandList4> cmdList)
+			{
+				auto pipeline = GetComputePipelineByIndex(mMipmapGenerationShader->ID);
+				cmdList->SetComputeRootSignature(pipeline->rootSignature.Get());
+				cmdList->SetPipelineState(pipeline->pipelineState.Get());
+
+				INT offset = 0;
+				CD3DX12_CPU_DESCRIPTOR_HANDLE dynamicDescriptorHandle(mMipmapGenerationDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+
+				ID3D12DescriptorHeap* curDescriptorHeaps[] = { mMipmapGenerationDescriptorHeap.Get() };
+				cmdList->SetDescriptorHeaps(_countof(curDescriptorHeaps), curDescriptorHeaps);
+
+				CD3DX12_RESOURCE_BARRIER beginBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+					textureResource.Get(),
+					D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+					D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+				);
+				cmdList->ResourceBarrier(1, &beginBarrier);
+
+				for (size_t i = 1; i < mipmapLevel; i++)
+				{
+					auto cpuHandle = descriptorMgr->GetCPUDescriptorHandle(srvHandles[i - 1]);
+					mD3D12Device->CopyDescriptorsSimple(1, dynamicDescriptorHandle, cpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					dynamicDescriptorHandle.Offset(1, mCbvSrvUavDescriptorSize);
+
+					cpuHandle = descriptorMgr->GetCPUDescriptorHandle(uavHandles[i]);
+					mD3D12Device->CopyDescriptorsSimple(1, dynamicDescriptorHandle, cpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					dynamicDescriptorHandle.Offset(1, mCbvSrvUavDescriptorSize);
+
+					CD3DX12_GPU_DESCRIPTOR_HANDLE dynamicGPUHandle(mMipmapGenerationDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+					dynamicGPUHandle.Offset(offset, mCbvSrvUavDescriptorSize);
+					offset += 2;
+
+					cmdList->SetComputeRootDescriptorTable(0, dynamicGPUHandle);
+
+					cmdList->Dispatch(
+						Math::Max(Math::CeilDiv(static_cast<UINT>(data->width), 8u), 1u),
+						Math::Max(Math::CeilDiv(static_cast<UINT>(data->height), 8u), 1u),
+						1
+					);
+
+					CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(textureResource.Get());
+					cmdList->ResourceBarrier(1, &uavBarrier);
+				}
+
+				CD3DX12_RESOURCE_BARRIER endBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+					textureResource.Get(),
+					D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+					D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+				);
+				cmdList->ResourceBarrier(1, &endBarrier);
+			});
+
+			for (uint32_t i = 0; i < mipmapLevel; i++)
+			{
+				descriptorMgr->ReleaseDescriptor(srvHandles[i]);
+				descriptorMgr->ReleaseDescriptor(uavHandles[i]);
+			}
+		}
+
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 		srvDesc.Format = mDefaultImageFormat;
 		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		srvDesc.Texture2D.MipLevels = 1;
+		srvDesc.Texture2D.MipLevels = static_cast<UINT16>(mipmapLevel);
 		srvDesc.Texture2D.MostDetailedMip = 0;
-		srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
 		return CreateZXD3D12Texture(textureResource, srvDesc);
 	}
@@ -2802,10 +3008,11 @@ namespace ZXEngine
 		// 创建根签名
 		ComPtr<ID3D12RootSignature> rootSignature;
 		{
+			bool needSample = false;
 			vector<D3D12_DESCRIPTOR_RANGE> descriptorRanges;
 			for (auto& bufferInfo : shaderInfo.bufferInfos)
 			{
-				if (bufferInfo.type == ShaderBufferType::Storage)
+				if (bufferInfo.type == ShaderBufferType::Storage || bufferInfo.type == ShaderBufferType::Texture)
 				{
 					D3D12_DESCRIPTOR_RANGE descriptorRange = {};
 					descriptorRange.RangeType = bufferInfo.isReadOnly ? D3D12_DESCRIPTOR_RANGE_TYPE_SRV : D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
@@ -2815,6 +3022,9 @@ namespace ZXEngine
 					descriptorRange.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 					descriptorRanges.push_back(descriptorRange);
+
+					if (bufferInfo.type == ShaderBufferType::Texture)
+						needSample = true;
 				}
 			}
 
@@ -2822,7 +3032,15 @@ namespace ZXEngine
 			rootParameters[0].InitAsDescriptorTable(static_cast<UINT>(descriptorRanges.size()), descriptorRanges.data());
 
 			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
-			rootSignatureDesc.Init(static_cast<UINT>(rootParameters.size()), rootParameters.data(), 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE);
+			if (needSample)
+			{
+				auto samplers = GetStaticSamplersDesc();
+				rootSignatureDesc.Init(static_cast<UINT>(rootParameters.size()), rootParameters.data(), static_cast<UINT>(samplers.size()), samplers.data(), D3D12_ROOT_SIGNATURE_FLAG_NONE);
+			}
+			else
+			{
+				rootSignatureDesc.Init(static_cast<UINT>(rootParameters.size()), rootParameters.data(), 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE);
+			}
 
 			ComPtr<ID3DBlob> error;
 			ComPtr<ID3DBlob> signature;
@@ -4823,6 +5041,18 @@ namespace ZXEngine
 		FBOManager::GetInstance()->RecreateAllFollowWindowFBO();
 		EventManager::GetInstance()->FireEvent(EventType::WINDOW_RESIZE, "");
 		mGameViewResized = false;
+	}
+
+	uint32_t RenderAPID3D12::GetMipmapLevel(uint32_t width, uint32_t height) const
+	{
+		uint32_t mipLevel = 1;
+		while (width > 1 || height > 1)
+		{
+			width = Math::Max(width / 2, 1u);
+			height = Math::Max(height / 2, 1u);
+			mipLevel++;
+		}
+		return mipLevel;
 	}
 
 	ZXD3D12Fence* RenderAPID3D12::CreateZXD3D12Fence()

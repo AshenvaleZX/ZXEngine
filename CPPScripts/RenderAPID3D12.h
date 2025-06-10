@@ -162,6 +162,9 @@ namespace ZXEngine
 		vector<UINT> mDynamicComputeDescriptorOffsets;
 		vector<ComPtr<ID3D12DescriptorHeap>> mDynamicComputeDescriptorHeaps;
 
+		// 用于生成Mipmap的描述符堆
+		ComPtr<ID3D12DescriptorHeap> mMipmapGenerationDescriptorHeap;
+
 		// 屏幕后台缓冲区图像格式
 		DXGI_FORMAT mPresentBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 		// 默认的纹理和FrameBuffer色彩空间
@@ -189,6 +192,8 @@ namespace ZXEngine
 		vector<ZXD3D12DescriptorHandle> mPresentBufferRTVHandles;
 
 		ComPtr<ID3D12CommandQueue> mCommandQueue;
+
+		ComputeShaderReference* mMipmapGenerationShader = nullptr;
 
 		void InitD3D12();
 		void GetDeviceProperties();
@@ -408,6 +413,8 @@ namespace ZXEngine
 
 		void DoWindowSizeChange();
 		void DoGameViewSizeChange();
+
+		uint32_t GetMipmapLevel(uint32_t width, uint32_t height) const;
 
 		ZXD3D12Fence* CreateZXD3D12Fence();
 		void SignalFence(ZXD3D12Fence* fence);
