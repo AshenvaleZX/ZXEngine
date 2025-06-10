@@ -15,7 +15,7 @@ pushd "%exclude_path2%"
 set "abs_exclude_path2=%CD%"
 popd
 
-for /R "%path_to_folder%" %%F in (*.cpp *.h) do (
+for /R "%path_to_folder%" %%F in (*.cpp *.h *.m *.mm) do (
     set "current_path=%%~dpF"
     if not "!current_path!"=="!abs_exclude_path1!\" if not "!current_path!"=="!abs_exclude_path2!\" (
         set current_file_lines=0
