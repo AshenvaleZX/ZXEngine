@@ -119,6 +119,12 @@ namespace ZXEngine
 		template<class T>
 		static constexpr T AlignDownPOT(T num, T alignment);
 
+		template <typename T, typename = typename std::enable_if<std::is_integral_v<T>>::type>
+		static constexpr T CeilDiv(T numerator, T denominator)
+		{
+			return (numerator + denominator - 1) / denominator;
+		}
+
 	private:
 		static Matrix4 InverseTest(const Matrix4& mat);
 	};
