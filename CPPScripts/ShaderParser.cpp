@@ -1718,17 +1718,30 @@ namespace ZXEngine
 		for (auto& line : lines)
 		{
 #ifdef ZX_API_D3D12
-			auto lexicalItem = line.find("ByteAddressBuffer");
-			if (lexicalItem == string::npos)
-				continue;
-
-			string binding = Utils::GetNextStringBlock(line, 0, '(', ')');
-			binding = binding.substr(1, binding.size() - 1);
-
 			ShaderBufferInfo info;
-			info.type = ShaderBufferType::Storage;
-			info.binding = static_cast<uint32_t>(std::stoul(binding));
-			info.isReadOnly = line.find("Output") == string::npos;
+
+			if (line.find("ByteAddressBuffer") != string::npos)
+			{
+				string binding = Utils::GetNextStringBlock(line, 0, '(', ')');
+				binding = binding.substr(1, binding.size() - 1);
+
+				info.type = ShaderBufferType::Storage;
+				info.binding = static_cast<uint32_t>(std::stoul(binding));
+				info.isReadOnly = line.find("Output") == string::npos;
+			}
+			else if (line.find("Texture2D") != string::npos)
+			{
+				string binding = Utils::GetNextStringBlock(line, 0, '(', ')');
+				string bindingIdx = binding.substr(1, binding.size() - 1);
+
+				info.type = ShaderBufferType::Texture;
+				info.binding = static_cast<uint32_t>(std::stoul(bindingIdx));
+				info.isReadOnly = binding.find("t") != string::npos;
+			}
+			else
+			{
+				continue;
+			}
 #else
 			auto lexicalItem = line.find("buffer");
 			if (lexicalItem == string::npos)

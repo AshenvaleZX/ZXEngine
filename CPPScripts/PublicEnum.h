@@ -169,6 +169,7 @@ namespace ZXEngine
 	{
 		Uniform,
 		Storage,
+		Texture,
 	};
 
 	enum class CommandType
