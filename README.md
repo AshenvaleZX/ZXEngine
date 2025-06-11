@@ -138,9 +138,9 @@ ZXEngine集成了Vulkan，DirectX 12，Metal和OpenGL的通用计算管线，并
 
 ZXEngine integrates the compute pipeline of Vulkan, DirectX 12, Metal and OpenGL and is encapsulated into a unified interface for use. Since macOS only supports OpenGL 4.1, and OpenGL added support for the compute pipeline from version 4.3, all compute pipeline related modules are disabled when using OpenGL on macOS. Except for the macOS + OpenGL combination that does not support compute pipeline, other platform + graphics API combinations are support.
 
-目前项目中实际应用了计算管线的地方在骨骼蒙皮动画模块。在启用了ZX_COMPUTE_ANIMATION宏之后，骨骼蒙皮动画的Mesh更新操作将在计算管线中完成。
+目前项目中实际应用了计算管线的地方在骨骼蒙皮动画模块和D3D12的Mipmap生成。在启用了ZX_COMPUTE_ANIMATION宏之后，骨骼蒙皮动画的Mesh更新操作将在计算管线中完成。
 
-Currently, the actual application of compute pipeline in the project is in the skeletal animation system. When the ZX_COMPUTE_ANIMATION macro is enabled, the update of skinned mesh will be done in the compute pipeline.
+Currently, the actual application of compute pipeline in the project is in the skeletal animation system and the mipmap generation of D3D12. When the ZX_COMPUTE_ANIMATION macro is enabled, the update of skinned mesh will be done in the compute pipeline.
 
 ## PhysZ物理引擎简介 (PhysZ Physics Engine Introduction)
 
