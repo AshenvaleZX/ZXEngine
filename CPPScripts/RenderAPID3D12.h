@@ -411,6 +411,8 @@ namespace ZXEngine
 
 		uint32_t GetCurFrameBufferIndex() const;
 
+		void CheckErrorBlob(const ComPtr<ID3DBlob>& errors, const string& path);
+
 		void DoWindowSizeChange();
 		void DoGameViewSizeChange();
 

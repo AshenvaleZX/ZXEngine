@@ -1726,8 +1726,7 @@ namespace ZXEngine
 			ComPtr<ID3DBlob> errors;
 			HRESULT res = D3DCompile(hlslCode.c_str(), hlslCode.length(), NULL, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
 				"VS", "vs_5_1", compileFlags, 0, &vertCode, &errors);
-			if (errors != nullptr)
-				Debug::LogError("Compile error in %s, dump error:\n%s", path, (const char*)errors->GetBufferPointer());
+			CheckErrorBlob(errors, path);
 			ThrowIfFailed(res);
 		}
 		// 编译Geometry Shader
@@ -1737,8 +1736,7 @@ namespace ZXEngine
 			ComPtr<ID3DBlob> errors;
 			HRESULT res = D3DCompile(hlslCode.c_str(), hlslCode.length(), NULL, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
 				"GS", "gs_5_1", compileFlags, 0, &geomCode, &errors);
-			if (errors != nullptr)
-				Debug::LogError("Compile error in %s, dump error:\n%s", path, (const char*)errors->GetBufferPointer());
+			CheckErrorBlob(errors, path);
 			ThrowIfFailed(res);
 		}
 		// 编译Fragment(Pixel) Shader
@@ -1748,8 +1746,7 @@ namespace ZXEngine
 			ComPtr<ID3DBlob> errors;
 			HRESULT res = D3DCompile(hlslCode.c_str(), hlslCode.length(), NULL, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
 				"PS", "ps_5_1", compileFlags, 0, &fragCode, &errors);
-			if (errors != nullptr)
-				Debug::LogError("Compile error in %s, dump error:\n%s", path, (const char*)errors->GetBufferPointer());
+			CheckErrorBlob(errors, path);
 			ThrowIfFailed(res);
 		}
 
@@ -4992,6 +4989,27 @@ namespace ZXEngine
 			return mCurPresentIdx;
 		else
 			return mCurrentFrame;
+	}
+
+	void RenderAPID3D12::CheckErrorBlob(const ComPtr<ID3DBlob>& errors, const string& path)
+	{
+		if (errors != nullptr)
+		{
+			const char* msg = (const char*)errors->GetBufferPointer();
+			std::istringstream stream(msg);
+			std::string line;
+			while (std::getline(stream, line))
+			{
+				if (line.find("error") != std::string::npos)
+				{
+					Debug::LogError("Compile error in %s, dump error:\n%s", path, line);
+				}
+				else
+				{
+					Debug::LogWarning("Compile warning in %s, dump warning:\n%s", path, line);
+				}
+			}
+		}
 	}
 
 	void RenderAPID3D12::DoWindowSizeChange()
