@@ -34,8 +34,13 @@
 #   define ZX_PLATFORM_MOBILE
 #endif
 
+/*
+|  Default Graphics API Configuration
+*/
 #if defined(ZX_PLATFORM_ANDROID)
 #   define ZX_API_DEFAULT 1
+#elif defined(ZX_PLATFORM_WINDOWS)
+#   define ZX_API_DEFAULT 2
 #elif defined(ZX_PLATFORM_MACOS) || defined(ZX_PLATFORM_IOS)
 #   define ZX_API_DEFAULT 3
 #else
