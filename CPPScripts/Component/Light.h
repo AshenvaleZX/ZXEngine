@@ -28,4 +28,17 @@ namespace ZXEngine
 		Matrix4 GetLightMatrix();
 		Matrix4 GetProjectionMatrix();
 	};
+
+	ZXRef_StaticReflection
+	(
+		Light,
+		ZXRef_BaseType(Component)
+		ZXRef_Fields
+		(
+			ZXRef_Field(&Light::mColor),
+			ZXRef_Field(&Light::mIntensity),
+			ZXRef_Field(&Light::mType),
+			ZXRef_Field(&Light::mDirectionalLightSpaceSize)
+		)
+	)
 }

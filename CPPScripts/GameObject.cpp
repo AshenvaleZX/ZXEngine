@@ -171,7 +171,7 @@ namespace ZXEngine
 			else if (component["Type"] == "Camera")
 				Parse<Camera>(component);
 			else if (component["Type"] == "Light")
-				ParseLight(component);
+				Parse<Light>(component);
 			else if (component["Type"] == "GameLogic")
 				Parse<GameLogic>(component);
 			else if (component["Type"] == "UIButton")
@@ -373,18 +373,6 @@ namespace ZXEngine
 		{
 			Debug::LogWarning("No meshs !");
 		}
-	}
-
-	void GameObject::ParseLight(json data)
-	{
-		Light* light = AddComponent<Light>();
-
-		light->color = Vector3(data["Color"][0], data["Color"][1], data["Color"][2]);
-		light->intensity = data["Intensity"];
-		light->type = data["LightType"];
-
-		if (!data["ShadowRange"].is_null())
-			light->mDirectionalLightSpaceSize = data["ShadowRange"];
 	}
 
 	void GameObject::ParseUIButton(json data)
