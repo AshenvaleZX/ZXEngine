@@ -17,10 +17,16 @@
         },
         {
             "Type": "Light",
-            "Color": [1, 1, 1],
-            "Intensity": 1,
-            "LightType": 1,
-            "ShadowRange": 10
+            "mColor":
+            {
+                "Type": "Vector3",
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "mIntensity": 1,
+            "mType": 1,
+            "mDirectionalLightSpaceSize": 10
         }
     ]
 }

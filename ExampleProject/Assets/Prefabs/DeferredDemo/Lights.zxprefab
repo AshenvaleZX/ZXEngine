@@ -30,9 +30,15 @@
                 },
                 {
                     "Type": "Light",
-                    "Color": [1, 1, 1],
-                    "Intensity": 1,
-                    "LightType": 2
+                    "mColor":
+                    {
+                        "Type": "Vector3",
+                        "x": 1.0,
+                        "y": 1.0,
+                        "z": 1.0
+                    },
+                    "mIntensity": 1,
+                    "mType": 2
                 }
             ]
         },
@@ -55,9 +61,15 @@
                 },
                 {
                     "Type": "Light",
-                    "Color": [1, 1, 1],
-                    "Intensity": 1,
-                    "LightType": 2
+                    "mColor":
+                    {
+                        "Type": "Vector3",
+                        "x": 1.0,
+                        "y": 1.0,
+                        "z": 1.0
+                    },
+                    "mIntensity": 1,
+                    "mType": 2
                 }
             ]
         },
@@ -80,9 +92,15 @@
                 },
                 {
                     "Type": "Light",
-                    "Color": [1, 0, 0],
-                    "Intensity": 1,
-                    "LightType": 2
+                    "mColor":
+                    {
+                        "Type": "Vector3",
+                        "x": 1.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "mIntensity": 1,
+                    "mType": 2
                 },
                 {
                     "Type": "GameLogic",
@@ -109,9 +127,15 @@
                 },
                 {
                     "Type": "Light",
-                    "Color": [0, 1, 0],
-                    "Intensity": 1,
-                    "LightType": 2
+                    "mColor":
+                    {
+                        "Type": "Vector3",
+                        "x": 0.0,
+                        "y": 1.0,
+                        "z": 0.0
+                    },
+                    "mIntensity": 1,
+                    "mType": 2
                 },
                 {
                     "Type": "GameLogic",
@@ -138,9 +162,15 @@
                 },
                 {
                     "Type": "Light",
-                    "Color": [0, 0, 1],
-                    "Intensity": 1,
-                    "LightType": 2
+                    "mColor":
+                    {
+                        "Type": "Vector3",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0
+                    },
+                    "mIntensity": 1,
+                    "mType": 2
                 },
                 {
                     "Type": "GameLogic",
@@ -167,9 +197,15 @@
                 },
                 {
                     "Type": "Light",
-                    "Color": [0, 1, 1],
-                    "Intensity": 1,
-                    "LightType": 2
+                    "mColor":
+                    {
+                        "Type": "Vector3",
+                        "x": 0.0,
+                        "y": 1.0,
+                        "z": 1.0
+                    },
+                    "mIntensity": 1,
+                    "mType": 2
                 },
                 {
                     "Type": "GameLogic",
@@ -196,9 +232,15 @@
                 },
                 {
                     "Type": "Light",
-                    "Color": [1, 0, 1],
-                    "Intensity": 1,
-                    "LightType": 2
+                    "mColor":
+                    {
+                        "Type": "Vector3",
+                        "x": 1.0,
+                        "y": 0.0,
+                        "z": 1.0
+                    },
+                    "mIntensity": 1,
+                    "mType": 2
                 },
                 {
                     "Type": "GameLogic",
@@ -225,9 +267,15 @@
                 },
                 {
                     "Type": "Light",
-                    "Color": [1, 1, 0],
-                    "Intensity": 1,
-                    "LightType": 2
+                    "mColor":
+                    {
+                        "Type": "Vector3",
+                        "x": 1.0,
+                        "y": 1.0,
+                        "z": 0.0
+                    },
+                    "mIntensity": 1,
+                    "mType": 2
                 },
                 {
                     "Type": "GameLogic",
@@ -254,9 +302,15 @@
                 },
                 {
                     "Type": "Light",
-                    "Color": [0, 0.5, 1],
-                    "Intensity": 1,
-                    "LightType": 2
+                    "mColor":
+                    {
+                        "Type": "Vector3",
+                        "x": 0.0,
+                        "y": 0.5,
+                        "z": 1.0
+                    },
+                    "mIntensity": 1,
+                    "mType": 2
                 },
                 {
                     "Type": "GameLogic",
@@ -283,9 +337,15 @@
                 },
                 {
                     "Type": "Light",
-                    "Color": [0, 1, 0.5],
-                    "Intensity": 1,
-                    "LightType": 2
+                    "mColor":
+                    {
+                        "Type": "Vector3",
+                        "x": 0.0,
+                        "y": 1.0,
+                        "z": 0.5
+                    },
+                    "mIntensity": 1,
+                    "mType": 2
                 },
                 {
                     "Type": "GameLogic",
@@ -312,9 +372,15 @@
                 },
                 {
                     "Type": "Light",
-                    "Color": [0.5, 0, 1],
-                    "Intensity": 1,
-                    "LightType": 2
+                    "mColor":
+                    {
+                        "Type": "Vector3",
+                        "x": 0.5,
+                        "y": 0.0,
+                        "z": 1.0
+                    },
+                    "mIntensity": 1,
+                    "mType": 2
                 },
                 {
                     "Type": "GameLogic",
@@ -341,9 +407,15 @@
                 },
                 {
                     "Type": "Light",
-                    "Color": [1, 0, 0.5],
-                    "Intensity": 1,
-                    "LightType": 2
+                    "mColor":
+                    {
+                        "Type": "Vector3",
+                        "x": 1.0,
+                        "y": 0.0,
+                        "z": 0.5
+                    },
+                    "mIntensity": 1,
+                    "mType": 2
                 },
                 {
                     "Type": "GameLogic",
@@ -370,9 +442,15 @@
                 },
                 {
                     "Type": "Light",
-                    "Color": [0.5, 1, 0],
-                    "Intensity": 1,
-                    "LightType": 2
+                    "mColor":
+                    {
+                        "Type": "Vector3",
+                        "x": 0.5,
+                        "y": 1.0,
+                        "z": 0.0
+                    },
+                    "mIntensity": 1,
+                    "mType": 2
                 },
                 {
                     "Type": "GameLogic",
@@ -399,9 +477,15 @@
                 },
                 {
                     "Type": "Light",
-                    "Color": [1, 0.5, 0],
-                    "Intensity": 1,
-                    "LightType": 2
+                    "mColor":
+                    {
+                        "Type": "Vector3",
+                        "x": 1.0,
+                        "y": 0.5,
+                        "z": 0.0
+                    },
+                    "mIntensity": 1,
+                    "mType": 2
                 },
                 {
                     "Type": "GameLogic",
@@ -428,9 +512,15 @@
                 },
                 {
                     "Type": "Light",
-                    "Color": [0, 0.5, 0.5],
-                    "Intensity": 1,
-                    "LightType": 2
+                    "mColor":
+                    {
+                        "Type": "Vector3",
+                        "x": 0.0,
+                        "y": 0.5,
+                        "z": 0.5
+                    },
+                    "mIntensity": 1,
+                    "mType": 2
                 },
                 {
                     "Type": "GameLogic",
@@ -457,9 +547,15 @@
                 },
                 {
                     "Type": "Light",
-                    "Color": [0.5, 0, 0.5],
-                    "Intensity": 1,
-                    "LightType": 2
+                    "mColor":
+                    {
+                        "Type": "Vector3",
+                        "x": 0.5,
+                        "y": 0.0,
+                        "z": 0.5
+                    },
+                    "mIntensity": 1,
+                    "mType": 2
                 },
                 {
                     "Type": "GameLogic",
@@ -486,9 +582,15 @@
                 },
                 {
                     "Type": "Light",
-                    "Color": [0.5, 0.5, 0],
-                    "Intensity": 1,
-                    "LightType": 2
+                    "mColor":
+                    {
+                        "Type": "Vector3",
+                        "x": 0.5,
+                        "y": 0.5,
+                        "z": 0.0
+                    },
+                    "mIntensity": 1,
+                    "mType": 2
                 },
                 {
                     "Type": "GameLogic",
@@ -515,9 +617,15 @@
                 },
                 {
                     "Type": "Light",
-                    "Color": [1, 1, 0.5],
-                    "Intensity": 1,
-                    "LightType": 2
+                    "mColor":
+                    {
+                        "Type": "Vector3",
+                        "x": 1.0,
+                        "y": 1.0,
+                        "z": 0.5
+                    },
+                    "mIntensity": 1,
+                    "mType": 2
                 },
                 {
                     "Type": "GameLogic",
