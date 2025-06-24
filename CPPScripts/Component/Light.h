@@ -14,9 +14,9 @@ namespace ZXEngine
 		static vector<Light*> allLights;
 
 	public:
-		Vector3 color;
-		float intensity = 0.0f;
-		LightType type = LightType::None;
+		Vector3 mColor;
+		float mIntensity = 0.0f;
+		LightType mType = LightType::None;
 		float mDirectionalLightSpaceSize = 20.0f;
 
 		Light();

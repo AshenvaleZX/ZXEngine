@@ -72,7 +72,7 @@ namespace ZXEngine
 		for (auto light : allLights)
 		{
 			lightPos.push_back(light->GetTransform()->GetPosition());
-			lightColor.push_back(light->color);
+			lightColor.push_back(light->mColor);
 		}
 		mDeferredMaterial->SetVector("_LightPositions", lightPos.data(), static_cast<uint32_t>(lightPos.size()));
 		mDeferredMaterial->SetVector("_LightColors", lightColor.data(), static_cast<uint32_t>(lightColor.size()));

@@ -57,8 +57,8 @@ namespace ZXEngine
 		lightPos = lights[0]->GetTransform()->GetPosition();
 		// 光源方向是指向光源的，所以要取反
 		lightDir = -lights[0]->GetTransform()->GetForward();
-		lightColor = lights[0]->color;
-		lightIntensity = lights[0]->intensity;
+		lightColor = lights[0]->mColor;
+		lightIntensity = lights[0]->mIntensity;
 	}
 
 	void RenderEngineProperties::SetCameraProperties(Camera* camera)

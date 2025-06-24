@@ -57,11 +57,11 @@ namespace ZXEngine
 		// 渲染阴影的光源
 		Light* light = Light::GetAllLights()[0];
 
-		if (light->type == LightType::Directional)
+		if (light->mType == LightType::Directional)
 		{
 			RenderShadowMap(light);
 		}
-		else if (light->type == LightType::Point)
+		else if (light->mType == LightType::Point)
 		{
 			RenderShadowCubeMap(light);
 		}

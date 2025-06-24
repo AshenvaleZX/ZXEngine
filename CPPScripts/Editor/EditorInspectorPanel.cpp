@@ -483,7 +483,7 @@ namespace ZXEngine
 		// Type
 		static ImGuiComboFlags flags = 0;
 		const char* items[] = { "None", "Directional", "Point" };
-		static int item_current_idx = (int)component->type;
+		static int item_current_idx = (int)component->mType;
 		const char* combo_preview_value = items[item_current_idx];
 		ImGui::Text("Type         ");
 		ImGui::SameLine();
@@ -499,13 +499,13 @@ namespace ZXEngine
 		}
 
 		// Color
-		Vector3 lightColor = component->color;
+		Vector3 lightColor = component->mColor;
 		ImVec4 color = ImVec4(lightColor.r, lightColor.g, lightColor.b, 1.0f);
 		ImGui::Text("Color        ");
 		ImGui::SameLine(); ImGui::ColorEdit3("##color", (float*)&color);
 
 		// Intensity
-		float intensity = component->intensity;
+		float intensity = component->mIntensity;
 		ImGui::Text("Intensity    ");
 		ImGui::SameLine(); ImGui::DragFloat("##Intensity", &intensity, 0.01f, 0.0f, FLT_MAX);
 
