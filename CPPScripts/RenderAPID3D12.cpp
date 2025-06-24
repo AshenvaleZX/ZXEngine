@@ -3028,10 +3028,10 @@ namespace ZXEngine
 			vector<CD3DX12_ROOT_PARAMETER> rootParameters(1);
 			rootParameters[0].InitAsDescriptorTable(static_cast<UINT>(descriptorRanges.size()), descriptorRanges.data());
 
+			auto samplers = GetStaticSamplersDesc();
 			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
 			if (needSample)
 			{
-				auto samplers = GetStaticSamplersDesc();
 				rootSignatureDesc.Init(static_cast<UINT>(rootParameters.size()), rootParameters.data(), static_cast<UINT>(samplers.size()), samplers.data(), D3D12_ROOT_SIGNATURE_FLAG_NONE);
 			}
 			else
