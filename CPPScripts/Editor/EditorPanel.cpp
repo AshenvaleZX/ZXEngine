@@ -19,22 +19,33 @@ namespace ZXEngine
             mSize.x = currentWindowSize.x;
             mSize.y = currentWindowSize.y;
             mDragSize = mSize;
-
-            PanelSizeChangeBegin();
         }
         // 松开
         else if (!isPressing && mPressing)
         {
-            if (mSize != mDragSize)
+            if (mResizing)
             {
                 PanelSizeChangeEnd(mDragSize);
             }
+            mResizing = false;
         }
         // 按住
         else if (isPressing)
         {
             ImVec2 currentWindowPos = ImGui::GetWindowPos();
             ImVec2 currentWindowSize = ImGui::GetWindowSize();
+
+            if (!mResizing)
+            {
+                if (!Math::Approximately(mDragPos.x,  currentWindowPos.x ) ||
+                    !Math::Approximately(mDragPos.y,  currentWindowPos.y ) ||
+                    !Math::Approximately(mDragSize.x, currentWindowSize.x) ||
+                    !Math::Approximately(mDragSize.y, currentWindowSize.y) )
+                {
+                    PanelSizeChangeBegin();
+                    mResizing = true;
+                }
+            }
 
             EditorPanelEdgeFlags flags = ZX_EDITOR_PANEL_EDGE_NONE;
             if (mDragSize.x != currentWindowSize.x)
@@ -58,8 +69,11 @@ namespace ZXEngine
             mDragSize.x = currentWindowSize.x;
             mDragSize.y = currentWindowSize.y;
 
-            PanelSizeChanging(mDragSize, flags);
-		}
+            if (mResizing)
+            {
+                PanelSizeChanging(mDragSize, flags);
+            }
+        }
 
         mPressing = isPressing;
     }

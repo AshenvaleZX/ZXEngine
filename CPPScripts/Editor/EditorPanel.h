@@ -12,6 +12,8 @@ namespace ZXEngine
 		EditorPanel() = default;
 		~EditorPanel() = default;
 
+		bool IsResizing() const { return mResizing; }
+
 		virtual void DrawPanel() = 0;
 		virtual void ResetPanel() {};
 
