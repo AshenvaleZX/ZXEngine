@@ -11,8 +11,6 @@ namespace ZXEngine
 		EditorGUIManagerDirectX12();
 		~EditorGUIManagerDirectX12();
 
-		virtual void Init();
-		virtual void ResetPanels();
 		virtual void OnWindowSizeChange();
 
 	protected:
@@ -21,8 +19,6 @@ namespace ZXEngine
 		virtual void EndEditorRender();
 
 	private:
-		vector<EditorPanel*> allPanels;
-
 		const uint32_t maxDescriptorNum = 256;
 
 		UINT descriptorSize;

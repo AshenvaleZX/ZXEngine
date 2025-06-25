@@ -9,8 +9,6 @@ namespace ZXEngine
 		EditorGUIManagerVulkan();
 		~EditorGUIManagerVulkan();
 
-		virtual void Init();
-		virtual void ResetPanels();
 		virtual void OnWindowSizeChange();
 
 	protected:
@@ -19,8 +17,6 @@ namespace ZXEngine
 		virtual void EndEditorRender();
 
 	private:
-		vector<EditorPanel*> allPanels;
-
 		void InitForVulkan();
 		void FrameRender();
 		void RecreateFrameBuffers();

@@ -1,11 +1,4 @@
 #include "EditorGUIManagerMetal.h"
-#include "EditorProjectPanel.h"
-#include "EditorMainBarPanel.h"
-#include "EditorHierarchyPanel.h"
-#include "EditorInspectorPanel.h"
-#include "EditorConsolePanel.h"
-#include "EditorGameViewPanel.h"
-#include "EditorAssetPreviewPanel.h"
 #include "EditorAssetPreviewer.h"
 #include "EditorDialogBoxManager.h"
 #include "../FBOManager.h"
@@ -30,19 +23,6 @@ namespace ZXEngine
 		ImGui_ImplMetal_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
-	}
-
-	void EditorGUIManagerMetal::Init()
-	{
-		// Inspector的绘制要放在Hierarchy和Project后面，因为这两个面板会决定Inspector的内容
-		mAllPanels.push_back(new EditorProjectPanel());
-		mAllPanels.push_back(new EditorMainBarPanel());
-		mAllPanels.push_back(new EditorHierarchyPanel());
-		mAllPanels.push_back(new EditorInspectorPanel());
-		mAllPanels.push_back(new EditorConsolePanel());
-		mAllPanels.push_back(new EditorGameViewPanel());
-		mAllPanels.push_back(new EditorAssetPreviewPanel());
-		assetPreviewer = new EditorAssetPreviewer();
 	}
 
 	void EditorGUIManagerMetal::BeginEditorRender()
@@ -89,12 +69,6 @@ namespace ZXEngine
 			dispatch_semaphore_signal(renderAPI->mSemaphore);
 		});
 		commandBuffer->commit();
-	}
-
-	void EditorGUIManagerMetal::ResetPanels()
-	{
-		for (auto panel : mAllPanels)
-			panel->ResetPanel();
 	}
 
 	void EditorGUIManagerMetal::OnWindowSizeChange()

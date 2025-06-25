@@ -30,6 +30,18 @@ namespace ZXEngine
 		AssetPreview,
 	};
 
+	enum class EditorPanelType
+	{
+		ProjectPanel,
+		MainBarPanel,
+		HierarchyPanel,
+		InspectorPanel,
+		ConsolePanel,
+		GameViewPanel,
+		AssetPreviewPanel,
+		Count,
+	};
+
 	struct EditorAssetNode
 	{
 		string path;

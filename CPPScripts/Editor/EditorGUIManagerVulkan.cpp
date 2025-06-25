@@ -1,11 +1,4 @@
 #include "EditorGUIManagerVulkan.h"
-#include "EditorProjectPanel.h"
-#include "EditorMainBarPanel.h"
-#include "EditorHierarchyPanel.h"
-#include "EditorInspectorPanel.h"
-#include "EditorConsolePanel.h"
-#include "EditorGameViewPanel.h"
-#include "EditorAssetPreviewPanel.h"
 #include "EditorAssetPreviewer.h"
 #include "EditorDialogBoxManager.h"
 #include "../FBOManager.h"
@@ -56,19 +49,6 @@ namespace ZXEngine
 		vkDestroyDescriptorPool(renderAPI->device, g_DescriptorPool, VK_NULL_HANDLE);
 	}
 
-	void EditorGUIManagerVulkan::Init()
-	{
-		// Inspector的绘制要放在Hierarchy和Project后面，因为这两个面板会决定Inspector的内容
-		allPanels.push_back(new EditorProjectPanel());
-		allPanels.push_back(new EditorMainBarPanel());
-		allPanels.push_back(new EditorHierarchyPanel());
-		allPanels.push_back(new EditorInspectorPanel());
-		allPanels.push_back(new EditorConsolePanel());
-		allPanels.push_back(new EditorGameViewPanel());
-		allPanels.push_back(new EditorAssetPreviewPanel());
-		assetPreviewer = new EditorAssetPreviewer();
-	}
-
 	void EditorGUIManagerVulkan::BeginEditorRender()
 	{
 		ImGui_ImplVulkan_NewFrame();
@@ -83,7 +63,7 @@ namespace ZXEngine
 
 		FBOManager::GetInstance()->SwitchFBO(ScreenBuffer);
 
-		for (auto panel : allPanels)
+		for (auto panel : mAllPanels)
 		{
 			panel->DrawPanel();
 		}
@@ -96,12 +76,6 @@ namespace ZXEngine
 	void EditorGUIManagerVulkan::EndEditorRender()
 	{
 		FrameRender();
-	}
-
-	void EditorGUIManagerVulkan::ResetPanels()
-	{
-		for (auto panel : allPanels)
-			panel->ResetPanel();
 	}
 
 	void EditorGUIManagerVulkan::OnWindowSizeChange()

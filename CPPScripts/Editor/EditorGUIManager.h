@@ -1,5 +1,6 @@
 #pragma once
 #include "EditorPanel.h"
+#include "EditorEnumStruct.h"
 
 namespace ZXEngine
 {
@@ -20,11 +21,15 @@ namespace ZXEngine
 
 		void Render();
 
-		virtual void Init()               = 0;
-		virtual void ResetPanels()        = 0;
+		void Init();
+		void ResetPanels();
+		EditorPanel* GetPanel(EditorPanelType type);
+
 		virtual void OnWindowSizeChange() = 0;
 
 	protected:
+		vector<EditorPanel*> mAllPanels;
+
 		virtual void BeginEditorRender() = 0;
 		virtual void EditorRender()      = 0;
 		virtual void EndEditorRender()   = 0;
