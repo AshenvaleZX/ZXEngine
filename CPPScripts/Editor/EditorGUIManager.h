@@ -17,7 +17,7 @@ namespace ZXEngine
 	public:
 		Vector2 mViewBorderSize;
 		float mHeaderSize = 0.0f;
-		EditorAssetPreviewer* assetPreviewer = nullptr;
+		EditorAssetPreviewer* mAssetPreviewer = nullptr;
 
 		void Render();
 

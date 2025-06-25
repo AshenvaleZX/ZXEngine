@@ -41,8 +41,8 @@ namespace ZXEngine
 
 	void EditorGUIManagerDirectX12::EditorRender()
 	{
-		if (assetPreviewer->Check())
-			assetPreviewer->Draw();
+		if (mAssetPreviewer->Check())
+			mAssetPreviewer->Draw();
 
 		FBOManager::GetInstance()->SwitchFBO(ScreenBuffer);
 

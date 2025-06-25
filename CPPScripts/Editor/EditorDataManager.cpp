@@ -197,7 +197,7 @@ namespace ZXEngine
 			{
 				auto curInfo = static_cast<AssetMaterialInfo*>(this->curAssetInfo);
 				curInfo->material = new Material(matStruct);
-				EditorGUIManager::GetInstance()->assetPreviewer->Reset();
+				EditorGUIManager::GetInstance()->mAssetPreviewer->Reset();
 			}, false, true);
 #else
 			MaterialStruct* matStruct = Resources::LoadMaterial(localPath);
@@ -229,7 +229,7 @@ namespace ZXEngine
 				curInfo->animBriefInfos = std::move(modelData->animBriefInfos);
 
 				float size = std::max({ curInfo->meshRenderer->mAABBSizeX, curInfo->meshRenderer->mAABBSizeY, curInfo->meshRenderer->mAABBSizeZ });
-				EditorGUIManager::GetInstance()->assetPreviewer->Reset(size);
+				EditorGUIManager::GetInstance()->mAssetPreviewer->Reset(size);
 			}, false, true);
 #else
 			ModelData* pModelData = ModelUtil::LoadModel(asset->path, false);

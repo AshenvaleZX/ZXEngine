@@ -40,7 +40,7 @@ namespace ZXEngine
 		{
 			ImGuiIO& io = ImGui::GetIO();
 			// 拖拽状态下旋转预览模型
-			EditorGUIManager::GetInstance()->assetPreviewer->UpdateModelRotation(io.MouseDelta.x, io.MouseDelta.y);
+			EditorGUIManager::GetInstance()->mAssetPreviewer->UpdateModelRotation(io.MouseDelta.x, io.MouseDelta.y);
 
 			// 拖拽状态下松开鼠标左键退出拖拽状态
 			if (!ImGui::IsMouseDown(0))
@@ -91,6 +91,6 @@ namespace ZXEngine
 	{
 		// 本来编辑器的输入是想统一用ImGuiIO的，但是ImGuiIO的MouseWheel必须要在ImGui::Begin和End之间调用才能生效
 		if (CheckCurMousePos() == EditorAreaType::AssetPreview)
-			EditorGUIManager::GetInstance()->assetPreviewer->UpdateModelScale(yOffset);
+			EditorGUIManager::GetInstance()->mAssetPreviewer->UpdateModelScale(yOffset);
 	}
 }

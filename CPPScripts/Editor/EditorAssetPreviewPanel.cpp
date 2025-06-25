@@ -23,7 +23,7 @@ namespace ZXEngine
 	void EditorAssetPreviewPanel::DrawPanel()
 	{
 		auto pGUIManager = EditorGUIManager::GetInstance();
-		if (!pGUIManager->assetPreviewer->Check())
+		if (!pGUIManager->mAssetPreviewer->Check())
 			return;
 
 		ImGui::SetNextWindowPos(ImVec2((float)(ProjectSetting::srcWidth - ProjectSetting::inspectorWidth), (float)(ProjectSetting::mainBarHeight + ProjectSetting::inspectorHeight)));
@@ -39,7 +39,7 @@ namespace ZXEngine
 
 			float imageWidth = static_cast<float>(ProjectSetting::inspectorWidth) - pGUIManager->mViewBorderSize.x * 2.0f;
 
-			if (pGUIManager->assetPreviewer->isLoading)
+			if (pGUIManager->mAssetPreviewer->isLoading)
 			{
 				id = mLoadingTexture->GetID();
 				if (!ImTextureMgr->CheckExistenceByEngineID(id))
