@@ -2,6 +2,7 @@
 #include "LuaManager.h"
 
 #ifdef ZX_EDITOR
+#include "Editor/EditorGUIManager.h"
 #include "Editor/EditorDataManager.h"
 #endif
 
@@ -27,6 +28,8 @@ namespace ZXEngine
         {
 #ifdef ZX_EDITOR
             if (EditorDataManager::GetInstance()->isGamePause)
+                return;
+            if (EditorGUIManager::GetInstance()->GetPanel(EditorPanelType::GameViewPanel)->IsResizing())
                 return;
 #endif
             auto iter = mCallBackMap.find(id);
