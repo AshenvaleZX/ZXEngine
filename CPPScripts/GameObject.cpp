@@ -175,7 +175,7 @@ namespace ZXEngine
 			else if (component["Type"] == "GameLogic")
 				Parse<GameLogic>(component);
 			else if (component["Type"] == "UIButton")
-				ParseUIButton(component);
+				Parse<UIButton>(component);
 			else if (component["Type"] == "UITextRenderer")
 				ParseUITextRenderer(component);
 			else if (component["Type"] == "UITextureRenderer")
@@ -373,14 +373,6 @@ namespace ZXEngine
 		{
 			Debug::LogWarning("No meshs !");
 		}
-	}
-
-	void GameObject::ParseUIButton(json data)
-	{
-		UIButton* uiButton = AddComponent<UIButton>();
-
-		uiButton->mWidth = data["Width"];
-		uiButton->mHeight = data["Height"];
 	}
 
 	void GameObject::ParseUITextRenderer(json data)

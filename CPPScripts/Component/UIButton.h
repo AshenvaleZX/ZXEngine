@@ -42,4 +42,15 @@ namespace ZXEngine
 		void BtnDownCallBack(const string& args);
 		void TouchClickCallBack(const string& args);
 	};
+
+	ZXRef_StaticReflection
+	(
+		UIButton,
+		ZXRef_BaseType(Component)
+		ZXRef_Fields
+		(
+			ZXRef_Field(&UIButton::mWidth),
+			ZXRef_Field(&UIButton::mHeight)
+		)
+	)
 }
