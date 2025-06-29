@@ -53,7 +53,19 @@ namespace ZXEngine
 		int stack_size = lua_gettop(L);
 		// 加载绑定的lua代码
 		string code = Resources::LoadTextFile(GetLuaFullPath());
-		auto suc = luaL_dostring(L, code.c_str());
+		// 用luaL_loadbuffer接口加载代码，可以传入一个自定义的代码名称，方便调试
+		auto suc = luaL_loadbuffer(L, code.c_str(), code.size(), Lua.c_str());
+		if (suc == LUA_OK)
+		{
+			// 立刻执行
+			suc = lua_pcall(L, 0, LUA_MULTRET, 0);
+			if (suc != LUA_OK)
+			{
+				// 打印并弹出错误信息
+				Debug::LogError(lua_tostring(L, -1));
+				lua_pop(L, 1);
+			}
+		}
 		if (suc == LUA_OK)
 		{
 			// 这里dofile成功后，lua代码的最后一行是return table，此时栈顶是一个table
